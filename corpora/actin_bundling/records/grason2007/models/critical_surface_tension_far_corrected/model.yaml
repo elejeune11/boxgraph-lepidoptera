@@ -1,0 +1,39 @@
+id: critical_surface_tension_far_corrected
+name: critical surface tension far from bulk condensation (corrected from Eqs. 6-7)
+role: model
+stated:
+  page: 3
+  printed_page: "098101-3"
+  quote: "Sufficiently far from the bulk condensation point"
+  where: "text, p. 3 col 2 top"
+equation: "Sigma_c = f_0^(3/2) * L^(1/2) / (3^(3/2) * pi^(3/2) * lambda_3perp * rho_0^(1/2) * (mu_c - mu)^(1/2))"
+variant_of: critical_surface_tension_far_printed
+corrections:
+  - equation: "asymptotic Sigma_c(mu) for mu << mu_c (p. 3 col 2 top)"
+    change: "replace (mu_c - mu)^(-3/2) with ((rho_0/L)*(mu_c - mu))^(-1/2) and prefactor 3^(-1/2) with 3^(-3/2) * pi^(-3/2)"
+    evidence: "Dimensionally, [f_0^(3/2) * lambda_3perp^(-1) * (mu_c - mu)^(-3/2)] = L^(-7/2) != [Sigma] = E/L^2 (even with bulk penalty density delta = (rho_0/L)*(mu_c - mu), delta^(-3/2) gives length R*, not surface tension). Expanding Eqs. (6)-(7) for R << lambda_3perp yields (Delta_F - mu*rho_0*pi*R^2)/(L*R) ~= -f_0*lambda_3perp^(-2/3)*R^(1/3) + pi*delta*R + 2*pi*Sigma, whose zero-minimum condition gives R* = f_0^(3/2)/(3^(3/2)*pi^(3/2)*lambda_3perp*delta^(3/2)) and Sigma_c = delta*R* = f_0^(3/2)/(3^(3/2)*pi^(3/2)*lambda_3perp*delta^(1/2))."
+built_from:
+  - columnar_free_energy_eq6
+  - cluster_size_distribution_eq7
+inputs:
+  f_0:
+    quantity: free_energy_prefactor_f0
+    unit: "pN / nm**(2/3)"
+  lambda_3perp:
+    quantity: characteristic_length_lambda3
+    unit: nm
+  delta_mu:
+    quantity: filament_chemical_potential
+    unit: "pN*nm"
+  rho_0:
+    quantity: chain_area_density
+    unit: "1 / nm**2"
+  L:
+    quantity: filament_length
+    unit: nm
+outputs:
+  Sigma_c:
+    quantity: surface_tension
+    unit: "pN / nm"
+settings: {}
+stochastic: false

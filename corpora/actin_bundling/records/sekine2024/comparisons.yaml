@@ -1,0 +1,252 @@
+# Reproduction, consistency, and validation comparisons for sekine2024.
+# Every printed derived result (31 data items) is compared against its computed model output.
+
+# --- 1. Table S1 parameter derivations (reproduction) ---
+- id: cmp_kBT_sim
+  purpose: reproduction
+  computed: kBT_computed
+  printed: kBT_sim
+  conditions_ok: "run uses temp_sim = 300 K, matching the 300 K condition stated in Table S1"
+
+- id: cmp_E_f_str_sim
+  purpose: reproduction
+  computed: E_f_str_computed
+  printed: E_f_str_sim
+
+- id: cmp_E_m_str_sim
+  purpose: reproduction
+  computed: E_m_str_computed
+  printed: E_m_str_sim
+
+- id: cmp_E_cl_str_sim
+  purpose: reproduction
+  computed: E_cl_str_computed
+  printed: E_cl_str_sim
+
+- id: cmp_l_m_bend_sim
+  purpose: reproduction
+  computed: l_m_bend_computed
+  printed: l_m_bend_sim
+
+- id: cmp_l_m_bend_chained
+  purpose: reproduction
+  computed: l_m_bend_chained
+  printed: l_m_bend_sim
+  conditions_ok: "chained run computes k_B T directly from temp_sim = 300 K"
+
+- id: cmp_l_cl_bend_sim
+  purpose: reproduction
+  computed: l_cl_bend_computed
+  printed: l_cl_bend_sim
+  note: "Direct evaluation gives 2.408 um vs printed ~24.1 um in Table S1 (10x discrepancy; no verdict due to '~' prefix, documented as possible_error q_table_s1_cl_persistence)."
+
+- id: cmp_l_cl_bend_chained
+  purpose: reproduction
+  computed: l_cl_bend_chained
+  printed: l_cl_bend_sim
+  conditions_ok: "chained run computes k_B T directly from temp_sim = 300 K"
+
+# --- 2. Structure factor periodic intervals (Supplementary Table 4, reproduction) ---
+- {id: cmp_interval_1m, purpose: reproduction, computed: interval_1m_computed, printed: interval_sim_1m}
+- {id: cmp_interval_3m, purpose: reproduction, computed: interval_3m_computed, printed: interval_sim_3m}
+- {id: cmp_interval_4m, purpose: reproduction, computed: interval_4m_computed, printed: interval_sim_4m}
+- {id: cmp_interval_4m_via_mu, purpose: reproduction, computed: interval_4m_via_mu_computed, printed: interval_sim_4m, note: "Chained check converting mu/(2*pi) -> mu -> 2*pi/mu."}
+- {id: cmp_interval_a4_1, purpose: reproduction, computed: interval_a4_1_computed, printed: interval_sim_a4_1}
+
+# --- 3. Motion anisotropy ratios |dy|/|dx| (Supplementary Table 5 & Fig. 5d, reproduction) ---
+- {id: cmp_aniso_sim_1m, purpose: reproduction, computed: aniso_sim_1m_computed, printed: aniso_ratio_sim_1m}
+- {id: cmp_aniso_sim_2m, purpose: reproduction, computed: aniso_sim_2m_computed, printed: aniso_ratio_sim_2m, note: "21.8/19.4 = 1.1237 vs printed 1.13; tests input rounding of 1-decimal printed means."}
+- {id: cmp_aniso_sim_4m, purpose: reproduction, computed: aniso_sim_4m_computed, printed: aniso_ratio_sim_4m}
+- {id: cmp_aniso_st15_m40, purpose: reproduction, computed: aniso_st15_m40_computed, printed: aniso_ratio_st15_m40}
+- {id: cmp_aniso_st15_m30, purpose: reproduction, computed: aniso_st15_m30_computed, printed: aniso_ratio_st15_m30}
+- {id: cmp_aniso_st15_m20, purpose: reproduction, computed: aniso_st15_m20_computed, printed: aniso_ratio_st15_m20}
+- {id: cmp_aniso_st15_m10, purpose: reproduction, computed: aniso_st15_m10_computed, printed: aniso_ratio_st15_m10}
+- {id: cmp_aniso_st15_0, purpose: reproduction, computed: aniso_st15_0_computed, printed: aniso_ratio_st15_0}
+- {id: cmp_aniso_st16_ctrl, purpose: reproduction, computed: aniso_st16_ctrl_computed, printed: aniso_ratio_st16_ctrl}
+- {id: cmp_aniso_st16_ctrl_fig5d, purpose: reproduction, computed: aniso_st16_ctrl_computed, printed: aniso_ratio_st16_ctrl_fig5d}
+- {id: cmp_aniso_st16_zasp52, purpose: reproduction, computed: aniso_st16_zasp52_computed, printed: aniso_ratio_st16_zasp52}
+- {id: cmp_aniso_st16_daam, purpose: reproduction, computed: aniso_st16_daam_computed, printed: aniso_ratio_st16_daam}
+- {id: cmp_aniso_st16_myosin_dn, purpose: reproduction, computed: aniso_st16_myosin_dn_computed, printed: aniso_ratio_st16_myosin_dn}
+- {id: cmp_aniso_st16_myosin_dn_fig5d, purpose: reproduction, computed: aniso_st16_myosin_dn_computed, printed: aniso_ratio_st16_myosin_dn_fig5d}
+
+# --- 4. Complex widths, pixel discretization, PIV window, frame durations (reproduction) ---
+- {id: cmp_width_single, purpose: reproduction, computed: width_single_computed, printed: width_single_labeled_actin}
+- {id: cmp_width_dimer, purpose: reproduction, computed: width_dimer_computed, printed: width_crosslinked_dimer}
+- {id: cmp_sim_pixel_size, purpose: reproduction, computed: sim_pixel_size_computed, printed: sim_pixel_size_printed, note: "3 um / 69 = 0.043478 um vs printed 0.04325 um in Methods p. 11."}
+- {id: cmp_piv_window_phys, purpose: reproduction, computed: piv_window_phys_computed, printed: piv_window_size_phys}
+- {id: cmp_fusion_dur_2frames, purpose: reproduction, computed: fusion_dur_2frames_computed, printed: fusion_dur_2frames_s}
+- {id: cmp_fusion_dur_4frames, purpose: reproduction, computed: fusion_dur_4frames_computed, printed: fusion_dur_4frames_s}
+- {id: cmp_movie1_dur_50frames, purpose: reproduction, computed: movie1_dur_50frames_computed, printed: movie1_dur_50frames_s, note: "50 * 0.32 s = 16 s (49 intervals = 15.68 s) vs printed 15 s in Supplementary Movie 1 description."}
+
+# --- 5. Internal consistency checks across sections/tables ---
+- id: cmp_consistency_eta_cyto
+  purpose: consistency
+  computed: eta_cyto_si_text
+  printed: eta_cyto_table_s1
+  note: "SI Notes Section II text (10^-1 Pa*s, p. 30) vs Table S1 (1 Pa*s, p. 31): 10x discrepancy."
+
+- id: cmp_consistency_f_walk
+  purpose: consistency
+  computed: f_walk_fig_s7b3_4m
+  printed: f_walk_table_s1
+  note: "Supplementary Fig. 7b3 black-framed 4-M reference / SI Notes III.2 (0.001 pN) vs Table S1 bold default (0.05 pN): 50x discrepancy."
+
+- id: cmp_consistency_L0_cl
+  purpose: consistency
+  computed: L0_cl_table_s3
+  printed: L0_cl_sim
+  note: "Supplementary Table 3 'Crosslinker length' (0.0175 um = L_0^cl/2) vs Table S1 and Fig. S7 (L_0^cl = 0.035 um): 2x discrepancy."
+
+- id: cmp_consistency_L0_cl_a5_2
+  purpose: consistency
+  computed: L0_cl_a5_2_table_s3
+  printed: L0_cl_a5_2_si_text
+  note: "Supplementary Table 3 row Fig. 7a5-2 (0.02 um) vs SI Notes III.1 & Fig. S7a5-2 (0.04 um): systematic 2x half-length discrepancy."
+
+- id: cmp_consistency_L0_cl_a5_3
+  purpose: consistency
+  computed: L0_cl_a5_3_table_s3
+  printed: L0_cl_a5_3_si_text
+  note: "Supplementary Table 3 row Fig. 7a5-3 (0.03 um) vs SI Notes III.1 & Fig. S7a5-3 (0.06 um): systematic 2x half-length discrepancy."
+
+- id: cmp_consistency_omega_cl_a3_3
+  purpose: consistency
+  computed: omega_cl_a3_3_table_s3
+  printed: omega_cl_a3_3_si_text
+  note: "Supplementary Table 3 row Fig. 7a3-3 (0.3 s^-1) vs Supplementary Fig. 7a3-3 and SI Notes III.1 (0.03 s^-1): 10x discrepancy."
+
+- id: cmp_consistency_st15_major_t1_t3
+  purpose: consistency
+  computed: st15_major_mean
+  printed: st15_major_mean_t3
+  note: "Stage 15 mean major length in Supplementary Table 1 (0.3286 um) vs Supplementary Table 3 (328.6 nm)."
+
+- id: cmp_consistency_st15_minor_t1_t3
+  purpose: consistency
+  computed: st15_minor_mean
+  printed: st15_minor_mean_t3
+  note: "Stage 15 mean minor length in Supplementary Table 1 (0.1780 um) vs Supplementary Table 3 (178.0 nm)."
+
+- id: cmp_consistency_st16_major_t1_t3
+  purpose: consistency
+  computed: st16_major_mean
+  printed: st16_major_mean_t3
+  note: "Stage 16 mean major length in Supplementary Table 1 (0.3835 um) vs Supplementary Table 3 (383.5 nm)."
+
+- id: cmp_consistency_st16_minor_t1_t3
+  purpose: consistency
+  computed: st16_minor_mean
+  printed: st16_minor_mean_t3
+  note: "Stage 16 mean minor length in Supplementary Table 1 (0.1682 um) vs Supplementary Table 3 (168.2 nm)."
+
+- id: cmp_roi_side_movies23
+  purpose: consistency
+  computed: roi_side_movies23_computed
+  printed: roi_side_movies23
+  note: "50-pixel live-imaging ROI width (Methods p. 10) multiplied by experimental pixel pitch 0.04325 um (Methods p. 11) gives 2.1625 um, reproducing the 2.16 um square ROI printed for Supplementary Movies 2-3 (p. 37)."
+
+- id: cmp_consistency_d_actin_s6a_ts1
+  purpose: consistency
+  computed: d_actin_s6a
+  printed: d_f_lit
+  note: "Literature F-actin diameter used in Supplementary Fig. 6a packing estimate (7 nm, p. 21) vs Table S1 in vivo/in vitro column (0.009 um = 9 nm, p. 31)."
+
+- id: cmp_consistency_l_actinin_s6a_ts1
+  purpose: consistency
+  computed: l_actinin_s6a
+  printed: L0_cl_lit
+  note: "Literature alpha-actinin length used in Supplementary Fig. 6a (35 nm, p. 21, citing Ribeiro et al. 2014 on p. 4) vs Table S1 in vivo/in vitro column (0.036 um = 36 nm, p. 31, citing the same Ribeiro et al. 2014 [17])."
+
+# --- 6. Validation & theoretical baseline comparisons ---
+- id: cmp_validation_cable_interval_4m
+  purpose: validation
+  computed: interval_4m_computed
+  printed: cable_interval_in_vivo
+  note: "Simulated 4-M stripe interval from structure factor (529 nm) vs in vivo early stage 16 periodic cable interval (450 ± 13.2 nm)."
+
+- id: cmp_langevin_passive_vs_sim_2m
+  purpose: consistency
+  computed: langevin_R_aniso
+  printed: aniso_ratio_sim_2m
+  note: "Contrasts stochastic single-filament passive anisotropic Brownian displacement ratio (<|dy|>/<|dx|> ~ 0.806 < 1) against motor-free many-body simulation 2-M (1.13 > 1), showing that equilibrium FDT diffusion alone predicts opposite anisotropy to 2-M."
+
+- id: cmp_analytic_passive_vs_sim_2m
+  purpose: consistency
+  computed: passive_aniso_ratio_analytic
+  printed: aniso_ratio_sim_2m
+  note: "Contrasts exact analytical passive Brownian ratio 1/sqrt(1.5) = 0.8165 < 1 against motor-free many-body simulation 2-M (1.13 > 1)."
+
+# --- 7. Digitized Supplementary Fig. 7c1-c4 Gaussian fit reproduction & fit quality ---
+# Directly settles q_gaussian_sf_2pi_convention: literal p. 11 angular-wavenumber form fails
+# catastrophically off-peak, whereas the q/(2*pi) spatial-frequency variant reproduces all 4 plotted curves.
+- id: cmp_sf_literal_c1_fit
+  purpose: reproduction
+  computed: S_c1_literal_fit
+  printed: d_figs7c1_fit
+  note: "Tests literal Methods p. 11 angular-wavenumber exponent -(2*pi*f - 2*pi*mu_f)^2/(2*sigma^2) against digitized Supp. Fig. 7c1 dotted Gaussian curve (1-M)."
+
+- id: cmp_sf_literal_c2_fit
+  purpose: reproduction
+  computed: S_c2_literal_fit
+  printed: d_figs7c2_fit
+  note: "Tests literal Methods p. 11 angular-wavenumber exponent against digitized Supp. Fig. 7c2 dotted Gaussian curve (3-M)."
+
+- id: cmp_sf_literal_c3_fit
+  purpose: reproduction
+  computed: S_c3_literal_fit
+  printed: d_figs7c3_fit
+  note: "Tests literal Methods p. 11 angular-wavenumber exponent against digitized Supp. Fig. 7c3 dotted Gaussian curve (4-M)."
+
+- id: cmp_sf_literal_c4_fit
+  purpose: reproduction
+  computed: S_c4_literal_fit
+  printed: d_figs7c4_fit
+  note: "Tests literal Methods p. 11 angular-wavenumber exponent against digitized Supp. Fig. 7c4 dotted Gaussian curve (a4-1)."
+
+- id: cmp_sf_freq_c1_fit
+  purpose: reproduction
+  computed: S_c1_freq_fit
+  printed: d_figs7c1_fit
+  note: "Tests q/(2*pi) spatial-frequency variant with Supplementary Table 4 parameters against digitized Supp. Fig. 7c1 dotted Gaussian curve (1-M)."
+
+- id: cmp_sf_freq_c2_fit
+  purpose: reproduction
+  computed: S_c2_freq_fit
+  printed: d_figs7c2_fit
+  note: "Tests q/(2*pi) spatial-frequency variant with Supplementary Table 4 parameters against digitized Supp. Fig. 7c2 dotted Gaussian curve (3-M)."
+
+- id: cmp_sf_freq_c3_fit
+  purpose: reproduction
+  computed: S_c3_freq_fit
+  printed: d_figs7c3_fit
+  note: "Tests q/(2*pi) spatial-frequency variant with Supplementary Table 4 parameters against digitized Supp. Fig. 7c3 dotted Gaussian curve (4-M)."
+
+- id: cmp_sf_freq_c4_fit
+  purpose: reproduction
+  computed: S_c4_freq_fit
+  printed: d_figs7c4_fit
+  note: "Tests q/(2*pi) spatial-frequency variant with Supplementary Table 4 parameters against digitized Supp. Fig. 7c4 dotted Gaussian curve (a4-1)."
+
+- id: cmp_sf_freq_c1_sim
+  purpose: fit_quality
+  computed: S_c1_freq_sim
+  printed: d_figs7c1_sim
+  note: "Fit quality of Table 4 Gaussian in q/(2*pi) coordinates against all 30 digitized simulated S(q) bins (q/(2*pi)=0.1..5.9 um^-1) in Supp. Fig. 7c1 (1-M)."
+
+- id: cmp_sf_freq_c2_sim
+  purpose: fit_quality
+  computed: S_c2_freq_sim
+  printed: d_figs7c2_sim
+  note: "Fit quality of Table 4 Gaussian in q/(2*pi) coordinates against all 30 digitized simulated S(q) bins in Supp. Fig. 7c2 (3-M)."
+
+- id: cmp_sf_freq_c3_sim
+  purpose: fit_quality
+  computed: S_c3_freq_sim
+  printed: d_figs7c3_sim
+  note: "Fit quality of Table 4 Gaussian in q/(2*pi) coordinates against all 30 digitized simulated S(q) bins in Supp. Fig. 7c3 (4-M)."
+
+- id: cmp_sf_freq_c4_sim
+  purpose: fit_quality
+  computed: S_c4_freq_sim
+  printed: d_figs7c4_sim
+  note: "Fit quality of Table 4 Gaussian in q/(2*pi) coordinates against all 30 digitized simulated S(q) bins in Supp. Fig. 7c4 (a4-1)."

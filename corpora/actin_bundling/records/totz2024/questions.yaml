@@ -1,0 +1,868 @@
+- id: q_eq3_e49_dimensional_misprint
+  kind: possible_error
+  about:
+    - rayleigh_ritz_strain_eq3
+    - rayleigh_ritz_amplitude_eq3
+    - youngs_modulus_lower_bound_eq3
+    - cmp_Ymin_printed_eq3
+    - Y_min_printed
+  text: >
+    Eq. 3 (p. 6) and SI Eq. E49 (p. 22) both print g/g_c = 1 + 3*h^2*a^2/4 - p*L^2/(a*pi^2*Y*g_c*h^3),
+    which is dimensionally inconsistent: 3*h^2*a^2/4 has dimension [length]^4 and
+    p*L^2/(a*pi^2*Y*g_c*h^3) has dimension [length]^-2, while g/g_c and 1 are dimensionless.
+    This arises from substituting dimensionless amplitude a_tilde -> h*a instead of a/h when
+    restoring units from SI Eq. E33 (w -> h*w). Evaluated literally in SI units, printed Eq. 3
+    fails to reproduce Y_min = 3.5 x 10^6 Pa by ~16 orders of magnitude (~1.9 x 10^22 Pa) and
+    fails to reduce to SI Eq. E44 as p -> 0. The dimensionally corrected variants
+    (replacing 3*h^2*a^2/4 with 3*a^2/(4*h^2) and h^3 with h) match SI Eq. E44 exactly at p -> 0,
+    reproduce Y_min = 3.5 x 10^6 Pa (for w_0(39.6%) = 25 nm), and match Figs. 3H and 4C.
+  citation:
+    page: 6
+    printed_page: "5"
+    quote: "Using the Rayleigh-Ritz approximation method to compute the maximum"
+    where: "Eq. 3 (and SI Eq. E49, p. 22)"
+
+- id: q_fvk_2d_unstated_fem
+  kind: unstated_model
+  about:
+    - fvk_2d_plate_eq1_eq2
+  text: >
+    Fig. 2D shows a 3D rendering described as "Numerical solutions of plate equations (Equations 1
+    and 2)" and Table S1 refers to "the finite element simulations of Figs. 2-4", yet the paper
+    does not state the 2D plate length along y, the boundary conditions at the longitudinal y-edges,
+    the finite-element software, mesh resolution, or element formulation (Experimental Procedures
+    p. 11 only describes numerically solving the 1D algebraic Eq. 3 in Mathematica 13.1).
+  citation:
+    page: 17
+    quote: "Föppl-von-Kármán equations and the finite element simulations of Figs."
+    where: "Table S1 caption (and Fig. 2D, p. 5)"
+
+- id: q_e36_e37_misprint
+  kind: possible_error
+  about:
+    - in_plane_displacement_scale_e36_e37
+    - in_plane_displacement_scale_e36_e37_corrected
+  text: >
+    SI Eqs. E36-E37 (p. 21) print the nondimensionalization of in-plane displacements as
+    "u -> YL/2h^2 u" and "v -> YL/2h^2 v", which is dimensionally invalid for a displacement
+    [length] because it includes Young's modulus Y (giving stress*length^3 or stress/length).
+    From the nonlinear strain-displacement relations (SI Eqs. E20-E21) with x ~ L/2 (Eq. E30)
+    and w ~ h (Eq. E33), the physically consistent scale is u_scale = h^2 / (L/2) = 2*h^2/L.
+  citation:
+    page: 21
+    quote: "Dimensionless equations can be achieved via:"
+    where: "SI Note S2, Eqs. E36-E37"
+
+- id: q_e42_mixed_dimension_misprint
+  kind: possible_error
+  about:
+    - ode_coefficients_e42
+    - ode_coefficients_e42_corrected
+  text: >
+    SI Eq. E42 (p. 22) defines the dimensionless ODE coefficient a = 12*(1 - nu^2)*((L/(2*h))^2*g - c*Y*h^2).
+    The second term '- c*Y*h^2' is dimensionally inconsistent with the dimensionless first term
+    (L/(2*h))^2*g: for dimensional stress potential amplitude c (units Pa, from Eq. E41), the term
+    should be -(L/(2*h))^2*(c/Y), or simply -c if c is already dimensionless under Eq. E34.
+    In addition, the symbol 'a' is overloaded between the ODE coefficient in Eq. E42 and the
+    buckling amplitude a = w(0) in Eq. 3 / E49.
+  citation:
+    page: 22
+    quote: "with the constants a = 12(1 – ν 2 )((L/(2h))2 g"
+    where: "SI Note S2, Eq. E42"
+
+- id: q_e22_shear_strain_misprint
+  kind: possible_error
+  about:
+    - hooke_plane_stress_e15_e17
+  text: >
+    SI Eq. E22 (p. 20) prints the linear shear strain part as (1/2)*(du/dx + dv/dy) instead of
+    (1/2)*(du/dy + dv/dx). The subsequent Eq. E25 (p. 20) reverts to the correct expression
+    du/dy + dv/dx = -(2*(1 + nu)/Y)*d^2chi/(dx*dy) - (dw/dx)*(dw/dy), confirming E22 is a
+    typesetting error.
+  citation:
+    page: 20
+    quote: "The strain tensor of the center surface for vanishing"
+    where: "SI Note S2, Eq. E22"
+
+- id: q_prestress_poisson_factor
+  kind: reading
+  about:
+    - prestress_growth
+    - hooke_plane_stress_e15_e17
+    - critical_growth_strain_eq4
+  text: >
+    In SI Note S2 (pp. 18-19), the paper adds isotropic growth pre-stress sigma_A = Y*g under
+    additive strain decomposition (eps_total = eps_e + g). However, under the paper's own 2D
+    plane-stress Hooke law (SI Eqs. E15-E16), clamped isotropic growth strain eps_e,xx = eps_e,yy = -g
+    produces sigma_xx = sigma_yy = -Y*g/(1 - nu) (a factor of 1/(1 - nu) = 2 larger for nu = 0.5).
+    The paper's subsequent formulas (Eqs. 4, E44-E48) are algebraically self-consistent with
+    defining pre-stress as sigma_A = Y*g (effectively rescaling g by 1 - nu relative to a 2D
+    biaxial isotropic growth strain).
+  citation:
+    page: 18
+    quote: "with σA = Yg (assuming additive decomposition of elastic and growth"
+    where: "SI Note S2"
+
+- id: q_unprinted_figure_amplitudes_and_spacings
+  kind: unstated_input
+  about:
+    - w0_39_6_added
+    - Y_min_printed
+    - cmp_Ymin_corrected_eq3
+  text: >
+    The paper does not print numerical tables for (i) the five mean in vivo protoridge amplitudes
+    w_0 at 39.6%-41.0% pupal development (plotted in Figs. 3A-E and 3F), or (ii) the inter-bundle
+    spacings L_1,A, L_2,A (Colias eurytheme) and L_1,B, L_2,B (Agraulis vanillae) plotted as
+    dashed lines in Fig. 4C. Reproducing Y_min = 3.5 x 10^6 Pa (p. 8) requires the 39.6% mean
+    amplitude w_0, entered here as w0_39_6_added = 25 nm (alternatives 24, 26 nm) pending
+    calibrated digitization of Fig. 3A and Fig. 4C in the digitize stage.
+  citation:
+    page: 8
+    printed_page: "7"
+    quote: "we find a lower bound of Ymin = 3:53106 Pa."
+    where: "text (referencing Fig. 3A, 3H, and Fig. 4C)"
+
+- id: q_fig3F_caption_40_6_vs_40_7
+  kind: possible_error
+  about:
+    - dev_time_fig3_40_6pct_caption
+    - dev_time_fig3_40_7pct_text
+    - cmp_consistency_dev_time_40_6_vs_40_7
+  text: >
+    The caption of Fig. 3F (p. 7) lists the five developmental time points as "39.6%, 40.0%,
+    40.3%, 40.6%, and 41.0%", whereas the timeline labels of Fig. 3D, the x-axis labels of
+    Figs. 3F-G, the caption of Fig. 3H, and the main text on p. 7 all report the fourth time
+    point as 40.7%.
+  citation:
+    page: 7
+    printed_page: "6"
+    quote: "times 39.6%, 40.0%, 40.3%, 40.6%, and 41.0%."
+    where: "Fig. 3F caption vs Fig. 3D/F/G/H and text"
+
+- id: q_fig2E_caption_vs_curves
+  kind: possible_error
+  about:
+    - g_fig2E
+    - L_fig2E
+    - rayleigh_ritz_amplitude_eq3_corrected
+    - buckled_profile_cosine
+  text: >
+    Inspection of the four subpanels of Fig. 2E (p. 5) against the dimensionally corrected
+    Rayleigh-Ritz Eq. 3 reveals three apparent discrepancies with the Fig. 2E caption
+    (which states g = 0.01, p = 10 Pa, Y = 10^6 Pa, h = 20 nm, L = 1.8 um, nu = 0.5):
+    (1) the plotted profile peaks are twice the amplitude a (e.g., ~208, 160, 102 nm for
+    g = 1.0%, 0.5%, 0.0% vs a = 104.2, 80.1, 51.2 nm), matching w(x) = a*(1 + cos(2*pi*x/L))
+    rather than w(0) = a as defined on p. 6 and used in Figs. 3H and 4C;
+    (2) the Young's modulus Y and pressure p subpanels match g = 0.5% (2a = 160 nm at
+    Y = 10^6 Pa, p = 10 Pa) rather than the caption's g = 0.01;
+    (3) the bundle distance L subpanel (peaks ~128, 75, 11 nm for 1.5L, 1.0L, 0.5L) matches
+    g = 0.5% with base L = 1.0 um rather than L = 1.8 um. To be verified quantitatively in the
+    digitize stage.
+  citation:
+    page: 5
+    printed_page: "4"
+    quote: "Model parameters: n = 0:5, g = 0:01, p = 10 Pa"
+    where: "Fig. 2E and caption"
+
+- id: q_rayleigh_ritz_vs_exact_1d_ode
+  kind: numerics
+  about:
+    - fvk_1d_ode_solver_e42_e29
+    - rayleigh_ritz_amplitude_eq3_corrected
+    - rel_ode_approximated_by_rr_corrected
+  text: >
+    The paper approximates the pressurized 1D FvK ODE (SI Eq. E42 + integral constraint Eq. E29)
+    with a single-mode cosine Rayleigh-Ritz ansatz (Eq. 3 / E49). Solving the exact coupled 1D
+    BVP numerically with a 2nd-order finite-difference grid shows that the single-mode
+    Rayleigh-Ritz amplitude underestimates the exact 1D peak height by ~0.3%-1.8% across the
+    biological parameter range (e.g., 24.95 nm vs 25.34 nm at g = 0, Y = 3.5 x 10^6 Pa,
+    L = 1.6 um, p = 10 Pa), while maintaining strict non-negativity (w_min = 0) across all grids.
+  citation:
+    page: 22
+    quote: "solved approximately with the Rayleigh-Ritz method [S6]."
+    where: "SI Note S2, Eqs. E42 and E49"
+
+- id: q_1d_monge_ampere_not_zero
+  kind: possible_error
+  about:
+    - fvk_2d_plate_eq1_eq2
+    - ode_coefficients_e42
+    - ode_coefficients_e42_corrected
+    - fvk_1d_ode_solver_e42_e29
+  text: >
+    On p. 6, the main text claims that assuming a y-invariant profile w(x) "removes the nonlinear
+    terms from the FvK equations, because the Monge-Ampere bracket simplifies to [chi, w] = 0
+    (see Note S2)", and SI Note S2 (p. 21) similarly asserts that y-invariance of w "eliminates
+    the non-linearity of the problem" and reduces Eq. E8 to d^4(chi)/dx^4 = 0 (Eq. E38). Both
+    statements contradict the paper's own derivation: setting w = w(x) sets K_G = 0 so Eq. E8
+    becomes the 2D biharmonic equation Delta^2(chi) = 0 (not d^4(chi)/dx^4 = 0 alone, since
+    Eq. E41 chi(x, y) = (c/2)*(nu*x^2 + y^2) depends quadratically on y), and the Monge-Ampere
+    bracket evaluates to [chi, w] = chi_yy * w_xx = c * w''(x) != 0. Indeed, Eq. E42 retains the
+    -h*[chi, w] = -h*c*w'' stretching term inside coefficient a, and c is nonlinearly coupled to w
+    through the lateral integral constraint, producing the cubic saturation term 3*a^2/(4*h^2) in
+    Eq. 3 / E49 and finite amplitude in Eq. E44 (if [chi, w] truly vanished, no post-buckling
+    equilibrium amplitude would exist).
+  citation:
+    page: 6
+    printed_page: "5"
+    quote: "equations, because the Monge-Ampère bracket simplifies to"
+    where: "text (and SI Note S2, Eq. E38, p. 21)"
+
+- id: q_si_bc_shift_e27_e29_inconsistency
+  kind: possible_error
+  about:
+    - fvk_1d_ode_solver_e42_e29
+    - zero_pressure_profile_e44
+    - postbuckling_stress_e45_e47
+  text: >
+    SI Note S2 mixes pre-shift and post-shift conventions across its boundary conditions (pp. 19-22):
+    (1) After shifting chi -> chi - sigma_A*(x^2 + y^2)/2 (p. 18) and u -> u + g*x so that
+    u(x = +-L/2, y) = +-g*L/2 -> 0 (p. 19), Eq. E27 (p. 20) writes dv/dy = (1/Y)*chi_xx -
+    (nu/Y)*chi_yy = g, directly contradicting Eq. E40 (p. 21, chi_xx - nu*chi_yy = 0) and Eq. E41
+    (chi = (c/2)*(nu*x^2 + y^2), which satisfies E40, not E27).
+    (2) Eqs. E28-E29 (p. 21) write u(+L/2, y) - u(-L/2, y) = L*g and
+    int_{-L/2}^{L/2} (-(nu/Y)*chi_xx + (1/Y)*chi_yy - (1/2)*(dw/dx)^2) dx' = L*g, contradicting
+    both p. 19 (u(+-L/2, y) -> 0) and the paper's own solutions Eqs. E44-E46 (p. 22), which
+    require RHS = 0 in Eq. E29 so that (1 - nu^2)*c/Y = (1/(2*L))*int (w')^2 dx (with RHS = L*g,
+    even the flat state w = 0 would yield c = Y*g/(1 - nu^2) != 0). The reconstructed solver
+    fvk_1d_ode_solver_e42_e29 implements the consistent RHS = 0 form of Eq. E29.
+    (3) On p. 19, the text mislabels the in-plane y-displacement v as "the vertical displacement v"
+    and states dv/dx|_{x=+-L/2} = 0 alongside v(+-L/2) = 0 (overconstraining 2D in-plane
+    elasticity; Eq. E27 differentiates v along y, not x), and Eq. E43 (p. 22) omits the odd
+    homogeneous solution terms c_3*x + c_4*sin(sqrt(a)*x) without explicitly invoking even
+    symmetry or noting the higher antisymmetric buckling threshold.
+  citation:
+    page: 21
+    quote: "Utilizing the fundamental theorem of calculus and (E23), constraint (E28) can be recast as an"
+    where: "SI Note S2, Eqs. E28-E29 (and p. 19 BCs, Eq. E27, Eq. E40, Eq. E43)"
+
+- id: q_tableS1_vs_fig2E_parameters
+  kind: possible_error
+  about:
+    - L_fig2E
+    - L_tableS1
+    - g_fig2E
+    - g_range_tableS1
+    - cmp_consistency_L_fig2E_vs_tableS1
+    - cmp_consistency_g_fig2E_vs_tableS1
+  text: >
+    Supplemental Table S1 (p. 17) states it lists "Parameters employed in the Föppl-von-Kármán
+    equations and the finite element simulations of Figs. 2-4" with actin bundle distance
+    L = 1.6 x 10^-6 m, growth strain g = 0.0-0.7%, and pressure p = 10 Pa. However, the Fig. 2E
+    caption (p. 5) reports baseline L = 1.8 um and g = 0.01 (1.0%, outside Table S1's 0.0-0.7%
+    range), and the Fig. 2E panels additionally sweep p = 50, 100 Pa and L = 0.5*L, 1.5*L.
+  citation:
+    page: 17
+    quote: "Parameters employed in the Föppl-von-Kármán equations and the finite element simulations of Figs."
+    where: "Table S1 caption vs Fig. 2E caption (p. 5)"
+
+- id: q_audit_solver_settings_and_refinements
+  kind: reading
+  about:
+    - rayleigh_ritz_amplitude_eq3
+    - rayleigh_ritz_amplitude_eq3_corrected
+    - fvk_1d_ode_solver_e42_e29
+    - ref_rr_printed_tol
+    - ref_rr_corrected_Ymin_tol
+    - run_rr_amp_corrected_fig4C
+  text: >
+    Audit observations on numerical solver settings and refinement coverage (preserving first-reader
+    implementation choices): (1) rayleigh_ritz_amplitude_eq3 and rayleigh_ritz_amplitude_eq3_corrected
+    expose rtol as `tol` in settings but hardcode `xtol = 1e-30`, `maxiter = 500`, and bracket
+    initialization in model.py (note also that Eq. 3 is a depressed cubic admitting an exact
+    closed-form real root, though Brent root-finding mirrors p. 11's Mathematica numerical solve).
+    In ref_rr_printed_tol and ref_rr_corrected_Ymin_tol, dividing tol from 1e-6 to 1.25e-7 yields
+    identical iterates across all four factors (changes = [0, 0, 0]) because superlinear Brent
+    convergence already reached ~1.3e-8 relative error at tol = 1e-6; run_rr_amp_corrected_fig4C
+    has no refinement entry. (2) fvk_1d_ode_solver_e42_e29 hardcodes `xtol = 1e-12`, `maxiter = 500`,
+    and log-bracket bounds `ld_lo = -20`, `ld_hi = 4`; refinements.yaml verifies clean 2nd-order
+    n_grid convergence (matching the exact continuum BVP solution to <0.002% at n_grid = 512)
+    but does not refine its `tol` setting or output `c` on run_fvk_1d_ode_fig2E.
+
+- id: q_audit_added_inputs_and_scope
+  kind: reading
+  about:
+    - w0_39_6_added
+    - dl_illustrative_added
+    - l0_illustrative_added
+    - eps_xx_added
+    - eps_yy_added
+    - eps_xy_added
+    - cmp_Ymin_corrected_eq3
+    - Y_min_printed
+    - postbuckling_stress_e45_e47
+    - zero_pressure_profile_e44
+    - lateral_resolution_p4
+    - height_sensitivity_p4
+  text: >
+    Audit observations on added inputs, conditions, model scope, and provenance (preserving
+    first-reader judgements): (1) cmp_Ymin_corrected_eq3 is highly sensitive to w0_39_6_added:
+    reproducing printed Y_min = 3.5 x 10^6 Pa within [3.45e6, 3.55e6] Pa requires w_0(39.6%) in
+    [24.78, 25.12] nm, and both stated alternatives (24 nm and 26 nm) flip the verdict to not
+    reproduced, so the current reproduced verdict rests on the uncalibrated visual estimate 25 nm
+    pending Fig. 3A digitization. (2) Y_min_printed stores the four model input parameters as
+    `conditions`, while the computed side carries `pupal_development_fraction: 39.6 %` from
+    w0_39_6_added, producing one-sided conditions_note annotations on cmp_Ymin_printed_eq3 and
+    cmp_Ymin_corrected_eq3. (3) dl_illustrative_added, l0_illustrative_added, eps_xx_added,
+    eps_yy_added, and eps_xy_added are synthetic illustrative inputs introduced solely to exercise
+    growth_strain_def and hooke_plane_stress_e15_e17 (which have no printed outputs); none perturb
+    exact identities or alter verdicts. (4) postbuckling_stress_e45_e47 evaluates SI Eqs. E45-E47
+    unconditionally without a g < g_c unbuckled branch (valid only for g >= g_c; run at g = 0.01 > g_c),
+    and zero_pressure_profile_e44 / zero_pressure_amplitude_e44 select the outward (+) branch of
+    printed ± in Eq. E44. (5) lateral_resolution_p4 and height_sensitivity_p4 cite from_source
+    ref-35 and ref-36 although the p. 4 sentence carries no inline citation superscript (inferred
+    from adjacent method citations on pp. 3-4).
+
+- id: q_digitized_Ymin_3_70e6_vs_3_5e6
+  kind: possible_error
+  about:
+    - d_fig3A_model_39_6pct
+    - d_fig3H_iso_39_6pct
+    - Y_min_printed
+    - cmp_Ymin_corrected_eq3_fig3A
+    - cmp_fig3H_iso_39_6pct_corrected
+  text: >
+    Calibrated 1200 dpi digitization of the five dashed model curves in Figs. 3A-E (p. 7) yields
+    exact least-squares cosine amplitudes w_0 = 24.31, 33.58, 41.69, 42.31, and 64.31 nm across
+    39.6%, 40.0%, 40.3%, 40.7%, and 41.0% pupal development, matching all five dashed isocontours
+    in Fig. 3H (900 dpi) to within <=0.08 nm (max |dg| <= 0.0021%). Substituting the calibrated
+    39.6% amplitude w_0 = 24.31 nm into dimensionally corrected Eq. 3 gives Y_min(g = 0) =
+    3.694 x 10^6 Pa (matching the Fig. 3H yellow isocontour's g = 0 intercept at 3.70 x 10^6 Pa,
+    and even higher, 3.82 x 10^6 Pa, under the exact 1D FvK ODE). Pointwise this is +5.5% above
+    the printed value Y_min = 3.5 x 10^6 Pa on p. 8 (outside the raw 2-sf interval [3.45, 3.55]e6
+    Pa, though BoxGraph marks cmp_Ymin_corrected_eq3_fig3A reproduced once the printed rounding of
+    p = 10 Pa, h = 20 nm, L = 1.6 um, nu = 0.5 is carried; reproducing 3.5 x 10^6 Pa pointwise
+    would require w_0 = 24.95 nm, suggesting visual reading of Fig. 3H's log axis or rounding
+    24.3 nm to 25 nm). Settles q_unprinted_figure_amplitudes_and_spacings and
+    q_audit_added_inputs_and_scope item (1).
+  citation:
+    page: 8
+    printed_page: "7"
+    quote: "we find a lower bound of Ymin = 3:53106 Pa."
+    where: "text (comparing against digitized Figs. 3A and 3H, p. 7)"
+
+- id: q_digitized_fig2E_three_discrepancies_settled
+  kind: possible_error
+  about:
+    - d_fig2E_g_1_0pct
+    - d_fig2E_Y_1e6
+    - d_fig2E_p_10
+    - d_fig2E_L_1_0
+    - buckled_profile_cosine_fig2E_2a
+    - buckled_profile_cosine_norm_fig2E_2a
+    - L0_fig2E_Lpanel_added
+    - cmp_fig2E_g_1_0pct_w0a
+    - cmp_fig2E_g_1_0pct_2a
+    - cmp_fig2E_Y_1e6_cap_2a
+    - cmp_fig2E_Y_1e6_act_2a
+    - cmp_fig2E_p_10_cap_2a
+    - cmp_fig2E_p_10_act_2a
+    - cmp_fig2E_L_1_0_cap_2a
+    - cmp_fig2E_L_1_0_act_2a
+  text: >
+    Calibrated 1200 dpi digitization of all 12 curves across the four subpanels of Fig. 2E (p. 5)
+    quantitatively settles q_fig2E_caption_vs_curves, confirming all three discrepancies with the
+    Fig. 2E caption (g = 0.01, p = 10 Pa, Y = 10^6 Pa, h = 20 nm, L = 1.8 um, nu = 0.5):
+    (1) all 12 curves plot w(x) = a*(1 + cos(2*pi*x/L)) (peak 2*a, omitting the factor of 1/2),
+    giving g-panel peaks 208.9, 160.3, 102.9 nm vs corrected Eq. 3 2*a = 208.5, 160.1, 102.4 nm;
+    (2) the Y subpanel (peaks 133.2, 160.3, 259.1 nm) and p subpanel (peaks 159.9, 217.4, 259.7 nm)
+    were generated with g = 0.5% (2*a = 132.9, 160.1, 259.6 nm and 160.1, 217.5, 259.6 nm) rather
+    than the caption's g = 0.01 (2*a = 193.2, 208.5, 286.9 nm and 208.5, 251.0, 286.9 nm);
+    (3) the L subpanel (peaks 127.9, 74.4, 11.3 nm for 1.5 L, 1.0 L, 0.5 L) was generated with
+    g = 0.5% and base spacing L_0 = 1.0 um (2*a = 128.1, 74.8, 10.6 nm) rather than g = 0.01 and
+    L = 1.8 um (2*a = 326.4, 208.5, 92.7 nm).
+  citation:
+    page: 5
+    printed_page: "4"
+    quote: "Model parameters: n = 0:5, g = 0:01, p = 10 Pa"
+    where: "Fig. 2E caption vs all 12 digitized curves"
+
+- id: q_digitized_fig4C_spacings_and_left_axis
+  kind: reading
+  about:
+    - d_fig4C_species_spacings
+    - d_fig4C_iso_10nm
+    - d_fig4C_iso_1nm
+    - d_fig4C_iso_0_1nm
+    - cmp_consistency_L_Vcardui_fig4C_vs_p8
+    - cmp_fig4C_iso_10nm_corrected
+    - cmp_fig4C_iso_1nm_corrected
+    - cmp_fig4C_iso_0_1nm_corrected
+  text: >
+    Calibrated 1200 dpi digitization of Fig. 4C (p. 9) reveals that the left plot spine sits at
+    L = 0.01 um (Mathematica ContourPlot lower bound avoiding the L = 0 singularity of g_c ~ L^-2)
+    rather than 0.00 um. Calibrating from the three interior major ticks (0.5, 1.0, 1.5 um) and
+    right spine (2.0 um) recovers the five species actin-bundle spacings as L_2,A = 0.341 um
+    (C. eurytheme flat), L_2,B = 0.360 um (A. vanillae flat), L_1,A = 0.801 um (C. eurytheme
+    ridged), L_1,B = 0.910 um (A. vanillae ridged), and L = 1.601 um (V. cardui, matching printed
+    1.6 um to 0.06%), and reproduces all three gray amplitude isocontours (0.1 nm, 1 nm, 10 nm)
+    with dimensionally corrected Eq. 3 to <=0.0008 um / <=0.0016% (whereas printed Eq. 3 fails).
+    At Y = 1 MPa, p = 10 Pa, g = 0.5%, corrected Eq. 3 predicts w_0 = 0.58 nm and 0.77 nm for the
+    two flat surfaces (g_c = 1.51% and 1.35%) versus 26.1 nm, 32.4 nm, and 69.4 nm for the three
+    ridged surfaces (g_c = 0.274%, 0.212%, and 0.0685%).
+  citation:
+    page: 9
+    printed_page: "8"
+    quote: "Black dashed lines indicate actin bundle spacings L from"
+    where: "Fig. 4C"
+
+- id: q_digitized_figS1J_timepoint_and_fig3F_jensen
+  kind: reading
+  about:
+    - d_figS1J_mean_sd
+    - d_fig3E_invivo_41_0pct
+    - d_fig3F_w0_mean
+    - d_fig3F_w0_median_iqr
+    - d_fig3G_L_mean
+    - cmp_figS1J_vs_41_0pct_model
+  text: >
+    Calibrated digitization of Fig. S1J (p. 16) and Figs. 3F-G (p. 7) resolves two quantitative
+    details not printed in the text: (1) the unlabeled developmental time point illustrated in
+    Fig. S1J has mean peak height 61.75 nm and +/-1 SD envelope [28.84, 94.56] nm at x = 0.8 um,
+    matching Fig. 3E (41.0% development, n = 911; in vivo mean ~61.3 nm, SD [28.9, 95.9] nm) and
+    falling squarely around the 41.0% model curve (w_0 = 64.31 nm); (2) the Fig. 3F individual-
+    profile scaled amplitude means (31.9, 36.7, 53.4, 48.5, 72.1 nm) systematically exceed the
+    corresponding Fig. 3A-E mean-profile peaks (24.3, 33.6, 41.7, 42.3, 64.3 nm) because peak
+    positions vary slightly across individual ridges (Jensen's inequality E[max_x w_i(x)] >
+    max_x E[w_i(x)]), and at 40.7% the mean (48.5 nm) falls below the median (52.9 nm), confirming
+    the p. 7 observation of left-skewness. Unscaled protoridge width means in Fig. 3G are 1.28,
+    1.60, 1.50, 1.44, and 1.60 um (overall mean 1.48 um vs reference width 1.6 um).
+  citation:
+    page: 17
+    quote: "then the mean (red) and standard deviation (blue) for this developmental"
+    where: "Fig. S1J (p. 16; caption p. 17) and Figs. 3F-G (p. 7)"
+
+- id: q_bois2011_upstream_spacing_interface
+  kind: unstated_model
+  about:
+    - actin_bundle_spacing
+    - L_Vcardui_p8
+    - d_fig4C_species_spacings
+    - critical_growth_strain_eq4
+    - rayleigh_ritz_amplitude_eq3_corrected
+    - rayleigh_ritz_width_eq3_corrected
+    - fvk_2d_plate_eq1_eq2
+    - bois2011/hydrodynamic_length
+    - bois2011/single_species_dispersion_eq12
+    - bois2011/single_species_fastest_mode
+    - bois2011/single_species_pde_eq1_3
+    - bois2011/asdm_dispersion_eq15
+    - bois2011/asdm_stability_boundary
+    - bois2011/asdm_pde_eq14
+    - bois2011/q_no_dimensional_params
+  text: >
+    No equation-level ModelAtlas relation (same_as, reduces_to, derived_from, scales_as,
+    approximated_by) or cited.yaml link connects bois2011 and totz2024: totz2024 does not cite
+    bois2011 (none of Refs. 1-63 or S1-S6), and the two papers model physically distinct,
+    sequentially decoupled stages of morphogenesis — upstream 1D overdamped active-fluid
+    advection-diffusion-reaction patterning of a viscous cortex (bois2011) versus downstream
+    static Föppl-von-Kármán (FvK) elastic plate buckling of a growing membrane/nascent cuticle
+    clamped between pre-existing actin bundles (totz2024, which explicitly notes on p. 10 that
+    the symmetry-breaking mechanism forming the actin scaffold is an open question not modeled
+    here). Documenting the upstream-to-downstream interface highlights five structural and
+    quantitative constraints required to couple them:
+    (1) Interface variable and symbol overloading: in bois2011, L (in L/ell) is the macroscopic
+    1D cortical domain extent [0, L], whereas the inter-peak pattern spacing is an emergent
+    wavelength lambda = 2*pi/k (or L_sys/n_peaks); in totz2024, L (actin_bundle_spacing) is a
+    single inter-bundle period (1.60 um in V. cardui, 0.801/0.341 um in C. eurytheme,
+    0.910/0.360 um in A. vanillae) treated as a fixed, externally imposed clamped boundary
+    condition (w = dw/dx = 0; constant during buckling, Fig. 3G). Other symbols are also
+    overloaded across the two records: D is regulator diffusivity [m^2/s] in bois2011 vs plate
+    bending modulus Y*h^3/(12*(1 - nu^2)) [N*m] in totz2024; h is unmodeled fluid film thickness
+    in bois2011 vs elastic plate thickness 20 nm in totz2024; u and v are ln(c) and bulk flow
+    velocity in bois2011 vs in-plane elastic displacements in totz2024.
+    (2) Quadratic buckling sensitivity to upstream wavelength: identifying totz2024's fixed
+    bundle spacing L with an upstream pattern wavelength lambda = 2*pi/k_pattern turns Eq. 4
+    (critical_growth_strain_eq4) into g_c = (pi^2 / (3*(1 - nu^2)))*(h/lambda)^2 =
+    h^2*k_pattern^2 / (12*(1 - nu^2)). A ~2.3-2.5x reduction in upstream spacing (C. eurytheme
+    L_1,A/L_2,A = 0.801/0.341 = 2.35; A. vanillae L_1,B/L_2,B = 0.910/0.360 = 2.53) raises g_c
+    by 5.52-6.39x (0.274% -> 1.51% and 0.212% -> 1.35%), crossing above Table S1's growth-strain
+    range g in [0, 0.7%] and suppressing ridge buckling.
+    (3) Single-species coarsening vs multi-species turnover: in bois2011's conserved single-species
+    model (single_species_dispersion_eq12, single_species_fastest_mode, single_species_pde_eq1_3),
+    the fastest-growing continuum linear mode has finite wavelength lambda_lin = 2*pi*ell /
+    sqrt(sqrt(Pe*c0*df/dc) - 1) (~5.13*ell at Pe = 25, c0 = 1), but Bois et al. (p. 3, Fig. 4)
+    show that multipeaked steady states are nonlinearly unstable and coarsen to a single peak
+    (n_peaks = 1). Generating a regular array of dozens of evenly spaced actin bundles across a
+    wing scale therefore requires either kinetic arrest of coarsening or chemical turnover as in
+    bois2011's 2-species ASDM (asdm_dispersion_eq15, asdm_stability_boundary, asdm_pde_eq14),
+    which supports stable multi-peaked periodic patterns (Fig. 5d: 3 peaks on L_sys/ell = 20,
+    lambda_ss = 6.67*ell; linear onset lambda_crit = 6.49*ell at Pe = 7, rho_a = 1, rho_s = 1.5;
+    fastest linear mode lambda_lin = 5.19*ell at D_a/D_s = 0.5).
+    (4) Hydrodynamic length-scale gap: bois2011 prints no dimensional parameters
+    (bois2011/q_no_dimensional_params). At the C. elegans cortical scale motivating bois2011
+    (ell = sqrt(eta/gamma) ~ 10 um, Ref. 7), active-fluid spacings lambda ~ 5.1-6.7*ell
+    (~51-67 um) are ~32-195x larger than butterfly scale bundle spacings (0.34-1.60 um). Matching
+    totz2024's spacings with k*ell ~ O(1) (lambda/ell ~ 5.1-6.7) would require ell ~ 0.24-0.31 um
+    (V. cardui), 0.12-0.18 um (ridged C. eurytheme / A. vanillae), and 0.05-0.07 um (flat
+    surfaces) — i.e. 10^3-4x10^4x higher friction-to-viscosity ratio gamma/eta than C. elegans —
+    or strongly reaction-dominated short-wavelength Turing selection (k*ell >> 1).
+    (5) Missing biophysical bridge and bimodal spacing: bois2011's 1D isotropic periodic steady
+    states produce evenly spaced symmetric extrema of uniform period (2*L_sys/N, p. 2) and cannot
+    by themselves produce the alternating double-bundle spacing (L_1,B = 0.910 um, L_2,B =
+    0.360 um) on the same upper surface of A. vanillae scales (Fig. 4B); furthermore, no model in
+    either paper bridges continuous scalar regulator concentration peaks to discrete cross-linked
+    bundles of 20-200 F-actin filaments rigidly anchored to a growing elastic membrane.
+  citation:
+    page: 10
+    printed_page: "9"
+    quote: "explored here concerns the formation of the actin scaffold, which must require an"
+    where: "Discussion (interfacing with bois2011 active-fluid patterning)"
+
+- id: q_bois2011_no_cross_validation
+  kind: unstated_model
+  about:
+    - d_fig3G_L_mean
+    - d_fig3G_L_median_iqr
+    - d_fig4C_species_spacings
+    - L_Vcardui_p8
+    - d_fig3A_invivo_39_6pct
+    - d_fig3E_invivo_41_0pct
+    - d_fig3F_w0_mean
+    - d_fig3F_w0_median_iqr
+    - d_fig1E_profile_35_8pct
+    - d_fig1G_profile_41_0pct
+    - d_figS1E_mean_profile
+    - d_figS1J_mean_sd
+    - protoridge_height_approx
+    - protoridge_formation_duration
+    - protoridge_onset_days
+    - protoridge_onset_fraction
+    - actin_filaments_per_bundle
+    - critical_growth_strain_eq4
+    - rayleigh_ritz_amplitude_eq3_corrected
+    - fvk_1d_ode_solver_e42_e29
+    - q_bois2011_upstream_spacing_interface
+    - bois2011/hydrodynamic_length
+    - bois2011/diffusive_timescale
+    - bois2011/characteristic_velocity
+    - bois2011/single_species_dispersion_eq12
+    - bois2011/single_species_fastest_mode
+    - bois2011/single_species_pde_eq1_3
+    - bois2011/asdm_dispersion_eq15
+    - bois2011/asdm_stability_boundary
+    - bois2011/asdm_pde_eq14
+    - bois2011/q_no_dimensional_params
+  text: >
+    No cross-record validations are entered in validations.yaml for either bois2011 or totz2024
+    (0 entries in both directions): neither paper cites the other, and no model in either record
+    genuinely predicts any measurement of the other on its own experimental conditions.
+    (1) bois2011 models (26 models) vs totz2024 measurements (37 origin: measured and 24 origin:
+    reported entries):
+    (a) Inter-bundle actin spacings and protoridge widths (d_fig3G_L_mean, d_fig3G_L_median_iqr
+    across 39.6%-41.0% development in V. cardui; d_fig4C_species_spacings for C. eurytheme
+    0.341/0.801 um, A. vanillae 0.360/0.910 um, V. cardui 1.601 um; and reported L_Vcardui_p8 =
+    1.6 um, L_ref_Vcardui_p6, L_tableS1): none of bois2011's 26 models outputs a dimensional
+    pattern wavelength or inter-peak spacing ([length]). The only [length]-valued model output
+    in bois2011 is bois2011/hydrodynamic_length (ell = sqrt(eta/gamma)), which is the active-fluid
+    velocity decay length rather than the emergent pattern period lambda = 2*pi/k (lambda ~
+    5.1-6.7*ell in bois2011's examples; mapping actin_bundle_spacing to hydrodynamic_length would
+    conflate distinct physical quantities sharing only dimension [length]), whereas
+    single_species_fastest_mode and asdm_stability_boundary output dimensionless wavenumbers k*ell.
+    Moreover, bois2011 prints no dimensional cortical parameter values at all
+    (bois2011/q_no_dimensional_params; its added values are generic C. elegans estimates giving
+    ell = 10 um, ~32-195x too large for butterfly scales), and totz2024 measures none of the
+    active-fluid parameters (eta, gamma, (zeta*Delta_mu)_0, D, Pe, D_a/D_s, rho_a, rho_s, L_sys/ell)
+    for developing butterfly scales. In addition, bois2011's single-species PDE coarsens to a
+    single peak (n_peaks = 1), and its uniform-period 1D ASDM steady states cannot produce the
+    bimodal alternating spacings (0.910 and 0.360 um) on the same upper surface of A. vanillae
+    (see q_bois2011_upstream_spacing_interface).
+    (b) Protoridge surface height profiles and peak buckling amplitudes (protoridge_height_approx,
+    d_fig1E_profile_35_8pct through d_fig1G_profile_41_0pct, d_fig3A_invivo_39_6pct through
+    d_fig3E_invivo_41_0pct, d_fig3F_w0_mean, d_fig3F_w0_median_iqr, d_figS1E_*, d_figS1F_ridge1-5,
+    d_figS1J_mean_sd): these measure out-of-plane elastic membrane/cuticle buckling deflections
+    w(x) and peak amplitudes w_0, whereas bois2011 models a flat, constant-thickness 1D viscous
+    active fluid with purely in-plane flow and scalar regulator concentration and has no model of
+    out-of-plane elastic deflection.
+    (c) Developmental staging and ridge-formation duration (dev_time_fig1B-D,
+    dev_time_fig3_40_6pct_caption, dev_time_fig3_40_7pct_text, protoridge_onset_fraction,
+    protoridge_onset_days ~3.5-4.5 d, protoridge_formation_duration ~10 h): bois2011's only
+    time-valued outputs are diffusive_timescale (tau_D = ell^2/D) and inverse linear growth rates
+    1/lambda(k), which do not model pupal developmental timing or post-scaffold elastic buckling
+    growth, and neither ell nor D is measured in totz2024.
+    (d) Sampling/filtering counts and reported cuticle/microscopy properties (scales_per_timepoint,
+    n_measurements_fig4B, profiles_initial_total, profiles_excluded_*, profile_counts_fig3F,
+    Y_soft_cuticle_range_p8, h_membrane_p8, actin_filaments_per_bundle, optical/SEM specs, and
+    Table S1/Fig. 4C model inputs): none corresponds to any observable predicted by bois2011
+    (which explicitly ignores viscoelasticity and discrete F-actin filament bundling).
+    (2) totz2024 models (34 models: 29 elastic-plate FvK/constitutive models and 5 data-processing
+    helpers) vs bois2011 data (53 entries): bois2011 is a purely theoretical study with 0
+    origin: measured entries in data.yaml. Its 18 origin: reported entries are theoretical
+    dimensionless inputs and boundary-condition definitions (Pe, L/ell, c0, beta, n_peaks, rho_a,
+    and zero-valued no-flux BCs v(0) = d_x c(0) = 0), its 3 origin: derived entries are exact
+    active-fluid flux/wavenumber identities (j0 = 0, k*ell = 1, 2, 3), and its 32 origin: predicted
+    entries are dimensionless active-fluid ODE/PDE/dispersion outputs. None of totz2024's static
+    thin-plate elastic buckling or plane-stress models predicts active-fluid hydrodynamic,
+    advection-diffusion, or ASDM reaction-diffusion observables.
+  citation:
+    page: 10
+    printed_page: "9"
+    quote: "formation of the actin scaffold, which must require an as-of-yet unknown symmetry-breaking mechanism."
+    where: "Discussion (cross-validation assessment between bois2011 and totz2024)"
+
+- id: q_hannezo2015_upstream_spacing_interface
+  kind: unstated_model
+  about:
+    - actin_bundle_spacing
+    - L_Vcardui_p8
+    - L_tableS1
+    - L_fig2E
+    - d_fig3G_L_mean
+    - d_fig4C_species_spacings
+    - critical_growth_strain_eq4
+    - critical_growth_strain_scaling
+    - rayleigh_ritz_amplitude_eq3_corrected
+    - zero_pressure_amplitude_e44
+    - fvk_2d_plate_eq1_eq2
+    - q_bois2011_upstream_spacing_interface
+    - hannezo2015/critical_wavelength_eq3
+    - hannezo2015/critical_wavelength_from_lengths
+    - hannezo2015/critical_wavelength_dimensionless
+    - hannezo2015/hydrodynamic_length
+    - hannezo2015/hydrodynamic_length_from_wavelength
+    - hannezo2015/turnover_diffusion_length
+    - hannezo2015/dimensionless_turnover_phi
+    - hannezo2015/dimensionless_critical_contractility_eq10
+    - hannezo2015/chaos_friction_threshold_inequality
+    - hannezo2015/cortical_pde_1d_ramp
+    - hannezo2015/cortical_pde_2d_anisotropic
+    - hannezo2015/ring_wavelength_embryo_wt
+    - hannezo2015/ring_wavelength_src42
+    - hannezo2015/ring_wavelength_larva_wt_early
+    - hannezo2015/taenidial_wavelength_larva_wt_late
+    - hannezo2015/taenidial_wavelength_moesin_rnai
+    - hannezo2015/ring_wavelength_kkv1
+    - hannezo2015/lambda_c_predicted_main
+    - hannezo2015/lh_derived_main
+    - hannezo2015/lh_inverted_si
+    - hannezo2015/q_si_p15_parameter_estimates_inconsistency
+  text: >
+    No equation-level ModelAtlas relation (same_as, reduces_to, derived_from, scales_as,
+    approximated_by) or cited.yaml link connects hannezo2015 (52 models) and totz2024 (34 models):
+    totz2024 does not cite hannezo2015 (none of Refs. 1-63 or S1-S6, though both independently
+    cite Priess & Hirsh 1986 on C. elegans actin-templated cuticle patterning — hannezo2015 ref-20,
+    totz2024 Ref. 55 — and both study insect epithelial actin scaffolds templating complementary
+    cuticular folds: taenidial folds in Drosophila trachea vs. inter-bundle protoridges in
+    butterfly wing scales). Rather than alternative formulations of the same equations, the two
+    papers represent a sequential upstream-to-downstream physical coupling: upstream 1D/2D
+    viscous active-gel cortical instability with turnover predicting periodic actin spacing
+    lambda_c (hannezo2015) feeding into downstream static Föppl-von-Kármán (FvK) elastic plate
+    buckling of a growing membrane/nascent cuticle clamped at fixed inter-bundle spacing L
+    (totz2024, which notes on p. 10 that the upstream actin-scaffold patterning mechanism is left
+    unmodeled). Quantitative evaluation of the sequential interface yields five findings:
+    (1) Direct algebraic coupling of g_c to active-gel parameters: setting totz2024's clamped
+    bundle spacing L equal to hannezo2015's linear onset wavelength lambda_c =
+    2*pi*(D*tau*eta/xi)^(1/4) = 2*pi*sqrt(l_t*l_h) = 2*pi*l_h*phi^(-1/4) (critical_wavelength_eq3,
+    critical_wavelength_from_lengths, critical_wavelength_dimensionless) substitutes directly into
+    totz2024's critical Euler buckling strain g_c = (pi^2 / (3*(1 - nu^2)))*(h/L)^2
+    (critical_growth_strain_eq4, scaling g_c ~ L^-2) to give the exact composed threshold
+    g_c = h^2 / (12*(1 - nu^2)*l_t*l_h) = (h^2 / (12*(1 - nu^2)))*(xi / (D*tau*eta))^(1/2) =
+    h^2*phi^(1/2) / (12*(1 - nu^2)*l_h^2), where pi^2 cancels (2*pi)^2 cleanly and cortex
+    thickness h_c cancels inside eta/xi = eta_3D/gamma_3D while elastic plate thickness h enters
+    as h^2. Hence totz2024's g_c ~ L^-2 couples directly to hannezo2015's (D*tau*eta/xi)^(-1/2):
+    higher cortical-ECM friction xi shrinks lambda_c ~ xi^(-1/4) and raises g_c ~ xi^(+1/2),
+    suppressing buckling, whereas lower friction widens lambda_c and lowers g_c.
+    (2) Exact wavelength-to-spacing overlap across Drosophila trachea and butterfly wing scales:
+    in stark contrast to bois2011's C. elegans cortical scale (ell ~ 10 um giving lambda ~ 51-67 um,
+    32-195x above butterfly scales; see q_bois2011_upstream_spacing_interface), hannezo2015's
+    insect epithelial active-gel wavelengths (lambda_c = 0.50-1.80 um) sit squarely across
+    totz2024's butterfly inter-bundle spacings (0.341-1.601 um in Fig. 4C; 1.28-1.60 um across
+    Fig. 3G, overall mean 1.48 um; 1.80 um in Fig. 2E caption). Specifically, hannezo2015's
+    theoretical predictions span 0.50-1.75 um (printed 1.8 um): Main p. 3 Eq. 3 from FRAP
+    D = 0.04 um^2/s, tau = 15 s (l_t = 0.775 um) and literature l_h = 0.100 um (eta = 1e-5 Pa*s*m,
+    xi = 1e9 Pa*s/m, phi = 0.0167) predicts lambda_c = 1.749 um (1.777 um with rounded l_t = 0.8 um;
+    printed 1.8 um, lambda_c_predicted_main), matching V. cardui (1.60 um) and Fig. 2E (1.80 um);
+    SI p. 15 inverted l_h = 10 nm (8.18 nm exact) gives lambda_c = 0.553 um (0.500 um); and the
+    SI Section 2.6.5 nonlinear PDE ramp (alpha = 480, phi = 0.0014, 14.68 rings / 10 um) yields
+    mean spacing 0.681 um (Fig. S14 mode 0.608 um). Likewise, hannezo2015's Drosophila tracheal
+    measurements span 0.50-1.80 um across wild-type and modest perturbations: embryonic WT
+    0.5 +/- 0.1 um, Src42A 0.8 +/- 0.2 um (matching C. eurytheme ridged L_1,A = 0.801 um), early
+    3rd-instar larval WT 1.2 +/- 0.1 um, late 3rd-instar larval WT taenidial 1.45 +/- 0.3 um
+    (matching V. cardui Fig. 3G mean 1.48 um), and moesin RNAi 1.8 +/- 0.5 um (only ECM-depleted
+    kkv1 4.5 +/- 2 um lies above). Feeding hannezo2015's wavelengths into totz2024's
+    critical_growth_strain_eq4 and rayleigh_ritz_amplitude_eq3_corrected (h = 20 nm, nu = 0.5,
+    Y = 1 MPa, p = 10 Pa) places hannezo2015 embryonic WT (0.500 um -> g_c = 0.702%, a = 5.3 nm at
+    g = 0.5% and 9.8 nm at g = 0.7%) right on totz2024's zero-pressure buckling threshold
+    (L* = 0.501 um at Table S1 g_max = 0.7% and L* = 0.592 um at Fig. 4C g = 0.5%), while the SI
+    PDE ramp (0.681 um -> g_c = 0.378%, a = 18.7 nm at g = 0.5%), Src42A (0.800 um -> g_c = 0.274%,
+    a = 26.1 nm), larval WT (1.20-1.45 um -> g_c = 0.122-0.083%, a = 48.2-61.4 nm), and Main Eq. 3
+    (1.749-1.800 um -> g_c = 0.057-0.054%, a = 77.3-80.1 nm) span the full ridged butterfly
+    buckling regime (26.2-69.4 nm at g = 0.5%).
+    (3) Implied active-gel parameters, subcriticality, stability, and quartic friction sensitivity:
+    inverting totz2024's five Fig. 4C spacings via hannezo2015/hydrodynamic_length_from_wavelength
+    at hannezo2015's FRAP l_t = 0.775 um and eta = 1e-5 Pa*s*m gives: V. cardui (1.601 um) ->
+    l_h = 83.8 nm, xi = 1.42e9 Pa*s/m, phi = 1.17e-2, chi_c = 1.23 (nearly identical to Main p. 3's
+    l_h = 100 nm, xi = 1e9 Pa*s/m); A. vanillae ridged (0.910 um) and C. eurytheme ridged
+    (0.801 um) -> l_h = 27.1 and 21.0 nm, xi = 1.36e10 and 2.27e10 Pa*s/m, phi = 1.22e-3 and
+    7.34e-4, chi_c = 1.07 and 1.05 (bracketing SI Section 2.6.4-2.6.5's phi = 1.0-1.4e-3,
+    chi_c ~ 1.07); and A. vanillae flat (0.360 um) and C. eurytheme flat (0.341 um) -> l_h = 4.24
+    and 3.80 nm, xi = 5.57e11 and 6.92e11 Pa*s/m, phi = 2.99e-5 and 2.41e-5 (~2x smaller l_h than
+    SI p. 15's exact 8.18 nm). All five butterfly spacings lie deep inside hannezo2015's subcritical
+    pitchfork regime (phi << phi_tricrit = 1/4, producing sharp, localized actin spikes separated
+    by wide depleted valleys) and 1.3e5-6.5e7x above hannezo2015's low-friction chaos boundary
+    (chaos_friction_threshold_inequality: zeta_c = eta/((2*pi)^4*D*tau) = 1.07e4 Pa*s/m,
+    phi_chaos = (2*pi)^4 = 1559), predicting stationary rather than chaotically migrating bundles
+    (consistent with constant spacing L during buckling in totz2024 Fig. 3G). However, because
+    lambda_c ~ xi^(-1/4) depends only weakly on friction, producing the 2.35-2.53x ridged-to-flat
+    spacing reduction purely by active-gel parameter tuning requires a quartic (L_1/L_2)^4 = 30.4x
+    (C. eurytheme) to 40.8x (A. vanillae) increase in xi/(D*tau*eta) — and 486x across V. cardui
+    vs. C. eurytheme flat (compare hannezo2015's own 150x friction span between Main p. 3 and SI
+    p. 15, hannezo2015/q_si_p15_parameter_estimates_inconsistency).
+    (4) Symbol overloading and dimensional distinctions: D is effective cortical actin diffusivity
+    (0.04 um^2/s, [length]^2/[time]) in hannezo2015 vs. elastic plate bending modulus
+    Y*h^3/(12*(1 - nu^2)) ([mass]*[length]^2/[time]^2) in totz2024; L is hydrodynamic screening
+    length sqrt(eta/xi) (SI) or cell length (Main p. 2 col. 1) in hannezo2015 vs. inter-bundle
+    period in totz2024; h is apical actin cortex thickness (100 nm, canceling in eta/xi) in
+    hannezo2015 vs. membrane/nascent-cuticle plate thickness (20 nm, entering as h^2 in g_c) in
+    totz2024; chi is dimensionless active contractility / Peclet number in hannezo2015 vs. Airy
+    stress potential in totz2024; sigma is 2D active-gel axial stress in hannezo2015 vs. 2D elastic
+    Cauchy stress tensor / growth pre-stress sigma_A = Y*g in totz2024.
+    (5) Remaining biophysical gaps: (a) orientation and geometry — hannezo2015 forms circumferential
+    rings around cylindrical tracheal cells via orthoradial friction anisotropy (xi_theta > 1.1*xi_z,
+    Fig. 2E) aligned across cell junctions (SI Section 2.7), whereas butterfly wing scales form
+    longitudinal parallel bundles within a single flattened scale cell (requiring orthogonal
+    anisotropy xi_parallel > 1.1*xi_perp); (b) bimodal spacing — hannezo2015's 1D active-gel
+    steady states produce unimodal periodic arrays (Fig. S14) and cannot by themselves generate the
+    alternating double-bundle spacing (L_1,B = 0.910 um, L_2,B = 0.360 um) on the single upper
+    surface of A. vanillae (Fig. 4B), and in C. eurytheme totz2024 (p. 10) attributes the smaller
+    lower-lamina gap L_2,A in part to thicker actin bundles physically narrowing the interstitial
+    space; (c) missing mechanical bridge and unmeasured parameters — hannezo2015 models a flat
+    viscous active fluid without membrane bending elasticity, growth strain g, or discrete bundling
+    of 20-200 cross-linked F-actin filaments, totz2024 assumes a static rigidly clamped bundle
+    array with no active turnover or contractility, and totz2024 measures none of D, tau, eta, xi,
+    or sigma_a in developing butterfly scales.
+  citation:
+    page: 10
+    printed_page: "9"
+    quote: "determine the regulation of actin bundling patterning at the early stages of scale"
+    where: "Discussion (interfacing with hannezo2015 active-gel cortical patterning)"
+
+- id: q_hannezo2015_no_cross_validation
+  kind: unstated_model
+  about:
+    - rayleigh_ritz_width_eq3
+    - rayleigh_ritz_width_eq3_corrected
+    - rayleigh_ritz_amplitude_eq3_corrected
+    - rayleigh_ritz_strain_eq3_corrected
+    - youngs_modulus_lower_bound_eq3_corrected
+    - critical_growth_strain_eq4
+    - critical_growth_strain_scaling
+    - zero_pressure_amplitude_e44
+    - zero_pressure_profile_e44
+    - fvk_1d_ode_solver_e42_e29
+    - fvk_2d_plate_eq1_eq2
+    - buckled_profile_cosine
+    - bending_modulus
+    - prestress_growth
+    - hooke_plane_stress_e15_e17
+    - d_fig3G_L_mean
+    - d_fig3G_L_median_iqr
+    - d_fig4C_species_spacings
+    - L_Vcardui_p8
+    - L_tableS1
+    - d_fig3F_w0_mean
+    - d_fig3F_w0_median_iqr
+    - d_fig3A_invivo_39_6pct
+    - d_fig3E_invivo_41_0pct
+    - protoridge_height_approx
+    - protoridge_formation_duration
+    - protoridge_onset_days
+    - protoridge_onset_fraction
+    - q_hannezo2015_upstream_spacing_interface
+    - hannezo2015/q_totz2024_no_cross_validation
+    - hannezo2015/critical_wavelength_eq3
+    - hannezo2015/critical_wavelength_from_lengths
+    - hannezo2015/ring_wavelength_embryo_wt
+    - hannezo2015/ring_wavelength_si_input
+    - hannezo2015/ring_wavelength_larva_wt_early
+    - hannezo2015/ring_wavelength_larva_wt_fig1c
+    - hannezo2015/ring_wavelength_src42
+    - hannezo2015/taenidial_wavelength_larva_wt_late
+    - hannezo2015/taenidial_wavelength_moesin_rnai
+    - hannezo2015/ring_wavelength_kkv1
+    - hannezo2015/fig3b_bar_ring_spacing_data
+    - hannezo2015/figs2d_moesin_rnai_spacing_data
+    - hannezo2015/rings_per_cell_embryo_wt
+    - hannezo2015/rings_per_cell_kkv1
+    - hannezo2015/turnover_time_frap
+    - hannezo2015/diffusion_coeff_frap
+    - hannezo2015/immobile_fraction_frap
+    - hannezo2015/fig2a_frap_recovery_data
+    - hannezo2015/fig2a_frap_variance_data
+    - hannezo2015/fig1a_actin_intensity_data
+    - hannezo2015/fig1c_fourier_spectrum_data
+    - hannezo2015/fig3b_dist_wt_data
+    - hannezo2015/fig3b_dist_src42_data
+    - hannezo2015/fig3c_kkv_diameter_vs_actin_data
+    - hannezo2015/fig4f_cop_actin_vs_diameter_data
+  text: >
+    No cross-record validations are entered in validations.yaml for either totz2024 or hannezo2015
+    (0 entries in both directions): neither paper cites the other, and no model in either record
+    genuinely predicts any measurement of the other on that measurement's own experimental
+    conditions.
+    (1) totz2024 models (34 models: 29 elastic-plate FvK/constitutive models and 5 data-processing
+    helpers) vs hannezo2015 measurements (35 origin: measured entries):
+    (a) All 10 measured actin-ring and taenidial-fold wavelengths (ring_wavelength_embryo_wt =
+    0.5 +/- 0.1 um, ring_wavelength_si_input = 5e-7 m, ring_wavelength_larva_wt_early = 1.2 +/-
+    0.1 um, ring_wavelength_larva_wt_fig1c = 1.2 um, ring_wavelength_src42 = 0.8 +/- 0.2 um,
+    taenidial_wavelength_larva_wt_late = 1.45 +/- 0.3 um, taenidial_wavelength_moesin_rnai =
+    1.8 +/- 0.5 um, ring_wavelength_kkv1 = 4.5 +/- 2 um, fig3b_bar_ring_spacing_data,
+    figs2d_moesin_rnai_spacing_data): totz2024 treats inter-bundle spacing L as a fixed external
+    upstream input rather than predicting actin scaffold spacing (p. 10 explicitly leaves the
+    upstream actin-patterning mechanism unmodeled). The only elastic models in totz2024 that output
+    actin_bundle_spacing (rayleigh_ritz_width_eq3 and rayleigh_ritz_width_eq3_corrected) are
+    algebraic inversions of Eq. 3 used to trace constant-amplitude isocontours in Fig. 4C and
+    require 6 buckling inputs (growth_strain g, protoridge_amplitude a = w_0, transverse_pressure
+    p, youngs_modulus Y, poisson_ratio nu, and plate_thickness h), 0/6 of which are measured or
+    reported in hannezo2015 (hannezo2015's reported cortical_thickness_lit = 100 nm is apical
+    actomyosin cortex thickness, not nascent cuticle membrane thickness h, and hannezo2015 measures
+    no taenidial fold amplitude w_0, cuticle modulus Y, pressure p, or growth strain g). Meanwhile,
+    totz2024's remaining [length] outputs are buckling height/amplitude profiles or scaling/processing
+    helpers (buckled_profile_cosine*, rayleigh_ritz_amplitude_eq3*, zero_pressure_*_e44,
+    fvk_1d_ode_solver_e42_e29, fvk_dimensional_scales_e30_e35, in_plane_displacement_scale_*,
+    extract_species_spacings, scale_bundle_spacing, fit_cosine_amplitude) that do not predict
+    tracheal actin-ring period.
+    (b) Both measured ring counts per cell (rings_per_cell_embryo_wt = 15 to 20,
+    rings_per_cell_kkv1 = ~1): totz2024 models a single clamped inter-bundle membrane strip of
+    prescribed width L and contains no model predicting the number of actin rings per cell.
+    (c) All 6 FRAP transport and kinetics measurements (turnover_time_frap = 15 +/- 7 s,
+    diffusion_coeff_frap = 0.04 +/- 0.03 um^2/s, immobile_fraction_frap < 20%, frap_sample_size =
+    10, fig2a_frap_recovery_data, fig2a_frap_variance_data): totz2024 is a static thin-plate
+    elasticity theory with zero [time]-, [length]^2-, or [length]^2/[time]-valued model outputs
+    and no actin turnover, diffusion, or photobleaching model.
+    (d) All 7 developmental actin-recruitment measurements (actin_increase_onset_text = 60%,
+    actin_increase_onset_fig1a = 70%, fluorescence_onset_si = 114, fluorescence_plateau_si = 156,
+    fig1a_actin_intensity_data, ring_onset_time_range = 10.2 to 21.2 min, ramp_duration_si =
+    1875 s): totz2024 models neither cortical actin fluorescence concentration nor temporal
+    upregulation ramps.
+    (e) All 7 tracheal tube-diameter, gamma-COP secretion, and constriction measurements
+    (cop_het_diameter_change, cop_het_actin_change, cop_hom_diameter_change, cop_hom_actin_change,
+    fig4f_cop_actin_vs_diameter_data, side_branch_diameter_ratio, fig3c_kkv_diameter_vs_actin_data):
+    totz2024 models planar buckling of a flat membrane strip between parallel bundles rather than
+    cylindrical epithelial tube diameter, apical secretion, or contractile pearling constrictions.
+    (f) All 3 spectral and spacing-distribution measurements (fig1c_fourier_spectrum_data,
+    fig3b_dist_wt_data, fig3b_dist_src42_data): all totz2024 models are deterministic single-ridge
+    buckling equations and output no actin fluorescence Fourier spectra or ring-spacing probability
+    histograms.
+    (2) hannezo2015 models (52 models) vs totz2024 measurements (37 origin: measured and 24 origin:
+    reported entries): zero valid on-conditions cross-validations exist as well. While
+    hannezo2015/critical_wavelength_eq3 (lambda_c = 2*pi*(D*tau*eta/xi)^(1/4)) and
+    critical_wavelength_from_lengths output periodic actin spacing, totz2024 measures 0/4 active-gel
+    parameters (D, tau, eta, xi) for butterfly wing scales; substituting hannezo2015's Drosophila
+    tracheal FRAP (D, tau) and mammalian/in-vitro literature viscosity and friction (Main p. 3
+    lambda_c = 1.749 um, printed 1.8 um, vs SI p. 21 inverted 0.553 um) against butterfly spacings
+    (d_fig3G_L_mean, d_fig3G_L_median_iqr, d_fig4C_species_spacings spanning 0.341-1.601 um) would
+    be an unconditioned cross-species exploratory comparison rather than a valid on-conditions
+    validation (and fails structurally on A. vanillae's bimodal alternating upper-surface spacings
+    and C. eurytheme's bundle-thickness-narrowed lower lamina). All remaining 34 totz2024 measured
+    entries (20 protoridge height/amplitude datasets, 8 pupal timing/duration measurements, and 6
+    scale/profile-filtering counts) have no corresponding predictive model in hannezo2015. See
+    hannezo2015/q_totz2024_no_cross_validation and q_hannezo2015_upstream_spacing_interface for
+    full details.
+  citation:
+    page: 10
+    printed_page: "9"
+    quote: "formation of the actin scaffold, which must require an as-of-yet unknown symmetry-breaking mechanism."
+    where: "Discussion (cross-validation assessment between hannezo2015 and totz2024)"
+
+

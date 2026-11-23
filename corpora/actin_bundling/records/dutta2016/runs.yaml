@@ -1,0 +1,283 @@
+# ---- Dimensional scale definitions and standalone models ----
+- id: run_effective_tension
+  model: effective_tension_def
+  inputs: {kappa_0: kappa_0_added}
+  outputs: {epsilon: epsilon_derived}
+
+- id: run_in_plane_rg
+  model: in_plane_rg_def
+  inputs: {L: L_polymer_added, kT: kT_room_added, epsilon: epsilon_derived}
+  outputs: {R_g: Rg_derived}
+
+- id: run_dimless_wavenumber
+  model: dimensionless_wavenumber_def
+  inputs: {k: k_phys_added, L: L_polymer_added, kT: kT_room_added, epsilon: epsilon_derived}
+  outputs: {k_star: k_star_derived}
+
+- id: run_dimless_density
+  model: dimensionless_areal_density_def
+  inputs: {rho: rho_phys_added, L: L_polymer_added, kT: kT_room_added, epsilon: epsilon_derived}
+  outputs: {rho_star: rho_star_derived}
+
+- id: run_actin_lambda_R
+  model: dimensionless_screening_length_def
+  inputs: {lambda_R_phys: screening_length_actin, R_g: filament_thickness_actin}
+  outputs: {lambda_R: lambda_R_actin_derived}
+  note: "Computes the dimensionless screening length implied by the F-actin values cited from ref. [11] on p. 5 (~1 nm / ~8 nm = 0.125)."
+
+- id: run_salt_scaling
+  model: screening_length_salt_scaling
+  inputs: {n: salt_conc_added}
+  outputs: {lambda_R_phys: lambda_R_salt_pred}
+
+- id: run_real_space_potential
+  model: real_space_potential
+  inputs:
+    r: r_eval_added
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_finite
+    lambda_A: lambda_A_fig2_3
+  outputs: {betaV: betaV_real_pred}
+
+- id: run_debye_factor
+  model: debye_factor_b
+  inputs: {k: k_eval_added}
+  outputs: {b: b_k_pred}
+
+# ---- Stated (consistent angular-wavenumber) model runs vs. Figs. 2, 3, and 4 ----
+- id: run_fig2a_GA4
+  model: potential_fourier
+  inputs:
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_no_bundle
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: betaV_fig2a_GA4}
+  outputs: {betaV: betaV_pred_fig2a_GA4}
+
+- id: run_fig2a_GA13
+  model: potential_fourier
+  inputs:
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_finite
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: betaV_fig2a_GA13}
+  outputs: {betaV: betaV_pred_fig2a_GA13}
+
+- id: run_fig2a_GA31
+  model: potential_fourier
+  inputs:
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_macro
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: betaV_fig2a_GA31}
+  outputs: {betaV: betaV_pred_fig2a_GA31}
+
+- id: run_fig2b_GA4
+  model: stability_function_eq8
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_no_bundle
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: F_fig2b_GA4}
+  outputs: {F: F_pred_fig2b_GA4}
+
+- id: run_fig2b_GA13
+  model: stability_function_eq8
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_finite
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: F_fig2b_GA13}
+  outputs: {F: F_pred_fig2b_GA13}
+
+- id: run_fig2b_GA31
+  model: stability_function_eq8
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_macro
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: F_fig2b_GA31}
+  outputs: {F: F_pred_fig2b_GA31}
+
+- id: run_fig3a
+  model: bundle_size_eq8
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    lambda_A: lambda_A_fig2_3
+  sweep: {Gamma_A: bundle_size_fig3a}
+  outputs:
+    bundle_size: bundle_size_pred_fig3a
+    bundle_size_over_lambda_R: bundle_size_over_lR_pred_fig3a
+
+- id: run_fig3b
+  model: bundle_size_eq8
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    Gamma_A: Gamma_A_fig3b
+    lambda_A: lambda_A_fig2_3
+  sweep: {lambda_R: bundle_size_fig3b}
+  outputs:
+    bundle_size: bundle_size_pred_fig3b
+    bundle_size_over_lambda_R: bundle_size_over_lR_pred_fig3b
+
+- id: run_fig3b_inset
+  model: bundle_size_eq8
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    Gamma_A: Gamma_A_fig3b
+    lambda_A: lambda_A_fig2_3
+  sweep: {lambda_R: bundle_size_over_lR_fig3b_inset}
+  outputs:
+    bundle_size: bundle_size_pred_fig3b_inset
+    bundle_size_over_lambda_R: bundle_size_over_lR_pred_fig3b_inset
+
+- id: run_fig4_finite
+  model: finite_bundle_boundary_eq8
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig4
+    lambda_A: lambda_A_fig4
+  sweep: {Gamma_A: lambda_R_finite_fig4}
+  outputs: {lambda_R: lambda_R_fin_pred_fig4}
+
+- id: run_fig4_infinite
+  model: macrophase_boundary_k0
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig4
+    lambda_A: lambda_A_fig4
+  sweep: {Gamma_A: lambda_R_infinite_fig4}
+  outputs: {lambda_R: lambda_R_inf_pred_fig4}
+
+- id: run_fig4_finite_consistent_ref
+  model: finite_bundle_boundary_eq8
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig4
+    Gamma_A: Gamma_A_consistent_ref_added
+    lambda_A: lambda_A_fig4
+  outputs: {lambda_R: lambda_R_fin_consistent_ref}
+  note: "Point inside the consistent angular-wavenumber finite-bundle regime (above Lifshitz point Gamma_A = 138.14) used for numerical refinement."
+
+# ---- Variant (mixed-2*pi figure convention) model runs vs. Figs. 2, 3, and 4 ----
+- id: run_fig2a_GA4_var
+  model: potential_fourier_cyclic
+  inputs:
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_no_bundle
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: betaV_fig2a_GA4}
+  outputs: {betaV: betaV_var_fig2a_GA4}
+
+- id: run_fig2a_GA13_var
+  model: potential_fourier_cyclic
+  inputs:
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_finite
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: betaV_fig2a_GA13}
+  outputs: {betaV: betaV_var_fig2a_GA13}
+
+- id: run_fig2a_GA31_var
+  model: potential_fourier_cyclic
+  inputs:
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_macro
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: betaV_fig2a_GA31}
+  outputs: {betaV: betaV_var_fig2a_GA31}
+
+- id: run_fig2b_GA4_var
+  model: stability_function_eq8_mixed2pi
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_no_bundle
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: F_fig2b_GA4}
+  outputs: {F: F_var_fig2b_GA4}
+
+- id: run_fig2b_GA13_var
+  model: stability_function_eq8_mixed2pi
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_finite
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: F_fig2b_GA13}
+  outputs: {F: F_var_fig2b_GA13}
+
+- id: run_fig2b_GA31_var
+  model: stability_function_eq8_mixed2pi
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    Gamma_A: Gamma_A_fig2_macro
+    lambda_A: lambda_A_fig2_3
+  sweep: {k: F_fig2b_GA31}
+  outputs: {F: F_var_fig2b_GA31}
+
+- id: run_fig3a_var
+  model: bundle_size_eq8_mixed2pi
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    lambda_R: lambda_R_fig2_3a
+    lambda_A: lambda_A_fig2_3
+  sweep: {Gamma_A: bundle_size_fig3a}
+  outputs:
+    bundle_size: bundle_size_var_fig3a
+    bundle_size_over_lambda_R: bundle_size_over_lR_var_fig3a
+
+- id: run_fig3b_var
+  model: bundle_size_eq8_mixed2pi
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    Gamma_A: Gamma_A_fig3b
+    lambda_A: lambda_A_fig2_3
+  sweep: {lambda_R: bundle_size_fig3b}
+  outputs:
+    bundle_size: bundle_size_var_fig3b
+    bundle_size_over_lambda_R: bundle_size_over_lR_var_fig3b
+
+- id: run_fig3b_inset_var
+  model: bundle_size_eq8_mixed2pi
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig2_3
+    Gamma_A: Gamma_A_fig3b
+    lambda_A: lambda_A_fig2_3
+  sweep: {lambda_R: bundle_size_over_lR_fig3b_inset}
+  outputs:
+    bundle_size: bundle_size_var_fig3b_inset
+    bundle_size_over_lambda_R: bundle_size_over_lR_var_fig3b_inset
+
+- id: run_fig4_finite_var
+  model: finite_bundle_boundary_eq8_mixed2pi
+  inputs:
+    rho_star: rho_star_1
+    Gamma_R: Gamma_R_fig4
+    lambda_A: lambda_A_fig4
+  sweep: {Gamma_A: lambda_R_finite_fig4}
+  outputs: {lambda_R: lambda_R_fin_var_fig4}

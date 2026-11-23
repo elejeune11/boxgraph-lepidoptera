@@ -1,0 +1,416 @@
+# All model runs for sekine2024: reproducing printed SI Table S1 derived quantities,
+# Supplementary Table 4 intervals, Supplementary Table 5 motion anisotropy ratios,
+# Supplementary Fig. 6a complex widths, Methods pixel/PIV/frame durations,
+# hydrodynamic/mechanical scales, RK4 dimer stability/conservation tests, and
+# stochastic anisotropic Langevin single-filament baseline.
+
+# --- 1. Table S1 thermodynamic & mechanical derivations ---
+- id: run_thermal_energy_300K
+  model: thermal_energy
+  inputs: {T: temp_sim}
+  outputs: {kBT: kBT_computed}
+
+- id: run_young_modulus_filament
+  model: young_modulus_rod
+  inputs: {kappa: kappa_f_str_sim, d: d_f_sim}
+  outputs: {E: E_f_str_computed}
+
+- id: run_young_modulus_motor
+  model: young_modulus_rod
+  inputs: {kappa: kappa_m_str_sim, d: d_m_sim}
+  outputs: {E: E_m_str_computed}
+
+- id: run_young_modulus_crosslinker
+  model: young_modulus_rod
+  inputs: {kappa: kappa_cl_str_sim, d: d_cl_sim}
+  outputs: {E: E_cl_str_computed}
+
+- id: run_persistence_motor
+  model: persistence_length_bending
+  inputs: {k_bend: k_m_bend_sim, L0: L0_m_sim, kBT: kBT_sim}
+  outputs: {l_bend: l_m_bend_computed}
+
+- id: run_persistence_motor_chained
+  model: persistence_length_from_temperature
+  inputs: {k_bend: k_m_bend_sim, L0: L0_m_sim, T: temp_sim}
+  outputs: {l_bend: l_m_bend_chained}
+
+- id: run_persistence_crosslinker
+  model: persistence_length_bending
+  inputs: {k_bend: k_cl_bend_sim, L0: L0_cl_sim, kBT: kBT_sim}
+  outputs: {l_bend: l_cl_bend_computed}
+
+- id: run_persistence_crosslinker_chained
+  model: persistence_length_from_temperature
+  inputs: {k_bend: k_cl_bend_sim, L0: L0_cl_sim, T: temp_sim}
+  outputs: {l_bend: l_cl_bend_chained}
+
+# --- 2. Hydrodynamic friction, walking velocity, and elastic potentials (SI Notes I) ---
+- id: run_friction_filament_eta1
+  model: cylindrical_friction_filament
+  inputs: {eta_cyto: eta_cyto_table_s1, d_f: d_f_sim, L0_f: L0_f_sim}
+  outputs: {gamma_f: gamma_f_eta1}
+
+- id: run_friction_filament_eta01
+  model: cylindrical_friction_filament
+  inputs: {eta_cyto: eta_cyto_si_text, d_f: d_f_sim, L0_f: L0_f_sim}
+  outputs: {gamma_f: gamma_f_eta01}
+
+- id: run_anisotropic_friction_4m
+  model: anisotropic_filament_friction
+  inputs: {eta_cyto: eta_cyto_table_s1, d_f: d_f_sim, L0_f: L0_f_sim, friction_asymmetry: friction_asymmetry_stripe}
+  outputs: {gamma_y_f: gamma_y_f_4m}
+
+- id: run_friction_motor_eta1
+  model: cylindrical_friction_connector
+  inputs: {eta_cyto: eta_cyto_table_s1, d: d_m_sim, L0: L0_m_sim}
+  outputs: {gamma: gamma_m_eta1}
+
+- id: run_friction_crosslinker_eta1
+  model: cylindrical_friction_connector
+  inputs: {eta_cyto: eta_cyto_table_s1, d: d_cl_sim, L0: L0_cl_sim}
+  outputs: {gamma: gamma_cl_eta1}
+
+- id: run_friction_crosslinker_eta01
+  model: cylindrical_friction_connector
+  inputs: {eta_cyto: eta_cyto_si_text, d: d_cl_sim, L0: L0_cl_sim}
+  outputs: {gamma: gamma_cl_eta01}
+
+- id: run_motor_walk_table_s1
+  model: motor_walking_velocity
+  inputs: {f_walk: f_walk_table_s1, zeta: zeta_motor_sim, l_f: L0_f_sim}
+  outputs: {v_walk: v_walk_table_s1, dalpha_dt: dalpha_dt_table_s1, tau_walk: tau_walk_table_s1}
+
+- id: run_motor_walk_fig_s7b3_4m
+  model: motor_walking_velocity
+  inputs: {f_walk: f_walk_fig_s7b3_4m, zeta: zeta_motor_sim, l_f: L0_f_sim}
+  outputs: {v_walk: v_walk_fig_s7b3_4m, dalpha_dt: dalpha_dt_fig_s7b3_4m, tau_walk: tau_walk_fig_s7b3_4m}
+
+- id: run_filament_stretch_probe
+  model: harmonic_stretching_potential
+  inputs: {r: probe_stretch_length_f, kappa: kappa_f_str_sim, L0: L0_f_sim}
+  outputs: {U_harm: U_harm_f_probe, f_str: f_str_f_probe, k_eff: k_eff_f_probe}
+
+- id: run_crosslinker_arm_stretch_probe
+  model: connector_arm_stretching_potential
+  inputs: {r: probe_stretch_length_cl_arm, kappa: kappa_cl_str_sim, L0: L0_cl_sim}
+  outputs: {U_harm: U_harm_cl_probe, f_str: f_str_cl_probe, k_eff: k_eff_cl_probe}
+
+- id: run_crosslinker_bending_probe
+  model: bending_potential
+  inputs: {theta: probe_bending_angle, k_bend: k_cl_bend_sim}
+  outputs: {U_bend: U_bend_cl_probe, tau_bend: tau_bend_cl_probe}
+
+- id: run_force_dist_printed
+  model: filament_force_distribution
+  inputs: {f: probe_applied_force, alpha: probe_binding_alpha}
+  outputs: {f_0: f0_printed, f_1: f1_printed, f_sum_ratio: f_sum_ratio_printed}
+
+- id: run_force_dist_corrected
+  model: filament_force_distribution_corrected
+  inputs: {f: probe_applied_force, alpha: probe_binding_alpha}
+  outputs: {f_0: f0_corrected, f_1: f1_corrected, f_sum_ratio: f_sum_ratio_corrected}
+
+# --- 3. Structure factor Gaussian fits and periodic intervals (Supplementary Table 4) ---
+- id: run_sf_interval_1m
+  model: structure_factor_interval
+  inputs: {mu_over_2pi: sf_1m_mu_over_2pi}
+  outputs: {interval: interval_1m_computed}
+
+- id: run_sf_interval_3m
+  model: structure_factor_interval
+  inputs: {mu_over_2pi: sf_3m_mu_over_2pi}
+  outputs: {interval: interval_3m_computed}
+
+- id: run_sf_interval_4m
+  model: structure_factor_interval
+  inputs: {mu_over_2pi: sf_4m_mu_over_2pi}
+  outputs: {interval: interval_4m_computed}
+
+- id: run_sf_interval_a4_1
+  model: structure_factor_interval
+  inputs: {mu_over_2pi: sf_a4_1_mu_over_2pi}
+  outputs: {interval: interval_a4_1_computed}
+
+- id: run_mu_wavenumber_4m
+  model: angular_wavenumber_from_frequency
+  inputs: {mu_over_2pi: sf_4m_mu_over_2pi}
+  outputs: {mu: sf_4m_mu_wavenumber}
+
+- id: run_sf_interval_4m_via_wavenumber
+  model: structure_factor_interval_wavenumber
+  inputs: {mu: sf_4m_mu_wavenumber}
+  outputs: {interval: interval_4m_via_mu_computed}
+
+- id: run_sf_gaussian_peak_1m
+  model: gaussian_structure_factor
+  inputs: {A: sf_1m_A, mu_over_2pi: sf_1m_mu_over_2pi, sigma: sf_1m_sigma, q_over_2pi: sf_1m_mu_over_2pi}
+  outputs: {S_q: S_peak_1m_full}
+
+- id: run_sf_gaussian_peak_4m
+  model: gaussian_structure_factor_peak
+  inputs: {A: sf_4m_A, sigma: sf_4m_sigma}
+  outputs: {S_peak: S_peak_4m_height}
+
+# --- 4. Motion anisotropy ratios |dy|/|dx| (Supplementary Table 5 & Fig. 4d, 5a,d) ---
+- id: run_aniso_sim_1m
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_sim_1m, mean_abs_dy: dy_sim_1m}
+  outputs: {R_aniso: aniso_sim_1m_computed}
+
+- id: run_aniso_sim_2m
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_sim_2m, mean_abs_dy: dy_sim_2m}
+  outputs: {R_aniso: aniso_sim_2m_computed}
+
+- id: run_aniso_sim_4m
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_sim_4m, mean_abs_dy: dy_sim_4m}
+  outputs: {R_aniso: aniso_sim_4m_computed}
+
+- id: run_aniso_st15_m40
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_st15_m40, mean_abs_dy: dy_st15_m40}
+  outputs: {R_aniso: aniso_st15_m40_computed}
+
+- id: run_aniso_st15_m30
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_st15_m30, mean_abs_dy: dy_st15_m30}
+  outputs: {R_aniso: aniso_st15_m30_computed}
+
+- id: run_aniso_st15_m20
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_st15_m20, mean_abs_dy: dy_st15_m20}
+  outputs: {R_aniso: aniso_st15_m20_computed}
+
+- id: run_aniso_st15_m10
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_st15_m10, mean_abs_dy: dy_st15_m10}
+  outputs: {R_aniso: aniso_st15_m10_computed}
+
+- id: run_aniso_st15_0
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_st15_0, mean_abs_dy: dy_st15_0}
+  outputs: {R_aniso: aniso_st15_0_computed}
+
+- id: run_aniso_st16_ctrl
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_st16_ctrl, mean_abs_dy: dy_st16_ctrl}
+  outputs: {R_aniso: aniso_st16_ctrl_computed}
+
+- id: run_aniso_st16_zasp52
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_st16_zasp52, mean_abs_dy: dy_st16_zasp52}
+  outputs: {R_aniso: aniso_st16_zasp52_computed}
+
+- id: run_aniso_st16_daam
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_st16_daam, mean_abs_dy: dy_st16_daam}
+  outputs: {R_aniso: aniso_st16_daam_computed}
+
+- id: run_aniso_st16_myosin_dn
+  model: motion_anisotropy_ratio
+  inputs: {mean_abs_dx: dx_st16_myosin_dn, mean_abs_dy: dy_st16_myosin_dn}
+  outputs: {R_aniso: aniso_st16_myosin_dn_computed}
+
+# --- 5. Molecular packing widths, pixel discretization, PIV window, frame durations ---
+- id: run_complex_widths
+  model: nanocluster_complex_width
+  inputs: {d_actin: d_actin_s6a, d_GFP: d_gfp_s6a, L_actinin: l_actinin_s6a}
+  outputs: {w_single: width_single_computed, w_dimer: width_dimer_computed}
+
+- id: run_pseudo_image_pixel
+  model: pseudo_image_discretization
+  inputs: {L_box: sim_box_length, N_grid: sim_grid_cells}
+  outputs: {dx_pixel: sim_pixel_size_computed}
+
+- id: run_piv_window_phys
+  model: piv_window_physical_size
+  inputs: {W_px: piv_window_px, M_enlarge: piv_enlargement, dx_pixel: sim_pixel_size_printed}
+  outputs: {W_phys: piv_window_phys_computed}
+
+- id: run_roi_side_movies23
+  model: roi_physical_size
+  inputs: {N_px: roi_side_px_live, dx_pixel: sim_pixel_size_printed}
+  outputs: {L_roi: roi_side_movies23_computed}
+
+- id: run_fusion_dur_2frames
+  model: fusion_duration_time
+  inputs: {N_frames: fusion_frames_typical, dt_frame: dt_frame_live}
+  outputs: {t_dur: fusion_dur_2frames_computed}
+
+- id: run_fusion_dur_4frames
+  model: fusion_duration_time
+  inputs: {N_frames: fusion_frames_ex_s2b, dt_frame: dt_frame_live}
+  outputs: {t_dur: fusion_dur_4frames_computed}
+
+- id: run_movie1_dur_50frames
+  model: fusion_duration_time
+  inputs: {N_frames: movie1_frames_count, dt_frame: dt_frame_live}
+  outputs: {t_dur: movie1_dur_50frames_computed}
+
+# --- 6. Deterministic RK4 mechanical dimer solver (Eqs. S1, S3, S5, S8, S9) ---
+- id: run_dimer_rk4_printed_eta1
+  model: cgmd_dimer_rk4
+  inputs:
+    eta_cyto: eta_cyto_table_s1
+    d_f: d_f_sim
+    L0_f: L0_f_sim
+    kappa_f: kappa_f_str_sim
+    d_cl: d_cl_sim
+    L0_cl: L0_cl_sim
+    kappa_cl: kappa_cl_str_sim
+    k_cl_bend: k_cl_bend_sim
+    friction_asymmetry: friction_asymmetry_iso
+    alpha: probe_binding_alpha
+    delta_y0: dimer_initial_deflection
+    t_max: dimer_t_max
+  settings: {dt: 5.0e-5}
+  outputs:
+    filament_y_shift: dimer_shift_printed_eta1
+    cm_drift: dimer_cm_drift_printed_eta1
+    rk4_stiffness_number: dimer_stiffness_eta1
+  note: "Printed force-assignment sign (-delta_{i1}) at Table S1 viscosity eta_cyto = 1 Pa*s and paper dt = 5e-5 s."
+
+- id: run_dimer_rk4_corrected_eta1
+  model: cgmd_dimer_rk4_corrected
+  inputs:
+    eta_cyto: eta_cyto_table_s1
+    d_f: d_f_sim
+    L0_f: L0_f_sim
+    kappa_f: kappa_f_str_sim
+    d_cl: d_cl_sim
+    L0_cl: L0_cl_sim
+    kappa_cl: kappa_cl_str_sim
+    k_cl_bend: k_cl_bend_sim
+    friction_asymmetry: friction_asymmetry_iso
+    alpha: probe_binding_alpha
+    delta_y0: dimer_initial_deflection
+    t_max: dimer_t_max
+  settings: {dt: 5.0e-5}
+  outputs:
+    filament_y_shift: dimer_shift_corrected_eta1
+    cm_drift: dimer_cm_drift_corrected_eta1
+    rk4_stiffness_number: dimer_stiffness_corr_eta1
+  note: "Sign-corrected (+delta_{i1}) RK4 dimer test at Table S1 viscosity eta_cyto = 1 Pa*s and paper dt = 5e-5 s."
+
+- id: run_dimer_rk4_corrected_eta01
+  model: cgmd_dimer_rk4_corrected
+  inputs:
+    eta_cyto: eta_cyto_si_text
+    d_f: d_f_sim
+    L0_f: L0_f_sim
+    kappa_f: kappa_f_str_sim
+    d_cl: d_cl_sim
+    L0_cl: L0_cl_sim
+    kappa_cl: kappa_cl_str_sim
+    k_cl_bend: k_cl_bend_sim
+    friction_asymmetry: friction_asymmetry_iso
+    alpha: probe_binding_alpha
+    delta_y0: dimer_initial_deflection
+    t_max: dimer_t_max
+  settings: {dt: 5.0e-5}
+  outputs:
+    filament_y_shift: dimer_shift_corrected_eta01
+    cm_drift: dimer_cm_drift_corrected_eta01
+    rk4_stiffness_number: dimer_stiffness_corr_eta01
+  note: "Sign-corrected (+delta_{i1}) RK4 dimer test at SI Notes Section II text viscosity eta_cyto = 10^-1 Pa*s and paper dt = 5e-5 s (linear stiffness number lambda_perp*dt = 5.34 > 2.785 RK4 stability limit)."
+
+# --- 7. Passive anisotropic Langevin single-filament baseline (Eqs. S1a-S1b) ---
+- id: run_passive_aniso_analytic
+  model: anisotropic_diffusion_ratio
+  inputs: {friction_asymmetry: friction_asymmetry_stripe}
+  outputs: {R_aniso: passive_aniso_ratio_analytic}
+
+- id: run_anisotropic_langevin_filament
+  model: cgmd_anisotropic_langevin
+  inputs:
+    eta_cyto: eta_cyto_table_s1
+    d_f: d_f_sim
+    L0_f: L0_f_sim
+    kappa_f: kappa_f_str_sim
+    kBT: kBT_sim
+    friction_asymmetry: friction_asymmetry_stripe
+    t_obs: langevin_obs_time
+  settings: {dt: 0.001, n_traj: 2000, seed: 42}
+  replicates: 5
+  outputs:
+    mean_abs_dx: langevin_dx_aniso
+    mean_abs_dy: langevin_dy_aniso
+    R_aniso: langevin_R_aniso
+  note: "Added numerical choice: dt = 0.001 s (vs paper 5e-5 s, justified because single-filament stretching rate 2*kappa_f/(L0_f*gamma_f) = 303 s^-1 satisfies lambda*dt = 0.30 << 2) and n_traj = 2000 per replicate across 5 replicates to keep refinement fast while achieving < 1% Monte Carlo SE."
+
+# --- 8. Structure factor Gaussian curve sweeps against Supplementary Fig. 7c1-c4 ---
+# Tests Methods p. 11 literal angular-wavenumber form vs Table 4 q/(2*pi) frequency convention
+# directly against the digitized black dotted fit curves and simulated S(q) spectra.
+- id: run_sf_literal_c1_fit
+  model: gaussian_structure_factor_literal_p11
+  inputs: {A: sf_1m_A, mu_over_2pi: sf_1m_mu_over_2pi, sigma: sf_1m_sigma}
+  sweep: {q_over_2pi: d_figs7c1_fit}
+  outputs: {S_q: S_c1_literal_fit}
+
+- id: run_sf_literal_c2_fit
+  model: gaussian_structure_factor_literal_p11
+  inputs: {A: sf_3m_A, mu_over_2pi: sf_3m_mu_over_2pi, sigma: sf_3m_sigma}
+  sweep: {q_over_2pi: d_figs7c2_fit}
+  outputs: {S_q: S_c2_literal_fit}
+
+- id: run_sf_literal_c3_fit
+  model: gaussian_structure_factor_literal_p11
+  inputs: {A: sf_4m_A, mu_over_2pi: sf_4m_mu_over_2pi, sigma: sf_4m_sigma}
+  sweep: {q_over_2pi: d_figs7c3_fit}
+  outputs: {S_q: S_c3_literal_fit}
+
+- id: run_sf_literal_c4_fit
+  model: gaussian_structure_factor_literal_p11
+  inputs: {A: sf_a4_1_A, mu_over_2pi: sf_a4_1_mu_over_2pi, sigma: sf_a4_1_sigma}
+  sweep: {q_over_2pi: d_figs7c4_fit}
+  outputs: {S_q: S_c4_literal_fit}
+
+- id: run_sf_freq_c1_fit
+  model: gaussian_structure_factor_freq_variant
+  inputs: {A: sf_1m_A, mu_over_2pi: sf_1m_mu_over_2pi, sigma: sf_1m_sigma}
+  sweep: {q_over_2pi: d_figs7c1_fit}
+  outputs: {S_q: S_c1_freq_fit}
+
+- id: run_sf_freq_c2_fit
+  model: gaussian_structure_factor_freq_variant
+  inputs: {A: sf_3m_A, mu_over_2pi: sf_3m_mu_over_2pi, sigma: sf_3m_sigma}
+  sweep: {q_over_2pi: d_figs7c2_fit}
+  outputs: {S_q: S_c2_freq_fit}
+
+- id: run_sf_freq_c3_fit
+  model: gaussian_structure_factor_freq_variant
+  inputs: {A: sf_4m_A, mu_over_2pi: sf_4m_mu_over_2pi, sigma: sf_4m_sigma}
+  sweep: {q_over_2pi: d_figs7c3_fit}
+  outputs: {S_q: S_c3_freq_fit}
+
+- id: run_sf_freq_c4_fit
+  model: gaussian_structure_factor_freq_variant
+  inputs: {A: sf_a4_1_A, mu_over_2pi: sf_a4_1_mu_over_2pi, sigma: sf_a4_1_sigma}
+  sweep: {q_over_2pi: d_figs7c4_fit}
+  outputs: {S_q: S_c4_freq_fit}
+
+- id: run_sf_freq_c1_sim
+  model: gaussian_structure_factor_freq_variant
+  inputs: {A: sf_1m_A, mu_over_2pi: sf_1m_mu_over_2pi, sigma: sf_1m_sigma}
+  sweep: {q_over_2pi: d_figs7c1_sim}
+  outputs: {S_q: S_c1_freq_sim}
+
+- id: run_sf_freq_c2_sim
+  model: gaussian_structure_factor_freq_variant
+  inputs: {A: sf_3m_A, mu_over_2pi: sf_3m_mu_over_2pi, sigma: sf_3m_sigma}
+  sweep: {q_over_2pi: d_figs7c2_sim}
+  outputs: {S_q: S_c2_freq_sim}
+
+- id: run_sf_freq_c3_sim
+  model: gaussian_structure_factor_freq_variant
+  inputs: {A: sf_4m_A, mu_over_2pi: sf_4m_mu_over_2pi, sigma: sf_4m_sigma}
+  sweep: {q_over_2pi: d_figs7c3_sim}
+  outputs: {S_q: S_c3_freq_sim}
+
+- id: run_sf_freq_c4_sim
+  model: gaussian_structure_factor_freq_variant
+  inputs: {A: sf_a4_1_A, mu_over_2pi: sf_a4_1_mu_over_2pi, sigma: sf_a4_1_sigma}
+  sweep: {q_over_2pi: d_figs7c4_sim}
+  outputs: {S_q: S_c4_freq_sim}

@@ -1,0 +1,45 @@
+id: cortical_pde_1d_chaos
+name: reconstructed 1D finite-volume solver of SI Section 2.2 nonlinear turnover PDE (Figs. S5-S8)
+role: model
+stated:
+  page: 10
+  printed_page: "SI-4"
+  quote: "develop the reaction term R(ρ) to second order in local"
+  where: SI Section 2.2 (Eq. 6, Figs. S5-S8)
+reconstructed: "SI Section 2.2 solves the nonlinear-turnover PDE (with R(rho) = (rho_0 - rho)/tau - epsilon*(rho_0 - rho)^2 and unit parameters D=tau=eta=rho_0=1) without reporting grid size, time step, spatial scheme, or initial perturbation amplitude; we implement a 2nd-order Scharfetter-Gummel finite-volume solver with exact DCT Helmholtz inversion and expose initial perturbation and horizon in added.yaml."
+equation: "d_t rho + d_x(rho*v) = D*d_xx rho + (rho_0 - rho)/tau - epsilon*(rho_0 - rho)^2; -eta*d_xx v + xi*v = chi*d_x rho"
+inputs:
+  l:
+    quantity: dimensionless_domain_length
+    unit: dimensionless
+  xi:
+    quantity: dimensionless_friction_chaos
+    unit: dimensionless
+  chi_rho0:
+    quantity: dimensionless_contractility_chaos
+    unit: dimensionless
+  epsilon:
+    quantity: nonlinear_turnover_coeff
+    unit: dimensionless
+  noise_amp:
+    quantity: dimensionless_density
+    unit: dimensionless
+  t_total:
+    quantity: dimensionless_time
+    unit: dimensionless
+outputs:
+  n_events:
+    quantity: peak_change_count
+    unit: dimensionless
+    description: "Number of nonzero peak-count dislocation jumps Delta(t) != 0 in the second half of [0, t_total]"
+  min_rho:
+    quantity: dimensionless_density
+    unit: dimensionless
+  max_rho:
+    quantity: dimensionless_density
+    unit: dimensionless
+settings:
+  N_grid: 512
+  dt: 0.05
+  seed: 1
+stochastic: true

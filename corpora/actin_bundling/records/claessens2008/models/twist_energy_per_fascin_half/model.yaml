@@ -1,0 +1,25 @@
+id: twist_energy_per_fascin_half
+name: torsional twist energy per bound fascin in units of k_B T (with linear-elastic 1/2 factor)
+role: model
+from_words: true
+variant_of: twist_energy_per_fascin
+built_from: [twist_energy_per_monomer_half, thermal_energy_scale]
+corrections:
+  - equation: "E_twist = tau*(Delta_theta)^2*d^(-1) (p. 2, right col.)"
+    change: "include the linear torsion elasticity prefactor 1/2: E_twist_fascin_kBT = (1/2)*(tau*(Delta_theta)^2/d)/(R_star*k_B*T)"
+    evidence: >
+      Standard linear torsional elasticity gives U = (1/2)*tau*(Delta_theta)^2/d per monomer.
+      With 1/2, E_twist per bound fascin is ~8.5-10 k_B T at intermediate R* = 0.05-0.10 in Fig. 3D
+      (remaining below Delta G ~ 15 k_B T) and ~4.6-4.7 k_B T at 1:4.5 saturation.
+stated: {page: 2, printed_page: "8820", quote: "is found to be constant per bound fascin.", where: text}
+equation: "E_twist_fascin_kBT = (1/2) * (tau * (Delta_theta)^2 / d) / (R_star * k_B * T)"
+inputs:
+  tau: {quantity: torsional_stiffness, unit: N*m^2}
+  Delta_theta: {quantity: monomer_overtwist, unit: rad}
+  d: {quantity: monomer_spacing, unit: nm}
+  R_star: {quantity: effective_bound_ratio, unit: dimensionless}
+  T: {quantity: temperature, unit: K}
+outputs:
+  E_twist_fascin_kBT: {quantity: twist_energy_per_fascin_kBT, unit: dimensionless}
+settings: {}
+stochastic: false

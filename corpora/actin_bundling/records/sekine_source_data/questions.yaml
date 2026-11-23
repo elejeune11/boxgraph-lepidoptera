@@ -1,0 +1,241 @@
+# Open questions documenting discrepancies, errors, unit mislabelings, duplicated files,
+# and omitted raw datasets uncovered by checking all 27 Source Data spreadsheets against sekine2024.
+
+- id: q_fig1k_duplicated_from_fig1j
+  kind: possible_error
+  about:
+    - tube_geometry_and_skeleton_reader
+    - f1j_diam_0_mean
+    - f1k_len_0_mean_stored
+    - cmp_f1k_0_mean
+  text: >
+    Source-data_Fig1k.xlsx (sheet 'Figure 1k', titled 'Tube length') contains an exact cell-for-cell
+    duplicate of all 36 tube-diameter measurements from Source-data_Fig1j.xlsx ('Tube Diameter',
+    ranging from 2.22 to 4.65 um with means 2.60-3.94 um; max absolute difference across all 36 cells
+    is 0.0 um in run_tube_skel_m80). In sekine2024 Fig. 1k (PDF p. 2), 'Tube length (um)' actually
+    rises from ~17 um at -80 min to ~24 um at +20 min. The true Fig. 1k tube-length source data are
+    completely missing from MOESM11_ESM.zip.
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_Fig1k.xlsx ('Figure 1k', C7:J12) vs Source-data_Fig1j.xlsx ('Figure 1j', C7:J12)"
+
+- id: q_fig5a_fig5d_dataset_and_scale_mismatch
+  kind: possible_error
+  about:
+    - motion_anisotropy_reader
+    - cmp_f5a_vs_f4e_m40_n
+    - cmp_f5a_vs_f4e_m40_ratio
+    - cmp_f5a_vs_f4e_0_n
+    - cmp_f5a_vs_f4e_0_ratio
+    - cmp_f5d_vs_f4e_ctrl_n
+    - cmp_f5d_vs_f4e_ctrl_ratio
+    - cmp_f5d_vs_f4e_zasp52_n
+    - cmp_f5d_vs_f4e_zasp52_ratio
+    - cmp_f5d_vs_f4e_daam_dy
+  text: >
+    The raw nanocluster-tracking spreadsheets Source-data_Fig5a.xlsx (all 5 Stage 15 timepoints) and
+    Source-data_Fig5d.xlsx (Control and Zasp52 RNAi) do NOT match Supplementary Table 5 (and
+    Source-data_Fig4e.xlsx / Fig. 5a,d printed ratios): all 7 conditions use pixel scale 0.0329 um/px
+    in their Excel formulas and contain 19-68% more tracked events than printed in Table 5:
+    Fig. 5a -40 min n=485 vs 314 (ratio 1.03 vs 1.08), -30 min n=444 vs 372 (1.43 vs 1.36), -20 min
+    n=560 vs 333 (1.38 vs 1.31), -10 min n=529 vs 317 (1.39 vs 1.39), 0 min n=471 vs 322 (1.75 vs
+    1.72); Fig. 5d Control n=497 vs 352 (|dx|=38.7 vs 49.3 nm, |dy|=67.1 vs 78.8 nm, ratio 1.735 vs
+    printed 1.60), and Zasp52 RNAi n=1335 vs 977 (|dx|=61.5 vs 82.3 nm, |dy|=61.9 vs 80.4 nm, ratio
+    1.007 vs 0.98). By contrast, in the very same Source-data_Fig5d.xlsx file, DAAM RNAi (0.0426 um/px,
+    n=463; |dy|=58.485 vs printed 58.4 nm) and Myosin II[DN] (0.0424 um/px, n=955; exact match on all
+    5 metrics) match Table 5's sample sizes and statistics. Thus 7 of 9 experimental motion-anisotropy
+    conditions in the released Source Data come from a different tracking export/calibration than
+    Supplementary Table 5 and Fig. 5a,d.
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_Fig5a.xlsx, Source-data_Fig5d.xlsx vs Source-data_Fig4e.xlsx (Supplementary Table 5)"
+
+- id: q_fig4d_pixel_scale_0424_vs_0426
+  kind: possible_error
+  about:
+    - motion_anisotropy_reader
+    - cmp_f4d_vs_f4e_1m_dx
+    - cmp_f4d_0426_vs_f4e_1m_dx
+    - cmp_f4d_vs_f4e_2m_dx
+    - cmp_f4d_vs_f4e_4m_dx
+  text: >
+    Source-data_Fig4d.xlsx computes dx and dy via Excel formulas '(F8-C8)*0.0424' (0.0424 um/px) for
+    all three simulation conditions (1-M n=1461, 2-M n=1134, 4-M n=152), yielding 18/18 mismatches
+    (~0.47% smaller) against Supplementary Table 5 / Source-data_Fig4e.xlsx (e.g. 1-M |dx|=18.11 vs
+    18.2 nm, 2-M |dx|=19.27 vs 19.4 nm, 4-M |dy|=26.50 vs 26.6 nm). Recomputing from the exact same
+    pixel coordinates in Source-data_Fig4d.xlsx with pixel scale 0.0426 um/px (run_fig4d_*_scale0426)
+    matches 18/18 Table 5 means and SDs to the last printed digit. Neither 0.0424 nor 0.0426 um/px
+    equals Methods p. 11's stated simulation pixel size 0.04325 um (or 3/69 = 0.04348 um). Scale-invariant
+    metrics (anisotropy ratios 0.97, 1.13, 1.45 and Welch P-values 0.511, 0.0485, 0.00714) match exactly.
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_Fig4d.xlsx ('Figure 4d', formulas I8:AF1468) vs Source-data_Fig4e.xlsx ('Figure 4e', C11:F13)"
+
+- id: q_figs5d_rhogef2_cross_stage_mixup
+  kind: possible_error
+  about:
+    - colocalization_reader
+    - run_s5d_rhogef2
+    - run_s5d_rhogef2_cross_stage_diagnostic
+  text: >
+    In Source-data_SupplementaryFig5d.xlsx (Stage 16 actin colocalization), two-sided Welch's t-tests
+    vs Stage 16 GFP reproduce 5 of 6 caption P-values exactly: DAAM (0.7635 -> 0.764), alpha-Actinin
+    (0.1761 -> 0.176), Zasp52 (1.986e-4 -> 1.99e-4), Myosin II (0.01950 -> 0.0195), and ROCK
+    (0.1504 -> 0.150). For Stage 16 RhoGEF2::mCherry (n=6, mean R = -0.2467 ± 0.1075), Welch's t-test
+    vs Stage 16 GFP gives P = 0.01602 (< 0.05, significant negative anti-colocalization), NOT the
+    p = 0.0641 printed in the Supplementary Fig. 5d caption — which explains why the plot in sekine2024
+    displays an asterisk (*) over RhoGEF2. Forensically, run_s5d_rhogef2_cross_stage_diagnostic shows
+    that testing Stage 15 RhoGEF2 (from Source-data_Fig3d.xlsx, mean R = -0.1617) against Stage 16 GFP
+    yields Welch P = 0.06411, reproducing the caption's p = 0.0641 to all 4 significant digits and
+    pinpointing a cross-stage data mix-up in computing the caption P-value.
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_SupplementaryFig5d.xlsx ('Supplementary Figure 5d', D7:D69) and Source-data_Fig3d.xlsx (D55:D60)"
+
+- id: q_fig4f_4m_coherency_never_reaches_030
+  kind: unexplained_difference
+  about:
+    - sim_4m_timecourse_reader
+    - f4c_4m_coherency
+    - f4c_4m_domdir
+    - cmp_f4f_max_vs_f4c_4m_coh
+    - cmp_f4f_final_vs_f4c_4m_coh
+    - cmp_f4f_final_vs_f4c_4m_dom
+  text: >
+    Source-data_Fig4f.xlsx confirms sekine2024's audit finding: across all 41 frames (Frames 1-41,
+    1 s/frame) of the 4-M simulation time course, OrientationJ coherency peaks at 0.22305 (Frame 32)
+    and finishes at 0.19096 (Frame 41, dominant direction 88.97 deg; mean of last 10 frames 0.19512).
+    It never reaches the 0.30 coherency (dominant direction 84.8 deg) reported for Fig4b-4-M in
+    Supplementary Table 3 / Source-data_Fig4c.xlsx (and used as the > 0.3 cable-formation threshold).
+    Also note stray Japanese katakana character 'ド' in column C header 'Dominant direction(°)ド'.
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_Fig4f.xlsx ('Figure 4f', B6:D47) vs Source-data_Fig4c.xlsx ('Figure 4c', L32:M32)"
+
+- id: q_fig3a_control_swap_and_s3a_omissions
+  kind: possible_error
+  about:
+    - orientation_distribution_reader
+    - f3a_attp40_orient
+    - f3a_attp40_major
+    - f3a_attp2_orient
+    - f3a_attp2_major
+    - f3a_septin2_orient
+    - f3a_myosin_dn_orient
+    - cmp_s3a_vs_f3a_septin2
+  text: >
+    Both Source-data_Fig3a.xlsx and Source-data_SupplementaryFig3bc.xlsx embed Supplementary Table 2
+    verbatim with attP40 (control) at 64.5 deg / major 345.57 nm / minor 161.02 nm and attP2 (control)
+    at 63.5 deg / major 363.37 nm / minor 166 nm; furthermore, Source-data_SupplementaryFig3a.xlsx's
+    OrientationJ probability curves independently confirm attP40 has a 1.0 deg higher median
+    orientation than attP2 (64.5 vs 63.5 deg at last bin < 0.5, or 65.5 vs 64.5 deg at first bin >= 0.5).
+    This confirms that Fig. 3a and Supplementary Fig. 3c in sekine2024 swapped the Control (attP40)
+    and Control (attP2) marker labels. Additionally: (1) Myosin II [DN] (54.4 deg in Table 2) is
+    omitted from Source-data_SupplementaryFig3a.xlsx (27 genotypes present vs 28 in Table 2); and
+    (2) Septin2's averaged PDF in SupplementaryFig3a gives median 58.5-59.5 deg vs 57.5 deg in Table 2.
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_Fig3a.xlsx (E11:I12, E23, E38), Source-data_SupplementaryFig3bc.xlsx, and Source-data_SupplementaryFig3a.xlsx (B7:AC97)"
+
+- id: q_fig5c_fig5f_unit_mislabeling_and_stars
+  kind: possible_error
+  about:
+    - piv_displacement_reader
+    - f5c_0min_vx_mean
+    - f5f_ctrl_vx_mean
+    - f5f_myosin_vx_mean
+    - run_fig5f_ctrl
+    - run_fig5f_myosin
+  text: >
+    (1) Severe unit-header errors in both PIV spreadsheets: Source-data_Fig5c.xlsx labels columns
+    'Vx (nm/s)' and 'Vy (nm/s)' while storing unscaled pixels/s (0.37-0.86; ~43.25x smaller than the
+    20-35 nm/s plotted in Fig. 5c), whereas Source-data_Fig5f.xlsx labels columns 'Vx (nm/s)' and
+    'Vy (nm/s)' while storing um/s (0.010-0.039; 1000x smaller than the 17-31 nm/s plotted in Fig. 5f,
+    with Control, DAAM, and zasp52 values being exact integer multiples of 4.32536e-5 um/s =
+    0.001 px/s x 0.0432536 um/px).
+    (2) Recomputing two-sided Welch's t-tests directly from Source-data_Fig5f.xlsx reproduces all 4
+    caption P-values to all 3 digits: Control P = 1.779e-6 (1.78e-6), DAAM P = 0.7277 (0.728),
+    zasp52 P = 0.4363 (0.436), and myosin II[DN] P = 8.983e-6 (8.98e-6). This confirms that Control
+    has a ~5x smaller P-value than myosin II[DN], proving Fig. 5f's '**' on Control vs '***' on
+    myosin II[DN] is inverted (and '***' is undefined in the caption).
+    (3) Source-data_Fig5f.xlsx also contains a stray second worksheet 'Supplementary Figure 6e'
+    identical cell-for-cell to Source-data_SupplementaryFig7c.xlsx.
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_Fig5c.xlsx ('Figure 5c', C6:T12) and Source-data_Fig5f.xlsx ('Figure 5f', C6:P21; stray sheet 'Supplementary Figure 6e')"
+
+- id: q_welch_mislabeled_as_student_and_fig2b_bonferroni
+  kind: possible_error
+  about:
+    - colocalization_reader
+    - motion_anisotropy_reader
+    - piv_displacement_reader
+    - fusion_stability_reader
+    - run_fig2b_0
+  text: >
+    Direct statistical recomputation from the raw Source Data spreadsheets uncovers two systematic
+    statistical reporting discrepancies in sekine2024:
+    (1) Every t-test P-value in Fig. 3d (6/6), Fig. 4e (3/3), Fig. 5c (5/5), Fig. 5f (4/4), and
+    Supplementary Fig. 5d (5/5 matching proteins) reproduces ONLY with Welch's unequal-variance
+    t-test (R's default t.test(x, y)), NOT equal-variance Student's t-test as stated in all five
+    captions (for example, Fig. 3d Myosin II gives Welch P = 0.0321 vs Student P = 0.0090; Fig. 5c
+    0* min gives Welch P = 0.0038 vs Student P = 0.00037; Fig. 5f myosin II[DN] gives Welch P = 8.98e-6
+    vs Student P = 5.11e-6).
+    (2) In Source-data_Fig2b.xlsx, the raw 1,953 fusion events reproduce all 5 Kruskal-Wallis P-values
+    (0.565, 0.322, 0.193, 0.0343, 0.0382), but at 0* min the printed pairwise bar 'p=0.0151' is the
+    UNADJUSTED two-sided Wilcoxon rank-sum P-value (0.01508) between circumferential (60-90 deg) and
+    diagonal (30-60 deg) fusions, rather than the Bonferroni-adjusted value (3 x 0.01508 = 0.0452)
+    claimed in the Fig. 2b caption.
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_Fig2b.xlsx, Source-data_Fig3d.xlsx, Source-data_Fig4d.xlsx, Source-data_Fig5c.xlsx, Source-data_Fig5f.xlsx, Source-data_SupplementaryFig5d.xlsx"
+
+- id: q_s1g_sample_counts_and_sd_convention_drift
+  kind: possible_error
+  about:
+    - tube_geometry_and_skeleton_reader
+    - live_imaging_orientation_reader
+    - cable_interval_reader
+    - s1g_skel_p10_mean
+    - s1g_skel_p20_mean
+    - s1d_cable_interval_sd
+  text: >
+    (1) In Source-data_SupplementaryFig1g.xlsx, the actual non-missing image counts are n = 9 at
+    +10 min (all 9 columns C16:K16 populated) and n = 4 at +20 min (only C17:F17 populated; G17:K17
+    are dashes '–'), contradicting the Supplementary Fig. 1g caption (PDF p. 16), which states
+    n = 8 at 10 min and n = 5 at 20 min (apparently copied from Fig. 1h,i's counts).
+    (2) SD conventions vary unannounced across spreadsheets: Fig. 1h, Fig. 1i, and Supp. Fig. 1g use
+    population SD (STDEVP, ddof=0), whereas Fig. 1j, Fig. 1k, Fig. 5c, Fig. 5f, Supp. Fig. 1d, and
+    Supp. Fig. 1f use sample SD (STDEV, ddof=1). Importantly, Source-data_SupplementaryFig1d.xlsx
+    resolves sekine2024's ambiguity on '450 ± 13.2 nm': cell D16 = 0.013158 um is sample SD (N-1)
+    across N = 8 embryos (where each embryo's mean interval is exactly 16.08 um / (N_cables - 1);
+    SEM would be 4.65 nm).
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_SupplementaryFig1g.xlsx (B7:M17), Source-data_Fig1h.xlsx, Source-data_Fig1i.xlsx, Source-data_SupplementaryFig1d.xlsx (B7:D17)"
+
+- id: q_omitted_raw_data_s7c_and_fig3e_and_stale_labels
+  kind: unstated_input
+  about:
+    - structure_factor_table_reader
+    - s7c_a4_1_A
+    - f3e_ctrl_circum_mean
+    - f4c_L0_cl_baseline
+    - f4c_omega_cl_a3_3
+  text: >
+    Several Source Data files omit underlying raw curves/events and contain stale/erroneous labels:
+    (1) Source-data_SupplementaryFig7c.xlsx (and its identical stray copy in Source-data_Fig5f.xlsx
+    sheet 'Supplementary Figure 6e') provides only the 4-row Gaussian-fit summary table (Supplementary
+    Table 4) and omits the raw circularly-binned S(q) curves plotted in Supplementary Fig. 7c1-c4;
+    moreover, its row labels retain outdated pre-split figure numbering 'Supplementary Fig. 6 e1 (1-M)'
+    through 'Supplementary Fig. 6 e4 (c4-1)' (typo 'c4-1' for 'a4-1').
+    (2) Source-data_Fig3e.xlsx provides only the 12-row fusion-duration summary table (with column B
+    still mislabeled 'Time (m)' copied from Fig. 2b) and omits the 2,451 raw per-fusion event rows,
+    preventing direct recomputation of the 4 Kruskal-Wallis P-values printed in Fig. 3e.
+    (3) Source-data_Fig4c.xlsx, Source-data_SupplementaryFig6bc.xlsx, and Source-data_SupplementaryFig7a.xlsx
+    all repeat Supplementary Table 3's 2x half-arm crosslinker lengths (0.0175, 0.02, 0.03 um) and
+    10x turnover typo (0.3 s^-1 for 7a3-3), and SupplementaryFig7a retains 'Supplementary Figures 6b, c'
+    in cell A3.
+  citation:
+    none: "binary xlsx spreadsheet in unpacked Source Data archive"
+    where: "Source-data_SupplementaryFig7c.xlsx, Source-data_Fig3e.xlsx, Source-data_Fig4c.xlsx, Source-data_SupplementaryFig6bc.xlsx, Source-data_SupplementaryFig7a.xlsx"

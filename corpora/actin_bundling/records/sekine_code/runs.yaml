@@ -1,0 +1,442 @@
+# Verification runs for sekine_code:
+# (1) Pixel-to-physical area conversions and tight implied pixel-size bounds (code line 40 vs README line 5)
+# (2) Circularity 4*pi*A/P^2 check
+# (3) Faithful MATLAB->Python port (nanocluster_motion_matlab) vs README/Methods specification
+#     (nanocluster_motion_methods_spec) across 8 deterministic 50x50 ROI verification scenarios
+
+# --- 1. Area unit conversion & pixel-bounds verification ---
+- id: run_area_min_um2
+  model: area_px_to_um2
+  inputs: {A_px: area_min_t1_px_code, dx: pixel_size_added}
+  settings: {}
+  outputs: {A_phys: area_min_um2_pred}
+  note: "Physical area corresponding to Nanocluster_motion.m line 40 lower cutoff 6 px at dx = 0.04325 um (0.011223 um^2 vs README 0.01 um^2)."
+
+- id: run_area_max_um2
+  model: area_px_to_um2
+  inputs: {A_px: area_max_t1_px_code, dx: pixel_size_added}
+  settings: {}
+  outputs: {A_phys: area_max_um2_pred}
+  note: "Physical area corresponding to Nanocluster_motion.m line 40 upper cutoff 53 px at dx = 0.04325 um (0.099140 um^2 vs README 0.1 um^2)."
+
+- id: run_area_bounds_px
+  model: area_um2_to_px_bounds
+  inputs: {A_min: area_min_readme, A_max: area_max_readme, dx: pixel_size_added}
+  settings: {}
+  outputs: {N_min: area_min_px_pred, N_max: area_max_px_pred}
+  note: "Exact interior integer pixel bounds [ceil(0.01/dx^2), floor(0.1/dx^2)] = [6, 53] at dx = 0.04325 um; alternatives dx = 3/69 = 0.043478 um and dx = 0.043 um shift N_max to 52 and 54 respectively."
+
+- id: run_implied_pixel_size
+  model: implied_pixel_size_bounds
+  inputs: {N_min: area_min_t1_px_code, N_max: area_max_t1_px_code, A_min: area_min_readme, A_max: area_max_readme}
+  settings: {}
+  outputs: {dx_lo: implied_dx_lo, dx_hi: implied_dx_hi, dx_mid: implied_dx_mid}
+  note: "Strict pixel-size interval (0.043033, 0.043437] um (midpoint 0.043235 um) for which [6, 53] is the exact integer pixel range inside [0.01, 0.1] um^2; encloses sekine2024's 0.04325 um and excludes both 3/69 (0.043478 um) and 0.043 um."
+
+# --- 2. Circularity formula verification ---
+- id: run_circularity_ideal_6px
+  model: circularity_definition
+  inputs: {A: area_min_t1_px_code, P: perimeter_ideal_6px_added}
+  settings: {}
+  outputs: {C: circ_ideal_6px_pred}
+  note: "Checks 4*pi*A/P^2 = 1.0 for an ideal circle of area 6 px (alternatives P = 10 px for compact 3x2 rectangle -> C = 0.754, and P = 14 px for 1x6 rod -> C = 0.385 < 0.5)."
+
+# --- 3. MATLAB port vs README/Methods spec across 8 verification scenarios ---
+- id: run_matlab_aniso_translation
+  model: nanocluster_motion_matlab
+  inputs:
+    area_min_t1: area_min_t1_px_code
+    area_max_t1: area_max_t1_px_code
+    area_min_t2: area_min_t2_px_code
+    connectivity: connectivity_bwlabel_code
+    binarize_level: binarize_level_added
+    pixel_size: pixel_size_added
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+  settings: {scenario: anisotropic_translation, apply_downstream_area_ratio: false}
+  outputs:
+    matched_count: mat_aniso_matched
+    unmatched_count: mat_aniso_unmatched
+    dropped_count: mat_aniso_dropped
+    mean_abs_dx: mat_aniso_dx
+    mean_abs_dy: mat_aniso_dy
+    mean_step_distance: mat_aniso_dist
+    anisotropy_ratio: mat_aniso_ratio
+    mean_area_ratio: mat_aniso_aratio
+  note: "Clean baseline: two interior 4x4 clusters shifting (+1,+2) and (-1,+2) px; exact recovery of <|dx|>=43.25 nm, <|dy|>=86.50 nm, dist=96.71 nm, |dy|/|dx|=2.0."
+
+- id: run_spec_aniso_translation
+  model: nanocluster_motion_methods_spec
+  inputs:
+    area_min: area_min_readme
+    area_max: area_max_readme
+    circ_min: circularity_min_readme
+    circ_max: circularity_max_readme
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+    overlap_min_px: overlap_min_px_readme
+    connectivity: connectivity_bwlabel_code
+    pixel_size: pixel_size_added
+  settings: {scenario: anisotropic_translation}
+  outputs:
+    matched_count: spec_aniso_matched
+    unmatched_count: spec_aniso_unmatched
+    dropped_count: spec_aniso_dropped
+    mean_abs_dx: spec_aniso_dx
+    mean_abs_dy: spec_aniso_dy
+    mean_step_distance: spec_aniso_dist
+    anisotropy_ratio: spec_aniso_ratio
+    mean_area_ratio: spec_aniso_aratio
+  note: "Clean baseline under documented README/Methods spec: identical to MATLAB port."
+
+- id: run_matlab_elongated_rod
+  model: nanocluster_motion_matlab
+  inputs:
+    area_min_t1: area_min_t1_px_code
+    area_max_t1: area_max_t1_px_code
+    area_min_t2: area_min_t2_px_code
+    connectivity: connectivity_bwlabel_code
+    binarize_level: binarize_level_added
+    pixel_size: pixel_size_added
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+  settings: {scenario: elongated_low_circularity, apply_downstream_area_ratio: false}
+  outputs:
+    matched_count: mat_rod_matched
+    unmatched_count: mat_rod_unmatched
+    dropped_count: mat_rod_dropped
+    mean_abs_dx: mat_rod_dx
+    mean_abs_dy: mat_rod_dy
+    mean_step_distance: mat_rod_dist
+    anisotropy_ratio: mat_rod_ratio
+    mean_area_ratio: mat_rod_aratio
+  note: "Proves missing circularity filter: 1x20 rod (A=20 px, C=0.1425 << 0.5) is tracked by Nanocluster_motion.m (matched=1)."
+
+- id: run_spec_elongated_rod
+  model: nanocluster_motion_methods_spec
+  inputs:
+    area_min: area_min_readme
+    area_max: area_max_readme
+    circ_min: circularity_min_readme
+    circ_max: circularity_max_readme
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+    overlap_min_px: overlap_min_px_readme
+    connectivity: connectivity_bwlabel_code
+    pixel_size: pixel_size_added
+  settings: {scenario: elongated_low_circularity}
+  outputs:
+    matched_count: spec_rod_matched
+    unmatched_count: spec_rod_unmatched
+    dropped_count: spec_rod_dropped
+    mean_abs_dx: spec_rod_dx
+    mean_abs_dy: spec_rod_dy
+    mean_step_distance: spec_rod_dist
+    anisotropy_ratio: spec_rod_ratio
+    mean_area_ratio: spec_rod_aratio
+  note: "README/Methods spec rejects the 1x20 rod (matched=0, dropped=1) because C = 0.1425 < 0.5."
+
+- id: run_matlab_area_ratio_raw
+  model: nanocluster_motion_matlab
+  inputs:
+    area_min_t1: area_min_t1_px_code
+    area_max_t1: area_max_t1_px_code
+    area_min_t2: area_min_t2_px_code
+    connectivity: connectivity_bwlabel_code
+    binarize_level: binarize_level_added
+    pixel_size: pixel_size_added
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+  settings: {scenario: area_ratio_violation, apply_downstream_area_ratio: false}
+  outputs:
+    matched_count: mat_aratio_matched
+    unmatched_count: mat_aratio_unmatched
+    dropped_count: mat_aratio_dropped
+    mean_abs_dx: mat_aratio_dx
+    mean_abs_dy: mat_aratio_dy
+    mean_step_distance: mat_aratio_dist
+    anisotropy_ratio: mat_aratio_ratio
+    mean_area_ratio: mat_aratio_aratio
+  note: "Proves missing 0.5-2x area-ratio filter in Nanocluster_motion.m: 16->64 px fusion (ratio 4.0) is accepted and exported."
+
+- id: run_spec_area_ratio
+  model: nanocluster_motion_methods_spec
+  inputs:
+    area_min: area_min_readme
+    area_max: area_max_readme
+    circ_min: circularity_min_readme
+    circ_max: circularity_max_readme
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+    overlap_min_px: overlap_min_px_readme
+    connectivity: connectivity_bwlabel_code
+    pixel_size: pixel_size_added
+  settings: {scenario: area_ratio_violation}
+  outputs:
+    matched_count: spec_aratio_matched
+    unmatched_count: spec_aratio_unmatched
+    dropped_count: spec_aratio_dropped
+    mean_abs_dx: spec_aratio_dx
+    mean_abs_dy: spec_aratio_dy
+    mean_step_distance: spec_aratio_dist
+    anisotropy_ratio: spec_aratio_ratio
+    mean_area_ratio: spec_aratio_aratio
+  note: "README/Methods spec rejects the 4.0x area-ratio match (matched=0)."
+
+- id: run_matlab_multi_overlap_raw
+  model: nanocluster_motion_matlab
+  inputs:
+    area_min_t1: area_min_t1_px_code
+    area_max_t1: area_max_t1_px_code
+    area_min_t2: area_min_t2_px_code
+    connectivity: connectivity_bwlabel_code
+    binarize_level: binarize_level_added
+    pixel_size: pixel_size_added
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+  settings: {scenario: multi_overlap_largest_vs_valid, apply_downstream_area_ratio: false}
+  outputs:
+    matched_count: mat_multi_raw_matched
+    unmatched_count: mat_multi_raw_unmatched
+    dropped_count: mat_multi_raw_dropped
+    mean_abs_dx: mat_multi_raw_dx
+    mean_abs_dy: mat_multi_raw_dy
+    mean_step_distance: mat_multi_raw_dist
+    anisotropy_ratio: mat_multi_raw_ratio
+    mean_area_ratio: mat_multi_raw_aratio
+  note: "Lines 101-145 pick the largest overlapping t_{n+1} object (64 px cable, ratio 4.0) over the valid 16 px match (ratio 1.0)."
+
+- id: run_matlab_multi_overlap_filtered
+  model: nanocluster_motion_matlab
+  inputs:
+    area_min_t1: area_min_t1_px_code
+    area_max_t1: area_max_t1_px_code
+    area_min_t2: area_min_t2_px_code
+    connectivity: connectivity_bwlabel_code
+    binarize_level: binarize_level_added
+    pixel_size: pixel_size_added
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+  settings: {scenario: multi_overlap_largest_vs_valid, apply_downstream_area_ratio: true}
+  outputs:
+    matched_count: mat_multi_filt_matched
+    unmatched_count: mat_multi_filt_unmatched
+    dropped_count: mat_multi_filt_dropped
+    mean_abs_dx: mat_multi_filt_dx
+    mean_abs_dy: mat_multi_filt_dy
+    mean_step_distance: mat_multi_filt_dist
+    anisotropy_ratio: mat_multi_filt_ratio
+    mean_area_ratio: mat_multi_filt_aratio
+  note: "Applying downstream 0.5-2x area-ratio filtering on Nanocluster_motion.m output yields matched=0 because the valid 16 px match was already discarded by line 133's maxArea rule."
+
+- id: run_spec_multi_overlap
+  model: nanocluster_motion_methods_spec
+  inputs:
+    area_min: area_min_readme
+    area_max: area_max_readme
+    circ_min: circularity_min_readme
+    circ_max: circularity_max_readme
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+    overlap_min_px: overlap_min_px_readme
+    connectivity: connectivity_bwlabel_code
+    pixel_size: pixel_size_added
+  settings: {scenario: multi_overlap_largest_vs_valid}
+  outputs:
+    matched_count: spec_multi_matched
+    unmatched_count: spec_multi_unmatched
+    dropped_count: spec_multi_dropped
+    mean_abs_dx: spec_multi_dx
+    mean_abs_dy: spec_multi_dy
+    mean_step_distance: spec_multi_dist
+    anisotropy_ratio: spec_multi_ratio
+    mean_area_ratio: spec_multi_aratio
+  note: "Filtering 0.5-2x ratio before tie-breaking retains the valid 16 px match (matched=1, <|dy|>=86.5 nm, ratio=1.0)."
+
+- id: run_matlab_border_clear
+  model: nanocluster_motion_matlab
+  inputs:
+    area_min_t1: area_min_t1_px_code
+    area_max_t1: area_max_t1_px_code
+    area_min_t2: area_min_t2_px_code
+    connectivity: connectivity_bwlabel_code
+    binarize_level: binarize_level_added
+    pixel_size: pixel_size_added
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+  settings: {scenario: border_cluster_removal, apply_downstream_area_ratio: false}
+  outputs:
+    matched_count: mat_border_matched
+    unmatched_count: mat_border_unmatched
+    dropped_count: mat_border_dropped
+    mean_abs_dx: mat_border_dx
+    mean_abs_dy: mat_border_dy
+    mean_step_distance: mat_border_dist
+    anisotropy_ratio: mat_border_ratio
+    mean_area_ratio: mat_border_aratio
+  note: "Hidden imclearborder (lines 41 & 45) eliminates both clusters touching the ROI border in t_n or t_{n+1} (matched=0, dropped=1, unmatched=1)."
+
+- id: run_spec_border_clear
+  model: nanocluster_motion_methods_spec
+  inputs:
+    area_min: area_min_readme
+    area_max: area_max_readme
+    circ_min: circularity_min_readme
+    circ_max: circularity_max_readme
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+    overlap_min_px: overlap_min_px_readme
+    connectivity: connectivity_bwlabel_code
+    pixel_size: pixel_size_added
+  settings: {scenario: border_cluster_removal}
+  outputs:
+    matched_count: spec_border_matched
+    unmatched_count: spec_border_unmatched
+    dropped_count: spec_border_dropped
+    mean_abs_dx: spec_border_dx
+    mean_abs_dy: spec_border_dy
+    mean_step_distance: spec_border_dist
+    anisotropy_ratio: spec_border_ratio
+    mean_area_ratio: spec_border_aratio
+  note: "Without undisclosed border clearing, both border-adjacent clusters are tracked (matched=2, anisotropy=2.0)."
+
+- id: run_matlab_antidiag_bug
+  model: nanocluster_motion_matlab
+  inputs:
+    area_min_t1: area_min_t1_px_code
+    area_max_t1: area_max_t1_px_code
+    area_min_t2: area_min_t2_px_code
+    connectivity: connectivity_bwlabel_code
+    binarize_level: binarize_level_added
+    pixel_size: pixel_size_added
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+  settings: {scenario: antidiagonal_centroid_miss, apply_downstream_area_ratio: false}
+  outputs:
+    matched_count: mat_antidiag_matched
+    unmatched_count: mat_antidiag_unmatched
+    dropped_count: mat_antidiag_dropped
+    mean_abs_dx: mat_antidiag_dx
+    mean_abs_dy: mat_antidiag_dy
+    mean_step_distance: mat_antidiag_dist
+    anisotropy_ratio: mat_antidiag_ratio
+    mean_area_ratio: mat_antidiag_aratio
+  note: "Stage 1 bug (lines 61-67): 2-px anti-diagonal overlap centroid rounds onto a 0 pixel of Image_2, so bwselect returns empty (matched=0, unmatched=1)."
+
+- id: run_spec_antidiag_bug
+  model: nanocluster_motion_methods_spec
+  inputs:
+    area_min: area_min_readme
+    area_max: area_max_readme
+    circ_min: circularity_min_readme
+    circ_max: circularity_max_readme
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+    overlap_min_px: overlap_min_px_readme
+    connectivity: connectivity_bwlabel_code
+    pixel_size: pixel_size_added
+  settings: {scenario: antidiagonal_centroid_miss}
+  outputs:
+    matched_count: spec_antidiag_matched
+    unmatched_count: spec_antidiag_unmatched
+    dropped_count: spec_antidiag_dropped
+    mean_abs_dx: spec_antidiag_dx
+    mean_abs_dy: spec_antidiag_dy
+    mean_step_distance: spec_antidiag_dist
+    anisotropy_ratio: spec_antidiag_ratio
+    mean_area_ratio: spec_antidiag_aratio
+  note: "Direct pixel-overlap matching tracks the 2-px anti-diagonal overlap cleanly (matched=1, ratio=1.75)."
+
+- id: run_matlab_ring_hole_abort
+  model: nanocluster_motion_matlab
+  inputs:
+    area_min_t1: area_min_t1_px_code
+    area_max_t1: area_max_t1_px_code
+    area_min_t2: area_min_t2_px_code
+    connectivity: connectivity_bwlabel_code
+    binarize_level: binarize_level_added
+    pixel_size: pixel_size_added
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+  settings: {scenario: ring_hole_try_catch_abort, apply_downstream_area_ratio: false}
+  outputs:
+    matched_count: mat_hole_matched
+    unmatched_count: mat_hole_unmatched
+    dropped_count: mat_hole_dropped
+    mean_abs_dx: mat_hole_dx
+    mean_abs_dy: mat_hole_dy
+    mean_step_distance: mat_hole_dist
+    anisotropy_ratio: mat_hole_ratio
+    mean_area_ratio: mat_hole_aratio
+  note: "Stage 2 bug (lines 88, 181-191, 241-242): imfill+shrink collapses a 3x3 ring intersection onto its interior 0-hole pixel, causing empty bwselect -> Centroid error -> silent try/catch abort that drops 3 of 4 clusters including unrelated healthy Cluster 4."
+
+- id: run_spec_ring_hole_abort
+  model: nanocluster_motion_methods_spec
+  inputs:
+    area_min: area_min_readme
+    area_max: area_max_readme
+    circ_min: circularity_min_readme
+    circ_max: circularity_max_readme
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+    overlap_min_px: overlap_min_px_readme
+    connectivity: connectivity_bwlabel_code
+    pixel_size: pixel_size_added
+  settings: {scenario: ring_hole_try_catch_abort}
+  outputs:
+    matched_count: spec_hole_matched
+    unmatched_count: spec_hole_unmatched
+    dropped_count: spec_hole_dropped
+    mean_abs_dx: spec_hole_dx
+    mean_abs_dy: spec_hole_dy
+    mean_step_distance: spec_hole_dist
+    anisotropy_ratio: spec_hole_ratio
+    mean_area_ratio: spec_hole_aratio
+  note: "Direct pixel-overlap matching handles the holed cluster without crashing (matched=3, dropped=0)."
+
+- id: run_matlab_grayscale_im2bw
+  model: nanocluster_motion_matlab
+  inputs:
+    area_min_t1: area_min_t1_px_code
+    area_max_t1: area_max_t1_px_code
+    area_min_t2: area_min_t2_px_code
+    connectivity: connectivity_bwlabel_code
+    binarize_level: binarize_level_added
+    pixel_size: pixel_size_added
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+  settings: {scenario: grayscale_im2bw_threshold, apply_downstream_area_ratio: false}
+  outputs:
+    matched_count: mat_gray_matched
+    unmatched_count: mat_gray_unmatched
+    dropped_count: mat_gray_dropped
+    mean_abs_dx: mat_gray_dx
+    mean_abs_dy: mat_gray_dy
+    mean_step_distance: mat_gray_dist
+    anisotropy_ratio: mat_gray_ratio
+    mean_area_ratio: mat_gray_aratio
+  note: "Hidden im2bw default level=0.5 (127.5/255) erases dim uint8 clusters at intensity 100 (matched=0); alternative binarize_level=0.25 recovers matched=2."
+
+- id: run_spec_grayscale_im2bw
+  model: nanocluster_motion_methods_spec
+  inputs:
+    area_min: area_min_readme
+    area_max: area_max_readme
+    circ_min: circularity_min_readme
+    circ_max: circularity_max_readme
+    ratio_min: area_ratio_min_readme
+    ratio_max: area_ratio_max_readme
+    overlap_min_px: overlap_min_px_readme
+    connectivity: connectivity_bwlabel_code
+    pixel_size: pixel_size_added
+  settings: {scenario: grayscale_im2bw_threshold}
+  outputs:
+    matched_count: spec_gray_matched
+    unmatched_count: spec_gray_unmatched
+    dropped_count: spec_gray_dropped
+    mean_abs_dx: spec_gray_dx
+    mean_abs_dy: spec_gray_dy
+    mean_step_distance: spec_gray_dist
+    anisotropy_ratio: spec_gray_ratio
+    mean_area_ratio: spec_gray_aratio
+  note: "Otsu binarization (Methods p. 10) cleanly segments the bimodal {0, 100} clusters (matched=2, anisotropy=2.0)."

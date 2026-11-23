@@ -1,0 +1,273 @@
+# The overview's text: what the page says that the build cannot. Every number on the page
+# comes from the build; this file holds the words around them. Used by
+#   make build site CORPUS=actin_bundling
+title: "Actin bundling, cortical patterning, and scale mechanics: an executable literature review"
+notice:
+  title: "Work in progress:"
+  text: results are produced by multi-agent BoxGraph audits and verified by the validator, but not yet reviewed by people;
+  link: check a record before citing it
+  href: https://github.com/elejeune11/boxgraph-public
+intro:
+  - All models are wrong, but some are useful (George E. P. Box). This page is an executable literature review of physical and mechanochemical models of actin bundle size control, active cortical patterning, and actin-templated membrane buckling — spanning 7 papers (2007–2024), 100% of their Supplemental Information, and 4 released code and data sources.
+  - Every value is traced to the page, code line, or spreadsheet cell it came from. Every runnable model is rebuilt as stated, evaluated on its own inputs, refined numerically where applicable, and compared with printed text and 900–1800 dpi calibrated figure readings at the precision printed. Relations between papers are tested symbolically or numerically rather than assumed, released code and Source Data are checked against their parent paper, and models of one paper are tested out-of-sample against another paper's measurements.
+  - Nothing is silently corrected or overwritten. Where an equation is evidently misprinted, the printed model is kept and counted in the paper's tally while a corrected variant is added beside it with the evidence. Every disagreement is preserved as a structured finding and open question.
+links:
+  - {text: "All reviews", href: "../"}
+  - {text: "BoxGraph design and code (GitHub)", href: "https://github.com/elejeune11/boxgraph-public"}
+case_studies:
+  - id: misprints
+    teaches: A paper against itself
+    title: Misprinted equations settled by calibrated figures
+    summary: >-
+      A reader who rebuilds a model from the printed text needs the printed equations to be the
+      ones that produced the paper's figures. Across three papers here — Grason & Bruinsma (2007),
+      Dutta et al. (2016), and Totz et al. (2024) — printed equations disagree with the paper's own
+      numbers or curves; keeping the printed model beside a corrected variant and checking against
+      1200 dpi figure readings settles what the authors actually computed.
+    sources: [totz2024, grason2007, dutta2016]
+    steps:
+      - text: >-
+          Totz et al. (2024) print Eq. 3 and SI Eq. E49 with an inverted nondimensionalization
+          (ha instead of a/h). Run as printed on the paper's own parameters, the minimum cuticle
+          Young's modulus fails by sixteen orders of magnitude.
+        show: "comparison: totz2024/cmp_Ymin_printed_eq3"
+      - text: >-
+          Replacing ha with the dimensionally consistent a/h reproduces the printed Y_min = 3.5 MPa
+          exactly, while keeping the misprinted equation separate in the paper's tally.
+        show: "comparison: totz2024/cmp_Ymin_corrected_eq3"
+      - text: >-
+          The same corrected variant reproduces all eight digitized isocontours across Fig. 3H and
+          Fig. 4C, whereas the printed equation fails all eight.
+        show: "comparison: totz2024/cmp_fig3H_iso_39_6pct_corrected"
+      - text: >-
+          Calibrated 1200 dpi digitization of all twelve curves in Fig. 2E further settles three
+          caption and Table S1 discrepancies: the curves plot peak-to-peak ridge height 2a rather
+          than half-amplitude a, using g = 0.5% and L_0 = 1.0 um.
+        show: "comparison: totz2024/cmp_fig2E_g_0_5pct_2a"
+      - text: >-
+          Grason & Bruinsma (2007) print a far-from-critical surface-tension threshold scaling as
+          (mu_c - mu)^(-3/2). ModelAtlas refutes the reduction from their exact Eq. (6) to that
+          printed asymptote.
+        show: "relation: grason2007/rel_exact_sigma_c_to_far_printed"
+      - text: >-
+          Correcting the algebra gives (mu_c - mu)^(-1/2), which ModelAtlas verifies against the
+          exact Eq. (6) solution — and 1200 dpi measurement of the Fig. 2 inset slope (-0.516 vs
+          -0.50) corroborates the corrected exponent.
+        show: "relation: grason2007/rel_exact_sigma_c_to_far_corrected"
+      - text: >-
+          Dutta, Benetatos & Jho (2016) mix 2*pi Fourier conventions between their interaction
+          potential and polymer structure factor. Evaluated with a consistent angular wavenumber k,
+          the entire finite-bundle phase of Fig. 4 disappears from the plotted window.
+        show: "comparison: dutta2016/cmp_fig4_finite"
+      - text: >-
+          A variant preserving the mixed 2*pi convention reproduces all ten nonzero-k curves across
+          Figs. 2–4, pinpointing the exact algebraic origin of the discrepancy.
+        show: "comparison: dutta2016/cmp_fig4_finite_var"
+
+  - id: active_gel
+    teaches: Papers against each other
+    title: From active fluids to epithelial rings
+    summary: >-
+      Bois, Jülicher & Grill (2011) formulate a 1D active-fluid patterning theory; Hannezo et al.
+      (2015) adapt it to circumferential actin rings in Drosophila tracheal tubes. ModelAtlas
+      verifies ten cross-paper relations forming two symbolic families, while auditing each paper's
+      figures and 19-page SI Appendix catches subtle plotting and projection slips.
+    sources: [bois2011, hannezo2015]
+    steps:
+      - text: >-
+          Both papers define the same hydrodynamic screening length l = sqrt(eta / gamma) (or
+          sqrt(eta / xi)), forming a verified three-model family across the two sources.
+        show: "family: bois2011/hydrodynamic_length"
+      - text: >-
+          Their turnover-modified linear dispersion relations — Bois Eq. (15) and Hannezo SI Eq.
+          (7) — are symbolically identical under a mapping of parameters, forming a second
+          cross-paper family.
+        show: "family: bois2011/single_species_rda_dispersion_eq15"
+      - text: >-
+          In the zero-turnover limit (tau -> infinity), Hannezo's dispersion relation reduces
+          exactly to Bois's conserved-species Eq. (12), as stated in prose and verified
+          numerically here.
+        show: "relation: hannezo2015/rel_bois2011_dispersion_eq12_limit"
+      - text: >-
+          Even across different stress constitutive laws (Bois's Hill saturation vs. Hannezo's
+          linear contractility), ModelAtlas verifies that their finite-domain instability
+          thresholds share identical scaling exponents.
+        show: "relation: hannezo2015/rel_bois2011_hill_boundary_scales_linear"
+      - text: >-
+          Rebuilding Bois et al. (2011) reproduces 34 of 35 checks, isolating a single discrepancy
+          in Fig. 5(d): the plotted substrate profile matches rho_s = 1.0 rather than the marked
+          rho_s = 1.5.
+        show: "comparison: bois2011/cmp_fig5d_s"
+      - text: >-
+          Auditing Hannezo et al.'s SI Appendix catches a dual error in Fig. S9: the bifurcation
+          onsets do not reproduce at the captioned alpha^2*phi = 10 (they correspond to 100).
+        show: "comparison: hannezo2015/cmp_figs9_onsets_captioned_10"
+      - text: >-
+          Even at alpha^2*phi = 100, the plotted y-axis does not match the labeled L2 norm
+          ||rho||_2 — instead, it reproduces the peak density max(rho) across both branches.
+        show: "comparison: hannezo2015/cmp_figs9_branch1_maxrho"
+      - text: >-
+          In SI Section 2.6.2, projecting the weakly nonlinear amplitude equation onto the right
+          instead of the left adjoint eigenvector introduces a 6–12x curvature error relative to
+          direct PDE continuation.
+        show: "question: hannezo2015/q_si_section262_wrong_fredholm_eigenvector"
+
+  - id: continuum_vs_cgmd
+    teaches: Papers against each other, and against measurement
+    title: Continuum active gel vs. microscopic CGMD in the same tube
+    summary: >-
+      Hannezo et al. (2015) and Sekine et al. (2024) come from the same lab and study the exact
+      same biological structure: circumferential actin rings in embryonic Drosophila trachea.
+      Bridging continuum theory to coarse-grained molecular dynamics reveals where scale separation
+      breaks down, how measurement precision flips validation verdicts, and why an internal
+      viscosity choice is numerically unstable.
+    sources: [hannezo2015, sekine2024]
+    steps:
+      - text: >-
+          ModelAtlas links Sekine's single-filament anisotropic Langevin dynamics directly to
+          Hannezo's continuum turnover-diffusion length l_t = sqrt(D * tau) via the two-bead
+          Einstein-Stokes diffusivity.
+        show: "relation: sekine2024/rel_hannezo2015_langevin_dx_approx_turnover_length"
+      - text: >-
+          Both models share the exact inverse-square-root scaling with directional friction
+          anisotropy, (gamma_y / gamma_x)^(-1/2), verified to machine precision across the regime.
+        show: "relation: sekine2024/rel_hannezo2015_aniso_diff_scales_turnover_length"
+      - text: >-
+          Tested out-of-sample against Sekine's Airyscan super-resolution cable interval
+          (450 ± 13.2 nm), Hannezo's uncalibrated Main Eq. [3] overshoots nearly fourfold
+          (1749 nm).
+        show: "validation: hannezo2015/val_lambda_c_eq3_main_vs_sekine_cable_interval"
+      - text: >-
+          Even using Hannezo's SI-calibrated hydrodynamic length (l_h = 8.18 nm — 12 to 30x smaller
+          than Sekine's filaments and myosin motors), the continuum wavelength still sits 11.1%
+          (3.8 embryo-mean SDs) above Sekine's Airyscan measurement.
+        show: "validation: hannezo2015/val_lambda_c_si_exact_lh_vs_sekine_cable_interval"
+      - text: >-
+          In the reverse direction, Sekine's 4-M CGMD structure-factor peak interval (528.7 nm)
+          fails against Sekine's own 450 ± 13.2 nm measurement — yet is reproduced against
+          Hannezo's wider confocal measurement (0.5 ± 0.1 um).
+        show: "validation: sekine2024/val_sf_interval_4m_vs_hannezo_wt_spacing"
+      - text: >-
+          Numerical time-step refinement settles a 10x viscosity contradiction in Sekine's SI Notes:
+          at dt = 5e-5 s and eta_cyto = 0.1 Pa*s, RK4 is numerically unstable (result belongs to the
+          numerics), whereas at eta_cyto = 1 Pa*s it converges cleanly.
+        show: "refinement: sekine2024/ref_dimer_rk4_corrected_eta01_dt"
+      - text: >-
+          Sekine's Methods print the Gaussian structure-factor fit in angular wavenumber q while
+          Supplementary Table 4 reports spatial frequency q/(2*pi), causing all four literal
+          curve reproductions to fail until converted by 2*pi.
+        show: "comparison: sekine2024/cmp_sf_literal_c1_fit"
+      - text: >-
+          Beyond parameter tuning, the two studies diverge sharply on mechanism: Hannezo's rings
+          vanish under ROCK inhibition, whereas Sekine's Myosin II[DN] still exhibits anisotropic
+          circumferential nanocluster motion and fusion bias.
+        show: "question: sekine2024/q_hannezo2015_same_system_biological_and_mechanistic_contrast"
+
+  - id: code_and_data
+    teaches: A paper against its own code and data
+    title: Auditing released MATLAB code, genetic screens, and 27 Source Data files
+    summary: >-
+      Sekine et al. (2024) released a MATLAB nanocluster tracker, two supplementary Excel screens
+      (RNAi pupa counts and MIST protein complexes), and 27 Source Data spreadsheets. Reading all
+      four attachments as BoxGraph sources confirms 82 cited values and 26 of 30 cross-validations
+      while exposing silent statistical, plotting, and code-vs-Methods discrepancies.
+    sources: [sekine2024, sekine_code, sekine_rnai_screen, sekine_mist_complexes, sekine_source_data]
+    steps:
+      - text: >-
+          Running live Python readers over all 27 Source Data spreadsheets reproduces 82 cited
+          numbers — including the in vivo cable interval mean and SD (450 ± 13.2 nm).
+        show: "validation: sekine_source_data/val_cable_interval_in_vivo"
+      - text: >-
+          Four cross-validations fail and pinpoint real reporting slips. First, the 4-M simulation
+          timecourse in Fig. 4f peaks at coherency 0.223 and never reaches the 0.30 reported in
+          Fig. 4c and Supplementary Table 3.
+        show: "validation: sekine_source_data/val_fig4f_max_vs_sim_4m_coherency"
+      - text: >-
+          Second, Fig. 2b reports a pairwise P-value as Bonferroni-corrected, but recomputation
+          from the raw sheet fails with Bonferroni and reproduces the printed value only without
+          multiple-testing adjustment.
+        show: "validation: sekine_source_data/val_fig2b_0min_pair_bonf_pval"
+      - text: >-
+          Third, Supplementary Fig. 5d prints p = 0.0641 for Stage 16 RhoGEF2 colocalization,
+          which fails against the actual Stage 16 Control vs. RhoGEF2 columns (p = 0.0160).
+        show: "validation: sekine_source_data/val_figs5d_rhogef2_true_st16_pval"
+      - text: >-
+          Remarkably, testing Stage 15 Control against Stage 16 RhoGEF2 reproduces p = 0.0641 to
+          four significant digits, diagnosing an exact cross-stage column mix-up.
+        show: "validation: sekine_source_data/val_figs5d_rhogef2_cross_stage_pval"
+      - text: >-
+          Auditing the archive also uncovers that Source-data_Fig1k.xlsx ("Tube length") is a
+          cell-for-cell duplicate of Source-data_Fig1j.xlsx ("Tube diameter"), while 900 dpi
+          digitization independently catches a +2.5 deg misplot of St. 15 orientation in Fig. 4c.
+        show: "question: sekine_source_data/q_fig1k_duplicated_from_fig1j"
+      - text: >-
+          Reading the released MATLAB tracker (Nanocluster_motion.m) confirms its hardcoded [6, 53]
+          pixel area filter against the Methods' 0.01–0.1 um^2 range — but shows that both the
+          circularity (> 0.5) and area-ratio (0.5–2x) filters stated in Methods are absent from the
+          code.
+        show: "question: sekine_code/q_missing_circularity_filter"
+      - text: >-
+          Auditing the two supplementary genetic-screen workbooks flags a day-8 pupae selection
+          threshold mismatch in the RNAi screen and an undocumented functional grouping in the
+          MIST complex table.
+        show: "question: sekine_rnai_screen/q_selection_threshold_mismatch"
+
+  - id: bundle_diameter
+    teaches: Competing physical mechanisms
+    title: Why do F-actin bundles stop growing?
+    summary: >-
+      Grason & Bruinsma (2007), Claessens et al. (2008), and Dutta et al. (2016) propose three
+      different equilibrium theories for finite F-actin bundle diameter: chiral supertwist,
+      cross-linker-driven helical overtwist, and competing electrostatic interactions. Testing
+      them side by side separates shared geometry from contradictory physical predictions.
+    sources: [grason2007, claessens2008, dutta2016]
+    steps:
+      - text: >-
+          ModelAtlas verifies four scaling relations between Claessens et al. (2008) and Grason &
+          Bruinsma (2007): both share the geometric D ~ N^(1/2) cross-section scaling and quadratic
+          elastic-twist energy scaling.
+        show: "relation: claessens2008/rel_grason_eq5_scales_claessens_twist"
+      - text: >-
+          Despite that shared geometry, their bundling mechanisms predict opposite responses to
+          increasing cross-linker ratio R*: Claessens measures D ~ (R*)^(+0.3), whereas chiral
+          supertwist predicts a decreasing or flat equilibrium radius.
+        show: "question: claessens2008/q_grason2007_diameter_Rstar_scaling_and_onset_size"
+      - text: >-
+          Digitizing Claessens et al.'s Fig. 2E droplet-confinement phase diagram shows that the
+          printed single-ring stability boundary misses the drawn line by a factor of 2.23x, while
+          the paper also prints a sign slip in Delta G = k_B T ln(K_D) and a Bragg degeneracy slip
+          in Fig. 3A.
+        show: "comparison: claessens2008/cmp_droplet_crit_ca_fig2e_line"
+      - text: >-
+          Dutta et al. (2016) claim their competing-interaction model agrees quantitatively with
+          Claessens et al.'s fascin-bundle widths, but cross-record auditing refutes the claim on
+          four fronts — including the 2*pi Fourier error and Claessens's own low-salt control.
+        show: "question: dutta2016/q_claessens2008_electrostatic_agreement_contradicted"
+
+  - id: wing_scales
+    teaches: Bridging across biological scales
+    title: From cortical actin patterning to butterfly wing-scale buckling
+    summary: >-
+      Totz et al. (2024) model early ridge formation in butterfly wing scales as membrane buckling
+      clamped between pre-patterned cortical F-actin bundles of spacing L, whereas Bois et al.
+      (2011) and Hannezo et al. (2015) derive periodic cortical bundle spacing from active-gel
+      mechanics. Putting both halves together defines an exact sequential interface — and exposes
+      the measurements still missing to close it.
+    sources: [bois2011, hannezo2015, totz2024]
+    steps:
+      - text: >-
+          Hannezo's critical active-gel wavelength lambda_c = 2*pi*sqrt(l_h * l_t) and Totz's
+          critical buckling growth strain g_c = (h^2 / (12*(1 - nu^2))) * (2*pi / L)^2 meet
+          sequentially at L = lambda_c, yielding g_c = (h^2 / (12*(1 - nu^2))) * sqrt(xi / (D * tau * eta)).
+        show: "question: totz2024/q_hannezo2015_upstream_spacing_interface"
+      - text: >-
+          Across five butterfly species, Totz's measured bundle spacings (0.34–1.60 um) fall inside
+          the exact physiological range spanned by Drosophila tracheal spacings in Hannezo (0.50–1.80 um),
+          placing cortical active-gel wavelengths squarely at the membrane buckling scale.
+        show: "question: totz2024/q_bois2011_upstream_spacing_interface"
+      - text: >-
+          Direct cross-validation between the active-gel and buckling models remains an open
+          experimental target: butterfly scale-cell cortical viscosity, friction, turnover, and
+          diffusivity have not yet been measured, and bimodal alternating ridges in A. vanillae
+          go beyond single-mode linear instability.
+        show: "question: totz2024/q_hannezo2015_no_cross_validation"

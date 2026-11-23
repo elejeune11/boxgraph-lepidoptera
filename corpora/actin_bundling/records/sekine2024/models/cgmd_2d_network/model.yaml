@@ -1,0 +1,56 @@
+id: cgmd_2d_network
+name: 2D periodic many-body coarse-grained molecular dynamics actomyosin network model (Eqs. S1-S9, S1a-S1b)
+role: model
+stated:
+  page: 28
+  quote: "The equations of motion for the filament, motor, and crosslinker particles are given by"
+  where: "SI Notes I-III (Eqs. S1-S9, S1a-S1b)"
+described_from: sref-12
+equation: "Overdamped 2D Langevin RK4+Euler dynamics of N^f=4500 actin filaments, N^cl=6750 alpha-actinin crosslinkers, and N^m=900 bipolar myosin II motors in a 3x3 um^2 periodic box with stochastic binding/unbinding/turnover, anisotropic filament friction gamma_y^f/gamma_x^f, pseudo-image reconstruction, OrientationJ/cluster analysis, and structure factor S(q)."
+inputs:
+  kBT: {quantity: thermal_energy, unit: pN*um}
+  eta_cyto: {quantity: cytosolic_viscosity, unit: Pa*s}
+  N_f: {quantity: molecule_count, unit: dimensionless}
+  d_f: {quantity: molecular_diameter, unit: um}
+  L0_f: {quantity: molecular_rest_length, unit: um}
+  kappa_f: {quantity: stretching_modulus, unit: pN}
+  omega_f: {quantity: turnover_rate, unit: 1/s}
+  N_m: {quantity: molecule_count, unit: dimensionless}
+  d_m: {quantity: molecular_diameter, unit: um}
+  L0_m: {quantity: molecular_rest_length, unit: um}
+  kappa_m: {quantity: stretching_modulus, unit: pN}
+  k_m_bend: {quantity: bending_rigidity, unit: pN*um}
+  f_walk: {quantity: motor_walk_force, unit: pN}
+  zeta: {quantity: motor_sliding_friction, unit: pN*s/um}
+  omega_m: {quantity: turnover_rate, unit: 1/s}
+  N_cl: {quantity: molecule_count, unit: dimensionless}
+  d_cl: {quantity: molecular_diameter, unit: um}
+  L0_cl: {quantity: molecular_rest_length, unit: um}
+  kappa_cl: {quantity: stretching_modulus, unit: pN}
+  k_cl_bend: {quantity: bending_rigidity, unit: pN*um}
+  omega_cl: {quantity: turnover_rate, unit: 1/s}
+  friction_asymmetry: {quantity: friction_asymmetry, unit: dimensionless}
+  L_box: {quantity: simulation_box_length, unit: um}
+outputs:
+  median_orientation: {quantity: pattern_orientation, unit: deg}
+  coherency: {quantity: orientation_coherency, unit: dimensionless}
+  major_length: {quantity: cluster_major_length, unit: nm}
+  minor_length: {quantity: cluster_minor_length, unit: nm}
+  interval: {quantity: pattern_interval, unit: nm}
+  anisotropy_ratio: {quantity: motion_anisotropy_ratio, unit: dimensionless}
+built_from:
+  - cylindrical_friction_filament
+  - anisotropic_filament_friction
+  - cylindrical_friction_connector
+  - motor_walking_velocity
+  - harmonic_stretching_potential
+  - connector_arm_stretching_potential
+  - bending_potential
+  - filament_force_distribution
+settings:
+  dt: 5.0e-5
+  t_relax: 40.0
+  seed: 0
+runnable: false
+not_runnable_reason: "Cannot be uniquely executed from the published paper alone: (1) free motor and crosslinker binding attempt rate, pair-selection protocol, and distance tolerance around L_0^m and L_0^cl are unstated in SI Notes I (p. 30); (2) how friction asymmetry gamma_y^f/gamma_x^f is partitioned between gamma_x^f and gamma_y^f and whether thermal noise variance scales anisotropically are unstated; (3) the printed equations contain two critical misprints (minus sign before delta_{i1} violating force conservation, and missing k_B T in the FDT on p. 29) plus three major parameter contradictions across text/tables (eta_cyto = 0.1 vs 1 Pa*s; f^walk = 0.05 vs 0.001 pN; L_0^cl = 0.035 vs 0.0175 um); (4) structure factor bin width delta_q, time-averaging window, and Fig. 4d motion-tracking frame interval (t_n to t_{n+2}) are unstated; (5) the simulation code is available only upon request to M.T., and full 12,150-agent RK4 integration for 30-60 s (0.6-1.2 million steps) is computationally prohibitive in pure Python."
+stochastic: true

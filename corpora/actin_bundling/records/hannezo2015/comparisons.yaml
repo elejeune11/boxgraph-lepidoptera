@@ -1,0 +1,387 @@
+# ==============================================================================
+# 1. Main Text Reproductions (pp. 2-3): l_t, l_h, lambda_c
+# ==============================================================================
+- id: cmp_lt_main
+  purpose: reproduction
+  computed: lt_from_frap
+  printed: lt_derived_main
+  note: "Checks l_t = sqrt(D*tau) = 0.775 um against printed l_t ≈ 0.8 ± 0.5 um (p. 3)."
+
+- id: cmp_lh_main_3d
+  purpose: reproduction
+  computed: lh_from_lit_3d
+  printed: lh_derived_main
+  note: "Checks l_h = sqrt(eta_3D*h/xi) = 0.100 um against printed l_h ≈ 0.1 um (p. 3)."
+
+- id: cmp_lh_main_chained
+  purpose: reproduction
+  computed: lh_from_lit_chained
+  printed: lh_derived_main
+  note: "Chained check l_h = sqrt(eta/xi) via eta = eta_3D*h against printed l_h ≈ 0.1 um (p. 3)."
+
+- id: cmp_lambda_c_main_from_printed_lengths
+  purpose: reproduction
+  computed: lambda_c_main_from_printed_lengths
+  printed: lambda_c_predicted_main
+  note: "Checks lambda_c = 2*pi*sqrt(l_t*l_h) using the printed rounded l_t = 0.8 um and l_h = 0.1 um (gives 1.777 um vs printed 1.8 um)."
+
+- id: cmp_lambda_c_main_chained
+  purpose: reproduction
+  computed: lambda_c_main_chained
+  printed: lambda_c_predicted_main
+  note: "Chained Eq. [3] evaluation directly from D = 0.04 um^2/s, tau = 15 s, eta_3D = 10^2 Pa*s, h = 100 nm, xi = 10^9 Pa*s/m (gives 1.749 um vs printed 1.8 um)."
+
+- id: cmp_lambda_c_val_embryo
+  purpose: validation
+  computed: lambda_c_main_chained
+  printed: ring_wavelength_embryo_wt
+  conditions_ok: "Model predicts embryonic stage 16 ring spacing using stage 15 FRAP parameters and literature viscosity/friction estimates."
+  note: "Main text p. 3 notes lambda_c = 1.8 um is slightly larger than, though same order of magnitude as, embryonic 0.5 ± 0.1 um."
+
+- id: cmp_lambda_c_val_larva
+  purpose: validation
+  computed: lambda_c_main_chained
+  printed: ring_wavelength_larva_wt_early
+  conditions_ok: "Main text p. 3 compares the threshold estimate lambda_c = 1.8 um against both embryonic and larval tracheal ring spacings."
+
+# ==============================================================================
+# 2. SI Section 2.2 (Chaos Diffusion Time) & Section 2.6.1-2.6.2 (Bifurcations)
+# ==============================================================================
+- id: cmp_chaos_tcell
+  purpose: reproduction
+  computed: chaos_tcell_computed
+  printed: chaos_diffusion_time_printed
+  note: "Checks l^2/D = 200^2/1 = 40000 against printed l^2/D ~ 40000 (SI p. 6)."
+
+- id: cmp_tricritical_phi_printed_model
+  purpose: reproduction
+  computed: phi_tricrit_printed_model
+  printed: tricritical_phi_printed
+  note: "Checks exact root phi_c = 1/4 = 0.25 of printed chi_c^(2) = (2*phi^(3/2)+3*phi-1)/(9*(sqrt(phi)+2)) (SI p. 13)."
+
+- id: cmp_tricritical_phi_corrected_model
+  purpose: reproduction
+  computed: phi_tricrit_corrected_model
+  printed: tricritical_phi_printed
+  note: "Verifies that the corrected adjoint-Fredholm chi_c^(2) preserves the exact tricritical point phi_c = 1/4 = 0.25."
+
+- id: cmp_fig_s11_n_rings
+  purpose: reproduction
+  computed: fig_s11_n_rings_computed
+  printed: fig_s11_n_rings_printed
+  note: "Checks finite-domain critical mode i_c/2 at alpha = 35, phi = 0.1 against printed 'three patterns' (SI Fig. S11, p. 13)."
+
+- id: cmp_fig_s12_n_rings
+  purpose: reproduction
+  computed: fig_s12_n_rings_computed
+  printed: fig_s12_n_rings_printed
+  note: "Checks finite-domain critical mode i_c/2 at alpha = 15, phi = 3 against printed 'three patterns' (SI Fig. S12, p. 14)."
+
+# ==============================================================================
+# 3. SI Section 2.6.4 Parameter Inversion & Consistency Checks (SI p. 15)
+# ==============================================================================
+- id: cmp_lh_inv_si
+  purpose: reproduction
+  computed: lh_inv_from_d_si
+  printed: lh_inverted_si
+  note: "Checks inverted hydrodynamic length (d/(2*pi))^2/sqrt(D*tau) = 8.18e-9 m against printed 10^-8 m (bare power of ten, SI p. 15)."
+
+- id: cmp_alpha_si_from_printed_L
+  purpose: reproduction
+  computed: alpha_si_from_printed_L
+  printed: alpha_estimated_si
+  note: "Checks alpha = l/L = 10^-5 m / 10^-8 m = 1000 against printed alpha = 5 x 10^2 (500) on SI p. 15 (off by factor of 2!)."
+
+- id: cmp_alpha_si_chained
+  purpose: reproduction
+  computed: alpha_si_chained
+  printed: alpha_estimated_si
+  note: "Chained check alpha = l/L_inv = 10^-5 m / 8.18e-9 m = 1223 against printed alpha = 5 x 10^2 (500) on SI p. 15."
+
+- id: cmp_phi_si_from_printed_L
+  purpose: reproduction
+  computed: phi_si_from_printed_L
+  printed: phi_estimated_si
+  note: "Checks phi = (L/l_t)^2 = (10^-8 m / 0.8 um)^2 = 1.56e-4 against printed phi = 10^-3 (bare power of ten, SI p. 15)."
+
+- id: cmp_phi_si_chained
+  purpose: reproduction
+  computed: phi_si_chained
+  printed: phi_estimated_si
+  note: "Chained check phi = (L_inv/l_t)^2 = 1.11e-4 against printed phi = 10^-3 (SI p. 15)."
+
+- id: cmp_chi_c_order_si
+  purpose: reproduction
+  computed: chi_c_si_order_computed
+  printed: chi_c_order_si
+  note: "Checks Eq. (10) (1 + sqrt(10^-3))^2 = 1.064 against printed chi_c ~ 1 (SI p. 15)."
+
+- id: cmp_xi_3d_si
+  purpose: reproduction
+  computed: xi_3d_si_computed
+  printed: friction_3d_estimated_si
+  note: "Checks xi = (rho_0*chi)/(D*chi_c) = 10^3 / (0.04e-12 * 1) = 2.5e16 Pa*s/m^2 against printed xi ~ 10^17 Pa*m^-2*s (SI p. 15)."
+
+- id: cmp_xi_3d_si_chained
+  purpose: reproduction
+  computed: xi_3d_si_chained
+  printed: friction_3d_estimated_si
+  note: "Chained check xi = 10^3 / (0.04e-12 * (1 + sqrt(10^-3))^2) = 2.35e16 Pa*s/m^2 against printed xi ~ 10^17 Pa*m^-2*s (SI p. 15)."
+
+# ==============================================================================
+# 4. SI Section 2.6.5 Linear Theory & Reconstructed Direct PDE Simulations
+# ==============================================================================
+- id: cmp_chi_c_sim_eq10
+  purpose: reproduction
+  computed: chi_c_sim_eq10
+  printed: chi_c_sim_si
+  note: "Checks Eq. (10) (1 + sqrt(0.0014))^2 = 1.076 against printed chi ~ 1.07 (SI p. 15)."
+
+- id: cmp_chi_c_sim_finite
+  purpose: reproduction
+  computed: chi_c_sim_finite
+  printed: chi_c_sim_si
+  note: "Checks finite-domain chi_ic^(0) = 1.076 at alpha = 480, phi = 0.0014 against printed chi ~ 1.07 (SI p. 15)."
+
+- id: cmp_chi_plateau_from_printed
+  purpose: reproduction
+  computed: chi_plateau_from_printed_chic
+  printed: chi_plateau_si
+  note: "Checks chi_plateau = 1.07 * (156 / 114) = 1.464 against printed 1.47 (SI p. 15)."
+
+- id: cmp_chi_plateau_chained
+  purpose: reproduction
+  computed: chi_plateau_chained
+  printed: chi_plateau_si
+  note: "Chained check chi_plateau = (1+sqrt(0.0014))^2 * (156 / 114) = 1.473 against printed 1.47 (SI p. 15)."
+
+- id: cmp_n_rings_linear_finite_si
+  purpose: reproduction
+  computed: n_rings_sim_finite_lin
+  printed: n_rings_linear_theory_si
+  note: "Checks finite-domain critical mode i_c/2 = 30/2 = 15.0 against printed linear theory prediction 15 (SI p. 17)."
+
+- id: cmp_n_rings_linear_inf_si
+  purpose: approximation
+  computed: n_rings_sim_inf_lin
+  printed: n_rings_linear_theory_si
+  note: "Infinite-system approximation alpha*phi^(1/4)/(2*pi) = 14.78 vs printed linear theory prediction 15 (SI p. 17)."
+
+- id: cmp_n_rings_pde_ramp_N80
+  purpose: reproduction
+  computed: n_rings_pde_ramp
+  printed: n_rings_sim_N80
+  note: "Reconstructed Eq. (8) linear-ramp PDE simulation vs SI p. 15 printed n = 14.68 ± 1.10 (N = 80)."
+
+- id: cmp_n_rings_pde_ramp_N40
+  purpose: reproduction
+  computed: n_rings_pde_ramp_n40
+  printed: n_rings_sim_N40
+  note: "Reconstructed Eq. (8) linear-ramp PDE simulation vs SI p. 15 printed n = 14.60 ± 1.06 (N = 40)."
+
+- id: cmp_n_rings_pde_val_embryo
+  purpose: validation
+  computed: n_rings_pde_ramp
+  printed: rings_per_cell_embryo_wt
+  conditions_ok: "PDE simulation uses parameters fitted to embryonic stage 15-16 wild-type tracheal cells."
+  note: "Validates PDE steady-state ring count against measured embryonic wild-type 15 to 20 rings per cell (p. 1)."
+
+- id: cmp_n_rings_linear_val_embryo
+  purpose: validation
+  computed: n_rings_sim_finite_lin
+  printed: rings_per_cell_embryo_wt
+  conditions_ok: "Finite-domain linear critical mode at alpha = 480, phi = 0.0014 (fitted to embryonic stage 15-16 WT) compared against measured embryonic stage 16 WT rings per cell."
+  note: "Validates finite-domain linear prediction i_c/2 = 15 rings/cell (SI p. 17) against measured embryonic wild-type 15 to 20 rings per cell (p. 1)."
+
+# ==============================================================================
+# 5. Experimental Genetic Perturbation Processing Checks (Main p. 4)
+# ==============================================================================
+- id: cmp_src42_pct_increase
+  purpose: reproduction
+  computed: src42_increase_computed
+  printed: src42_increase_pct_printed
+  conditions_ok: "Relative percentage increase combines Src42A mutant (0.8 ± 0.2 um) and wild-type control (0.5 ± 0.1 um) at stage 16."
+  note: "Printed 0.8 and 0.5 give (0.8-0.5)/0.5 = 60% vs printed 70% (consistent within rounding of 1-sig-fig unrounded means, e.g. 0.47 to 0.80 um)."
+
+- id: cmp_moesin_rnai_pct_increase
+  purpose: reproduction
+  computed: moesin_rnai_increase_computed
+  printed: moesin_rnai_increase_pct_printed
+  conditions_ok: "Relative percentage increase combines moesin RNAi (1.8 ± 0.5 um) and wild-type control (1.45 ± 0.3 um) late third-instar larvae."
+  note: "Gives (1.8-1.45)/1.45 = 24.1% vs printed 25%."
+
+- id: cmp_kkv1_fold_increase
+  purpose: reproduction
+  computed: kkv1_fold_computed
+  printed: kkv1_fold_increase_printed
+  conditions_ok: "Fold-change ratio combines kkv1 mutant (4.5 ± 2 um) and wild-type control (0.5 ± 0.1 um) at stage 16."
+  note: "Gives 4.5/0.5 = 9.0-fold vs printed '10-fold' in Fig. 3A caption."
+
+# ==============================================================================
+# 6. Internal Consistency & Scaling Checks Across Main Text and SI Appendix
+# ==============================================================================
+- id: cmp_actin_increase_text_vs_fig1a
+  purpose: consistency
+  computed: actin_increase_onset_text
+  printed: actin_increase_onset_fig1a
+  note: "Internal inconsistency: Main text p. 1 prints 60% increase in filamentous actin concentration whereas Fig. 1A caption p. 2 prints 70%."
+
+- id: cmp_larval_period_text_vs_fig1c
+  purpose: consistency
+  computed: ring_wavelength_larva_wt_early
+  printed: ring_wavelength_larva_wt_fig1c
+  note: "Checks consistency between p. 1 text (1.2 ± 0.1 um) and Fig. 1C caption (1.2 um)."
+
+- id: cmp_chaos_scaling_vs_lit_friction
+  purpose: consistency
+  computed: zeta_c_scaling_main
+  printed: friction_2d_lit
+  note: "Scaling law (prefactor: unknown) implies prefactor relating eta/(D*tau) to literature wild-type cortical friction xi = 10^9 Pa*s/m."
+
+- id: cmp_lh_main_vs_si_inverted
+  purpose: consistency
+  computed: lh_from_lit_3d
+  printed: lh_inverted_si
+  note: "Cross-checks Main text literature estimate l_h ≈ 0.1 um (10^-7 m) against SI p. 15 inverted value 10^-8 m (10-fold discrepancy)."
+
+# ==============================================================================
+# 7. Calibrated Figure Curve Comparisons (Main Figs. 2A/2B/2D & SI Figs. S5, S9-S13)
+# ==============================================================================
+- id: cmp_fig2a_frap_var_model
+  purpose: consistency
+  computed: fig2a_var_pred_model_grid
+  printed: fig2a_frap_variance_model_curve
+  note: "Checks Eq. (14) M_2(t)/M_0(t) = 2*D*t using population mean D = 0.04 ± 0.03 um^2/s against the representative trace's green linear fit (slope 0.0613 um^2/s -> D = 0.0307 um^2/s)."
+
+- id: cmp_fig2a_frap_var_fit
+  purpose: fit_quality
+  computed: fig2a_var_pred_exp_grid
+  printed: fig2a_frap_variance_data
+  note: "Compares Eq. (14) M_2(t)/M_0(t) = 2*D*t (population mean D = 0.04 ± 0.03 um^2/s) against the 17 error-barred experimental variance points of the representative FRAP curve in Fig. 2A (bottom right)."
+
+- id: cmp_fig2b_instability_threshold
+  purpose: reproduction
+  computed: fig2b_chi_c_pred
+  printed: fig2b_instability_threshold_curve
+  note: "Reproduces Main Fig. 2B red instability threshold chi_c(phi) = (1 + sqrt(phi))^2 across phi = 0.5..9.5."
+
+- id: cmp_fig2d_wavelength
+  purpose: reproduction
+  computed: fig2d_lambda_pred
+  printed: fig2d_wavelength_curve
+  note: "Reproduces Main Fig. 2D (right) red dimensionless wavelength curve lambda_c/l_h = 2*pi*phi^(-1/4) across phi = 0.2..9.5."
+
+- id: cmp_figs5_linear_stability
+  purpose: reproduction
+  computed: figs5_chi_c_pred
+  printed: figs5_linear_stability_curve
+  note: "Reproduces SI Fig. S5 bright-red linear stability curve (rho_0*chi)_c = (1 + sqrt(xi))^2 across xi in [2e-5, 0.85]."
+
+- id: cmp_figs9_onsets_captioned_10
+  purpose: reproduction
+  computed: figs9_onsets_pred_10
+  printed: figs9_bifurcation_points_curve
+  note: "Tests SI Fig. S9 captioned parameter alpha^2*phi = 10 against digitized mode i = 1..4 bifurcation abscissae (predicts 1.99..16.79 vs plotted 1.09..2.57; refutes captioned 10)."
+
+- id: cmp_figs9_onsets_100
+  purpose: reproduction
+  computed: figs9_onsets_pred_100
+  printed: figs9_bifurcation_points_curve
+  note: "Tests alpha^2*phi = 100 (alpha*sqrt(phi) = 10) against digitized SI Fig. S9 mode i = 1..4 bifurcation abscissae (1.099, 1.395, 1.888, 2.579 vs digitized 1.093, 1.387, 1.881, 2.572)."
+
+- id: cmp_figs9_branch1_l2
+  purpose: reproduction
+  computed: figs9_b1_l2_pred
+  printed: figs9_branch1_curve
+  note: "Tests exact Section 2.5 zero-friction ODE continuation (i = 1, alpha^2*phi = 100) using the captioned L2 norm ||rho||_2 against digitized Fig. S9 branch 1 (misses by 40-150%)."
+
+- id: cmp_figs9_branch1_maxrho
+  purpose: reproduction
+  computed: figs9_b1_maxrho_pred
+  printed: figs9_branch1_curve
+  note: "Tests exact Section 2.5 zero-friction ODE continuation (i = 1, alpha^2*phi = 100) using max(rho) against digitized Fig. S9 branch 1 (proves y-axis plots max(rho) despite ||rho||_2 label)."
+
+- id: cmp_figs9_branch2_l2
+  purpose: reproduction
+  computed: figs9_b2_l2_pred
+  printed: figs9_branch2_curve
+  note: "Tests exact Section 2.5 zero-friction ODE continuation (i = 2, alpha^2*phi = 100) using the captioned L2 norm ||rho||_2 against digitized Fig. S9 branch 2 (misses by >100%)."
+
+- id: cmp_figs9_branch2_maxrho
+  purpose: reproduction
+  computed: figs9_b2_maxrho_pred
+  printed: figs9_branch2_curve
+  note: "Tests exact Section 2.5 zero-friction ODE continuation (i = 2, alpha^2*phi = 100) using max(rho) against digitized Fig. S9 branch 2 (agrees across the entire plotted branch)."
+
+- id: cmp_figs10_finite
+  purpose: reproduction
+  computed: figs10_finite_pred
+  printed: figs10_finite_curve
+  note: "Reproduces SI Fig. S10 blue finite-domain step curve i_c/2 vs phi at alpha = 25 across all 6 plateaus (2.0..4.5)."
+
+- id: cmp_figs10_infinite
+  purpose: reproduction
+  computed: figs10_infinite_pred
+  printed: figs10_infinite_curve
+  note: "Reproduces SI Fig. S10 purple infinite-domain curve alpha*phi^(1/4)/(2*pi) vs phi at alpha = 25."
+
+- id: cmp_figs11_bif_points
+  purpose: reproduction
+  computed: figs11_bif_pts_pred
+  printed: figs11_bifurcation_points_curve
+  note: "Reproduces all 7 red 'B' linear bifurcation thresholds chi_i^(0) (i = 4..10) on max_rho = 1 in SI Fig. S11 (alpha = 35, phi = 0.1)."
+
+- id: cmp_figs11_branch_wnl_printed
+  purpose: approximation
+  computed: figs11_wnl_printed_pred
+  printed: figs11_primary_branch_curve
+  note: "Compares printed weakly nonlinear branch (chi_i^(2) = -0.0384, 10x too flat near onset) against digitized AUTO primary branch i_c = 6 in SI Fig. S11."
+
+- id: cmp_figs11_branch_wnl_corrected
+  purpose: approximation
+  computed: figs11_wnl_corrected_pred
+  printed: figs11_primary_branch_curve
+  note: "Compares adjoint-Fredholm corrected weakly nonlinear branch (chi_i^(2) = -0.4005) against digitized AUTO primary branch i_c = 6 in SI Fig. S11 (matches near-onset subcritical curvature before fold turnaround)."
+
+- id: cmp_figs11_branch_exact
+  purpose: reproduction
+  computed: figs11_exact_pred
+  printed: figs11_primary_branch_curve
+  note: "Reproduces the full nonlinear subcritical + upper i_c = 6 AUTO continuation branch of SI Fig. S11 via exact Fourier-cosine continuation of Eq. (8)."
+
+- id: cmp_figs12_bif_points
+  purpose: reproduction
+  computed: figs12_bif_pts_pred
+  printed: figs12_bifurcation_points_curve
+  note: "Reproduces the 8 isolated red 'B' linear bifurcation thresholds chi_i^(0) (i = 4, 6, 7, 9, 10, 11, 12, 13) in SI Fig. S12 (alpha = 15, phi = 3)."
+
+- id: cmp_figs12_branch_wnl_printed
+  purpose: approximation
+  computed: figs12_wnl_printed_pred
+  printed: figs12_primary_branch_curve
+  note: "Compares printed weakly nonlinear branch (chi_i^(2) = +0.5546, 6.4x too shallow near onset) against digitized AUTO primary branch i_c = 6 in SI Fig. S12."
+
+- id: cmp_figs12_branch_wnl_corrected
+  purpose: approximation
+  computed: figs12_wnl_corrected_pred
+  printed: figs12_primary_branch_curve
+  note: "Compares adjoint-Fredholm corrected weakly nonlinear branch (chi_i^(2) = +3.5325) against digitized AUTO primary branch i_c = 6 in SI Fig. S12."
+
+- id: cmp_figs12_branch_exact
+  purpose: reproduction
+  computed: figs12_exact_pred
+  printed: figs12_primary_branch_curve
+  note: "Reproduces the full nonlinear supercritical i_c = 6 AUTO continuation branch of SI Fig. S12 (max_rho = 1.3..13.0) via exact Fourier-cosine continuation of Eq. (8)."
+
+- id: cmp_figs13_chi_ramp_printed
+  purpose: reproduction
+  computed: figs13_chi_ramp_printed_pred
+  printed: figs13_chi_ramp_curve
+  note: "Reproduces SI Fig. S13 inset linear Peclet number ramp chi(t) using SI p. 15 printed endpoints 1.07 -> 1.47 over 1875 s."
+
+- id: cmp_figs13_chi_ramp_chained
+  purpose: reproduction
+  computed: figs13_chi_ramp_chained_pred
+  printed: figs13_chi_ramp_curve
+  note: "Reproduces SI Fig. S13 inset linear Peclet number ramp chi(t) using chained Eq. (10) endpoints 1.076 -> 1.473 over 1875 s."
+

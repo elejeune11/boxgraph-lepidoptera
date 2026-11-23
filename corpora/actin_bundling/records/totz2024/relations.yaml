@@ -1,0 +1,147 @@
+- id: rel_gc_scales_as_L_inv2
+  kind: scales_as
+  a: totz2024/critical_growth_strain_eq4
+  b: totz2024/critical_growth_strain_scaling
+  mapping:
+    L: L
+  regime:
+    nu: [0.2, 0.5]
+    h: [1.0e-8, 4.0e-8]
+    L: [3.0e-7, 2.5e-6]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "8"
+    quote: "buckling transition occurs at a critical growth strain,"
+    where: "text (g_c proportional to L^-2 from Equation 4)"
+  assumptions:
+    - "Fixed plate thickness h and Poisson ratio nu while varying actin bundle spacing L"
+
+- id: rel_rr_corrected_reduces_to_e44
+  kind: reduces_to
+  a: totz2024/rayleigh_ritz_amplitude_eq3_corrected
+  b: totz2024/zero_pressure_amplitude_e44
+  mapping:
+    g: g
+    nu: nu
+    h: h
+    L: L
+  limit:
+    p: "0"
+  regime:
+    g: [0.002, 0.01]
+    p: [1.0, 100.0]
+    Y: [1.0e5, 1.0e8]
+    nu: [0.2, 0.5]
+    h: [1.5e-8, 2.5e-8]
+    L: [1.4e-6, 2.0e-6]
+  provenance: stated
+  citation:
+    page: 22
+    quote: "For vanishing pressure p/Y → 0, the solution is"
+    where: "SI Note S2, Eqs. E44 and E49 (also Eq. 3-4, p. 6)"
+  assumptions:
+    - "Supercritical growth strain g > g_c so the buckled zero-pressure branch is nonzero"
+    - "Dimensionally corrected form of Eq. 3 / E49"
+
+- id: rel_rr_printed_reduces_to_e44
+  kind: reduces_to
+  a: totz2024/rayleigh_ritz_amplitude_eq3
+  b: totz2024/zero_pressure_amplitude_e44
+  mapping:
+    g: g
+    nu: nu
+    h: h
+    L: L
+  limit:
+    p: "0"
+  regime:
+    g: [0.002, 0.01]
+    p: [1.0, 100.0]
+    Y: [1.0e5, 1.0e8]
+    nu: [0.2, 0.5]
+    h: [1.5e-8, 2.5e-8]
+    L: [1.4e-6, 2.0e-6]
+  provenance: stated
+  citation:
+    page: 22
+    quote: "For vanishing pressure p/Y → 0, the solution is"
+    where: "SI Note S2, Eqs. E44 and E49 (tests printed Eq. 3 / E49 against Eq. E44)"
+  assumptions:
+    - "Supercritical growth strain g > g_c; tests whether printed Eq. 3 / E49 reduces to Eq. E44 (expected to fail because of the 3*h^2*a^2/4 misprint)"
+
+- id: rel_e44_amplitude_derived_from_profile
+  kind: derived_from
+  a: totz2024/zero_pressure_profile_e44
+  b: totz2024/zero_pressure_amplitude_e44
+  mapping:
+    g: g
+    nu: nu
+    h: h
+    L: L
+  steps:
+    - "subs: x = 0"
+    - "simplify"
+  regime:
+    x: [0.0, 5.0e-7]
+    g: [0.002, 0.01]
+    nu: [0.2, 0.5]
+    h: [1.5e-8, 2.5e-8]
+    L: [1.4e-6, 2.0e-6]
+  provenance: stated
+  citation:
+    page: 6
+    printed_page: "5"
+    quote: "where x = 0 marks the location centered between"
+    where: "text (a = w(x = 0) applied to SI Eq. E44, p. 22)"
+
+- id: rel_ode_approximated_by_rr_corrected
+  kind: approximated_by
+  a: totz2024/fvk_1d_ode_solver_e42_e29
+  b: totz2024/rayleigh_ritz_amplitude_eq3_corrected
+  mapping:
+    g: g
+    p: p
+    Y: Y
+    nu: nu
+    h: h
+    L: L
+  output_map:
+    a: w_max
+  regime:
+    g: [0.001, 0.01]
+    p: [5.0, 100.0]
+    Y: [1.0e5, 1.0e8]
+    nu: [0.2, 0.5]
+    h: [1.5e-8, 2.5e-8]
+    L: [1.0e-6, 2.0e-6]
+  tolerance: 0.05
+  provenance: stated
+  citation:
+    page: 22
+    quote: "solved approximately with the Rayleigh-Ritz method [S6]."
+    where: "SI Note S2, Eqs. E42 and E49"
+  assumptions:
+    - "Compares exact 1D coupled BVP peak height w_max against single-mode cosine Rayleigh-Ritz approximation (Eq. 3 / E49 corrected)"
+
+- id: rel_e44_profile_same_as_cosine_ansatz
+  kind: same_as
+  a: totz2024/zero_pressure_profile_e44
+  b: totz2024/buckled_profile_cosine
+  mapping:
+    x: x
+    L: L
+    a: "(2 * h / sqrt(3)) * sqrt(g / (pi**2 / (3 * (1 - nu**2)) * (h / L)**2) - 1)"
+  regime:
+    x: [1.0e-8, 7.0e-7]
+    g: [0.002, 0.01]
+    nu: [0.2, 0.5]
+    h: [1.5e-8, 2.5e-8]
+    L: [1.4e-6, 2.0e-6]
+  provenance: stated
+  citation:
+    page: 22
+    quote: "the full solution for vanishing pressure is:"
+    where: "SI Note S2, Eq. E44"
+  assumptions:
+    - "Supercritical regime g > g_c where the buckled cosine branch is active"

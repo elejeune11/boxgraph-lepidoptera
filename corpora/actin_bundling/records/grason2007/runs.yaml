@@ -1,0 +1,405 @@
+# ==========================================================================
+# 1. Microscopic F-actin predictions & validations (Page 4 & Page 1)
+# ==========================================================================
+
+- id: run_lambda_3perp_factin
+  model: lambda_3perp_microscopic
+  inputs:
+    d: factin_chain_spacing
+    l_p: factin_persistence_length
+    dE_kBT: factin_linker_binding_energy_kBT
+  outputs:
+    lambda_3perp: lambda_3perp_factin_pred
+  note: "Microscopic scaling estimate of onset bundle radius lambda_{3 perp} for F-actin (p. 4 col 1)."
+
+- id: run_cholesteric_pitch_factin
+  model: cholesteric_pitch_from_torsion
+  inputs:
+    dE_kBT: factin_linker_binding_energy_kBT
+    d: factin_chain_spacing
+    l_p: factin_persistence_length
+    twist_pitch: factin_twist_pitch_ikawa2007
+  outputs:
+    P: cholesteric_pitch_factin_pred
+  note: "Inferred cholesteric pitch P for F-actin from Ikawa et al. [22] twist pitch 2*pi/Omega ~ 100 nm (p. 4 col 1)."
+
+- id: run_stability_factin
+  model: stability_criterion_microscopic
+  inputs:
+    d: factin_chain_spacing
+    P: factin_cholesteric_pitch_est
+    lambda_3perp: factin_lambda_3perp_est
+    dE_ratio: dE_surface_ratio_added
+  outputs:
+    stability_ratio: stability_ratio_factin_pred
+  note: "Stability ratio Sigma_c(mu_c)/Sigma for F-actin using paper's p. 4 parameters and added surface-binding reduction ratio Delta E/Delta E*."
+
+- id: run_saturated_linker_spacing_factin
+  model: saturated_linker_spacing
+  inputs:
+    d: factin_chain_spacing
+  outputs:
+    l: linker_spacing_factin_derived
+
+- id: run_linker_binding_energy_factin
+  model: linker_binding_energy_from_kBT
+  inputs:
+    dE_kBT: factin_linker_binding_energy_kBT
+    kBT: kBT_added
+  outputs:
+    dE: linker_binding_energy_factin_derived
+
+- id: run_chiral_torque_microscopic_factin
+  model: chiral_torque_microscopic
+  inputs:
+    dE: linker_binding_energy_factin_derived
+    l: linker_spacing_factin_derived
+    P: factin_cholesteric_pitch_est
+  outputs:
+    gamma: gamma_micro_factin_pred
+
+- id: run_small_bundle_torsion_factin
+  model: small_bundle_torsion_microscopic
+  inputs:
+    gamma: gamma_micro_factin_pred
+    kBT: kBT_added
+    l_p: factin_persistence_length
+  outputs:
+    Omega: omega_small_bundle_factin_pred
+
+# ==========================================================================
+# 2. Continuum effective parameters & scale definitions (Pages 2-3)
+# ==========================================================================
+
+- id: run_eff_mu_perp
+  model: effective_in_plane_shear_modulus
+  inputs:
+    mu_perp: mu_perp_added
+  outputs:
+    mu_perp_bar: mu_perp_bar_continuum
+
+- id: run_eff_frank_moduli
+  model: effective_frank_moduli
+  inputs:
+    K2: K2_added
+    K3: K3_added
+  outputs:
+    K2_bar: K2_bar_continuum
+    K3_bar: K3_bar_continuum
+
+- id: run_chiral_torque_continuum
+  model: chiral_torque_coupling
+  inputs:
+    K2: K2_added
+    P: factin_cholesteric_pitch_est
+  outputs:
+    gamma: gamma_continuum
+
+- id: run_eff_mu_par
+  model: effective_out_of_plane_shear_modulus
+  inputs:
+    mu_par: mu_par_added
+  outputs:
+    mu_par_bar: mu_par_bar_continuum
+
+- id: run_lambda3_continuum
+  model: characteristic_length_lambda3
+  inputs:
+    K3_bar: K3_bar_continuum
+    mu_perp_bar: mu_perp_bar_continuum
+  outputs:
+    lambda_3perp: lambda_3perp_continuum
+
+- id: run_mu_c_continuum
+  model: bulk_condensation_chemical_potential
+  inputs:
+    epsilon: epsilon_added
+    L: L_eval_added
+    rho_0: rho0_added
+  outputs:
+    mu_c: mu_c_continuum
+
+- id: run_f0_printed
+  model: columnar_f0
+  inputs:
+    gamma: gamma_continuum
+    mu_perp_bar: mu_perp_bar_continuum
+  outputs:
+    f_0: f0_printed_continuum
+
+- id: run_f0_corrected
+  model: columnar_f0_corrected
+  inputs:
+    gamma: gamma_continuum
+    mu_perp_bar: mu_perp_bar_continuum
+  outputs:
+    f_0: f0_corrected_continuum
+
+# ==========================================================================
+# 3. Hexagonal-columnar continuum models & validation of onset diameter
+# ==========================================================================
+
+- id: run_eq5_continuum
+  model: columnar_elastic_energy_eq5
+  inputs:
+    R: R_eval_added
+    Omega: Omega_eval_added
+    mu_perp_bar: mu_perp_bar_continuum
+    K2_bar: K2_bar_continuum
+    K3_bar: K3_bar_continuum
+    gamma: gamma_continuum
+  outputs:
+    E_elast: E_elast_eq5_continuum
+
+- id: run_optimal_torsion_continuum
+  model: columnar_optimal_torsion
+  inputs:
+    R: R_eval_added
+    gamma: gamma_continuum
+    mu_perp_bar: mu_perp_bar_continuum
+    lambda_3perp: lambda_3perp_continuum
+  outputs:
+    Omega_0: Omega0_continuum
+
+- id: run_eq6_printed_f0
+  model: columnar_free_energy_eq6
+  inputs:
+    R: R_eval_added
+    f_0: f0_printed_continuum
+    lambda_3perp: lambda_3perp_continuum
+    epsilon: epsilon_added
+    Sigma: Sigma_added
+  outputs:
+    dF_over_L: dF_over_L_eq6_printed
+    dF_elast_over_L: dF_elast_over_L_eq6_printed
+
+- id: run_eq6_from_eq5
+  model: columnar_free_energy_from_eq5
+  inputs:
+    R: R_eval_added
+    gamma: gamma_continuum
+    mu_perp_bar: mu_perp_bar_continuum
+    K3_bar: K3_bar_continuum
+    epsilon: epsilon_added
+    Sigma: Sigma_added
+  outputs:
+    dF_over_L: dF_over_L_from_eq5
+    dF_elast_over_L: dF_elast_over_L_from_eq5
+
+- id: run_eq8_continuum
+  model: critical_surface_tension_eq8
+  inputs:
+    f_0: f0_printed_continuum
+    lambda_3perp: lambda_3perp_continuum
+  outputs:
+    Sigma_c: Sigma_c_eq8_continuum
+    R_0: R0_eq8_continuum
+
+- id: run_eq8_at_printed_lambda3
+  model: critical_surface_tension_eq8
+  inputs:
+    f_0: f0_printed_continuum
+    lambda_3perp: factin_lambda_3perp_est
+  outputs:
+    Sigma_c: Sigma_c_eq8_at_printed_lam3
+    R_0: R0_onset_from_printed_lam3
+  note: "Applies Eq. (8) R_0(Sigma_c) = lambda_{3 perp} to the paper's printed F-actin estimate lambda_{3 perp} ~ 100 nm."
+
+- id: run_eq8_at_micro_lambda3
+  model: critical_surface_tension_eq8
+  inputs:
+    f_0: f0_printed_continuum
+    lambda_3perp: lambda_3perp_factin_pred
+  outputs:
+    Sigma_c: Sigma_c_eq8_at_micro_lam3
+    R_0: R0_onset_from_micro_lam3
+  note: "Applies Eq. (8) R_0(Sigma_c) = lambda_{3 perp} to the microscopic scaling output lambda_{3 perp}."
+
+- id: run_diameter_from_printed_lambda3
+  model: bundle_diameter_from_radius
+  inputs:
+    R: R0_onset_from_printed_lam3
+  outputs:
+    D: diameter_onset_from_printed_lam3
+  note: "Onset bundle diameter D = 2*R_0 = 2*lambda_{3 perp} from printed lambda_{3 perp} ~ 100 nm, for validation against Lai et al. [12]."
+
+- id: run_diameter_from_micro_lambda3
+  model: bundle_diameter_from_radius
+  inputs:
+    R: R0_onset_from_micro_lam3
+  outputs:
+    D: diameter_onset_from_micro_lam3
+  note: "Onset bundle diameter D = 2*R_0 from microscopic scaling lambda_{3 perp}, for validation against Lai et al. [12]."
+
+- id: run_eq6_at_critical_point
+  model: columnar_free_energy_eq6
+  inputs:
+    R: R0_eq8_continuum
+    f_0: f0_printed_continuum
+    lambda_3perp: lambda_3perp_continuum
+    epsilon: epsilon_added
+    Sigma: Sigma_c_eq8_continuum
+  outputs:
+    dF_over_L: dF_over_L_at_critical_point
+    dF_elast_over_L: dF_elast_over_L_at_critical_point
+  note: "Evaluates Eq. (6) at the critical onset point R = lambda_{3 perp}, Sigma = Sigma_c."
+
+- id: run_cluster_weight_eq7
+  model: cluster_size_distribution_eq7
+  inputs:
+    R: R0_eq8_continuum
+    dF_over_L: dF_over_L_at_critical_point
+    L: L_eval_added
+    mu: mu_c_continuum
+    rho_0: rho0_added
+    kBT: kBT_added
+  outputs:
+    weight: cluster_weight_at_critical_point
+  note: "Evaluates Eq. (7) at the critical onset point (mu = mu_c, Sigma = Sigma_c, R = lambda_{3 perp}) where Delta F - mu_c*rho_0*pi*R^2 = 0."
+
+- id: run_columnar_R0_exact
+  model: columnar_equilibrium_radius_muc
+  inputs:
+    f_0: f0_printed_continuum
+    lambda_3perp: lambda_3perp_continuum
+    Sigma: Sigma_added
+  outputs:
+    R_0: R0_columnar_exact_printed_f0
+
+- id: run_columnar_R0_exact_corrected_f0
+  model: columnar_equilibrium_radius_muc
+  inputs:
+    f_0: f0_corrected_continuum
+    lambda_3perp: lambda_3perp_continuum
+    Sigma: Sigma_added
+  outputs:
+    R_0: R0_columnar_exact_corrected_f0
+
+- id: run_columnar_radius_low_sigma
+  model: columnar_radius_low_sigma
+  inputs:
+    gamma: gamma_continuum
+    mu_perp_bar: mu_perp_bar_continuum
+    Sigma: Sigma_added
+  outputs:
+    R_0: R0_columnar_low_sigma_pred
+
+- id: run_columnar_Sigma_c_exact
+  model: columnar_critical_surface_tension_exact
+  inputs:
+    f_0: f0_printed_continuum
+    lambda_3perp: lambda_3perp_continuum
+    delta_mu: delta_mu_added
+    rho_0: rho0_added
+    L: L_eval_added
+  outputs:
+    Sigma_c: Sigma_c_exact_away
+    R_star: R_star_exact_away
+
+- id: run_Sigma_c_far_printed
+  model: critical_surface_tension_far_printed
+  inputs:
+    f_0: f0_printed_continuum
+    lambda_3perp: lambda_3perp_continuum
+    delta_mu: delta_mu_added
+  outputs:
+    Sigma_c: Sigma_c_far_printed_out
+
+- id: run_Sigma_c_far_corrected
+  model: critical_surface_tension_far_corrected
+  inputs:
+    f_0: f0_printed_continuum
+    lambda_3perp: lambda_3perp_continuum
+    delta_mu: delta_mu_added
+    rho_0: rho0_added
+    L: L_eval_added
+  outputs:
+    Sigma_c: Sigma_c_far_corrected_out
+
+# ==========================================================================
+# 4. 3D Hexagonal-solid continuum models (Page 3 col 2 & Footnote 21)
+# ==========================================================================
+
+- id: run_eq9_continuum
+  model: solid_elastic_energy_eq9
+  inputs:
+    R: R_eval_added
+    Omega: Omega_eval_added
+    mu_par_bar: mu_par_bar_continuum
+    mu_perp_bar: mu_perp_bar_continuum
+    K3_bar: K3_bar_continuum
+    gamma: gamma_continuum
+  outputs:
+    E_elast: E_elast_eq9_continuum
+
+- id: run_solid_min_eq9
+  model: solid_elastic_energy_min_eq9
+  inputs:
+    R: R_eval_added
+    mu_par_bar: mu_par_bar_continuum
+    mu_perp_bar: mu_perp_bar_continuum
+    K3_bar: K3_bar_continuum
+    gamma: gamma_continuum
+  outputs:
+    Omega_0: Omega0_solid_min
+    theta_0: theta0_solid_min
+    E_elast: E_elast_solid_min
+
+- id: run_solid_harmonic_printed
+  model: solid_harmonic_min_printed
+  inputs:
+    R: R_eval_added
+    mu_par_bar: mu_par_bar_continuum
+    gamma: gamma_continuum
+  outputs:
+    theta_0: theta0_solid_harm_printed
+    E_elast: E_elast_solid_harm_printed
+
+- id: run_solid_harmonic_corrected
+  model: solid_harmonic_min_corrected
+  inputs:
+    R: R_eval_added
+    mu_par_bar: mu_par_bar_continuum
+    gamma: gamma_continuum
+  outputs:
+    theta_0: theta0_solid_harm_corrected
+    E_elast: E_elast_solid_harm_corrected
+
+- id: run_solid_R0_exact
+  model: solid_equilibrium_radius_muc
+  inputs:
+    mu_par_bar: mu_par_bar_continuum
+    mu_perp_bar: mu_perp_bar_continuum
+    K3_bar: K3_bar_continuum
+    gamma: gamma_continuum
+    Sigma: Sigma_solid_added
+  outputs:
+    R_0: R0_solid_exact
+
+- id: run_solid_radius_bending
+  model: solid_radius_bending_regime
+  inputs:
+    K3_bar: K3_bar_continuum
+    Sigma: Sigma_solid_added
+    gamma: gamma_continuum
+    mu_par_bar: mu_par_bar_continuum
+  outputs:
+    R_0: R0_solid_bending_pred
+
+- id: run_solid_radius_shear
+  model: solid_radius_shear_regime
+  inputs:
+    mu_perp_bar: mu_perp_bar_continuum
+    Sigma: Sigma_solid_added
+    gamma: gamma_continuum
+    mu_par_bar: mu_par_bar_continuum
+  outputs:
+    R_0: R0_solid_shear_pred
+
+- id: run_solid_to_columnar_ratio
+  model: solid_to_columnar_radius_ratio
+  inputs:
+    Sigma: Sigma_solid_added
+    gamma: gamma_continuum
+  outputs:
+    radius_ratio: solid_to_columnar_ratio_pred

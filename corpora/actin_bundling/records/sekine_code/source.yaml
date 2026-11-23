@@ -1,0 +1,66 @@
+id: sekine_code
+kind: software
+title: "Nanocluster_motion: MATLAB code for actin nanocluster motility analysis (Sekine et al., 2024)"
+authors:
+  - Mustafa M. Sami
+year: 2024
+file: corpus/actin_bundling/code/sekine_code
+url: https://github.com/SayakaSekine/Nanocluster_motion
+version: "sha256:413aa4b2e01e3620d83efeab7462fc6fb05c4d1e278519de56973d8193577ae1"
+licence: none stated
+language: MATLAB
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1"
+  date: "2026-11-23"
+notes: >
+  Full audit and Python port of the released MATLAB nanocluster motility tracking repository
+  `corpus/actin_bundling/code/sekine_code` (`Nanocluster_motion.m`, 260 lines; `README.md`, 8 lines;
+  authored by Mustafa M. Sami, hosted at https://github.com/SayakaSekine/Nanocluster_motion, no
+  licence stated) accompanying Sekine et al., Nature Communications 15, 464 (2024) (`sekine2024`).
+
+  Scope: recorded all 18 parameters, thresholds, and structural constants written in
+  `Nanocluster_motion.m` (11 datums: `Numb_of_Images = 100`, single-frame step `1`, `bwareafilt`
+  bounds `6` and `53` px at `t_n`, `1` px to `Inf` at `t_{n+1}`, `8`-connectivity, `>= 2` and `== 1`
+  intersection branch thresholds, `0` unmatched sentinel, `6` output columns, Excel `sheet = 1`) and
+  `README.md` (7 datums echoing `sekine2024` Methods p. 10: physical area `0.01` to `0.1 um^2`,
+  circularity `0.5` to `1.0`, area ratio `0.5` to `2`, minimum overlap `1` px). Note on
+  `from_source`/`from_datum`: none of these tracking thresholds appear as standalone datums in
+  `sekine2024/data.yaml` (they appear only in Methods p. 10 prose), whereas `sekine2024/data.yaml`
+  records `sim_pixel_size_printed = 0.04325 um` and `dt_frame_live = 0.32 s`, neither of which is
+  written anywhere in `sekine_code`; accordingly `pixel_size_added = 0.04325 um` (with alternatives
+  `3/69 = 0.043478 um` and `0.043 um`) is supplied in `added.yaml`.
+
+  Ported models and verification: built 6 deterministic Python processing models (`area_px_to_um2`,
+  `area_um2_to_px_bounds`, `implied_pixel_size_bounds`, `circularity_definition`, faithful
+  line-by-line MATLAB-to-Python port `nanocluster_motion_matlab` covering `Nanocluster_motion.m`
+  lines 28-250 with exact column-major `bwlabel(..., 8)`, 1-based `regionprops`, `bwselect`,
+  `imfill('holes')`, 4-subiteration Euler-preserving `bwmorph('shrink', Inf)`, and bare `try/catch`
+  semantics, plus `nanocluster_motion_methods_spec` implementing `README.md` lines 5-8 / Methods
+  p. 10). All 5 internal consistency/reproduction comparisons reproduce at printed precision.
+
+  Key code-vs-paper findings and hidden parameters (10 open questions in `questions.yaml`):
+  (1) Circularity `0.5-1.0` (`README.md` line 5, Methods p. 10) is completely absent from
+  `Nanocluster_motion.m` and cannot be applied downstream from the 6-column `(x1, y1, A1, x2, y2, A2)`
+  Excel output. (2) Area ratio `0.5-2` fold (`README.md` line 6, Methods p. 10) is not enforced in
+  `Nanocluster_motion.m` (line 44 uses `[1 Inf]`, contradicting line 39's comment), and lines 101-145
+  break multi-overlap ties by picking the LARGEST overlapping object (`maxArea`, comment: 'before was
+  nearest one'), discarding valid `0.5-2` matches whenever a cluster also touches a larger fused
+  structure. (3) `Nanocluster_motion.m` never computes `dx`, `dy`, `|dy|/|dx|`, micron conversion, or
+  frame-interval normalization; the downstream R script cited on Methods p. 10 is unreleased.
+  (4) `[6, 53]` px uniquely pins the unstated pixel size to `(0.043033, 0.043437] um` (matching
+  `sekine2024`'s experimental `0.04325 um` -> `[ceil(5.346), floor(53.460)] = [6, 53]`, whereas
+  exact simulation grid pitch `3/69 = 0.043478 um` gives `[6, 52]` and `43 nm` gives `[6, 54]`),
+  with an effective lower cutoff of `0.01122 um^2` (+12.2% above `0.01 um^2`). (5) Undisclosed
+  `imclearborder` removes boundary-touching objects in both frames (lines 41, 45). (6) Undisclosed
+  default `im2bw` threshold `0.5` (lines 35-36, vs local Otsu on Methods p. 10) and undisclosed
+  8-connectivity. (7) Hardcoded `Numb_of_Images = 100` (line 8) ignores `num_frames = numel(filelist)`
+  (line 25) and conflicts with 200-frame live imaging on Methods p. 10. (8) Stage 1 (lines 61-67)
+  calls `bwselect` on raw intersection centroids without shrink, dropping non-convex or 2-px
+  anti-diagonal overlaps. (9) Stage 2 (lines 88, 110-119, 181-191, 241-242) shrinks hole-filled ring
+  intersections onto background hole pixels, causing empty `bwselect` -> `Centroid` error swallowed
+  by bare `try/catch` that silently aborts all remaining clusters in the frame; plus an uninitialized
+  `ref_Coordinate_List` crash on line 243 if frame 1 is empty or fails on cluster 1. (10) Unstated
+  discrete perimeter definition for circularity and unstated upstream image-axis rotation.
+

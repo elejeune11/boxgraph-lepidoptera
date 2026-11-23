@@ -1,0 +1,864 @@
+# ==============================================================================
+# 1. Scale Definitions, Main Text Parameter Estimates, and Chained Predictions
+# ==============================================================================
+- id: run_eta_2d_lit
+  model: viscosity_2d_from_3d
+  inputs:
+    eta_3D: viscosity_3d_lit
+    h: cortical_thickness_lit
+  outputs:
+    eta: eta_2d_lit
+
+- id: run_lh_from_3d_lit
+  model: hydrodynamic_length_from_3d
+  inputs:
+    eta_3D: viscosity_3d_lit
+    h: cortical_thickness_lit
+    xi: friction_2d_lit
+  outputs:
+    l_h: lh_from_lit_3d
+
+- id: run_lh_chained
+  model: hydrodynamic_length
+  inputs:
+    eta: eta_2d_lit
+    xi: friction_2d_lit
+  outputs:
+    l_h: lh_from_lit_chained
+
+- id: run_lt_frap
+  model: turnover_diffusion_length
+  inputs:
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+  outputs:
+    l_t: lt_from_frap
+
+- id: run_T_hydro_main
+  model: diffusion_time_hydrodynamic
+  inputs:
+    eta: eta_2d_lit
+    xi: friction_2d_lit
+    D: diffusion_coeff_frap
+  outputs:
+    T: T_hydro_main
+
+- id: run_phi_main_lit
+  model: dimensionless_turnover_phi
+  inputs:
+    eta: eta_2d_lit
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+    xi: friction_2d_lit
+  outputs:
+    phi: phi_main_lit
+
+- id: run_lambda_c_main_chained
+  model: critical_wavelength_eq3
+  inputs:
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+    eta: eta_2d_lit
+    xi: friction_2d_lit
+  outputs:
+    lambda_c: lambda_c_main_chained
+  note: "Direct Eq. [3] evaluation using measured D, tau and literature eta_3D*h, xi."
+
+- id: run_lambda_c_main_from_printed_lengths
+  model: critical_wavelength_from_lengths
+  inputs:
+    l_t: lt_derived_main
+    l_h: lh_derived_main
+  outputs:
+    lambda_c: lambda_c_main_from_printed_lengths
+  note: "Chained from the paper's printed rounded intermediates l_t = 0.8 um and l_h = 0.1 um."
+
+- id: run_lambda_hat_sim
+  model: critical_wavelength_dimensionless
+  inputs:
+    phi: phi_sim_si
+  outputs:
+    lambda_hat: lambda_hat_sim
+
+# ==============================================================================
+# 2. Linear Stability, Dispersion Relation, Thresholds, and SI 1/q_c Misprint
+# ==============================================================================
+- id: run_chi_c_2d_main
+  model: critical_contractility_2d
+  inputs:
+    eta: eta_2d_lit
+    tau: turnover_time_frap
+    D: diffusion_coeff_frap
+    xi: friction_2d_lit
+  outputs:
+    chi_c: chi_c_2d_main
+
+- id: run_chi_dimless_at_threshold_main
+  model: dimensionless_contractility_chi_2d
+  inputs:
+    sigma_a: chi_c_2d_main
+    xi: friction_2d_lit
+    D: diffusion_coeff_frap
+  outputs:
+    chi: chi_dimless_at_threshold_main
+
+- id: run_chi_c_eq10_main_lit
+  model: dimensionless_critical_contractility_eq10
+  inputs:
+    phi: phi_main_lit
+  outputs:
+    chi_c: chi_c_eq10_main_lit
+
+- id: run_inv_qc_printed_main
+  model: critical_inverse_wavenumber_si_printed
+  inputs:
+    L: lh_from_lit_chained
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+    xi: friction_2d_lit
+    eta: eta_2d_lit
+  outputs:
+    inv_qc: inv_qc_printed_main
+
+- id: run_inv_qc_corrected_main
+  model: critical_inverse_wavenumber_si_corrected
+  inputs:
+    L: lh_from_lit_chained
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+    xi: friction_2d_lit
+    eta: eta_2d_lit
+  outputs:
+    inv_qc: inv_qc_corrected_main
+    q_c: qc_corrected_main
+
+- id: run_dispersion_at_threshold
+  model: dispersion_relation_eq7
+  inputs:
+    tau: turnover_time_frap
+    D: diffusion_coeff_frap
+    sigma_a: chi_c_2d_main
+    xi: friction_2d_lit
+    eta: eta_2d_lit
+    q: qc_corrected_main
+  outputs:
+    lam: lam_at_threshold
+  note: "Verifies that SI Eq. (7) vanishes identically (lambda(q_c) = 0) at chi_c and corrected q_c."
+
+# ==============================================================================
+# 3. Chaos Threshold Scaling & Exact Inequality (Main p. 5) + SI Diffusion Time
+# ==============================================================================
+- id: run_chaos_zeta_scaling
+  model: chaos_friction_threshold_scaling
+  inputs:
+    eta: eta_2d_lit
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+  outputs:
+    zeta_c: zeta_c_scaling_main
+
+- id: run_chaos_zeta_inequality
+  model: chaos_friction_threshold_inequality
+  inputs:
+    eta: eta_2d_lit
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+  outputs:
+    zeta_c: zeta_c_inequality_main
+
+- id: run_chaos_tcell
+  model: diffusion_time_cell
+  inputs:
+    l: chaos_domain_length
+    D: chaos_unit_diffusivity
+  outputs:
+    T_cell: chaos_tcell_computed
+
+# ==============================================================================
+# 4. SI Section 2.1 (Two-Component Reduction) & Section 2.2 (Green's Kernel)
+# ==============================================================================
+- id: run_two_comp_printed
+  model: two_component_reduction_printed
+  inputs:
+    D_m: probe_motor_diffusivity_added
+    k_d: probe_kd_added
+    K: probe_binding_ratio_K_added
+  outputs:
+    D: two_comp_D_printed
+    k_d_eff: two_comp_kd_printed
+
+- id: run_two_comp_corrected
+  model: two_component_reduction_corrected
+  inputs:
+    D_m: probe_motor_diffusivity_added
+    k_d: probe_kd_added
+    K: probe_binding_ratio_K_added
+  outputs:
+    D: two_comp_D_corrected
+    k_d_eff: two_comp_kd_corrected
+
+- id: run_kernel_uniform_printed
+  model: nonlocal_velocity_kernel_printed
+  inputs:
+    sigma_a: probe_active_stress_2d_added
+    eta: eta_2d_lit
+    L: lh_from_lit_chained
+    l: cell_length_si
+    x: probe_x_kernel_added
+  outputs:
+    v_unif: v_unif_kernel_printed
+
+- id: run_kernel_uniform_corrected
+  model: nonlocal_velocity_kernel_corrected
+  inputs:
+    sigma_a: probe_active_stress_2d_added
+    eta: eta_2d_lit
+    L: lh_from_lit_chained
+    l: cell_length_si
+    x: probe_x_kernel_added
+  outputs:
+    v_unif: v_unif_kernel_corrected
+
+# ==============================================================================
+# 5. SI Section 2.5 (Zero-Friction) & Section 2.6.1-2.6.3 (Bifurcations)
+# ==============================================================================
+- id: run_xi0_printed
+  model: zero_friction_bifurcation_printed
+  inputs:
+    alpha: probe_alpha_xi0_added
+    phi: probe_phi_xi0_added
+    i: probe_mode_i1_added
+  outputs:
+    chi_i0: xi0_chi_i0_printed
+    chi_i0_over_phi: xi0_chi_over_phi_printed
+    chi_i2: xi0_chi_i2_printed
+
+- id: run_xi0_corrected
+  model: zero_friction_bifurcation_corrected
+  inputs:
+    alpha: probe_alpha_xi0_added
+    phi: probe_phi_xi0_added
+    i: probe_mode_i1_added
+  outputs:
+    chi_i0: xi0_chi_i0_corrected
+    chi_i0_over_phi: xi0_chi_over_phi_corrected
+    chi_i2: xi0_chi_i2_corrected
+
+- id: run_fig_s11_critical_mode
+  model: finite_domain_critical_mode
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+  outputs:
+    i_c: fig_s11_ic
+    n_rings: fig_s11_n_rings_computed
+    chi_c0: fig_s11_chi_c0
+
+- id: run_fig_s11_bif_threshold
+  model: finite_domain_bifurcation_threshold
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+    i: fig_s11_ic
+  outputs:
+    chi_i0: fig_s11_chi_i0_direct
+
+- id: run_fig_s11_resonance_i0
+  model: resonance_mode_i0
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+  outputs:
+    i_0: fig_s11_i0
+
+- id: run_fig_s12_critical_mode
+  model: finite_domain_critical_mode
+  inputs:
+    alpha: fig_s12_alpha
+    phi: fig_s12_phi
+  outputs:
+    i_c: fig_s12_ic
+    n_rings: fig_s12_n_rings_computed
+    chi_c0: fig_s12_chi_c0
+
+- id: run_fig_s11_chi2_printed
+  model: weakly_nonlinear_curvature_finite_printed
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+    i: fig_s11_ic
+  outputs:
+    chi_i2: fig_s11_chi2_printed
+
+- id: run_fig_s11_chi2_corrected
+  model: weakly_nonlinear_curvature_finite_corrected
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+    i: fig_s11_ic
+  outputs:
+    chi_i2: fig_s11_chi2_corrected
+
+- id: run_fig_s11_steady_num
+  model: steady_state_eq8_bifurcation
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+    i: fig_s11_ic
+    eps: bif_probe_eps_added
+  outputs:
+    chi_branch: fig_s11_chi_branch_num
+    chi_i2: fig_s11_chi2_num
+    min_rho: fig_s11_min_rho_num
+
+- id: run_fig_s12_chi2_printed
+  model: weakly_nonlinear_curvature_finite_printed
+  inputs:
+    alpha: fig_s12_alpha
+    phi: fig_s12_phi
+    i: fig_s12_ic
+  outputs:
+    chi_i2: fig_s12_chi2_printed
+
+- id: run_fig_s12_chi2_corrected
+  model: weakly_nonlinear_curvature_finite_corrected
+  inputs:
+    alpha: fig_s12_alpha
+    phi: fig_s12_phi
+    i: fig_s12_ic
+  outputs:
+    chi_i2: fig_s12_chi2_corrected
+
+- id: run_fig_s12_steady_num
+  model: steady_state_eq8_bifurcation
+  inputs:
+    alpha: fig_s12_alpha
+    phi: fig_s12_phi
+    i: fig_s12_ic
+    eps: bif_probe_eps_added
+  outputs:
+    chi_branch: fig_s12_chi_branch_num
+    chi_i2: fig_s12_chi2_num
+    min_rho: fig_s12_min_rho_num
+
+- id: run_inf_chi2_printed
+  model: weakly_nonlinear_curvature_infinite_printed
+  inputs:
+    phi: fig_s11_phi
+  outputs:
+    chi_c2: inf_chi_c2_printed
+    phi_tricritical: phi_tricrit_printed_model
+
+- id: run_inf_chi2_corrected
+  model: weakly_nonlinear_curvature_infinite_corrected
+  inputs:
+    phi: fig_s11_phi
+  outputs:
+    chi_c2: inf_chi_c2_corrected
+    phi_tricritical: phi_tricrit_corrected_model
+
+# ==============================================================================
+# 6. SI Section 2.6.4 (FRAP & Parameter Inversion) & 2.6.5 (Linear + PDE Ramp)
+# ==============================================================================
+- id: run_frap_moments_probe
+  model: frap_moment_recovery_eq14
+  inputs:
+    t: frap_probe_time_added
+    tau: turnover_time_frap
+    D: diffusion_coeff_frap
+    var0: frap_initial_variance_added
+  outputs:
+    m0_norm: frap_m0_at_tau
+    variance: frap_var_at_tau
+
+- id: run_lh_inv_si
+  model: hydrodynamic_length_from_wavelength
+  inputs:
+    d: ring_wavelength_si_input
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+  outputs:
+    l_h: lh_inv_from_d_si
+
+- id: run_alpha_si_from_printed_L
+  model: dimensionless_cell_size_alpha
+  inputs:
+    l: cell_length_si
+    L: lh_inverted_si
+  outputs:
+    alpha: alpha_si_from_printed_L
+
+- id: run_alpha_si_chained
+  model: dimensionless_cell_size_alpha
+  inputs:
+    l: cell_length_si
+    L: lh_inv_from_d_si
+  outputs:
+    alpha: alpha_si_chained
+
+- id: run_phi_si_from_printed_L
+  model: dimensionless_turnover_phi_from_lengths
+  inputs:
+    l_h: lh_inverted_si
+    l_t: lt_derived_main
+  outputs:
+    phi: phi_si_from_printed_L
+
+- id: run_phi_si_chained
+  model: dimensionless_turnover_phi_from_lengths
+  inputs:
+    l_h: lh_inv_from_d_si
+    l_t: lt_from_frap
+  outputs:
+    phi: phi_si_chained
+
+- id: run_chi_c_si_order
+  model: dimensionless_critical_contractility_eq10
+  inputs:
+    phi: phi_estimated_si
+  outputs:
+    chi_c: chi_c_si_order_computed
+
+- id: run_xi_3d_si
+  model: friction_3d_from_contractility
+  inputs:
+    sigma_a: active_stress_keratocyte_lit
+    D: diffusion_coeff_frap
+    chi_c: chi_c_order_si
+  outputs:
+    xi: xi_3d_si_computed
+
+- id: run_xi_3d_si_chained
+  model: friction_3d_from_contractility
+  inputs:
+    sigma_a: active_stress_keratocyte_lit
+    D: diffusion_coeff_frap
+    chi_c: chi_c_si_order_computed
+  outputs:
+    xi: xi_3d_si_chained
+  note: "Chained 3D friction estimate using Eq. (10) chi_c = (1 + sqrt(10^-3))^2 = 1.064 rather than rounded chi_c ~ 1."
+
+- id: run_chi_c_sim_eq10
+  model: dimensionless_critical_contractility_eq10
+  inputs:
+    phi: phi_sim_si
+  outputs:
+    chi_c: chi_c_sim_eq10
+
+- id: run_sim_critical_mode
+  model: finite_domain_critical_mode
+  inputs:
+    alpha: alpha_sim_si
+    phi: phi_sim_si
+  outputs:
+    i_c: sim_ic_lin
+    n_rings: n_rings_sim_finite_lin
+    chi_c0: chi_c_sim_finite
+
+- id: run_sim_inf_ring_count
+  model: infinite_domain_ring_count
+  inputs:
+    alpha: alpha_sim_si
+    phi: phi_sim_si
+  outputs:
+    n_rings: n_rings_sim_inf_lin
+
+- id: run_chi_plateau_from_printed
+  model: peclet_from_fluorescence_ratio
+  inputs:
+    chi_c: chi_c_sim_si
+    F_c: fluorescence_onset_si
+    F_plateau: fluorescence_plateau_si
+  outputs:
+    chi_plateau: chi_plateau_from_printed_chic
+
+- id: run_chi_plateau_chained
+  model: peclet_from_fluorescence_ratio
+  inputs:
+    chi_c: chi_c_sim_eq10
+    F_c: fluorescence_onset_si
+    F_plateau: fluorescence_plateau_si
+  outputs:
+    chi_plateau: chi_plateau_chained
+
+- id: run_pde_ramp_N80
+  model: cortical_pde_1d_ramp
+  inputs:
+    alpha: alpha_sim_si
+    phi: phi_sim_si
+    tau: turnover_time_frap
+    chi_start: chi_c_sim_si
+    chi_end: chi_plateau_si
+    t_ramp: ramp_duration_si
+    t_total: ramp_total_duration_added
+    noise_amp: ramp_noise_amplitude_added
+  settings:
+    N_grid: 2048
+    dt: 50.0
+    n_samples: 4
+    seed: 0
+  replicates: 3
+  outputs:
+    n_rings: n_rings_pde_ramp
+    S: S_pde_ramp
+    min_rho: min_rho_pde_ramp
+  note: "Reconstructed Eq. (8) linear-ramp simulation at temporally converged dt=50.0; uses n_samples=4 per replicate across 3 replicates (12 realizations total) vs paper's N=80 (see q_choice_pde_sample_size_and_horizon)."
+
+- id: run_pde_ramp_N40
+  model: cortical_pde_1d_ramp
+  inputs:
+    alpha: alpha_sim_si
+    phi: phi_sim_si
+    tau: turnover_time_frap
+    chi_start: chi_c_sim_si
+    chi_end: chi_plateau_si
+    t_ramp: ramp_duration_si
+    t_total: ramp_total_duration_added
+    noise_amp: ramp_noise_amplitude_added
+  settings:
+    N_grid: 2048
+    dt: 50.0
+    n_samples: 2
+    seed: 100
+  replicates: 3
+  outputs:
+    n_rings: n_rings_pde_ramp_n40
+    S: S_pde_ramp_n40
+    min_rho: min_rho_pde_ramp_n40
+  note: "Reconstructed Eq. (8) linear-ramp check at smaller ensemble size (n_samples=2 per replicate across 3 replicates vs paper's N=40)."
+
+# ==============================================================================
+# 7. SI Section 2.2 Nonlinear-Turnover Chaos PDE Runs (Chaotic vs Stationary)
+# ==============================================================================
+- id: run_pde_chaos_fig_s6
+  model: cortical_pde_1d_chaos
+  inputs:
+    l: chaos_domain_length
+    xi: chaos_xi_fig_s6
+    chi_rho0: chaos_chi_fig_s6
+    epsilon: chaos_epsilon
+    noise_amp: chaos_noise_amplitude_added
+    t_total: chaos_horizon_added
+  settings:
+    N_grid: 512
+    dt: 0.025
+    seed: 1
+  replicates: 3
+  outputs:
+    n_events: chaos_n_events_s6
+    min_rho: chaos_min_rho_s6
+    max_rho: chaos_max_rho_s6
+
+- id: run_pde_stationary_fig_s5
+  model: cortical_pde_1d_chaos
+  inputs:
+    l: chaos_domain_length
+    xi: chaos_stationary_xi_added
+    chi_rho0: chaos_chi_fig_s6
+    epsilon: chaos_epsilon
+    noise_amp: chaos_noise_amplitude_added
+    t_total: chaos_horizon_added
+  settings:
+    N_grid: 512
+    dt: 0.025
+    seed: 1
+  replicates: 3
+  outputs:
+    n_events: stationary_n_events_s5
+    min_rho: stationary_min_rho_s5
+    max_rho: stationary_max_rho_s5
+
+# ==============================================================================
+# 8. Experimental Genetic Perturbation Processing Checks (Main p. 4)
+# ==============================================================================
+- id: run_src42_pct_increase
+  model: relative_increase_processing
+  inputs:
+    lambda_mutant: ring_wavelength_src42
+    lambda_wt: ring_wavelength_embryo_wt
+  outputs:
+    pct_increase: src42_increase_computed
+
+- id: run_moesin_rnai_pct_increase
+  model: relative_increase_processing
+  inputs:
+    lambda_mutant: taenidial_wavelength_moesin_rnai
+    lambda_wt: taenidial_wavelength_larva_wt_late
+  outputs:
+    pct_increase: moesin_rnai_increase_computed
+
+- id: run_kkv1_fold_increase
+  model: fold_change_processing
+  inputs:
+    lambda_mutant: ring_wavelength_kkv1
+    lambda_wt: ring_wavelength_embryo_wt
+  outputs:
+    fold: kkv1_fold_computed
+
+# ==============================================================================
+# 9. Calibrated Figure Curve Runs (Main Figs. 2A/2B/2D & SI Figs. S5, S9-S13)
+# ==============================================================================
+- id: run_fig2a_frap_var_model
+  model: frap_moment_recovery_eq14
+  inputs:
+    tau: turnover_time_frap
+    D: diffusion_coeff_frap
+    var0: frap_initial_variance_added
+  sweep:
+    t: fig2a_frap_variance_model_curve
+  outputs:
+    variance: fig2a_var_pred_model_grid
+  note: "Evaluates Eq. (14) M_2(t)/M_0(t) = 2*D*t using population mean D = 0.04 ± 0.03 um^2/s across the Fig. 2A (bottom right) green model curve grid."
+
+- id: run_fig2a_frap_var_exp
+  model: frap_moment_recovery_eq14
+  inputs:
+    tau: turnover_time_frap
+    D: diffusion_coeff_frap
+    var0: frap_initial_variance_added
+  sweep:
+    t: fig2a_frap_variance_data
+  outputs:
+    variance: fig2a_var_pred_exp_grid
+  note: "Evaluates Eq. (14) M_2(t)/M_0(t) = 2*D*t using population mean D = 0.04 ± 0.03 um^2/s at the 17 post-bleach Fig. 2A experimental variance timestamps."
+
+- id: run_fig2b_threshold
+  model: dimensionless_critical_contractility_eq10
+  inputs: {}
+  sweep:
+    phi: fig2b_instability_threshold_curve
+  outputs:
+    chi_c: fig2b_chi_c_pred
+  note: "Sweeps Eq. (10) chi_c = (1 + sqrt(phi))^2 over the digitized Fig. 2B red instability threshold curve."
+
+- id: run_fig2d_wavelength
+  model: critical_wavelength_dimensionless
+  inputs: {}
+  sweep:
+    phi: fig2d_wavelength_curve
+  outputs:
+    lambda_hat: fig2d_lambda_pred
+  note: "Sweeps lambda_c/l_h = 2*pi*phi^(-1/4) over the digitized Fig. 2D (right) red wavelength curve."
+
+- id: run_figs5_linear_stability
+  model: chaos_linear_stability_eq7
+  inputs:
+    D: chaos_unit_diffusivity
+  sweep:
+    xi: figs5_linear_stability_curve
+  outputs:
+    chi_rho0: figs5_chi_c_pred
+  note: "Sweeps (rho_0*chi)_c = (1 + sqrt(D*xi))^2 at D = tau = eta = 1 over the digitized SI Fig. S5 bright-red linear stability boundary."
+
+- id: run_figs9_onsets_captioned_10
+  model: zero_friction_bifurcation_printed
+  inputs:
+    alpha: probe_alpha_xi0_added
+    phi: probe_phi_xi0_added
+  sweep:
+    i: figs9_bifurcation_points_curve
+  outputs:
+    chi_i0_over_phi: figs9_onsets_pred_10
+  note: "Zero-friction onset thresholds chi_i^(0)/phi = 1 + i^2*pi^2/(alpha^2*phi) at the captioned parameter alpha^2*phi = 10."
+
+- id: run_figs9_onsets_100
+  model: zero_friction_bifurcation_printed
+  inputs:
+    alpha: probe_alpha_xi0_added
+    phi: figs9_phi_100_added
+  sweep:
+    i: figs9_bifurcation_points_curve
+  outputs:
+    chi_i0_over_phi: figs9_onsets_pred_100
+  note: "Zero-friction onset thresholds chi_i^(0)/phi = 1 + i^2*pi^2/(alpha^2*phi) at alpha^2*phi = 100 (alpha*sqrt(phi) = 10), matching the four plotted branches in Fig. S9."
+
+- id: run_figs9_branch1_l2
+  model: zero_friction_ode_branch_l2
+  inputs:
+    alpha2_phi: figs9_alpha2_phi_100_added
+    i: figs9_mode_1
+    target_branch: figs9_branch1_curve
+  settings:
+    M_modes: 80
+  outputs:
+    gamma_curve: figs9_b1_l2_pred
+    gamma_at_y4: figs9_b1_l2_y4
+  note: "Exact Section 2.5 zero-friction ODE continuation for mode i = 1 at alpha^2*phi = 100 evaluated against the captioned L2 norm ||rho||_2."
+
+- id: run_figs9_branch1_maxrho
+  model: zero_friction_ode_branch_maxrho
+  inputs:
+    alpha2_phi: figs9_alpha2_phi_100_added
+    i: figs9_mode_1
+    target_branch: figs9_branch1_curve
+  outputs:
+    gamma_curve: figs9_b1_maxrho_pred
+    gamma_at_y4: figs9_b1_maxrho_y4
+  note: "Exact Section 2.5 zero-friction ODE continuation for mode i = 1 at alpha^2*phi = 100 evaluated against max(rho) (correcting Fig. S9's mislabeled y-axis)."
+
+- id: run_figs9_branch2_l2
+  model: zero_friction_ode_branch_l2
+  inputs:
+    alpha2_phi: figs9_alpha2_phi_100_added
+    i: figs9_mode_2
+    target_branch: figs9_branch2_curve
+  settings:
+    M_modes: 80
+  outputs:
+    gamma_curve: figs9_b2_l2_pred
+    gamma_at_y4: figs9_b2_l2_y4
+  note: "Exact Section 2.5 zero-friction ODE continuation for mode i = 2 at alpha^2*phi = 100 evaluated against the captioned L2 norm ||rho||_2."
+
+- id: run_figs9_branch2_maxrho
+  model: zero_friction_ode_branch_maxrho
+  inputs:
+    alpha2_phi: figs9_alpha2_phi_100_added
+    i: figs9_mode_2
+    target_branch: figs9_branch2_curve
+  outputs:
+    gamma_curve: figs9_b2_maxrho_pred
+    gamma_at_y4: figs9_b2_maxrho_y4
+  note: "Exact Section 2.5 zero-friction ODE continuation for mode i = 2 at alpha^2*phi = 100 evaluated against max(rho) (correcting Fig. S9's mislabeled y-axis)."
+
+- id: run_figs10_finite
+  model: finite_domain_critical_mode
+  inputs:
+    alpha: fig_s10_alpha
+  sweep:
+    phi: figs10_finite_curve
+  outputs:
+    n_rings: figs10_finite_pred
+  note: "Sweeps finite-domain critical ring count i_c/2 at alpha = 25 across the six plateaus of SI Fig. S10."
+
+- id: run_figs10_infinite
+  model: infinite_domain_ring_count
+  inputs:
+    alpha: fig_s10_alpha
+  sweep:
+    phi: figs10_infinite_curve
+  outputs:
+    n_rings: figs10_infinite_pred
+  note: "Sweeps infinite-domain critical ring count alpha*phi^(1/4)/(2*pi) at alpha = 25 across the purple curve of SI Fig. S10."
+
+- id: run_figs11_bif_points
+  model: finite_domain_bifurcation_threshold
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+  sweep:
+    i: figs11_bifurcation_points_curve
+  outputs:
+    chi_i0: figs11_bif_pts_pred
+  note: "Computes linear bifurcation thresholds chi_i^(0) for modes i = 4..10 at alpha = 35, phi = 0.1 (SI Fig. S11)."
+
+- id: run_figs11_branch_wnl_printed
+  model: weakly_nonlinear_branch_printed
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+    i: fig_s11_ic
+  sweep:
+    max_rho: figs11_primary_branch_curve
+  outputs:
+    chi: figs11_wnl_printed_pred
+  note: "Weakly nonlinear pitchfork branch using printed chi_i^(2) = -0.0384 at alpha = 35, phi = 0.1, i_c = 6."
+
+- id: run_figs11_branch_wnl_corrected
+  model: weakly_nonlinear_branch_corrected
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+    i: fig_s11_ic
+  sweep:
+    max_rho: figs11_primary_branch_curve
+  outputs:
+    chi: figs11_wnl_corrected_pred
+  note: "Weakly nonlinear pitchfork branch using adjoint-Fredholm corrected chi_i^(2) = -0.4005 at alpha = 35, phi = 0.1, i_c = 6."
+
+- id: run_figs11_branch_exact
+  model: steady_state_eq8_branch_continuation
+  inputs:
+    alpha: fig_s11_alpha
+    phi: fig_s11_phi
+    i: fig_s11_ic
+    target_branch: figs11_primary_branch_curve
+  outputs:
+    chi_curve: figs11_exact_pred
+    chi_at_max: figs11_exact_chimax
+    min_rho_at_max: figs11_exact_minrho
+  note: "Exact Fourier-cosine continuation of Eq. (8) along the primary subcritical i_c = 6 branch at alpha = 35, phi = 0.1 (SI Fig. S11)."
+
+- id: run_figs12_bif_points
+  model: finite_domain_bifurcation_threshold
+  inputs:
+    alpha: fig_s12_alpha
+    phi: fig_s12_phi
+  sweep:
+    i: figs12_bifurcation_points_curve
+  outputs:
+    chi_i0: figs12_bif_pts_pred
+  note: "Computes linear bifurcation thresholds chi_i^(0) for isolated modes i = 4, 6, 7, 9, 10, 11, 12, 13 at alpha = 15, phi = 3 (SI Fig. S12)."
+
+- id: run_figs12_branch_wnl_printed
+  model: weakly_nonlinear_branch_printed
+  inputs:
+    alpha: fig_s12_alpha
+    phi: fig_s12_phi
+    i: fig_s12_ic
+  sweep:
+    max_rho: figs12_primary_branch_curve
+  outputs:
+    chi: figs12_wnl_printed_pred
+  note: "Weakly nonlinear pitchfork branch using printed chi_i^(2) = +0.5546 at alpha = 15, phi = 3, i_c = 6."
+
+- id: run_figs12_branch_wnl_corrected
+  model: weakly_nonlinear_branch_corrected
+  inputs:
+    alpha: fig_s12_alpha
+    phi: fig_s12_phi
+    i: fig_s12_ic
+  sweep:
+    max_rho: figs12_primary_branch_curve
+  outputs:
+    chi: figs12_wnl_corrected_pred
+  note: "Weakly nonlinear pitchfork branch using adjoint-Fredholm corrected chi_i^(2) = +3.5325 at alpha = 15, phi = 3, i_c = 6."
+
+- id: run_figs12_branch_exact
+  model: steady_state_eq8_branch_continuation
+  inputs:
+    alpha: fig_s12_alpha
+    phi: fig_s12_phi
+    i: fig_s12_ic
+    target_branch: figs12_primary_branch_curve
+  settings:
+    M_modes: 60
+  outputs:
+    chi_curve: figs12_exact_pred
+    chi_at_max: figs12_exact_chimax
+    min_rho_at_max: figs12_exact_minrho
+  note: "Exact Fourier-cosine continuation of Eq. (8) along the primary supercritical i_c = 6 branch at alpha = 15, phi = 3 (SI Fig. S12)."
+
+- id: run_figs13_chi_ramp_printed
+  model: linear_chi_ramp_si
+  inputs:
+    chi_start: chi_c_sim_si
+    chi_end: chi_plateau_si
+    t_ramp: ramp_duration_si
+  sweep:
+    t: figs13_chi_ramp_curve
+  outputs:
+    chi: figs13_chi_ramp_printed_pred
+  note: "Piecewise-linear Peclet number ramp using printed SI p. 15 endpoints chi_start ~ 1.07, chi_end = 1.47, t_ramp = 1875 s."
+
+- id: run_figs13_chi_ramp_chained
+  model: linear_chi_ramp_si
+  inputs:
+    chi_start: chi_c_sim_eq10
+    chi_end: chi_plateau_chained
+    t_ramp: ramp_duration_si
+  sweep:
+    t: figs13_chi_ramp_curve
+  outputs:
+    chi: figs13_chi_ramp_chained_pred
+  note: "Chained piecewise-linear Peclet number ramp using Eq. (10) chi_c = 1.076 and fluorescence-scaled plateau 1.473 over t_ramp = 1875 s."
+

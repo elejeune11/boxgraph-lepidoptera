@@ -1,0 +1,154 @@
+- id: rel_Rstar_reduces_to_R
+  kind: reduces_to
+  a: claessens2008/effective_bound_ratio
+  b: claessens2008/molar_ratio_fascin_actin
+  mapping: {c_f: "R * c_a", c_a: "c_a"}
+  limit: {c_a: "oo"}
+  regime: {R: [0.01, 0.9], K_d: [0.1, 1.0], c_a: [1.0, 10.0]}
+  provenance: stated
+  citation: {page: 4, printed_page: "8822", quote: "Deviations of R* from R become apparent", where: Methods}
+  assumptions: ["R < 1 so all added fascin binds when c_a >> K_d"]
+
+- id: rel_bundle_geometry_bulk_limit
+  kind: reduces_to
+  a: claessens2008/bundle_geometry_saturation
+  b: claessens2008/bundle_geometry_bulk_limit
+  mapping: {u: "u"}
+  limit: {n_f: "oo"}
+  regime: {u: [12.0, 15.0], n_f: [5.0, 100.0], sigma: [-1.0, 1.0]}
+  tolerance: 1.0e-4
+  provenance: stated
+  citation: {page: 5, printed_page: "SI 1", quote: "necessary to build one hexagonal unit, the ⫾ sign refers to", where: "SI Methods"}
+  assumptions: ["Surface contribution +/- 3.5 * n_f^(-1/2) vanishes as bundle filament number n_f -> oo"]
+
+- id: rel_D_scaling_consistency
+  kind: scales_as
+  a: claessens2008/diameter_filament_scaling
+  b: claessens2008/diameter_scaling_Rstar
+  mapping: {R_star: "n_f**(5/3)"}
+  regime: {n_f: [1.0, 20.0]}
+  provenance: stated
+  citation: {page: 5, printed_page: "SI 1", quote: "obtain R*(nf) it is assumed that D ⬇ nf1/2", where: "SI Methods"}
+  assumptions: ["Translating D ~ (R*)^0.3 using D ~ n_f^(1/2) implies R* ~ n_f^(5/3)"]
+
+- id: rel_twist_fascin_scales_with_monomer
+  kind: scales_as
+  a: claessens2008/twist_energy_per_fascin
+  b: claessens2008/twist_energy_per_monomer
+  mapping: {tau: "tau", Delta_theta: "Delta_theta", d: "d"}
+  regime: {tau: [1.0e-26, 2.0e-25], Delta_theta: [0.005, 0.03], d: [2.5, 3.2], R_star: [0.05, 0.5], T: [290.0, 310.0]}
+  provenance: stated
+  citation: {page: 2, printed_page: "8820", quote: "is found to be constant per bound fascin.", where: text}
+  assumptions: ["Per-bound-fascin twist energy scales identically with (tau, Delta_theta, d) as per-monomer twist energy at fixed R* and T"]
+
+# Cross-paper proposed relations with grason2007 (ref-20)
+- id: rel_grason_eq5_scales_claessens_twist
+  kind: scales_as
+  a: grason2007/columnar_elastic_energy_eq5
+  b: claessens2008/twist_energy_per_monomer
+  mapping:
+    tau: "K2_bar * (sqrt(3) / 2) * 12.4**2 * 1e-30"
+    Delta_theta: "Omega * 2.9"
+    d: "2.9"
+  regime:
+    R: [1.0, 5.0]
+    Omega: [1.0e-4, 1.0e-3]
+    mu_perp_bar: [1.0e-4, 1.0e-3]
+    K2_bar: [10.0, 100.0]
+    K3_bar: [1.0, 10.0]
+    gamma: [1.0e-8, 1.0e-7]
+  provenance: proposed
+  reason: >
+    In the achiral, small-strain harmonic limit (gamma -> 0, Omega*R << 1), Grason & Bruinsma's
+    columnar elastic energy density Eq. (5) is dominated by the Frank twist term K2_bar*Omega^2
+    [pN/nm^2]. Mapping twist rate Omega [1/nm] to per-monomer twist angle Delta_theta = Omega*d
+    at Claessens's monomer rise d = 2.9 nm and Frank twist modulus K2_bar [pN] to effective
+    per-filament torsional stiffness tau = K2_bar / rho_0 = K2_bar * A_fil (with hexagonal
+    area per filament A_fil = (sqrt(3)/2)*a_H^2, a_H = 12.4 nm, 1 pN*nm^2 = 1e-30 N*m^2),
+    E_twist = tau*(Delta_theta)^2/d [J] equals V_mon * (K2_bar * Omega^2) (with monomer volume
+    V_mon = A_fil*d) and scales identically in (K2_bar, Omega). Outside this harmonic achiral
+    limit, Grason & Bruinsma drop K2_bar (K2 << K3, finite gamma) so quartic shear/bend and
+    linear chiral torque dominate instead (see q_grason2007_overtwist_vs_supertwist_mechanics).
+  assumptions:
+    - "Achiral small-strain harmonic twist limit (gamma -> 0, Omega*R << 1, K2_bar*Omega^2 dominates Eq. 5)"
+    - "Fixed monomer axial rise d = 2.9 nm and hexagonal area per filament A_fil = (sqrt(3)/2)*(12.4 nm)^2"
+    - "Formal structural comparison only: Grason's Omega is macroscopic whole-bundle supertwist (Frank double-twist) whereas Claessens's Delta_theta/d is internal single-filament overtwist"
+
+- id: rel_grason_eq9_scales_claessens_twist
+  kind: scales_as
+  a: grason2007/solid_elastic_energy_eq9
+  b: claessens2008/twist_energy_per_monomer
+  mapping:
+    tau: "2 * pi * 3.5**4 * 1e-30 * mu_par_bar"
+    Delta_theta: "Omega * 2.9"
+    d: "2.9"
+  regime:
+    R: [3.0, 10.0]
+    Omega: [1.0e-4, 1.0e-3]
+    mu_par_bar: [1.0, 10.0]
+    mu_perp_bar: [1.0e-3, 1.0e-2]
+    K3_bar: [1.0, 10.0]
+    gamma: [1.0e-8, 1.0e-7]
+  provenance: proposed
+  reason: >
+    In the achiral harmonic limit (gamma -> 0, Omega*R << 1), Grason & Bruinsma's 3D hexagonal-solid
+    elastic energy density Eq. (9) reduces to classical Saint-Venant torsion of an elastic rod,
+    E_elast = mu_par_bar*(Omega*R)^2 = (1/4)*mu_par*(Omega*R)^2 (Grason p. 3, Ref. 20). Mapping
+    shear modulus mu_par_bar to Saint-Venant torsional rigidity tau = (pi/2)*mu_par*r_0^4 =
+    2*pi*r_0^4*mu_par_bar for a circular rod of fixed F-actin filament radius r_0 = 3.5 nm
+    (1 pN*nm^2 = 1e-30 N*m^2) and twist angle Delta_theta = Omega*d at d = 2.9 nm shows identical
+    quadratic twist-rate and linear shear-modulus scaling with Claessens's single-filament torsion
+    law E_twist = tau*(Delta_theta)^2/d (matching the exact volumetric energy density
+    E_twist_half / (pi*r_0^2*d) = mu_par_bar*(Omega*r_0)^2 when the 1/2 linear-elasticity factor
+    of twist_energy_per_monomer_half is restored). Note that bundle radius R is held fixed:
+    Grason's Eq. (9) scales as R^2 in energy density (coherent solid-bundle torsion), whereas
+    Claessens's single-filament overtwist is independent of bundle radius (R^0).
+  assumptions:
+    - "Achiral harmonic Saint-Venant regime (gamma -> 0, Omega*R << 1, mu_par_bar*(Omega*R)^2 dominates Eq. 9)"
+    - "Fixed filament radius r_0 = 3.5 nm and monomer spacing d = 2.9 nm; bundle radius R held fixed while comparing (mu_par_bar, Omega) scaling"
+    - "Claessens's printed twist_energy_per_monomer omits the 1/2 linear-elasticity prefactor (absorbed by scales_as; restored in twist_energy_per_monomer_half)"
+
+- id: rel_diameter_filament_scales_grason_diameter
+  kind: scales_as
+  a: claessens2008/diameter_filament_scaling
+  b: grason2007/bundle_diameter_from_radius
+  mapping:
+    R: "sqrt(n_f / (pi * (2 / (sqrt(3) * 12.4**2))))"
+  regime:
+    n_f: [1.0, 200.0]
+  provenance: proposed
+  reason: >
+    Connects Claessens's SI p. 5 area-packing scaling D ~ n_f^(1/2) (prefactor: unknown, used to
+    convert TEM bundle diameters in Fig. 1C to filament counts in Fig. S1) to Grason & Bruinsma's
+    continuum cylinder diameter D = 2*R via Grason's constant cross-sectional chain density
+    N = rho_0*pi*R^2 (Eq. 7) evaluated at Claessens's SAXS hexagonal lattice spacing a_H = 12.4 nm
+    (rho_0 = 2/(sqrt(3)*a_H^2) ~= 0.00751 nm^-2). Both exhibit log-slope 1/2 in n_f; same_as
+    does not apply because diameter_filament_scaling omits its dimensional prefactor (13.02 nm
+    hydrated SAXS vs 6.31 nm TEM empirical anchor in Fig. 1C/S1).
+  assumptions:
+    - "Uniform hexagonal chain area density rho_0 = 2 / (sqrt(3) * a_H^2) with Claessens's SAXS a_H = 12.4 nm"
+    - "Cylindrical bundle cross-section N = n_f = rho_0 * pi * R^2 (Grason Eq. 7)"
+
+- id: rel_hexagonal_shells_scales_grason_diameter
+  kind: scales_as
+  a: claessens2008/hexagonal_shell_filaments
+  b: grason2007/bundle_diameter_from_radius
+  output_map:
+    D: D_fil
+  mapping:
+    R: "12.4 * sqrt((sqrt(3) / (2 * pi)) * (1 + 3 * k * (k + 1)))"
+  regime:
+    k: [3.0, 20.0]
+  provenance: proposed
+  reason: >
+    Tests Grason & Bruinsma's continuum circular-cylinder bundle diameter D = 2*R (with area-equivalent
+    radius R(k) = sqrt(n_f(k) / (pi*rho_0)) from Grason Eq. 7 and Claessens's SAXS lattice constant
+    a_H = 12.4 nm) against Claessens's discrete concentric hexagonal-shell width D_fil = 2*k + 1
+    (with n_f = 1 + 3*k*(k + 1), p. 2). In the multi-shell continuum regime k >= 3 (n_f >= 37),
+    both agree in log-slope within 0.6%, whereas at Claessens's actual 1-2 shell fascin bundle sizes
+    (k = 1-2, n_f = 7-19) finite-size shell discreteness introduces a 1.1-2.4% slope discrepancy
+    (in addition to the hexagon-to-circle geometric factor sqrt(3*sqrt(3)/(2*pi)) ~= 0.909).
+  assumptions:
+    - "Multi-shell continuum regime k in [3, 20] (n_f in [37, 1261]); at k = 1-2 discrete shell corrections exceed 1%"
+    - "Area-equivalent cylindrical radius pi*R^2 = n_f / rho_0 with rho_0 = 2/(sqrt(3)*a_H^2), a_H = 12.4 nm"
+

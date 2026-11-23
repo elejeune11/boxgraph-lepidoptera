@@ -1,0 +1,26 @@
+id: ode_coefficients_e42_corrected
+name: 1D buckling ODE coefficients a and b (corrected SI Eq. E42)
+role: model
+stated:
+  page: 22
+  quote: "we obtain a linear, inhomogeneous differential equation for the displacement"
+  where: "SI Note S2, Eq. E42 (corrected)"
+equation: "a = 12*(1 - nu^2)*(L/(2*h))^2*(g - c/Y); b = 12*(1 - nu^2)*(p/Y)*(L/(2*h))^4"
+variant_of: ode_coefficients_e42
+corrections:
+  - equation: "SI Eq. E42"
+    change: "Replace printed '- c*Y*h^2' inside the parentheses of a with '- (L/(2*h))^2 * (c / Y)' (for dimensional stress amplitude c in Eq. E41, sigma_xx^pert = c)"
+    evidence: "Substituting chi = (c/2)*(nu*x^2 + y^2) (Eq. E41) into Eq. E7 gives D*w'''' + h*(Y*g - c)*w'' = p. Nondimensionalizing x = (L/2)*x_tilde and dividing by D/(L/2)^4 yields w'''' + 12*(1 - nu^2)*(L/(2*h))^2*(g - c/Y)*w'' = 12*(1 - nu^2)*(p/Y)*(L/(2*h))^4. The printed term '- c*Y*h^2' has units Pa^2*m^2 (or Pa*m^2 if c is dimensionless) and cannot be subtracted from the dimensionless (L/(2*h))^2*g."
+inputs:
+  nu: {quantity: poisson_ratio, unit: dimensionless}
+  L: {quantity: actin_bundle_spacing, unit: m}
+  h: {quantity: plate_thickness, unit: m}
+  g: {quantity: growth_strain, unit: dimensionless}
+  c: {quantity: stress_potential_amplitude, unit: Pa}
+  Y: {quantity: youngs_modulus, unit: Pa}
+  p: {quantity: transverse_pressure, unit: Pa}
+outputs:
+  a_ode: {quantity: dimensionless_ode_coeff_a, unit: dimensionless}
+  b_ode: {quantity: dimensionless_ode_coeff_b, unit: dimensionless}
+settings: {}
+stochastic: false

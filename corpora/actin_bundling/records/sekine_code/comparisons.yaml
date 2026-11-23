@@ -1,0 +1,31 @@
+# Comparisons checking internal consistency between Nanocluster_motion.m pixel constants and README.md physical thresholds.
+
+- id: cmp_area_min_px
+  purpose: reproduction
+  computed: area_min_px_pred
+  printed: area_min_t1_px_code
+  note: "ceil(0.01 um^2 / (0.04325 um)^2) = ceil(5.346) = 6 px exactly reproduces Nanocluster_motion.m line 40 lower bound 6."
+
+- id: cmp_area_max_px
+  purpose: reproduction
+  computed: area_max_px_pred
+  printed: area_max_t1_px_code
+  note: "floor(0.1 um^2 / (0.04325 um)^2) = floor(53.460) = 53 px exactly reproduces Nanocluster_motion.m line 40 upper bound 53; under alternatives dx = 3/69 = 0.043478 um (52 px) and dx = 0.043 um (54 px), the verdict shifts to close."
+
+- id: cmp_area_min_um2
+  purpose: reproduction
+  computed: area_min_um2_pred
+  printed: area_min_readme
+  note: "6 * (0.04325 um)^2 = 0.011223 um^2 reproduces README.md line 5's 0.01 um^2 at printed precision ([0.005, 0.015] um^2), though the discrete integer cutoff sits 12.2% above 0.01 um^2."
+
+- id: cmp_area_max_um2
+  purpose: reproduction
+  computed: area_max_um2_pred
+  printed: area_max_readme
+  note: "53 * (0.04325 um)^2 = 0.099140 um^2 reproduces README.md line 5's 0.1 um^2 at printed precision ([0.05, 0.15] um^2)."
+
+- id: cmp_circularity_ideal_6px
+  purpose: consistency
+  computed: circ_ideal_6px_pred
+  printed: circularity_max_readme
+  note: "Verifies C = 4*pi*A/P^2 = 1.0000 for an ideal 6-pixel circle against README.md line 5's upper bound 1.0 (compact 3x2 rectangle gives 0.754; elongated 1x6 rod gives 0.385 < 0.5)."

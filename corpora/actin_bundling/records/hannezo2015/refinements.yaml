@@ -1,0 +1,174 @@
+# Steady-state Eq. (8) Fourier-cosine bifurcation solver refinements
+- id: ref_steady_s11_modes_chi2
+  run: run_fig_s11_steady_num
+  setting: M_modes
+  factors: [1, 2, 4]
+  mode: multiply
+  output: chi_i2
+  tolerance: "0.1%"
+  tolerance_basis: "added: tight spectral convergence criterion well below the 10x discrepancy between printed and adjoint-corrected chi_i^(2)"
+  tolerance_added: true
+
+- id: ref_steady_s11_modes_min_rho
+  run: run_fig_s11_steady_num
+  setting: M_modes
+  factors: [1, 2, 4]
+  mode: multiply
+  output: min_rho
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies nonnegative density trough convergence (no Gibbs undershoot)"
+  tolerance_added: true
+
+- id: ref_steady_s12_modes_chi2
+  run: run_fig_s12_steady_num
+  setting: M_modes
+  factors: [1, 2, 4]
+  mode: multiply
+  output: chi_i2
+  tolerance: "0.1%"
+  tolerance_basis: "added: tight spectral convergence criterion for supercritical branch curvature chi_i^(2)"
+  tolerance_added: true
+
+# 1D Eq. (8) linear-ramp PDE solver refinements (dt, N_grid, n_samples, plus positivity min_rho)
+- id: ref_pde_ramp_dt_nrings
+  run: run_pde_ramp_N80
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: n_rings
+  tolerance: "5%"
+  tolerance_basis: "added: below the printed standard deviation +/- 1.10 / 14.68 (7.5%) of the SI Section 2.6.5 ring count"
+  tolerance_added: true
+
+- id: ref_pde_ramp_dt_min_rho
+  run: run_pde_ramp_N80
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: min_rho
+  tolerance: "10%"
+  tolerance_basis: "added: verifies strict positivity and temporal convergence of depleted trough density min(rho) > 0"
+  tolerance_added: true
+
+- id: ref_pde_ramp_grid_nrings
+  run: run_pde_ramp_N80
+  setting: N_grid
+  factors: [1, 2]
+  mode: multiply
+  output: n_rings
+  tolerance: "5%"
+  tolerance_basis: "added: below the printed 7.5% standard deviation of the SI Section 2.6.5 ring count"
+  tolerance_added: true
+
+- id: ref_pde_ramp_grid_min_rho
+  run: run_pde_ramp_N80
+  setting: N_grid
+  factors: [1, 2]
+  mode: multiply
+  output: min_rho
+  tolerance: "10%"
+  tolerance_basis: "added: verifies spatial grid convergence of depleted trough density min(rho) > 0"
+  tolerance_added: true
+
+- id: ref_pde_ramp_samples_nrings
+  run: run_pde_ramp_N80
+  setting: n_samples
+  factors: [1, 2]
+  mode: multiply
+  output: n_rings
+  tolerance: "5%"
+  tolerance_basis: "added: tests Monte Carlo ensemble convergence across n_samples = 4, 8 per replicate below the 7.5% printed spread"
+  tolerance_added: true
+
+# 1D nonlinear-turnover chaos PDE solver refinements (dt, N_grid, positivity min_rho, stationary n_events)
+- id: ref_pde_chaos_dt_min_rho
+  run: run_pde_chaos_fig_s6
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: min_rho
+  tolerance: "15%"
+  tolerance_basis: "added: verifies positivity and temporal robustness of density trough min(rho) > 0 in the chaotic merging/emerging regime"
+  tolerance_added: true
+
+- id: ref_pde_chaos_grid_min_rho
+  run: run_pde_chaos_fig_s6
+  setting: N_grid
+  factors: [1, 2, 4]
+  mode: multiply
+  output: min_rho
+  tolerance: "15%"
+  tolerance_basis: "added: verifies spatial resolution convergence of density trough min(rho) > 0 in the chaotic regime"
+  tolerance_added: true
+
+- id: ref_pde_stationary_dt_events
+  run: run_pde_stationary_fig_s5
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: n_events
+  tolerance: "0.5"
+  tolerance_basis: "added: confirms stationary pattern phase retains zero peak-dislocation events (Delta = 0) under time-step refinement"
+  tolerance_added: true
+
+# Reconstructed nonlinear branch continuation solver refinements (Figs. S9, S11, S12)
+- id: ref_figs9_branch1_modes
+  run: run_figs9_branch1_maxrho
+  setting: M_modes
+  factors: [1, 2]
+  mode: multiply
+  output: gamma_at_y4
+  tolerance: "0.1%"
+  tolerance_basis: "added: tight spectral convergence criterion well below the 0.3% reading accuracy of Fig. S9"
+  tolerance_added: true
+
+- id: ref_figs9_branch1_l2_modes
+  run: run_figs9_branch1_l2
+  setting: M_modes
+  factors: [1, 2]
+  mode: multiply
+  output: gamma_at_y4
+  tolerance: "0.1%"
+  tolerance_basis: "added: confirms L2-norm branch mismatch in Fig. S9 is not a truncation artifact"
+  tolerance_added: true
+
+- id: ref_figs11_branch_exact_modes_chi
+  run: run_figs11_branch_exact
+  setting: M_modes
+  factors: [1, 2]
+  mode: multiply
+  output: chi_at_max
+  tolerance: "0.1%"
+  tolerance_basis: "added: tight spectral convergence criterion for high-amplitude subcritical upper branch (max_rho = 10.5) in Fig. S11"
+  tolerance_added: true
+
+- id: ref_figs11_branch_exact_modes_minrho
+  run: run_figs11_branch_exact
+  setting: M_modes
+  factors: [1, 2]
+  mode: multiply
+  output: min_rho_at_max
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies positive density trough convergence (no Gibbs undershoot) at max_rho = 10.5 in Fig. S11"
+  tolerance_added: true
+
+- id: ref_figs12_branch_exact_modes_chi
+  run: run_figs12_branch_exact
+  setting: M_modes
+  factors: [1, 2]
+  mode: multiply
+  output: chi_at_max
+  tolerance: "0.1%"
+  tolerance_basis: "added: tight spectral convergence criterion for supercritical branch (max_rho = 13.0) in Fig. S12"
+  tolerance_added: true
+
+- id: ref_figs12_branch_exact_modes_minrho
+  run: run_figs12_branch_exact
+  setting: M_modes
+  factors: [1, 2]
+  mode: multiply
+  output: min_rho_at_max
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies positive density trough convergence (no Gibbs undershoot) at max_rho = 13.0 in Fig. S12"
+  tolerance_added: true
+

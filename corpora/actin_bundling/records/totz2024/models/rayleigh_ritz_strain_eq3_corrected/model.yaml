@@ -1,0 +1,27 @@
+id: rayleigh_ritz_strain_eq3_corrected
+name: Rayleigh-Ritz growth strain vs buckling amplitude (corrected Eq. 3 / SI Eq. E49)
+role: model
+stated:
+  page: 6
+  printed_page: "5"
+  quote: "Using the Rayleigh-Ritz approximation method to compute the maximum"
+  where: "Eq. 3 (also SI Note S2, Eq. E49, p. 22; dimensionally corrected)"
+equation: "g / g_c = 1 + 3 * a^2 / (4 * h^2) - p * L^2 / (a * pi^2 * Y * g_c * h)"
+described_from: ref-42
+built_from: [critical_growth_strain_eq4]
+variant_of: rayleigh_ritz_strain_eq3
+corrections:
+  - equation: "Eq. 3 (p. 6) and SI Eq. E49 (p. 22)"
+    change: "Replace 3*h^2*a^2/4 with 3*a^2/(4*h^2) and p*L^2/(a*pi^2*Y*g_c*h^3) with p*L^2/(a*pi^2*Y*g_c*h)"
+    evidence: "In the printed form, 3*h^2*a^2/4 has dimension [length]^4 and p*L^2/(a*pi^2*Y*g_c*h^3) has dimension [length]^-2, both incompatible with dimensionless g/g_c; this arises from substituting dimensionless amplitude a_tilde -> h*a instead of a/h when restoring units from SI Eq. E33 (w -> h*w). The corrected form matches the exact p -> 0 limit of SI Eq. E44 (a = (2*h/sqrt(3))*sqrt(g/g_c - 1) <=> g/g_c = 1 + 3*a^2/(4*h^2)), reproduces Y_min = 3.5 x 10^6 Pa (p. 8), and matches the contours of Figs. 3H and 4C."
+inputs:
+  a: {quantity: protoridge_amplitude, unit: m}
+  p: {quantity: transverse_pressure, unit: Pa}
+  Y: {quantity: youngs_modulus, unit: Pa}
+  nu: {quantity: poisson_ratio, unit: dimensionless}
+  h: {quantity: plate_thickness, unit: m}
+  L: {quantity: actin_bundle_spacing, unit: m}
+outputs:
+  g: {quantity: growth_strain, unit: dimensionless}
+settings: {}
+stochastic: false

@@ -1,0 +1,24 @@
+id: two_cell_orthoradial_coupling_eq16
+name: two-cell orthoradial junction stress coupling stochastic PDE (SI Eqs. 15-16)
+role: model
+stated:
+  page: 23
+  printed_page: "SI-17"
+  quote: "We simulate Eq. 16 for two cells in parallel for the same parameters"
+  where: SI Section 2.7, Eqs. (15)-(16) & Fig. S16
+equation: "rho_i^0 = rho^0 + beta*(sigma_{i-1} + sigma_{i+1} - 2*sigma^0); d_t rho_i = D*Delta(rho_i) - div(v*rho_i) - (rho_i - rho_i^0)/tau + f_i; C = int_0^1 rho_1*rho_2 dz / int_0^1 rho_1^2 dz"
+inputs:
+  beta:
+    quantity: junction_coupling
+    unit: dimensionless
+  A:
+    quantity: noise_intensity
+    unit: dimensionless
+outputs:
+  C:
+    quantity: pattern_correlation
+    unit: dimensionless
+settings: {}
+runnable: false
+not_runnable_reason: "SI Section 2.7 states <f_i(t) f_i(t+t_1)> = A*delta(t_1) with A = 0.1 but omits the spatial noise correlation/discretization, the exact PDE parameter values used in Fig. S16 (where x in [0, 400] and rho in [0.6, 1.5], differing sharply from the spike regime of Section 2.6.5), the two-cell neighbor boundary convention for sigma_{i-1}+sigma_{i+1}-2*sigma^0, and the mean-subtraction omitted from the printed correlation formula C = int rho_1*rho_2 / int rho_1^2 (which cannot yield C ~ 0 at beta = 10^-5 as plotted in Fig. S16)."
+stochastic: false

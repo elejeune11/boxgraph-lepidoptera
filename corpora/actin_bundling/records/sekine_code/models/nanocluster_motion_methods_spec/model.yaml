@@ -1,0 +1,34 @@
+id: nanocluster_motion_methods_spec
+name: documented README.md / Methods p. 10 nanocluster tracking specification (with circularity, 0.5-2x area ratio, exact overlap, no border clearing)
+role: processing
+from_words: true
+built_from:
+  - circularity_definition
+stated:
+  file: README.md
+  lines: "5-8"
+  quote: "an actin cluster within the size range 0.01 to 0.1 µm2 and circularity 0.5 – 1.0 was selected"
+  where: "README.md lines 5-8 & sekine2024 Methods p. 10 (Motion anisotropy)"
+equation: "Otsu binarize -> filter t_n by A in [A_min, A_max] and C = 4*pi*A/P^2 in [C_min, C_max] -> match t_{n+1} with overlap >= overlap_min_px and A2/A1 in [ratio_min, ratio_max] -> <|dy|>/<|dx|>"
+inputs:
+  area_min: {quantity: cluster_area_physical, unit: um^2}
+  area_max: {quantity: cluster_area_physical, unit: um^2}
+  circ_min: {quantity: cluster_circularity, unit: dimensionless}
+  circ_max: {quantity: cluster_circularity, unit: dimensionless}
+  ratio_min: {quantity: cluster_area_ratio, unit: dimensionless}
+  ratio_max: {quantity: cluster_area_ratio, unit: dimensionless}
+  overlap_min_px: {quantity: overlap_area_pixels, unit: dimensionless}
+  connectivity: {quantity: pixel_connectivity, unit: dimensionless}
+  pixel_size: {quantity: pixel_size, unit: um}
+outputs:
+  matched_count: {quantity: tracked_cluster_count, unit: dimensionless}
+  unmatched_count: {quantity: unmatched_cluster_count, unit: dimensionless}
+  dropped_count: {quantity: dropped_cluster_count, unit: dimensionless}
+  mean_abs_dx: {quantity: longitudinal_displacement, unit: nm}
+  mean_abs_dy: {quantity: circumferential_displacement, unit: nm}
+  mean_step_distance: {quantity: step_distance, unit: nm}
+  anisotropy_ratio: {quantity: motion_anisotropy_ratio, unit: dimensionless}
+  mean_area_ratio: {quantity: cluster_area_ratio, unit: dimensionless}
+settings:
+  scenario: anisotropic_translation
+stochastic: false

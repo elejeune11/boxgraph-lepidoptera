@@ -1,0 +1,35 @@
+# Cross-record validations of sekine2024 runnable models against independent experimental
+# measurements in hannezo2015 (same Hayashi lab, same wild-type Drosophila embryonic
+# stage 15-16 tracheal dorsal-trunk circumferential actin rings/cables).
+
+- id: val_sf_interval_4m_vs_hannezo_wt_spacing
+  model: structure_factor_interval
+  inputs:
+    mu_over_2pi: sf_4m_mu_over_2pi
+  output: interval
+  against: hannezo2015/ring_wavelength_embryo_wt
+  purpose: validation
+  quantities:
+    "hannezo2015/ring_wavelength": pattern_interval
+  conditions_ok: >
+    Sekine 2024's 4-M CGMD stripe simulation models wild-type embryonic stage 15-16 Drosophila
+    tracheal circumferential actin cables in a 3 x 3 um^2 periodic box (N^f = 4500, N^cl = 6750,
+    N^m = 900, gamma_y^f/gamma_x^f = 1.5, Table S1 & Supp. Table 4); Hannezo 2015 measures the
+    same stage-16 wild-type Drosophila tracheal dorsal-trunk circumferential actin rings via
+    Olympus FV1000 confocal microscopy of UAS-lifeact-mEGFP embryos (n > 150 rings, pooled
+    per-ring SD +/- 0.1 um, vs Sekine's Airyscan embryo-mean SD +/- 13.2 nm).
+  basis: >
+    Sekine 2024's full many-body CGMD network (cgmd_2d_network) is non-runnable from the
+    published text alone, so mirroring sekine2024/comparisons.yaml (cmp_validation_cable_interval_4m),
+    structure_factor_interval (interval = 1 / (mu/(2*pi)), role: processing) evaluates Sekine's
+    published 4-M CGMD Gaussian structure-factor peak spatial frequency sf_4m_mu_over_2pi =
+    1.89140416 um^-1 (Supp. Table 4; not fitted to Hannezo 2015) to obtain the CGMD predicted
+    wild-type stage-16 cable spacing (528.7 nm = 0.5287 um) and tests it against Hannezo 2015's
+    independent wild-type stage-16 tracheal ring spacing measurement (0.5 +/- 0.1 um).
+  note: >
+    Computes 0.5287 um (528.7 nm) vs Hannezo's 0.5 +/- 0.1 um (+0.0287 um, +5.7%): reproduced
+    inside [0.4, 0.6] um, in sharp contrast to cmp_validation_cable_interval_4m where the
+    identical 528.7 nm prediction is not reproduced against Sekine's own higher-precision
+    Airyscan measurement (450 +/- 13.2 nm, +17.5%). Caveat: structure_factor_interval converts
+    the printed fitted S(q) peak frequency of the non-runnable cgmd_2d_network rather than
+    re-integrating the 12,150-agent simulation from scratch.

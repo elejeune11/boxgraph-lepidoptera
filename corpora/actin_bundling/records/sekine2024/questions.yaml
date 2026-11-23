@@ -1,0 +1,1367 @@
+# Open questions documenting misprints, internal contradictions, unstated inputs/models,
+# numerical choices, and reading ambiguities found in sekine2024.
+
+- id: q_force_assignment_sign_error
+  kind: possible_error
+  about:
+    - filament_force_distribution
+    - filament_force_distribution_corrected
+    - cgmd_dimer_rk4
+    - cgmd_dimer_rk4_corrected
+  text: >
+    On SI Notes p. 2 (PDF p. 29), both the motor and crosslinker force-assignment equations
+    print a minus sign before delta_{i1}: f_i^{f,m} = delta_{i0} sum (1 - alpha) f - delta_{i1} sum alpha f
+    and f_i^{f,cl} = delta_{i0} sum (1 - alpha) f - delta_{i1} sum alpha f. This contradicts
+    Fig. S1 directly above on the same page (which draws both (1-alpha)f and +alpha f pointing
+    in the same direction as f) and violates force and torque conservation (total force on the
+    filament sums to (1 - 2*alpha)f instead of f, producing ~0.416 nm spurious center-of-mass
+    drift in our isolated dimer test run_dimer_rk4_printed_eta1 vs 5e-15 nm in the sign-corrected
+    variant_of model).
+  citation:
+    page: 29
+    printed_page: "SI Notes 2"
+    quote: "to the filament particles with the geometric weight"
+    where: "SI Notes I"
+
+- id: q_fdt_missing_kBT
+  kind: possible_error
+  about:
+    - cgmd_2d_network
+    - cgmd_anisotropic_langevin
+    - kBT_sim
+  text: >
+    On SI Notes p. 2 (PDF p. 29), the fluctuation-dissipation theorem is printed as
+    <xi_{i,a}^X(0) xi_{j,b}^X(t)> = 2 gamma^X delta_{ij} delta_{ab} delta(t), omitting the
+    thermal energy factor k_B T. Without k_B T the right-hand side has dimensions [force]/[length]
+    instead of [force]^2 (pN^2). Table S1 explicitly lists k_B T = 4.142 x 10^-3 pN*um as a
+    bold simulation input parameter, confirming that 2 gamma^X k_B T was intended. In addition,
+    the paper does not state whether thermal noise along y under anisotropic friction Eqs. S1a-S1b
+    uses 2 gamma_y^f k_B T or isotropic 2 gamma^f k_B T.
+  citation:
+    page: 29
+    printed_page: "SI Notes 2"
+    quote: "which satisfy the fluctuation-dissipation theorem"
+    where: "SI Notes I"
+
+- id: q_table_s1_cl_persistence
+  kind: possible_error
+  about:
+    - l_cl_bend_sim
+    - persistence_length_bending
+    - cmp_l_cl_bend_sim
+  text: >
+    Table S1 (PDF p. 31) prints the crosslinker persistence length formula
+    l^{cl,bend} = k^{cl,bend} l_0^{cl} / (2 k_B T) and reports ~ 24.1 um. Direct substitution of
+    Table S1's own inputs (k^{cl,bend} = 0.57 pN*um, L_0^{cl} = 0.035 um, k_B T = 4.142 x 10^-3 pN*um)
+    yields 2.408 um (rounds to 2.41 um), exactly 10 times smaller than 24.1 um and matching the
+    motor persistence length (~ 2.4 um) because 0.57 * 0.035 = 0.01995 ~= 0.1 * 0.2 = 0.02. This
+    strongly indicates a factor-of-10 decimal slip in Table S1 (24.1 instead of 2.41 um).
+  citation:
+    page: 31
+    printed_page: "SI Notes 4"
+    quote: "∼ 24.1 µm"
+    where: "Table S1"
+
+- id: q_eta_cyto_contradiction
+  kind: possible_error
+  about:
+    - eta_cyto_si_text
+    - eta_cyto_table_s1
+    - cmp_consistency_eta_cyto
+    - ref_dimer_rk4_corrected_eta01_dt
+    - ref_dimer_rk4_corrected_eta1_dt
+  text: >
+    SI Notes Section II (PDF p. 30) states 'we set eta_cyto = 10^-1 Pa*sec which is larger than
+    the measured cytosolic viscosity 10^-3-10^-1 Pa*sec [27]', whereas Table S1 on the very next
+    page (PDF p. 31) lists eta_cyto = 1 Pa*sec in bold as the simulation input. Furthermore, our
+    RK4 dimer solver refinement (ref_dimer_rk4_corrected_eta01_dt vs ref_dimer_rk4_corrected_eta1_dt)
+    shows that at eta_cyto = 0.1 Pa*s and the paper's stated dt = 5e-5 s, the crosslinker bending
+    stiffness number lambda_perp*dt = 16 k^{cl,bend} dt / ((L_0^{cl})^2 gamma^{cl}) = 5.34 exceeds
+    the RK4 linear stability boundary (2.785), causing a 24% numerical error at factor=1 (belongs_to:
+    numerics), whereas at eta_cyto = 1 Pa*s lambda_perp*dt = 0.534 converges smoothly to 0.0025%
+    (belongs_to: model). Both the text logic ('10 times larger than 10^-1') and RK4 stability
+    indicate 1 Pa*s was used in the simulations and 10^-1 Pa*s in Section II is a misprint.
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "Therefore, we set ηcyto = 10−1 Pa · sec"
+    where: "SI Notes II & Table S1"
+
+- id: q_f_walk_contradiction
+  kind: possible_error
+  about:
+    - f_walk_table_s1
+    - f_walk_fig_s7b3_4m
+    - cmp_consistency_f_walk
+    - run_motor_walk_table_s1
+    - run_motor_walk_fig_s7b3_4m
+  text: >
+    Table S1 (PDF p. 31) lists walk force f^walk = 0.05 pN in bold as the default simulation
+    parameter. However, in Supplementary Fig. 7b3 (PDF p. 22) and SI Notes Section III.2 (PDF pp.
+    32-33), the black-framed reference snapshot identical to Fig. 4b (4-M) is panel (b3-2) with
+    f^walk = 0.001, while panel (b3-4) at f^walk = 0.05 produces 'no clear pattern' (loose/dispersed).
+    Consistent with this, Eq. S4 gives v^walk = 0.5 um/s (filament traversal time 0.2 s) at
+    0.05 pN vs v^walk = 0.01 um/s (10 s, matching filament turnover 1/omega^f = 10 s and in vivo
+    PIV speeds ~20-35 nm/s) at 0.001 pN.
+  citation:
+    page: 32
+    printed_page: "SI Notes 5"
+    quote: "leading to a stripe pattern (f walk = 0.001 and 0.005)"
+    where: "SI Notes III.2 & Table S1"
+
+- id: q_crosslinker_length_half_vs_full
+  kind: possible_error
+  about:
+    - L0_cl_sim
+    - L0_cl_table_s3
+    - cmp_consistency_L0_cl
+  text: >
+    Supplementary Table 3 (PDF p. 25) lists 'Crosslinker length (um)' as 0.0175 (baseline), 0.02
+    (Fig. 7a5-2), and 0.03 (Fig. 7a5-3), which are exactly half of the full rest lengths L_0^{cl} =
+    0.035, 0.04, and 0.06 um printed in Table S1 (PDF p. 31), Supplementary Fig. 7a5/7b6 (PDF p. 22),
+    and SI Notes III.1 (PDF p. 32). Table 3 appears to report the half-arm rest length L_0^{cl}/2
+    used in Eq. S8 rather than full crosslinker length L_0^{cl}.
+  citation:
+    page: 25
+    quote: "Fig4b-1-M 6750 1 0 0.1 0.01 0.1 0.0175"
+    where: "Supplementary Table 3"
+
+- id: q_omega_cl_a3_3_typo
+  kind: possible_error
+  about:
+    - omega_cl_a3_3_table_s3
+    - omega_cl_a3_3_si_text
+    - cmp_consistency_omega_cl_a3_3
+  text: >
+    For simulation condition Supplementary Fig. 7a3-3, Supplementary Table 3 (PDF p. 25) prints
+    crosslinker turnover = 0.3, whereas both Supplementary Fig. 7a3-3 (PDF p. 22) and SI Notes
+    Section III.1 (PDF p. 32) state omega^{cl} = 0.03 (a factor-of-10 discrepancy).
+  citation:
+    page: 25
+    quote: "Supplementary Fig. 7a3-3 6750 1 0 0.1 0.3"
+    where: "Supplementary Table 3"
+
+- id: q_sim_pixel_size_mismatch
+  kind: unexplained_difference
+  about:
+    - sim_pixel_size_printed
+    - pseudo_image_discretization
+    - cmp_sim_pixel_size
+    - cmp_piv_window_phys
+  text: >
+    Methods (PDF p. 11) states that the 3 x 3 um^2 simulation box 'was discretized into 69 x 69
+    square boxes of the length 0.04325 um, which is comparable to the pixel size of the
+    experimental images.' Exact division gives 3 / 69 = 0.043478 um (69 * 0.04325 = 2.98425 um).
+    The printed value 0.04325 um reproduces the experimental PIV window conversion on p. 10
+    (91 / 10 * 0.04325 = 0.39358 -> 0.394 um), indicating 0.04325 um is the experimental pixel size
+    rather than the exact 3/69 simulation grid pitch.
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "the length 0.04325 µm, which is comparable to"
+    where: "Methods (Models)"
+
+- id: q_movie1_duration_rounding
+  kind: possible_error
+  about:
+    - movie1_dur_50frames_s
+    - cmp_movie1_dur_50frames
+  text: >
+    Description of Additional Supplementary Files (PDF p. 37) describes Supplementary Movie 1 as
+    '0.32 s/frame for 50 frames (15 s)'. Multiplying 50 * 0.32 s gives 16.0 s (and 49 inter-frame
+    intervals give 15.68 s), both rounding to 16 s rather than 15 s.
+  citation:
+    page: 37
+    quote: "0.32 s/frame for 50 frames (15 s)"
+    where: "Supplementary Movie 1"
+
+- id: q_cgmd_2d_not_runnable_unstated_algorithm
+  kind: unstated_model
+  about:
+    - cgmd_2d_network
+  text: >
+    The full 2D many-body CGMD simulation (Eqs. S1-S9, S1a-S1b) cannot be uniquely reconstructed
+    from the paper alone: SI Notes I (PDF p. 30) states that a free motor or crosslinker 'binds to
+    a randomly-selected pair of filaments whenever it find a position on each filament that are
+    separated by the length' L_0^m or L_0^{cl}, without specifying the binding attempt rate per
+    time step, number of pair trials, distance tolerance, or intersection selection rule. In
+    addition, how gamma_y^f/gamma_x^f is split between gamma_x^f and gamma_y^f, whether thermal
+    noise scales anisotropically, the exact steady-state averaging window and delta_q bin width
+    for S(q), and the simulation frame interval between t_n and t_{n+2} in Fig. 4d are all unstated
+    (simulation code is available only upon request to M.T.).
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "binds to a randomly-selected pair of filaments whenever"
+    where: "SI Notes I"
+
+- id: q_missing_relaxation_time_explanation
+  kind: unstated_model
+  about:
+    - cgmd_2d_network
+    - cgmd_anisotropic_langevin
+    - cmp_langevin_passive_vs_sim_2m
+    - cmp_analytic_passive_vs_sim_2m
+    - aniso_ratio_sim_2m
+  text: >
+    Main text (PDF p. 6) attributes cluster alignment and biased motion toward the higher-friction
+    direction to 'the difference in the relaxation time scale of the filaments... caused by the
+    friction asymmetry (see Supplementary Notes)'. However, the Supplementary Notes (PDF pp. 28-33)
+    contain no derivation or discussion of relaxation time scales or cluster motion anisotropy.
+    Moreover, single-filament passive Brownian motion under Eqs. S1a-S1b with FDT gives
+    <|dy|>/<|dx|> = sqrt(gamma_x^f / gamma_y^f) = 1/sqrt(1.5) = 0.816 < 1 (verified by
+    run_anisotropic_langevin_filament), opposite in sign to motor-free many-body simulation 2-M
+    (<|dy|>/<|dx|> = 1.13 > 1, P = 0.0485), implying that non-equilibrium filament/crosslinker
+    turnover or cluster-shape centroid tracking must invert the displacement anisotropy.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "relaxation time scale of the filaments"
+    where: text
+
+- id: q_structure_factor_normalization
+  kind: possible_error
+  about:
+    - structure_factor_interval
+    - gaussian_structure_factor
+  text: >
+    Methods (PDF p. 11) writes S(q) = integral_q^{q+dq} integral_0^{2*pi} <(1/N_f) sum_j sum_k
+    exp[-i q . (r_j^f - r_k^f)]> q dtheta dq, omitting the bin-area normalization 1/(2*pi*q*dq)
+    and summing over all filament particles (2 N_f particles while dividing by N_f). In
+    Supplementary Fig. 7c1-c4 (PDF p. 22), S(q) decays toward ~0.1 at large q/(2*pi) = 6 rather
+    than growing linearly with q as the unnormalized integral predicts, indicating that bin
+    averaging (and likely j != k or baseline handling) was applied in the code.
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "The structure factor is calculated from the position"
+    where: "Methods (Structure factor)"
+
+- id: q_control_labels_swapped_fig3a
+  kind: possible_error
+  about:
+    - t2_attp40_major
+    - t2_attp2_major
+    - t2_attp40_orient
+    - t2_attp2_orient
+  text: >
+    In Fig. 3a (PDF p. 5) and Supplementary Fig. 3c (PDF p. 18), the red control markers appear
+    to have swapped labels relative to Supplementary Table 2 (PDF p. 24) and Supplementary Fig. 3b:
+    Table 2 reports attP40 (control) with major = 345.57 nm, minor = 161.02 nm, orientation = 64.5 deg
+    and attP2 (control) with major = 363.37 nm, minor = 166 nm, orientation = 63.5 deg, whereas
+    Fig. 3a and Fig. S3c label the higher-major-length point (~363 nm, 63.5 deg, 166 nm) as
+    Control (attP40) and the lower point (~346 nm, 64.5 deg, 161 nm) as Control (attP2).
+  citation:
+    page: 24
+    quote: "attP40 (control) viable 18 64.5 289 345.57"
+    where: "Supplementary Table 2 vs Fig. 3a & Fig. S3c"
+
+- id: q_rhogef2_stage16_asterisk_mismatch
+  kind: possible_error
+  about:
+    - pval_figs5d_rhogef2
+  text: >
+    In Supplementary Fig. 5d (PDF p. 20), the caption states 'p=0.0641 (RhoGEF2). *p < 0.05,
+    **p < 0.01', yet the boxplot panel above RhoGEF2 displays a single asterisk (*), inconsistent
+    with p = 0.0641 > 0.05.
+  citation:
+    page: 20
+    quote: "p=0.150 (ROCK) or p=0.0641 (RhoGEF2)"
+    where: "Supplementary Fig. 5d"
+
+- id: q_indexing_and_table_crossref_typos
+  kind: reading
+  about:
+    - cgmd_2d_network
+    - t2_myosin_dn_orient
+  text: >
+    Minor typographical inconsistencies noted during reading: (1) SI Notes p. 1 (PDF p. 28) writes
+    'i = 1, 2 and the particle i = 0 and 1' and 'h = 1, 2' while Eqs. S2-S3, S7, S9 and Fig. 4a
+    use 0-based indices i = 0, 1 and h = 0, 1; (2) Methods p. 11 refers to 'Supplementary Table 4'
+    for MIST molecular complexes (actually Supplementary Data 2); (3) Supp. Fig. 6 caption (p. 21)
+    refers to 'Supplementary Table 5' for simulation conditions (actually Supplementary Table 3);
+    (4) SI Notes III.1 (p. 32) cites non-existent 'Supplementary Table 7'; (5) Supplementary Table 2
+    lists Myosin II[DN] median orientation as 54.4 deg while all other 27 rows end in .5 deg;
+    (6) Supplementary Table 5 omits '±' before the parenthetical spreads on the DAAM RNAi row and
+    does not explicitly label the parenthetical numbers as SD, nor does p. 3 state whether
+    '450 ± 13.2 nm' is SD or SEM.
+  citation:
+    page: 28
+    quote: "Since the filament consists of two particles"
+    where: "SI Notes I"
+
+- id: q_dt_unit_and_langevin_settings
+  kind: choice
+  about:
+    - dt_sim
+    - run_anisotropic_langevin_filament
+    - ref_langevin_dt
+    - ref_langevin_n_traj
+  text: >
+    SI Notes p. 3 (PDF p. 30) writes 'dt = 5 x 10^-5' without an explicit unit; seconds are
+    inferred from all other SI Notes time units (sec^-1, Pa*sec). For the reconstructed
+    single-filament Langevin baseline (run_anisotropic_langevin_filament), dt = 0.001 s and
+    n_traj = 2000 (5 replicates) were chosen instead of dt = 5e-5 s so refinement runs stay under
+    a few seconds; dt refinement (ref_langevin_dt) confirms < 2% insensitivity.
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "time increment is set to dt = 5 × 10−5"
+    where: "SI Notes I"
+
+- id: q_gaussian_sf_2pi_convention
+  kind: possible_error
+  about:
+    - gaussian_structure_factor
+    - gaussian_structure_factor_peak
+    - sf_1m_A
+    - sf_1m_sigma
+    - sf_3m_A
+    - sf_3m_sigma
+    - sf_4m_A
+    - sf_4m_sigma
+    - sf_a4_1_A
+    - sf_a4_1_sigma
+  text: >
+    Methods (PDF p. 11) writes the Gaussian structure-factor fit as
+    A / ((2*pi)^(1/2) * sigma) * exp[-(q - mu)^2 / (2 * sigma^2)] with periodic interval 2*pi / mu,
+    so q and mu are angular wavenumbers. However, Supplementary Table 4 (PDF p. 26) tabulates columns
+    A, mu/(2*pi), and sigma while Supplementary Fig. 7c1-c4 (PDF p. 22) plots S(q) and the dotted
+    Gaussian fit against q/(2*pi). Checking peak heights A/(sqrt(2*pi)*sigma) = 0.974 (1-M),
+    0.716 (3-M), 0.398 (4-M), and 2.656 (a4-1) and half-widths at e^(-1/2) of peak height against
+    Fig. 7c1-c4 shows that Table 4's sigma (0.528, 0.372, 0.501, 0.561 um^-1) and A are fitted
+    directly in q/(2*pi) coordinates (effectively sigma/(2*pi) and A/(2*pi) relative to p. 11).
+    Plugging Table 4's sigma into p. 11's literal (q - mu)^2 / (2*sigma^2) with angular wavenumbers
+    q = 2*pi*(q/2*pi) and mu = 2*pi*(mu/2*pi) shrinks the Gaussian width by a factor of 2*pi
+    (yielding S ~ 10^-7 at q/(2*pi) = 2.0 um^-1 in c1 instead of the plotted ~0.65).
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "The interval of the structure is measured"
+    where: "Methods (Structure factor) vs Supplementary Table 4 & Fig. 7c"
+
+- id: q_reading_gaussian_sf_printed_vs_table4
+  kind: reading
+  about:
+    - gaussian_structure_factor
+    - rel_gaussian_sf_peak_limit
+    - run_sf_gaussian_peak_1m
+    - spatial_frequency
+    - structure_factor_peak_frequency
+  text: >
+    Audit disagreement with the first reader's formulation of gaussian_structure_factor:
+    (1) gaussian_structure_factor cites Methods p. 11 (where exp[-(q - mu)^2 / (2*sigma^2)] is
+    printed) but alters the base model equation to exp[-(q/(2*pi) - mu/(2*pi))^2 / (2*sigma^2)] to
+    match Supplementary Table 4's q/(2*pi) coordinate convention, rather than keeping the literal
+    p. 11 equation as the printed base model and placing the q/(2*pi) convention in a variant_of
+    model; (2) its independent-variable port q_over_2pi is typed as structure_factor_peak_frequency
+    rather than the already-declared spatial_frequency (which would mismatch a spatial_frequency
+    x-axis when digitizing Supplementary Fig. 7c); and (3) rel_gaussian_sf_peak_limit pins both
+    mu_over_2pi and q_over_2pi to constant 1.0 instead of equating q_over_2pi = mu_over_2pi. Left
+    unchanged per audit rules (first reader's model-scope choice).
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "The interval of the structure is measured"
+    where: "Methods (Structure factor)"
+
+- id: q_reading_anisotropic_friction_split_scope
+  kind: reading
+  about:
+    - anisotropic_filament_friction
+    - rel_anisotropic_friction_symmetric_limit
+    - cgmd_dimer_rk4
+    - cgmd_dimer_rk4_corrected
+  text: >
+    Audit disagreement with scope markings on anisotropic_filament_friction,
+    rel_anisotropic_friction_symmetric_limit, and cgmd_dimer_rk4 / cgmd_dimer_rk4_corrected:
+    SI Notes p. 3 (PDF p. 30, Eqs. S1a-S1b) specifies only the ratio gamma_y^f / gamma_x^f without
+    stating whether gamma_x^f = gamma^f is held fixed while gamma_y^f is scaled up (as opposed to
+    holding gamma_y^f = gamma^f or sqrt(gamma_x^f * gamma_y^f) = gamma^f fixed). While
+    cgmd_anisotropic_langevin and q_cgmd_2d_not_runnable_unstated_algorithm explicitly mark this
+    partition as unstated/reconstructed, anisotropic_filament_friction encodes gamma_x^f = gamma^f
+    without reconstructed and rel_anisotropic_friction_symmetric_limit marks the relation as
+    provenance: stated. Likewise, cgmd_dimer_rk4 (and its corrected variant) sets thermal noise
+    xi = 0, applies the unstated friction split, and constructs a synthetic two-filament geometry
+    not stated in the paper without setting reconstructed. Left unchanged per audit rules.
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "where γyf /γxf measures the friction asymmetry"
+    where: "Eqs. S1a-S1b"
+
+- id: q_reading_dimer_rk4_solver_and_eigenvalue
+  kind: reading
+  about:
+    - cgmd_dimer_rk4
+    - cgmd_dimer_rk4_corrected
+    - ref_dimer_rk4_corrected_eta01_dt
+    - q_eta_cyto_contradiction
+  text: >
+    Audit note on solver details in cgmd_dimer_rk4/model.py and ref_dimer_rk4_corrected_eta01_dt:
+    (1) model.py hardcodes a divergence cap CAP_UM = 100.0 that returns finite sentinel outputs
+    (100000 nm) rather than NaN if triggered (never triggered on current runs because the bounded
+    cosine bending potential turns linear RK4 instability into large-amplitude nonlinear oscillations);
+    (2) the reported rk4_stiffness_number = 16 * k_bend / (L0_cl^2 * g_cl) * dt (= 5.34 at
+    eta_cyto = 0.1 Pa*s, dt = 5e-5 s) is the fixed-ABD center-bead approximation rather than the
+    exact coupled two-filament linearized eigenvalue at alpha = 0.5,
+    (16 * k_bend / L0_cl^2) * (1/g_cl + 1/(4*g_f)) * dt = 6.75 at dt = 5e-5 s and 3.37 (> 2.785)
+    at factor = 2 (dt = 2.5e-5 s). The coupled eigenvalue explains why ref_dimer_rk4_corrected_eta01_dt
+    still diverges to 0.153 nm (vs converged 0.418 nm) at factor = 2 even though 5.34/2 = 2.67 < 2.785,
+    further reinforcing that dt = 5e-5 s is unstable at eta_cyto = 0.1 Pa*s.
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "solved by using the fourth-order Runge-Kutta method"
+    where: "SI Notes I"
+
+- id: q_fig5f_and_figs5d_significance_claims
+  kind: possible_error
+  about:
+    - pval_fig5f_ctrl
+    - pval_fig5f_myosin
+    - pval_figs5d_rhogef2
+    - sim_4m_coherency
+  text: >
+    Additional figure-to-text/caption inconsistencies found during independent audit:
+    (1) In Fig. 5f (PDF p. 9) vs its caption (PDF p. 10), Control (P = 1.78e-6) is annotated with
+    two asterisks (**) whereas myosin II[DN] (P = 8.98e-6, a larger P value than Control) is
+    annotated with three asterisks (***), and the caption defines only *P < 0.05, **P < 0.01
+    (omitting ***); (2) Main text (PDF p. 3) states 'Most of the nanocluster-associated molecules
+    colocalized with the actin cables at stage 16 (Supplementary Fig. 5c, d)', whereas Supplementary
+    Fig. 5d (PDF p. 20) reports statistical significance vs GFP for only 2 of the 5 tested
+    nanocluster-associated proteins (Zasp52 p = 1.99e-4, Myosin II p = 0.0195), while DAAM
+    (p = 0.764), alpha-Actinin (p = 0.176), and ROCK (p = 0.150) are all non-significant;
+    (3) In Fig. 4f (PDF p. 7), the 4-M coherency time course up to t = 40 s remains below ~0.23
+    (~0.20 at t = 40 s), whereas Supplementary Table 3 (PDF p. 25) reports Fig4b-4-M coherency as
+    0.30 (matching the > 0.3 cable-formation threshold used for the red frame in Fig. 4b) without
+    stating at what later steady-state time point (> 40 s) coherency reaches 0.30.
+  citation:
+    page: 10
+    printed_page: "10"
+    quote: "P = 1.78e-6 in Control (n = 9), P = 0.728"
+    where: "Fig. 5f caption, Results p. 3, Supp. Fig. 5d, Fig. 4f"
+
+- id: q_si_notes_and_table_s1_minor_typos
+  kind: possible_error
+  about:
+    - d_actin_s6a
+    - d_f_lit
+    - l_actinin_s6a
+    - L0_cl_lit
+    - E_f_str_sim
+    - E_f_str_lit
+    - persistence_length_bending
+  text: >
+    Additional SI Notes, Discussion, and Table S1 inconsistencies found during independent audit:
+    (1) SI Notes III.2 (PDF p. 33) cites 'Supplement Figure 7b6 L_0^f = 0.075' for shorter filament
+    length, whereas Supplementary Fig. 7b6 (PDF p. 22) varies crosslinker length L_0^{cl} and panel
+    7b7 varies filament length L_0^f (b7-2 = 0.075); (2) Discussion (PDF p. 8) cites 'Supplementary
+    Tables 3 and 5' for cluster size and interval dependence on turnover rates, whereas structure
+    intervals are in Supplementary Table 4 (Table 5 is motion analysis); (3) Table S1 (PDF p. 31)
+    prints l_0^m and l_0^{cl} in the persistence-length formulas instead of the rest-length symbols
+    L_0^m and L_0^{cl} (and prints mot instead of m in the motor Young's modulus formula), and uses
+    an F-actin Young's modulus (~1.27 x 10^5 Pa) ~16,000x softer than the literature value listed
+    beside it (2 x 10^9 Pa [23]) without explaining the coarse-grained timestep softening in SI Notes;
+    (4) Supplementary Fig. 6a (PDF p. 21) uses F-actin width 7 nm and alpha-actinin length 35 nm
+    (citing Ribeiro et al. 2014 on p. 4), whereas Table S1 (PDF p. 31) lists in vivo/in vitro values
+    0.009 um (9 nm [15]) and 0.036 um (36 nm, citing the same Ribeiro et al. 2014 [17]).
+  citation:
+    page: 33
+    printed_page: "SI Notes 6"
+    quote: "stripe structure gets more compact (Supplement Figure 7b6"
+    where: "SI Notes III.2, Discussion p. 8, Table S1, Supp. Fig. 6a"
+
+- id: q_fig1k_source_data_duplicated_from_fig1j
+  kind: possible_error
+  about:
+    - d_fig1k_length
+    - d_fig1j_diameter
+    - sekine_source_data/f1k_len_0_mean_stored
+    - sekine_source_data/f1j_diam_0_mean
+  text: >
+    Independent 1200-dpi digitization of Fig. 1j (d_fig1j_diameter) reproduces all 6 timepoint means
+    in Source-data_Fig1j.xlsx to 0.07% median error (2.672, 2.598, 3.151, 3.659, 3.942, 3.802 um vs
+    2.674, 2.596, 3.150, 3.656, 3.940, 3.798 um at -80 to +20 min), whereas Fig. 1k (d_fig1k_length)
+    recovers tracheal tube lengths rising from 16.73 um (-80 min) to 24.24 um (+20 min) (means 16.73,
+    17.05, 18.83, 20.77, 22.66, 24.24 um; min-max range 13.50-26.96 um). In sekine_source_data,
+    Source-data_Fig1k.xlsx ('Tube length') instead contains an exact cell-for-cell copy of
+    Source-data_Fig1j.xlsx ('Tube Diameter', 2.60-3.94 um, differing from Fig. 1k by 14.05-20.45 um
+    or 468-557%), confirming that the true Fig. 1k tube-length Source Data are missing from
+    MOESM11_ESM.zip (see sekine_source_data/q_fig1k_duplicated_from_fig1j).
+  citation:
+    page: 2
+    printed_page: "2"
+    quote: "Transition of tube diameter and length of the dorsal"
+    where: "Fig. 1j-k vs Source-data_Fig1j.xlsx & Source-data_Fig1k.xlsx"
+
+- id: q_fig4c_st15_misplotted_orientation
+  kind: possible_error
+  about:
+    - d_fig4c_sim_exp
+    - st15_median_orientation
+    - st15_major_mean_t3
+    - sekine_source_data/f4c_st15_major
+  text: >
+    Comparing the 900-dpi digitization of Fig. 4c (d_fig4c_sim_exp, PDF p. 7) against
+    Source-data_Fig4c.xlsx and Supplementary Table 3 shows that 8 of 9 unoccluded markers (CGMD 1-M,
+    2-M, 2-H, 3-M, 3-H, 4-M, 4-H and experimental St.16) match the table to 0.00-0.08 deg horizontally
+    and 0.02-0.52 nm vertically (e.g. St.16 sits at 66.50 deg, 383.58 nm vs 66.5 deg, 383.54 nm).
+    However, the experimental St.15 grey circle in Fig. 4c is plotted at 46.98 deg (328.79 nm) —
+    shifted +2.5 deg (81 px at 900 dpi, clearly right of the 45 deg midpoint) from the 44.5 deg
+    median orientation reported in Supplementary Table 1 (st15_median_orientation), Supplementary
+    Table 3, and Source-data_Fig4c.xlsx (cell K34 = 44.5, cell O34 = 328.59 nm).
+  citation:
+    page: 8
+    printed_page: "8"
+    quote: "The median orientation and average major length are"
+    where: "Fig. 4c (p. 7) vs Supplementary Table 1, Table 3 & Source-data_Fig4c.xlsx"
+
+- id: q_figs3c_red_control_marker_on_wasp
+  kind: possible_error
+  about:
+    - d_figs3c_controls
+    - t2_attp40_major
+    - t2_attp40_minor
+    - t2_wasp_major
+    - t2_wasp_minor
+    - sekine_source_data/f3a_attp40_major
+    - sekine_source_data/f3a_attp40_minor
+  text: >
+    Extending q_control_labels_swapped_fig3a: pixel-level comparison of Supplementary Fig. 3c
+    (d_figs3c_controls, PDF p. 18) against Supplementary Table 2 / Source-data_SupplementaryFig3bc.xlsx
+    reveals that not only are the Control (attP40) and Control (attP2) labels swapped, the lower red
+    highlight circle ('Control (attP2)', bbox center 160.86 nm, 348.19 nm; digitized 160.89 nm,
+    348.69 nm; bottom edge at 345.97 nm) was actually drawn on top of the WASp RNAi marker
+    (160.87 nm, 347.77 nm) rather than on attP40 (161.02 nm, 345.57 nm). The true attP40 marker
+    remains visible as an unhighlighted blue circle (RGB = 171, 204, 233 at its center) peeking out
+    ~3.1 nm below the red circle, whereas the upper red circle ('Control (attP40)') sits accurately
+    on attP2 (165.82 nm, 363.57 nm vs 166.00 nm, 363.37 nm).
+  citation:
+    page: 18
+    quote: "the average minor length and the average major length"
+    where: "Supplementary Fig. 3c vs Supplementary Table 2 & Source-data_SupplementaryFig3bc.xlsx"
+
+- id: q_nanocluster_motion_code_vs_methods
+  kind: possible_error
+  about:
+    - motion_anisotropy_ratio
+    - sim_pixel_size_printed
+    - pseudo_image_discretization
+    - roi_side_px_live
+    - dt_frame_live
+    - aniso_ratio_sim_4m
+    - aniso_ratio_st15_0
+    - aniso_ratio_st16_ctrl
+    - sekine_code/nanocluster_motion_matlab
+    - sekine_code/nanocluster_motion_methods_spec
+    - sekine_code/implied_pixel_size_bounds
+  text: >
+    Cross-record audit of the released MATLAB nanocluster motility script (sekine_code:
+    Nanocluster_motion.m, 260 lines, and README.md, 8 lines; cited on Methods p. 10 and Code
+    availability p. 11 for Fig. 4d,e, Fig. 5a,d, and Supplementary Table 5) reveals that the script
+    only implements an upstream binary image-tracking step exporting 6 raw-pixel columns
+    (x1, y1, A1, x2, y2, A2; with (0, 0, 0) sentinels for unmatched clusters) and diverges from
+    Methods p. 10 / README.md in six major respects (verified by porting Nanocluster_motion.m in
+    sekine_code/nanocluster_motion_matlab vs the documented specification in
+    sekine_code/nanocluster_motion_methods_spec; no ModelAtlas equation relation exists because
+    sekine_code ports image tracking whereas sekine2024 models CGMD dynamics and summary ratios,
+    pixel-area vs pixel-length formulas differ in dx^2 vs dx^1 scaling and are too_plain, and
+    Methods p. 10's 7 tracking thresholds appear only in prose rather than sekine2024/data.yaml):
+    (1) Missing circularity 0.5-1.0 filter (sekine_code/q_missing_circularity_filter):
+    Nanocluster_motion.m never computes or exports perimeter or circularity, so circularity
+    filtering cannot even be applied downstream in R (an elongated 1x20 px rod with A = 20 px =
+    0.0374 um^2 and C = 0.143 << 0.5 is tracked as matched=1 vs Methods spec matched=0).
+    (2) Missing 0.5-2 fold area-ratio filter and undisclosed largest-overlap tie-breaker
+    (sekine_code/q_missing_area_ratio_and_largest_tiebreak): line 44 sets
+    bwareafilt(BW_Image_2, [1 Inf]) ('%no limitation', contradicting line 39's comment '6 to 53
+    pixels') with no area-ratio check (accepting a 16->64 px, 4.0x fusion), and for >= 2
+    8-connected intersection components lines 101-145 select the LARGEST overlapping t_{n+1}
+    object (maxArea, comment 'before was nearest one'), discarding a valid 1.0x match whenever
+    the cluster also touches a larger 4.0x structure so downstream 0.5-2x filtering cannot
+    recover it (matched=0 vs spec matched=1).
+    (3) Unreleased displacement and anisotropy computation
+    (sekine_code/q_missing_displacement_and_anisotropy_code): Nanocluster_motion.m contains no
+    pixel-to-micron factor, no frame interval (dt_frame_live = 0.32 s), no zero-sentinel removal,
+    no dx/dy subtraction, and no |dy|/|dx| ratio (motion_anisotropy_ratio); the downstream R
+    script cited on Methods p. 10 is not released.
+    (4) Hidden imclearborder, default im2bw(0.5), 8-connectivity, and hardcoded frame count
+    (sekine_code/q_hidden_imclearborder_filter, sekine_code/q_hidden_im2bw_threshold_and_connectivity,
+    sekine_code/q_hardcoded_frame_count_ignores_filelist): lines 41 and 45 silently call
+    imclearborder on both frames (dropping 50x50 px ROI border-touching clusters at t_n and
+    turning clusters stepping onto the border at t_{n+1} into (0, 0, 0) rows: matched=0 vs spec
+    matched=2); lines 35-36 call deprecated im2bw with implicit default level = 0.5 (127.5/255 for
+    uint8, erasing dim intensity-100 clusters unless pre-binarized externally in Fiji via Methods
+    p. 10's local Otsu r = 5 px: matched=0 vs spec matched=2) with undisclosed 8-connectivity; and
+    line 8 hardcodes Numb_of_Images = 100 (99 pairs, ignoring num_frames = numel(filelist) on line
+    25), conflicting with Methods p. 10's 200-frame live-imaging length.
+    (5) Stage 1 and Stage 2 tracking bugs (sekine_code/q_stage1_centroid_miss_bug,
+    sekine_code/q_stage2_hole_shrink_and_silent_try_catch_abort): Stage 1 (lines 61-67) calls
+    bwselect on raw intersection centroids without imfill/shrink, dropping non-convex or 2-px
+    anti-diagonal overlaps whose rounded centroid lands on a 0 background pixel (matched=0 vs
+    spec matched=1); Stage 2 (lines 88, 110-119, 181-191, 241-242) applies imfill('holes') +
+    bwmorph('shrink', Inf), collapsing ring-shaped overlaps onto interior 0 hole pixels of Cumm_Img
+    so empty bwselect -> Centroid throws an error silently swallowed by the bare try/catch around
+    the per-cluster loop, aborting the rest of the frame and dropping all subsequent unrelated
+    clusters (3 of 4 dropped, including an unrelated healthy cluster; plus an uninitialized
+    ref_Coordinate_List crash on line 243 if frame 1 is empty or fails on cluster 1).
+    (6) Implicit pixel-size bracket from [6, 53] px vs 0.01-0.1 um^2
+    (sekine_code/q_unstated_pixel_size_and_sim_grid_mismatch, reinforcing q_sim_pixel_size_mismatch):
+    line 40's hardcoded [6, 53] px window uniquely constrains the unstated pixel pitch to
+    (0.043033, 0.043437] um (sekine_code/implied_pixel_size_bounds), matching experimental
+    sim_pixel_size_printed = 0.04325 um (6 px = 0.01122 um^2, +12.2% above 0.01 um^2; 53 px =
+    0.09914 um^2) while excluding both the exact simulation grid pitch 3/69 = 0.043478 um (52 px)
+    and Supplementary Fig. 6a's 43 nm = 0.043 um (54 px).
+  citation:
+    page: 10
+    printed_page: "10"
+    quote: "measured using an original program written in Matlab"
+    where: "Methods (Motion anisotropy) & Code availability (p. 11) vs sekine_code/Nanocluster_motion.m"
+
+- id: q_bois2011_continuum_vs_microscopic_bridge
+  kind: unstated_model
+  about:
+    - ref-14
+    - sref-21
+    - ref-23
+    - cgmd_2d_network
+    - cgmd_anisotropic_langevin
+    - cylindrical_friction_filament
+    - anisotropic_filament_friction
+    - motor_walking_velocity
+    - connector_arm_stretching_potential
+    - gaussian_structure_factor
+    - structure_factor_interval
+    - structure_factor_interval_wavenumber
+    - cable_interval_in_vivo
+    - interval_sim_4m
+    - eta_cyto_table_s1
+    - eta_cyto_si_text
+    - L0_f_sim
+    - L0_m_sim
+    - L0_cl_sim
+    - N_f_sim
+    - N_cl_sim
+    - N_m_sim
+    - omega_f_sim
+    - zeta_motor_sim
+    - q_cgmd_2d_not_runnable_unstated_algorithm
+    - q_eta_cyto_contradiction
+    - bois2011/hydrodynamic_length
+    - bois2011/characteristic_velocity
+    - bois2011/diffusive_timescale
+    - bois2011/peclet_number_physical
+    - bois2011/discrete_wavenumber
+    - bois2011/single_species_dispersion_eq12
+    - bois2011/single_species_rda_dispersion_eq15
+    - bois2011/single_species_pde_eq1_3
+    - bois2011/asdm_dispersion_eq15
+    - bois2011/asdm_pde_eq14
+    - bois2011/q_no_dimensional_params
+  text: >
+    No equation-level ModelAtlas relation (same_as, reduces_to, derived_from, scales_as,
+    approximated_by) or cited.yaml link connects bois2011 and sekine2024 across all 26 x 31 = 806
+    model pairs. sekine2024 does not cite bois2011 directly (none of Refs. 1-55 or S1-S27 is Bois,
+    Julicher & Grill 2011; Ref. 23 is Yan, Narayanan, Wiegand, Julicher & Grill 2022 on cortical
+    condensates) and takes zero values from bois2011 (a purely dimensionless theory paper with 0
+    origin: measured data). Instead, sekine2024 connects to bois2011 transitively via hannezo2015
+    (Ref. 14 / S21), positioning its 2D bottom-up coarse-grained molecular dynamics (CGMD) model as
+    the molecular mechanism beneath hannezo2015's phenomenological active-gel model (which in turn
+    extends bois2011 and shares verified same_as ModelAtlas families with bois2011 for
+    hydrodynamic_length, diffusive_timescale, peclet_number_physical, and
+    single_species_rda_dispersion_eq15). Four structural and quantitative gaps block any
+    equation-level map between bois2011 and sekine2024:
+    (1) Model-class mismatch and missing coarse-graining derivation: bois2011 formulates 1D
+    isotropic, constant-thickness viscous continuum advection-diffusion-reaction PDEs (explicitly
+    neglecting viscoelasticity and filament discreteness, p. 1), whereas sekine2024 models a
+    non-runnable 2D discrete 3-species Langevin CGMD network (cgmd_2d_network: N^f = 4500 polar
+    two-bead actin filaments, N^cl = 6750 passive alpha-actinin crosslinkers, N^m = 900 bipolar
+    myosin II motors in a 3 x 3 um^2 periodic box with stochastic binding/unbinding/turnover),
+    microscopic single-molecule elastic/drag constitutive laws, and phenomenological Gaussian
+    structure-factor fits. Neither paper derives effective continuum fields (c, v), gel viscosity
+    eta, substrate friction gamma, or an active-stress constitutive law f(c) from Eqs. S1-S9.
+    Superficial algebraic pairs across shared dimensions (e.g., bois2011/discrete_wavenumber vs
+    structure_factor_interval_wavenumber, characteristic_velocity vs motor_walking_velocity,
+    diffusive_timescale vs fusion_duration_time or motor_walking_velocity.tau_walk, or
+    single_species_dispersion_eq12 vs gaussian_structure_factor) either represent unrelated
+    physical/functional forms or fail ModelAtlas's too_plain (<= 2 ops) threshold.
+    (2) Symbol overloading and dimensional mismatches: gamma is 3D continuum substrate friction per
+    unit volume [Pa*s/m^2] in bois2011 Eq. (3) vs single-bead cytosolic Stokes drag [pN*s/um] in
+    sekine2024 Eqs. (S1)-(S3); eta is macroscopic active-gel internal viscosity [Pa*s] in bois2011
+    vs background cytosolic fluid viscosity eta_cyto (1 Pa*s in Table S1; 0.1 Pa*s in SI text)
+    setting solvent drag in sekine2024; zeta appears in active stress coupling zeta*Delta_mu [Pa]
+    in bois2011 vs motor-ABD sliding friction zeta = 0.1 pN*s/um in sekine2024 Eq. (S4); L is the
+    1D macroscopic domain length in bois2011 vs simulation box side L_box = 3 um and molecular rest
+    lengths L_0^f = 0.1, L_0^m = 0.2, L_0^cl = 0.035 um in sekine2024; and sigma is total 1D fluid
+    stress [Pa] in bois2011 vs Gaussian structure-factor peak width [1/um] in sekine2024.
+    (3) Breakdown of continuum scale separation (ell >> L_0^f, L_0^m): bois2011 prints no
+    dimensional parameters (bois2011/q_no_dimensional_params), with pattern wavelengths
+    lambda/ell in [5.13, 6.67] across its worked examples (single-species Pe = 25 linear 5.13*ell;
+    ASDM Fig. 5d steady state 6.67*ell). Matching sekine2024's periodic cable spacing
+    (450 +/- 13.2 nm in vivo; 529 nm in CGMD 4-M) requires ell = 67-88 nm (in vivo) or 79-103 nm
+    (CGMD 4-M) — comparable to or smaller than an individual actin filament (L_0^f = 100 nm) and
+    2-3x smaller than a bipolar myosin II motor (L_0^m = 200 nm) or nanocluster (168-384 nm) —
+    violating the hydrodynamic continuum separation of scales required by bois2011.
+    (4) Microscopic transport and elastic-motor scales vs continuum inputs: from Table S1
+    (eta_cyto = 1 Pa*s), single-bead filament drag is gamma^f = 0.6597 pN*s/um (2*gamma^f =
+    1.3195 pN*s/um per two-bead filament), yielding free-filament thermal diffusivity
+    D_fil,x = k_B T / (2*gamma^f) = 0.00314 um^2/s (diffusive length sqrt(D_fil,x / omega^f) =
+    177 nm over filament lifetime 1/omega^f = 10 s; at eta_cyto = 0.1 Pa*s, D_fil,x = 0.0314 um^2/s
+    and 560 nm), and naive 2D filament drag density xi_2D,x = (N_f / L_box^2) * (2*gamma^f) =
+    6.60e8 Pa*s/m. Moreover, in sekine2024 Eqs. (S4) and (S6)-(S7), the direct counterforce of
+    f^walk vanishes identically and active forces enter only indirectly through load-free kinematic
+    ABD walking (v^walk = f^walk / zeta) stretching harmonic motor arms (k_eff = 2*kappa^{m,str} /
+    L_0^m = 100 pN/um per arm), with no closed-form mapping onto bois2011's scalar active stress
+    (zeta*Delta_mu)_0 * f(c) or continuum gel viscosity eta.
+  citation:
+    page: 2
+    printed_page: "2"
+    quote: "phenomenological active gel model, the local anisotropic friction"
+    where: "Introduction (p. 2) & Results/SI Notes (pp. 4, 28-33) vs bois2011 Eqs. (1)-(15)"
+
+- id: q_bois2011_contrasting_myosin_and_patterning_predictions
+  kind: unexplained_difference
+  about:
+    - cgmd_2d_network
+    - anisotropic_diffusion_ratio
+    - motor_walking_velocity
+    - motion_anisotropy_ratio
+    - interval_sim_1m
+    - interval_sim_3m
+    - interval_sim_4m
+    - interval_sim_a4_1
+    - f_walk_table_s1
+    - f_walk_fig_s7b3_4m
+    - sim_2h_orient
+    - sim_2h_major
+    - sim_2h_coherency
+    - sim_4l_orient
+    - sim_4l_coherency
+    - sim_4m_orient
+    - sim_4m_coherency
+    - t2_myosin_dn_orient
+    - t2_myosin_dn_major
+    - aniso_ratio_sim_2m
+    - aniso_ratio_sim_4m
+    - aniso_ratio_st15_0
+    - aniso_ratio_st16_ctrl
+    - aniso_ratio_st16_myosin_dn
+    - pval_fig3e_myosin_kw
+    - pval_fig5f_myosin
+    - q_f_walk_contradiction
+    - q_missing_relaxation_time_explanation
+    - bois2011/single_species_dispersion_eq12
+    - bois2011/single_species_instability_eq13
+    - bois2011/single_species_stability_boundary_hill
+    - bois2011/single_species_fastest_mode
+    - bois2011/single_species_pde_eq1_3
+    - bois2011/single_species_rda_dispersion_eq15
+    - bois2011/asdm_dispersion_eq15
+    - bois2011/asdm_stability_boundary
+    - bois2011/asdm_pde_eq14
+  text: >
+    Comparing bois2011's 1D active-fluid continuum framework against sekine2024's 2D CGMD
+    simulations and in vivo Drosophila tracheal perturbations reveals five qualitative and
+    quantitative predictive divergences — most sharply in myosin motor dependence:
+    (1) Motor-free periodic clustering vs mandatory active-stress threshold: in bois2011's
+    single-species model (Eqs. 1-13), vanishing active stress (Pe = 0) gives lambda(k) = -D*k^2 < 0
+    for all k != 0 so no clusters or patterns can form below the finite threshold Pe > Pe_crit
+    (Pe_crit >= 4 for Hill stress at c_0 = 1, Eq. 13; ASDM at Pe = 0 requires autocatalytic
+    Turing chemistry with D_a/D_s < 0.114 at rho_a = 1, rho_s = 1.5). In contrast, sekine2024
+    demonstrates spontaneous, regularly spaced ~200-350 nm nanoclusters with periodic structure
+    factor interval 404 nm (1-M, mu/(2*pi) = 2.476 um^-1) at N^m = 0 (zero myosin motors) purely
+    from passive alpha-actinin crosslinking + filament turnover, and even aligned fused structures
+    at high crosslinker density (2-H: N^cl = 7500, N^m = 0, gamma_y^f/gamma_x^f = 1.5, major =
+    439.6 nm, dominant direction = 85.3 deg, coherency = 0.15). Consistently, in vivo myosin II[DN]
+    still forms nanoclusters (325.64 nm major length, orientation 54.4 deg) and retains significant
+    circumferential fusion-duration bias (P = 1.83e-5, Fig. 3e) and PIV anisotropy (P = 8.98e-6,
+    Fig. 5f), failing specifically at cluster-to-cable fusion rather than initial clustering.
+    (2) Non-monotonic motor-activity window (upper destruction threshold) vs monotonic Pe
+    amplification: in bois2011 Eqs. (12) and (15) (Figs. 3a-b, 5b-c), diffusivity D is independent
+    of active stress, so raising Pe monotonically increases growth rates, expands unstable parameter
+    regions, and sharpens concentration peaks without any upper bound (Pe = 7, 10, 25, 50). In
+    sekine2024 (SI Notes III.2, pp. 32-33; Fig. S7b3), aligned stripes occur only inside an
+    intermediate window of motor walk force: f^walk = 0 produces an unoriented labyrinth;
+    f^walk = 0.001-0.005 pN (v^walk = 0.01-0.05 um/s, filament traversal time tau_walk = 10-2 s,
+    single-filament Peclet Pe_fil = v^walk*L_0^f/D_fil = 0.32-1.59 at eta_cyto = 1 Pa*s) produces
+    circumferential stripes (4-M); and f^walk = 0.05 pN (v^walk = 0.5 um/s, tau_walk = 0.2 s = 50x
+    faster than filament turnover 1/omega^f = 10 s, Pe_fil = 15.9, drag force 2*gamma^f*v^walk =
+    0.660 pN >> k_B T/L_0^f = 0.0414 pN) injects active agitation that enhances effective filament
+    diffusion and destroys the pattern completely ("no clear pattern", SI Notes p. 33; see also
+    q_f_walk_contradiction).
+    (3) Opposite sign of myosin-induced pattern-spacing shift: adding N^m = 900 motors in
+    sekine2024 increases the structure-factor interval from 404 nm (1-M, N^m = 0) to 571 nm
+    (3-M isotropic labyrinth, +41.3%) and 529 nm (4-M anisotropic stripes, +30.9%, Supplementary
+    Table 4) — shifting peak spatial frequency downward (2.476 -> 1.751 / 1.891 um^-1) as motors
+    bridge and coalesce neighboring clusters. By contrast, raising active stress Pe in bois2011
+    shifts the fastest-growing linear wavenumber monotonically upward and shortens the selected
+    wavelength: k_max*ell = sqrt(sqrt(Pe/4) - 1) increases from 0.568 (Pe = 7) to 1.225 (Pe = 25)
+    and 1.592 (Pe = 50) in single-species Eq. (12), and from 1.215 (Pe = 7) to 1.630 (Pe = 25) and
+    2.005 (Pe = 50) in ASDM Fig. 5c (lambda_lin/ell drops from 11.1 to 3.95 and 5.17 to 3.13).
+    (4) Crosslinker necessity, coarsening, and turnover scaling: sekine2024 requires passive
+    crosslinker attraction above a threshold (N^cl = 6750, omega^cl <= 0.01 s^-1; dropping to
+    N^cl = 4500 in 4-L or raising omega^cl to 0.02-0.03 s^-1 yields a dispersed state even with
+    full motors and friction anisotropy), a mechanism absent from bois2011 (where passive viscosity
+    eta instead widens ell and raises finite-domain Pe_crit in Eq. 13). On turnover, bois2011's
+    conserved single-species PDE (Eqs. 1-3, Fig. 4) coarsens all multi-peak transients to 1 peak,
+    requiring chemical turnover (Eq. 15; e.g. first-order dR/dc = -omega^f in hannezo2015 giving
+    lambda_c propto (omega^f)^(-1/4)) to arrest coarsening. Lowering omega^f 10-fold (0.1 ->
+    0.01 s^-1) in motor-free sekine2024 (1-M -> a4-1) increases spacing by only +16.6%
+    (404 -> 471 nm) vs +77.8% (10^(1/4) - 1) predicted by bois2011 Eq. (15) with first-order
+    turnover, and with motors at omega^f = 0.01 s^-1 (Fig. S7b5) reverts stripes back into compact
+    isolated clusters rather than coarsening to a single global peak.
+    (5) 1D isotropic flow vs 2D anisotropic friction and opposite motion-anisotropy direction:
+    bois2011 is strictly 1D and isotropic and cannot select 2D stripe orientation; extending
+    bois2011's overdamped force balance to 2D anisotropic friction gamma_y/gamma_x = 1.5 (as in
+    hannezo2015) gives Pe_x/Pe_y = 1.5 and ell_x/ell_y = 1.225, selecting wavevector k_x (stripes
+    aligned along high-friction y) via advective flow v_x along the low-friction x-axis (same sign
+    as passive single-filament Brownian bias |dy|/|dx| = 1/sqrt(1.5) = 0.816 < 1 in
+    anisotropic_diffusion_ratio). In sekine2024, cables also align along the high-friction y-axis,
+    yet tracked nanocluster displacements are biased along the high-friction y-axis instead
+    (|dy|/|dx| = 1.13 in 2-M, 1.45 in 4-M, 1.60 in Stage 16 control, 1.72 at Stage 15 0 min, and
+    1.20 in myosin II[DN]; see also q_missing_relaxation_time_explanation), reflecting
+    many-body turnover and circumferential motor-bridging coalescence rather than low-friction
+    x-axis hydrodynamic advection.
+  citation:
+    page: 33
+    printed_page: "SI Notes 6"
+    quote: "no clear pattern is observed (f walk = 0.05). This is probably because the higher motor walk force"
+    where: "SI Notes III.2 (pp. 32-33), Supp. Tables 3-5 & Figs. 3-5 vs bois2011 Eqs. (12)-(15)"
+
+- id: q_bois2011_no_cross_validation
+  kind: unstated_model
+  about:
+    - cable_interval_in_vivo
+    - d_figs1d_intervals
+    - d_fig5c_vx
+    - d_fig5c_vy
+    - d_fig5f_vx
+    - d_fig5f_vy
+    - st15_cluster_count
+    - st16_cluster_count
+    - st15_major_mean
+    - st16_major_mean
+    - st15_median_orientation
+    - st16_median_orientation
+    - d_fig1h_orientation
+    - d_fig1i_coherency
+    - d_fig1j_diameter
+    - d_fig1k_length
+    - t2_daam_orient
+    - t2_zasp52_orient
+    - t2_actn14_orient
+    - t2_myosin_dn_orient
+    - dx_st15_0
+    - dy_st15_0
+    - dx_st16_ctrl
+    - dy_st16_ctrl
+    - dx_st16_myosin_dn
+    - dy_st16_myosin_dn
+    - aniso_ratio_st15_0
+    - aniso_ratio_st16_ctrl
+    - aniso_ratio_st16_myosin_dn
+    - cgmd_2d_network
+    - q_bois2011_continuum_vs_microscopic_bridge
+    - q_bois2011_contrasting_myosin_and_patterning_predictions
+    - bois2011/hydrodynamic_length
+    - bois2011/characteristic_velocity
+    - bois2011/steady_velocity_eq8
+    - bois2011/steady_flux_eq5
+    - bois2011/steady_flux_eq7
+    - bois2011/diffusive_timescale
+    - bois2011/discrete_wavenumber
+    - bois2011/single_species_dispersion_eq12
+    - bois2011/single_species_fastest_mode
+    - bois2011/single_species_pde_eq1_3
+    - bois2011/single_species_rda_dispersion_eq15
+    - bois2011/asdm_dispersion_eq15
+    - bois2011/asdm_stability_boundary
+    - bois2011/asdm_pde_eq14
+    - bois2011/q_no_dimensional_params
+  text: >
+    No cross-record validations are entered in validations.yaml for either bois2011 or sekine2024
+    (0 entries in both directions): sekine2024 does not cite bois2011 directly (connecting only
+    transitively via hannezo2015, Ref. 14 / S21), and no model in either record genuinely predicts
+    any measurement of the other on that measurement's own experimental conditions.
+    (1) sekine2024 models (31 models: 30 runnable microscopic elastic/drag/structure-factor/
+    anisotropy/data-processing models plus non-runnable cgmd_2d_network) vs bois2011 data (53
+    entries): bois2011 is a purely theoretical paper with 0 origin: measured entries in data.yaml
+    (32 predicted dimensionless ODE/PDE/dispersion/stability outputs, 18 reported dimensionless
+    parameters and zero-valued boundary conditions, and 3 derived algebraic flux/wavenumber
+    identities). Consequently, sekine2024 has zero bois2011 measurements to validate against.
+    (2) bois2011 models (26 purely 1D continuum active-fluid models with 0 printed dimensional
+    parameter values; see bois2011/q_no_dimensional_params) vs sekine2024 measurements (all 214
+    origin: measured entries across 27 quantities, plus experimental origin: derived summaries):
+    (a) Periodic cable interval (pattern_interval, 2 measured data: cable_interval_in_vivo = 450
+    +/- 13.2 nm and d_figs1d_intervals median 0.4468 um, range 0.4352-0.4746 um): none of
+    bois2011's 26 models outputs a dimensional pattern wavelength or cable spacing ([length]).
+    The sole [length]-valued output in bois2011 is bois2011/hydrodynamic_length (ell =
+    sqrt(eta/gamma)), which is the active-fluid velocity screening length rather than the
+    emergent cable period lambda (mapping pattern_interval to hydrodynamic_length would conflate
+    distinct physical quantities sharing only dimension [length]), while discrete_wavenumber,
+    single_species_fastest_mode, and asdm_stability_boundary output dimensionless k*ell. Moreover,
+    bois2011's zero-turnover single-species model (Eqs. 1-13) has no finite onset wavelength
+    (k_c = 0) and coarsens all multi-peak transients to n_peaks_final = 1; bois2011 prints no
+    dimensional cortical parameters (its generic added C. elegans scales give ell = 10 um, 22x
+    larger than 450 nm and 114-148x larger than the ell = 67.5-87.7 nm implied by bois2011's
+    worked lambda/ell in [5.13, 6.67], which itself violates continuum scale separation against
+    L_0^f = 100 nm and L_0^m = 200 nm; see q_bois2011_continuum_vs_microscopic_bridge); and
+    sekine2024 measures none of bois2011's continuum inputs (eta, gamma, (zeta*Delta_mu)_0, D,
+    Pe, c_0, L/ell, D_a/D_s, rho_a, rho_s) in vivo.
+    (b) Cortical actin PIV velocities (piv_mean_velocity, 4 measured curves: d_fig5c_vx =
+    20.7-27.5 nm/s and d_fig5c_vy = 25.6-34.8 nm/s across Stage 15 -40..0* min; d_fig5f_vx =
+    17.1-29.4 nm/s and d_fig5f_vy = 26.5-28.8 nm/s across Stage 16 Control, DAAM RNAi, Zasp52
+    RNAi, and myosin II[DN]): although bois2011 has [length]/[time]-valued outputs
+    (characteristic_velocity U = (zeta*Delta_mu)_0/sqrt(eta*gamma), steady_velocity_eq8 v =
+    D*d_x(ln c), and steady_flux_eq5/steady_flux_eq7 j_0), none predicts 2D PIV speeds on
+    sekine2024's conditions. sekine2024 measures none of the required continuum inputs
+    ((zeta*Delta_mu)_0, eta, gamma, D, or local spatial log-concentration gradient d_x(ln c)) at
+    any developmental stage or genotype (bois2011's generic added cortical scales give U = 250
+    nm/s, 7-15x above PIV speeds and uncoupled from tracheal conditions); U is an
+    order-of-magnitude scale rather than a spatially averaged PIV velocity, Eq. (8) assumes zero
+    turnover (j_0 = 0) and a known local profile d_x(ln c), and j_0 vanishes for periodic or
+    no-flux BCs; and 1D isotropic bois2011 cannot separate |V_x| vs |V_y| or model developmental
+    staging or RNAi perturbations (furthermore, 2D anisotropic-friction active-gel advection
+    flows along low-friction x with |V_x| > |V_y| and vanishes as (zeta*Delta_mu)_0 -> 0,
+    contrary to sekine2024's measured |V_y| > |V_x| and persistent PIV speeds of 22.6 and 27.2
+    nm/s with P = 8.98e-6 in myosin II[DN]).
+    (c) Wild-type and RNAi/mutant nanocluster morphometry, orientation, coherency, densities,
+    skeleton length, and cluster counts (152 measured data: 38 cluster_major_length, 2
+    cluster_major_length_sd, 33 cluster_minor_length, 2 cluster_minor_length_sd, 2 cluster_area,
+    2 cluster_area_sd, 30 cluster_aspect_ratio, 2 cluster_aspect_ratio_sd, 2 aspect_ratio_density,
+    4 cluster_length_density, 31 pattern_orientation, 1 orientation_coherency, 2 cluster_count,
+    and 1 skeleton_length, covering Stage 15/16 wild type and 28 Table 2 / Fig. 3 / Supp. Fig. 3
+    genetic perturbations including DAAM, Zasp52, actn14, RhoA, and myosin II[DN]): 1D isotropic
+    bois2011 has no discrete 2D cluster morphology, orientation angle (0-90 deg), structure-tensor
+    coherency, size-distribution KDE, skeleton length, or genetic-perturbation parameters, and
+    outputs no [length]^2 area or [1/length] density. In particular, st15_cluster_count = 356 and
+    st16_cluster_count = 271 are pooled counts of binarized 2D ellipses across 22 and 21 ROIs
+    (~16.2 and ~12.9 clusters per 5.19 x 5.19 um^2 ROI), not 1D spatial peak counts
+    (peak_count, fastest_growing_mode) on a single 1D domain L.
+    (d) Tracked 2D nanocluster displacements and fusion lifetimes (35 measured data: 9
+    mean_longitudinal_displacement dx_*, 9 mean_circumferential_displacement dy_*, 9
+    mean_step_distance dist_*, and 8 frame_count fusion-duration entries fusion_frames_typical,
+    fusion_frames_ex_s2b, d_fig2b_mean_*, d_fig3e_mean_*; plus origin: derived ratios
+    aniso_ratio_st15_*, aniso_ratio_st16_* and fusion_dur_*): deterministic 1D continuum bois2011
+    models neither discrete tracked 2D cluster steps (nor their high-friction-biased ratio
+    |dy|/|dx| = 1.08-1.72; see q_bois2011_contrasting_myosin_and_patterning_predictions) nor
+    stochastic fusion/fission durations.
+    (e) Tracheal tube geometry, protein colocalization, junctional RhoGEF2, experimental counts,
+    and statistical P-values (21 measured data: d_fig1j_diameter, d_fig1k_length,
+    d_fig3d_coloc_st15, d_figs5d_coloc_st16, d_figs1f_rhogef2, st15_roi_count, st16_roi_count,
+    rnai_screen_lethal_lines, rnai_screen_positive_genes, and 12 p_value entries pval_*):
+    bois2011 is a flat constant-thickness 1D film with fixed input domain length L and
+    deterministic PDEs, predicting no cylindrical tube expansion/elongation, two-channel
+    fluorescence colocalization, junctional polarity, screen/ROI sample counts, or P-values.
+    (f) Conversely, bois2011's remaining dimensional output classes — diffusive_timescale
+    ([time], tau_D = ell^2/D) and growth_rate ([1/time], lambda(k) in Eqs. 12 and 15) — have 0
+    origin: measured data of matching dimension in sekine2024.
+  citation:
+    page: 2
+    printed_page: "2"
+    quote: "organization of periodic actin cables14. However, the molecular"
+    where: "Introduction (p. 2) — cross-validation assessment between bois2011 and sekine2024"
+
+- id: q_hannezo2015_continuum_vs_cgmd_incompatibilities
+  kind: unstated_model
+  about:
+    - ref-14
+    - sref-21
+    - sref-12
+    - rel_hannezo2015_langevin_dx_approx_turnover_length
+    - rel_hannezo2015_langevin_dy_approx_turnover_length
+    - rel_hannezo2015_aniso_diff_scales_turnover_length
+    - cgmd_2d_network
+    - cgmd_anisotropic_langevin
+    - anisotropic_diffusion_ratio
+    - anisotropic_filament_friction
+    - cylindrical_friction_filament
+    - cylindrical_friction_connector
+    - motor_walking_velocity
+    - structure_factor_interval
+    - structure_factor_interval_wavenumber
+    - gaussian_structure_factor
+    - eta_cyto_table_s1
+    - eta_cyto_si_text
+    - omega_f_sim
+    - N_f_sim
+    - N_cl_sim
+    - N_m_sim
+    - L0_f_sim
+    - L0_m_sim
+    - L0_cl_sim
+    - friction_asymmetry_stripe
+    - f_walk_table_s1
+    - f_walk_fig_s7b3_4m
+    - interval_sim_1m
+    - interval_sim_3m
+    - interval_sim_4m
+    - interval_sim_a4_1
+    - cable_interval_in_vivo
+    - q_cgmd_2d_not_runnable_unstated_algorithm
+    - q_eta_cyto_contradiction
+    - q_f_walk_contradiction
+    - hannezo2015/cortical_pde_2d_anisotropic
+    - hannezo2015/cortical_pde_1d_ramp
+    - hannezo2015/turnover_diffusion_length
+    - hannezo2015/hydrodynamic_length
+    - hannezo2015/hydrodynamic_length_from_3d
+    - hannezo2015/hydrodynamic_length_from_wavelength
+    - hannezo2015/critical_wavelength_eq3
+    - hannezo2015/critical_wavelength_from_lengths
+    - hannezo2015/critical_contractility_2d
+    - hannezo2015/dispersion_relation_eq7
+    - hannezo2015/frap_moment_recovery_eq14
+    - hannezo2015/viscosity_2d_from_3d
+    - hannezo2015/turnover_time_frap
+    - hannezo2015/diffusion_coeff_frap
+    - hannezo2015/lt_derived_main
+    - hannezo2015/lh_derived_main
+    - hannezo2015/lh_inverted_si
+    - hannezo2015/lambda_c_predicted_main
+    - hannezo2015/friction_2d_lit
+    - hannezo2015/friction_3d_estimated_si
+    - hannezo2015/ring_wavelength_embryo_wt
+    - hannezo2015/q_unstated_2d_anisotropic_model
+    - hannezo2015/q_si_p15_parameter_estimates_inconsistency
+  text: >
+    Audit of every citation of Hannezo et al. (PNAS 112:8620-8625, 2015; ref-14 on main pp. 1-2, 4,
+    6, 8 and sref-21 on SI Notes pp. 30, 32) across sekine2024 establishes zero cited.yaml value
+    links and zero stated ModelAtlas equation relations, alongside three verified proposed relations
+    bridging single-filament Langevin diffusion to Hannezo's turnover-diffusion length
+    (rel_hannezo2015_langevin_dx_approx_turnover_length,
+    rel_hannezo2015_langevin_dy_approx_turnover_length,
+    rel_hannezo2015_aniso_diff_scales_turnover_length):
+    (0) Cited-data and stated-relation audit: none of sekine2024/data.yaml's 9 from_source entries
+    cites ref-14 or sref-21 (they cite sref-15, -16, -17, -23, -25, -27). Even Table S1's filament
+    turnover rate omega^f = 0.1 s^-1 (lifetime 1/omega^f = 10 s, which sits inside Hannezo's FRAP
+    tau = 15 +/- 7 s -> 1/tau in [0.045, 0.125] s^-1) prints no reference to [21], and Sekine's
+    anisotropy threshold gamma_y^f/gamma_x^f >= 1.5 is its own CGMD sweep threshold rather than
+    Hannezo's xi_theta > 1.1*xi_z. All seven mentions of Hannezo 2015 are conceptual or qualitative
+    experimental comparisons (prior active-gel anisotropic-friction cue, DAAM labyrinth, ROCK
+    inhibitor Y-27632, and circumferential force balance); sekine2024 derives cgmd_2d_network from
+    Tarama & Shibata 2022 (sref-12) and states no mathematical reduction, equivalence, or scaling
+    map between its CGMD equations and Hannezo's active-gel PDEs.
+    (1) Non-runnable 2D pattern-forming models and model-class mismatch: the two models that
+    directly address 2D anisotropic-friction stripe orientation — hannezo2015/cortical_pde_2d_anisotropic
+    (unstated 2D tensorial viscosity, aspect ratio, BCs, and parameters; hannezo2015/q_unstated_2d_anisotropic_model)
+    and sekine2024/cgmd_2d_network (12,150 discrete agents with unstated binding protocol,
+    anisotropic friction split, noise scaling, and S(q) binning; q_cgmd_2d_not_runnable_unstated_algorithm)
+    — are both non-runnable and belong to structurally incompatible classes. Hannezo formulates
+    1D/2D compressible viscous continuum active-gel PDEs with linear active stress
+    sigma = chi^0*(rho/rho_0) + eta*d_x v and no passive crosslinkers; Sekine simulates discrete
+    polar two-bead actin filaments (N^f = 4500), passive alpha-actinin crosslinkers (N^cl = 6750),
+    and bipolar myosin II motors (N^m = 900) where the counterforce of f^walk vanishes identically
+    via Eq. (S4) and active forces arise solely from kinematic ABD walking stretching harmonic
+    motor arms. Neither paper derives continuum gel viscosity eta, substrate friction xi, or active
+    stress chi^0 from Eqs. (S1)-(S9). Across the remaining runnable pairs, trivial too_plain shapes
+    (e.g. structure_factor_interval_wavenumber 2*pi/mu vs critical_wavelength_eq3) and accidental
+    dimensional collisions (hannezo2015/viscosity_2d_from_3d [Pa*s*m] vs
+    sekine2024/cylindrical_friction_filament [pN*s/um], both [M]/[T] yet physically distinct) are
+    excluded.
+    (2) Symbol overloading and dimensional mismatches: eta denotes 2D thickness-integrated cortical
+    viscosity (eta = eta_3D*h = 10^-5 Pa*s*m, with eta_3D = 100 Pa*s) in Hannezo vs background
+    cytosolic solvent viscosity eta_cyto (1 Pa*s in Table S1; 0.1 Pa*s in SI Notes II) in Sekine;
+    xi (also zeta on Main pp. 3, 5) is 2D continuum ECM friction (10^9 Pa*s/m Main p. 3; 3D
+    ~10^17 Pa*s/m^2 SI p. 21) in Hannezo vs thermal Langevin noise xi_i^X and motor ABD sliding
+    friction zeta = 0.1 pN*s/um in Sekine; gamma^f is single-bead cytosolic Stokes drag
+    [pN*s/um] in Sekine (absent in Hannezo); alpha is dimensionless cell length l/l_h = 480-500 in
+    Hannezo vs fractional ABD binding coordinate 0 <= alpha <= 1 in Sekine; and sigma is axial
+    cortical stress in Hannezo vs Gaussian S(q) peak width [1/um] in Sekine.
+    (3) Breakdown of continuum hydrodynamic scale separation (l_h << L_0^f, L_0^m): inverting
+    Hannezo Eq. [3] (hydrodynamic_length_from_wavelength) with Hannezo's FRAP inputs (D = 0.04 um^2/s,
+    tau = 15 s -> l_t = 0.775 um) yields l_h = 8.18 nm (SI p. 21 printed 10^-8 m) for Hannezo's
+    0.50 um spacing and l_h = 6.62 nm for Sekine's 450 nm spacing — 12x-15x smaller than a single
+    actin filament (L_0^f = 100 nm), 24x-30x smaller than a bipolar myosin II filament (L_0^m =
+    200 nm), and 20x-58x smaller than an actin nanocluster (168-384 nm). Even Hannezo Main p. 3's
+    literature estimate l_h = 100 nm equals L_0^f and is half L_0^m while overpredicting embryonic
+    WT spacing by 3.5x-3.9x (1.75 um computed / 1.8 um printed vs 0.50 / 0.45 um).
+    (4) Microscopic-to-continuum transport and drag tension (eta_cyto = 0.1 vs 1 Pa*s): at Sekine's
+    SI Notes II value eta_cyto = 0.1 Pa*s, single-filament two-bead Stokes drag is 2*gamma_x^f =
+    0.132 pN*s/um, giving Einstein-Stokes center-of-mass diffusivity D_fil,x = k_B T / (2*gamma_x^f) =
+    0.0314 um^2/s (D_fil,y = 0.0209 um^2/s at gamma_y^f/gamma_x^f = 1.5) and turnover-diffusion
+    length l_{t,x} = sqrt(D_fil,x / omega^f) = 0.560 um (l_{t,y} = 0.458 um) — matching Hannezo's
+    in vivo FRAP (D = 0.04 +/- 0.03 um^2/s, tau = 15 +/- 7 s, l_t = 0.8 +/- 0.5 um) while areal
+    filament drag density xi_2D,x = (N_f/L_box^2)*(2*gamma_x^f) = 6.60e7 Pa*s/m (1.31e8 Pa*s/m
+    including crosslinkers and motors) sits ~10x below Hannezo's xi = 10^9 Pa*s/m. Conversely, at
+    Table S1's bold eta_cyto = 1 Pa*s (required for RK4 stability at dt = 5e-5 s;
+    q_eta_cyto_contradiction), areal drag density closely matches Hannezo's 10^9 Pa*s/m
+    (xi_2D,x = 6.60e8, xi_2D,y = 9.90e8 Pa*s/m for filaments alone; 1.31e9 / 1.64e9 Pa*s/m
+    including all 12,150 agents), whereas free-filament diffusivity drops 12.7x below Hannezo's FRAP
+    (D_fil,x = 0.00314 um^2/s, l_{t,x} = 0.177 um).
+    (5) Incompatible turnover and contractility scaling laws: Hannezo Eq. [3] predicts
+    lambda_c = 2*pi*(D*tau*eta/xi)^(1/4) propto (omega^f)^(-1/4) (+77.8% spacing increase for a
+    10-fold drop in omega^f) and supercritical spacing reduction as contractility chi rises
+    (Main p. 3; ring count n ~ sqrt(chi) in SI Fig. S15). In Sekine Supp. Table 4, lowering
+    omega^f 10-fold (0.1 -> 0.01 s^-1, motor-free 1-M -> a4-1) increases spacing by only +16.6%
+    (404 -> 471 nm, effective exponent -0.067 vs -0.25) and with motors (Fig. S7b5) collapses
+    stripes back into discrete clusters; meanwhile adding motors lengthens spacing by +30.9% to
+    +41.3% (404 -> 529 nm in 4-M, 571 nm in 3-M) and raising motor walk force to f^walk = 0.05 pN
+    destroys the pattern completely via active agitation (SI Notes pp. 32-33).
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "we introduce frictional asymmetry that has been proposed in the"
+    where: "SI Notes I (p. 30, citing [21] = Hannezo et al. 2015) & Main text pp. 1-2, 4, 6, 8 (ref-14)"
+
+- id: q_hannezo2015_same_system_biological_and_mechanistic_contrast
+  kind: unexplained_difference
+  about:
+    - ref-14
+    - sref-21
+    - cable_interval_in_vivo
+    - d_figs1d_intervals
+    - d_fig1j_diameter
+    - d_fig1h_orientation
+    - d_fig1i_coherency
+    - st15_major_mean
+    - st15_minor_mean
+    - st15_median_orientation
+    - st16_major_mean
+    - st16_minor_mean
+    - st16_median_orientation
+    - t2_attp40_orient
+    - t2_attp2_orient
+    - t2_myosin_dn_orient
+    - t2_myosin_dn_major
+    - t2_myosin_dn_minor
+    - t2_myosin_dn_ar
+    - t2_zip_orient
+    - t2_zip_major
+    - t2_daam_orient
+    - t2_zasp52_orient
+    - t2_actn14_orient
+    - friction_asymmetry_stripe
+    - interval_sim_1m
+    - interval_sim_4m
+    - sim_cable_interval_text
+    - sim_2h_orient
+    - sim_2h_major
+    - sim_2h_coherency
+    - sim_4l_orient
+    - sim_4l_coherency
+    - sim_4m_orient
+    - sim_4m_coherency
+    - aniso_ratio_sim_2m
+    - aniso_ratio_sim_4m
+    - aniso_ratio_st15_0
+    - aniso_ratio_st16_ctrl
+    - aniso_ratio_st16_daam
+    - aniso_ratio_st16_zasp52
+    - aniso_ratio_st16_myosin_dn
+    - pval_fig3e_myosin_kw
+    - pval_fig3e_daam_kw
+    - pval_fig5f_ctrl
+    - pval_fig5f_daam
+    - pval_fig5f_zasp52
+    - pval_fig5f_myosin
+    - d_fig5c_vx
+    - d_fig5c_vy
+    - d_fig5f_vx
+    - d_fig5f_vy
+    - fusion_dur_2frames_s
+    - anisotropic_diffusion_ratio
+    - motion_anisotropy_ratio
+    - rel_hannezo2015_aniso_diff_scales_turnover_length
+    - q_missing_relaxation_time_explanation
+    - sekine_source_data/s1d_cable_interval_mean
+    - sekine_source_data/s1d_cable_interval_sd
+    - hannezo2015/ring_wavelength_embryo_wt
+    - hannezo2015/fig3b_bar_ring_spacing_data
+    - hannezo2015/fig3b_dist_wt_data
+    - hannezo2015/fig4f_cop_actin_vs_diameter_data
+    - hannezo2015/friction_anisotropy_threshold_2d
+    - hannezo2015/friction_anisotropy_fig2e
+    - hannezo2015/y27632_concentration
+    - hannezo2015/y27632_incubation_time
+    - hannezo2015/ring_wavelength_src42
+    - hannezo2015/taenidial_wavelength_moesin_rnai
+    - hannezo2015/ring_wavelength_kkv1
+    - hannezo2015/actin_increase_onset_text
+    - hannezo2015/actin_increase_onset_fig1a
+    - hannezo2015/cop_het_diameter_change
+    - hannezo2015/cop_het_actin_change
+    - hannezo2015/cop_hom_diameter_change
+    - hannezo2015/cop_hom_actin_change
+    - hannezo2015/lambda_c_predicted_main
+    - hannezo2015/lh_inverted_si
+    - hannezo2015/dispersion_relation_eq7
+    - hannezo2015/cortical_pde_2d_anisotropic
+    - hannezo2015/cortical_pde_1d_chaos
+  text: >
+    Direct biological and mechanistic comparison between the two Shigeo Hayashi-lab studies on the
+    exact same experimental system — periodic circumferential cortical actin rings/cables in the
+    stage 15-16 Drosophila embryonic tracheal dorsal trunk — reveals one closely concordant
+    wild-type observable alongside four sharp mechanistic and experimental divergences:
+    (1) Same-system wild-type spacing and tube geometry (concordant): Hannezo 2015 measures stage-16
+    WT actin ring period 0.5 +/- 0.1 um (ring_wavelength_embryo_wt, n > 150 rings, Lifeact-mEGFP;
+    Fig. 3B histogram mean 0.494 +/- 0.081 um, bar 0.499 +/- 0.068 um), whereas Sekine 2024
+    measures early stage-16 periodic cable interval 450 +/- 13.2 nm (0.450 +/- 0.0132 um;
+    cable_interval_in_vivo, Airyscan super-resolution Lifeact::GFP, n = 294 cables across N = 8
+    embryos; Supp. Fig. 1d median 446.8 nm, range 435.2-474.6 nm). The 10% mean offset (450 vs
+    500 nm) sits well inside Hannezo's +/- 100 nm spread, and the 7.6x narrower printed uncertainty
+    reflects distinct summary statistics: Source-data_SupplementaryFig1d.xlsx
+    (sekine_source_data/s1d_cable_interval_mean = 0.450123 um, s1d_cable_interval_sd = 0.013158 um)
+    confirms +/- 13.2 nm is the sample SD across N = 8 embryo means, whereas Hannezo's +/- 0.1 um
+    is the per-ring pooled SD. Dorsal-trunk diameter also aligns across developmental staging:
+    Sekine Fig. 1j rises from 2.60 um (-80 min) to 3.94 um (+20 min, range 2.22-4.66 um) across
+    stage 15 to early stage 16, approaching Hannezo Fig. 4F's stage-16 WT diameter 4.775 +/-
+    0.250 um. On forward spacing prediction, Sekine's CGMD 4-M produces 529 nm (~0.5 um, +17.6%
+    above 450 nm), whereas Hannezo Main p. 3's literature inputs predict 1.8 um (1.749 um exact,
+    3.5x-3.9x larger) and SI p. 21 reproduces 0.50-0.55 um only after inverting l_h = 10 nm
+    (8.18 nm exact) directly from 0.5 um.
+    (2) Myosin II / contractility requirement (complete pattern loss vs persistent oriented
+    nanoclusters and fusion-specific role): Hannezo 2015 (Main p. 3, Fig. 2C) reports complete
+    disappearance of stage-16 actin rings after 180-min incubation in 250 uM Y-27632 (ROCK
+    inhibitor), taking this as decisive proof of a contractility-driven hydrodynamic instability
+    whose uniform state is strictly stable below threshold (lambda(q) = -1/tau - D*q^2 < 0 at zero
+    contractility in dispersion_relation_eq7). Although Sekine 2024 (p. 4) describes Myosin II[DN]
+    (zip[ROD]) as "consistent with the ROCK inhibitor treatment14", Sekine's own quantitative data
+    tell a substantially different mechanistic story: Myosin II[DN] does NOT abolish actin
+    clustering or circumferential bias — nanoclusters remain robust (major 325.64 nm, minor
+    171.16 nm, aspect ratio 2.034), retain partial circumferential orientation (54.4 deg vs
+    63.5-66.5 deg controls and 44.5 deg random/DAAM; zip RNAi in Table 2 retains 59.5 deg and
+    330.58 nm), preserve statistically significant circumferential fusion-duration stabilization
+    (P = 1.83e-5, Fig. 3e), and preserve significant circumferential motion anisotropy
+    (|dy|/|dx| = 1.20 vs 1.60 control; PIV |V_y| = 27.2 > |V_x| = 22.6 nm/s, P = 8.98e-6,
+    Fig. 5d-f). Correspondingly, Sekine's CGMD self-organizes periodic 404 nm nanoclusters at
+    zero myosin motors (1-M, N^m = 0) via passive alpha-actinin crosslinking alone, and even forms
+    circumferentially oriented fused cables without motors at high crosslinker density (2-H:
+    N^cl = 7500, N^m = 0, gamma_y^f/gamma_x^f = 1.5 -> median 59 deg, dominant 85.3 deg, major
+    439.6 nm, coherency 0.15). Thus myosin II is the sole pattern-initiating instability driver in
+    hannezo2015, whereas in sekine2024 it acts downstream solely to bridge and fuse pre-existing
+    crosslinker-nucleated nanoclusters (with Y-27632's complete abolition in Hannezo potentially
+    reflecting broader 180-min ROCK-pathway effects on cortical actin assembly/RhoA signaling beyond
+    myosin II motor activity alone).
+    (3) Friction anisotropy threshold, molecular cue, and opposite flow/motion direction:
+    Hannezo Main p. 3 reports that small orthoradial friction excess xi_theta > 1.1*xi_z (10%;
+    20% shown in Fig. 2E) suffices to orient rings circumferentially, attributing friction and its
+    anisotropy to ECM-cortex coupling (axially aligned luminal chitin fibers, Src42A increasing
+    spacing to 0.8 +/- 0.2 um, moesin RNAi increasing larval taenidial spacing +25% to 1.8 +/-
+    0.5 um, and chitin-deficient kkv1 expanding spacing 9-10x to 4.5 +/- 2 um with chaotic
+    wandering). Sekine SI Notes p. 32 instead requires 5x larger friction asymmetry
+    (gamma_y^f/gamma_x^f >= 1.5, applied exclusively to actin filaments) plus both threshold
+    crosslinkers (N^cl >= 6750; 4-L with N^cl = 4500 stays dispersed at 52 deg, coherency 0.15)
+    and motors (N^m = 900), identifying mechanosensitive formin DAAM (DAAM RNAi: 44.5 deg,
+    isotropic fusion P = 0.114, isotropic motion |dy|/|dx| = 0.96, PIV P = 0.728, labyrinth) and
+    alpha-Actinin/Zasp52 (actn14: 42.5 deg; Zasp52 RNAi: 48.5 deg, |dy|/|dx| = 0.98, PIV P = 0.436)
+    as the anisotropy-sensing machinery. Most fundamentally, the direction of actin transport
+    relative to friction anisotropy is reversed: in Hannezo's active gel (xi_theta > xi_z),
+    higher circumferential friction suppresses circumferential flow v_theta relative to axial flow
+    v_z so contractile advection moves actin along the low-friction longitudinal axis (|v_z| >
+    |v_theta|), matching the passive single-filament Brownian bias |dy|/|dx| = 1/sqrt(1.5) =
+    0.816 < 1 (anisotropic_diffusion_ratio, rel_hannezo2015_aniso_diff_scales_turnover_length);
+    whereas Sekine observes and simulates faster nanocluster displacement and PIV flow along the
+    high-friction circumferential axis (|dy|/|dx| = 1.13 in 2-M, 1.45 in 4-M, 1.72 at Stage 15
+    0* min, 1.60 in Stage 16 control, 1.20 in Myosin II[DN]; PIV |V_y| > |V_x|), an inversion not
+    explained by equilibrium friction or linear active-gel flow (see also
+    q_missing_relaxation_time_explanation).
+    (4) De novo instability onset vs two-stage nanocluster fusion/fission dynamics: Hannezo 2015
+    proposes a single-step supercritical/subcritical bifurcation from a homogeneous stage-15
+    cortex triggered by a +60% (text p. 1; +70% Fig. 1A) increase in F-actin concentration ramping
+    chi from 1.07 to 1.47 over 1875 s (supported by gamma-COP mutants with -20%/-45% diameter and
+    -40%/-65% actin lacking rings). Sekine 2024 resolves a hierarchical two-stage process during
+    stage-15 tube expansion (-80 to 0* min): sporadic ~140 x 210 nm (mode; mean 178 x 329 nm)
+    nanoclusters emerge first, align circumferentially (-40 to 0* min: dominant direction 15.6 ->
+    83.9 deg, median 44.5 -> 66.5 deg) before cable connectivity rises (-10 to 0* min: coherency
+    0.13 -> 0.48), and sustain steady-state periodic cables through repetitive sub-second (0.64 s)
+    fusion and fission with DAAM-dependent circumferential stabilization — a dynamic
+    cluster-coalescence pathway that neither paper reconciles quantitatively with Hannezo's
+    monolithic density-wave bifurcation or kkv1 chaotic ring dynamics.
+  citation:
+    page: 4
+    printed_page: "4"
+    quote: "myosin IIDN also caused failure in cluster fusion (Fig. 3f), consistent with"
+    where: "Results (p. 4, col. 1, citing ref-14) & Figs. 1, 3-5, Supp. Tables 1-5 vs hannezo2015 Figs. 1-4"
+
+- id: q_hannezo2015_cross_validation_summary
+  kind: unstated_model
+  about:
+    - structure_factor_interval
+    - structure_factor_interval_wavenumber
+    - sf_4m_mu_over_2pi
+    - interval_sim_4m
+    - cable_interval_in_vivo
+    - cmp_validation_cable_interval_4m
+    - cgmd_2d_network
+    - cgmd_anisotropic_langevin
+    - anisotropic_diffusion_ratio
+    - cylindrical_friction_filament
+    - anisotropic_filament_friction
+    - motor_walking_velocity
+    - fusion_duration_time
+    - gaussian_structure_factor
+    - nanocluster_complex_width
+    - cgmd_dimer_rk4
+    - omega_f_sim
+    - eta_cyto_table_s1
+    - eta_cyto_si_text
+    - friction_asymmetry_stripe
+    - q_cgmd_2d_not_runnable_unstated_algorithm
+    - q_hannezo2015_continuum_vs_cgmd_incompatibilities
+    - q_hannezo2015_same_system_biological_and_mechanistic_contrast
+    - hannezo2015/ring_wavelength_embryo_wt
+    - hannezo2015/ring_wavelength_si_input
+    - hannezo2015/fig3b_bar_ring_spacing_data
+    - hannezo2015/ring_wavelength_src42
+    - hannezo2015/ring_wavelength_kkv1
+    - hannezo2015/ring_wavelength_larva_wt_early
+    - hannezo2015/taenidial_wavelength_larva_wt_late
+    - hannezo2015/taenidial_wavelength_moesin_rnai
+    - hannezo2015/diffusion_coeff_frap
+    - hannezo2015/turnover_time_frap
+    - hannezo2015/fig2a_frap_variance_data
+    - hannezo2015/rings_per_cell_embryo_wt
+    - hannezo2015/q_sekine2024_cross_validation_summary
+  text: >
+    Cross-validation of all 31 sekine2024 models (30 runnable, plus non-runnable cgmd_2d_network)
+    against all 35 origin: measured data in hannezo2015 yields 1 cross-validation entry in
+    validations.yaml (val_sf_interval_4m_vs_hannezo_wt_spacing, purpose: validation) and excludes
+    the remaining 34 measured data:
+    (1) Included validation — structure_factor_interval on sf_4m_mu_over_2pi (1.89140416 um^-1,
+    4-M WT embryonic stage-16 circumferential-stripe CGMD simulation, Supp. Table 4) vs
+    hannezo2015/ring_wavelength_embryo_wt (0.5 +/- 0.1 um, n > 150 rings, Olympus FV1000 confocal
+    UAS-lifeact-mEGFP): computes 0.5287 um (528.7 nm), diff = +0.0287 um (+5.7%), verdict =
+    reproduced inside [0.4, 0.6] um. This mirrors sekine2024/comparisons.yaml's own
+    cmp_validation_cable_interval_4m and reveals a sharp precision-driven contrast: the exact
+    same 528.7 nm 4-M prediction is reproduced against Hannezo 2015's confocal per-ring SD
+    (500 +/- 100 nm) yet not reproduced against Sekine 2024's own Airyscan embryo-mean SD
+    (450 +/- 13.2 nm, +17.5%). Important methodological caveat: because cgmd_2d_network is
+    non-runnable from the published text alone (q_cgmd_2d_not_runnable_unstated_algorithm),
+    structure_factor_interval (role: processing) evaluates the published 4-M fitted structure-
+    factor peak frequency rather than re-integrating the 12,150-agent CGMD network from scratch.
+    (structure_factor_interval_wavenumber is omitted as an algebraic same_as duplicate, and
+    hannezo2015/ring_wavelength_si_input = 5 x 10^-7 m is omitted as a duplicate restatement of
+    ring_wavelength_embryo_wt without its +/- 0.1 um uncertainty.)
+    (2) Excluded hannezo2015 measurements (34/35):
+    (a) Mutant, larval, and multi-condition bar-chart spacings (ring_wavelength_src42,
+    ring_wavelength_kkv1, ring_wavelength_larva_wt_early, ring_wavelength_larva_wt_fig1c,
+    taenidial_wavelength_larva_wt_late, taenidial_wavelength_moesin_rnai,
+    fig3b_bar_ring_spacing_data, figs2d_moesin_rnai_spacing_data): Sekine's 4-M simulation
+    models embryonic stage 15-16 wild-type tracheal cells only, not Src42A, kkv1, moesin RNAi,
+    or third-instar larvae, and fig3b_bar_ring_spacing_data is a 3-bar table indexed by
+    condition_index.
+    (b) Stage-15 FRAP measurements (diffusion_coeff_frap = 0.04 +/- 0.03 um^2/s,
+    turnover_time_frap = 15 +/- 7 s, fig2a_frap_variance_data, fig2a_frap_recovery_data,
+    immobile_fraction_frap): no runnable model in sekine2024 outputs diffusion_coefficient
+    ([length]^2/[time]), frap_variance ([length]^2), actin turnover_time (omega_f_sim = 0.1 s^-1
+    is a fixed simulation input, fusion_duration_time is nanocluster-fusion duration, and
+    motor_walking_velocity.tau_walk is myosin ABD traversal time), or immobile_fraction. In
+    particular, cgmd_anisotropic_langevin outputs single-filament mean absolute displacements
+    mean_abs_dx/dy (nm) and dimensionless R_aniso, and anisotropic_diffusion_ratio outputs
+    dimensionless R_aniso — none of which is measured in hannezo2015.
+    (c) Remaining hannezo2015 measurements (rings_per_cell_embryo_wt, rings_per_cell_kkv1,
+    fig1c_fourier_spectrum_data larval 1D FFT vs period, fig3b_dist_* spacing histograms,
+    fig1a_actin_intensity_data, actin_increase_onset_*, fluorescence_*, cop_* diameter/actin
+    changes, fig3c_kkv_diameter_vs_actin_data, fig4f_cop_actin_vs_diameter_data,
+    side_branch_diameter_ratio, ring_onset_time_range, ramp_duration_si, frap_sample_size):
+    no runnable sekine2024 model predicts per-cell ring counts, larval Fourier spectra, ring
+    spacing histograms, actin fluorescence intensity ramps, tube diameters, or mutant
+    diameter/intensity changes.
+    In the reverse direction (hannezo2015 models vs sekine2024 measurements), see
+    hannezo2015/q_sekine2024_cross_validation_summary.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "between cables was ~0.5 µm (Supplementary Fig. 7c"
+    where: "Results (p. 6, col. 1) & Supp. Table 4 vs hannezo2015/ring_wavelength_embryo_wt"

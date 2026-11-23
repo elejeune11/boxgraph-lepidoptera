@@ -1,0 +1,1080 @@
+# Core reproduction runs: lower-bound Young's modulus Y_min (p. 8)
+- id: run_Ymin_printed_eq3
+  model: youngs_modulus_lower_bound_eq3
+  inputs:
+    a: w0_39_6_added
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  outputs:
+    Y_min: Y_min_pred_printed_eq3
+  note: "Evaluates the g = 0 lower bound from printed Eq. 3 literally in SI base units (demonstrates ~16 orders-of-magnitude discrepancy from dimensional misprint)."
+
+- id: run_Ymin_corrected_eq3
+  model: youngs_modulus_lower_bound_eq3_corrected
+  inputs:
+    a: w0_39_6_added
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  outputs:
+    Y_min: Y_min_pred_corrected_eq3
+  note: "Evaluates the g = 0 lower bound from dimensionally corrected Eq. 3 using V. cardui parameters (p. 8) and w0(39.6%) = 25 nm from Fig. 3A (added)."
+
+# Profile filtering & total count accounting (pp. 7, 12)
+- id: run_filter_phase_jump
+  model: profile_filter_count
+  inputs:
+    n_before: profiles_initial_total
+    n_excluded: profiles_excluded_phase_jump
+  outputs:
+    n_remaining: profiles_after_phase_filter_pred
+
+- id: run_filter_edge_drop
+  model: profile_filter_count
+  inputs:
+    n_before: profiles_after_phase_filter
+    n_excluded: profiles_excluded_edge_drop
+  outputs:
+    n_remaining: profiles_total_from_filter_pred
+
+- id: run_filter_edge_drop_chained
+  model: profile_filter_count
+  inputs:
+    n_before: profiles_after_phase_filter_pred
+    n_excluded: profiles_excluded_edge_drop
+  outputs:
+    n_remaining: profiles_total_from_filter_chained_pred
+
+- id: run_sum_five_counts
+  model: sum_five_profile_counts
+  inputs:
+    counts: profile_counts_fig3F
+  outputs:
+    n_total: profiles_total_from_sum_pred
+
+# Rayleigh-Ritz numerical amplitude solvers (printed & corrected)
+- id: run_rr_amp_printed_fig2E
+  model: rayleigh_ritz_amplitude_eq3
+  inputs:
+    g: g_fig2E
+    p: p_fig2E
+    Y: Y_fig2E
+    nu: nu_fig2E
+    h: h_fig2E
+    L: L_fig2E
+  settings:
+    tol: 1.0e-6
+  outputs:
+    a: a_printed_fig2E_pred
+
+- id: run_rr_amp_corrected_fig2E
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs:
+    g: g_fig2E
+    p: p_fig2E
+    Y: Y_fig2E
+    nu: nu_fig2E
+    h: h_fig2E
+    L: L_fig2E
+  settings:
+    tol: 1.0e-6
+  outputs:
+    a: a_corrected_fig2E_pred
+
+- id: run_rr_amp_corrected_Ymin
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs:
+    g: g_fig2E_zero
+    p: p_model_p8
+    Y: Y_min_printed
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  settings:
+    tol: 1.0e-6
+  outputs:
+    a: a_corrected_at_Ymin_pred
+  note: "Forward check: amplitude at g = 0 and printed Y_min = 3.5 x 10^6 Pa for V. cardui (L = 1.6 um)."
+
+- id: run_rr_amp_corrected_fig4C
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs:
+    g: g_fig2E_half_pct
+    p: p_model_p8
+    Y: Y_fig4C
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  settings:
+    tol: 1.0e-6
+  outputs:
+    a: a_corrected_fig4C_pred
+
+# Explicit Rayleigh-Ritz strain g(a) runs (printed & corrected)
+- id: run_rr_strain_printed_39_6pct
+  model: rayleigh_ritz_strain_eq3
+  inputs:
+    a: w0_39_6_added
+    p: p_model_p8
+    Y: Y_min_printed
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  outputs:
+    g: g_printed_39_6pct_pred
+
+- id: run_rr_strain_corrected_39_6pct
+  model: rayleigh_ritz_strain_eq3_corrected
+  inputs:
+    a: w0_39_6_added
+    p: p_model_p8
+    Y: Y_min_printed
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  outputs:
+    g: g_corrected_39_6pct_pred
+
+# Reconstructed exact 1D FvK BVP + integral constraint solver (SI Eqs. E42 + E29)
+- id: run_fvk_1d_ode_Vcardui_g0
+  model: fvk_1d_ode_solver_e42_e29
+  inputs:
+    g: g_fig2E_zero
+    p: p_model_p8
+    Y: Y_min_printed
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  settings:
+    n_grid: 64
+    tol: 1.0e-9
+  outputs:
+    w_max: w_max_ode_Vcardui_g0_pred
+    w_min: w_min_ode_Vcardui_g0_pred
+    c: c_ode_Vcardui_g0_pred
+  note: "Exact 1D FvK BVP solution at g = 0 and Y = 3.5 x 10^6 Pa; refined over n_grid = 64..512."
+
+- id: run_fvk_1d_ode_fig2E
+  model: fvk_1d_ode_solver_e42_e29
+  inputs:
+    g: g_fig2E
+    p: p_fig2E
+    Y: Y_fig2E
+    nu: nu_fig2E
+    h: h_fig2E
+    L: L_fig2E
+  settings:
+    n_grid: 64
+    tol: 1.0e-9
+  outputs:
+    w_max: w_max_ode_fig2E_pred
+    w_min: w_min_ode_fig2E_pred
+    c: c_ode_fig2E_pred
+  note: "Exact 1D FvK BVP solution at Fig. 2E baseline parameters (supercritical g = 0.01, p = 10 Pa)."
+
+# Critical growth strain, scaling, and zero-pressure exact solutions (Eq. 4, SI Eqs. E44-E48)
+- id: run_gc_Vcardui
+  model: critical_growth_strain_eq4
+  inputs:
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  outputs:
+    g_c: g_c_Vcardui_pred
+
+- id: run_gc_fig2E
+  model: critical_growth_strain_eq4
+  inputs:
+    nu: nu_fig2E
+    h: h_fig2E
+    L: L_fig2E
+  outputs:
+    g_c: g_c_fig2E_pred
+
+- id: run_gc_scaling_Vcardui
+  model: critical_growth_strain_scaling
+  inputs:
+    L: L_Vcardui_p8
+  outputs:
+    g_c: g_c_scaling_Vcardui_pred
+
+- id: run_zero_pressure_profile_center
+  model: zero_pressure_profile_e44
+  inputs:
+    x: x_center_p6
+    g: g_fig2E
+    nu: nu_fig2E
+    h: h_fig2E
+    L: L_fig2E
+  outputs:
+    w: w_zero_p_center_fig2E_pred
+
+- id: run_zero_pressure_amplitude_fig2E
+  model: zero_pressure_amplitude_e44
+  inputs:
+    g: g_fig2E
+    nu: nu_fig2E
+    h: h_fig2E
+    L: L_fig2E
+  outputs:
+    a: a_zero_p_fig2E_pred
+
+- id: run_postbuckling_stress_fig2E
+  model: postbuckling_stress_e45_e47
+  inputs:
+    Y: Y_fig2E
+    g: g_fig2E
+    nu: nu_fig2E
+    h: h_fig2E
+    L: L_fig2E
+  outputs:
+    sigma_xx: sigma_xx_postbuckling_fig2E_pred
+    sigma_yy: sigma_yy_postbuckling_fig2E_pred
+    sigma_xy: sigma_xy_postbuckling_fig2E_pred
+
+- id: run_profile_cosine_39_6pct
+  model: buckled_profile_cosine
+  inputs:
+    x: x_center_p6
+    a: a_corrected_at_Ymin_pred
+    L: L_Vcardui_p8
+  outputs:
+    w: w_cosine_center_Ymin_pred
+
+# Elastic moduli, constitutive relations, dimensional scales, and ODE coefficients (SI Note S2)
+- id: run_bending_modulus_Vcardui
+  model: bending_modulus
+  inputs:
+    Y: Y_fig4C
+    h: h_membrane_p8
+    nu: nu_model_p8
+  outputs:
+    D: D_Vcardui_1MPa_pred
+
+- id: run_growth_strain_def
+  model: growth_strain_def
+  inputs:
+    dl: dl_illustrative_added
+    l0: l0_illustrative_added
+  outputs:
+    g: g_def_illustrative_pred
+
+- id: run_prestress_growth_fig2E
+  model: prestress_growth
+  inputs:
+    Y: Y_fig2E
+    g: g_fig2E
+  outputs:
+    sigma_A: sigma_A_fig2E_pred
+
+- id: run_hooke_plane_stress
+  model: hooke_plane_stress_e15_e17
+  inputs:
+    Y: Y_fig4C
+    nu: nu_model_p8
+    eps_xx: eps_xx_added
+    eps_yy: eps_yy_added
+    eps_xy: eps_xy_added
+  outputs:
+    sigma_xx: sigma_xx_hooke_pred
+    sigma_yy: sigma_yy_hooke_pred
+    sigma_xy: sigma_xy_hooke_pred
+    eps_zz: eps_zz_hooke_pred
+
+- id: run_fvk_scales_Vcardui
+  model: fvk_dimensional_scales_e30_e35
+  inputs:
+    L: L_Vcardui_p8
+    h: h_membrane_p8
+    Y: Y_fig4C
+  outputs:
+    x_scale: x_scale_Vcardui_pred
+    biharm_scale: biharm_scale_Vcardui_pred
+    g_scale: g_scale_Vcardui_pred
+    w_scale: w_scale_Vcardui_pred
+    chi_scale: chi_scale_Vcardui_pred
+    p_scale: p_scale_Vcardui_pred
+
+- id: run_u_scale_corrected_Vcardui
+  model: in_plane_displacement_scale_e36_e37_corrected
+  inputs:
+    L: L_Vcardui_p8
+    h: h_membrane_p8
+  outputs:
+    u_scale: u_scale_corrected_Vcardui_pred
+
+- id: run_ode_coeff_printed
+  model: ode_coefficients_e42
+  inputs:
+    nu: nu_fig2E
+    L: L_fig2E
+    h: h_fig2E
+    g: g_fig2E
+    c: c_ode_fig2E_pred
+    Y: Y_fig2E
+    p: p_fig2E
+  outputs:
+    a_ode: a_ode_printed_fig2E_pred
+    b_ode: b_ode_printed_fig2E_pred
+
+- id: run_ode_coeff_corrected
+  model: ode_coefficients_e42_corrected
+  inputs:
+    nu: nu_fig2E
+    L: L_fig2E
+    h: h_fig2E
+    g: g_fig2E
+    c: c_ode_fig2E_pred
+    Y: Y_fig2E
+    p: p_fig2E
+  outputs:
+    a_ode: a_ode_corrected_fig2E_pred
+    b_ode: b_ode_corrected_fig2E_pred
+
+# ==============================================================================
+# Runs using calibrated 900-1200 dpi figure readings (Figs. 2E, 3A-E, 3H, 4C, S1J)
+# ==============================================================================
+
+# --- Block A: Fig. 3A-E cosine amplitude extraction, Y_min re-evaluation, & profile checks ---
+- id: run_fit_w0_39_6pct
+  model: fit_cosine_amplitude
+  inputs:
+    profile: d_fig3A_model_39_6pct
+    L: L_Vcardui_p8
+  outputs:
+    a: w0_39_6pct_fig3A
+  note: "Least-squares cosine peak amplitude extracted from the digitized yellow dashed model curve in Fig. 3A (39.6% development)."
+
+- id: run_fit_w0_39_6pct_invivo
+  model: fit_cosine_amplitude
+  inputs:
+    profile: d_fig3A_invivo_39_6pct
+    L: L_Vcardui_p8
+  outputs:
+    a: w0_39_6pct_fig3A_invivo
+  note: "Least-squares cosine peak amplitude fitted directly to the digitized in vivo mean profile in Fig. 3A (39.6% development)."
+
+- id: run_fit_w0_40_0pct
+  model: fit_cosine_amplitude
+  inputs:
+    profile: d_fig3B_model_40_0pct
+    L: L_Vcardui_p8
+  outputs:
+    a: w0_40_0pct_fig3B
+
+- id: run_fit_w0_40_3pct
+  model: fit_cosine_amplitude
+  inputs:
+    profile: d_fig3C_model_40_3pct
+    L: L_Vcardui_p8
+  outputs:
+    a: w0_40_3pct_fig3C
+
+- id: run_fit_w0_40_7pct
+  model: fit_cosine_amplitude
+  inputs:
+    profile: d_fig3D_model_40_7pct
+    L: L_Vcardui_p8
+  outputs:
+    a: w0_40_7pct_fig3D
+
+- id: run_fit_w0_41_0pct
+  model: fit_cosine_amplitude
+  inputs:
+    profile: d_fig3E_model_41_0pct
+    L: L_Vcardui_p8
+  outputs:
+    a: w0_41_0pct_fig3E
+
+- id: run_Ymin_printed_eq3_fig3A
+  model: youngs_modulus_lower_bound_eq3
+  inputs:
+    a: w0_39_6pct_fig3A
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  outputs:
+    Y_min: Y_min_pred_printed_fig3A
+  note: "Re-evaluates Y_min from printed Eq. 3 using calibrated Fig. 3A w_0(39.6%) = 24.31 nm."
+
+- id: run_Ymin_corrected_eq3_fig3A
+  model: youngs_modulus_lower_bound_eq3_corrected
+  inputs:
+    a: w0_39_6pct_fig3A
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  outputs:
+    Y_min: Y_min_pred_corrected_fig3A
+  note: "Re-evaluates Y_min from dimensionally corrected Eq. 3 using calibrated Fig. 3A w_0(39.6%) = 24.31 nm (yields 3.70 x 10^6 Pa vs printed 3.5 x 10^6 Pa)."
+
+- id: run_fig3A_cosine_model
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_39_6pct_fig3A
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3A_model_39_6pct
+  outputs:
+    w: w_fig3A_cosine_model_pred
+
+- id: run_fig3B_cosine_model
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_40_0pct_fig3B
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3B_model_40_0pct
+  outputs:
+    w: w_fig3B_cosine_model_pred
+
+- id: run_fig3C_cosine_model
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_40_3pct_fig3C
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3C_model_40_3pct
+  outputs:
+    w: w_fig3C_cosine_model_pred
+
+- id: run_fig3D_cosine_model
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_40_7pct_fig3D
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3D_model_40_7pct
+  outputs:
+    w: w_fig3D_cosine_model_pred
+
+- id: run_fig3E_cosine_model
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_41_0pct_fig3E
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3E_model_41_0pct
+  outputs:
+    w: w_fig3E_cosine_model_pred
+
+- id: run_fig3A_cosine_invivo
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_39_6pct_fig3A
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3A_invivo_39_6pct
+  outputs:
+    w: w_fig3A_cosine_invivo_pred
+
+- id: run_fig3B_cosine_invivo
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_40_0pct_fig3B
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3B_invivo_40_0pct
+  outputs:
+    w: w_fig3B_cosine_invivo_pred
+
+- id: run_fig3C_cosine_invivo
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_40_3pct_fig3C
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3C_invivo_40_3pct
+  outputs:
+    w: w_fig3C_cosine_invivo_pred
+
+- id: run_fig3D_cosine_invivo
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_40_7pct_fig3D
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3D_invivo_40_7pct
+  outputs:
+    w: w_fig3D_cosine_invivo_pred
+
+- id: run_fig3E_cosine_invivo
+  model: buckled_profile_cosine
+  inputs:
+    a: w0_41_0pct_fig3E
+    L: L_Vcardui_p8
+  sweep:
+    x: d_fig3E_invivo_41_0pct
+  outputs:
+    w: w_fig3E_cosine_invivo_pred
+
+- id: run_figS1J_cosine_41_0pct
+  model: buckled_profile_cosine_trough_origin
+  inputs:
+    a: w0_41_0pct_fig3E
+    L: L_Vcardui_p8
+  sweep:
+    x: d_figS1J_mean_sd
+  outputs:
+    w: w_figS1J_41_0pct_pred
+  note: "Tests Fig. S1J rescaled all-ridge mean +/- SD profile against the 41.0% model curve from Fig. 3E."
+
+# --- Block B: Fig. 3H phase-space amplitude isocontours g(Y) (printed & corrected Eq. 3) ---
+- id: run_fig3H_iso_39_6pct_printed
+  model: rayleigh_ritz_strain_eq3
+  inputs:
+    a: w0_39_6pct_fig3A
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_39_6pct
+  outputs:
+    g: g_fig3H_39_6pct_printed_pred
+
+- id: run_fig3H_iso_39_6pct_corrected
+  model: rayleigh_ritz_strain_eq3_corrected
+  inputs:
+    a: w0_39_6pct_fig3A
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_39_6pct
+  outputs:
+    g: g_fig3H_39_6pct_corrected_pred
+
+- id: run_fig3H_iso_40_0pct_printed
+  model: rayleigh_ritz_strain_eq3
+  inputs:
+    a: w0_40_0pct_fig3B
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_40_0pct
+  outputs:
+    g: g_fig3H_40_0pct_printed_pred
+
+- id: run_fig3H_iso_40_0pct_corrected
+  model: rayleigh_ritz_strain_eq3_corrected
+  inputs:
+    a: w0_40_0pct_fig3B
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_40_0pct
+  outputs:
+    g: g_fig3H_40_0pct_corrected_pred
+
+- id: run_fig3H_iso_40_3pct_printed
+  model: rayleigh_ritz_strain_eq3
+  inputs:
+    a: w0_40_3pct_fig3C
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_40_3pct
+  outputs:
+    g: g_fig3H_40_3pct_printed_pred
+
+- id: run_fig3H_iso_40_3pct_corrected
+  model: rayleigh_ritz_strain_eq3_corrected
+  inputs:
+    a: w0_40_3pct_fig3C
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_40_3pct
+  outputs:
+    g: g_fig3H_40_3pct_corrected_pred
+
+- id: run_fig3H_iso_40_7pct_printed
+  model: rayleigh_ritz_strain_eq3
+  inputs:
+    a: w0_40_7pct_fig3D
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_40_7pct
+  outputs:
+    g: g_fig3H_40_7pct_printed_pred
+
+- id: run_fig3H_iso_40_7pct_corrected
+  model: rayleigh_ritz_strain_eq3_corrected
+  inputs:
+    a: w0_40_7pct_fig3D
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_40_7pct
+  outputs:
+    g: g_fig3H_40_7pct_corrected_pred
+
+- id: run_fig3H_iso_41_0pct_printed
+  model: rayleigh_ritz_strain_eq3
+  inputs:
+    a: w0_41_0pct_fig3E
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_41_0pct
+  outputs:
+    g: g_fig3H_41_0pct_printed_pred
+
+- id: run_fig3H_iso_41_0pct_corrected
+  model: rayleigh_ritz_strain_eq3_corrected
+  inputs:
+    a: w0_41_0pct_fig3E
+    p: p_model_p8
+    nu: nu_model_p8
+    h: h_membrane_p8
+    L: L_Vcardui_p8
+  sweep:
+    Y: d_fig3H_iso_41_0pct
+  outputs:
+    g: g_fig3H_41_0pct_corrected_pred
+
+# --- Block C: Fig. 2E parameter-sweep amplitudes & profiles (caption vs actual 2*a / g=0.5% / L_0=1.0 um) ---
+- id: run_rr_amp_fig2E_g05
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_fig2E, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_g05_pred}
+
+- id: run_rr_amp_fig2E_g00
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_zero, p: p_fig2E, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_g00_pred}
+
+- id: run_rr_amp_fig2E_Y1e8_cap
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E, p: p_fig2E, Y: Y_fig2E_1e8, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_Y1e8_cap_pred}
+
+- id: run_rr_amp_fig2E_Y1e5_cap
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E, p: p_fig2E, Y: Y_fig2E_1e5, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_Y1e5_cap_pred}
+
+- id: run_rr_amp_fig2E_Y1e8_act
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_fig2E, Y: Y_fig2E_1e8, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_Y1e8_act_pred}
+
+- id: run_rr_amp_fig2E_Y1e5_act
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_fig2E, Y: Y_fig2E_1e5, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_Y1e5_act_pred}
+
+- id: run_rr_amp_fig2E_p100_cap
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E, p: p_fig2E_100, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_p100_cap_pred}
+
+- id: run_rr_amp_fig2E_p50_cap
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E, p: p_fig2E_50, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_p50_cap_pred}
+
+- id: run_rr_amp_fig2E_p100_act
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_fig2E_100, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_p100_act_pred}
+
+- id: run_rr_amp_fig2E_p50_act
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_fig2E_50, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_p50_act_pred}
+
+# Bundle-distance L subpanel scaled widths (caption L_0 = 1.8 um vs actual L_0 = 1.0 um)
+- id: run_scale_L_fig2E_15_cap
+  model: scale_bundle_spacing
+  inputs: {m: factor_fig2E_1_5, L_0: L_fig2E}
+  outputs: {L: L_fig2E_15_cap}
+
+- id: run_scale_L_fig2E_05_cap
+  model: scale_bundle_spacing
+  inputs: {m: factor_fig2E_0_5, L_0: L_fig2E}
+  outputs: {L: L_fig2E_05_cap}
+
+- id: run_scale_L_fig2E_15_act
+  model: scale_bundle_spacing
+  inputs: {m: factor_fig2E_1_5, L_0: L0_fig2E_Lpanel_added}
+  outputs: {L: L_fig2E_15_act}
+
+- id: run_scale_L_fig2E_10_act
+  model: scale_bundle_spacing
+  inputs: {m: factor_fig2E_1_0, L_0: L0_fig2E_Lpanel_added}
+  outputs: {L: L_fig2E_10_act}
+
+- id: run_scale_L_fig2E_05_act
+  model: scale_bundle_spacing
+  inputs: {m: factor_fig2E_0_5, L_0: L0_fig2E_Lpanel_added}
+  outputs: {L: L_fig2E_05_act}
+
+- id: run_rr_amp_fig2E_L15_cap
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E, p: p_fig2E, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E_15_cap}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_L15_cap_pred}
+
+- id: run_rr_amp_fig2E_L05_cap
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E, p: p_fig2E, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E_05_cap}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_L05_cap_pred}
+
+- id: run_rr_amp_fig2E_L15_act
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_fig2E, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E_15_act}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_L15_act_pred}
+
+- id: run_rr_amp_fig2E_L10_act
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_fig2E, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E_10_act}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_L10_act_pred}
+
+- id: run_rr_amp_fig2E_L05_act
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_fig2E, Y: Y_fig2E, nu: nu_fig2E, h: h_fig2E, L: L_fig2E_05_act}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_fig2E_L05_act_pred}
+
+# Fig. 2E profile sweeps: (1) printed Eq. 3 & caption w(0)=a (fails), (2) corrected 2*a & actual params (reproduces)
+- id: run_fig2E_g_1_0pct_printed_eq3
+  model: buckled_profile_cosine
+  inputs: {a: a_printed_fig2E_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_g_1_0pct}
+  outputs: {w: w_fig2E_g_1_0pct_printed_eq3}
+
+- id: run_fig2E_g_1_0pct_w0a
+  model: buckled_profile_cosine
+  inputs: {a: a_corrected_fig2E_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_g_1_0pct}
+  outputs: {w: w_fig2E_g_1_0pct_w0a}
+
+- id: run_fig2E_g_0_5pct_w0a
+  model: buckled_profile_cosine
+  inputs: {a: a_fig2E_g05_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_g_0_5pct}
+  outputs: {w: w_fig2E_g_0_5pct_w0a}
+
+- id: run_fig2E_g_0_0pct_w0a
+  model: buckled_profile_cosine
+  inputs: {a: a_fig2E_g00_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_g_0_0pct}
+  outputs: {w: w_fig2E_g_0_0pct_w0a}
+
+- id: run_fig2E_g_1_0pct_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_corrected_fig2E_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_g_1_0pct}
+  outputs: {w: w_fig2E_g_1_0pct_2a}
+
+- id: run_fig2E_g_0_5pct_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_fig2E_g05_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_g_0_5pct}
+  outputs: {w: w_fig2E_g_0_5pct_2a}
+
+- id: run_fig2E_g_0_0pct_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_fig2E_g00_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_g_0_0pct}
+  outputs: {w: w_fig2E_g_0_0pct_2a}
+
+- id: run_fig2E_Y_1e8_cap_w0a
+  model: buckled_profile_cosine
+  inputs: {a: a_fig2E_Y1e8_cap_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_Y_1e8}
+  outputs: {w: w_fig2E_Y_1e8_cap_w0a}
+
+- id: run_fig2E_Y_1e6_cap_w0a
+  model: buckled_profile_cosine
+  inputs: {a: a_corrected_fig2E_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_Y_1e6}
+  outputs: {w: w_fig2E_Y_1e6_cap_w0a}
+
+- id: run_fig2E_Y_1e5_cap_w0a
+  model: buckled_profile_cosine
+  inputs: {a: a_fig2E_Y1e5_cap_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_Y_1e5}
+  outputs: {w: w_fig2E_Y_1e5_cap_w0a}
+
+- id: run_fig2E_Y_1e6_cap_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_corrected_fig2E_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_Y_1e6}
+  outputs: {w: w_fig2E_Y_1e6_cap_2a}
+  note: "Tests caption g = 1.0% with 2*a convention on Y = 10^6 Pa curve (still fails: 208.5 vs 160.3 nm)."
+
+- id: run_fig2E_Y_1e8_act_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_fig2E_Y1e8_act_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_Y_1e8}
+  outputs: {w: w_fig2E_Y_1e8_act_2a}
+
+- id: run_fig2E_Y_1e6_act_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_fig2E_g05_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_Y_1e6}
+  outputs: {w: w_fig2E_Y_1e6_act_2a}
+
+- id: run_fig2E_Y_1e5_act_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_fig2E_Y1e5_act_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_Y_1e5}
+  outputs: {w: w_fig2E_Y_1e5_act_2a}
+
+- id: run_fig2E_p_100_cap_w0a
+  model: buckled_profile_cosine
+  inputs: {a: a_fig2E_p100_cap_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_p_100}
+  outputs: {w: w_fig2E_p_100_cap_w0a}
+
+- id: run_fig2E_p_50_cap_w0a
+  model: buckled_profile_cosine
+  inputs: {a: a_fig2E_p50_cap_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_p_50}
+  outputs: {w: w_fig2E_p_50_cap_w0a}
+
+- id: run_fig2E_p_10_cap_w0a
+  model: buckled_profile_cosine
+  inputs: {a: a_corrected_fig2E_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_p_10}
+  outputs: {w: w_fig2E_p_10_cap_w0a}
+
+- id: run_fig2E_p_10_cap_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_corrected_fig2E_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_p_10}
+  outputs: {w: w_fig2E_p_10_cap_2a}
+  note: "Tests caption g = 1.0% with 2*a convention on p = 10 Pa curve (still fails: 208.5 vs 159.9 nm)."
+
+- id: run_fig2E_p_100_act_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_fig2E_p100_act_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_p_100}
+  outputs: {w: w_fig2E_p_100_act_2a}
+
+- id: run_fig2E_p_50_act_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_fig2E_p50_act_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_p_50}
+  outputs: {w: w_fig2E_p_50_act_2a}
+
+- id: run_fig2E_p_10_act_2a
+  model: buckled_profile_cosine_fig2E_2a
+  inputs: {a: a_fig2E_g05_pred, L: L_fig2E}
+  sweep: {x: d_fig2E_p_10}
+  outputs: {w: w_fig2E_p_10_act_2a}
+
+- id: run_fig2E_L_1_5_cap_w0a
+  model: buckled_profile_cosine_norm
+  inputs: {a: a_fig2E_L15_cap_pred, L: L_fig2E_15_cap, L_0: L_fig2E}
+  sweep: {x_norm: d_fig2E_L_1_5}
+  outputs: {w: w_fig2E_L_1_5_cap_w0a}
+
+- id: run_fig2E_L_1_0_cap_w0a
+  model: buckled_profile_cosine_norm
+  inputs: {a: a_corrected_fig2E_pred, L: L_fig2E, L_0: L_fig2E}
+  sweep: {x_norm: d_fig2E_L_1_0}
+  outputs: {w: w_fig2E_L_1_0_cap_w0a}
+
+- id: run_fig2E_L_0_5_cap_w0a
+  model: buckled_profile_cosine_norm
+  inputs: {a: a_fig2E_L05_cap_pred, L: L_fig2E_05_cap, L_0: L_fig2E}
+  sweep: {x_norm: d_fig2E_L_0_5}
+  outputs: {w: w_fig2E_L_0_5_cap_w0a}
+
+- id: run_fig2E_L_1_0_cap_2a
+  model: buckled_profile_cosine_norm_fig2E_2a
+  inputs: {a: a_corrected_fig2E_pred, L: L_fig2E, L_0: L_fig2E}
+  sweep: {x_norm: d_fig2E_L_1_0}
+  outputs: {w: w_fig2E_L_1_0_cap_2a}
+  note: "Tests caption g = 1.0%, L_0 = 1.8 um with 2*a convention on 1.0 L curve (still fails: 208.5 vs 74.4 nm)."
+
+- id: run_fig2E_L_1_5_act_2a
+  model: buckled_profile_cosine_norm_fig2E_2a
+  inputs: {a: a_fig2E_L15_act_pred, L: L_fig2E_15_act, L_0: L0_fig2E_Lpanel_added}
+  sweep: {x_norm: d_fig2E_L_1_5}
+  outputs: {w: w_fig2E_L_1_5_act_2a}
+
+- id: run_fig2E_L_1_0_act_2a
+  model: buckled_profile_cosine_norm_fig2E_2a
+  inputs: {a: a_fig2E_L10_act_pred, L: L_fig2E_10_act, L_0: L0_fig2E_Lpanel_added}
+  sweep: {x_norm: d_fig2E_L_1_0}
+  outputs: {w: w_fig2E_L_1_0_act_2a}
+
+- id: run_fig2E_L_0_5_act_2a
+  model: buckled_profile_cosine_norm_fig2E_2a
+  inputs: {a: a_fig2E_L05_act_pred, L: L_fig2E_05_act, L_0: L0_fig2E_Lpanel_added}
+  sweep: {x_norm: d_fig2E_L_0_5}
+  outputs: {w: w_fig2E_L_0_5_act_2a}
+
+# --- Block D: Fig. 4C species spacings & amplitude isocontours (0.1 nm, 1 nm, 10 nm) ---
+- id: run_extract_species_spacings
+  model: extract_species_spacings
+  inputs:
+    spacings: d_fig4C_species_spacings
+  outputs:
+    L_2A: L_2A_fig4C
+    L_2B: L_2B_fig4C
+    L_1A: L_1A_fig4C
+    L_1B: L_1B_fig4C
+    L_Vcardui: L_Vcardui_fig4C
+
+- id: run_fig4C_iso_10nm_printed
+  model: rayleigh_ritz_strain_eq3
+  inputs:
+    a: isocontour_amp_fig4C_high
+    p: p_model_p8
+    Y: Y_fig4C
+    nu: nu_model_p8
+    h: h_membrane_p8
+  sweep:
+    L: d_fig4C_iso_10nm
+  outputs:
+    g: g_fig4C_10nm_printed_pred
+
+- id: run_fig4C_iso_10nm_corrected
+  model: rayleigh_ritz_strain_eq3_corrected
+  inputs:
+    a: isocontour_amp_fig4C_high
+    p: p_model_p8
+    Y: Y_fig4C
+    nu: nu_model_p8
+    h: h_membrane_p8
+  sweep:
+    L: d_fig4C_iso_10nm
+  outputs:
+    g: g_fig4C_10nm_corrected_pred
+
+- id: run_fig4C_iso_1nm_printed
+  model: rayleigh_ritz_width_eq3
+  inputs:
+    a: isocontour_amp_fig4C_mid
+    p: p_model_p8
+    Y: Y_fig4C
+    nu: nu_model_p8
+    h: h_membrane_p8
+  sweep:
+    g: d_fig4C_iso_1nm
+  outputs:
+    L: L_fig4C_1nm_printed_pred
+
+- id: run_fig4C_iso_1nm_corrected
+  model: rayleigh_ritz_width_eq3_corrected
+  inputs:
+    a: isocontour_amp_fig4C_mid
+    p: p_model_p8
+    Y: Y_fig4C
+    nu: nu_model_p8
+    h: h_membrane_p8
+  sweep:
+    g: d_fig4C_iso_1nm
+  outputs:
+    L: L_fig4C_1nm_corrected_pred
+
+- id: run_fig4C_iso_0_1nm_printed
+  model: rayleigh_ritz_width_eq3
+  inputs:
+    a: isocontour_amp_fig4C_low
+    p: p_model_p8
+    Y: Y_fig4C
+    nu: nu_model_p8
+    h: h_membrane_p8
+  sweep:
+    g: d_fig4C_iso_0_1nm
+  outputs:
+    L: L_fig4C_0_1nm_printed_pred
+
+- id: run_fig4C_iso_0_1nm_corrected
+  model: rayleigh_ritz_width_eq3_corrected
+  inputs:
+    a: isocontour_amp_fig4C_low
+    p: p_model_p8
+    Y: Y_fig4C
+    nu: nu_model_p8
+    h: h_membrane_p8
+  sweep:
+    g: d_fig4C_iso_0_1nm
+  outputs:
+    L: L_fig4C_0_1nm_corrected_pred
+
+# Species critical growth strains (Eq. 4) and amplitudes at g = 0.5%, Y = 1 MPa, p = 10 Pa
+- id: run_gc_species_L2A
+  model: critical_growth_strain_eq4
+  inputs: {nu: nu_model_p8, h: h_membrane_p8, L: L_2A_fig4C}
+  outputs: {g_c: g_c_C_eurytheme_flat_pred}
+
+- id: run_gc_species_L2B
+  model: critical_growth_strain_eq4
+  inputs: {nu: nu_model_p8, h: h_membrane_p8, L: L_2B_fig4C}
+  outputs: {g_c: g_c_A_vanillae_flat_pred}
+
+- id: run_gc_species_L1A
+  model: critical_growth_strain_eq4
+  inputs: {nu: nu_model_p8, h: h_membrane_p8, L: L_1A_fig4C}
+  outputs: {g_c: g_c_C_eurytheme_ridged_pred}
+
+- id: run_gc_species_L1B
+  model: critical_growth_strain_eq4
+  inputs: {nu: nu_model_p8, h: h_membrane_p8, L: L_1B_fig4C}
+  outputs: {g_c: g_c_A_vanillae_ridged_pred}
+
+- id: run_amp_species_L2A_g05
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_model_p8, Y: Y_fig4C, nu: nu_model_p8, h: h_membrane_p8, L: L_2A_fig4C}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_C_eurytheme_flat_g05_pred}
+
+- id: run_amp_species_L2B_g05
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_model_p8, Y: Y_fig4C, nu: nu_model_p8, h: h_membrane_p8, L: L_2B_fig4C}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_A_vanillae_flat_g05_pred}
+
+- id: run_amp_species_L1A_g05
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_model_p8, Y: Y_fig4C, nu: nu_model_p8, h: h_membrane_p8, L: L_1A_fig4C}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_C_eurytheme_ridged_g05_pred}
+
+- id: run_amp_species_L1B_g05
+  model: rayleigh_ritz_amplitude_eq3_corrected
+  inputs: {g: g_fig2E_half_pct, p: p_model_p8, Y: Y_fig4C, nu: nu_model_p8, h: h_membrane_p8, L: L_1B_fig4C}
+  settings: {tol: 1.0e-6}
+  outputs: {a: a_A_vanillae_ridged_g05_pred}

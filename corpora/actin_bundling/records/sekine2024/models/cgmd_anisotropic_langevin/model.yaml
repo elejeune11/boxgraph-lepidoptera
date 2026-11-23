@@ -1,0 +1,31 @@
+id: cgmd_anisotropic_langevin
+name: stochastic 2D anisotropic Langevin filament solver (Eqs. S1a-S1b, S5 with corrected FDT)
+role: model
+stated:
+  page: 30
+  printed_page: "SI Notes 3"
+  quote: "Eq. (S1) is separated to the spatial components as"
+  where: "Eqs. S1a-S1b & S5 (SI Notes I)"
+reconstructed: "Single-filament stochastic Langevin solver of Eqs. S1a-S1b and S5 restoring the missing k_B T factor in the printed FDT (<xi_a(0)xi_b(t)> = 2 gamma_a^f k_B T delta(t)), assuming gamma_x^f = gamma^f and gamma_y^f = (gamma_y^f/gamma_x^f)*gamma^f (split unstated in paper) to test passive anisotropic motion without crosslinker/motor interactions."
+equation: "gamma_x^f dr_{i,x}/dt = f_{i,x}^{f,str} + xi_{i,x}; gamma_y^f dr_{i,y}/dt = f_{i,y}^{f,str} + xi_{i,y}; <xi_{i,a}(0) xi_{j,b}(t)> = 2 gamma_a^f k_B T delta_{ij} delta_{ab} delta(t)"
+inputs:
+  eta_cyto: {quantity: cytosolic_viscosity, unit: Pa*s}
+  d_f: {quantity: molecular_diameter, unit: um}
+  L0_f: {quantity: molecular_rest_length, unit: um}
+  kappa_f: {quantity: stretching_modulus, unit: pN}
+  kBT: {quantity: thermal_energy, unit: pN*um}
+  friction_asymmetry: {quantity: friction_asymmetry, unit: dimensionless}
+  t_obs: {quantity: observation_time, unit: s}
+outputs:
+  mean_abs_dx: {quantity: mean_longitudinal_displacement, unit: nm}
+  mean_abs_dy: {quantity: mean_circumferential_displacement, unit: nm}
+  R_aniso: {quantity: motion_anisotropy_ratio, unit: dimensionless}
+built_from:
+  - cylindrical_friction_filament
+  - anisotropic_filament_friction
+  - harmonic_stretching_potential
+settings:
+  dt: 0.001
+  n_traj: 2000
+  seed: 42
+stochastic: true

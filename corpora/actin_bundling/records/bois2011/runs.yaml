@@ -1,0 +1,625 @@
+# Group A: Dimensional characteristic scales and Peclet definitions (representative cortical scales)
+- id: run_hydro_length
+  model: hydrodynamic_length
+  inputs:
+    eta: eta_cortex_added
+    gamma: gamma_cortex_added
+  outputs:
+    l: l_cortex_pred
+
+- id: run_char_velocity
+  model: characteristic_velocity
+  inputs:
+    zdm0: zdm0_cortex_added
+    eta: eta_cortex_added
+    gamma: gamma_cortex_added
+  outputs:
+    U: U_cortex_pred
+
+- id: run_pe_physical
+  model: peclet_number_physical
+  inputs:
+    zdm0: zdm0_cortex_added
+    D: D_cortex_added
+    gamma: gamma_cortex_added
+  outputs:
+    Pe: Pe_phys_pred
+
+- id: run_pe_timescale
+  model: peclet_number_timescale
+  inputs:
+    U: U_cortex_pred
+    l: l_cortex_pred
+    D: D_cortex_added
+  outputs:
+    Pe: Pe_timescale_pred
+
+- id: run_tau_D
+  model: diffusive_timescale
+  inputs:
+    l: l_cortex_pred
+    D: D_cortex_added
+  outputs:
+    tau_D: tau_D_cortex_pred
+
+# Group B: Single-species steady-state flux, velocity, potential, and BVP profiles (Eqs. 4-10, Figs. 1-2)
+- id: run_steady_flux_noflux
+  model: steady_flux_eq5
+  inputs:
+    v: v_noflux_boundary
+    c: c_boundary_noflux_added
+    D: D_cortex_added
+    dc_dx: dc_dx_noflux_boundary
+  outputs:
+    j0: j0_noflux_pred
+
+- id: run_steady_flux_periodic
+  model: steady_flux_eq7
+  inputs:
+    delta_sigma: delta_sigma_periodic_added
+    gamma: gamma_cortex_added
+    D: D_cortex_added
+    c_ratio: c_ratio_periodic_added
+    inv_c_int: inv_c_integral_added
+  outputs:
+    j0: j0_periodic_pred
+
+- id: run_steady_vel_homog
+  model: steady_velocity_eq8
+  inputs:
+    D: D_cortex_added
+    du_dx: du_dx_homog_added
+  outputs:
+    v: v_homog_pred
+
+- id: run_ss_fig1a_1peak
+  model: single_species_steady_state_eq9
+  inputs:
+    Pe: Pe_fig1
+    L_over_l: L_over_l_fig1
+    c0: c0_fig1
+    n_peaks: n_peaks_fig1a
+  outputs:
+    c_max: c_max_fig1a_pred
+    c_min: c_min_fig1a_pred
+    c_mean: c_mean_fig1a_pred
+    v_over_U_max: v_max_fig1a_pred
+    sigma0_hat: sigma0_hat_fig1a_pred
+    sigma_hat_max: sigma_max_fig1a_pred
+    sigma_hat_min: sigma_min_fig1a_pred
+    active_stress_hat_max: active_max_fig1a_pred
+
+- id: run_ss_fig1b_2peak
+  model: single_species_steady_state_eq9
+  inputs:
+    Pe: Pe_fig1
+    L_over_l: L_over_l_fig1
+    c0: c0_fig1
+    n_peaks: n_peaks_fig1b
+  outputs:
+    c_max: c_max_fig1b_pred
+    c_min: c_min_fig1b_pred
+    c_mean: c_mean_fig1b_pred
+    v_over_U_max: v_max_fig1b_pred
+    sigma0_hat: sigma0_hat_fig1b_pred
+    sigma_hat_max: sigma_max_fig1b_pred
+    sigma_hat_min: sigma_min_fig1b_pred
+    active_stress_hat_max: active_max_fig1b_pred
+
+- id: run_ss_fig2a_Pe10
+  model: single_species_steady_state_eq9
+  inputs:
+    Pe: Pe_fig3a_10
+    L_over_l: L_over_l_fig1
+    c0: c0_fig1
+    n_peaks: n_peaks_fig1a
+  outputs:
+    c_max: c_max_Pe10_pred
+    c_min: c_min_Pe10_pred
+    c_mean: c_mean_Pe10_pred
+    v_over_U_max: v_max_Pe10_pred
+    sigma0_hat: sigma0_hat_Pe10_pred
+    sigma_hat_max: sigma_max_Pe10_pred
+    sigma_hat_min: sigma_min_Pe10_pred
+    active_stress_hat_max: active_max_Pe10_pred
+
+- id: run_potential_fig2a_Pe3
+  model: single_species_potential_eq10
+  inputs:
+    u: u_zero_added
+    Pe: Pe_fig3a_3
+    sigma0_hat: sigma0_hat_homog_added
+  outputs:
+    V_dimless: V_u0_Pe3_pred
+    d2V_du2_dimless: d2V_u0_Pe3_pred
+
+- id: run_potential_fig2a_Pe7
+  model: single_species_potential_eq10
+  inputs:
+    u: u_zero_added
+    Pe: Pe_fig3a_7
+    sigma0_hat: sigma0_hat_homog_added
+  outputs:
+    V_dimless: V_u0_Pe7_pred
+    d2V_du2_dimless: d2V_u0_Pe7_pred
+
+- id: run_potential_fig2a_Pe10
+  model: single_species_potential_eq10
+  inputs:
+    u: u_zero_added
+    Pe: Pe_fig3a_10
+    sigma0_hat: sigma0_hat_Pe10_pred
+  outputs:
+    V_dimless: V_u0_Pe10_pred
+    d2V_du2_dimless: d2V_u0_Pe10_pred
+
+# Group C: Single-species linear stability, dispersion, and PDE dynamics (Eqs. 1-3, 11-13, Figs. 3-4)
+- id: run_kl_fig3a
+  model: discrete_wavenumber
+  inputs:
+    beta: beta_periodic
+    L_over_l: L_over_l_fig1
+  sweep:
+    n: kl_integers_fig3a
+  outputs:
+    k_l: kl_fig3a_pred
+
+- id: run_disp_raw
+  model: single_species_dispersion_raw
+  inputs:
+    k: k_test_added
+    D: D_cortex_added
+    c0: c0_fig1
+    zdm0: zdm0_cortex_added
+    df_dc: df_dc_c1_added
+    gamma: gamma_cortex_added
+    eta: eta_cortex_added
+  outputs:
+    lam: lam_raw_pred
+
+- id: run_disp_eq12
+  model: single_species_dispersion_eq12
+  inputs:
+    k: k_test_added
+    D: D_cortex_added
+    Pe: Pe_fig1
+    c0: c0_fig1
+    df_dc: df_dc_c1_added
+    l: l_cortex_pred
+  outputs:
+    lam: lam_eq12_pred
+    lam_dimless: lam_dimless_eq12_pred
+
+- id: run_disp_hill_fig3a
+  model: single_species_dispersion_hill
+  inputs:
+    k_l: k_l_test_added
+    Pe: Pe_fig1
+    c0: c0_fig1
+  outputs:
+    lam_dimless: lam_dimless_hill_pred
+
+- id: run_instab_eq13_fig1
+  model: single_species_instability_eq13
+  inputs:
+    Pe: Pe_fig1
+    c0: c0_fig1
+    df_dc: df_dc_c1_added
+    beta: beta_periodic
+    L_over_l: L_over_l_fig1
+  outputs:
+    stability_ratio: S_fig1_pred
+    Pe_crit: Pe_crit_fig1_pred
+
+- id: run_stability_boundary_hill_fig1
+  model: single_species_stability_boundary_hill
+  inputs:
+    c0: c0_fig1
+    beta: beta_periodic
+    L_over_l: L_over_l_fig1
+  outputs:
+    Pe_crit: Pe_crit_hill_fig1_pred
+    Pe_crit_rescaled: Pe_crit_rescaled_c1_pred
+
+- id: run_stability_boundary_noflux
+  model: single_species_stability_boundary_hill
+  inputs:
+    c0: c0_fig1
+    beta: beta_noflux
+    L_over_l: L_over_l_fig1
+  outputs:
+    Pe_crit: Pe_crit_hill_noflux_pred
+    Pe_crit_rescaled: Pe_crit_rescaled_noflux_pred
+
+- id: run_fastest_mode_fig4
+  model: single_species_fastest_mode
+  inputs:
+    Pe: Pe_fig1
+    c0: c0_fig1
+    beta: beta_periodic
+    L_over_l: L_over_l_fig4
+  outputs:
+    n_max: fastest_mode_fig4_pred
+    k_max_discrete_l: k_max_fig4_pred
+    lam_max_dimless: lam_max_fig4_pred
+    n_unstable_modes: n_unstable_fig4_pred
+
+- id: run_fastest_mode_fig1
+  model: single_species_fastest_mode
+  inputs:
+    Pe: Pe_fig1
+    c0: c0_fig1
+    beta: beta_periodic
+    L_over_l: L_over_l_fig1
+  outputs:
+    n_max: fastest_mode_fig1_pred
+    k_max_discrete_l: k_max_fig1_pred
+    lam_max_dimless: lam_max_fig1_pred
+    n_unstable_modes: n_unstable_fig1_pred
+
+- id: run_pde_fig4
+  model: single_species_pde_eq1_3
+  inputs:
+    Pe: Pe_fig1
+    L_over_l: L_over_l_fig4
+    c0: c0_fig1
+    T_end: T_end_fig4_added
+    eps_init: eps_init_fig4_added
+  outputs:
+    n_peaks_final: n_peaks_final_fig4_pred
+    c_max_final: c_max_final_fig4_pred
+    c_mean_final: c_mean_final_fig4_pred
+
+# Group D: Multi-species Eq. (15) and ASDM models (Eqs. 14-15, Fig. 5)
+- id: run_rda_eq15_1species
+  model: single_species_rda_dispersion_eq15
+  inputs:
+    k: k_test_added
+    D: D_cortex_added
+    dR_dc: dR_dc_zero_added
+    Pe: Pe_fig1
+    c0: c0_fig1
+    df_dc: df_dc_c1_added
+    l: l_cortex_pred
+  outputs:
+    lam: lam_rda_1species_pred
+
+- id: run_asdm_homog_ss
+  model: asdm_homogeneous_steady_state
+  inputs:
+    rho_a: rho_a_fig5a
+    rho_s: rho_s_fig5_cross_added
+  outputs:
+    a0: asdm_a0_pred
+    s0: asdm_s0_pred
+
+- id: run_asdm_disp_fig5b_cross
+  model: asdm_dispersion_eq15
+  inputs:
+    k_l: k_l_test_added
+    Da_over_Ds: Da_over_Ds_fig5_cross_added
+    rho_a: rho_a_fig5b
+    rho_s: rho_s_fig5_cross_added
+    Pe: Pe_fig5b
+  outputs:
+    re_lam_dimless: asdm_re_lam_Pe7_pred
+    im_lam_dimless: asdm_im_lam_Pe7_pred
+    tr_dimless: asdm_tr_Pe7_pred
+    det_dimless: asdm_det_Pe7_pred
+
+- id: run_asdm_disp_pe0_cross
+  model: asdm_dispersion_pe0
+  inputs:
+    k_l: k_l_test_added
+    Da_over_Ds: Da_over_Ds_fig5_cross_added
+    rho_a: rho_a_fig5a
+    rho_s: rho_s_fig5_cross_added
+  outputs:
+    re_lam_dimless: asdm_re_lam_Pe0_pred
+    im_lam_dimless: asdm_im_lam_Pe0_pred
+    tr_dimless: asdm_tr_Pe0_pred
+    det_dimless: asdm_det_Pe0_pred
+
+- id: run_asdm_boundary_Pe0
+  model: asdm_stability_boundary
+  inputs:
+    rho_a: rho_a_fig5a
+    rho_s: rho_s_fig5_cross_added
+    Pe: Pe_fig5a
+  outputs:
+    Da_over_Ds_crit: Da_over_Ds_crit_Pe0_pred
+    k_crit_l: k_crit_Pe0_pred
+
+- id: run_asdm_boundary_Pe7
+  model: asdm_stability_boundary
+  inputs:
+    rho_a: rho_a_fig5b
+    rho_s: rho_s_fig5_cross_added
+    Pe: Pe_fig5b
+  outputs:
+    Da_over_Ds_crit: Da_over_Ds_crit_Pe7_pred
+    k_crit_l: k_crit_Pe7_pred
+
+- id: run_asdm_pde_fig5d
+  model: asdm_pde_eq14
+  inputs:
+    Pe: Pe_fig5b
+    Da_over_Ds: Da_over_Ds_fig5_cross_added
+    rho_a: rho_a_fig5b
+    rho_s: rho_s_fig5_cross_added
+    L_over_l: L_over_l_fig5d_added
+    T_end: T_end_fig5d_added
+    eps_init: eps_init_fig5d_added
+  outputs:
+    a_max: a_max_fig5d_pred
+    a_min: a_min_fig5d_pred
+    s_max: s_max_fig5d_pred
+    s_min: s_min_fig5d_pred
+    v_over_U_max: v_max_fig5d_pred
+    n_peaks: n_peaks_fig5d_pred
+
+# Group E: Curve runs comparing existing and profile-wrapper models against digitized Figs. 1, 2, 3, and 5
+- id: run_fig1a_c_curve
+  model: single_species_steady_state_profile_eq9
+  inputs:
+    Pe: Pe_fig1
+    L_over_l: L_over_l_fig1
+    c0: c0_fig1
+    n_peaks: n_peaks_fig1a
+    x_peak_over_l: x_peak_fig1a_added
+  sweep:
+    x_over_l: fig1a_c_data
+  outputs:
+    c: fig1a_c_pred
+
+- id: run_fig1a_v_curve
+  model: single_species_steady_state_profile_eq9
+  inputs:
+    Pe: Pe_fig1
+    L_over_l: L_over_l_fig1
+    c0: c0_fig1
+    n_peaks: n_peaks_fig1a
+    x_peak_over_l: x_peak_fig1a_added
+  sweep:
+    x_over_l: fig1a_v_data
+  outputs:
+    v_over_U: fig1a_v_pred
+
+- id: run_fig1a_stress_curves
+  model: single_species_steady_state_profile_eq9
+  inputs:
+    Pe: Pe_fig1
+    L_over_l: L_over_l_fig1
+    c0: c0_fig1
+    n_peaks: n_peaks_fig1a
+    x_peak_over_l: x_peak_fig1a_added
+  sweep:
+    x_over_l: fig1a_sigma_data
+  outputs:
+    sigma_hat: fig1a_sigma_pred
+    active_stress_hat: fig1a_zdm_pred
+
+- id: run_fig1b_c_curve
+  model: single_species_steady_state_profile_eq9
+  inputs:
+    Pe: Pe_fig1
+    L_over_l: L_over_l_fig1
+    c0: c0_fig1
+    n_peaks: n_peaks_fig1b
+    x_peak_over_l: x_peak_fig1b_added
+  sweep:
+    x_over_l: fig1b_c_data
+  outputs:
+    c: fig1b_c_pred
+
+- id: run_fig1b_v_curve
+  model: single_species_steady_state_profile_eq9
+  inputs:
+    Pe: Pe_fig1
+    L_over_l: L_over_l_fig1
+    c0: c0_fig1
+    n_peaks: n_peaks_fig1b
+    x_peak_over_l: x_peak_fig1b_added
+  sweep:
+    x_over_l: fig1b_v_data
+  outputs:
+    v_over_U: fig1b_v_pred
+
+- id: run_fig1b_stress_curves
+  model: single_species_steady_state_profile_eq9
+  inputs:
+    Pe: Pe_fig1
+    L_over_l: L_over_l_fig1
+    c0: c0_fig1
+    n_peaks: n_peaks_fig1b
+    x_peak_over_l: x_peak_fig1b_added
+  sweep:
+    x_over_l: fig1b_sigma_data
+  outputs:
+    sigma_hat: fig1b_sigma_pred
+    active_stress_hat: fig1b_zdm_pred
+
+- id: run_fig2a_Pe10_curve
+  model: single_species_potential_eq10
+  inputs:
+    Pe: Pe_fig3a_10
+    sigma0_hat: sigma0_hat_Pe10_pred
+  sweep:
+    u: fig2a_Pe10_data
+  outputs:
+    V_dimless: fig2a_Pe10_pred
+
+- id: run_fig2a_Pe7_curve
+  model: single_species_potential_eq10
+  inputs:
+    Pe: Pe_fig3a_7
+    sigma0_hat: sigma0_hat_homog_added
+  sweep:
+    u: fig2a_Pe7_data
+  outputs:
+    V_dimless: fig2a_Pe7_pred
+
+- id: run_fig2a_Pe3_curve
+  model: single_species_potential_eq10
+  inputs:
+    Pe: Pe_fig3a_3
+    sigma0_hat: sigma0_hat_homog_added
+  sweep:
+    u: fig2a_Pe3_data
+  outputs:
+    V_dimless: fig2a_Pe3_pred
+
+- id: run_fig2b_2peak_curve
+  model: single_species_potential_eq10
+  inputs:
+    Pe: Pe_fig1
+    sigma0_hat: sigma0_hat_fig1b_pred
+  sweep:
+    u: fig2b_2peak_data
+  outputs:
+    V_dimless: fig2b_2peak_pred
+
+- id: run_fig2b_1peak_curve
+  model: single_species_potential_eq10
+  inputs:
+    Pe: Pe_fig1
+    sigma0_hat: sigma0_hat_fig1a_pred
+  sweep:
+    u: fig2b_1peak_data
+  outputs:
+    V_dimless: fig2b_1peak_pred
+
+- id: run_fig3a_Pe25_curve
+  model: single_species_dispersion_hill
+  inputs:
+    Pe: Pe_fig1
+    c0: c0_fig1
+  sweep:
+    k_l: fig3a_Pe25_data
+  outputs:
+    lam_dimless: fig3a_Pe25_pred
+
+- id: run_fig3a_Pe10_curve
+  model: single_species_dispersion_hill
+  inputs:
+    Pe: Pe_fig3a_10
+    c0: c0_fig1
+  sweep:
+    k_l: fig3a_Pe10_data
+  outputs:
+    lam_dimless: fig3a_Pe10_pred
+
+- id: run_fig3a_Pe7_curve
+  model: single_species_dispersion_hill
+  inputs:
+    Pe: Pe_fig3a_7
+    c0: c0_fig1
+  sweep:
+    k_l: fig3a_Pe7_data
+  outputs:
+    lam_dimless: fig3a_Pe7_pred
+
+- id: run_fig3a_Pe3_curve
+  model: single_species_dispersion_hill
+  inputs:
+    Pe: Pe_fig3a_3
+    c0: c0_fig1
+  sweep:
+    k_l: fig3a_Pe3_data
+  outputs:
+    lam_dimless: fig3a_Pe3_pred
+
+- id: run_fig3b_boundary_curve
+  model: single_species_stability_boundary_hill
+  inputs:
+    beta: beta_periodic
+    L_over_l: L_over_l_fig1
+  sweep:
+    c0: fig3b_stability_boundary_data
+  outputs:
+    Pe_crit_rescaled: fig3b_boundary_pred
+
+- id: run_fig5a_boundary_curve
+  model: asdm_stability_boundary
+  inputs:
+    rho_a: rho_a_fig5a
+    Pe: Pe_fig5a
+  sweep:
+    rho_s: fig5a_boundary_I_II_data
+  outputs:
+    Da_over_Ds_crit: fig5a_boundary_pred
+
+- id: run_fig5b_boundary_curve
+  model: asdm_stability_boundary
+  inputs:
+    rho_a: rho_a_fig5b
+    Pe: Pe_fig5b
+  sweep:
+    rho_s: fig5b_boundary_I_II_data
+  outputs:
+    Da_over_Ds_crit: fig5b_boundary_pred
+
+- id: run_fig5c_Pe50_curve
+  model: asdm_dispersion_eq15
+  inputs:
+    Da_over_Ds: Da_over_Ds_fig5_cross_added
+    rho_a: rho_a_fig5b
+    rho_s: rho_s_fig5_cross_added
+    Pe: Pe_fig5c_50
+  sweep:
+    k_l: fig5c_Pe50_data
+  outputs:
+    re_lam_dimless: fig5c_Pe50_pred
+
+- id: run_fig5c_Pe25_curve
+  model: asdm_dispersion_eq15
+  inputs:
+    Da_over_Ds: Da_over_Ds_fig5_cross_added
+    rho_a: rho_a_fig5b
+    rho_s: rho_s_fig5_cross_added
+    Pe: Pe_fig1
+  sweep:
+    k_l: fig5c_Pe25_data
+  outputs:
+    re_lam_dimless: fig5c_Pe25_pred
+
+- id: run_fig5c_Pe0_cross_curve
+  model: asdm_dispersion_pe0
+  inputs:
+    Da_over_Ds: Da_over_Ds_fig5_cross_added
+    rho_a: rho_a_fig5a
+    rho_s: rho_s_fig5_cross_added
+  sweep:
+    k_l: fig5c_Pe0_cross_data
+  outputs:
+    re_lam_dimless: fig5c_Pe0_cross_pred
+
+- id: run_fig5c_Pe0_plus_curve
+  model: asdm_dispersion_pe0
+  inputs:
+    Da_over_Ds: Da_over_Ds_fig5_plus_added
+    rho_a: rho_a_fig5a
+    rho_s: rho_s_fig5_plus_added
+  sweep:
+    k_l: fig5c_Pe0_plus_data
+  outputs:
+    re_lam_dimless: fig5c_Pe0_plus_pred
+
+- id: run_fig5d_profiles
+  model: asdm_pde_profile_eq14
+  inputs:
+    Pe: Pe_fig5b
+    Da_over_Ds: Da_over_Ds_fig5_cross_added
+    rho_a: rho_a_fig5b
+    rho_s: rho_s_fig5_cross_added
+    L_over_l: L_over_l_fig5d_added
+    T_end: T_end_fig5d_added
+    eps_init: eps_init_fig5d_added
+    x_peak_over_l: x_peak_fig5d_added
+    a_ref: fig5d_a_data
+    s_ref: fig5d_s_data
+    v_ref: fig5d_v_data
+  outputs:
+    a_profile: fig5d_a_pred
+    s_profile: fig5d_s_pred
+    v_profile: fig5d_v_pred

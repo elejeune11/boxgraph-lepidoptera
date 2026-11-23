@@ -1,0 +1,1194 @@
+"""The build of one record: runs, comparisons, refinement, alternatives.
+
+Everything here is a deterministic function of the authored record
+(principles 5 and 11). Model code runs in a separate interpreter with a
+timeout. Results are cached by the hash of (code, inputs, settings).
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+import subprocess
+import sys
+from dataclasses import dataclass, field, replace
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+from . import precision as P
+from . import units as U
+from .schema import ROLE_OUTPUT_ORIGIN, Added, Datum, Origin
+from .store import LoadedRecord, model_by_id
+
+RUNNER = Path(__file__).with_name("_runner.py")
+RUN_TIMEOUT = 2 * 3600  # a model run that takes longer is stopped: long simulations are normal, a hang is not
+READ_TIMEOUT = 15 * 60  # figure-reading code
+DEFAULT_TIMEOUT = RUN_TIMEOUT
+
+
+
+ERROR_BARS = {"sem": "SEM", "sd": "SD", "ci95": "95% CI", "range": "range", "unstated": "unstated error"}
+
+WRITTEN = ("article", "preprint", "thesis", "book")  # sources whose models a reader translates from text
+
+
+class BuildError(RuntimeError):
+    pass
+
+
+# --------------------------------------------------------------------------
+# Values: what a node holds once the record is loaded or a run has produced it
+# --------------------------------------------------------------------------
+
+
+@dataclass
+class Value:
+    id: str
+    quantity: str
+    unit: str
+    scale: str
+    origin: str
+    kind: str  # 'printed' | 'added' | 'output'
+    value: float | None = None  # scalar
+    printed: P.Printed | None = None
+    index: list[float] | None = None  # table / curve
+    index_quantity: str | None = None
+    index_unit: str | None = None
+    values: list[float | None] | None = None
+    printed_values: list[P.Printed | None] | None = None
+    conditions: dict[str, str] = field(default_factory=dict)
+    run: str | None = None  # for outputs: which run made it
+    se: float | None = None  # sampling error of a scalar from repeated runs of a model with randomness
+    ses: list[float | None] | None = None  # the same, value by value, for a curve
+    # computed through a scaling law printed without its prefactor (that model's id); chained: through others too
+    prefactor_model: str | None = None
+    prefactor_chained: bool = False
+    reader_model: str | None = None  # computed through a model the reader built, not the paper (its id)
+
+    @property
+    def is_table(self) -> bool:
+        return self.values is not None
+
+    def to_json(self) -> dict:
+        d = {
+            "id": self.id,
+            "quantity": self.quantity,
+            "unit": self.unit,
+            "scale": self.scale,
+            "origin": self.origin,
+            "kind": self.kind,
+        }
+        if self.is_table:
+            d["index"] = self.index
+            d["index_unit"] = self.index_unit
+            d["values"] = self.values
+        else:
+            d["value"] = self.value
+        if self.printed is not None:
+            d["printed"] = self.printed.text
+        if self.run:
+            d["run"] = self.run
+        if self.se:
+            d["se"] = self.se
+        if self.ses:
+            d["ses"] = self.ses
+        if self.conditions:
+            d["conditions"] = self.conditions
+        if self.prefactor_model:
+            d["prefactor_model"] = self.prefactor_model
+            d["prefactor_chained"] = self.prefactor_chained
+        if self.reader_model:
+            d["reader_model"] = self.reader_model
+        return d
+
+
+def _safe_parse(text: str) -> P.Printed | None:
+    try:
+        return P.parse(text)
+    except P.PrintedError:
+        return None
+
+
+def value_from_datum(d: Datum) -> Value:
+    if d.table is not None:
+        idx = [_safe_parse(x) for x in d.table.index]
+        vals = [_safe_parse(x) for x in d.table.values]
+        return Value(
+            id=d.id, quantity=d.quantity, unit=d.unit, scale=d.scale, origin=d.origin.value, kind="printed",
+            index=[p.value if p else None for p in idx], index_quantity=d.table.index_quantity,
+            index_unit=d.table.index_unit, values=[p.value if p else None for p in vals], printed_values=vals,
+            conditions=dict(d.conditions),
+        )
+    p = _safe_parse(d.printed)
+    return Value(id=d.id, quantity=d.quantity, unit=d.unit, scale=d.scale, origin=d.origin.value, kind="printed",
+                 value=p.value if p else None, printed=p, conditions=dict(d.conditions))
+
+
+def value_from_added(a: Added, override: str | None = None) -> Value:
+    text = override if override is not None else a.printed
+    p = _safe_parse(text)
+    return Value(id=a.id, quantity=a.quantity, unit=a.unit, scale=a.scale, origin=Origin.assumed.value, kind="added",
+                 value=p.value if p else None, printed=p, conditions=dict(a.conditions))
+
+
+# --------------------------------------------------------------------------
+# Executing model code
+# --------------------------------------------------------------------------
+
+
+_CACHE: dict[str, Any] = {}
+
+
+def _code_bytes(path: Path, figure: bool = False) -> bytes:
+    """Everything a piece of record code can load, for its cache key: the file itself, the shared
+    helpers beside it (files whose names start with '_'), any other code in a model's own folder, and,
+    through the models it is declared to be built from (model.yaml `built_from`), their code too.
+    Figure code may import any module beside it, so all code in its folder counts."""
+    out: list[bytes] = []
+    seen: set[Path] = set()
+    visited: set[Path] = set()  # model folders, so a cycle in built_from ends
+
+    def add(p: Path) -> None:
+        p = p.resolve()
+        if p in seen or not p.is_file():
+            return
+        seen.add(p)
+        out.append(p.name.encode() + b"\0" + p.read_bytes())
+
+    def add_model_dir(d: Path) -> None:
+        if d.resolve() in visited:
+            return
+        visited.add(d.resolve())
+        for f in sorted(d.glob("*.py")):
+            add(f)
+        spec = d / "model.yaml"
+        if spec.is_file():
+            try:
+                built = (yaml.safe_load(spec.read_text()) or {}).get("built_from") or []
+            except yaml.YAMLError:
+                built = []
+            for mid in sorted(built):
+                add_model_dir(d.parent / str(mid))
+
+    path = Path(path)
+    add(path)
+    if (path.parent / "model.yaml").is_file():
+        add_model_dir(path.parent)
+    else:
+        for f in sorted(path.parent.glob("*.py" if figure else "_*.py")):
+            add(f)
+    return b"\0\0".join(out)
+
+
+def _cache_key(code: bytes, calls: list[dict]) -> str:
+    h = hashlib.sha256(code)
+    h.update(json.dumps(calls, sort_keys=True, default=str).encode())
+    return h.hexdigest()
+
+
+def _cache_read(cf: Path):
+    """A cached result, or None when there is none or the file is cut short."""
+    try:
+        return json.loads(cf.read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def _cache_write(cf: Path, res) -> None:
+    """Write whole or not at all: concurrent builds share the cache."""
+    import os
+    import tempfile
+
+    cf.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=cf.parent, prefix=cf.name + ".tmp")
+    with os.fdopen(fd, "w") as f:
+        f.write(json.dumps(res))
+    os.replace(tmp, cf)
+
+
+_SANDBOX: bool | None = None
+
+
+def sandbox_available() -> bool:
+    """Whether record code can be run without network access here: a Linux user and network
+    namespace (`unshare -rn`). Checked once."""
+    global _SANDBOX
+    if _SANDBOX is None:
+        import shutil
+
+        try:
+            _SANDBOX = bool(shutil.which("unshare")) and subprocess.run(
+                ["unshare", "-rn", "true"], capture_output=True, timeout=10).returncode == 0
+        except (OSError, subprocess.SubprocessError):
+            _SANDBOX = False
+    return _SANDBOX
+
+
+def _runner_argv() -> list[str]:
+    """The isolated runner: a fresh interpreter ignoring the environment and user site, and, where the
+    system allows it, with no network (record code is written by agents and may come from papers)."""
+    base = [sys.executable, "-I", str(RUNNER)]
+    return ["unshare", "-rn", *base] if sandbox_available() else base
+
+
+def execute(model_path: Path, calls: list[dict], timeout: int = DEFAULT_TIMEOUT, cache_dir: Path | None = None,
+            source: Path | None = None, source_version: str | None = None) -> list[dict]:
+    """Run a model's code on each call, in the isolated runner. `source` is the folder of the source's
+    own code (a software record), given to the code as $BOXGRAPH_SOURCE; its version is part of the key."""
+    key = _cache_key(_code_bytes(model_path) + (f"\0source:{source_version}".encode() if source else b""), calls)
+    if key in _CACHE:
+        if cache_dir is not None and not (cache_dir / f"{key}.json").exists():
+            _cache_write(cache_dir / f"{key}.json", _CACHE[key])  # so the next process finds it too
+        return _CACHE[key]
+    if cache_dir is not None:
+        res = _cache_read(cache_dir / f"{key}.json")
+        if res is not None:
+            _CACHE[key] = res
+            return res
+    req = {"model_path": str(model_path.resolve()), "calls": calls, "want": "run",
+           "source": str(Path(source).resolve()) if source else None}
+    try:
+        proc = subprocess.run(
+            _runner_argv(), input=json.dumps(req), capture_output=True, text=True,
+            timeout=timeout, cwd=str(model_path.parent),
+        )
+    except subprocess.TimeoutExpired:
+        raise BuildError(f"{model_path}: timed out after {timeout}s") from None
+    if proc.returncode != 0 or not proc.stdout.strip():
+        raise BuildError(f"{model_path}: runner failed: {proc.stderr[-2000:]}")
+    try:
+        out = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        raise BuildError(f"the runner's reply could not be read: {proc.stdout[:300]!r}") from None
+    if not out.get("ok"):
+        raise BuildError(f"{model_path}: {out.get('error')}\n{out.get('trace', '')}")
+    res = out["results"]
+    _CACHE[key] = res
+    if cache_dir is not None:
+        _cache_write(cache_dir / f"{key}.json", res)
+    return res
+
+
+def read_with_code(code_path: Path, image, at: list[float], timeout: int = READ_TIMEOUT,
+                   cache_dir: Path | None = None) -> list[dict]:
+    """Run a record's figure-reading code, read(image, at), in the isolated runner."""
+    import tempfile
+
+    import numpy as np
+
+    img_sha = hashlib.sha256(np.ascontiguousarray(image).tobytes() + str(image.shape).encode()).hexdigest()
+    key = _cache_key(_code_bytes(code_path, figure=True), [{"image": img_sha, "at": at, "want": "figure"}])
+    if cache_dir is not None:
+        cached = _cache_read(cache_dir / f"{key}.json")
+        if cached is not None:
+            return cached
+    with tempfile.TemporaryDirectory() as td:
+        np.save(Path(td) / "image.npy", image)
+        req = {"model_path": str(code_path.resolve()), "want": "figure", "image": str(Path(td) / "image.npy"), "at": at}
+        try:
+            proc = subprocess.run(_runner_argv(), input=json.dumps(req), capture_output=True,
+                                  text=True, timeout=timeout, cwd=str(code_path.parent))
+        except subprocess.TimeoutExpired:
+            raise BuildError(f"{code_path.name}: timed out after {timeout}s") from None
+    if proc.returncode != 0 or not proc.stdout.strip():
+        raise BuildError(f"{code_path.name}: runner failed: {proc.stderr[-2000:]}")
+    try:
+        out = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        raise BuildError(f"the runner's reply could not be read: {proc.stdout[:300]!r}") from None
+    if not out.get("ok"):
+        raise BuildError(f"{code_path.name}: {out.get('error')}")
+    res = out["readings"]
+    if cache_dir is not None:
+        _cache_write(cache_dir / f"{key}.json", res)
+    return res
+
+
+def symbolic(model_path: Path, timeout: int = 120, cache_dir: Path | None = None) -> dict[str, str] | None:
+    key = _cache_key(_code_bytes(model_path), [{"want": "symbolic"}])
+    if cache_dir is not None:
+        cached = _cache_read(cache_dir / f"{key}.json")
+        if cached is not None:
+            return cached["symbolic"]
+    req = {"model_path": str(model_path.resolve()), "want": "symbolic"}
+    proc = subprocess.run(_runner_argv(), input=json.dumps(req), capture_output=True, text=True,
+                          timeout=timeout, cwd=str(model_path.parent))
+    if proc.returncode != 0 or not proc.stdout.strip():
+        return None  # a failure is not cached: it may be passing
+    try:
+        out = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        return None
+    if not out.get("ok"):
+        return None  # a failure is not cached: it may be fixed
+    res = out.get("symbolic")
+    if cache_dir is not None:
+        _cache_write(cache_dir / f"{key}.json", {"symbolic": res})
+    return res
+
+
+# --------------------------------------------------------------------------
+# One record's build
+# --------------------------------------------------------------------------
+
+
+@dataclass
+class RunResult:
+    id: str
+    model: str
+    ok: bool
+    error: str | None = None
+    inputs: dict[str, Any] = field(default_factory=dict)  # symbol -> value used (port unit)
+    settings: dict[str, Any] = field(default_factory=dict)
+    outputs: dict[str, str] = field(default_factory=dict)  # symbol -> value id
+    added_inputs: list[str] = field(default_factory=list)
+    replicates: int = 1
+    notes: list[str] = field(default_factory=list)
+
+
+@dataclass
+class ComparisonResult:
+    id: str
+    purpose: str
+    computed: str
+    printed: str
+    ok: bool
+    error: str | None = None
+    computed_value: Any = None  # in printed unit/scale
+    printed_text: Any = None
+    difference: Any = None  # computed - printed, in printed unit/scale
+    verdict: str | None = None
+    per_value: list[str] | None = None
+    conditions_note: str | None = None
+    computed_se: Any = None  # sampling error of the computed side, in printed unit and scale
+    input_rounding: dict | None = None  # the range the printed inputs' rounding allows, when it was tried
+    prefactor_model: str | None = None  # the scaling law without a prefactor the computed side rests on
+    implied_prefactor: float | None = None  # printed over computed: the one measurement's, or the fitted one
+    prefactor_note: str | None = None
+    reader_model: str | None = None  # the model the reader built that the computed side rests on
+
+
+@dataclass
+class RecordBuild:
+    source: str
+    digest: str
+    values: dict[str, Value] = field(default_factory=dict)
+    runs: dict[str, RunResult] = field(default_factory=dict)
+    comparisons: dict[str, ComparisonResult] = field(default_factory=dict)
+    refinements: dict[str, dict] = field(default_factory=dict)
+    alternatives: list[dict] = field(default_factory=list)
+    figures: dict[str, dict] = field(default_factory=dict)
+    problems: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+
+    def to_json(self) -> dict:
+        return {
+            "source": self.source,
+            "digest": self.digest,
+            "values": {k: v.to_json() for k, v in sorted(self.values.items())},
+            "runs": {k: vars(v) for k, v in sorted(self.runs.items())},
+            "comparisons": {k: vars(v) for k, v in sorted(self.comparisons.items())},
+            "refinements": dict(sorted(self.refinements.items())),
+            "alternatives": self.alternatives,
+            "figures": dict(sorted(self.figures.items())),
+            "problems": self.problems,
+            "warnings": self.warnings,
+        }
+
+
+def conditions_agree(a: dict[str, str], b: dict[str, str]) -> tuple[bool, list[str]]:
+    """Agree when every condition both name has the same value. Returns
+    (agree, notes). Values are compared as printed after whitespace
+    normalisation, and numerically with units when both parse."""
+    notes = []
+    agree = True
+    for k in sorted(set(a) | set(b)):
+        if k not in a or k not in b:
+            notes.append(f"condition {k!r} named by one side only")
+            continue
+        if _cond_equal(a[k], b[k]):
+            continue
+        agree = False
+        notes.append(f"condition {k!r} differs: {a[k]!r} vs {b[k]!r}")
+    return agree, notes
+
+
+def _cond_equal(x: str, y: str) -> bool:
+    if " ".join(str(x).split()).lower() == " ".join(str(y).split()).lower():
+        return True
+    try:
+        qx, qy = U.ureg.Quantity(str(x)), U.ureg.Quantity(str(y))
+        if qx.dimensionality != qy.dimensionality:
+            return False
+        return math.isclose(qx.to_base_units().magnitude, qy.to_base_units().magnitude, rel_tol=1e-9)
+    except Exception:  # noqa: BLE001
+        return False
+
+
+DEFAULT_REPLICATES = 5
+ROUNDING_TRY_WITHIN = 0.10  # a miss larger than this fraction of the printed value is judged as computed
+ROUNDING_MAX_INPUTS = 8  # at most this many printed inputs are varied, the most coarsely printed first
+
+
+def rounding_inputs(inputs: dict[str, str], vals: dict[str, Value]) -> list[str]:
+    """The printed inputs whose rounding is carried into a run's result: scalars printed with a
+    precision (never added inputs or other runs' outputs), the most coarsely printed first."""
+    out = []
+    for vid in sorted(set(inputs.values())):
+        v = vals.get(vid)
+        p = v.printed if v is not None else None
+        if v is None or v.kind != "printed" or v.is_table or v.value is None or p is None or not p.has_precision:
+            continue
+        if p.lo is None or p.hi is None or p.hi <= p.lo:
+            continue
+        out.append(((p.hi - p.lo) / max(abs(p.value), 1e-300), vid))
+    return [vid for _, vid in sorted(out, key=lambda t: (-t[0], t[1]))][:ROUNDING_MAX_INPUTS]
+
+
+def _mean_se(xs: list) -> tuple[float | None, float | None]:
+    """Mean and standard error of repeated runs; a single run has no standard error."""
+    xs = [float(x) for x in xs if x is not None and not (isinstance(x, float) and math.isnan(x))]
+    if not xs:
+        return None, None
+    m = sum(xs) / len(xs)
+    if len(xs) < 2:
+        return m, None
+    var = sum((x - m) ** 2 for x in xs) / (len(xs) - 1)
+    return m, math.sqrt(var / len(xs))
+
+
+def _convert_se(y, se, cv: Value, pv: Value) -> float | None:
+    """A standard error carried into the printed unit and scale (linearised)."""
+    if y is None or not se:
+        return None
+    a = U.convert(y, cv.unit, pv.unit, cv.scale, pv.scale)
+    b = U.convert(y + se, cv.unit, pv.unit, cv.scale, pv.scale)
+    return abs(b - a)
+
+
+def parse_tolerance(text: str) -> tuple[bool, float]:
+    """A refinement tolerance: '1%' (relative) or a plain number (absolute, in the output's unit)."""
+    tol = str(text).strip()
+    try:
+        return (True, float(tol[:-1]) / 100) if tol.endswith("%") else (False, float(tol))
+    except ValueError:
+        raise ValueError(f"tolerance {text!r} is neither a percentage such as '1%' nor a plain number "
+                         "in the output's unit") from None
+
+
+def _index_mismatch(cv: Value, pv: Value) -> str | None:
+    """Why two curves cannot be compared point by point, or None: they must be indexed by the same
+    quantity at the same x values (after unit conversion), in the same order."""
+    if not pv.index or not cv.index:
+        return None if not pv.index and not cv.index else "one curve has x values and the other has none"
+    if cv.index_quantity != pv.index_quantity:
+        return f"the curves are indexed by different quantities: {cv.index_quantity!r} vs {pv.index_quantity!r}"
+    xs = [None if x is None else U.convert(x, cv.index_unit, pv.index_unit) for x in cv.index]
+    for a, b in zip(xs, pv.index):
+        if a is None or b is None:
+            continue
+        if abs(a - b) > 1e-9 * max(abs(a), abs(b), 1e-300):
+            return (f"the curves are at different x values: computed at {cv.index} {cv.index_unit}, "
+                    f"printed at {pv.index} {pv.index_unit}")
+    return None
+
+
+# ---- saved figure readings (DECISIONS, Saved figure readings) ---------------
+READINGS_FILE = "readings.json"
+_READING_KEYS = ("x", "found", "y", "lo", "hi", "bar_lo", "bar_hi", "bar_lo_outer", "bar_hi_outer")
+
+
+def reading_recipe(lr: LoadedRecord, fr) -> str:
+    """A fingerprint of how a figure is read: its reading as recorded, and its code if it has any."""
+    h = hashlib.sha256(json.dumps(fr.model_dump(mode="json"), sort_keys=True).encode())
+    if fr.mode == "code" and fr.code and (lr.path / fr.code).exists():
+        h.update((lr.path / fr.code).read_bytes())
+    return h.hexdigest()[:16]
+
+
+def load_saved_readings(lr: LoadedRecord) -> dict:
+    f = lr.path / READINGS_FILE
+    if not f.exists():
+        return {}
+    try:
+        return json.loads(f.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def save_readings(lr: LoadedRecord, figures: dict[str, dict]) -> bool:
+    """Write the numbers read from each figure beside the record. Only figures read from the page
+    are saved; a figure taken from the saved file, or not read, keeps what was saved. Returns
+    whether the file changed."""
+    saved = load_saved_readings(lr)
+    out = {}
+    for fr in sorted(lr.record.figures, key=lambda f: f.id):
+        res = figures.get(fr.id)
+        if res is not None and not res.get("from_saved") and not res.get("errors") and res.get("readings"):
+            out[fr.id] = {"recipe": reading_recipe(lr, fr), "where": fr.where, "page": fr.page,
+                          "readings": [{k: r[k] for k in _READING_KEYS if k in r} for r in res["readings"]]}
+        elif fr.id in saved:
+            out[fr.id] = saved[fr.id]
+    f = lr.path / READINGS_FILE
+    text = json.dumps(out, indent=1, sort_keys=True) + "\n"
+    if not out:
+        if f.exists():
+            f.unlink()
+            return True
+        return False
+    if f.exists() and f.read_text() == text:
+        return False
+    f.write_text(text)
+    return True
+
+
+def _differences(read: list[dict], saved: list[dict], rel: float = 1e-6) -> list[str]:
+    """Where a reading of the page differs from the saved one."""
+    out = []
+    if [r.get("x") for r in read] != [r.get("x") for r in saved]:
+        return ["the positions read differ"]
+    for a, b in zip(read, saved):
+        for k in _READING_KEYS[1:]:
+            va, vb = a.get(k), b.get(k)
+            if isinstance(va, (int, float)) and isinstance(vb, (int, float)) and not isinstance(va, bool):
+                if abs(va - vb) > rel * max(abs(va), abs(vb), 1e-12):
+                    out.append(f"at x = {a['x']:g}: {k} read {va:.6g}, saved {vb:.6g}")
+            elif va != vb:
+                out.append(f"at x = {a['x']:g}: {k} read {va!r}, saved {vb!r}")
+    return out
+
+
+class Builder:
+    def __init__(self, lr: LoadedRecord, cache_dir: Path | None = None, timeout: int = DEFAULT_TIMEOUT):
+        self.lr = lr
+        self.rec = lr.record
+        self.cache_dir = cache_dir
+        self.timeout = timeout
+        self.figures = {f.id: f for f in self.rec.figures}
+        self.figure_results: dict[str, dict] = {}
+        self.saved_readings = load_saved_readings(lr)
+        self._rounding_runs: dict[tuple, Any] = {}  # (run, input, end) -> output values, within one build
+        self._rounding_half: dict[str, tuple] = {}  # comparison -> (half-widths in computed units, inputs varied)
+
+    # -- values -----------------------------------------------------------
+    def _base_values(self, overrides: dict[str, str] | None = None) -> dict[str, Value]:
+        vals: dict[str, Value] = {}
+        for d in self.rec.data:
+            vals[d.id] = self._figure_value(d) if d.figure else value_from_datum(d)
+        for a in self.rec.added:
+            vals[a.id] = value_from_added(a, (overrides or {}).get(a.id))
+        return vals
+
+    # -- figures -----------------------------------------------------------
+    def _page_image(self, fr):
+        from . import digitize as D
+
+        pdf = self.lr.source_file()
+        if pdf is None:
+            raise BuildError(f"figure {fr.id}: the source file {self.rec.source.file!r} was not found")
+        key = hashlib.sha256(f"{pdf.stat().st_size}:{pdf.stat().st_mtime_ns}:{pdf}:{fr.page}:{fr.dpi}:{tuple(fr.crop)}"
+                             .encode()).hexdigest()[:24]
+        if self.cache_dir is not None:
+            f = self.cache_dir / "pages" / f"{key}.png"
+            if f.exists():
+                try:
+                    return D.load_image(f)
+                except Exception:  # cut short by a concurrent writer: render again
+                    pass
+        img = D.render(pdf, fr.page, dpi=fr.dpi, crop=tuple(fr.crop))
+        if self.cache_dir is not None:
+            import os
+            import tempfile
+
+            from PIL import Image
+
+            (self.cache_dir / "pages").mkdir(parents=True, exist_ok=True)
+            fd, tmp = tempfile.mkstemp(dir=self.cache_dir / "pages", prefix=f"{key}.tmp", suffix=".png")
+            os.close(fd)
+            Image.fromarray(img).save(tmp)
+            os.replace(tmp, self.cache_dir / "pages" / f"{key}.png")
+        return img
+
+    def read_figure(self, fid: str, overlay_to=None) -> dict:
+        """Read a figure from its page, applying its recorded calibration. Without the page, the
+        numbers saved by an earlier build are used if they were read by the same recipe."""
+        if fid in self.figure_results and overlay_to is None:
+            return self.figure_results[fid]
+        from . import figures as FG
+
+        fr = self.figures[fid]
+        saved = self.saved_readings.get(fid)
+        recipe = reading_recipe(self.lr, fr)
+        fresh = saved is not None and saved.get("recipe") == recipe
+        state = "none" if saved is None else ("matches" if fresh else "stale")
+        if self.lr.source_file() is None:
+            res = {"id": fid, "where": fr.where, "what": fr.what, "page": fr.page, "readings": [], "errors": [],
+                   "notes": [], "saved": state, "from_saved": False}
+            if fresh:
+                res.update(readings=[dict(r) for r in saved["readings"]], from_saved=True)
+                res["notes"].append("read from the saved reading: the source file is not available")
+            else:
+                why = ("there is no saved reading" if saved is None
+                       else "its saved reading was made by another recipe (save it again with the source file)")
+                res["notes"].append(f"left out: the source file is not available and {why}")
+                res["unavailable"] = True
+            self.figure_results[fid] = res
+            return res
+        out = overlay_to
+        if out is None and self.cache_dir is not None:
+            out = self.cache_dir.parent / "figures" / self.rec.source.id / f"{fid}.png"
+        reader = None
+        if fr.mode == "code" and fr.code:
+            def reader(img, at, _p=self.lr.path / fr.code):
+                return read_with_code(_p, img, at, cache_dir=self.cache_dir)
+        try:
+            res = FG.apply(fr, self._page_image(fr), overlay_to=out, code_reader=reader)
+        except (BuildError, subprocess.CalledProcessError, OSError) as e:
+            res = {"id": fid, "where": fr.where, "what": fr.what, "page": fr.page, "readings": [], "errors": [str(e)],
+                   "notes": []}
+        res["from_saved"] = False
+        res["saved"] = state
+        if fresh and not res["errors"]:
+            diffs = _differences(res["readings"], saved["readings"])
+            if diffs:
+                res["saved"] = "differs"
+                res["notes"].append("differs from the saved reading: " + "; ".join(diffs[:5])
+                                    + (f" (and {len(diffs) - 5} more)" if len(diffs) > 5 else ""))
+        self.figure_results[fid] = res
+        return res
+
+    def _figure_value(self, d: Datum) -> Value:
+        v = Value(id=d.id, quantity=d.quantity, unit=d.unit, scale=d.scale, origin=d.origin.value, kind="printed",
+                  index=[], values=[], printed_values=[], conditions=dict(d.conditions))
+        fr = self.figures.get(d.figure)
+        if fr is None:
+            return v
+        res = self.read_figure(fr.id)
+        v.index_quantity, v.index_unit = fr.x.quantity, fr.x.unit
+        for r in res["readings"]:
+            v.index.append(r["x"])
+            if not r["found"]:
+                v.values.append(None)
+                v.printed_values.append(None)
+                continue
+            bars = r.get("bar_lo") is not None
+            # a measured value with error bars: the bar, widened by how precisely its ends were read,
+            # is its printed interval; otherwise the reading's own precision is
+            lo_k, hi_k = ("bar_lo_outer", "bar_hi_outer") if bars else ("lo", "hi")
+            if bars and (r.get(lo_k) is None or r.get(hi_k) is None):
+                lo_k, hi_k = "bar_lo", "bar_hi"  # a reading that gives only the bar's ends
+            try:
+                y, lo, hi = (U.convert(q, fr.y.unit, d.unit, "linear", d.scale) for q in (r["y"], r[lo_k], r[hi_k]))
+            except (U.UnitError, TypeError, ValueError, KeyError):  # a reading without usable numbers has no value
+                v.values.append(None)
+                v.printed_values.append(None)
+                continue
+            lo, hi = min(lo, hi), max(lo, hi)
+            v.values.append(y)
+            what = f" ({ERROR_BARS.get(fr.error_bars, 'unstated kind of')} bar)" if bars else ""
+            if fr.mode == "code":
+                what += " read by the record's code"
+            v.printed_values.append(P.Printed(f"{y:.4g} [{lo:.4g}, {hi:.4g}]{what} read from {fr.where}", y, lo, hi,
+                                              "figure"))
+        return v
+
+    def _run_order(self) -> list:
+        """Topological order of runs: a run whose input is another run's output goes after it."""
+        produced = {}
+        for r in self.rec.runs:
+            for oid in r.outputs.values():
+                produced[oid] = r.id
+        deps = {r.id: {produced[i] for i in r.inputs.values() if i in produced} for r in self.rec.runs}
+        order, done = [], set()
+        runs = {r.id: r for r in self.rec.runs}
+        while len(done) < len(runs):
+            ready = sorted(rid for rid in runs if rid not in done and deps[rid] <= done)
+            if not ready:
+                raise BuildError(f"{self.rec.source.id}: runs form a cycle: {sorted(set(runs) - done)}")
+            for rid in ready:
+                order.append(runs[rid])
+                done.add(rid)
+        return order
+
+    def _port_curve(self, v: Value, port, symbol: str, run_id: str) -> dict:
+        """A whole curve for a curve port: its points with both x and y, in the port's units."""
+        if v.quantity != port.quantity:
+            raise BuildError(f"run {run_id}: input {symbol} expects quantity {port.quantity!r}, got {v.id} measuring {v.quantity!r}")
+        if not v.is_table:
+            raise BuildError(f"run {run_id}: input {symbol} takes a curve; {v.id} is a single value")
+        if v.index_quantity != port.curve.quantity:
+            raise BuildError(f"run {run_id}: input {symbol} takes a curve indexed by {port.curve.quantity!r}; "
+                             f"{v.id} is indexed by {v.index_quantity!r}")
+        pts = [(x, y) for x, y in zip(v.index, v.values) if x is not None and y is not None]
+        if not pts:
+            raise BuildError(f"run {run_id}: input {symbol} ({v.id}) has no readable point")
+        return {"x": [U.convert(x, v.index_unit, port.curve.unit) for x, _ in pts],
+                "y": [U.convert(y, v.unit, port.unit, v.scale, port.scale) for _, y in pts]}
+
+    def _port_value(self, v: Value, port, symbol: str, run_id: str) -> float:
+        if v.is_table:
+            raise BuildError(f"run {run_id}: input {symbol} takes one number; {v.id} is a curve "
+                             "(sweep over its x values, or give the model a curve port)")
+        if v.quantity != port.quantity:
+            raise BuildError(f"run {run_id}: input {symbol} expects quantity {port.quantity!r}, got {v.id} measuring {v.quantity!r}")
+        if v.value is None:
+            raise BuildError(f"run {run_id}: input {symbol} ({v.id}) has no readable value")
+        return U.convert(v.value, v.unit, port.unit, v.scale, port.scale)
+
+    def _do_run(self, run, vals: dict[str, Value], settings_override: dict | None = None) -> tuple[RunResult, dict[str, Value]]:
+        model = model_by_id(self.lr, run.model)
+        res = RunResult(id=run.id, model=run.model, ok=False)
+        if model is None:
+            res.error = f"unknown model {run.model}"
+            return res, {}
+        if not model.runnable:
+            res.error = f"model {model.id} is not runnable: {model.not_runnable_reason}"
+            return res, {}
+        path = self.lr.model_code.get(model.id)
+        if path is None:
+            res.error = f"model {model.id} has no model.py"
+            return res, {}
+        missing = set(model.inputs) - set(run.inputs) - set(run.sweep)
+        extra = (set(run.inputs) | set(run.sweep)) - set(model.inputs)
+        if missing or extra:
+            res.error = f"inputs do not match model {model.id}: missing {sorted(missing)}, unknown {sorted(extra)}"
+            return res, {}
+        settings = dict(model.settings)
+        settings.update(run.settings)
+        if settings_override:
+            settings.update(settings_override)
+        res.settings = settings
+        try:
+            base_inputs = {}
+            for sym, vid in run.inputs.items():
+                if vid not in vals:
+                    raise BuildError(f"run {run.id}: input {sym} refers to unknown {vid}")
+                v = vals[vid]
+                if v.kind == "added":
+                    res.added_inputs.append(vid)
+                port = model.inputs[sym]
+                base_inputs[sym] = (self._port_curve(v, port, sym, run.id) if port.curve
+                                    else self._port_value(v, port, sym, run.id))
+            res.inputs = {sym: ({"curve_of": run.inputs[sym], **x} if isinstance(x, dict) else x)
+                          for sym, x in base_inputs.items()}
+            sweep_index = None
+            if run.sweep:
+                if len(run.sweep) != 1:
+                    raise BuildError(f"run {run.id}: only one sweep input is supported")
+                (ssym, sid), = run.sweep.items()
+                tv = vals.get(sid)
+                if tv is None or not tv.is_table:
+                    raise BuildError(f"run {run.id}: sweep {ssym} needs a table datum, got {sid}")
+                port = model.inputs[ssym]
+                if tv.index_quantity != port.quantity:
+                    raise BuildError(f"run {run.id}: sweep {ssym} expects {port.quantity!r}, table {sid} is indexed by {tv.index_quantity!r}")
+                sweep_index = [U.convert(x, tv.index_unit, port.unit, "linear", port.scale) for x in tv.index]
+                points = [{**base_inputs, ssym: x} for x in sweep_index]
+                res.inputs[ssym] = {"sweep_of": sid, "values": sweep_index}
+            else:
+                points = [base_inputs]
+            n_rep = run.replicates or (DEFAULT_REPLICATES if model.stochastic else 1)
+            if n_rep > 1 and "seed" not in settings:
+                raise BuildError(f"run {run.id}: repeating model {model.id} needs a `seed` setting")
+            res.replicates = n_rep
+            seeds = [settings["seed"] + k for k in range(n_rep)] if n_rep > 1 else [None]
+            calls = [{"inputs": pt, "settings": settings if s is None else {**settings, "seed": s}}
+                     for pt in points for s in seeds]
+            source = self.lr.source_file() if model.software else None
+            flat = execute(path, calls, timeout=self.timeout, cache_dir=self.cache_dir, source=source,
+                           source_version=self.rec.source.version)
+            results = [flat[i * n_rep:(i + 1) * n_rep] for i in range(len(points))]  # per point, per seed
+        except (BuildError, U.UnitError) as e:
+            res.error = str(e)
+            return res, {}
+        origin = Origin.run.value if model.software else ROLE_OUTPUT_ORIGIN[model.role].value
+        seen_cond: dict[str, set[str]] = {}
+        for vid in run.inputs.values():
+            for k, c in vals[vid].conditions.items():
+                seen_cond.setdefault(k, set()).add(str(c))
+        # inputs that disagree on a condition give a mixed one, which no single value agrees with
+        cond = {k: " | ".join(sorted(cs)) for k, cs in sorted(seen_cond.items())}
+        res.notes += [f"inputs disagree on {k}: {cond[k]}" for k in cond if len(seen_cond[k]) > 1]
+        marks = self._marks(model, [vals[vid] for vid in run.inputs.values()])
+        new: dict[str, Value] = {}
+        for sym, port in model.outputs.items():
+            oid = run.outputs.get(sym, f"{run.id}.{sym}")
+            res.outputs[sym] = oid
+            if port.curve:
+                got = [r.get(sym) for reps in results for r in reps]
+                if sweep_index is not None or len(got) != 1:
+                    res.error = f"output {sym} is a curve: it cannot be swept or repeated over seeds"
+                    return res, {}
+                c = got[0]
+                if not (isinstance(c, dict) and isinstance(c.get("x"), list) and isinstance(c.get("y"), list)
+                        and len(c["x"]) == len(c["y"])):
+                    res.error = f"output {sym} is a curve port: the model must return {{'x': [...], 'y': [...]}} of one length"
+                    return res, {}
+                new[oid] = Value(id=oid, quantity=port.quantity, unit=port.unit, scale=port.scale, origin=origin,
+                                 kind="output", index=[float(x) for x in c["x"]], index_quantity=port.curve.quantity,
+                                 index_unit=port.curve.unit, values=[None if y is None else float(y) for y in c["y"]],
+                                 conditions=cond, run=run.id, **marks)
+                continue
+            if any(isinstance(r.get(sym), list) for reps in results for r in reps):
+                res.error = f"output {sym} is a list; use a sweep to produce a curve"
+                return res, {}
+            stats = [_mean_se([r.get(sym) for r in reps]) for reps in results]
+            if sweep_index is not None:
+                tv = vals[run.sweep[next(iter(run.sweep))]]
+                new[oid] = Value(id=oid, quantity=port.quantity, unit=port.unit, scale=port.scale, origin=origin,
+                                 kind="output", index=list(tv.index), index_quantity=tv.index_quantity,
+                                 index_unit=tv.index_unit, values=[m for m, _ in stats], conditions=cond, run=run.id,
+                                 ses=[s for _, s in stats] if n_rep > 1 else None, **marks)
+            else:
+                m, s = stats[0]
+                new[oid] = Value(id=oid, quantity=port.quantity, unit=port.unit, scale=port.scale, origin=origin,
+                                 kind="output", value=m, conditions=cond, run=run.id, se=s if n_rep > 1 else None,
+                                 **marks)
+        res.ok = True
+        return res, new
+
+    def _marks(self, model, inputs: list[Value]) -> dict:
+        """What a run's outputs carry from its model and its inputs (DECISIONS, Scaling laws and reconstructed
+        models): the scaling law without a prefactor they rest on, and the reader's model they rest on."""
+        up = next((v.prefactor_model for v in inputs if v.prefactor_model), None)
+        if model.prefactor == "unknown":
+            pf, chained = model.id, up is not None
+        else:
+            pf, chained = up, up is not None
+        # an uncited model is the reader's in a written source; in released code or data it is the reader's
+        # processing of the source's own files, and in this_work every model is the author's own
+        own = bool(model.reconstructed) or (model.stated.none is not None and self.rec.source.kind.value in WRITTEN)
+        reader = model.id if own else next((v.reader_model for v in inputs if v.reader_model), None)
+        return {"prefactor_model": pf, "prefactor_chained": chained, "reader_model": reader}
+
+    @staticmethod
+    def _judge_shape(r: ComparisonResult, cv: Value, pv: Value) -> None:
+        """A value computed by a scaling law printed without its prefactor is judged on its shape only.
+        Against one measurement: no verdict, and the prefactor the measurement implies. Against two or more:
+        the one constant is fitted (least squares in log) and what is left is judged."""
+        import math
+
+        r.prefactor_model = cv.prefactor_model
+        if cv.prefactor_chained:
+            r.prefactor_note = (f"rests on {cv.prefactor_model}, a scaling law printed without its prefactor, "
+                                "through other models: not judged")
+        elif pv.scale != "linear" or cv.scale != "linear":
+            r.prefactor_note = f"rests on {cv.prefactor_model}, printed without its prefactor, on a log scale: not judged"
+        else:
+            comp = r.computed_value if pv.is_table else [r.computed_value]
+            printed = pv.printed_values if pv.is_table else [pv.printed]
+            pairs = [(y, p.value) for y, p in zip(comp, printed)
+                     if y is not None and p is not None and y != 0 and p.value / y > 0]
+            if pairs:
+                r.implied_prefactor = math.exp(sum(math.log(p / y) for y, p in pairs) / len(pairs))
+            if len(pairs) < 2:
+                r.prefactor_note = (f"{cv.prefactor_model} is printed without its prefactor; one value fixes the "
+                                    "prefactor and leaves nothing to judge")
+            else:
+                C = r.implied_prefactor
+                scaled = [None if y is None else C * y for y in comp]
+                per = [P.Verdict.no_verdict if p is None or y is None else P.verdict(y, p)
+                       for y, p in zip(scaled, printed)]
+                r.computed_value = scaled
+                r.difference = [None if y is None or p is None else y - p.value for y, p in zip(scaled, printed)]
+                r.per_value = [v.value for v in per]
+                r.verdict = P.combine(per).value
+                r.prefactor_note = (f"{cv.prefactor_model} is printed without its prefactor; the prefactor is fitted "
+                                    f"to the {len(pairs)} values ({C:.4g}) and the shape is judged")
+                return
+        r.verdict = P.Verdict.no_verdict.value
+        r.difference = None
+        if pv.is_table:
+            r.per_value = [P.Verdict.no_verdict.value] * len(pv.values)
+
+    def _compare(self, c, vals: dict[str, Value]) -> ComparisonResult:
+        r = ComparisonResult(id=c.id, purpose=c.purpose.value, computed=c.computed, printed=c.printed, ok=False)
+        cv, pv = vals.get(c.computed), vals.get(c.printed)
+        if cv is None or pv is None:
+            r.error = f"missing {'computed ' + c.computed if cv is None else ''} {'printed ' + c.printed if pv is None else ''}".strip()
+            return r
+        if cv.quantity != pv.quantity:
+            r.error = f"quantities differ: {cv.quantity!r} vs {pv.quantity!r}"
+            return r
+        agree, notes = conditions_agree(cv.conditions, pv.conditions)
+        if notes:
+            r.conditions_note = "; ".join(notes)
+        if not agree and not c.conditions_ok:
+            r.error = f"conditions disagree and no label says why they may be compared: {r.conditions_note}"
+            return r
+        try:
+            if pv.is_table:
+                if not cv.is_table:
+                    r.error = "printed value is a table; computed is a scalar"
+                    return r
+                if len(cv.values) != len(pv.values):
+                    r.error = "table lengths differ"
+                    return r
+                mismatch = _index_mismatch(cv, pv)
+                if mismatch:
+                    r.error = mismatch
+                    return r
+                comp = [None if y is None else U.convert(y, cv.unit, pv.unit, cv.scale, pv.scale) for y in cv.values]
+                ses = [_convert_se(y, s, cv, pv) for y, s in zip(cv.values, cv.ses or [None] * len(cv.values))]
+                diffs, per = [], []
+                for y, pp, s in zip(comp, pv.printed_values, ses):
+                    if pp is None:
+                        diffs.append(None)
+                        per.append(P.Verdict.no_verdict.value)
+                        continue
+                    diffs.append(None if y is None else y - pp.value)
+                    per.append(P.verdict(y, pp, se=s or 0.0).value)
+                if cv.ses:
+                    r.computed_se = ses
+                r.computed_value = comp
+                r.printed_text = [p.text if p else None for p in pv.printed_values]
+                r.difference = diffs
+                r.per_value = per
+                r.verdict = P.combine([P.Verdict(v) for v in per]).value
+            else:
+                if cv.value is None:
+                    r.error = "computed value is missing"
+                    return r
+                y = U.convert(cv.value, cv.unit, pv.unit, cv.scale, pv.scale)
+                se = _convert_se(cv.value, cv.se, cv, pv)
+                r.computed_value = y
+                r.computed_se = se
+                r.printed_text = pv.printed.text if pv.printed else None
+                if pv.printed is None:
+                    r.verdict = P.Verdict.no_verdict.value
+                else:
+                    r.difference = y - pv.printed.value
+                    r.verdict = P.verdict(y, pv.printed, se=se or 0.0).value
+        except U.UnitError as e:
+            r.error = str(e)
+            return r
+        r.reader_model = cv.reader_model
+        if cv.prefactor_model:
+            self._judge_shape(r, cv, pv)
+        r.ok = True
+        return r
+
+    def evaluate(self, overrides: dict[str, str] | None = None) -> tuple[dict[str, Value], dict[str, RunResult], dict[str, ComparisonResult]]:
+        vals = self._base_values(overrides)
+        runs: dict[str, RunResult] = {}
+        for run in self._run_order():
+            rr, new = self._do_run(run, vals)
+            runs[run.id] = rr
+            for k, v in new.items():
+                if k in vals:
+                    rr.ok = False
+                    rr.error = f"output id {k} collides with an existing node"
+                vals[k] = v
+        comps = {c.id: self._compare(c, vals) for c in self.rec.comparisons}
+        for c in self.rec.comparisons:
+            self._carry_rounding(c, comps[c.id], vals, baseline=not overrides)
+        return vals, runs, comps
+
+    # -- rounding of printed inputs (02-boxgraph.md, Verdicts) ---------------
+    def _perturbed(self, run, vid: str, end: float, vals: dict[str, Value], oid: str):
+        key = (run.id, vid, end, oid)
+        if key not in self._rounding_runs:
+            rr, new = self._do_run(run, {**vals, vid: replace(vals[vid], value=end)})
+            v = new.get(oid) if rr.ok else None
+            self._rounding_runs[key] = None if v is None else (v.values if v.is_table else v.value)
+        return self._rounding_runs[key]
+
+    def _carry_rounding(self, c, r: ComparisonResult, vals: dict[str, Value], baseline: bool) -> None:
+        """A result that misses its printed precision by no more than ROUNDING_TRY_WITHIN is judged
+        again with the range its printed inputs' rounding allows: each varied input at either end of
+        its printed range, one at a time, the changes added up. Alternatives of added inputs reuse the
+        baseline's range, so they run nothing more."""
+        if not r.ok or r.verdict not in (P.Verdict.not_reproduced.value, P.Verdict.close.value):
+            return
+        if r.prefactor_model:  # judged on its shape, with a fitted constant: the inputs' rounding cancels in it
+            return
+        cv, pv = vals[c.computed], vals[c.printed]
+        run = next((x for x in self.rec.runs if x.id == cv.run), None) if cv.kind == "output" else None
+        if run is None:
+            return
+        model = model_by_id(self.lr, run.model)
+        if model is None or model.stochastic:
+            return
+        table = pv.is_table
+        printed = pv.printed_values if table else [pv.printed]
+        comp = r.computed_value if table else [r.computed_value]
+        near = [y is not None and p is not None and p.has_precision and p.value
+                and abs(y - p.value) <= ROUNDING_TRY_WITHIN * abs(p.value) for y, p in zip(comp, printed)]
+        if not any(near):
+            r.input_rounding = {"varied": [], "band": None,
+                                "note": f"not tried: the result is more than {ROUNDING_TRY_WITHIN:.0%} from the printed value"}
+            return
+        if baseline:
+            varied = rounding_inputs(run.inputs, vals)
+            y0 = cv.values if cv.is_table else [cv.value]
+            half = [0.0] * len(y0)
+            for vid in varied:
+                p = vals[vid].printed
+                devs = [0.0] * len(y0)
+                for end in (p.lo, p.hi):
+                    out = self._perturbed(run, vid, end, vals, cv.id)
+                    if out is None:
+                        r.input_rounding = {"varied": varied, "band": None,
+                                            "note": f"not tried: a run with {vid} at {end:g} failed"}
+                        return
+                    out = out if isinstance(out, list) else [out]
+                    devs = [max(d, abs(a - b)) if a is not None and b is not None else d for d, a, b in zip(devs, out, y0)]
+                half = [h + d for h, d in zip(half, devs)]
+            self._rounding_half[c.id] = (half, varied)
+            note = "each varied input at either end of its printed range, one at a time, the changes added up"
+        elif c.id in self._rounding_half:
+            half, varied = self._rounding_half[c.id]
+            note = "the range of the baseline's inputs, carried to this alternative"
+        else:
+            return
+        y0 = cv.values if cv.is_table else [cv.value]
+        bands = []
+        for y, h in zip(y0, half):
+            if y is None:
+                bands.append(None)
+                continue
+            a, b = (U.convert(q, cv.unit, pv.unit, cv.scale, pv.scale) for q in (y - h, y + h))
+            bands.append((min(a, b), max(a, b)))
+        ses = r.computed_se if table else [r.computed_se]
+        per = []
+        for y, p, bd, s in zip(comp, printed, bands, ses or [None] * len(comp)):
+            per.append(P.Verdict.no_verdict if p is None else P.verdict(y, p, se=s or 0.0, band=bd))
+        if table:
+            r.per_value = [v.value for v in per]
+            r.verdict = P.combine(per).value
+        else:
+            r.verdict = per[0].value
+        r.input_rounding = {"varied": varied, "band": bands if table else bands[0], "note": note}
+
+    def _refine(self, ref, vals: dict[str, Value]) -> dict:
+        run = next((r for r in self.rec.runs if r.id == ref.run), None)
+        out = {"id": ref.id, "run": ref.run, "setting": ref.setting, "factors": ref.factors, "mode": ref.mode,
+               "output": ref.output, "tolerance": ref.tolerance, "tolerance_basis": ref.tolerance_basis,
+               "tolerance_added": ref.tolerance_added}
+        if run is None:
+            out["error"] = f"unknown run {ref.run}"
+            return out
+        model = model_by_id(self.lr, run.model)
+        base = dict(model.settings) if model else {}
+        base.update(run.settings)
+        if ref.setting not in base:
+            out["error"] = f"setting {ref.setting!r} is not a setting of run {run.id}"
+            return out
+        if len(ref.factors) < 2 or 1 not in ref.factors:  # no step to judge, or no paper's setting to judge it from
+            out["error"] = f"needs at least two factors, one of them 1 (the paper's own setting); got {ref.factors}"
+            return out
+        series = []
+        for f in ref.factors:
+            s0 = base[ref.setting]
+            sv = s0 / f if ref.mode == "divide" else s0 * f
+            if isinstance(s0, int) and ref.mode == "multiply":
+                sv = int(round(sv))
+            rr, new = self._do_run(run, vals, {ref.setting: sv})
+            if not rr.ok:
+                out["error"] = rr.error
+                return out
+            oid = rr.outputs.get(ref.output)
+            v = new.get(oid)
+            if v is None:
+                out["error"] = f"run {run.id} has no output {ref.output!r}"
+                return out
+            value = v.values if v.is_table else v.value
+            if value is None or (isinstance(value, list) and all(x is None for x in value)):
+                out["error"] = f"run {run.id} gave no value for {ref.output!r} at {ref.setting} = {sv}"
+                return out
+            series.append({"factor": f, "setting": sv, "value": value})
+        out["series"] = series
+        try:
+            rel, tval = parse_tolerance(ref.tolerance)
+        except ValueError as e:
+            out["error"] = str(e)
+            return out
+
+        def dist(a, b):
+            if isinstance(a, list):
+                ds = [dist(x, y) for x, y in zip(a, b) if x is not None and y is not None]
+                return max(ds) if ds else float("nan")
+            if rel:
+                return abs(a - b) / max(abs(b), 1e-300)
+            return abs(a - b)
+
+        steps = [dist(series[i]["value"], series[i - 1]["value"]) for i in range(1, len(series))]
+        out["changes"] = steps
+        settled = bool(steps) and steps[-1] <= tval
+        out["settles"] = settled
+        # principle 8: the paper's result is the value at the paper's own setting (factor 1).
+        # It belongs to the model only if the series settles AND that value is within the
+        # tolerance of where the series settles; a result that changes as it is refined
+        # belongs to the numerics, even if it settles somewhere else.
+        first = next(x for x in series if x["factor"] == 1)
+        out["shift"] = dist(first["value"], series[-1]["value"])
+        out["belongs_to"] = "model" if settled and out["shift"] <= tval else "numerics"
+        return out
+
+    def _left_out(self) -> dict[str, str]:
+        """Runs and comparisons that depend on a figure that could not be read (no source file and no
+        saved reading): they are left out, not counted as errors of the record."""
+        why: dict[str, str] = {}
+        for d in self.rec.data:
+            if d.figure and self.read_figure(d.figure).get("unavailable"):
+                why[d.id] = f"{d.id} is read from figure {d.figure}, which could not be read without the source file"
+        for r in self._run_order():
+            src = next((why[i] for i in [*r.inputs.values(), *r.sweep.values()] if i in why), None)
+            if src:
+                why[r.id] = src
+                for oid in r.outputs.values():
+                    why[oid] = src
+        for c in self.rec.comparisons:
+            src = why.get(c.computed) or why.get(c.printed)
+            if src:
+                why[c.id] = src
+        return why
+
+    def build(self) -> RecordBuild:
+        b = RecordBuild(source=self.rec.source.id, digest=self.lr.digest())
+        vals, runs, comps = self.evaluate()
+        for fid in sorted(self.figures):
+            res = self.read_figure(fid)
+            b.figures[fid] = res
+            b.problems += [f"figure {fid}: {e}" for e in res["errors"]]
+            b.warnings += [f"figure {fid}: {n}" for n in res["notes"]]
+        b.values, b.runs, b.comparisons = vals, runs, comps
+        left_out = self._left_out()
+        for rr in runs.values():
+            if rr.id in left_out:
+                b.warnings.append(f"run {rr.id}: left out: {left_out[rr.id]}")
+            elif not rr.ok:
+                b.problems.append(f"run {rr.id}: {rr.error}")
+            b.warnings += [f"run {rr.id}: {n}" for n in rr.notes]
+        for cr in comps.values():
+            if cr.id in left_out:
+                b.warnings.append(f"comparison {cr.id}: left out: {left_out[cr.id]}")
+                cr.ok, cr.verdict, cr.error = False, None, f"left out: {left_out[cr.id]}"
+            elif not cr.ok:
+                b.problems.append(f"comparison {cr.id}: {cr.error}")
+        for ref in self.rec.refinements:
+            b.refinements[ref.id] = self._refine(ref, vals)
+            if "error" in b.refinements[ref.id]:
+                b.problems.append(f"refinement {ref.id}: {b.refinements[ref.id]['error']}")
+        # alternatives of added inputs: one at a time (06 decision), only those used by some run
+        used = {vid for r in self.rec.runs for vid in r.inputs.values()}
+        for a in sorted(self.rec.added, key=lambda x: x.id):
+            if a.id not in used:
+                continue
+            for alt in sorted(a.alternatives, key=str):
+                _, aruns, acomps = self.evaluate({a.id: alt})
+                changes = []
+                for cid, cr in sorted(comps.items()):
+                    ac = acomps.get(cid)
+                    if ac is None:
+                        continue
+                    if ac.verdict != cr.verdict:
+                        changes.append({"comparison": cid, "baseline": cr.verdict, "alternative": ac.verdict,
+                                        "computed": ac.computed_value})
+                b.alternatives.append({"added": a.id, "baseline": a.printed, "alternative": alt,
+                                       "verdict_changes": changes,
+                                       "failed_runs": sorted(r.id for r in aruns.values() if not r.ok)})
+        return b

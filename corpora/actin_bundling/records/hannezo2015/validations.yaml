@@ -1,0 +1,97 @@
+# Cross-record validations of hannezo2015 models against independent experimental measurements
+# in sekine2024 (same Hayashi lab, same wild-type Drosophila embryonic stage 15-16 tracheal
+# dorsal-trunk circumferential actin rings/cables).
+
+- id: val_lambda_c_eq3_main_vs_sekine_cable_interval
+  model: critical_wavelength_eq3
+  inputs:
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+    eta: eta_2d_lit
+    xi: friction_2d_lit
+  output: lambda_c
+  against: sekine2024/cable_interval_in_vivo
+  purpose: validation
+  quantities:
+    "sekine2024/pattern_interval": ring_wavelength
+  conditions_ok: >
+    Hannezo 2015 Main Eq. [3] uses live stage-15 wild-type Drosophila tracheal dorsal-trunk
+    FRAP inputs (UAS-actin-GFP, Olympus FV1000 confocal, D = 0.04 +/- 0.03 um^2/s, tau = 15 +/- 7 s)
+    together with Main p. 3 literature cortical viscosity/thickness/friction estimates
+    (eta_3D = 10^2 Pa*s, h = 100 nm, xi = 10^9 Pa*s/m) to predict stage-16 wild-type
+    circumferential actin ring wavelength; Sekine 2024 independently measures the same
+    Hayashi-lab Drosophila dorsal-trunk circumferential actin cables at early stage 16 in
+    fixed btl>lifeact::GFP (w[1118]) embryos by Zeiss LSM980 Airyscan super-resolution
+    microscopy (N = 8 embryos, n = 294 cables, with +/- 13.2 nm representing sample SD across
+    embryo means rather than per-ring SD).
+  basis: >
+    Hannezo 2015 Main Eq. [3] (lambda_c = 2*pi*(D*tau*eta/xi)^(1/4)) evaluated on Hannezo's
+    Main p. 3 physiological FRAP and literature inputs makes an uncalibrated, strictly
+    out-of-sample forward prediction (1749 nm; printed 1.8 um) of periodic circumferential
+    actin ring spacing in the wild-type embryonic stage-16 Drosophila tracheal dorsal trunk,
+    tested directly against Sekine 2024's independent Airyscan measurement of the same
+    biological structure (450 +/- 13.2 nm).
+  note: >
+    Out-of-sample test of Hannezo's uncalibrated Main p. 3 forward prediction (1749 nm vs
+    450 +/- 13.2 nm; 3.89x larger, mirroring cmp_lambda_c_val_embryo against Hannezo's own
+    confocal 0.5 +/- 0.1 um).
+
+- id: val_lambda_c_si_printed_lh_vs_sekine_cable_interval
+  model: critical_wavelength_from_lengths
+  inputs:
+    l_t: lt_from_frap
+    l_h: lh_inverted_si
+  output: lambda_c
+  against: sekine2024/cable_interval_in_vivo
+  purpose: validation
+  quantities:
+    "sekine2024/pattern_interval": ring_wavelength
+  conditions_ok: >
+    Hannezo 2015 SI Section 2.6.4 (p. 21) combines live stage-15 wild-type tracheal FRAP
+    turnover-diffusion length l_t = sqrt(D*tau) = 0.775 um (UAS-actin-GFP, confocal) with the
+    printed rounded hydrodynamic length l_h = 10^-8 m (10 nm) calibrated solely to Hannezo
+    2015's own stage-16 confocal ring spacing (0.5 +/- 0.1 um, UAS-lifeact-mEGFP, per-ring SD);
+    Sekine 2024 independently measures early stage-16 fixed btl>lifeact::GFP (w[1118]) embryos
+    via Airyscan super-resolution microscopy (N = 8 embryos, n = 294 cables, +/- 13.2 nm
+    embryo-mean SD).
+  basis: >
+    Hannezo 2015 Main p. 3 explicitly designates l_h as 'the one fitting parameter to match
+    the observed wavelength', and SI Section 2.6.4 (p. 21) calibrates l_h = 10^-8 m to Hannezo
+    2015's own 2015 confocal spacing (0.5 um). Evaluating critical_wavelength_from_lengths
+    (lambda_c = 2*pi*sqrt(l_t*l_h)) with FRAP l_t = 0.775 um and SI printed l_h = 10^-8 m
+    yields an out-of-sample prediction (553.0 nm) tested against Sekine 2024's independent
+    2024 Airyscan measurement (450 +/- 13.2 nm).
+  note: >
+    Computes 553.0 nm vs 450 +/- 13.2 nm (+103.0 nm, +22.9%, 7.8 embryo-mean SDs): combines
+    the +11.1% inter-study offset between Hannezo's 500 nm confocal mean and Sekine's 450 nm
+    Airyscan mean with the +10.6% upward shift from rounding l_h from 8.18 nm to 10^-8 m on
+    SI p. 21.
+
+- id: val_lambda_c_si_exact_lh_vs_sekine_cable_interval
+  model: critical_wavelength_from_lengths
+  inputs:
+    l_t: lt_from_frap
+    l_h: lh_inv_from_d_si
+  output: lambda_c
+  against: sekine2024/cable_interval_in_vivo
+  purpose: validation
+  quantities:
+    "sekine2024/pattern_interval": ring_wavelength
+  conditions_ok: >
+    Hannezo 2015 SI Section 2.6.4 exact inversion (hydrodynamic_length_from_wavelength) fits
+    l_h = 8.175 nm exclusively to Hannezo 2015's stage-16 wild-type confocal spacing (500 nm,
+    UAS-lifeact-mEGFP, pooled per-ring SD +/- 100 nm) and stage-15 FRAP l_t = 0.775 um
+    (UAS-actin-GFP); evaluated out-of-sample against Sekine 2024's independent early stage-16
+    fixed btl>lifeact::GFP (w[1118]) Airyscan measurement (450 +/- 13.2 nm, N = 8 embryos,
+    n = 294 cables, embryo-mean SD).
+  basis: >
+    Evaluating Hannezo 2015's wavelength law lambda_c = 2*pi*sqrt(l_t*l_h) using the exact
+    unrounded SI Eq. (11) inversion l_h = 8.175 nm calibrated exclusively to Hannezo 2015's
+    confocal cohort tests out-of-sample transfer to Sekine 2024's independent Airyscan cohort
+    and cleanly separates the true inter-study offset (500.0 vs 450 +/- 13.2 nm) from SI
+    p. 21's bare-power-of-ten rounding of l_h to 10^-8 m.
+  note: >
+    Computes 500.0 nm vs 450 +/- 13.2 nm (+50.0 nm, +11.1%, 3.79 embryo-mean SDs; 10.4 nm
+    outside BoxGraph's close band [410.4, 489.6] nm). Reflects both the 10% mean shift between
+    2015 confocal stage-16 (500 nm) and 2024 Airyscan early-stage-16 (450 nm) measurements and
+    Sekine's 7.6x narrower embryo-mean SD (+/- 13.2 nm vs +/- 100 nm per-ring SD).

@@ -1,0 +1,295 @@
+# Dimensional scales and concentration conversions
+- id: run_ca_fig1a_molar
+  model: actin_molar_from_mass
+  inputs: {c_a: ca_fig1a, M_actin: M_actin_added}
+  outputs: {c_a_molar: ca_fig1a_molar_pred}
+
+- id: run_ca_fig3a_molar
+  model: actin_molar_from_mass
+  inputs: {c_a: ca_fig3a, M_actin: M_actin_added}
+  outputs: {c_a_molar: ca_fig3a_molar_pred}
+
+- id: run_kBT_20C
+  model: thermal_energy_scale
+  inputs: {T: T_experiment}
+  outputs: {kBT: kBT_20C_pred}
+
+# Molar ratio and effective bound ratio R* (p. 4 Methods)
+- id: run_R_fig4d
+  model: molar_ratio_fascin_actin
+  inputs: {c_f: cf_fig4d_added, c_a: ca_fig4cd}
+  outputs: {R: R_fig4d_pred}
+
+- id: run_kappa_fig4cd
+  model: dimensionless_kd_scale
+  inputs: {K_d: Kd_fascin, c_a: ca_fig4cd}
+  outputs: {kappa: kappa_fig4cd_pred}
+
+- id: run_kappa_saxs_2mg
+  model: dimensionless_kd_scale
+  inputs: {K_d: Kd_fascin, c_a: ca_fig3a_molar_pred}
+  outputs: {kappa: kappa_saxs_2mg_pred}
+
+- id: run_Rstar_fig4d_low_ca
+  model: effective_bound_ratio
+  inputs: {R: R_fascin_fig4, K_d: Kd_fascin, c_a: ca_fig4cd}
+  outputs: {R_star: Rstar_fig4d_pred}
+  note: "At low actin concentration (0.95 uM, R = 1), R* = 0.574 deviates strongly from R = 1."
+
+- id: run_Rstar_saxs_high_ca
+  model: effective_bound_ratio
+  inputs: {R: R_fascin_fig4, K_d: Kd_fascin, c_a: ca_fig3a_molar_pred}
+  outputs: {R_star: Rstar_saxs_pred}
+  note: "At high SAXS actin concentration (2 mg/ml = 47.6 uM, R = 1), R* = 0.924 is closer to R = 1."
+
+# Hexagonal SAXS packing (p. 2)
+- id: run_aH_hex_saxs
+  model: hexagonal_lattice_spacing
+  inputs: {q_10: q10_saxs}
+  outputs: {a_H: aH_hex_saxs_pred}
+
+- id: run_hex_bragg_peaks
+  model: hexagonal_bragg_peaks
+  inputs: {q_10: q10_saxs}
+  outputs: {q_11: q11_saxs_pred, q_20: q20_saxs_pred, q_21: q21_saxs_pred}
+
+# Bundle thickness scaling laws and hexagonal shells (pp. 1-3, SI p. 5)
+- id: run_D_scaling_Rstar_plateau
+  model: diameter_scaling_Rstar
+  inputs: {R_star: Rstar_plateau}
+  outputs: {D: D_scaling_Rstar_pred}
+
+- id: run_D_scaling_nf_20
+  model: diameter_filament_scaling
+  inputs: {n_f: nf_fig2e_line}
+  outputs: {D: D_scaling_nf20_pred}
+
+- id: run_Rstar_scaling_nf_20
+  model: Rstar_filament_scaling
+  inputs: {n_f: nf_fig2e_line}
+  outputs: {R_star: Rstar_scaling_nf20_pred}
+
+- id: run_nf_fig4d_thick
+  model: filament_number_from_diameter_ratio
+  inputs: {n_f_0: nf_fig2e_line, D_ratio: D_ratio_fig4d}
+  outputs: {n_f: nf_fig4d_thick_pred}
+
+- id: run_hex_shells_2
+  model: hexagonal_shell_filaments
+  inputs: {k: hex_shells_max}
+  outputs: {n_f: nf_hex_shells2_pred, D_fil: D_fil_hex_shells2_pred}
+
+# Confined emulsion droplet single-ring model (p. 2, Fig. 2E)
+- id: run_droplet_ring_rep
+  model: droplet_ring_filament_number
+  inputs: {c_a: ca_fig1b, D_d: Dd_droplet_rep_added, M_actin: M_actin_added, d: d_monomer}
+  outputs: {L: L_droplet_rep_pred, n_f: nf_droplet_rep_pred}
+
+- id: run_droplet_crit_ca_rep
+  model: droplet_critical_concentration
+  inputs: {n_f: nf_fig2e_line, D_d: Dd_droplet_rep_added, M_actin: M_actin_added, d: d_monomer}
+  outputs: {c_a: ca_crit_droplet_rep_pred}
+
+# Helical symmetry and overtwist (p. 2, SI p. 5)
+- id: run_M_13_6
+  model: helical_symmetry_ratio
+  inputs: {p: p_unbundled, s: s_unbundled}
+  outputs: {M: M_13_6_pred}
+
+- id: run_M_28_13
+  model: helical_symmetry_ratio
+  inputs: {p: p_overtwisted, s: s_overtwisted}
+  outputs: {M: M_28_13_pred}
+
+- id: run_overtwist_13_6_to_28_13
+  model: helical_overtwist_from_symmetry
+  inputs: {p_0: p_unbundled, s_0: s_unbundled, p_1: p_overtwisted, s_1: s_overtwisted}
+  outputs: {theta_0: theta_13_6_pred, theta_1: theta_28_13_pred, Delta_theta: Delta_theta_overtwist_pred}
+
+# Twist energy and binding free energy (pp. 2-3, SI p. 5)
+- id: run_Rsat_stoich
+  model: saturation_ratio_from_stoichiometry
+  inputs: {r_sat: actins_per_fascin_sat}
+  outputs: {R_star: Rsat_stoich_pred}
+
+- id: run_Etwist_monomer_printed
+  model: twist_energy_per_monomer
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_overtwist_pred, d: d_monomer}
+  outputs: {E_twist: Etwist_monomer_pred}
+
+- id: run_Etwist_monomer_half
+  model: twist_energy_per_monomer_half
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_overtwist_pred, d: d_monomer}
+  outputs: {E_twist: Etwist_monomer_half_pred}
+
+- id: run_Etwist_fascin_sat_chained
+  model: twist_energy_per_fascin
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_overtwist_pred, d: d_monomer, R_star: Rsat_stoich_pred, T: T_experiment}
+  outputs: {E_twist_fascin_kBT: Etwist_fascin_sat_chained_pred}
+  note: "Chained overtwist (0.989 deg from -13/6 -> -28/13) and 1:4.5 saturation stoichiometry using printed E_twist = tau*Delta_theta^2/d."
+
+- id: run_Etwist_fascin_sat_printed_dtheta
+  model: twist_energy_per_fascin
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_max, d: d_monomer, R_star: Rsat_stoich_pred, T: T_experiment}
+  outputs: {E_twist_fascin_kBT: Etwist_fascin_sat_printed_dtheta_pred}
+  note: "Printed Delta_theta (~1 deg) and 1:4.5 saturation stoichiometry using printed E_twist = tau*Delta_theta^2/d."
+
+- id: run_Etwist_fascin_plateau
+  model: twist_energy_per_fascin
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_max, d: d_monomer, R_star: Rstar_plateau, T: T_experiment}
+  outputs: {E_twist_fascin_kBT: Etwist_fascin_plateau_pred}
+  note: "Printed Delta_theta (~1 deg) and plateau R* (~0.25) using printed E_twist = tau*Delta_theta^2/d."
+
+- id: run_Etwist_fascin_Rstar_0p5
+  model: twist_energy_per_fascin
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_overtwist_pred, d: d_monomer, R_star: Rstar_fig3b, T: T_experiment}
+  outputs: {E_twist_fascin_kBT: Etwist_fascin_Rstar_0p5_pred}
+  note: "Tests claimed constancy per bound fascin at high printed R* = 0.5 (Fig. 3B-C, -28/13 saturated overtwist) using printed E_twist = tau*Delta_theta^2/d."
+
+- id: run_Etwist_fascin_half_sat_chained
+  model: twist_energy_per_fascin_half
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_overtwist_pred, d: d_monomer, R_star: Rsat_stoich_pred, T: T_experiment}
+  outputs: {E_twist_fascin_kBT: Etwist_fascin_half_sat_chained_pred}
+  note: "Linear-elastic 1/2 variant with chained overtwist (0.989 deg) and 1:4.5 saturation stoichiometry."
+
+- id: run_Etwist_fascin_half_sat_printed_dtheta
+  model: twist_energy_per_fascin_half
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_max, d: d_monomer, R_star: Rsat_stoich_pred, T: T_experiment}
+  outputs: {E_twist_fascin_kBT: Etwist_fascin_half_sat_printed_dtheta_pred}
+  note: "Linear-elastic 1/2 variant with printed Delta_theta (~1 deg) and 1:4.5 saturation stoichiometry."
+
+- id: run_Etwist_fascin_half_plateau
+  model: twist_energy_per_fascin_half
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_max, d: d_monomer, R_star: Rstar_plateau, T: T_experiment}
+  outputs: {E_twist_fascin_kBT: Etwist_fascin_half_plateau_pred}
+  note: "Linear-elastic 1/2 variant with printed Delta_theta (~1 deg) and plateau R* (~0.25)."
+
+- id: run_Etwist_fascin_half_Rstar_0p5
+  model: twist_energy_per_fascin_half
+  inputs: {tau: tau_actin, Delta_theta: Delta_theta_overtwist_pred, d: d_monomer, R_star: Rstar_fig3b, T: T_experiment}
+  outputs: {E_twist_fascin_kBT: Etwist_fascin_half_Rstar_0p5_pred}
+  note: "Linear-elastic 1/2 variant at high printed R* = 0.5 (Fig. 3B-C, -28/13 saturated overtwist)."
+
+- id: run_DeltaG_fascin_printed
+  model: binding_energy_fascin
+  inputs: {K_D: Kd_fascin, c_0: c0_standard_state}
+  outputs: {DeltaG_kBT: DeltaG_fascin_printed_pred}
+
+- id: run_DeltaG_fascin_sign_corrected
+  model: binding_energy_fascin_sign_corrected
+  inputs: {K_D: Kd_fascin, c_0: c0_standard_state}
+  outputs: {DeltaG_kBT: DeltaG_fascin_sign_corrected_pred}
+
+# SI Bundle Geometry (SI pp. 5-6)
+- id: run_u_hex_unit
+  model: hexagonal_unit_monomers
+  inputs: {z: binding_sites_hex, r_sat: actins_per_fascin_sat}
+  outputs: {u: u_hex_unit_pred}
+
+- id: run_SI_R_surface_nf20
+  model: bundle_geometry_saturation
+  inputs: {u: u_figS1_assumed, n_f: nf_fig2e_line, sigma: sigma_surface_included}
+  outputs: {R: R_SI_surface_nf20_pred}
+  note: "Full saturation (including surface sites) at n_f = 20, u = 13 (blue curve in Fig. S1)."
+
+- id: run_SI_R_inside_nf20
+  model: bundle_geometry_saturation
+  inputs: {u: u_figS1_assumed, n_f: nf_fig2e_line, sigma: sigma_inside_only}
+  outputs: {R: R_SI_inside_nf20_pred}
+  note: "Inside occupation only at n_f = 20, u = 13 (green curve in Fig. S1)."
+
+- id: run_SI_R_surface_nf19_chained
+  model: bundle_geometry_saturation
+  inputs: {u: u_hex_unit_pred, n_f: nf_hex_shells2_pred, sigma: sigma_surface_included}
+  outputs: {R: R_SI_surface_nf19_chained_pred}
+  note: "Chained u = 13.5 (from 1:4.5 saturation) and n_f = 19 (2 hexagonal shells)."
+
+- id: run_SI_R_bulk_u13
+  model: bundle_geometry_bulk_limit
+  inputs: {u: u_figS1_assumed}
+  outputs: {R: R_SI_bulk_u13_pred}
+
+- id: run_SI_R_bulk_u_chained
+  model: bundle_geometry_bulk_limit
+  inputs: {u: u_hex_unit_pred}
+  outputs: {R: R_SI_bulk_u_chained_pred}
+
+# SI Helical-to-Hexagonal Angular Mismatch (SI pp. 5, 7; Fig. S2)
+- id: run_max_mismatch_13_6
+  model: helical_hexagonal_max_mismatch
+  inputs: {p: p_unbundled, s: s_unbundled, n_unit: u_figS1_assumed, phi0: phi0_13_6_added}
+  outputs: {max_mismatch: max_mismatch_13_6_pred, total_mismatch: total_mismatch_13_6_pred}
+
+- id: run_max_mismatch_28_13
+  model: helical_hexagonal_max_mismatch
+  inputs: {p: p_overtwisted, s: s_overtwisted, n_unit: n_unit_28_13_added, phi0: phi0_28_13_added}
+  outputs: {max_mismatch: max_mismatch_28_13_pred, total_mismatch: total_mismatch_28_13_pred}
+
+- id: run_profile_13_6_figS2
+  model: helical_hexagonal_site_mismatch
+  inputs: {p: p_unbundled, s: s_unbundled, n_unit: u_figS1_assumed, phi0: phi0_13_6_added}
+  sweep: {psi: mismatch_profile_13_6_figS2}
+  outputs: {delta_phi: profile_13_6_figS2_pred}
+
+- id: run_profile_28_13_figS2
+  model: helical_hexagonal_site_mismatch
+  inputs: {p: p_overtwisted, s: s_overtwisted, n_unit: n_unit_28_13_added, phi0: phi0_28_13_added}
+  sweep: {psi: mismatch_profile_28_13_figS2}
+  outputs: {delta_phi: profile_28_13_figS2_pred}
+
+# Figure sweep runs (Fig. 1C, Fig. 2E, SI Fig. S1)
+- id: run_D_scaling_fig1c_fit
+  model: diameter_scaling_Rstar
+  inputs: {}
+  sweep: {R_star: D_fig1c_powerlaw_fit}
+  outputs: {D: D_fig1c_powerlaw_pred}
+  note: "Sweeps D ~ (R*)^0.3 (prefactor: unknown) over Fig. 1C dashed power-law line."
+
+- id: run_D_scaling_fig1c_data
+  model: diameter_scaling_Rstar
+  inputs: {}
+  sweep: {R_star: D_fig1c_measured}
+  outputs: {D: D_fig1c_measured_pred}
+  note: "Sweeps D ~ (R*)^0.3 (prefactor: unknown) over all 8 TEM measured bundle diameters in Fig. 1C."
+
+- id: run_droplet_crit_ca_fig2e_line
+  model: droplet_critical_concentration
+  inputs: {n_f: nf_fig2e_line, M_actin: M_actin_added, d: d_monomer}
+  sweep: {D_d: ca_fig2e_nf20_boundary}
+  outputs: {c_a: ca_fig2e_nf20_boundary_pred}
+  note: "Sweeps confined equatorial-ring model c_a(D_d) at n_f = 20 over Fig. 2E dashed boundary line."
+
+- id: run_droplet_crit_ca_fig2e_single_ring
+  model: droplet_critical_concentration
+  inputs: {n_f: nf_fig2e_line, M_actin: M_actin_added, d: d_monomer}
+  sweep: {D_d: ca_fig2e_single_ring_max}
+  outputs: {c_a: ca_fig2e_single_ring_max_pred}
+  note: "Sweeps confined equatorial-ring model c_a(D_d) at n_f = 20 over the measured rightmost single-ring droplets in Fig. 2E."
+
+- id: run_SI_blue_surface_sweep
+  model: bundle_geometry_saturation
+  inputs: {u: u_figS1_assumed, sigma: sigma_surface_included}
+  sweep: {n_f: R_figS1_blue_surface}
+  outputs: {R: R_figS1_blue_surface_pred}
+  note: "Sweeps SI saturation model (u = 13, + branch) over Fig. S1 blue curve."
+
+- id: run_SI_green_inside_sweep
+  model: bundle_geometry_saturation
+  inputs: {u: u_figS1_assumed, sigma: sigma_inside_only}
+  sweep: {n_f: R_figS1_green_inside}
+  outputs: {R: R_figS1_green_inside_pred}
+  note: "Sweeps SI saturation model (u = 13, - branch) over Fig. S1 green curve."
+
+- id: run_Rstar_scaling_figS1_line
+  model: Rstar_filament_scaling
+  inputs: {}
+  sweep: {n_f: Rstar_figS1_powerlaw}
+  outputs: {R_star: Rstar_figS1_powerlaw_pred}
+  note: "Sweeps translated scaling R* ~ n_f^(5/3) (prefactor: unknown) over Fig. S1 red dashed line."
+
+- id: run_Rstar_scaling_figS1_exp
+  model: Rstar_filament_scaling
+  inputs: {}
+  sweep: {n_f: Rstar_figS1_experiment}
+  outputs: {R_star: Rstar_figS1_experiment_pred}
+  note: "Sweeps translated scaling R* ~ n_f^(5/3) (prefactor: unknown) over Fig. S1 8 translated experimental points."

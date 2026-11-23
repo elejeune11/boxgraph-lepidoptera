@@ -1,0 +1,51 @@
+# Numerical refinement series for ODE (RK4 dimer) and SDE (anisotropic Langevin) solvers.
+
+- id: ref_dimer_rk4_corrected_eta1_dt
+  run: run_dimer_rk4_corrected_eta1
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: filament_y_shift
+  tolerance: "1%"
+  tolerance_basis: "added: 1% relative tolerance on mechanical relaxation shift confirms clean RK4 convergence at Table S1 eta_cyto = 1 Pa*s and paper dt = 5e-5 s"
+  tolerance_added: true
+
+- id: ref_dimer_rk4_corrected_eta01_dt
+  run: run_dimer_rk4_corrected_eta01
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: filament_y_shift
+  tolerance: "1%"
+  tolerance_basis: "added: 1% relative tolerance tests RK4 stability at SI Notes text viscosity eta_cyto = 0.1 Pa*s and paper dt = 5e-5 s (where lambda_perp*dt = 5.34 > 2.785 stability boundary)"
+  tolerance_added: true
+
+- id: ref_dimer_rk4_printed_eta1_dt
+  run: run_dimer_rk4_printed_eta1
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: cm_drift
+  tolerance: "1%"
+  tolerance_basis: "added: 1% relative tolerance verifies that the spurious center-of-mass drift (~0.416 nm) of the printed -delta_{i1} equation belongs to the printed model rather than RK4 discretization error"
+  tolerance_added: true
+
+- id: ref_langevin_n_traj
+  run: run_anisotropic_langevin_filament
+  setting: n_traj
+  factors: [1, 2, 4]
+  mode: multiply
+  output: R_aniso
+  tolerance: "2%"
+  tolerance_basis: "added: 2% relative tolerance on Monte Carlo trajectory count verifies convergence of simulated passive anisotropic ratio R_aniso to 1/sqrt(1.5) = 0.8165"
+  tolerance_added: true
+
+- id: ref_langevin_dt
+  run: run_anisotropic_langevin_filament
+  setting: dt
+  factors: [1, 2, 4]
+  mode: divide
+  output: R_aniso
+  tolerance: "2%"
+  tolerance_basis: "added: 2% relative tolerance verifies Euler-Maruyama timestep insensitivity of single-filament anisotropic displacement ratio R_aniso"
+  tolerance_added: true

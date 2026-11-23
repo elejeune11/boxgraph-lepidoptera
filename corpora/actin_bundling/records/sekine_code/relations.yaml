@@ -1,0 +1,22 @@
+# No cross-record ModelAtlas equation relations between sekine_code and sekine2024:
+# 1. Pipeline separation: sekine_code/nanocluster_motion_matlab and sekine_code/nanocluster_motion_methods_spec
+#    implement the 2D binary image-tracking stage (Nanocluster_motion.m) on synthetic 50x50 ROI verification
+#    scenarios (taking pixel/area/circularity thresholds and pixel_size as inputs), whereas sekine2024 models
+#    upstream CGMD filament/motor/crosslinker dynamics (cgmd_2d_network, runnable: false; cgmd_anisotropic_langevin;
+#    anisotropic_diffusion_ratio) and the downstream summary ratio motion_anisotropy_ratio (R_aniso = <|dy|>/<|dx|>,
+#    attributed to an unreleased R script on Methods p. 10 and absent from Nanocluster_motion.m itself; count_ops = 1,
+#    too_plain). They are sequential pipeline stages / distinct domains rather than equivalent or reducible models.
+# 2. Pixel-area vs. pixel-length conversions: sekine_code/area_px_to_um2 (A_phys = A_px * dx^2, um^2, count_ops = 2)
+#    versus sekine2024/roi_physical_size (N_px * dx_pixel, um, count_ops = 1), piv_window_physical_size
+#    ((W_px / M_enlarge) * dx_pixel, um, count_ops = 2), and pseudo_image_discretization (L_box / N_grid, um,
+#    count_ops = 1) differ in both physical dimension and pixel-pitch scaling exponent (dx^2 vs. dx^1, so neither
+#    same_as nor scales_as holds) and are too_plain trivial products/quotients (<= 2 ops).
+# 3. Discrete bounds and circularity: sekine_code/area_um2_to_px_bounds (ceil/floor step functions),
+#    sekine_code/implied_pixel_size_bounds (tight pixel-size bracket (0.043033, 0.043437] um from [6, 53] px <->
+#    [0.01, 0.1] um^2, which excludes sekine2024/pseudo_image_discretization's 3/69 = 0.043478 um), and
+#    sekine_code/circularity_definition (4*pi*A/P^2, omitted from Nanocluster_motion.m) have no counterpart models
+#    in sekine2024.
+# Cross-record code-vs-Methods findings are summarized in sekine2024/questions.yaml (q_nanocluster_motion_code_vs_methods)
+# and detailed across sekine_code/questions.yaml.
+[]
+

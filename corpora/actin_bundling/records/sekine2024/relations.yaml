@@ -1,0 +1,198 @@
+# Intra-record model relations explicitly stated in sekine2024 (all provenance: stated).
+
+- id: rel_anisotropic_friction_symmetric_limit
+  kind: reduces_to
+  a: sekine2024/anisotropic_filament_friction
+  b: sekine2024/cylindrical_friction_filament
+  mapping:
+    eta_cyto: "eta_cyto"
+    d_f: "d_f"
+    L0_f: "L0_f"
+  limit:
+    friction_asymmetry: "1"
+  regime:
+    eta_cyto: [0.1, 2.0]
+    d_f: [0.005, 0.02]
+    L0_f: [0.05, 0.2]
+    friction_asymmetry: [1.0, 2.0]
+  provenance: stated
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "γyf /γxf = 1 corresponds to the symmetric case"
+    where: "Eqs. S1a-S1b"
+
+- id: rel_connector_arm_same_as_harmonic
+  kind: same_as
+  a: sekine2024/connector_arm_stretching_potential
+  b: sekine2024/harmonic_stretching_potential
+  mapping:
+    r: "r"
+    kappa: "kappa"
+    L0: "L0 / 2"
+  output_map:
+    U_harm: U_harm
+  regime:
+    r: [0.01, 0.2]
+    kappa: [1.0, 50.0]
+    L0: [0.02, 0.3]
+  provenance: stated
+  citation:
+    page: 29
+    printed_page: "SI Notes 2"
+    quote: "Similarly, the stretching and bending forces act between the motor particles"
+    where: "Eqs. S5, S6, S8"
+
+- id: rel_persistence_temp_same_as_kbt
+  kind: same_as
+  a: sekine2024/persistence_length_from_temperature
+  b: sekine2024/persistence_length_bending
+  mapping:
+    k_bend: "k_bend"
+    L0: "L0"
+    kBT: "1.380649e-5 * T"
+  regime:
+    k_bend: [0.05, 1.0]
+    L0: [0.02, 0.3]
+    T: [270.0, 320.0]
+  provenance: stated
+  citation:
+    page: 31
+    printed_page: "SI Notes 4"
+    quote: "thermal energy kB T 4.142 × 10−3 pN µm at 300 K"
+    where: "Table S1"
+
+- id: rel_sf_interval_frequency_same_as_wavenumber
+  kind: same_as
+  a: sekine2024/structure_factor_interval
+  b: sekine2024/structure_factor_interval_wavenumber
+  mapping:
+    mu: "2 * pi * mu_over_2pi"
+  regime:
+    mu_over_2pi: [0.5, 6.0]
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "The interval of the structure is measured"
+    where: "Methods (Structure factor) & Supplementary Table 4"
+
+- id: rel_gaussian_sf_peak_limit
+  kind: same_as
+  a: sekine2024/gaussian_structure_factor_peak
+  b: sekine2024/gaussian_structure_factor
+  mapping:
+    A: "A"
+    mu_over_2pi: "1.0"
+    sigma: "sigma"
+    q_over_2pi: "1.0"
+  regime:
+    A: [0.2, 5.0]
+    sigma: [0.1, 1.0]
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "The interval of the structure is measured"
+    where: "Methods (Structure factor)"
+
+# Cross-record relations with hannezo2015 (Hannezo et al., PNAS 112:8620-8625, 2015; cited as ref-14 / sref-21).
+# Note: sekine2024 states no equation-level relation to hannezo2015 (it adopts directional friction
+# asymmetry conceptually as an external cue in SI Notes pp. 30, 32, and both 2D pattern-forming
+# models — hannezo2015/cortical_pde_2d_anisotropic and sekine2024/cgmd_2d_network — are non-runnable).
+# The three proposed relations below bridge sekine2024's single-filament anisotropic Langevin dynamics
+# (Eqs. S1a-S1b, S5 with FDT) to hannezo2015's continuum turnover-diffusion length l_t = sqrt(D*tau).
+
+- id: rel_hannezo2015_langevin_dx_approx_turnover_length
+  kind: approximated_by
+  a: sekine2024/cgmd_anisotropic_langevin
+  b: hannezo2015/turnover_diffusion_length
+  mapping:
+    D: "kBT / (6 * pi * eta_cyto * (3 * d_f + 2 * L0_f / 5))"
+    tau: "t_obs"
+  output_map:
+    l_t: mean_abs_dx
+  regime:
+    eta_cyto: [0.5, 2.0]
+    d_f: [0.008, 0.012]
+    L0_f: [0.08, 0.15]
+    kappa_f: [5.0, 15.0]
+    kBT: [0.0035, 0.0045]
+    friction_asymmetry: [1.0, 2.0]
+    t_obs: [0.05, 0.5]
+  tolerance: 0.20
+  provenance: proposed
+  reason: >
+    Under Eqs. (S1a)-(S1b) and (S5) with the corrected fluctuation-dissipation theorem, internal
+    harmonic spring forces cancel identically from the two-bead actin filament center of mass,
+    giving 1D longitudinal Brownian diffusion with exact Einstein-Stokes center-of-mass diffusivity
+    D_fil,x = k_B T / (2 * gamma_x^f) = k_B T / (6 * pi * eta_cyto * (3 * d^f + 2 * L_0^f / 5))
+    [1 pN*um / (Pa*s * um) = 1 um^2/s]. Over observation (or turnover) time tau = t_obs, the
+    stochastic mean absolute displacement E[|Delta x_cm|] = sqrt(4/pi) * sqrt(D_fil,x * t_obs) =
+    1.1284 * l_t is approximated by Hannezo's continuum turnover-diffusion length l_t = sqrt(D * tau)
+    (Main p. 2) within the exact 11.4% half-normal-to-scale factor (1 - sqrt(pi/4)) plus ~2-4%
+    finite-ensemble Monte Carlo spread at n_traj = 2000.
+  assumptions:
+    - "Free two-bead filament without crosslinker or motor coupling (single-filament passive Brownian limit of Eqs. S1a-S1b, S5 with restored k_B T in FDT)."
+    - "Longitudinal drag partition gamma_x^f = gamma^f = 3*pi*eta_cyto*(3*d^f + 2*L_0^f/5); Euler-Maruyama stable regime (eta_cyto in [0.5, 2.0] Pa*s bracketing Table S1 1 Pa*s; dt = 1e-3 s)."
+    - "Mean absolute displacement E[|Delta x|] = sqrt(4/pi)*sqrt(D*t) differs from l_t = sqrt(D*t) by a deterministic factor sqrt(4/pi) ~= 1.1284 (relative difference 11.4%) plus finite-sample Monte Carlo noise."
+
+- id: rel_hannezo2015_langevin_dy_approx_turnover_length
+  kind: approximated_by
+  a: sekine2024/cgmd_anisotropic_langevin
+  b: hannezo2015/turnover_diffusion_length
+  mapping:
+    D: "kBT / (6 * pi * eta_cyto * friction_asymmetry * (3 * d_f + 2 * L0_f / 5))"
+    tau: "t_obs"
+  output_map:
+    l_t: mean_abs_dy
+  regime:
+    eta_cyto: [0.5, 2.0]
+    d_f: [0.008, 0.012]
+    L0_f: [0.08, 0.15]
+    kappa_f: [5.0, 15.0]
+    kBT: [0.0035, 0.0045]
+    friction_asymmetry: [1.0, 2.0]
+    t_obs: [0.05, 0.5]
+  tolerance: 0.20
+  provenance: proposed
+  reason: >
+    Along the circumferential (y) axis where Sekine introduces directional filament friction
+    gamma_y^f = (gamma_y^f / gamma_x^f) * gamma_x^f following Hannezo's anisotropic-friction cue
+    (ref-14 / sref-21), the two-bead center-of-mass Einstein-Stokes diffusivity scales inversely
+    with friction asymmetry as D_fil,y = D_fil,x / (gamma_y^f / gamma_x^f). Consequently, the
+    stochastic circumferential mean displacement mean_abs_dy = E[|Delta y_cm(t_obs)|] =
+    sqrt(4/pi) * sqrt(D_fil,y * t_obs) is approximated by Hannezo's continuum turnover-diffusion
+    length l_t = sqrt(D_fil,y * tau) within the same 11.4% half-normal factor plus ~2-4% Monte
+    Carlo spread across the Euler-Maruyama stable regime bracketing friction_asymmetry in [1.0, 2.0].
+  assumptions:
+    - "Free two-bead filament under Eqs. (S1a)-(S1b) and (S5) with anisotropic friction gamma_y^f = friction_asymmetry * gamma_x^f and anisotropic FDT noise variance 2*gamma_a^f*k_B*T."
+    - "Euler-Maruyama stable regime (eta_cyto in [0.5, 2.0] Pa*s bracketing Table S1 1 Pa*s; dt = 1e-3 s)."
+    - "Highlights the passive-diffusion baseline (D_fil,y < D_fil,x when gamma_y^f > gamma_x^f), whose reduced circumferential travel contrasts with the enhanced circumferential motion |dy|/|dx| > 1 in Sekine's full many-body CGMD and in vivo measurements."
+
+- id: rel_hannezo2015_aniso_diff_scales_turnover_length
+  kind: scales_as
+  a: sekine2024/anisotropic_diffusion_ratio
+  b: hannezo2015/turnover_diffusion_length
+  mapping:
+    D: "0.04 / friction_asymmetry"
+    tau: "15.0"
+  output_map:
+    l_t: R_aniso
+  regime:
+    friction_asymmetry: [1.0, 3.0]
+  provenance: proposed
+  reason: >
+    Under Einstein-Stokes scaling D_y = D_x / (gamma_y^f / gamma_x^f) with direction-independent
+    actin turnover time tau (anchored at Hannezo's stage-15 tracheal FRAP values D_x = 0.04 um^2/s
+    and tau = 15 s), Hannezo's circumferential turnover-diffusion length l_{t,y} = sqrt(D_y * tau)
+    scales as (gamma_y^f / gamma_x^f)^(-1/2), matching the exact log-slope (-1/2) of Sekine's
+    passive anisotropic Brownian displacement ratio R_aniso = <|dy|>/<|dx|> =
+    (gamma_y^f / gamma_x^f)^(-1/2). Both continuum passive diffusion and equilibrium Langevin
+    dynamics therefore predict reduced circumferential displacement (< 1) under gamma_y^f > gamma_x^f,
+    opposite in sign to Sekine's full CGMD (|dy|/|dx| = 1.13-1.45) and in vivo tracheal tracking
+    (|dy|/|dx| = 1.20-1.72).
+  assumptions:
+    - "Einstein-Stokes inverse-friction diffusivity D_y = D_x / (gamma_y^f / gamma_x^f) at fixed longitudinal D_x = 0.04 um^2/s and isotropic turnover time tau = 15 s (Hannezo Main p. 3 FRAP values)."
+    - "Passive equilibrium single-filament scaling without motor-driven clustering or nonequilibrium turnover-induced directional bias."
+

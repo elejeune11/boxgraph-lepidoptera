@@ -1,0 +1,233 @@
+# Open questions documenting every code-vs-paper discrepancy, hidden parameter, and bug in sekine_code.
+
+- id: q_missing_circularity_filter
+  kind: possible_error
+  about:
+    - circularity_min_readme
+    - circularity_max_readme
+    - output_columns_code
+    - nanocluster_motion_matlab
+    - run_matlab_elongated_rod
+    - run_spec_elongated_rod
+  text: >
+    Both README.md (line 5) and sekine2024 Methods p. 10 ('Motion anisotropy') state that
+    'an actin cluster within the size range 0.01 to 0.1 um^2 and circularity 0.5 - 1.0 was selected
+    at tn'. However, Nanocluster_motion.m never computes perimeter or circularity (no regionprops
+    'Circularity' or 'Perimeter' call anywhere in lines 1-260) and never filters by shape. Because
+    ALL_Result exports only 6 columns (x1, y1, A1, x2, y2, A2; lines 161-170, 199-207, 222-230),
+    circularity filtering cannot even be performed downstream in R from the MATLAB output. Either
+    circularity pre-filtering was applied externally in ImageJ/Fiji before running MATLAB (undisclosed
+    in both README.md and Methods p. 10, and partially redundant with bwareafilt([6 53])), or no
+    circularity filter was actually applied. Our Python port confirms an elongated 1x20 px rod
+    (A = 20 px = 0.0374 um^2, C = 0.143 << 0.5) is tracked by Nanocluster_motion.m (matched=1)
+    but rejected by the documented Methods/README specification (matched=0).
+  citation:
+    file: README.md
+    lines: "5"
+    quote: "an actin cluster within the size range 0.01 to 0.1 µm2 and circularity 0.5 – 1.0 was selected"
+
+- id: q_missing_area_ratio_and_largest_tiebreak
+  kind: unexplained_difference
+  about:
+    - area_min_t2_px_code
+    - area_ratio_min_readme
+    - area_ratio_max_readme
+    - multi_overlap_branch_min_code
+    - nanocluster_motion_matlab
+    - run_matlab_area_ratio_raw
+    - run_matlab_multi_overlap_raw
+    - run_matlab_multi_overlap_filtered
+    - run_spec_multi_overlap
+  text: >
+    Both README.md (line 6) and sekine2024 Methods p. 10 state that in frame t_{n+1} 'an actin
+    cluster with a similar size (between 0.5 to 2 fold of the size at tn) and similar position (at
+    least overlapped 1 pixel with the cluster at tn)' is matched. In Nanocluster_motion.m:
+    (1) Line 44 sets Large_Obj_Image_2 = bwareafilt(BW_Image_2, [1 Inf]); %no limitation, contradicting
+    the comment on line 39 ('Remove very small objects from image_1 and image_2 (6 to 53 pixels)') and
+    performing no 0.5-2 fold area-ratio check (run_matlab_area_ratio_raw accepts a 16->64 px, ratio 4.0
+    fusion).
+    (2) Even if downstream Excel/R code filters exported columns 3 and 6 by 0.5 <= A2/A1 <= 2,
+    lines 101-145 introduce an undisclosed tie-breaker when a t_n cluster has >= 2 8-connected
+    intersection components with Cumm_Img: it selects the LARGEST overlapping object in t_{n+1}
+    (maxArea, tie-breaking equal areas by column-major label order via break on line 138; comment
+    notes 'before was nearest one'). When a 16-px cluster overlaps both a valid 16-px match (ratio 1.0)
+    and a 64-px cable (ratio 4.0), Nanocluster_motion.m outputs the 64-px cable and discards the valid
+    match, so downstream 0.5-2x filtering loses the cluster entirely (matched=0 vs spec matched=1).
+  citation:
+    file: Nanocluster_motion.m
+    lines: "101"
+    quote: "if ref_Cell_Obj_Intersect_NumberOfObjects>=2  % if more than 2 overlapped objects then take the biggest one (before was nearest one)"
+
+- id: q_missing_displacement_and_anisotropy_code
+  kind: unstated_model
+  about:
+    - output_columns_code
+    - unmatched_sentinel_code
+    - nanocluster_motion_matlab
+  text: >
+    README.md line 8 states 'By comparing the coordinates of the center of masses between tn and
+    tn+1, the displacement Δx and Δy were calculated', and sekine2024 Methods p. 10 adds that 'the
+    average ratio of absolute values (|Δy|/|Δx|) was calculated by R'. Nanocluster_motion.m performs
+    none of these steps: it exports only raw 1-based pixel coordinates and pixel areas
+    (x1, y1, A1, x2, y2, A2) via xlswrite (line 257), with (0, 0, 0) sentinel entries in columns 4-6
+    for unmatched clusters (lines 217-230). It contains no pixel-to-micron scale factor, no frame
+    interval (0.32 s), no zero-sentinel exclusion, no Δx/Δy subtraction, and no |Δy|/|Δx| ratio;
+    the downstream R script is not released.
+  citation:
+    file: README.md
+    lines: "8"
+    quote: "By comparing the coordinates of the center of masses between tn and tn+1, the displacement Δx and Δy were calculated."
+
+- id: q_unstated_pixel_size_and_sim_grid_mismatch
+  kind: unstated_input
+  about:
+    - area_min_t1_px_code
+    - area_max_t1_px_code
+    - area_min_readme
+    - area_max_readme
+    - pixel_size_added
+    - cmp_area_max_px
+    - run_implied_pixel_size
+  text: >
+    Nanocluster_motion.m hardcodes [6 53] pixels (line 40) without stating any pixel size, whereas
+    README.md (line 5) and sekine2024 Methods p. 10 state 0.01 to 0.1 um^2. Requiring [6, 53] to be
+    the exact integer pixel counts inside [0.01, 0.1] um^2 tightly constrains the square pixel size
+    to (0.043033, 0.043437] um (midpoint 0.043235 um), uniquely matching sekine2024's experimental
+    Airyscan pixel size 0.04325 um (Methods p. 11, datum sekine2024/sim_pixel_size_printed:
+    0.01/0.04325^2 = 5.346 -> ceil 6 px = 0.01122 um^2; 0.1/0.04325^2 = 53.460 -> floor 53 px =
+    0.09914 um^2). Both alternatives shift N_max away from 53: exact simulation box pitch
+    3/69 = 0.043478 um gives floor(52.90) = 52 px (53 px = 0.10019 um^2 > 0.1), and Supp. Fig. 6a's
+    43 nm = 0.043 um gives floor(54.08) = 54 px. Because 5 px = 0.00935 um^2 < 0.01, the integer
+    cutoff 6 px sets the actual minimum area 12.2% above 0.01 um^2 (0.01122 um^2).
+  citation:
+    file: Nanocluster_motion.m
+    lines: "40"
+    quote: "Large_Obj_Image_1 = bwareafilt (BW_Image_1, [6 53]);"
+
+- id: q_hidden_imclearborder_filter
+  kind: choice
+  about:
+    - nanocluster_motion_matlab
+    - run_matlab_border_clear
+    - run_spec_border_clear
+  text: >
+    Nanocluster_motion.m calls imclearborder on BOTH Large_Obj_Image_1 (line 41) and
+    Large_Obj_Image_2 (line 45), removing every 8-connected object touching any edge of the ROI in
+    either frame. Neither README.md nor sekine2024 Methods p. 10 mentions border clearing. In the
+    50 x 50 px live-imaging ROIs (2.16 x 2.16 um), clusters touching the border in t_n are dropped
+    entirely and interior t_n clusters that step onto the border in t_{n+1} are converted into
+    unmatched (0, 0, 0) rows (verified in run_matlab_border_clear: matched=0 vs spec matched=2).
+  citation:
+    file: Nanocluster_motion.m
+    lines: "41"
+    quote: "Large_Obj_Image_1 = imclearborder(Large_Obj_Image_1); %remove objects at the boundary"
+
+- id: q_hidden_im2bw_threshold_and_connectivity
+  kind: unstated_input
+  about:
+    - binarize_level_added
+    - connectivity_bwlabel_code
+    - run_matlab_grayscale_im2bw
+    - run_spec_grayscale_im2bw
+  text: >
+    Lines 35-36 call deprecated MATLAB im2bw(Image_1) and im2bw(Image_2) with no second (level)
+    argument, applying MATLAB's implicit default normalized luminance threshold level = 0.5
+    (127.5 for uint8, 32767.5 for uint16). By contrast, sekine2024 Methods p. 10 ('Cluster analysis')
+    describes ImageJ rolling-ball background subtraction (r = 50 px), Auto Local Threshold with Otsu
+    (r = 5 px), and Despeckle. This implies either undisclosed upstream binarization in Fiji/ImageJ
+    before MATLAB (making im2bw an identity map on {0, 255} TIFFs) or fixed global 0.5 thresholding
+    that erases dim grayscale clusters below 128/255 (run_matlab_grayscale_im2bw: matched=0 vs Otsu
+    spec matched=2; alternative binarize_level=0.25 recovers matched=2). Additionally, lines 55, 81,
+    83, 99, and 131 hardcode 8-connectivity ('%must use 8-connectivity'), a choice undisclosed in
+    README.md and Methods p. 10.
+  citation:
+    file: Nanocluster_motion.m
+    lines: "35-36"
+    quote: "BW_Image_1 = im2bw(Image_1);"
+
+- id: q_hardcoded_frame_count_ignores_filelist
+  kind: possible_error
+  about:
+    - numb_of_images_code
+  text: >
+    Line 8 hardcodes Numb_of_Images = 100 and line 28 loops for Count = 1:Numb_of_Images-1 (99
+    frame pairs), completely ignoring num_frames = (numel(filelist)) computed from the selected
+    directory on line 25. If a folder contains fewer than 100 .tif files, line 32 throws a cell-index
+    error; if it contains 200 frames (the sub-second live-imaging length stated on sekine2024 Methods
+    p. 10, vs 100 frames for PIV and 50 frames in Supp. Movie 1), frames 101-200 are silently skipped.
+    Neither Methods p. 10 nor README.md states how many frames were analyzed for Motion anisotropy
+    in vivo or in the CGMD simulation (Fig. 4d), nor is the live-imaging frame interval (0.32 s)
+    referenced anywhere in Nanocluster_motion.m.
+  citation:
+    file: Nanocluster_motion.m
+    lines: "8"
+    quote: "Numb_of_Images = 100;                  %% input the numbe of images you have"
+
+- id: q_stage1_centroid_miss_bug
+  kind: possible_error
+  about:
+    - overlap_min_px_readme
+    - nanocluster_motion_matlab
+    - run_matlab_antidiag_bug
+    - run_spec_antidiag_bug
+  text: >
+    In Stage 1 (lines 61-67), each 8-connected intersection component Cell_Obj of
+    Large_Obj_Image_1 .* Large_Obj_Image_2 is mapped back to its full t_{n+1} object via
+    bwselect(Large_Obj_Image_2, Cell_x_cordinate, Cell_y_cordinate) using the raw geometric centroid
+    WITHOUT the imfill('holes') + bwmorph('shrink', Inf) safeguard later added in Stage 2 (lines
+    110-111, 181-182). For any non-convex intersection (C-shape, ring) or even a simple 2-pixel
+    anti-diagonal 8-connected overlap {(r, c+1), (r+1, c)} whose centroid (c+0.5, r+0.5) rounds via
+    MATLAB round() to (c+1, r+1), the seed pixel can fall on a 0 (background) pixel of
+    Large_Obj_Image_2. bwselect then returns an all-zero mask, omitting the overlapping cluster from
+    Cummulative_image and producing a false unmatched (0, 0, 0) row despite >= 1 pixel overlap
+    (verified in run_matlab_antidiag_bug: matched=0 vs spec matched=1).
+  citation:
+    file: Nanocluster_motion.m
+    lines: "63-67"
+    quote: "Full_Obj = bwselect(Large_Obj_Image_2, Cell_x_cordinate, Cell_y_cordinate);"
+
+- id: q_stage2_hole_shrink_and_silent_try_catch_abort
+  kind: possible_error
+  about:
+    - nanocluster_motion_matlab
+    - run_matlab_ring_hole_abort
+    - run_spec_ring_hole_abort
+  text: >
+    Stage 2 wraps the entire per-cluster loop in a bare try ... catch end block (lines 88 and
+    241-242) and applies imfill(..., 'holes') followed by bwmorph(..., 'shrink', Inf) to each
+    intersection component before calling bwselect(Cumm_Img, x, y) (lines 110-119, 181-191).
+    If a t_n cluster overlaps a holed t_{n+1} object in a closed ring (e.g. a 3x3 ring missing its
+    center pixel in Cumm_Img), imfill fills the interior hole and bwmorph('shrink', Inf) collapses
+    the filled region right onto that center pixel, which is 0 in Cumm_Img. bwselect returns an
+    all-zero mask, regionprops(Full_Obj, 'centroid') returns an empty 0x1 struct, and
+    Full_Obj_Cord.Centroid(1) throws an error that the bare catch silently swallows—aborting the
+    entire remainder of the frame's cluster loop and dropping all subsequent unrelated clusters
+    (verified in run_matlab_ring_hole_abort: 3 of 4 clusters dropped, including healthy Cluster 4).
+    Additionally, ref_Coordinate_List = [] is only initialized at the end of the frame loop (line 247),
+    so if frame Count = 1 has 0 objects or throws on cluster 1, line 243 crashes with an undefined
+    variable error. (Other minor code issues: unused ManyDistance_List on line 86, unused sheet = 1 on
+    line 256, hardcoded cd '/Users/XXXXX/' on line 6, and deprecated im2bw / xlswrite in MATLAB 2022a.)
+  citation:
+    file: Nanocluster_motion.m
+    lines: "181-191"
+    quote: "ref_Cell_Obj_Intersect = bwmorph(ref_Cell_Obj_Intersect,'shrink', Inf);"
+
+- id: q_circularity_perimeter_convention_and_axis_orientation
+  kind: reading
+  about:
+    - circularity_definition
+    - circularity_min_readme
+    - circularity_max_readme
+  text: >
+    Neither README.md nor sekine2024 Methods p. 10 states the discrete perimeter formula used for
+    'circularity 0.5 - 1.0'. On small 6-53 pixel binary clusters, ImageJ outer pixel-edge perimeter
+    gives C <= 1.0 (e.g., 4x4 square P=16 -> C=0.785; 3x2 rect P=10 -> C=0.754; 1x6 rod P=14 ->
+    C=0.385), whereas MATLAB regionprops('Perimeter') measures pixel-center paths (4x4 square P=12 ->
+    naive 4*pi*A/P^2 = 1.396 > 1.0; MATLAB R2019a+ regionprops('Circularity') uses a small-region
+    adjustment 4*pi*A/(P+pi)^2 = 0.877). Also unstated in sekine_code is the upstream image rotation
+    aligning the tracheal longitudinal axis with MATLAB Centroid(1) (x) and the circumferential axis
+    with Centroid(2) (y) (as stated in sekine2024 Fig. 5a caption).
+  citation:
+    file: README.md
+    lines: "5"
+    quote: "and circularity 0.5 – 1.0 was selected"

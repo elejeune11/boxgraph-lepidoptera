@@ -1,0 +1,132 @@
+- id: rel_raw_to_eq12
+  kind: same_as
+  a: bois2011/single_species_dispersion_raw
+  b: bois2011/single_species_dispersion_eq12
+  mapping:
+    k: k
+    D: D
+    Pe: zdm0 / (D * gamma)
+    c0: c0
+    df_dc: df_dc
+    l: sqrt(eta / gamma)
+  output_map:
+    lam: lam
+  regime:
+    k: [1.0e4, 5.0e5]
+    D: [1.0e-14, 1.0e-12]
+    c0: [0.1, 10.0]
+    zdm0: [10.0, 1000.0]
+    df_dc: [0.05, 1.0]
+    gamma: [1.0e13, 1.0e15]
+    eta: [1.0e3, 1.0e5]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "028103-3"
+    quote: "Inserting (11) into (1) and considering terms up to linear"
+    where: "Eq. 12"
+
+- id: rel_eq12_to_hill
+  kind: derived_from
+  a: bois2011/single_species_dispersion_eq12
+  b: bois2011/single_species_dispersion_hill
+  mapping:
+    k_l: k * l
+    Pe: Pe
+    c0: c0
+  output_map:
+    lam_dimless: lam_dimless
+  steps:
+    - "subs: df_dc = 1 / (1 + c0)**2"
+    - simplify
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "028103-3"
+    quote: "and c0 ¼ 1 for Pe ¼ 3, 7, 10, and 25"
+    where: "Fig. 3(a)"
+  assumptions:
+    - "Hill active stress f(c) = c / (1 + c) so d_c f(c0) = 1 / (1 + c0)^2"
+    - "Growth rate nondimensionalized by tau_D = ell^2 / D"
+
+- id: rel_eq13_to_hill
+  kind: derived_from
+  a: bois2011/single_species_instability_eq13
+  b: bois2011/single_species_stability_boundary_hill
+  mapping:
+    c0: c0
+    beta: beta
+    L_over_l: L_over_l
+  output_map:
+    Pe_crit: Pe_crit
+  steps:
+    - "subs: df_dc = 1 / (1 + c0)**2"
+    - simplify
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "028103-3"
+    quote: "for the same active stress function."
+    where: "Fig. 3(b)"
+  assumptions:
+    - "Hill active stress f(c) = c / (1 + c) so d_c f(c0) = 1 / (1 + c0)^2"
+
+- id: rel_eq15_reduces_to_eq12
+  kind: reduces_to
+  a: bois2011/single_species_rda_dispersion_eq15
+  b: bois2011/single_species_dispersion_eq12
+  mapping:
+    k: k
+    D: D
+    Pe: Pe
+    c0: c0
+    df_dc: df_dc
+    l: l
+  output_map:
+    lam: lam
+  limit:
+    dR_dc: "0"
+  regime:
+    k: [0.5, 5.0]
+    D: [0.5, 5.0]
+    dR_dc: [0.01, 1.0]
+    Pe: [1.0, 30.0]
+    c0: [0.2, 5.0]
+    df_dc: [0.05, 1.0]
+    l: [0.2, 2.0]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "028103-3"
+    quote: "The simple scenario described above can be easily gen-"
+    where: "Eq. 15"
+  assumptions:
+    - "Single conserved species (N = 1, R_1 = 0)"
+
+- id: rel_asdm_reduces_to_classic
+  kind: reduces_to
+  a: bois2011/asdm_dispersion_eq15
+  b: bois2011/asdm_dispersion_pe0
+  mapping:
+    k_l: k_l
+    Da_over_Ds: Da_over_Ds
+    rho_a: rho_a
+    rho_s: rho_s
+  output_map:
+    re_lam_dimless: re_lam_dimless
+  limit:
+    Pe: "0"
+  regime:
+    k_l: [0.2, 4.0]
+    Da_over_Ds: [0.1, 2.0]
+    rho_a: [0.5, 2.0]
+    rho_s: [0.2, 2.0]
+    Pe: [0.1, 20.0]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "028103-3"
+    quote: "or in the absence of active stress, we recover the classic"
+    where: "text / Fig. 5(a)"
+  assumptions:
+    - "Vanishing active stress / Peclet number (Pe -> 0)"

@@ -1,0 +1,457 @@
+- id: rel_lh_3d_same_as_lh
+  kind: same_as
+  a: hannezo2015/hydrodynamic_length_from_3d
+  b: hannezo2015/hydrodynamic_length
+  mapping:
+    eta: "eta_3D * h / 10**9"
+    xi: "xi"
+  regime:
+    eta_3D: [10.0, 1000.0]
+    h: [10.0, 500.0]
+    xi: [1.0e7, 1.0e11]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "8622"
+    quote: "and a viscosity η3D = η=h = 102 Pa·s"
+    where: text
+
+- id: rel_lambda_c_eq3_same_as_lengths
+  kind: same_as
+  a: hannezo2015/critical_wavelength_eq3
+  b: hannezo2015/critical_wavelength_from_lengths
+  mapping:
+    l_t: "sqrt(D * tau)"
+    l_h: "sqrt(eta / xi) * 10**6"
+  regime:
+    D: [0.005, 0.5]
+    tau: [1.0, 100.0]
+    eta: [1.0e-7, 1.0e-3]
+    xi: [1.0e7, 1.0e11]
+  provenance: stated
+  citation:
+    page: 2
+    printed_page: "8621"
+    quote: "characteristic length scales crucial for the patterning:"
+    where: text
+
+- id: rel_phi_same_as_length_ratio_sq
+  kind: same_as
+  a: hannezo2015/dimensionless_turnover_phi
+  b: hannezo2015/dimensionless_turnover_phi_from_lengths
+  mapping:
+    l_h: "sqrt(eta / xi)"
+    l_t: "sqrt(D * tau / 10**12)"
+  regime:
+    eta: [1.0e-7, 1.0e-3]
+    D: [0.005, 0.5]
+    tau: [1.0, 100.0]
+    xi: [1.0e7, 1.0e11]
+  provenance: stated
+  citation:
+    page: 14
+    printed_page: "SI-8"
+    quote: "which is the ratio of viscous stress created by actin turnover over frictional stress"
+    where: SI Section 2.3
+
+- id: rel_finite_threshold_derived_eq10
+  kind: derived_from
+  a: hannezo2015/finite_domain_bifurcation_threshold
+  b: hannezo2015/dimensionless_critical_contractility_eq10
+  mapping:
+    phi: "phi"
+  output_map:
+    chi_c: chi_i0
+  steps:
+    - "subs: i = alpha * phi**(1/4) / pi"
+    - "simplify"
+  regime:
+    alpha: [10.0, 1000.0]
+    phi: [0.001, 10.0]
+    i: [1.0, 50.0]
+  provenance: stated
+  citation:
+    page: 17
+    printed_page: "SI-11"
+    quote: "bifurcation arises from the homogeneous state can be computed from the infinite case"
+    where: SI Section 2.6.1, Eq. (10)
+
+- id: rel_finite_critical_reduces_to_eq10
+  kind: reduces_to
+  a: hannezo2015/finite_domain_critical_mode
+  b: hannezo2015/dimensionless_critical_contractility_eq10
+  mapping:
+    phi: "phi"
+  output_map:
+    chi_c: chi_c0
+  limit:
+    alpha: "oo"
+  regime:
+    alpha: [5.0, 50.0]
+    phi: [0.01, 5.0]
+  provenance: stated
+  citation:
+    page: 17
+    printed_page: "SI-11"
+    quote: "bifurcation arises from the homogeneous state can be computed from the infinite case"
+    where: SI Section 2.6.1, Eq. (10)
+
+- id: rel_finite_rings_reduces_to_infinite
+  kind: reduces_to
+  a: hannezo2015/finite_domain_critical_mode
+  b: hannezo2015/infinite_domain_ring_count
+  mapping:
+    alpha: "alpha"
+    phi: "phi"
+  output_map:
+    n_rings: n_rings
+  limit:
+    alpha: "oo"
+  regime:
+    alpha: [5.0, 50.0]
+    phi: [0.01, 5.0]
+  provenance: stated
+  citation:
+    page: 17
+    printed_page: "SI-11"
+    quote: "We plot on Fig.S10 the number of patterns as a function of φ"
+    where: SI Section 2.6.1, Fig. S10
+
+- id: rel_weakly_nl_printed_derived_inf
+  kind: derived_from
+  a: hannezo2015/weakly_nonlinear_curvature_finite_printed
+  b: hannezo2015/weakly_nonlinear_curvature_infinite_printed
+  mapping:
+    phi: "phi"
+  output_map:
+    chi_c2: chi_i2
+  steps:
+    - "subs: i = alpha * phi**(1/4) / pi"
+    - "simplify"
+  regime:
+    alpha: [10.0, 500.0]
+    phi: [0.01, 5.0]
+    i: [1.0, 40.0]
+  provenance: stated
+  citation:
+    page: 19
+    printed_page: "SI-13"
+    quote: "If we substitute this value in the above expression, we obtain"
+    where: SI Section 2.6.2 (p. 13)
+
+- id: rel_weakly_nl_corrected_derived_inf
+  kind: derived_from
+  a: hannezo2015/weakly_nonlinear_curvature_finite_corrected
+  b: hannezo2015/weakly_nonlinear_curvature_infinite_corrected
+  mapping:
+    phi: "phi"
+  output_map:
+    chi_c2: chi_i2
+  steps:
+    - "subs: i = alpha * phi**(1/4) / pi"
+    - "simplify"
+  regime:
+    alpha: [10.0, 500.0]
+    phi: [0.01, 5.0]
+    i: [1.0, 40.0]
+  provenance: stated
+  citation:
+    page: 19
+    printed_page: "SI-13"
+    quote: "If we substitute this value in the above expression, we obtain"
+    where: SI Section 2.6.2 (p. 13)
+
+- id: rel_chaos_inequality_scales_as_scaling
+  kind: scales_as
+  a: hannezo2015/chaos_friction_threshold_inequality
+  b: hannezo2015/chaos_friction_threshold_scaling
+  mapping:
+    eta: "eta"
+    D: "D"
+    tau: "tau"
+  regime:
+    eta: [1.0e-7, 1.0e-3]
+    D: [0.005, 0.5]
+    tau: [1.0, 100.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "8624"
+    quote: "occur if the friction is lower than a critical value"
+    where: text (p. 8624)
+
+- id: rel_wavelength_eq3_scales_as_inv_qc
+  kind: scales_as
+  a: hannezo2015/critical_wavelength_eq3
+  b: hannezo2015/critical_inverse_wavenumber_si_corrected
+  mapping:
+    L: "sqrt(eta / xi) * 1e6"
+    D: "D"
+    tau: "tau"
+    xi: "xi"
+    eta: "eta"
+  output_map:
+    inv_qc: lambda_c
+  regime:
+    D: [0.005, 0.5]
+    tau: [1.0, 100.0]
+    eta: [1.0e-7, 1.0e-3]
+    xi: [1.0e7, 1.0e11]
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "This loss of stability happens at a critical wavelength"
+    where: SI Section 2.2 (p. 5)
+
+# Cross-record relations with bois2011 (Bois, Julicher & Grill, PRL 106:028103, 2011; cited as ref-10)
+
+- id: rel_bois2011_hydrodynamic_length
+  kind: same_as
+  a: hannezo2015/hydrodynamic_length
+  b: bois2011/hydrodynamic_length
+  mapping:
+    eta: "eta"
+    gamma: "xi"
+  regime:
+    eta: [1.0e-7, 1.0e-3]
+    xi: [1.0e7, 1.0e11]
+  provenance: proposed
+  reason: >
+    Both papers define the hydrodynamic screening length as sqrt(viscosity / friction):
+    Hannezo's 2D cortical length l_h = sqrt(eta/xi) (Main p. 2, SI p. 10) is algebraically
+    identical to Bois's 3D hydrodynamic length ell = sqrt(eta/gamma) (p. 2) because the
+    cortex thickness h cancels in eta/xi = (h*eta_3D)/(h*gamma).
+  assumptions:
+    - "2D thickness-integrated viscosity eta = h*eta_3D and 2D friction xi = h*gamma cancel cortex thickness h in eta/xi = eta_3D/gamma (mapped at unit reference thickness h = 1 m)."
+
+- id: rel_bois2011_hydrodynamic_length_3d
+  kind: same_as
+  a: hannezo2015/hydrodynamic_length_from_3d
+  b: bois2011/hydrodynamic_length
+  mapping:
+    eta: "eta_3D"
+    gamma: "xi * 10**9 / h"
+  regime:
+    eta_3D: [10.0, 1000.0]
+    h: [10.0, 500.0]
+    xi: [1.0e7, 1.0e11]
+  provenance: proposed
+  reason: >
+    Expressing Hannezo's hydrodynamic length via 3D cortical viscosity eta_3D and thickness h
+    gives a dimensionally exact 3D-to-3D identity with Bois's ell = sqrt(eta/gamma) under
+    eta = eta_3D and gamma = xi / h (converting h from nm to m).
+  assumptions:
+    - "3D bulk friction coefficient gamma [Pa*s/m^2] relates to Hannezo's 2D cortical friction xi [Pa*s/m] by gamma = xi / h."
+
+- id: rel_bois2011_diffusive_timescale
+  kind: same_as
+  a: hannezo2015/diffusion_time_hydrodynamic
+  b: bois2011/diffusive_timescale
+  mapping:
+    l: "sqrt(eta / xi)"
+    D: "D / 10**12"
+  regime:
+    eta: [1.0e-7, 1.0e-3]
+    xi: [1.0e7, 1.0e11]
+    D: [0.005, 0.5]
+  provenance: proposed
+  reason: >
+    Both papers nondimensionalize time by diffusion across one hydrodynamic length:
+    Hannezo SI Section 2.3 defines T = eta/(xi*D) = L^2/D, identically equal to Bois Fig. 3's
+    diffusive timescale tau_D = ell^2/D with ell = sqrt(eta/xi).
+
+- id: rel_bois2011_peclet_number
+  kind: same_as
+  a: hannezo2015/dimensionless_contractility_chi_2d
+  b: bois2011/peclet_number_physical
+  mapping:
+    zdm0: "sigma_a"
+    gamma: "xi"
+    D: "D / 10**12"
+  regime:
+    sigma_a: [1.0e-6, 1.0e-2]
+    xi: [1.0e7, 1.0e11]
+    D: [0.005, 0.5]
+  provenance: proposed
+  reason: >
+    Hannezo's dimensionless contractility chi = sigma_a/(xi*D) (explicitly called 'the Peclet
+    number chi' in SI Section 2.6.5, p. 15) has the exact same form as Bois's active Peclet
+    number Pe = (zeta*Delta_mu)_0/(D*gamma), with cortex thickness h canceling in
+    sigma_a/xi = (zeta*Delta_mu)_0/gamma.
+  assumptions:
+    - "2D thickness-integrated active stress sigma_a = h*(zeta*Delta_mu)_0 and 2D friction xi = h*gamma cancel thickness h in sigma_a/xi = (zeta*Delta_mu)_0/gamma."
+    - "Under Hannezo's linear active stress sigma_act = sigma_a*(rho/rho_0), c_0*df/dc = 1 so chi equals both bare Pe and linearized Pe_eff = Pe*c_0*df/dc; for Bois's Hill stress f(c) = c/(1+c), Pe_eff = Pe*c_0/(1+c_0)^2 = Pe/4 at c_0 = 1."
+
+- id: rel_bois2011_rda_dispersion_eq15
+  kind: same_as
+  a: hannezo2015/dispersion_relation_eq7
+  b: bois2011/single_species_rda_dispersion_eq15
+  mapping:
+    k: "q * 10**6"
+    D: "D / 10**12"
+    dR_dc: "-1 / tau"
+    Pe: "sigma_a * 10**12 / (xi * D)"
+    c0: "1"
+    df_dc: "1"
+    l: "sqrt(eta / xi)"
+  regime:
+    tau: [1.0, 100.0]
+    D: [0.005, 0.5]
+    sigma_a: [1.0e-6, 1.0e-2]
+    xi: [1.0e7, 1.0e11]
+    eta: [1.0e-7, 1.0e-3]
+    q: [0.1, 50.0]
+  provenance: proposed
+  reason: >
+    Hannezo SI Eq. (7) is algebraically identical to the single-species (N = 1) case of Bois
+    Eq. (15) when chemical reaction is first-order actin turnover R(rho) = (rho_0 - rho)/tau
+    (dR/dc = -1/tau), active stress is linear in rescaled density rho_hat = rho/rho_0
+    (c_0 = 1, df/dc = 1), Pe = sigma_a/(xi*D), and ell = sqrt(eta/xi). Hannezo only cites
+    Bois 2011 (ref-10) for the conserved limit tau -> oo without noting this exact equivalence
+    to Bois Eq. (15).
+  assumptions:
+    - "Single active-stress regulator species (N = 1) with linear turnover reaction dR/dc = -1/tau."
+    - "Linear active stress f(rho_hat) = rho_hat around rescaled reference density rho_hat_0 = 1 (c_0 = 1, df/dc = 1)."
+    - "Cortex thickness h cancels in both ell = sqrt(eta/xi) and Pe = sigma_a/(xi*D)."
+
+- id: rel_bois2011_dispersion_eq12_limit
+  kind: reduces_to
+  a: hannezo2015/dispersion_relation_eq7
+  b: bois2011/single_species_dispersion_eq12
+  mapping:
+    k: "q * 10**6"
+    D: "D / 10**12"
+    Pe: "sigma_a * 10**12 / (xi * D)"
+    c0: "1"
+    df_dc: "1"
+    l: "sqrt(eta / xi)"
+  output_map:
+    lam: lam
+  limit:
+    tau: "oo"
+  regime:
+    tau: [1.0, 100.0]
+    D: [0.005, 0.5]
+    sigma_a: [1.0e-6, 1.0e-2]
+    xi: [1.0e7, 1.0e11]
+    eta: [1.0e-7, 1.0e-3]
+    q: [1.0, 50.0]
+  provenance: stated
+  citation:
+    page: 2
+    printed_page: "8621"
+    quote: "The case τ → ∞ has been studied theoretically previously (10, 11) and yields to actin"
+    where: "Main text p. 8621, col. 2 (citing ref. 10 = Bois et al. 2011 for the tau -> oo limit)"
+  assumptions:
+    - "No-turnover conserved-species limit tau -> oo."
+    - "Linear active stress f(rho_hat) = rho_hat around rescaled reference density rho_hat_0 = 1 (c_0 = 1, df/dc = 1)."
+
+- id: rel_bois2011_instability_eq13_critical_limit
+  kind: reduces_to
+  a: hannezo2015/finite_domain_critical_mode
+  b: bois2011/single_species_instability_eq13
+  mapping:
+    Pe: "1"
+    c0: "1"
+    df_dc: "1"
+    beta: "1"
+    L_over_l: "alpha"
+  output_map:
+    Pe_crit: chi_c0
+  limit:
+    phi: "0"
+  regime:
+    alpha: [2.0, 20.0]
+    phi: [0.001, 0.1]
+  provenance: stated
+  citation:
+    page: 2
+    printed_page: "8621"
+    quote: "The case τ → ∞ has been studied theoretically previously (10, 11) and yields to actin"
+    where: "Main text p. 8621, col. 2 (citing ref. 10 = Bois et al. 2011 for the tau -> oo limit)"
+  assumptions:
+    - "No-turnover limit phi = eta/(D*tau*xi) -> 0 (tau -> oo) at finite domain size alpha = l/l_h, where the critical mode drops to i_c = 1 (single-region accumulation)."
+    - "No-flux boundary conditions (beta = 1 in Bois Eq. 13 matching Hannezo Eq. 5)."
+    - "Linear active stress f(rho_hat) = rho_hat around rescaled reference density rho_hat_0 = 1 (c_0 = 1, df/dc = 1)."
+
+- id: rel_bois2011_instability_eq13_mode_i_limit
+  kind: reduces_to
+  a: hannezo2015/finite_domain_bifurcation_threshold
+  b: bois2011/single_species_instability_eq13
+  mapping:
+    Pe: "1"
+    c0: "1"
+    df_dc: "1"
+    beta: "i"
+    L_over_l: "alpha"
+  output_map:
+    Pe_crit: chi_i0
+  limit:
+    phi: "0"
+  regime:
+    alpha: [2.0, 20.0]
+    phi: [0.001, 0.1]
+    i: [1.0, 2.0]
+  provenance: proposed
+  reason: >
+    Taking the no-turnover limit phi -> 0 in Hannezo's finite-domain mode-i bifurcation
+    threshold chi_i^(0) = 1 + (i*pi/alpha)^2 + phi*(1 + alpha^2/(i*pi)^2) yields Bois Eq. (13)'s
+    Pe_crit = 1 + (beta*pi*ell/L)^2 for linear active stress (c_0 = 1, df/dc = 1), with i = 1
+    matching no-flux BCs (beta = 1) and i = 2 matching periodic BCs (beta = 2).
+  assumptions:
+    - "No-turnover limit phi -> 0 for fixed cosine mode i."
+    - "Linear active stress f(rho_hat) = rho_hat around rho_hat_0 = 1 (c_0 = 1, df/dc = 1)."
+    - "Mode index i = 1 maps to no-flux BC (beta = 1) and i = 2 maps to periodic BC fundamental mode (beta = 2)."
+
+- id: rel_bois2011_hill_boundary_scales_linear
+  kind: scales_as
+  a: bois2011/single_species_stability_boundary_hill
+  b: hannezo2015/finite_domain_bifurcation_threshold
+  mapping:
+    alpha: "L_over_l"
+    i: "beta"
+    phi: "0"
+  output_map:
+    chi_i0: Pe_crit
+  regime:
+    c0: [0.1, 5.0]
+    beta: [1.0, 2.0]
+    L_over_l: [1.0, 20.0]
+  provenance: proposed
+  reason: >
+    Bois's Hill saturating active stress f(c) = c/(1+c) multiplies the finite-domain linear
+    instability threshold by the concentration-dependent saturation factor (1+c_0)^2/c_0 >= 4
+    relative to Hannezo's linear active stress threshold at phi = 0, leaving the geometric
+    dependence on L/ell (= alpha) and boundary condition factor beta (= i) identical.
+  assumptions:
+    - "Turnover-free limit phi = 0 on the Hannezo side and fixed mean concentration c_0 on the Bois Hill-stress side."
+
+- id: rel_bois2011_fastest_mode_approx_ring_count
+  kind: approximated_by
+  a: bois2011/single_species_fastest_mode
+  b: hannezo2015/infinite_domain_ring_count
+  mapping:
+    alpha: "2 * L_over_l / beta"
+    phi: "(sqrt(Pe * c0 / (1 + c0)**2) - 1)**2"
+  output_map:
+    n_rings: n_max
+  regime:
+    Pe: [10.0, 50.0]
+    c0: [0.5, 2.0]
+    beta: [1.0, 2.0]
+    L_over_l: [200.0, 1000.0]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    Because first-order turnover shifts Bois's dispersion curve uniformly downward by -phi
+    without moving its wavenumber peak k_max*ell = sqrt(sqrt(Pe_eff) - 1), setting
+    phi = (sqrt(Pe_eff) - 1)^2 aligns Hannezo's marginal onset wavenumber phi^(1/4) with Bois's
+    supercritical fastest-growing wavenumber; for large domains L/ell in [200, 1000], Bois's
+    discrete n_max agrees with Hannezo's continuous ring count alpha*phi^(1/4)/(2*pi) up to
+    O(1/n) integer discretization.
+  assumptions:
+    - "Supercritical active stress Pe * c_0 / (1 + c_0)^2 > 1 throughout the regime."
+    - "Large domain L/ell >> 1 so discrete integer rounding error O(1/n) is < 2%."
+    - "Rescaled domain alpha = 2*(L/ell)/beta aligns discrete wavenumber spacing beta*pi/(L/ell) with Hannezo's ring count (2*pi/alpha)."
+

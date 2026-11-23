@@ -1,0 +1,51 @@
+id: cortical_pde_1d_ramp
+name: reconstructed 1D finite-volume Scharfetter-Gummel solver of SI Eq. (8) with linear chi ramp (SI Section 2.6.5)
+role: model
+stated:
+  page: 21
+  printed_page: "SI-15"
+  quote: "we made N = 80 sample simulations"
+  where: SI Section 2.6.5 (Eq. 8, Figs. S13-S14)
+reconstructed: "SI Section 2.6.5 integrates the nondimensional coupled PDE Eq. (8) under a linear ramp of chi without stating the spatial discretization, time step, grid resolution, initial random perturbation amplitude, or peak-counting rule; we implement an unconditionally positive 2nd-order Scharfetter-Gummel finite-volume M-matrix solver with exact DCT Helmholtz inversion and expose unstated initial-condition/horizon choices in added.yaml."
+equation: "-alpha^-2 d_yy s + s = chi(t)*(rho - 1); d_t rho + alpha^-2 d_y(rho*d_y s - d_y rho) = -phi*(rho - 1)"
+inputs:
+  alpha:
+    quantity: rescaled_cell_size
+    unit: dimensionless
+  phi:
+    quantity: rescaled_turnover
+    unit: dimensionless
+  tau:
+    quantity: turnover_time
+    unit: s
+  chi_start:
+    quantity: peclet_contractility
+    unit: dimensionless
+  chi_end:
+    quantity: peclet_contractility
+    unit: dimensionless
+  t_ramp:
+    quantity: time
+    unit: s
+  t_total:
+    quantity: time
+    unit: s
+  noise_amp:
+    quantity: dimensionless_density
+    unit: dimensionless
+outputs:
+  n_rings:
+    quantity: ring_count
+    unit: dimensionless
+  S:
+    quantity: pattern_order_parameter
+    unit: dimensionless
+  min_rho:
+    quantity: dimensionless_density
+    unit: dimensionless
+settings:
+  N_grid: 2048
+  dt: 100.0
+  n_samples: 4
+  seed: 0
+stochastic: true

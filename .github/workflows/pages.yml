@@ -1,0 +1,32 @@
+name: pages
+# Serves site/ (the landing page and each corpus's overview, copied there by `make site` and committed)
+# with GitHub Pages. Enable it once: Settings -> Pages -> Source: GitHub Actions.
+# Every push to the main branch deploys (about 20 s). No `paths: [site/**]` filter: GitHub checks a
+# path filter against the first 300 changed files only, so a large push that also changes site/ was skipped.
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    # only the published repository serves the page; a private working copy skips this
+    if: endsWith(github.repository, '/boxgraph-public')
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

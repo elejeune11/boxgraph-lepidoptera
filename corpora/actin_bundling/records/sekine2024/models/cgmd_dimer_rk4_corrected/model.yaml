@@ -1,0 +1,41 @@
+id: cgmd_dimer_rk4_corrected
+name: deterministic RK4 dimer solver of Eqs. S1, S3, S5, S8, S9 (sign-corrected force assignment)
+role: model
+stated:
+  page: 30
+  printed_page: "SI Notes 3"
+  quote: "solved by using the fourth-order Runge-Kutta method"
+  where: "Eqs. S1, S3, S5, S8, S9 (SI Notes I)"
+equation: "gamma^f dr_{f,i}/dt = f_{f,i}^{f,str} + f_{f,i}^{f,cl}; gamma^cl dr_c/dt = sum_h (-f_{c,h}^{cl,str} - f_{c,h}^{cl,bend}) with corrected f_i^{f,cl} = delta_{i0}(1-alpha)f + delta_{i1} alpha f"
+variant_of: cgmd_dimer_rk4
+corrections:
+  - equation: "Force distribution equation for f_i^{f,cl} (SI Notes p. 2, PDF p. 29)"
+    change: "Replace '- delta_{i1} sum alpha f' with '+ delta_{i1} sum alpha f' so forces on filament endpoints sum to f and conserve total momentum."
+    evidence: "Fig. S1 (PDF p. 29) draws (1-alpha)f and +alpha f in the same direction as f, and the accompanying text states force and torque conservation; the printed minus sign causes spurious center-of-mass drift of an isolated dimer."
+inputs:
+  eta_cyto: {quantity: cytosolic_viscosity, unit: Pa*s}
+  d_f: {quantity: molecular_diameter, unit: um}
+  L0_f: {quantity: molecular_rest_length, unit: um}
+  kappa_f: {quantity: stretching_modulus, unit: pN}
+  d_cl: {quantity: molecular_diameter, unit: um}
+  L0_cl: {quantity: molecular_rest_length, unit: um}
+  kappa_cl: {quantity: stretching_modulus, unit: pN}
+  k_cl_bend: {quantity: bending_rigidity, unit: pN*um}
+  friction_asymmetry: {quantity: friction_asymmetry, unit: dimensionless}
+  alpha: {quantity: binding_coordinate, unit: dimensionless}
+  delta_y0: {quantity: crosslinker_deflection, unit: um}
+  t_max: {quantity: observation_time, unit: s}
+outputs:
+  filament_y_shift: {quantity: dimer_filament_shift, unit: nm}
+  cm_drift: {quantity: center_of_mass_drift, unit: nm}
+  rk4_stiffness_number: {quantity: rk4_stability_number, unit: dimensionless}
+built_from:
+  - cylindrical_friction_filament
+  - cylindrical_friction_connector
+  - harmonic_stretching_potential
+  - connector_arm_stretching_potential
+  - bending_potential
+  - filament_force_distribution_corrected
+settings:
+  dt: 5.0e-5
+stochastic: false

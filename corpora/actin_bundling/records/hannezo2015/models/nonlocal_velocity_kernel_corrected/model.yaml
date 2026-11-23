@@ -1,0 +1,36 @@
+id: nonlocal_velocity_kernel_corrected
+name: corrected non-local force-balance velocity kernel on uniform gel (SI Eq. 6)
+role: model
+stated:
+  page: 10
+  printed_page: "SI-4"
+  quote: "We have introduced, the kernel Φ which explicitly reads"
+  where: SI Eq. 6
+variant_of: nonlocal_velocity_kernel_printed
+corrections:
+  - equation: "SI Section 2.2, p. 4 (PDF p. 10), kernel Phi(x, y) below Eq. (6)"
+    change: "Change sign of boundary image term from -sinh((x+y)/L) to +sinh((x+y)/L)"
+    evidence: "With the printed minus sign, Phi(l/2, y) = -sinh((l/2+y)/L)/sinh(l/L) != 0, violating clamped boundary condition v(+-l/2) = 0 (Eq. 5), and integrating against a uniform density rho = rho_0 yields a spurious nonzero flow v_unif(x) = -(chi*rho_0/eta)*L*sinh(x/L)/cosh(l/(2L)) != 0. Changing to +sinh((x+y)/L) satisfies v(+-l/2) = 0, yields v_unif = 0 identically, and reproduces exact force balance eta*d_xx(v) - xi*v = -chi*d_x(rho)."
+equation: "v_unif(x) = (sigma_a / eta) * int_{-l/2}^{l/2} Phi_corrected(x, y) dy = 0"
+inputs:
+  sigma_a:
+    quantity: active_stress_2d
+    unit: Pa*m
+  eta:
+    quantity: viscosity_2d
+    unit: Pa*s*m
+  L:
+    quantity: hydrodynamic_length
+    unit: um
+  l:
+    quantity: cell_length
+    unit: um
+  x:
+    quantity: spatial_coordinate
+    unit: um
+outputs:
+  v_unif:
+    quantity: cortical_velocity
+    unit: um/s
+settings: {}
+stochastic: false

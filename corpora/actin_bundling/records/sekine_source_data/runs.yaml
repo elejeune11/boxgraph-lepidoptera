@@ -1,0 +1,500 @@
+# Runs of all 12 software: true reader/summary models directly on the 27 unpacked Source Data .xlsx files.
+
+# --- 1. Cluster morphometry & KS tests (Source-data_Fig1ef.xlsx & SupplementaryFig1bc.xlsx) ---
+- id: run_fig1ef_st15
+  model: cluster_morphometry_reader
+  inputs: {}
+  settings: {stage: 15}
+  outputs:
+    n_clusters: comp_st15_n
+    area_mean: comp_st15_area_mean
+    area_sd: comp_st15_area_sd
+    major_mean: comp_st15_major_mean
+    major_sd: comp_st15_major_sd
+    minor_mean: comp_st15_minor_mean
+    minor_sd: comp_st15_minor_sd
+    ar_mean: comp_st15_ar_mean
+    ar_sd: comp_st15_ar_sd
+    angle_median_folded: comp_st15_angle_med
+    ks_p_ar: comp_fig1f_ks_p_ar
+    ks_p_major: comp_s1b_ks_p_major
+    ks_p_minor: comp_s1c_ks_p_minor
+    dup_s1bc_max_diff: comp_st15_s1bc_diff
+
+- id: run_fig1ef_st16
+  model: cluster_morphometry_reader
+  inputs: {}
+  settings: {stage: 16}
+  outputs:
+    n_clusters: comp_st16_n
+    area_mean: comp_st16_area_mean
+    area_sd: comp_st16_area_sd
+    major_mean: comp_st16_major_mean
+    major_sd: comp_st16_major_sd
+    minor_mean: comp_st16_minor_mean
+    minor_sd: comp_st16_minor_sd
+    ar_mean: comp_st16_ar_mean
+    ar_sd: comp_st16_ar_sd
+    angle_median_folded: comp_st16_angle_med
+    ks_p_ar: comp_st16_ks_p_ar
+    ks_p_major: comp_st16_ks_p_major
+    ks_p_minor: comp_st16_ks_p_minor
+    dup_s1bc_max_diff: comp_st16_s1bc_diff
+
+# --- 2. Periodic cable interval (Source-data_SupplementaryFig1d.xlsx) ---
+- id: run_s1d_cables
+  model: cable_interval_reader
+  inputs: {}
+  settings: {}
+  outputs:
+    n_embryos: comp_s1d_n_embryos
+    n_cables_total: comp_s1d_n_cables
+    interval_mean: comp_s1d_mean
+    interval_sd: comp_s1d_sd
+    interval_sem: comp_s1d_sem
+    interval_weighted_mean: comp_s1d_wmean
+
+# --- 3. Live-imaging OrientationJ dominant direction & coherency (Fig. 1h, 1i) ---
+- id: run_fig1hi_m80
+  model: live_imaging_orientation_reader
+  inputs: {}
+  settings: {time_min: -80}
+  outputs:
+    n_samples: comp_f1hi_m80_n
+    dominant_direction_mean: comp_f1h_m80_mean
+    dominant_direction_sd_pop: comp_f1h_m80_sd
+    coherency_mean: comp_f1i_m80_mean
+    coherency_sd_pop: comp_f1i_m80_sd
+
+- id: run_fig1hi_0
+  model: live_imaging_orientation_reader
+  inputs: {}
+  settings: {time_min: 0}
+  outputs:
+    n_samples: comp_f1hi_0_n
+    dominant_direction_mean: comp_f1h_0_mean
+    dominant_direction_sd_pop: comp_f1h_0_sd
+    coherency_mean: comp_f1i_0_mean
+    coherency_sd_pop: comp_f1i_0_sd
+
+- id: run_fig1hi_p20
+  model: live_imaging_orientation_reader
+  inputs: {}
+  settings: {time_min: 20}
+  outputs:
+    n_samples: comp_f1hi_p20_n
+    dominant_direction_mean: comp_f1h_p20_mean
+    dominant_direction_sd_pop: comp_f1h_p20_sd
+    coherency_mean: comp_f1i_p20_mean
+    coherency_sd_pop: comp_f1i_p20_sd
+
+# --- 4. Tube diameter, duplicated Fig. 1k length, and skeleton length (Fig. 1j, 1k, Supp. Fig. 1g) ---
+- id: run_tube_skel_m80
+  model: tube_geometry_and_skeleton_reader
+  inputs: {}
+  settings: {time_min: -80}
+  outputs:
+    tube_diameter_mean: comp_f1j_m80_mean
+    tube_diameter_sd: comp_f1j_m80_sd
+    fig1k_stored_length_mean: comp_f1k_m80_mean
+    fig1k_minus_fig1j_max_abs: comp_f1k_dup_diff
+    skeleton_length_mean: comp_s1g_m80_mean
+    skeleton_length_sd_pop: comp_s1g_m80_sd
+    skeleton_n: comp_s1g_m80_n
+
+- id: run_tube_skel_0
+  model: tube_geometry_and_skeleton_reader
+  inputs: {}
+  settings: {time_min: 0}
+  outputs:
+    tube_diameter_mean: comp_f1j_0_mean
+    tube_diameter_sd: comp_f1j_0_sd
+    fig1k_stored_length_mean: comp_f1k_0_mean
+    fig1k_minus_fig1j_max_abs: comp_f1k_0_dup_diff
+    skeleton_length_mean: comp_s1g_0_mean
+    skeleton_length_sd_pop: comp_s1g_0_sd
+    skeleton_n: comp_s1g_0_n
+
+- id: run_tube_skel_p10
+  model: tube_geometry_and_skeleton_reader
+  inputs: {}
+  settings: {time_min: 10}
+  outputs:
+    tube_diameter_mean: comp_f1j_p10_fallback
+    tube_diameter_sd: comp_f1j_p10_sd_fallback
+    fig1k_stored_length_mean: comp_f1k_p10_fallback
+    fig1k_minus_fig1j_max_abs: comp_f1k_p10_dup_diff
+    skeleton_length_mean: comp_s1g_p10_mean
+    skeleton_length_sd_pop: comp_s1g_p10_sd
+    skeleton_n: comp_s1g_p10_n
+
+- id: run_tube_skel_p20
+  model: tube_geometry_and_skeleton_reader
+  inputs: {}
+  settings: {time_min: 20}
+  outputs:
+    tube_diameter_mean: comp_f1j_p20_mean
+    tube_diameter_sd: comp_f1j_p20_sd
+    fig1k_stored_length_mean: comp_f1k_p20_mean
+    fig1k_minus_fig1j_max_abs: comp_f1k_p20_dup_diff
+    skeleton_length_mean: comp_s1g_p20_mean
+    skeleton_length_sd_pop: comp_s1g_p20_sd
+    skeleton_n: comp_s1g_p20_n
+
+# --- 5. Junctional RFP::RhoGEF2 intensity ratio (Supp. Fig. 1f) ---
+- id: run_s1f_rhogef2
+  model: rhogef2_junction_reader
+  inputs: {}
+  settings: {}
+  outputs:
+    n_images: comp_s1f_n
+    st15_mean: comp_s1f_st15_mean
+    st15_sd: comp_s1f_st15_sd
+    st16_mean: comp_s1f_st16_mean
+    st16_sd: comp_s1f_st16_sd
+    welch_p: comp_s1f_welch_p
+
+# --- 6. Raw nanocluster fusion stability (Source-data_Fig2b.xlsx) ---
+- id: run_fig2b_m40
+  model: fusion_stability_reader
+  inputs: {}
+  settings: {time_min: -40}
+  outputs:
+    n_circum: comp_f2b_m40_nc
+    n_diag: comp_f2b_m40_nd
+    n_long: comp_f2b_m40_nl
+    mean_dur_circum: comp_f2b_m40_mc
+    mean_dur_diag: comp_f2b_m40_md
+    mean_dur_long: comp_f2b_m40_ml
+    median_dur_circum: comp_f2b_m40_medc
+    median_dur_diag: comp_f2b_m40_medd
+    median_dur_long: comp_f2b_m40_medl
+    kw_p: comp_f2b_m40_kw
+    wilcox_circum_vs_diag_unadj_p: comp_f2b_m40_wu
+    wilcox_circum_vs_diag_bonf_p: comp_f2b_m40_wb
+
+- id: run_fig2b_m10
+  model: fusion_stability_reader
+  inputs: {}
+  settings: {time_min: -10}
+  outputs:
+    n_circum: comp_f2b_m10_nc
+    n_diag: comp_f2b_m10_nd
+    n_long: comp_f2b_m10_nl
+    mean_dur_circum: comp_f2b_m10_mc
+    mean_dur_diag: comp_f2b_m10_md
+    mean_dur_long: comp_f2b_m10_ml
+    median_dur_circum: comp_f2b_m10_medc
+    median_dur_diag: comp_f2b_m10_medd
+    median_dur_long: comp_f2b_m10_medl
+    kw_p: comp_f2b_m10_kw
+    wilcox_circum_vs_diag_unadj_p: comp_f2b_m10_wu
+    wilcox_circum_vs_diag_bonf_p: comp_f2b_m10_wb
+
+- id: run_fig2b_0
+  model: fusion_stability_reader
+  inputs: {}
+  settings: {time_min: 0}
+  outputs:
+    n_circum: comp_f2b_0_nc
+    n_diag: comp_f2b_0_nd
+    n_long: comp_f2b_0_nl
+    mean_dur_circum: comp_f2b_0_mc
+    mean_dur_diag: comp_f2b_0_md
+    mean_dur_long: comp_f2b_0_ml
+    median_dur_circum: comp_f2b_0_medc
+    median_dur_diag: comp_f2b_0_medd
+    median_dur_long: comp_f2b_0_medl
+    kw_p: comp_f2b_0_kw
+    wilcox_circum_vs_diag_unadj_p: comp_f2b_0_wu
+    wilcox_circum_vs_diag_bonf_p: comp_f2b_0_wb
+
+# --- 7. OrientationJ distribution curves (Source-data_SupplementaryFig3a.xlsx) ---
+- id: run_s3a_attp40
+  model: orientation_distribution_reader
+  inputs: {}
+  settings: {genotype: "attP40"}
+  outputs:
+    median_orientation_asc: comp_s3a_attp40_asc
+    median_orientation_prev: comp_s3a_attp40_prev
+    median_orientation_interp: comp_s3a_attp40_interp
+    pdf_sum: comp_s3a_attp40_sum
+    n_genotypes_present: comp_s3a_n_geno
+
+- id: run_s3a_attp2
+  model: orientation_distribution_reader
+  inputs: {}
+  settings: {genotype: "attP2"}
+  outputs:
+    median_orientation_asc: comp_s3a_attp2_asc
+    median_orientation_prev: comp_s3a_attp2_prev
+    median_orientation_interp: comp_s3a_attp2_interp
+    pdf_sum: comp_s3a_attp2_sum
+    n_genotypes_present: comp_s3a_attp2_n_geno
+
+- id: run_s3a_septin2
+  model: orientation_distribution_reader
+  inputs: {}
+  settings: {genotype: "Septin2"}
+  outputs:
+    median_orientation_asc: comp_s3a_septin2_asc
+    median_orientation_prev: comp_s3a_septin2_prev
+    median_orientation_interp: comp_s3a_septin2_interp
+    pdf_sum: comp_s3a_septin2_sum
+    n_genotypes_present: comp_s3a_septin2_n_geno
+
+- id: run_s3a_daam
+  model: orientation_distribution_reader
+  inputs: {}
+  settings: {genotype: "DAAM"}
+  outputs:
+    median_orientation_asc: comp_s3a_daam_asc
+    median_orientation_prev: comp_s3a_daam_prev
+    median_orientation_interp: comp_s3a_daam_interp
+    pdf_sum: comp_s3a_daam_sum
+    n_genotypes_present: comp_s3a_daam_n_geno
+
+- id: run_s3a_zasp52
+  model: orientation_distribution_reader
+  inputs: {}
+  settings: {genotype: "Zasp52"}
+  outputs:
+    median_orientation_asc: comp_s3a_zasp52_asc
+    median_orientation_prev: comp_s3a_zasp52_prev
+    median_orientation_interp: comp_s3a_zasp52_interp
+    pdf_sum: comp_s3a_zasp52_sum
+    n_genotypes_present: comp_s3a_zasp52_n_geno
+
+- id: run_s3a_actn14
+  model: orientation_distribution_reader
+  inputs: {}
+  settings: {genotype: "Actn[14]"}
+  outputs:
+    median_orientation_asc: comp_s3a_actn14_asc
+    median_orientation_prev: comp_s3a_actn14_prev
+    median_orientation_interp: comp_s3a_actn14_interp
+    pdf_sum: comp_s3a_actn14_sum
+    n_genotypes_present: comp_s3a_actn14_n_geno
+
+# --- 8. Actin colocalization (Fig. 3d Stage 15 & Supp. Fig. 5d Stage 16 + cross-stage diagnostic) ---
+- id: run_fig3d_daam
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 15, protein: "DAAM::GFP", control_stage: 15}
+  outputs: {n_rois: comp_f3d_daam_n, r_mean: comp_f3d_daam_mean, r_sd: comp_f3d_daam_sd, r_median: comp_f3d_daam_med, welch_p_vs_gfp: comp_f3d_daam_pw, student_p_vs_gfp: comp_f3d_daam_pt}
+
+- id: run_fig3d_zasp52
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 15, protein: "Zasp52::GFP", control_stage: 15}
+  outputs: {n_rois: comp_f3d_zasp52_n, r_mean: comp_f3d_zasp52_mean, r_sd: comp_f3d_zasp52_sd, r_median: comp_f3d_zasp52_med, welch_p_vs_gfp: comp_f3d_zasp52_pw, student_p_vs_gfp: comp_f3d_zasp52_pt}
+
+- id: run_fig3d_rhogef2
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 15, protein: "RhoGEF2::mCherry", control_stage: 15}
+  outputs: {n_rois: comp_f3d_rhogef2_n, r_mean: comp_f3d_rhogef2_mean, r_sd: comp_f3d_rhogef2_sd, r_median: comp_f3d_rhogef2_med, welch_p_vs_gfp: comp_f3d_rhogef2_pw, student_p_vs_gfp: comp_f3d_rhogef2_pt}
+
+- id: run_s5d_daam
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 16, protein: "DAAM::GFP", control_stage: 16}
+  outputs: {n_rois: comp_s5d_daam_n, r_mean: comp_s5d_daam_mean, r_sd: comp_s5d_daam_sd, r_median: comp_s5d_daam_med, welch_p_vs_gfp: comp_s5d_daam_pw, student_p_vs_gfp: comp_s5d_daam_pt}
+
+- id: run_s5d_actinin
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 16, protein: "α-Actinin::GFP", control_stage: 16}
+  outputs: {n_rois: comp_s5d_actn_n, r_mean: comp_s5d_actn_mean, r_sd: comp_s5d_actn_sd, r_median: comp_s5d_actn_med, welch_p_vs_gfp: comp_s5d_actn_pw, student_p_vs_gfp: comp_s5d_actn_pt}
+
+- id: run_s5d_zasp52
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 16, protein: "Zasp52::GFP", control_stage: 16}
+  outputs: {n_rois: comp_s5d_zasp52_n, r_mean: comp_s5d_zasp52_mean, r_sd: comp_s5d_zasp52_sd, r_median: comp_s5d_zasp52_med, welch_p_vs_gfp: comp_s5d_zasp52_pw, student_p_vs_gfp: comp_s5d_zasp52_pt}
+
+- id: run_s5d_myosin
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 16, protein: "Myosin II(Zip)::GFP", control_stage: 16}
+  outputs: {n_rois: comp_s5d_myosin_n, r_mean: comp_s5d_myosin_mean, r_sd: comp_s5d_myosin_sd, r_median: comp_s5d_myosin_med, welch_p_vs_gfp: comp_s5d_myosin_pw, student_p_vs_gfp: comp_s5d_myosin_pt}
+
+- id: run_s5d_rock
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 16, protein: "ROCK(Rok)::mNeonGreen", control_stage: 16}
+  outputs: {n_rois: comp_s5d_rock_n, r_mean: comp_s5d_rock_mean, r_sd: comp_s5d_rock_sd, r_median: comp_s5d_rock_med, welch_p_vs_gfp: comp_s5d_rock_pw, student_p_vs_gfp: comp_s5d_rock_pt}
+
+- id: run_s5d_rhogef2
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 16, protein: "RhoGEF2::mCherry", control_stage: 16}
+  outputs: {n_rois: comp_s5d_rhogef2_n, r_mean: comp_s5d_rhogef2_mean, r_sd: comp_s5d_rhogef2_sd, r_median: comp_s5d_rhogef2_med, welch_p_vs_gfp: comp_s5d_rhogef2_pw, student_p_vs_gfp: comp_s5d_rhogef2_pt}
+
+- id: run_s5d_rhogef2_cross_stage_diagnostic
+  model: colocalization_reader
+  inputs: {}
+  settings: {stage: 15, protein: "RhoGEF2::mCherry", control_stage: 16}
+  outputs: {n_rois: comp_s5d_rhogef2_xs_n, r_mean: comp_s5d_rhogef2_xs_mean, r_sd: comp_s5d_rhogef2_xs_sd, r_median: comp_s5d_rhogef2_xs_med, welch_p_vs_gfp: comp_s5d_rhogef2_xs_pw, student_p_vs_gfp: comp_s5d_rhogef2_xs_pt}
+  note: "Forensic diagnostic testing Stage 15 RhoGEF2 (Fig. 3d) against Stage 16 GFP (Supp. Fig. 5d): yields Welch P = 0.06411, reproducing the Supp. Fig. 5d caption's p = 0.0641 to 4 significant digits."
+
+# --- 9. 4-M simulation coherency time course (Source-data_Fig4f.xlsx) ---
+- id: run_fig4f_4m
+  model: sim_4m_timecourse_reader
+  inputs: {}
+  settings: {}
+  outputs:
+    n_frames: comp_f4f_nframes
+    coherency_max: comp_f4f_coh_max
+    coherency_final: comp_f4f_coh_final
+    coherency_mean_last10: comp_f4f_coh_last10
+    domdir_final: comp_f4f_dom_final
+    domdir_mean_last10: comp_f4f_dom_last10
+
+# --- 10. Nanocluster motion anisotropy (Fig. 4d, 5a, 5d) ---
+- id: run_fig4d_1m
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig4d", condition: "1-M", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f4d_1m_n, dx_mean: comp_f4d_1m_dx, dx_sd: comp_f4d_1m_dxsd, dy_mean: comp_f4d_1m_dy, dy_sd: comp_f4d_1m_dysd, aniso_ratio: comp_f4d_1m_ratio, dist_mean: comp_f4d_1m_dist, dist_sd: comp_f4d_1m_distsd, welch_p: comp_f4d_1m_pw, implied_um_per_px: comp_f4d_1m_px}
+
+- id: run_fig4d_1m_scale0426
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig4d", condition: "1-M", override_um_per_px: 0.0426}
+  outputs: {n_clusters: comp_f4d_1m_0426_n, dx_mean: comp_f4d_1m_0426_dx, dx_sd: comp_f4d_1m_0426_dxsd, dy_mean: comp_f4d_1m_0426_dy, dy_sd: comp_f4d_1m_0426_dysd, aniso_ratio: comp_f4d_1m_0426_ratio, dist_mean: comp_f4d_1m_0426_dist, dist_sd: comp_f4d_1m_0426_distsd, welch_p: comp_f4d_1m_0426_pw, implied_um_per_px: comp_f4d_1m_0426_px}
+  note: "Recomputes Fig. 4d 1-M pixel coordinates using 0.0426 um/px instead of the spreadsheet formula's 0.0424 um/px."
+
+- id: run_fig4d_2m
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig4d", condition: "2-M", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f4d_2m_n, dx_mean: comp_f4d_2m_dx, dx_sd: comp_f4d_2m_dxsd, dy_mean: comp_f4d_2m_dy, dy_sd: comp_f4d_2m_dysd, aniso_ratio: comp_f4d_2m_ratio, dist_mean: comp_f4d_2m_dist, dist_sd: comp_f4d_2m_distsd, welch_p: comp_f4d_2m_pw, implied_um_per_px: comp_f4d_2m_px}
+
+- id: run_fig4d_2m_scale0426
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig4d", condition: "2-M", override_um_per_px: 0.0426}
+  outputs: {n_clusters: comp_f4d_2m_0426_n, dx_mean: comp_f4d_2m_0426_dx, dx_sd: comp_f4d_2m_0426_dxsd, dy_mean: comp_f4d_2m_0426_dy, dy_sd: comp_f4d_2m_0426_dysd, aniso_ratio: comp_f4d_2m_0426_ratio, dist_mean: comp_f4d_2m_0426_dist, dist_sd: comp_f4d_2m_0426_distsd, welch_p: comp_f4d_2m_0426_pw, implied_um_per_px: comp_f4d_2m_0426_px}
+
+- id: run_fig4d_4m
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig4d", condition: "4-M", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f4d_4m_n, dx_mean: comp_f4d_4m_dx, dx_sd: comp_f4d_4m_dxsd, dy_mean: comp_f4d_4m_dy, dy_sd: comp_f4d_4m_dysd, aniso_ratio: comp_f4d_4m_ratio, dist_mean: comp_f4d_4m_dist, dist_sd: comp_f4d_4m_distsd, welch_p: comp_f4d_4m_pw, implied_um_per_px: comp_f4d_4m_px}
+
+- id: run_fig4d_4m_scale0426
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig4d", condition: "4-M", override_um_per_px: 0.0426}
+  outputs: {n_clusters: comp_f4d_4m_0426_n, dx_mean: comp_f4d_4m_0426_dx, dx_sd: comp_f4d_4m_0426_dxsd, dy_mean: comp_f4d_4m_0426_dy, dy_sd: comp_f4d_4m_0426_dysd, aniso_ratio: comp_f4d_4m_0426_ratio, dist_mean: comp_f4d_4m_0426_dist, dist_sd: comp_f4d_4m_0426_distsd, welch_p: comp_f4d_4m_0426_pw, implied_um_per_px: comp_f4d_4m_0426_px}
+
+- id: run_fig5a_m40
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig5a", condition: "-40 min", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f5a_m40_n, dx_mean: comp_f5a_m40_dx, dx_sd: comp_f5a_m40_dxsd, dy_mean: comp_f5a_m40_dy, dy_sd: comp_f5a_m40_dysd, aniso_ratio: comp_f5a_m40_ratio, dist_mean: comp_f5a_m40_dist, dist_sd: comp_f5a_m40_distsd, welch_p: comp_f5a_m40_pw, implied_um_per_px: comp_f5a_m40_px}
+
+- id: run_fig5a_m30
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig5a", condition: "-30 min", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f5a_m30_n, dx_mean: comp_f5a_m30_dx, dx_sd: comp_f5a_m30_dxsd, dy_mean: comp_f5a_m30_dy, dy_sd: comp_f5a_m30_dysd, aniso_ratio: comp_f5a_m30_ratio, dist_mean: comp_f5a_m30_dist, dist_sd: comp_f5a_m30_distsd, welch_p: comp_f5a_m30_pw, implied_um_per_px: comp_f5a_m30_px}
+
+- id: run_fig5a_m20
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig5a", condition: "-20 min", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f5a_m20_n, dx_mean: comp_f5a_m20_dx, dx_sd: comp_f5a_m20_dxsd, dy_mean: comp_f5a_m20_dy, dy_sd: comp_f5a_m20_dysd, aniso_ratio: comp_f5a_m20_ratio, dist_mean: comp_f5a_m20_dist, dist_sd: comp_f5a_m20_distsd, welch_p: comp_f5a_m20_pw, implied_um_per_px: comp_f5a_m20_px}
+
+- id: run_fig5a_m10
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig5a", condition: "-10 min", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f5a_m10_n, dx_mean: comp_f5a_m10_dx, dx_sd: comp_f5a_m10_dxsd, dy_mean: comp_f5a_m10_dy, dy_sd: comp_f5a_m10_dysd, aniso_ratio: comp_f5a_m10_ratio, dist_mean: comp_f5a_m10_dist, dist_sd: comp_f5a_m10_distsd, welch_p: comp_f5a_m10_pw, implied_um_per_px: comp_f5a_m10_px}
+
+- id: run_fig5a_0
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig5a", condition: "0 min", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f5a_0_n, dx_mean: comp_f5a_0_dx, dx_sd: comp_f5a_0_dxsd, dy_mean: comp_f5a_0_dy, dy_sd: comp_f5a_0_dysd, aniso_ratio: comp_f5a_0_ratio, dist_mean: comp_f5a_0_dist, dist_sd: comp_f5a_0_distsd, welch_p: comp_f5a_0_pw, implied_um_per_px: comp_f5a_0_px}
+
+- id: run_fig5d_ctrl
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig5d", condition: "Control", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f5d_ctrl_n, dx_mean: comp_f5d_ctrl_dx, dx_sd: comp_f5d_ctrl_dxsd, dy_mean: comp_f5d_ctrl_dy, dy_sd: comp_f5d_ctrl_dysd, aniso_ratio: comp_f5d_ctrl_ratio, dist_mean: comp_f5d_ctrl_dist, dist_sd: comp_f5d_ctrl_distsd, welch_p: comp_f5d_ctrl_pw, implied_um_per_px: comp_f5d_ctrl_px}
+
+- id: run_fig5d_daam
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig5d", condition: "DAAM RNAi", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f5d_daam_n, dx_mean: comp_f5d_daam_dx, dx_sd: comp_f5d_daam_dxsd, dy_mean: comp_f5d_daam_dy, dy_sd: comp_f5d_daam_dysd, aniso_ratio: comp_f5d_daam_ratio, dist_mean: comp_f5d_daam_dist, dist_sd: comp_f5d_daam_distsd, welch_p: comp_f5d_daam_pw, implied_um_per_px: comp_f5d_daam_px}
+
+- id: run_fig5d_zasp52
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig5d", condition: "Zasp52 RNAi", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f5d_zasp52_n, dx_mean: comp_f5d_zasp52_dx, dx_sd: comp_f5d_zasp52_dxsd, dy_mean: comp_f5d_zasp52_dy, dy_sd: comp_f5d_zasp52_dysd, aniso_ratio: comp_f5d_zasp52_ratio, dist_mean: comp_f5d_zasp52_dist, dist_sd: comp_f5d_zasp52_distsd, welch_p: comp_f5d_zasp52_pw, implied_um_per_px: comp_f5d_zasp52_px}
+
+- id: run_fig5d_myosin
+  model: motion_anisotropy_reader
+  inputs: {}
+  settings: {dataset: "fig5d", condition: "Myosin II[DN]", override_um_per_px: 0.0}
+  outputs: {n_clusters: comp_f5d_myosin_n, dx_mean: comp_f5d_myosin_dx, dx_sd: comp_f5d_myosin_dxsd, dy_mean: comp_f5d_myosin_dy, dy_sd: comp_f5d_myosin_dysd, aniso_ratio: comp_f5d_myosin_ratio, dist_mean: comp_f5d_myosin_dist, dist_sd: comp_f5d_myosin_distsd, welch_p: comp_f5d_myosin_pw, implied_um_per_px: comp_f5d_myosin_px}
+
+# --- 11. PIV displacement rates & Welch/Student P-values (Fig. 5c, 5f) ---
+- id: run_fig5c_0min
+  model: piv_displacement_reader
+  inputs: {}
+  settings: {dataset: "fig5c", condition: "0 min"}
+  outputs: {n_images: comp_f5c_0_n, vx_mean: comp_f5c_0_vx, vx_sd: comp_f5c_0_vxsd, vy_mean: comp_f5c_0_vy, vy_sd: comp_f5c_0_vysd, aniso_ratio: comp_f5c_0_ratio, welch_p: comp_f5c_0_pw, student_p: comp_f5c_0_pt}
+
+- id: run_fig5f_ctrl
+  model: piv_displacement_reader
+  inputs: {}
+  settings: {dataset: "fig5f", condition: "Control"}
+  outputs: {n_images: comp_f5f_ctrl_n, vx_mean: comp_f5f_ctrl_vx, vx_sd: comp_f5f_ctrl_vxsd, vy_mean: comp_f5f_ctrl_vy, vy_sd: comp_f5f_ctrl_vysd, aniso_ratio: comp_f5f_ctrl_ratio, welch_p: comp_f5f_ctrl_pw, student_p: comp_f5f_ctrl_pt}
+
+- id: run_fig5f_daam
+  model: piv_displacement_reader
+  inputs: {}
+  settings: {dataset: "fig5f", condition: "DAAM RNAi"}
+  outputs: {n_images: comp_f5f_daam_n, vx_mean: comp_f5f_daam_vx, vx_sd: comp_f5f_daam_vxsd, vy_mean: comp_f5f_daam_vy, vy_sd: comp_f5f_daam_vysd, aniso_ratio: comp_f5f_daam_ratio, welch_p: comp_f5f_daam_pw, student_p: comp_f5f_daam_pt}
+
+- id: run_fig5f_zasp52
+  model: piv_displacement_reader
+  inputs: {}
+  settings: {dataset: "fig5f", condition: "zasp52 RNAi"}
+  outputs: {n_images: comp_f5f_zasp52_n, vx_mean: comp_f5f_zasp52_vx, vx_sd: comp_f5f_zasp52_vxsd, vy_mean: comp_f5f_zasp52_vy, vy_sd: comp_f5f_zasp52_vysd, aniso_ratio: comp_f5f_zasp52_ratio, welch_p: comp_f5f_zasp52_pw, student_p: comp_f5f_zasp52_pt}
+
+- id: run_fig5f_myosin
+  model: piv_displacement_reader
+  inputs: {}
+  settings: {dataset: "fig5f", condition: "myosin II[DN]"}
+  outputs: {n_images: comp_f5f_myosin_n, vx_mean: comp_f5f_myosin_vx, vx_sd: comp_f5f_myosin_vxsd, vy_mean: comp_f5f_myosin_vy, vy_sd: comp_f5f_myosin_vysd, aniso_ratio: comp_f5f_myosin_ratio, welch_p: comp_f5f_myosin_pw, student_p: comp_f5f_myosin_pt}
+
+# --- 12. Structure factor Gaussian fit table (Supp. Fig. 7c & Fig. 5f stray sheet) ---
+- id: run_s7c_1m
+  model: structure_factor_table_reader
+  inputs: {}
+  settings: {condition: "1-M"}
+  outputs: {A: comp_s7c_1m_A, mu_over_2pi: comp_s7c_1m_mu, sigma: comp_s7c_1m_sig, interval_stored: comp_s7c_1m_int_s, interval_from_mu: comp_s7c_1m_int, peak_height: comp_s7c_1m_pk}
+
+- id: run_s7c_3m
+  model: structure_factor_table_reader
+  inputs: {}
+  settings: {condition: "3-M"}
+  outputs: {A: comp_s7c_3m_A, mu_over_2pi: comp_s7c_3m_mu, sigma: comp_s7c_3m_sig, interval_stored: comp_s7c_3m_int_s, interval_from_mu: comp_s7c_3m_int, peak_height: comp_s7c_3m_pk}
+
+- id: run_s7c_4m
+  model: structure_factor_table_reader
+  inputs: {}
+  settings: {condition: "4-M"}
+  outputs: {A: comp_s7c_4m_A, mu_over_2pi: comp_s7c_4m_mu, sigma: comp_s7c_4m_sig, interval_stored: comp_s7c_4m_int_s, interval_from_mu: comp_s7c_4m_int, peak_height: comp_s7c_4m_pk}
+
+- id: run_s7c_a4_1
+  model: structure_factor_table_reader
+  inputs: {}
+  settings: {condition: "a4-1"}
+  outputs: {A: comp_s7c_a4_1_A, mu_over_2pi: comp_s7c_a4_1_mu, sigma: comp_s7c_a4_1_sig, interval_stored: comp_s7c_a4_1_int_s, interval_from_mu: comp_s7c_a4_1_int, peak_height: comp_s7c_a4_1_pk}

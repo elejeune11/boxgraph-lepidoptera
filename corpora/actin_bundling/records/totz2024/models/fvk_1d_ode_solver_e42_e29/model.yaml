@@ -1,0 +1,31 @@
+id: fvk_1d_ode_solver_e42_e29
+name: Reconstructed exact 1D FvK BVP + integral constraint solver (SI Eqs. E42 + E29)
+role: model
+stated:
+  page: 22
+  quote: "we obtain a linear, inhomogeneous differential equation for the displacement"
+  where: "SI Note S2, Eq. E42 with clamped BCs (p. 19) and Eq. E29 (p. 21)"
+equation: "D*w'''' + h*(Y*g - c)*w'' = p on [-L/2, L/2], w(+-L/2) = w'(+-L/2) = 0, (1 - nu^2)*c/Y = (1/(2*L))*int_{-L/2}^{L/2} (w'(x))^2 dx"
+built_from: [bending_modulus]
+reconstructed: >
+  SI Note S2 derives the exact 1D ODE (Eq. E42, after correcting the dimensional typo in
+  coefficient a) and the clamped-edge lateral integral constraint (Eq. E29), but solves only
+  the p = 0 case analytically (Eq. E44) and uses the single-mode Rayleigh-Ritz approximation
+  (Eq. 3 / E49) for p != 0. This model reconstructs a 2nd-order pentadiagonal finite-difference
+  solver with Brent root-finding for the coupled exact 1D BVP to test the accuracy of the
+  Rayleigh-Ritz approximation and verify profile non-negativity (w_min >= 0).
+inputs:
+  g: {quantity: growth_strain, unit: dimensionless}
+  p: {quantity: transverse_pressure, unit: Pa}
+  Y: {quantity: youngs_modulus, unit: Pa}
+  nu: {quantity: poisson_ratio, unit: dimensionless}
+  h: {quantity: plate_thickness, unit: m}
+  L: {quantity: actin_bundle_spacing, unit: m}
+outputs:
+  w_max: {quantity: protoridge_amplitude, unit: m}
+  w_min: {quantity: protoridge_height, unit: m}
+  c: {quantity: stress_potential_amplitude, unit: Pa}
+settings:
+  n_grid: 64
+  tol: 1.0e-9
+stochastic: false

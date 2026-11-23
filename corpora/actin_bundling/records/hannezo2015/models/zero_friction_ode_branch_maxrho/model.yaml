@@ -1,0 +1,46 @@
+id: zero_friction_ode_branch_maxrho
+name: corrected zero-friction (xi = 0) ODE branch chi/phi vs max(rho) (SI Fig. S9 y-axis correction)
+role: model
+stated:
+  page: 16
+  printed_page: "SI-10"
+  quote: "for α2 φ = 10. ||ρ||2 denotes the L2 norm"
+  where: SI Section 2.5 & Fig. S9
+variant_of: zero_friction_ode_branch_l2
+corrections:
+  - equation: "SI Fig. S9 y-axis label and caption (p. 10 / PDF p. 16)"
+    change: "Evaluate vertical-axis ordinate as max(rho) (L^infinity norm) rather than the labeled L^2 norm ||rho||_2 = sqrt(int rho^2 dy)"
+    evidence: "In SI Fig. S9, all four density-profile insets attached to the four black dots at y = 4 have peak height max(rho) = 4 (whereas their L^2 norms are only 1.20-1.47), and exact Section 2.5 ODE continuation at alpha^2*phi = 100 matches all four branches to <0.4% when plotted against max(rho) (e.g., at y = 4.0: 1.307, 1.774, 2.447, 3.359 vs digitized 1.303, 1.768, 2.435, 3.342) while ||rho||_2 misses by 40-150%."
+reconstructed: "Solves the exact SI Section 2.5 zero-friction ODE via harmonic Fourier-cosine continuation and evaluates max(rho) on the vertical axis of Fig. S9."
+equation: "-(alpha^2*phi)^-1 d_yy Psi = (chi/phi - 1)*(exp(Psi)/int exp(Psi) - 1); rho = (1 - phi/chi)*exp(Psi)/int exp(Psi) + phi/chi; y = max(rho)"
+built_from:
+  - zero_friction_ode_branch_l2
+inputs:
+  alpha2_phi:
+    quantity: squared_cell_to_turnover_length
+    unit: dimensionless
+  i:
+    quantity: mode_index
+    unit: dimensionless
+  target_branch:
+    quantity: rescaled_contractility_over_turnover
+    unit: dimensionless
+    curve:
+      quantity: density_l2_norm
+      unit: dimensionless
+    description: Digitized Fig. S9 branch supplying the vertical-axis values (labeled ||rho||_2 in Fig. S9) at which to evaluate chi/phi.
+outputs:
+  gamma_curve:
+    quantity: rescaled_contractility_over_turnover
+    unit: dimensionless
+    curve:
+      quantity: density_l2_norm
+      unit: dimensionless
+  gamma_at_y4:
+    quantity: rescaled_contractility_over_turnover
+    unit: dimensionless
+    description: Predicted chi/phi at vertical-axis value 4.0 (scalar convergence diagnostic).
+settings:
+  M_modes: 40
+  N_quad: 512
+stochastic: false

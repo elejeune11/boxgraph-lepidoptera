@@ -1,0 +1,204 @@
+# Parameters, thresholds, and structural constants written in Nanocluster_motion.m and README.md.
+# Note: None of these tracking thresholds are entered as standalone datums in sekine2024/data.yaml
+# (they appear only in Methods p. 10 prose of sekine2024, whereas pixel_size = 0.04325 um and
+# frame_interval = 0.32 s are in sekine2024/data.yaml but absent from sekine_code).
+
+# --- Parameters written in Nanocluster_motion.m ---
+- id: numb_of_images_code
+  quantity: frame_count
+  unit: dimensionless
+  origin: reported
+  printed: "100"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "8"
+    quote: "Numb_of_Images = 100;                  %% input the numbe of images you have"
+  note: "Hardcoded frame count looped as 1:Numb_of_Images-1 (99 pairs, line 28), ignoring num_frames = numel(filelist) computed on line 25. Compare sekine2024 Methods p. 10 (200 frames live imaging, 100 frames PIV, 50 frames Supp. Movie 1)."
+
+- id: frame_step_code
+  quantity: frame_step
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "32"
+    quote: "Image_2 = imread(fullfile(pathName, fileNames{Count+1}));"
+  note: "Single-frame step between paired frames Count and Count+1; agrees with README.md line 7 ('during the single time frame')."
+
+- id: area_min_t1_px_code
+  quantity: cluster_area_pixels
+  unit: dimensionless
+  origin: reported
+  printed: "6"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "40"
+    quote: "Large_Obj_Image_1 = bwareafilt (BW_Image_1, [6 53]);"
+  note: "Lower pixel-area cutoff at t_n (inclusive). Line 39 comment says 'from image_1 and image_2 (6 to 53 pixels)', but Image_2 uses [1 Inf] on line 44. At sekine2024's pixel size 0.04325 um, ceil(0.01 / 0.04325^2) = 6 px (0.01122 um^2)."
+
+- id: area_max_t1_px_code
+  quantity: cluster_area_pixels
+  unit: dimensionless
+  origin: reported
+  printed: "53"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "40"
+    quote: "Large_Obj_Image_1 = bwareafilt (BW_Image_1, [6 53]);"
+  note: "Upper pixel-area cutoff at t_n (inclusive). At sekine2024's pixel size 0.04325 um, floor(0.1 / 0.04325^2) = 53 px (0.09914 um^2)."
+
+- id: area_min_t2_px_code
+  quantity: cluster_area_pixels
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "44"
+    quote: "Large_Obj_Image_2 = bwareafilt (BW_Image_2,  [1 Inf]); %no limitation"
+  note: "Lower pixel-area cutoff at t_{n+1} (upper bound is Inf, i.e., unbounded). Contradicts line 39's comment ('image_1 and image_2 (6 to 53 pixels)') and omits README.md/Methods p. 10's 0.5-2 fold area-ratio filter."
+
+- id: connectivity_bwlabel_code
+  quantity: pixel_connectivity
+  unit: dimensionless
+  origin: reported
+  printed: "8"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "55"
+    quote: "[Labels NumberOfObjects] = bwlabel(Intersect_Type_1_or_2, 8);"
+  note: "Explicitly passed as 8-connectivity on lines 55, 81, 83, 99 ('%must use 8-connectivity'), and 131 ('%must use 8-connectivity'), and MATLAB 2D default for bwareafilt, imclearborder, and bwselect. Undisclosed in README.md and sekine2024 Methods."
+
+- id: multi_overlap_branch_min_code
+  quantity: overlap_component_threshold
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "101"
+    quote: "if ref_Cell_Obj_Intersect_NumberOfObjects>=2  % if more than 2 overlapped objects then take the biggest one (before was nearest one)"
+  note: "When a t_n cluster has >= 2 8-connected intersection components with Cumm_Img, lines 101-145 select the largest overlapping t_{n+1} object (maxArea, breaking ties by column-major label order). Undisclosed in README.md and sekine2024 Methods."
+
+- id: single_overlap_branch_code
+  quantity: overlap_component_threshold
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "173"
+    quote: "elseif ref_Cell_Obj_Intersect_NumberOfObjects ==1"
+  note: "Single 8-connected intersection component branch (any overlap >= 1 pixel via immultiply on lines 50 and 92)."
+
+- id: unmatched_sentinel_code
+  quantity: unmatched_sentinel
+  unit: dimensionless
+  origin: reported
+  printed: "0"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "217-218"
+    quote: "Full_Obj_Cord_x_cordinate = 0;  % put zero"
+  note: "Sentinel 0 written into columns 4, 5, and 6 (x2, y2, Area_Full_Obj; lines 217, 218, 230) when ref_Cell_Obj_Intersect_NumberOfObjects == 0."
+
+- id: output_columns_code
+  quantity: output_column_count
+  unit: dimensionless
+  origin: reported
+  printed: "6"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "169"
+    quote: "ref_Coordinate_List(ref_CellCount,6) = Area_Full_Obj;"
+  note: "ALL_Result exports exactly 6 columns per t_n cluster: (x1, y1, A1, x2, y2, A2) in raw pixels, without circularity, perimeter, dx, dy, micron conversion, or |dy|/|dx|."
+
+- id: excel_sheet_code
+  quantity: excel_sheet_index
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: Nanocluster_motion.m
+    lines: "256"
+    quote: "sheet = 1;"
+  note: "Declared immediately before xlswrite(Excel_filename,ALL_Result) on line 257 (not even passed as an argument to xlswrite)."
+
+# --- Parameters stated in README.md (echoing sekine2024 Methods p. 10) ---
+- id: area_min_readme
+  quantity: cluster_area_physical
+  unit: um^2
+  origin: reported
+  printed: "0.01"
+  citation:
+    file: README.md
+    lines: "5"
+    quote: "an actin cluster within the size range 0.01 to 0.1 µm2 and circularity 0.5 – 1.0"
+  note: "Matches sekine2024 Methods p. 10 ('0.01 to 0.1 µm2'). Implemented in Nanocluster_motion.m line 40 as integer pixel lower bound 6 px."
+
+- id: area_max_readme
+  quantity: cluster_area_physical
+  unit: um^2
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: README.md
+    lines: "5"
+    quote: "an actin cluster within the size range 0.01 to 0.1 µm2 and circularity 0.5 – 1.0"
+  note: "Matches sekine2024 Methods p. 10 ('0.01 to 0.1 µm2'). Implemented in Nanocluster_motion.m line 40 as integer pixel upper bound 53 px."
+
+- id: circularity_min_readme
+  quantity: cluster_circularity
+  unit: dimensionless
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: README.md
+    lines: "5"
+    quote: "and circularity 0.5 – 1.0 was selected"
+  note: "Matches sekine2024 Methods p. 10 ('circularity 0.5–1.0'), but completely absent from Nanocluster_motion.m (neither computed nor exported)."
+
+- id: circularity_max_readme
+  quantity: cluster_circularity
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: README.md
+    lines: "5"
+    quote: "and circularity 0.5 – 1.0 was selected"
+  note: "Matches sekine2024 Methods p. 10 ('circularity 0.5–1.0'), but completely absent from Nanocluster_motion.m."
+
+- id: area_ratio_min_readme
+  quantity: cluster_area_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: README.md
+    lines: "6"
+    quote: "similar size (between 0.5 to 2 fold of the size at tn)"
+  note: "Matches sekine2024 Methods p. 10 ('between 0.5 to 2 fold of the size at tn'), but NOT enforced in Nanocluster_motion.m (which uses [1 Inf] on line 44 and selects the largest overlapping object on lines 101-145 before exporting A1 and A2)."
+
+- id: area_ratio_max_readme
+  quantity: cluster_area_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    file: README.md
+    lines: "6"
+    quote: "similar size (between 0.5 to 2 fold of the size at tn)"
+  note: "Matches sekine2024 Methods p. 10 ('between 0.5 to 2 fold of the size at tn'), but NOT enforced in Nanocluster_motion.m."
+
+- id: overlap_min_px_readme
+  quantity: overlap_area_pixels
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: README.md
+    lines: "7"
+    quote: "(at least overlapped 1 pixel with the cluster at tn)"
+  note: "Matches sekine2024 Methods p. 10 ('at least overlapped 1 pixel') and Nanocluster_motion.m lines 50 and 92 (pixelwise immultiply gives non-empty component for >= 1 overlapping pixel, modulo Stage 1 centroid-miss and Stage 2 hole-shrink bugs)."

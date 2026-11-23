@@ -1,0 +1,39 @@
+# Inputs required to convert pixel units, evaluate MATLAB implicit defaults, and verify circularity,
+# none of which are explicitly printed inside Nanocluster_motion.m or README.md.
+
+- id: pixel_size_added
+  quantity: pixel_size
+  unit: um
+  printed: "0.04325"
+  basis: >
+    Nanocluster_motion.m hardcodes pixel area bounds [6 53] without stating a pixel size,
+    while README.md states 0.01 to 0.1 um^2. The companion paper sekine2024 prints 0.04325 um
+    (Methods p. 11, datum sim_pixel_size_printed; consistent with PIV window 91/10 * 0.04325 = 0.394 um
+    on p. 10 and 50-px ROI width 2.16 um in Supp. Movies 2-3). Alternatives are the exact simulation
+    pseudo-image grid pitch 3/69 = 0.043478 um (Methods p. 11) and 0.043 um (43 nm in Supp. Fig. 6a).
+  alternatives: ["0.043478", "0.043"]
+  stands_for: "implicit pixel edge length converting Nanocluster_motion.m pixel coordinates/areas to um"
+
+- id: binarize_level_added
+  quantity: binarize_threshold
+  unit: dimensionless
+  printed: "0.5"
+  basis: >
+    Nanocluster_motion.m lines 35-36 invoke im2bw(Image_1) and im2bw(Image_2) without a second
+    argument; MATLAB Image Processing Toolbox uses default normalized threshold level = 0.5
+    (127.5 for uint8, 32767.5 for uint16). Alternatives bracket lower/higher fixed thresholds
+    (0.25 and 0.75) to test grayscale sensitivity vs local Otsu thresholding described on Methods p. 10.
+  alternatives: ["0.25", "0.75"]
+  stands_for: "implicit default level parameter of MATLAB im2bw(I) on lines 35-36"
+
+- id: perimeter_ideal_6px_added
+  quantity: cluster_perimeter_pixels
+  unit: dimensionless
+  printed: "8.6832"
+  basis: >
+    Exact Euclidean circle perimeter 2*sqrt(pi*A) for area A = 6 px (the minimum area in
+    Nanocluster_motion.m line 40), giving C = 4*pi*A/P^2 = 1.0000 to check against README.md line 5's
+    upper circularity bound 1.0. Alternatives are the discrete 4-edge pixel perimeters of a compact
+    3x2 rectangle (P = 10 px, C = 0.754) and an elongated 1x6 rod (P = 14 px, C = 0.385 < 0.5).
+  alternatives: ["10", "14"]
+  stands_for: "perimeter P in circularity C = 4*pi*A/P^2 for a 6-pixel cluster"

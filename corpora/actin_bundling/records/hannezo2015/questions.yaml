@@ -1,0 +1,780 @@
+- id: q_main_chi_rho0_inconsistency
+  kind: possible_error
+  about: [dimensionless_contractility_chi_2d, critical_contractility_2d]
+  text: >
+    Main text p. 2 (p. 8621) writes the constitutive stress as sigma = chi^0 * rho/rho_0 + eta * d_x v
+    (Eq. 2) and the critical threshold without rho_0 as chi_c = (sqrt(eta/tau) + sqrt(D*xi))^2,
+    so chi^0 already has units of 2D stress (Pa*m) and chi^0/(xi*D) is dimensionless. Yet p. 2 col 2
+    defines the dimensionless contractility as chi = rho_0 * chi^0 / (xi * D), retaining an extraneous
+    factor of rho_0 carried over from SI Eq. (4) (sigma = eta*d_x v + chi*rho, where rho_0*chi is the
+    active stress). Unless rho is dimensionless, rho_0 * chi^0 / (xi * D) is dimensionally inconsistent
+    with Main Eq. (2).
+  citation:
+    page: 2
+    printed_page: "8621"
+    quote: "contractility-induced flows favoring the localization of the gel"
+    where: text
+
+- id: q_si_two_component_K_swapped
+  kind: possible_error
+  about: [two_component_reduction_printed, two_component_reduction_corrected]
+  text: >
+    In SI Section 2.1 (p. 3 / PDF p. 9), substituting m = K*a and rho = a + m = (1+K)*a into Eq. (1)
+    gives a = rho/(1+K) and m = K*rho/(1+K). Summing the two conservation equations yields
+    D = K*D_m/(1+K) and R(rho) = k_p - k_d*rho/(1+K). The SI prints D = D_m/(1+K) and
+    R(rho) = k_p - K*k_d*rho/(1+K), swapping the factor K between the diffusion and depolymerization terms.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "Defining ρ = a + m, the acto-myosin density, by summing"
+    where: SI Section 2.1, Eq. (2)
+
+- id: q_si_eq6_green_kernel_sign
+  kind: possible_error
+  about: [nonlocal_velocity_kernel_printed, nonlocal_velocity_kernel_corrected]
+  text: >
+    In SI Section 2.2 (p. 4 / PDF p. 10), the Green's function kernel below Eq. (6) is printed as
+    Phi(x, y) = [sinh((x - y - sign(x-y)*l)/L) - sinh((x+y)/L)] / (2*sinh(l/L)). With the minus sign
+    before sinh((x+y)/L), Phi(+-l/2, y) != 0 (violating the clamped BC v(+-l/2) = 0 of Eq. 5) and
+    integrating against a uniform density rho = rho_0 yields a nonzero velocity
+    v_unif(x) = -(chi*rho_0/eta)*L*sinh(x/L)/cosh(l/(2L)) != 0. Changing the sign to +sinh((x+y)/L)
+    restores v(+-l/2) = 0, v_unif = 0, and exact equivalence to force balance. In addition, Eq. (6)
+    writes Phi((x-y)/L) as a single-argument translation-invariant function inside the integral,
+    even though the finite-domain kernel Phi(x, y) depends on both x and y.
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "We have introduced, the kernel Φ which explicitly reads"
+    where: SI Eq. (6)
+
+- id: q_si_inv_qc_extra_pi
+  kind: possible_error
+  about: [critical_inverse_wavenumber_si_printed, critical_inverse_wavenumber_si_corrected, critical_wavelength_eq3]
+  text: >
+    SI Section 2.2 (p. 5 / PDF p. 11) prints the critical inverse wavenumber as
+    1/q_c = pi * L * (D*tau*xi/eta)^(1/4) (note OCR garbles xi/eta, verified on page-011.png).
+    Because L = sqrt(eta/xi), L*(D*tau*xi/eta)^(1/4) = (D*tau*eta/xi)^(1/4) is already 1/q_c from
+    maximizing SI Eq. (7). The printed expression has an extraneous factor of pi (making it equal
+    to lambda_c / 2 rather than either 1/q_c or the wavelength lambda_c = 2*pi/q_c of Main Eq. 3
+    and SI Eq. 11).
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "This loss of stability happens at a critical wavelength"
+    where: SI Section 2.2
+
+- id: q_si_section262_wrong_fredholm_eigenvector
+  kind: possible_error
+  about: [weakly_nonlinear_curvature_finite_printed, weakly_nonlinear_curvature_finite_corrected, weakly_nonlinear_curvature_infinite_printed, weakly_nonlinear_curvature_infinite_corrected, steady_state_eq8_bifurcation]
+  text: >
+    In SI Section 2.6.2 (pp. 12-13 / PDF pp. 18-19), the linear steady-state operator
+    L = -alpha^-2 d_yy + [[1, -chi], [1, phi - chi]] (Eq. 9) is non-self-adjoint (L_12 = -chi != 1 = L_21).
+    When applying the Fredholm solvability condition to Eq. (13) on p. 18, the SI projects the RHS
+    onto the right eigenvector (s_i^(1), rho_i^(1)) rather than the adjoint (left) null vector
+    ker(L^*) = (-alpha^2/(alpha^2 + i^2*pi^2), 1)^T. Reproducing that erroneous inner product yields
+    the printed chi_i^(2) and chi_c^(2) identically, whereas both exact adjoint-Fredholm analysis and
+    direct numerical steady-state continuation of Eq. (8) give a curvature larger by the strictly
+    positive factor (alpha^2 + i^2*pi^2)*(alpha^2*phi + 2*i^2*pi^2)/(i*pi)^4 (6x-12x larger at
+    Figs. S11-S12 parameters). Because the factor is positive for all phi > 0, the sign of chi_c^(2)
+    and the tricritical point phi = 1/4 remain unchanged. Separately, the displayed 2nd-order solution
+    (s_i^(2), rho_i^(2)) on p. 18 mistypes (alpha^2*phi + i^2*pi^2) and (alpha^2*phi + 4*i^2*pi^2)
+    in place of (alpha^2 + i^2*pi^2) and (alpha^2 + 4*i^2*pi^2), though the paper's subsequent chi_i^(2)
+    formula was clearly derived using the correct 2nd-order amplitudes.
+  citation:
+    page: 18
+    printed_page: "SI-12"
+    quote: "Again, the condition of solvability reads"
+    where: SI Section 2.6.2
+
+- id: q_si_section25_xi0_curvature_and_figs9
+  kind: possible_error
+  about: [zero_friction_bifurcation_printed, zero_friction_bifurcation_corrected, fig_s9_alpha2_phi_printed]
+  text: >
+    Two discrepancies occur in SI Section 2.5 (xi = 0, pp. 9-10 / PDF pp. 15-16):
+    (1) With the stated normalization rho_1 = cos(i*pi*(y+1/2)), the exact 3rd-order expansion of
+    the Section 2.5 PDE yields chi_i^(2) = (alpha^2*phi + i^2*pi^2)^2 / (6*alpha^2*i^2*pi^2)
+    (which agrees with numerical continuation and equals the xi -> 0 limit of the corrected
+    Section 2.6.2 formula), whereas p. 15 prints chi_i^(2) = phi + i^2*pi^2/(6*alpha^2).
+    (2) The Fig. S9 caption (p. 16) states alpha^2*phi = 10, which would place the first four
+    bifurcation points chi_i^(0)/phi = 1 + i^2*pi^2/(alpha^2*phi) at 1.99, 4.95, 9.88, 16.79 (only
+    one branch inside the plotted range chi/phi in [0.5, 4]); the four plotted branches in Fig. S9
+    bifurcate at chi/phi ~ 1.1, 1.4, 1.9, 2.6, corresponding to alpha^2*phi = 100 (i.e. alpha*sqrt(phi) = 10).
+    In addition, p. 15 writes y = x/sqrt(D*tau) alongside integrals on [-1/2, 1/2] and Neumann BCs at y = 0, 1.
+  citation:
+    page: 16
+    printed_page: "SI-10"
+    quote: "for α2 φ = 10. ||ρ||2 denotes the L2 norm"
+    where: Fig. S9 caption
+
+- id: q_si_p15_parameter_estimates_inconsistency
+  kind: unexplained_difference
+  about: [alpha_estimated_si, phi_estimated_si, lh_inverted_si, alpha_sim_si, phi_sim_si, cmp_alpha_si_from_printed_L, cmp_alpha_si_chained, cmp_lh_main_vs_si_inverted]
+  text: >
+    SI Section 2.6.4 (p. 15 / PDF p. 21) inverts d = 5 x 10^-7 m via Eq. (11) to obtain
+    sqrt(eta/xi) = 10^-8 m (exact inversion with D = 0.04 um^2/s, tau = 15 s gives 8.18 x 10^-9 m)
+    and uses average cell size l = 10^-5 m, yet prints alpha = 5 x 10^2 (= 500) and phi = 10^-3.
+    However, l/L = 10^-5 / 10^-8 = 1000 (or 1223 using L = 8.18 x 10^-9 m) — a factor of ~2x larger
+    than alpha = 500 — and L^2/(D*tau) = 1.67 x 10^-4 (or 1.11 x 10^-4) — ~6x-9x smaller than phi = 10^-3.
+    In Section 2.6.5 on the same page, simulations use alpha = 480 and phi = 0.0014, which yield
+    15 rings/cell (corresponding to d = l/15 ~ 0.67 um, matching the histogram peak ~0.62 um in Fig. S14,
+    rather than d = 0.5 um). Meanwhile, Main text p. 3 estimates l_h ≈ 0.1 um (10^-7 m, 10x larger than
+    SI's 10^-8 m) from 2D friction xi = 10^9 Pa*s/m, whereas SI p. 15 infers 3D per-thickness friction
+    xi ~ 10^17 Pa*m^-2*s (2.5 x 10^16 Pa*s/m^2 from rho_0*chi = 10^3 Pa), switching between 2D and 3D
+    conventions without explicitly noting the thickness factor h = 100 nm.
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "we obtain an estimate of two non dimensional parameters"
+    where: SI Section 2.6.4
+
+- id: q_actin_increase_60_vs_70
+  kind: possible_error
+  about: [actin_increase_onset_text, actin_increase_onset_fig1a, cmp_actin_increase_text_vs_fig1a]
+  text: >
+    Main text p. 1 (p. 8620) states 'a 60% increase in filamentous actin concentration' at ring onset,
+    whereas Fig. 1A caption (p. 2 / p. 8621) states 'Actin intensity increases by 70% at the onset of
+    ring formation', and SI Section 2.6.5 (p. 21) reads fluorescence ramping from 114 to 156 (+56% above
+    the 100% baseline, or +37% during the linear ramp).
+  citation:
+    page: 2
+    printed_page: "8621"
+    quote: "Actin intensity increases by 70% at the onset of ring formation."
+    where: Fig. 1A caption
+
+- id: q_src42_and_kkv1_rounded_ratios
+  kind: reading
+  about: [src42_increase_pct_printed, kkv1_fold_increase_printed, cmp_src42_pct_increase, cmp_kkv1_fold_increase]
+  text: >
+    From the printed rounded means, Src42A (0.8 ± 0.2 um) vs wild-type (0.5 ± 0.1 um) gives a 60%
+    increase rather than the stated 70% (though consistent with unrounded means within the 1-sig-fig
+    printed precision, e.g., 0.47 to 0.80 um = 70.2%), and kkv1 (4.5 ± 2 um) vs wild-type (0.5 ± 0.1 um)
+    gives a 9.0-fold increase rather than the '10-fold' stated in Fig. 3A caption.
+  citation:
+    page: 4
+    printed_page: "8623"
+    quote: "The period of the ring pattern increased by 70% in Src42"
+    where: Fig. 3A caption
+
+- id: q_minor_caption_typos_and_crossrefs
+  kind: possible_error
+  about: [chaos_epsilon, fluorescence_onset_si]
+  text: >
+    Several typographical slips appear in captions and figure cross-references:
+    (1) Main text p. 4 swaps references to SI Fig. S1 and Fig. S2 (citing Fig. S1 A and B for moesin RNAi
+    and Fig. S2 for taenidial-actin complementarity, whereas SI p. 7 has them reversed) and omits a word in
+    'Actin patterns are severely [disrupted] in embryos and larvae'.
+    (2) Main Fig. 4B (p. 5) image header prints 't=0s, t=110s, t=220s' whereas its caption states
+    't = 0 (green), t = 90 s (red), and t = 180 s (blue)'.
+    (3) SI Fig. S8 caption (p. 14) prints 'α = 0.1' instead of 'ε = 0.1'.
+    (4) SI Section 2.6.5 (p. 21) refers to 'Fig. 1B of the main paper' when discussing the fluorescence
+    time-course graph in Fig. 1A.
+  citation:
+    page: 14
+    printed_page: "SI-8"
+    quote: "Parameters are χρ0 = 4, ξ = 0.001, l = 200, α = 0.1"
+    where: Fig. S8 caption
+
+- id: q_unstated_2d_anisotropic_model
+  kind: unstated_model
+  about: [cortical_pde_2d_anisotropic, friction_anisotropy_threshold_2d]
+  text: >
+    Main text p. 3 and Fig. 2E present 2D periodic strip simulations with anisotropic friction
+    (reporting circumferential rings for xi_theta > 1.1*xi_z and showing 20% anisotropy), but neither
+    the main text nor the SI Appendix gives the 2D tensorial constitutive stress equation (bulk vs shear
+    viscosity), domain dimensions, dimensionless parameters (alpha, phi, chi), or discretization.
+  citation:
+    page: 3
+    printed_page: "8622"
+    quote: "modeling the tube as a 2D periodic strip. In the absence of"
+    where: text
+
+- id: q_unstated_two_cell_coupling_and_C_formula
+  kind: unstated_model
+  about: [two_cell_orthoradial_coupling_eq16, two_cell_beta_transition]
+  text: >
+    SI Section 2.7 (pp. 17-18 / PDF pp. 23-24, Eqs. 15-16, Fig. S16) simulates two parallel coupled cells
+    with white noise A = 0.1 and reports correlation C(beta) rising from ~0 at beta = 10^-5 to ~1 above
+    beta ~ 10^-3. However, the SI omits the spatial noise correlation/discretization, the exact PDE
+    parameters (Fig. S16 bottom shows smooth oscillations rho in [0.6, 1.5] on x in [0, 400], unlike
+    the sharp spikes of Section 2.6.5), and the two-cell neighbor boundary rule in Eq. (15). Moreover,
+    the printed formula C = int_0^1 rho_1(z)*rho_2(z) dz / int_0^1 rho_1(z)^2 dz cannot approach 0 for
+    uncorrelated positive densities oscillating around rho_0 = 1 (which would yield C ~ 0.9); mean
+    subtraction (rho_i - rho_0) appears to have been omitted from the printed definition of C.
+  citation:
+    page: 23
+    printed_page: "SI-17"
+    quote: "calculate the correlation coefficient C(β) between the two patterns"
+    where: SI Section 2.7
+
+- id: q_unstated_pde_ic_and_subcritical_sensitivity
+  kind: unstated_input
+  about: [cortical_pde_1d_ramp, ramp_noise_amplitude_added, ramp_total_duration_added, n_rings_sim_N80]
+  text: >
+    SI Section 2.6.5 (p. 21) does not specify the amplitude or spatial spectrum of the initial random
+    density perturbation, the spatial/temporal discretization, the final steady-state stop time, or
+    the peak-counting convention. Because phi = 0.0014 < 1/4 lies deep in the subcritical regime,
+    our reconstructed Eq. (8) solver shows genuine sensitivity to the initial noise amplitude: small
+    noise (1e-4) reproduces n ~ 14.5 rings (within 14.68 ± 1.10), whereas larger noise (0.01-0.05)
+    causes premature nucleation onto lower-wavenumber subcritical branches (~12-13 rings). In addition,
+    our continuum integral S = int_0^1 (rho - 1)^2 dy plateaus near ~120 rather than ~14,000 as plotted
+    on the y-axis of Fig. S13 (suggesting Fig. S13 may plot an unnormalized discrete grid sum or an
+    integral over rescaled x_hat in [0, alpha] rather than y in [0, 1]).
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "Starting from an homogeneous concentration of actin randomly perturbed"
+    where: SI Section 2.6.5
+
+- id: q_choice_pde_sample_size_and_horizon
+  kind: choice
+  about: [run_pde_ramp_N80, run_pde_ramp_N40, run_pde_chaos_fig_s6, chaos_horizon_added]
+  text: >
+    To keep build and refinement runtimes tractable, run_pde_ramp_N80 uses n_samples = 4 per replicate
+    across 3 replicates (12 realizations total, refined up to n_samples = 8 per replicate = 24 total
+    in ref_pde_ramp_samples_nrings) instead of N = 80 per call, and run_pde_chaos_fig_s6 integrates to
+    t_total = 200 (matching the plotted window of Figs. S6-S8) rather than T = 5000 or T = 10^6 used
+    in Fig. S5 classification.
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "we made N = 80 sample simulations"
+    where: SI Section 2.6.5
+
+- id: q_si_section262_sign_criterion_and_i0_floor
+  kind: possible_error
+  about: [weakly_nonlinear_curvature_finite_printed, weakly_nonlinear_curvature_finite_corrected, resonance_mode_i0]
+  text: >
+    Two additional mathematical errors appear in SI Section 2.6.2 (p. 12 / PDF p. 18):
+    (1) The text asserts 'As in the case where phi = 0 the nature of the pitchfork bifurcation change
+    from supercritical if alpha < sqrt(2)*i*pi to subcritical in the opposite case.' For phi > 0, both
+    the printed and adjoint-corrected chi_i^(2) contain the sign-changing denominator factor
+    (4*pi^4*i^4 - alpha^4*phi) alongside (2*pi^2*i^2 - alpha^2). Hence alpha < sqrt(2)*i*pi gives
+    supercriticality only for i > alpha*phi^(1/4)/(sqrt(2)*pi) (which includes the primary critical
+    mode i_c), whereas for lower modes i < alpha*phi^(1/4)/(sqrt(2)*pi) (e.g., i = 1..4 at Fig. S12
+    parameters alpha = 15, phi = 3), the sign reverses (i = 1 has alpha > sqrt(2)*pi yet is
+    supercritical; i = 4 has alpha < 4*sqrt(2)*pi yet is subcritical).
+    (2) The text writes that the 2nd-order denominator alpha^4*phi - 4*i^4*pi^4 vanishes for
+    i_0 = floor(alpha*phi^(1/4)/(sqrt(2)*pi)) < i_c 'so there is no problem of definition.' The
+    denominator vanishes only when alpha*phi^(1/4)/(sqrt(2)*pi) is an exact integer (not at its floor),
+    and when it is an integer, the 2nd-order expansion is resonant on that lower branch i_0 < i_c
+    (avoiding resonance only on the primary critical branch i_c).
+  citation:
+    page: 18
+    printed_page: "SI-12"
+    quote: "the nature of the pitchfork bifurcation change from supercritical if"
+    where: SI Section 2.6.2
+
+- id: q_audit_pde_ramp_dt_drift_and_peak_counting
+  kind: reading
+  about: [cortical_pde_1d_ramp, run_pde_ramp_N80, ref_pde_ramp_dt_nrings, n_rings_sim_N80]
+  text: >
+    Audit disagreement on temporal convergence and hardcoded peak counting in the reconstructed
+    cortical_pde_1d_ramp solver: (1) ref_pde_ramp_dt_nrings checks only two levels (factors: [1, 2],
+    dt = 50 -> 25, 3.95% change vs 5% tolerance), missing a continuing monotonic drift under further
+    refinement. On the same 4 realizations (seed = 0, N_grid = 2048), refining dt = 50 -> 25 -> 12.5 -> 5.0
+    (physical dt = 1.05 -> 0.105 s) shifts n_rings monotonically upward from 13.75 -> 14.75 -> 15.50 -> 16.00
+    (+16.4%) and S downward from 117.46 -> 114.96 -> 110.62 -> 106.79 (-9.1%), because explicitly lagging
+    stress s^n by dt_phys = 1.05 s damps high-wavenumber nucleation during the fast subcritical burst.
+    (2) model.py hardcodes the 0.1 peak-height threshold (stated only in SI Section 2.2 p. 11, not in
+    Section 2.6.5) and counts each Neumann boundary half-peak as a full ring (+0.38 to +0.62 rings above
+    half-weighted boundary peaks consistent with linear i_c/2, and +0.50 to +0.75 above a 50% threshold).
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "The average number of rings per cell in steady state was"
+    where: SI Section 2.6.5
+
+- id: q_audit_pde_chaos_explicit_reaction_and_max_rho
+  kind: reading
+  about: [cortical_pde_1d_chaos, run_pde_chaos_fig_s6, ref_pde_chaos_dt_min_rho, ref_pde_chaos_grid_min_rho]
+  text: >
+    Audit observations on the reconstructed cortical_pde_1d_chaos solver: (1) model.py lines 69-71
+    contain a stale comment claiming semi-implicit linearization of -eps*(rho - 1)^2 to preserve
+    positivity, whereas line 71 integrates -eps*(rho - 1)^2 explicitly on the RHS; while positivity
+    holds at N_grid = 512, dt = 0.025, chaotic spikes reach max_rho ~ 50-119 so explicit decay is not
+    unconditionally positivity-preserving at larger dt or finer grids. (2) ref_pde_chaos_grid_min_rho
+    checks only min_rho (~0.30 in broad depleted troughs), whereas max_rho grows from 51.5 -> 83.4 -> 118.9
+    across N_grid = 512, 1024, 2048 (t in [0, 100]), showing chaotic spike peaks are not yet spatially
+    resolved at N_grid = 512 (stationary spikes at xi = 0.1 saturate near 15.2). (3) The sampling
+    interval dt_sample = 1.0 (vs Fig. S7 caption 'every 10 times steps') and transient discard (first
+    50% of [0, t_total]) are hardcoded in model.py rather than exposed as settings.
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "The peaks were defined as region of space where the density"
+    where: SI Section 2.2
+
+- id: q_kkv1_cell_length_and_zero_friction_ring_count
+  kind: unexplained_difference
+  about: [ring_wavelength_kkv1, rings_per_cell_kkv1, cell_length_si, rings_per_cell_embryo_wt, ring_wavelength_embryo_wt, zero_friction_bifurcation_printed]
+  text: >
+    Two quantitative tensions exist between Main text and SI regarding cell length and zero-friction
+    ring count: (1) Main p. 1 reports embryonic wild-type spacing 0.5 ± 0.1 um with 15 to 20 rings
+    per cell (implying cell length 7.5-10 um, matching SI p. 15 cell size 10^-5 m = 10 um), yet Main
+    p. 4 reports kkv1 ring distance 4.5 ± 2 um as corresponding 'on average to one ring per cell',
+    which implies ~2x shorter axial cell length (~4.5 um vs 10 um, or ~2.2 rings per 10 um cell).
+    (2) Main p. 4 predicts that for lambda > L actin accumulates in 'one actin ring per cell',
+    whereas SI Section 2.5 (p. 15 / SI-9, Fig. S9) finds the sole stable zero-friction mode is i = 1
+    (cos(pi*(y + 1/2)), i.e., i/2 = 0.5 patterns per cell), placing one peak 'at the edge of the cell
+    (on every two cell boundaries only)'.
+  citation:
+    page: 4
+    printed_page: "8623"
+    quote: "corresponds indeed on average to one ring per cell"
+    where: text
+
+- id: q_additional_minor_equation_and_figure_typos
+  kind: possible_error
+  about: [dispersion_relation_eq7, two_cell_orthoradial_coupling_eq16, zero_friction_bifurcation_printed, cop_hom_diameter_change, ring_wavelength_src42]
+  text: >
+    Additional minor notation and typographical slips identified during audit:
+    (1) Main p. 2 uses uppercase L for cell length in col 1 ('of length L') then switches to lowercase
+    l in alpha = l/l_h in col 2 (while SI uses l for cell length and L = sqrt(eta/xi)); similarly
+    friction switches between xi (Main text, SI Eqs. 3-7) and zeta (Main Fig. 2E caption p. 3 and
+    Main p. 5).
+    (2) SI p. 5 (PDF p. 11) writes the linear perturbation on x in [-l/2, l/2] as rho = rho_0 + A*exp(lambda*t)*cos(q*x)
+    with q = i*pi/l, which violates no-flux BCs d_x rho(+-l/2) = 0 for odd integers i (SI p. 10 / PDF p. 16
+    uses the correct shifted basis cos(i*pi*(y + 1/2))).
+    (3) SI Section 2.7 (p. 17 / PDF p. 23) writes cell-cell junction continuity as sigma(l_j(t), t) = sigma(l_{j+1}(t), t)
+    and v(l_j(t), t) = v(l_{j+1}(t), t), putting cell indices j, j+1 on the interface positions l_j, l_{j+1}
+    rather than on the cell fields sigma_j, sigma_{j+1} and v_j, v_{j+1} (unlike the next line
+    d_x rho_j(l_j(t), t) = d_x rho_{j+1}(l_j(t), t) = 0), and Eq. (15) has a stray extra closing parenthesis '2*sigma^0))'.
+    (4) In SI Section 2.5 (p. 9 / PDF p. 15), normalizing Psi_1 = cos(i*pi*(y + 1/2)) instead of rho_1 = cos(i*pi*(y + 1/2))
+    yields chi_i^(2) = i^2*pi^2/(6*alpha^2), indicating the printed phi + i^2*pi^2/(6*alpha^2) arose from
+    both normalizing Psi_1 and erroneously carrying +phi from (chi - phi) into chi_i^(2).
+    (5) Minor figure typos: Main Fig. 3B x-axis prints 'Scr42A mutant' for 'Src42A mutant' and Fig. 3C
+    caption prints 'stating' for 'staining' (p. 4); Main Fig. 4F legend clips 'Cop -/-' to 'Cop /' and
+    Fig. 4D-E panels label the allele 'gamma-COP^10' which is omitted from Materials and Methods (p. 6).
+  citation:
+    page: 23
+    printed_page: "SI-17"
+    quote: "and, of course, no flux boundary conditions which imply"
+    where: SI Section 2.7
+
+- id: q_figs9_yaxis_maxrho_not_l2
+  kind: possible_error
+  about: [figs9_bifurcation_points_curve, figs9_branch1_curve, figs9_branch2_curve, zero_friction_ode_branch_l2, zero_friction_ode_branch_maxrho, cmp_figs9_onsets_captioned_10, cmp_figs9_onsets_100, cmp_figs9_branch1_l2, cmp_figs9_branch1_maxrho, cmp_figs9_branch2_l2, cmp_figs9_branch2_maxrho]
+  text: >
+    Calibrated 900 dpi digitization of SI Fig. S9 (p. 16 / SI-10) combined with exact harmonic
+    continuation of the SI Section 2.5 zero-friction ODE reveals TWO independent caption/axis errors:
+    (1) Parameter error: the four digitized bifurcation abscissae chi_i^(0)/phi = 1.093, 1.387,
+    1.881, 2.572 match alpha^2*phi = 100 (1.099, 1.395, 1.888, 2.579; alpha*sqrt(phi) = 10) rather
+    than the captioned alpha^2*phi = 10 (1.987, 4.948, 9.883, 16.791), settling
+    q_si_section25_xi0_curvature_and_figs9.
+    (2) Vertical-axis norm mislabeling: Fig. S9 labels its y-axis '||rho||_2' and captions
+    '||rho||_2 denotes the L2 norm of rho', yet exact ODE continuation at alpha^2*phi = 100 proves
+    the plotted vertical ordinate is actually max(rho) (L^infinity norm). All four density-profile
+    insets attached to the black dots at y = 4 have peak height max(rho) = 4 (whereas their L^2
+    norms are only 1.20-1.47); at y = 4.0, digitized chi/phi = 1.303, 1.768, 2.435, 3.342 match
+    exact max(rho) = 4 continuation (1.307, 1.774, 2.447, 3.359; <0.5% across branches i = 1, 2),
+    whereas true ||rho||_2 continuation misses by 40-150% (predicting 2.42, 4.30, 7.05, 10.75 at
+    ||rho||_2 = 4).
+  citation:
+    page: 16
+    printed_page: "SI-10"
+    quote: "for α2 φ = 10. ||ρ||2 denotes the L2 norm"
+    where: SI Fig. S9 caption
+
+- id: q_fig2d_shifted_interior_ticks
+  kind: reading
+  about: [fig2d_wavelength_curve, cmp_fig2d_wavelength]
+  text: >
+    In Main Fig. 2D (right, p. 3 / p. 8622), the three interior x-axis tick strokes for phi = 4, 6, 8
+    are displaced ~26.5 px (~0.21 phi units at 1200 dpi) to the left of their printed numeral labels
+    (a vector-graphics grouping shift), whereas the frame borders (phi = 0, 10), interior tick phi = 2,
+    all numeric label centers, and the plotted curve 2*pi*phi^(-1/4) align cleanly on the true linear
+    axis (residual 0.18 px). Calibrating on the outer frame borders and tick phi = 2 reproduces
+    2*pi*phi^(-1/4) across phi in [0.2, 9.5].
+  citation:
+    page: 3
+    printed_page: "8622"
+    quote: "Theoretical profiles of actin concentration for different values of our parameters in 1D."
+    where: Fig. 2D caption
+
+- id: q_digitized_figure_resolutions
+  kind: reading
+  about: [fig1a_actin_intensity_data, fig3b_bar_ring_spacing_data, fig3b_dist_wt_data, fig3b_dist_src42_data, fig4f_cop_actin_vs_diameter_data, figs11_primary_branch_curve, figs12_bifurcation_points_curve, figs12_primary_branch_curve, figs16_correlation_vs_beta_data, cmp_figs11_branch_exact, cmp_figs12_branch_exact]
+  text: >
+    Calibrated 900-1200 dpi figure digitization quantitatively resolves four open questions from the
+    text audit and uncovers two additional AUTO diagram details:
+    (1) Fig. 1A (settles q_actin_increase_60_vs_70): cortical actin intensity rises from ~105% (100 s)
+    through ~114% (1000-1600 s, matching SI p. 15 '114') to a plateau of 154-157% (3700-4250 s),
+    confirming Main p. 1 ('60%') and SI p. 15 ('156') over Fig. 1A caption's '70%'.
+    (2) Fig. 3B (settles q_src42_and_kkv1_rounded_ratios): unrounded bar heights are 0.499 ± 0.068 um
+    (WT), 0.797 ± 0.171 um (Src42A, +59.8% vs WT — confirming +70% in text/caption is an overestimate
+    even before 1-sig-fig rounding), and 4.575 ± 2.018 um (kkv, 9.18-fold vs printed '10-fold');
+    digitized Fig. 3B histograms yield WT mean 0.494 ± 0.081 um and Src42A mean 0.807 ± 0.180 um (+63.4%).
+    (3) Fig. 4F: digitized coordinates refine Cop-/+ (-16.0% diameter, -38.3% actin vs printed -20%, -40%)
+    and Cop-/- (-47.4% diameter, -68.9% actin vs printed -45%, -65%); at 1200 dpi the 'Cop -/-' legend
+    is faint rather than truncated (updating note (5) of q_additional_minor_equation_and_figure_typos).
+    (4) Figs. S11-S12 (confirms q_si_section262_wrong_fredholm_eigenvector): all 7 red 'B' thresholds in
+    Fig. S11 (i = 4..10, max|diff| = 0.00011) and all 8 isolated 'B' thresholds in Fig. S12
+    (i = 4, 6, 7, 9, 10, 11, 12, 13, max|diff| = 0.0046) reproduce finite_domain_bifurcation_threshold,
+    and exact Fourier-cosine continuation of Eq. (8) reproduces both AUTO primary i_c = 6 branches
+    (13/13 points in Fig. S11 to <= 0.0014; 10/10 points in Fig. S12 to <= 0.009) while printed chi_i^(2)
+    is 6x-10x too shallow near onset and adjoint-Fredholm chi_i^(2) matches onset curvature; Fig. S11
+    also exhibits a secondary bifurcation branching left of the pure i = 6 curve above max(rho) ~ 3.8.
+    (5) Fig. S16 (settles q_unstated_two_cell_coupling_and_C_formula): C = 0.0131 ± 0.0022 at
+    beta = 1.02e-5 (rising to C = 0.502 at beta = 1.00e-3 and 1.001 for beta >= 0.05) proves mean
+    subtraction (rho_i - rho_0) was used in code despite being omitted from the printed C formula.
+  citation:
+    page: 24
+    printed_page: "SI-18"
+    quote: "transition to high correlation values around β ≈ 10−3"
+    where: SI Section 2.7
+
+- id: q_bois2011_notation_dimensional_and_active_stress_mapping
+  kind: choice
+  about:
+    - ref-10
+    - hydrodynamic_length
+    - hydrodynamic_length_from_3d
+    - diffusion_time_hydrodynamic
+    - dimensionless_contractility_chi_2d
+    - friction_3d_from_contractility
+    - critical_contractility_2d
+    - dimensionless_critical_contractility_eq10
+    - finite_domain_bifurcation_threshold
+    - finite_domain_critical_mode
+    - rel_bois2011_hydrodynamic_length
+    - rel_bois2011_hydrodynamic_length_3d
+    - rel_bois2011_peclet_number
+    - rel_bois2011_hill_boundary_scales_linear
+    - bois2011/hydrodynamic_length
+    - bois2011/peclet_number_physical
+    - bois2011/single_species_instability_eq13
+    - bois2011/single_species_stability_boundary_hill
+  text: >
+    Cross-record reconciliation with Bois, Julicher & Grill (PRL 106:028103, 2011; cited in
+    hannezo2015 as ref-10, distinct from the review ref-3 Howard, Grill & Bois 2011 and the
+    predecessor paper ref-16 / si-ref-12 Mayer et al. 2010) highlights four systematic notation,
+    dimensional, and constitutive differences:
+    (1) 2D thickness-integrated vs. 3D bulk units: bois2011 Eqs. (2)-(3) use 3D bulk parameters
+    eta [Pa*s], gamma [Pa*s/m^2], and (zeta*Delta_mu)_0 [Pa], whereas hannezo2015 Main Eqs. (2)-(3)
+    and SI Eqs. (3)-(4) use 2D thickness-integrated eta = h*eta_3D [Pa*s*m], xi (also printed zeta
+    on Main p. 5) = h*gamma [Pa*s/m], and sigma_a = chi^0 = rho_0*chi = h*(zeta*Delta_mu)_0 [Pa*m]
+    (with SI p. 15 friction_3d_from_contractility briefly reverting to 3D Pa and Pa*s/m^2 matching
+    bois2011). Thickness h cancels identically in l_h = sqrt(eta/xi) = sqrt(eta_3D/gamma) = ell,
+    T = eta/(xi*D) = ell^2/D = tau_D, and chi = sigma_a/(xi*D) = (zeta*Delta_mu)_0/(D*gamma) = Pe.
+    (2) Symbol swaps: domain length l (hannezo2015) <-> L (bois2011), hydrodynamic length L or l_h
+    <-> ell, dimensionless size alpha = l/l_h <-> L/ell, wavenumber q <-> k, friction xi/zeta <->
+    gamma, and active contractility chi (called 'the Peclet number chi' in SI p. 15) <-> Pe.
+    (3) Linear vs. Hill saturating active stress: hannezo2015 uses strictly linear active stress
+    sigma_act = sigma_a*(rho/rho_0) (Main Eq. 2, SI Eq. 4; no saturating stress law appears in
+    hannezo2015), giving c_0*df/dc = 1 at rescaled reference density rho_hat_0 = 1 and turnover-free
+    infinite-domain threshold chi_c = 1 (dimensional chi_c = (sqrt(eta/tau) + sqrt(D*xi))^2 -> D*xi
+    as tau -> oo). bois2011's general Eqs. (12)-(13), (15) carry the factor c_0*df/dc (effective
+    linearized Peclet Pe_eff = Pe*c_0*df/dc), while Figs. 1-5 specialize to the Hill saturating
+    law f(c) = c/(1+c), where c_0*df/dc = c_0/(1+c_0)^2 <= 1/4 (maximum at c_0 = 1), raising bare
+    Pe_crit by (1+c_0)^2/c_0 >= 4 while preserving the exact finite-size geometric scaling
+    1 + (beta*pi*ell/L)^2 (rel_bois2011_hill_boundary_scales_linear).
+    (4) Orthogonal threshold limits: dimensionless_critical_contractility_eq10 (chi_c = (1+sqrt(phi))^2,
+    already at alpha -> oo) and bois2011/single_species_instability_eq13 (Pe_crit = (1 + (beta*pi*ell/L)^2)/(c_0*df/dc),
+    already at phi = 0) are orthogonal 1-parameter limits (alpha -> oo vs. phi -> 0) of
+    finite_domain_critical_mode and finite_domain_bifurcation_threshold, both converging to
+    chi_c = Pe_eff,c = 1 in the joint limit (alpha -> oo, phi -> 0).
+  citation:
+    page: 2
+    printed_page: "8621"
+    quote: "The case τ → ∞ has been studied theoretically previously (10, 11) and yields to actin"
+    where: "Main text p. 8621, col. 2 (citing ref. 10 = Bois et al. 2011)"
+
+- id: q_bois2011_turnover_arrested_coarsening_and_nonlinear_dynamics
+  kind: choice
+  about:
+    - ref-10
+    - dispersion_relation_eq7
+    - finite_domain_critical_mode
+    - infinite_domain_ring_count
+    - steady_state_eq8_bifurcation
+    - cortical_pde_1d_ramp
+    - cortical_pde_1d_chaos
+    - rel_bois2011_rda_dispersion_eq15
+    - rel_bois2011_dispersion_eq12_limit
+    - rel_bois2011_instability_eq13_critical_limit
+    - rel_bois2011_fastest_mode_approx_ring_count
+    - bois2011/single_species_rda_dispersion_eq15
+    - bois2011/single_species_dispersion_eq12
+    - bois2011/single_species_steady_state_eq9
+    - bois2011/single_species_potential_eq10
+    - bois2011/single_species_pde_eq1_3
+  text: >
+    Comparing the linear and nonlinear dynamics of hannezo2015 against bois2011 (ref-10) clarifies
+    the exact role of actin turnover tau (dimensionless phi = eta/(D*tau*xi)):
+    (1) Unstated exact Eq. (15) equivalence: Hannezo Main p. 2 cites Bois 2011 only for the
+    conserved tau -> oo limit (rel_bois2011_dispersion_eq12_limit, rel_bois2011_instability_eq13_critical_limit).
+    Yet even at finite turnover tau < oo, Hannezo SI Eq. (7) is symbolically identical to the
+    single-species (N = 1) case of Bois's general reaction-diffusion-advection dispersion relation
+    Eq. (15) with first-order turnover dR/dc = -1/tau (rel_bois2011_rda_dispersion_eq15), a case
+    Bois did not analyze (focusing Eq. 15 on the 2-species ASDM).
+    (2) Turnover shifts the dispersion curve uniformly downward by -phi without shifting its
+    wavenumber peak k_max*ell = sqrt(sqrt(Pe_eff) - 1), so marginal onset chi_c = (1 + sqrt(phi))^2
+    selects finite critical wavenumber q_c*l_h = phi^(1/4) (lambda_c = 2*pi*(D*tau*eta/xi)^(1/4)),
+    matching Bois's fastest-growing mode at phi = (sqrt(Pe_eff) - 1)^2 (rel_bois2011_fastest_mode_approx_ring_count),
+    whereas at phi = 0 the instability becomes long-wavelength (q_c -> 0, i_c = 1).
+    (3) Nonlinear coarsening vs. arrested multi-ring patterns: in bois2011 (tau -> oo,
+    single_species_pde_eq1_3, Fig. 4), regulator conservation enforces zero steady flux j_0 = 0
+    (Eqs. 5-8), permitting the conservative Hamiltonian reduction Eqs. (9)-(10) with Hill-stress
+    potential V(u), and all multipeaked steady states are unstable and coarsen to a single peak
+    (n_peaks_final = 1). In hannezo2015 (phi > 0, cortical_pde_1d_ramp, Figs. S13-S15), turnover
+    breaks zero-flux conservation (sustaining steady depolymerization at peaks and polymerization
+    in valleys), invalidating Bois's Hamiltonian steady-state reduction while arresting coarsening
+    to stabilize periodic multi-ring arrays (~15 rings/cell) — and, with quadratic turnover
+    nonlinearity (epsilon > 0, cortical_pde_1d_chaos, Figs. S5-S8), enabling spatiotemporal chaos
+    below a critical friction xi_c propto eta/(D*tau).
+  citation:
+    page: 2
+    printed_page: "8621"
+    quote: "The case τ → ∞ has been studied theoretically previously (10, 11) and yields to actin"
+    where: "Main text p. 8621, col. 2 (citing ref. 10 = Bois et al. 2011)"
+
+- id: q_bois2011_no_cross_validation
+  kind: unstated_model
+  about:
+    - ref-10
+    - hydrodynamic_length
+    - dispersion_relation_eq7
+    - finite_domain_critical_mode
+    - cortical_pde_1d_ramp
+    - rings_per_cell_embryo_wt
+    - rings_per_cell_kkv1
+    - q_bois2011_notation_dimensional_and_active_stress_mapping
+    - q_bois2011_turnover_arrested_coarsening_and_nonlinear_dynamics
+    - bois2011/q_hannezo2015_no_cross_validation
+    - bois2011/single_species_fastest_mode
+    - bois2011/single_species_pde_eq1_3
+    - bois2011/single_species_rda_dispersion_eq15
+    - bois2011/hydrodynamic_length
+  text: >
+    No cross-record validations are entered in validations.yaml for hannezo2015 models against
+    bois2011 data, because bois2011 (ref-10) is a purely theoretical paper containing 0
+    origin: measured entries out of 53 total data in bois2011/data.yaml (32 predicted dimensionless
+    ODE/PDE/dispersion outputs, 18 reported dimensionless parameters and zero-valued boundary
+    conditions, and 3 derived algebraic flux/wavenumber identities). All shared mathematical
+    structure between the two papers is already captured by the verified ModelAtlas relations in
+    relations.yaml (including same_as families for hydrodynamic_length, diffusion_time_hydrodynamic,
+    dimensionless_contractility_chi_2d, and dispersion_relation_eq7 <->
+    bois2011/single_species_rda_dispersion_eq15). In the reverse direction (bois2011 models against
+    hannezo2015's 35 origin: measured data), zero valid cross-validations exist as well; see
+    bois2011/q_hannezo2015_no_cross_validation for the item-by-item exclusion of all 35 measured
+    data.
+  citation:
+    page: 2
+    printed_page: "8621"
+    quote: "The case τ → ∞ has been studied theoretically previously (10, 11) and yields to actin"
+    where: "Main text p. 8621, col. 2 (citing ref. 10 = Bois et al. 2011)"
+
+- id: q_totz2024_no_cross_validation
+  kind: unstated_input
+  about:
+    - critical_wavelength_eq3
+    - critical_wavelength_from_lengths
+    - critical_wavelength_dimensionless
+    - cortical_pde_1d_ramp
+    - cortical_pde_2d_anisotropic
+    - hydrodynamic_length
+    - hydrodynamic_length_from_3d
+    - hydrodynamic_length_from_wavelength
+    - turnover_diffusion_length
+    - diffusion_time_hydrodynamic
+    - finite_domain_critical_mode
+    - infinite_domain_ring_count
+    - diffusion_coeff_frap
+    - turnover_time_frap
+    - viscosity_3d_lit
+    - cortical_thickness_lit
+    - friction_2d_lit
+    - lt_derived_main
+    - lh_derived_main
+    - lh_inverted_si
+    - lambda_c_predicted_main
+    - ring_wavelength_embryo_wt
+    - ring_wavelength_larva_wt_early
+    - taenidial_wavelength_larva_wt_late
+    - ring_wavelength_src42
+    - taenidial_wavelength_moesin_rnai
+    - ring_wavelength_kkv1
+    - q_si_p15_parameter_estimates_inconsistency
+    - totz2024/q_hannezo2015_no_cross_validation
+    - totz2024/q_hannezo2015_upstream_spacing_interface
+    - totz2024/d_fig3G_L_mean
+    - totz2024/d_fig3G_L_median_iqr
+    - totz2024/d_fig4C_species_spacings
+    - totz2024/L_Vcardui_p8
+    - totz2024/L_tableS1
+    - totz2024/d_fig3A_invivo_39_6pct
+    - totz2024/d_fig3E_invivo_41_0pct
+    - totz2024/d_fig3F_w0_mean
+    - totz2024/d_fig3F_w0_median_iqr
+    - totz2024/protoridge_height_approx
+    - totz2024/protoridge_formation_duration
+    - totz2024/protoridge_onset_days
+    - totz2024/protoridge_onset_fraction
+    - totz2024/actin_filaments_per_bundle
+  text: >
+    No cross-record validations are entered in validations.yaml for hannezo2015 models (52 models)
+    against totz2024 measurements (37 origin: measured and 24 origin: reported entries): neither
+    paper cites the other, and no hannezo2015 model genuinely predicts any totz2024 measurement on
+    butterfly wing-scale experimental conditions.
+    (1) Inter-bundle actin spacings and protoridge widths (totz2024/d_fig3G_L_mean: 1.277-1.598 um
+    across 39.6%-41.0% development in V. cardui, mean 1.482 um; totz2024/d_fig3G_L_median_iqr:
+    medians 1.282-1.642 um; totz2024/d_fig4C_species_spacings: C. eurytheme flat L_2,A = 0.341 um
+    and ridged L_1,A = 0.801 um, A. vanillae flat L_2,B = 0.360 um and ridged L_1,B = 0.910 um,
+    V. cardui ridged L = 1.601 um; plus reported L_Vcardui_p8 / L_ref_Vcardui_p6 / L_tableS1 =
+    1.6 um): although critical_wavelength_eq3 (lambda_c = 2*pi*(D*tau*eta/xi)^(1/4)) and
+    critical_wavelength_from_lengths (2*pi*sqrt(l_t*l_h)) share dimension [length] and physical
+    role (periodic cortical actin spacing; cortical_pde_2d_anisotropic is non-runnable), evaluating
+    them on totz2024's butterfly data is an unconditioned cross-species comparison rather than a
+    valid on-conditions test for four reasons:
+    (a) Zero butterfly-scale inputs (0/4 for critical_wavelength_eq3, 0/2 for
+    critical_wavelength_from_lengths): totz2024 measures none of D, tau, eta, xi, l_t, or l_h in
+    developing butterfly wing scales. In hannezo2015, D = 0.04 +/- 0.03 um^2/s and tau = 15 +/- 7 s
+    (l_t = 0.775 um) were measured by FRAP in stage-15 Drosophila embryonic trachea, while Main
+    p. 3 explicitly notes that l_h "can be considered as the one fitting parameter to match the
+    observed wavelength" (using mammalian granulocyte eta_3D = 100 Pa*s, h = 100 nm, and in vitro
+    bead friction xi = 10^9 Pa*s/m -> l_h = 0.100 um) and SI p. 21 states "Both eta and xi are
+    hard to measure and estimates from the literature span over several order of magnitudes."
+    (b) Two mutually inconsistent Drosophila parameter sets within hannezo2015 itself
+    (q_si_p15_parameter_estimates_inconsistency): Main p. 3's literature inputs give lambda_c =
+    1.749 um (printed 1.8 um, overpredicting Drosophila's own embryonic WT 0.5 +/- 0.1 um by
+    3.5x), whereas SI p. 21's Drosophila-inverted l_h = 10 nm (8.18 nm exact) gives 0.553 um
+    (0.500 um exact). That Main p. 3's 1.749 um happens to sit near V. cardui's 1.60 um (while
+    overpredicting C. eurytheme flat 0.341 um by 5.1x and A. vanillae ridged 0.910 um by 1.9x,
+    and while SI's 0.553 um underpredicts V. cardui by 2.9x) is an unconditioned cross-species
+    coincidence with zero inputs taken from butterflies.
+    (c) Multi-condition/multi-species span with no varying input: d_fig3G_L_mean and
+    d_fig3G_L_median_iqr span 5 pupal development fractions and d_fig4C_species_spacings spans 5
+    surface/species spacings across a 4.7x range (requiring a quartic 488x span in xi/(D*tau*eta)
+    between V. cardui and C. eurytheme flat, and 30.5x-40.8x between ridged and flat surfaces of
+    the same butterfly species; see totz2024/q_hannezo2015_upstream_spacing_interface).
+    (d) Biophysical mechanism and geometry mismatch: hannezo2015 models a continuous viscous
+    myosin-II-contractile active gel forming unimodal circumferential rings around cylindrical
+    tracheal cells (orthoradial friction anisotropy xi_theta > 1.1*xi_z), whereas butterfly wing
+    scales form discrete longitudinal cross-linked bundles of 20-200 F-actin filaments homologous
+    to Drosophila bristles (totz2024 p. 10), A. vanillae exhibits bimodal alternating double-bundle
+    spacings (0.910 and 0.360 um) on a single upper surface that unimodal active-gel onset cannot
+    produce, and C. eurytheme's narrower lower-lamina gap L_2,A reflects edge-to-edge narrowing by
+    thick actin bundles rather than center-to-center wavelength alone.
+    (2) All 20 measured protoridge height profiles and peak buckling amplitudes
+    (protoridge_height_approx, d_fig1E-G, d_fig3A-E, d_fig3F_w0_mean, d_fig3F_w0_median_iqr,
+    d_figS1E_*, d_figS1F_ridge1-5, d_figS1J_mean_sd): hannezo2015 models a flat viscous active
+    fluid with purely in-plane flow and contains no out-of-plane elastic membrane/cuticle buckling
+    deflection model.
+    (3) All 8 developmental timing/staging measurements (dev_time_fig1B-D,
+    protoridge_onset_fraction, protoridge_onset_days, protoridge_formation_duration,
+    dev_time_fig3_40_6pct_caption, dev_time_fig3_40_7pct_text) and all 6 sampling/profile-filtering
+    counts (scales_per_timepoint, n_measurements_fig4B, profiles_initial_total,
+    profiles_excluded_phase_jump, profiles_excluded_edge_drop, profile_counts_fig3F): none
+    corresponds to any observable predicted by hannezo2015 (diffusion_time_hydrodynamic T = l_h^2/D
+    is a ms-scale cortical diffusion time, not pupal developmental staging or buckling duration).
+    In the reverse direction (totz2024 models vs hannezo2015's 35 origin: measured data), zero
+    valid cross-validations exist as well; see totz2024/q_hannezo2015_no_cross_validation.
+  citation:
+    page: 3
+    printed_page: "8622"
+    quote: "Estimating the hydrodynamic length lh is more difficult in this"
+    where: "Main text p. 8622, col. 2 (cross-validation assessment with totz2024)"
+
+- id: q_sekine2024_cross_validation_summary
+  kind: unexplained_difference
+  about:
+    - critical_wavelength_eq3
+    - critical_wavelength_from_lengths
+    - critical_wavelength_dimensionless
+    - critical_inverse_wavenumber_si_printed
+    - critical_inverse_wavenumber_si_corrected
+    - hydrodynamic_length_from_wavelength
+    - finite_domain_critical_mode
+    - infinite_domain_ring_count
+    - cortical_pde_1d_ramp
+    - cortical_pde_2d_anisotropic
+    - nonlocal_velocity_kernel_printed
+    - nonlocal_velocity_kernel_corrected
+    - turnover_diffusion_length
+    - frap_moment_recovery_eq14
+    - diffusion_coeff_frap
+    - turnover_time_frap
+    - eta_2d_lit
+    - friction_2d_lit
+    - lt_from_frap
+    - lh_inverted_si
+    - lh_inv_from_d_si
+    - ring_wavelength_embryo_wt
+    - rings_per_cell_embryo_wt
+    - alpha_sim_si
+    - phi_sim_si
+    - cell_length_si
+    - n_rings_sim_N80
+    - figs14_wavelength_histogram_data
+    - q_si_p15_parameter_estimates_inconsistency
+    - sekine2024/cable_interval_in_vivo
+    - sekine2024/d_figs1d_intervals
+    - sekine2024/st15_cluster_count
+    - sekine2024/st16_cluster_count
+    - sekine2024/d_fig1j_diameter
+    - sekine2024/d_fig1k_length
+    - sekine2024/d_fig5c_vx
+    - sekine2024/d_fig5c_vy
+    - sekine2024/d_fig5f_vx
+    - sekine2024/d_fig5f_vy
+    - sekine2024/dx_st15_0
+    - sekine2024/dy_st15_0
+    - sekine2024/dx_st16_ctrl
+    - sekine2024/dy_st16_ctrl
+    - sekine2024/q_hannezo2015_cross_validation_summary
+  text: >
+    Cross-validation of all 53 hannezo2015 models (51 runnable, 2 non-runnable) against all
+    214 origin: measured data in sekine2024 (same Hayashi lab, same wild-type Drosophila
+    embryonic stage 15-16 tracheal dorsal trunk) yields 3 out-of-sample validations in
+    validations.yaml — all targeting sekine2024/cable_interval_in_vivo = 450 +/- 13.2 nm
+    (early stage 16 fixed btl>lifeact::GFP Airyscan, N = 8 embryos, n = 294 cables, embryo-mean
+    SD) — and all 3 come out not reproduced:
+    (1) Uncalibrated Main p. 3 forward prediction (critical_wavelength_eq3 on stage-15 FRAP
+    D = 0.04 um^2/s, tau = 15 s and literature eta = 10^-5 Pa*s*m, xi = 10^9 Pa*s/m): predicts
+    1749.0 nm (printed 1.8 um), 3.89x larger than 450 +/- 13.2 nm (+1299.0 nm).
+    (2) SI Section 2.6.4 printed calibration (critical_wavelength_from_lengths with FRAP
+    l_t = 0.775 um and SI p. 21 printed rounded l_h = 10^-8 m, calibrated solely to Hannezo
+    2015's 0.5 um confocal data): predicts 553.0 nm (+103.0 nm, +22.9%, 7.8 embryo-mean SDs).
+    (3) SI Section 2.6.4 exact unrounded calibration (critical_wavelength_from_lengths with
+    FRAP l_t = 0.775 um and exact SI Eq. 11 inversion lh_inv_from_d_si = 8.175 nm): predicts
+    500.0 nm (+50.0 nm, +11.1%, 3.79 embryo-mean SDs, 10.4 nm beyond BoxGraph's close band
+    [410.4, 489.6] nm), isolating the inter-study mean shift (500 nm 2015 confocal stage-16 vs
+    450 nm 2024 Airyscan early-stage-16) and Sekine's 7.6x narrower embryo-mean SD (+/- 13.2 nm
+    vs Hannezo's +/- 100 nm per-ring SD). Note also that Hannezo's SI Section 2.6.5 simulation
+    parameters (alpha = 480, phi = 0.0014 on l = 10 um -> l_h = 20.8 nm, n = 14.68 rings/cell,
+    SI Fig. S14 peak 608 nm / mean ~680 nm) imply ~677-681 nm, even further above 450 nm
+    (not entered in validations.yaml because no hannezo2015 model outputs dimensional wavelength
+    from alpha and phi).
+    All other 213 measured data in sekine2024 are excluded from validations.yaml for exact
+    physical/structural reasons:
+    (a) d_figs1d_intervals (Supp. Fig. 1d boxplot of the exact same N = 8 embryo dataset,
+    median 446.8 nm, range 435.2-474.6 nm): stored as a 1-point table indexed by condition_index,
+    incompatible with scalar wavelength models without inventing a sweep port; same measurement
+    is already tested via scalar cable_interval_in_vivo.
+    (b) st15_cluster_count (356) and st16_cluster_count (271): pooled counts of binarized 2D
+    nanocluster/fragment ellipses across 22 and 21 ROIs (~16.2 and ~12.9 per ROI), not
+    per-cell 1D ring counts (rings_per_cell_embryo_wt = 15 to 20 per 10 um cell), so
+    finite_domain_critical_mode, infinite_domain_ring_count, and cortical_pde_1d_ramp do not
+    predict them.
+    (c) d_fig1j_diameter (2.60-3.94 um) and d_fig1k_length (16.7-24.2 um dorsal-trunk metamere
+    span TC5-DB6): no hannezo2015 model outputs tube diameter or tube length, and metamere span
+    is multicellular rather than single-cell axial length l = 10 um.
+    (d) PIV velocities d_fig5c_vx/vy and d_fig5f_vx/vy: nonlocal_velocity_kernel_corrected
+    evaluates uniform-gel velocity v_unif(x) = 0 identically (diagnostic for SI Eq. 6's printed
+    boundary sign error), not fluctuating 2D PIV speeds in a patterned/clustering cortex, and
+    sekine2024 measures no active stress sigma_a or viscosity eta.
+    (e) Tracked nanocluster steps dx_*/dy_*/dist_* and anisotropy ratios aniso_ratio_*:
+    turnover_diffusion_length requires actin turnover time tau (not camera frame interval 0.32 s),
+    frap_moment_recovery_eq14 outputs 1D bleached-profile variance [length]^2, and 1D hannezo2015
+    models have no 2D cluster-tracking or |dy|/|dx| output.
+    (f) Remaining 170+ measured data (nanocluster major/minor axes, areas, aspect ratios, KDEs,
+    OrientationJ angles/coherency, skeleton length, 28 RNAi/mutant conditions in Table 2, fusion
+    frame counts, Pearson's R colocalization, junctional RhoGEF2 ratio, ROI/screen counts, and
+    12 P-values): continuum 1D active-gel hannezo2015 models none of these observables (and
+    cortical_pde_2d_anisotropic is non-runnable).
+    In the reverse direction, see sekine2024/q_hannezo2015_cross_validation_summary.
+  citation:
+    page: 3
+    printed_page: "8622"
+    quote: "near the threshold of λc = 1.8 μm, which is slightly larger"
+    where: "Main text p. 8622, col. 2 & SI Section 2.6.4 (p. 21) vs sekine2024/cable_interval_in_vivo"

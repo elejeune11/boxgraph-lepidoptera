@@ -1,0 +1,39 @@
+id: zero_friction_ode_branch_l2
+name: reconstructed zero-friction (xi = 0) ODE nonlinear branch chi/phi vs ||rho||_2 (SI Section 2.5, Fig. S9)
+role: model
+stated:
+  page: 16
+  printed_page: "SI-10"
+  quote: "for α2 φ = 10. ||ρ||2 denotes the L2 norm"
+  where: SI Section 2.5 & Fig. S9
+reconstructed: "SI Section 2.5 states the zero-friction nonlinear ODE -alpha^-2 d_yy Psi = (chi - phi)(exp(Psi)/int exp(Psi) - 1) and plots Fig. S9 without providing continuation code; we solve the exact ODE by harmonic Fourier-cosine continuation and evaluate ||rho||_2 as labeled on Fig. S9's y-axis."
+equation: "-(alpha^2*phi)^-1 d_yy Psi = (chi/phi - 1)*(exp(Psi)/int exp(Psi) - 1); rho = (1 - phi/chi)*exp(Psi)/int exp(Psi) + phi/chi; ||rho||_2 = sqrt(int rho^2 dy)"
+inputs:
+  alpha2_phi:
+    quantity: squared_cell_to_turnover_length
+    unit: dimensionless
+  i:
+    quantity: mode_index
+    unit: dimensionless
+  target_branch:
+    quantity: rescaled_contractility_over_turnover
+    unit: dimensionless
+    curve:
+      quantity: density_l2_norm
+      unit: dimensionless
+    description: Digitized Fig. S9 branch supplying the vertical-axis values at which to evaluate chi/phi.
+outputs:
+  gamma_curve:
+    quantity: rescaled_contractility_over_turnover
+    unit: dimensionless
+    curve:
+      quantity: density_l2_norm
+      unit: dimensionless
+  gamma_at_y4:
+    quantity: rescaled_contractility_over_turnover
+    unit: dimensionless
+    description: Predicted chi/phi at vertical-axis value 4.0 (scalar convergence diagnostic).
+settings:
+  M_modes: 40
+  N_quad: 512
+stochastic: false

@@ -1,0 +1,49 @@
+id: steady_state_eq8_branch_continuation
+name: reconstructed harmonic Fourier-cosine continuation of SI Eq. (8) primary branch chi(max_rho)
+role: model
+stated:
+  page: 19
+  printed_page: "SI-13"
+  quote: "two bifurcation diagrams constructed with AUTO"
+  where: SI Section 2.6.3 (Figs. S11-S12)
+reconstructed: "SI Section 2.6.3 computes nonlinear steady-state branches of Eq. (8) using AUTO-07p without providing AUTO scripts or mesh settings; we implement a harmonic Fourier-cosine Galerkin continuation solver along the primary mode i_c branch to compare directly against the digitized Figs. S11-S12 curves."
+equation: "-alpha^-2 d_yy s + s = chi*(rho - 1); alpha^-2 d_y(rho*d_y s - d_y rho) = -phi*(rho - 1)"
+built_from:
+  - steady_state_eq8_bifurcation
+inputs:
+  alpha:
+    quantity: rescaled_cell_size
+    unit: dimensionless
+  phi:
+    quantity: rescaled_turnover
+    unit: dimensionless
+  i:
+    quantity: mode_index
+    unit: dimensionless
+  target_branch:
+    quantity: peclet_contractility
+    unit: dimensionless
+    curve:
+      quantity: dimensionless_density
+      unit: dimensionless
+    description: Digitized bifurcation curve supplying the max_rho abscissae at which to evaluate chi(max_rho).
+outputs:
+  chi_curve:
+    quantity: peclet_contractility
+    unit: dimensionless
+    curve:
+      quantity: dimensionless_density
+      unit: dimensionless
+  chi_at_max:
+    quantity: peclet_contractility
+    unit: dimensionless
+    description: Contractility chi at the largest requested max_rho point (scalar convergence diagnostic).
+  min_rho_at_max:
+    quantity: dimensionless_density
+    unit: dimensionless
+    description: Minimum trough density min(rho) at the largest requested max_rho point (positivity diagnostic).
+settings:
+  M_modes: 40
+  N_quad: 512
+  n_steps: 70
+stochastic: false

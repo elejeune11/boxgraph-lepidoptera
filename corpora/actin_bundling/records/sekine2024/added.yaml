@@ -1,0 +1,66 @@
+# Unstated probe/test inputs required to run standalone potential, force-distribution,
+# dimer ODE, and stochastic Langevin models (never placed in data.yaml).
+
+- id: probe_binding_alpha
+  quantity: binding_coordinate
+  unit: dimensionless
+  printed: "0.5"
+  basis: "Midpoint binding coordinate along a filament (0 <= alpha <= 1) used to evaluate the force-distribution equation and two-filament dimer RK4 solver; the paper specifies 0 <= alpha <= 1 without a canonical single-dimer test value."
+  alternatives: ["0.25", "0.75"]
+  stands_for: "alpha_{c,h}^{cl} or alpha_{m,h}^{m} in SI Notes p. 2 (PDF p. 29)"
+
+- id: probe_applied_force
+  quantity: applied_force
+  unit: pN
+  printed: "1.0"
+  basis: "Unit 1 pN test force applied by a connector ABD to verify force conservation of the printed vs corrected filament force-distribution equation."
+  alternatives: ["0.1", "5.0"]
+  stands_for: "f_{m,h}^m or f_{c,h}^{cl} in SI Notes p. 2 (PDF p. 29)"
+
+- id: probe_stretch_length_f
+  quantity: segment_length
+  unit: um
+  printed: "0.105"
+  basis: "5% axial stretch above L_0^f = 0.1 um to evaluate harmonic filament stretching energy and restoring force in Eq. S5."
+  alternatives: ["0.095", "0.110"]
+  stands_for: "l^f in Eq. S5 (PDF p. 29)"
+
+- id: probe_stretch_length_cl_arm
+  quantity: segment_length
+  unit: um
+  printed: "0.0185"
+  basis: "Small axial stretch (~5.7%) above crosslinker arm rest length L_0^{cl}/2 = 0.0175 um to evaluate Eq. S8."
+  alternatives: ["0.0165", "0.0200"]
+  stands_for: "l_{c,h}^{cl} in Eq. S8 (PDF p. 29)"
+
+- id: probe_bending_angle
+  quantity: bending_angle
+  unit: rad
+  printed: "0.1"
+  basis: "Small bending deflection angle (0.1 rad) to evaluate connector bending energy and torque in Eqs. S7 and S9."
+  alternatives: ["0.05", "0.2"]
+  stands_for: "angle between -l_hat_0 and l_hat_1 in Eqs. S7, S9 (PDF p. 29)"
+
+- id: dimer_initial_deflection
+  quantity: crosslinker_deflection
+  unit: um
+  printed: "0.002"
+  basis: "Small initial transverse deflection (2 nm, ~11% of arm half-length L_0^{cl}/2 = 17.5 nm) of the crosslinker central particle in the deterministic 2-filament + 1-crosslinker RK4 relaxation and stability test."
+  alternatives: ["0.0005", "0.004"]
+  stands_for: "initial transverse perturbation delta_y(0) of r_c^{cl} in Eqs. S1, S3, S5, S8, S9"
+
+- id: dimer_t_max
+  quantity: observation_time
+  unit: s
+  printed: "0.0005"
+  basis: "Integration horizon (0.5 ms = 10 RK4 steps at dt = 5e-5 s), corresponding to ~5.3 crosslinker bending relaxation times at eta_cyto = 1 Pa*s so mechanical relaxation reaches equilibrium while RK4 blowup at eta_cyto = 0.1 Pa*s is cleanly detected."
+  alternatives: ["0.0003", "0.001"]
+  stands_for: "integration horizon for deterministic dimer RK4 test of Eqs. S1-S9"
+
+- id: langevin_obs_time
+  quantity: observation_time
+  unit: s
+  printed: "0.32"
+  basis: "Observation window equal to the live-imaging frame interval (0.32 s) for testing single-filament anisotropic Brownian displacement ratio under Eqs. S1a-S1b; the paper does not state the simulation sampling interval between t_n and t_{n+2} in Fig. 4d."
+  alternatives: ["0.16", "0.64"]
+  stands_for: "frame interval between tracked cluster positions in Fig. 4d / Eqs. S1a-S1b"
