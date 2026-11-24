@@ -1,0 +1,39 @@
+- id: ref_grids_init_n
+  run: run_grids_init_default
+  setting: grid_mult
+  factors: [1, 2]
+  mode: multiply
+  output: noise_var_init
+  tolerance: "5%"
+  tolerance_basis: "added: verifies empirical variance of ModelC_2D.run() initial Gaussian noise converges to 1e-4 as N doubles from 128 to 256"
+  tolerance_added: true
+
+- id: ref_stepper_tol
+  run: run_stepper_audit_low
+  setting: tol_factor
+  factors: [1, 2]
+  mode: divide
+  output: R_final
+  tolerance: "2%"
+  tolerance_basis: "added: verifies adaptive ModelC_2D.run() domain size at t=20 is converged as TOL tightens from 1e-4 to 5e-5"
+  tolerance_added: true
+
+- id: ref_native_low_tol
+  run: run_native_low
+  setting: tol_factor
+  factors: [1, 2]
+  mode: divide
+  output: alpha_fit
+  tolerance: "15%"
+  tolerance_basis: "added: checks convergence of fitted coarsening exponent alpha in unmodified adaptive ModelC_2D.run() as TOL tightens from 1e-4 to 5e-5 (15% reflects finite-box N=48 sensitivity)"
+  tolerance_added: true
+
+- id: ref_euler_low_dt
+  run: run_euler_low_shared
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: alpha_fit
+  tolerance: "15%"
+  tolerance_basis: "added: checks temporal step convergence (dt = 0.4 -> 0.2) of fitted coarsening exponent alpha from live ModelC_2D.euler_step() at N=64"
+  tolerance_added: true

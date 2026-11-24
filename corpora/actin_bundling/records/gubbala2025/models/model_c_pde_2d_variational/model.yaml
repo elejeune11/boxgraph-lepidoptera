@@ -1,0 +1,37 @@
+id: model_c_pde_2d_variational
+name: 2D Fourier pseudospectral Model C PDE solver with variational E_3 sign (corrected Eq. 10)
+role: model
+stated:
+  page: 3
+  printed_page: "6245"
+  quote: "The expanded forms of these coupled equations can be expressed as"
+  where: "Eqs. (5), (8), (9)-(10), SI Eq. (S25)"
+equation: "Same as model_c_pde_2d_eq9_10 except -(1/2)*E_3*(...) = -(delta F_elastic/delta Q_ij)^st instead of printed +(1/2)*E_3*(...) in Eq. (10)/Eq. (S20)"
+variant_of: model_c_pde_2d_eq9_10
+corrections:
+  - equation: "Eq. (10) / SI Eq. (S18) / SI Eq. (S20)"
+    change: "Negate the cubic elastic term from +(1/2)*E_3*(...) to -(1/2)*E_3*(...)"
+    evidence: "Direct Euler-Lagrange differentiation of Eq. (5) f_elastic = (1/2)E_1(d_i Q_jk)^2 + (1/2)E_3 Q_ij d_i Q_kl d_j Q_kl yields +delta F_E3/delta Q_ij = +(1/2)E_3(...), so dQ/dt = -delta F/delta Q (Eq. 8) requires -(1/2)E_3(...); confirmed numerically (dF_E3/dt ratio = +1 vs -1) and by the paper's own linear stability Eq. (S25) which prints -(E_3/sqrt(beta))(k_x^2 - k_y^2) Q_xx~."
+inputs:
+  beta: {quantity: ldg_quartic_coeff, unit: dimensionless}
+  chi: {quantity: anchoring_strength, unit: dimensionless}
+  gamma: {quantity: timescale_ratio, unit: dimensionless}
+  E1: {quantity: elastic_constant_dimless, unit: dimensionless}
+  E3: {quantity: elastic_constant_dimless, unit: dimensionless}
+  phi0: {quantity: mean_lipid_concentration, unit: dimensionless}
+  noise_var: {quantity: noise_variance, unit: dimensionless}
+  k_cut_ratio: {quantity: wavenumber_ratio, unit: dimensionless}
+  t_fit_start: {quantity: time_dimless, unit: dimensionless}
+  t_end: {quantity: time_dimless, unit: dimensionless}
+outputs:
+  alpha_fit: {quantity: coarsening_exponent, unit: dimensionless}
+  R_final: {quantity: domain_size_dimless, unit: dimensionless}
+  R_growth_ratio: {quantity: domain_size_ratio, unit: dimensionless}
+  Q_max_final: {quantity: nematic_order_magnitude, unit: dimensionless}
+settings:
+  n_grid: 64
+  L_box: 62.5
+  dt: 0.4
+  seed: 0
+  n_samples: 6
+stochastic: true

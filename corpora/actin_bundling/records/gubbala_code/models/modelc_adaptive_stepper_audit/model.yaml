@@ -1,0 +1,36 @@
+id: modelc_adaptive_stepper_audit
+name: live ModelC_2D.run() adaptive timestepper, T += DT_new time-shift, and mass-drift audit
+role: model
+software: true
+stated:
+  file: ModelC_Cubic.py
+  lines: "208-225"
+  quote: "self.DT = self.DT * self.xp.power(self.TOL / delta, 1 / 5)"
+  where: "ModelC_Cubic.py::ModelC_2D.run adaptive time-stepping loop (lines 208-225)"
+equation: "Delta = (mean|phi-phi_half| * mean|Qxx-Qxx_half| * mean|Qxy-Qxy_half|)^(1/3); DT_new = DT_old * (TOL / Delta)^(1/5); T += DT_new (adding DT_new after advancing fields by DT_old)"
+inputs:
+  beta: {quantity: ldg_quartic_coeff, unit: dimensionless}
+  gamma: {quantity: timescale_ratio, unit: dimensionless}
+  chi: {quantity: anchoring_strength, unit: dimensionless}
+  E1: {quantity: elastic_constant_dimless, unit: dimensionless}
+  E3: {quantity: elastic_constant_dimless, unit: dimensionless}
+  phi0: {quantity: mean_lipid_concentration, unit: dimensionless}
+  dt_init: {quantity: time_dimless, unit: dimensionless}
+  tol: {quantity: error_tolerance, unit: dimensionless}
+  t_end: {quantity: time_dimless, unit: dimensionless}
+  k_cut_ratio: {quantity: wavenumber_ratio, unit: dimensionless}
+outputs:
+  reported_time_step1: {quantity: time_dimless, unit: dimensionless}
+  true_time_step1: {quantity: time_dimless, unit: dimensionless}
+  max_time_shift: {quantity: time_dimless, unit: dimensionless}
+  final_dt: {quantity: time_dimless, unit: dimensionless}
+  phi_mean_drift: {quantity: mass_drift, unit: dimensionless}
+  R_final: {quantity: domain_size_dimless, unit: dimensionless}
+  blowup_flag: {quantity: blowup_indicator, unit: dimensionless}
+settings:
+  n_grid: 32
+  L_box: 31.25
+  skips: 1
+  tol_factor: 1.0
+  seed: 0
+stochastic: true

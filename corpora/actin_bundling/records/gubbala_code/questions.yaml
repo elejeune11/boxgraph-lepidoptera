@@ -1,0 +1,363 @@
+- id: q_cubic_line91_realspace_fft_bug
+  kind: possible_error
+  about:
+    - modelc_cubic_operator_audit
+    - modelc_cubic_operator_fixed
+    - modelc_linear_stability_probe
+    - modelc_linear_stability_fixed
+    - cmp_lsa_E3_eff_code_vs_paper
+    - cmp_lsa_E3_eff_fixed_vs_paper
+    - run_euler_high_shared
+  text: >
+    Critical Fourier-space bug in ModelC_Cubic.py line 91 (ModelC_2D.cubic): the second-derivative term
+    -2 Q_kl d_k d_l Q_ij of Eq. (10) is coded as `2 * Q[k][l] * self.ifft2(-K[k] * K[l] * Q[i][j]).real`,
+    multiplying wavevectors -K[k]*K[l] pointwise into the REAL-SPACE array Q[i][j] instead of its Fourier
+    transform Q_fft[i][j] (even though qxx_fft and qxy_fft were passed as arguments to cubic() and used
+    only in grad() on lines 72-73). Consequences verified directly on live ModelC_2D:
+    (1) On the smooth periodic 2D test field (run_cubic_audit_high), ModelC_2D.cubic() has 116.3% L2 error
+    vs exact Eq. (10) (118.1% error on the second-derivative term).
+    (2) On a spatially uniform constant nematic field (Qxx = 1, Qxy = 0, where every derivative is 0),
+    ModelC_2D.cubic() produces a spurious cross-shaped artifact along x = 0 and y = 0 with amplitude
+    max|0.5*E3*fxx| = 4.013 at E3 = 2, N = 32 (4.198 at E3 = 1, N = 64), breaking translational invariance.
+    (3) In the linearized dispersion around (phi = 1, Qxx = 1, Qxy = 0) at E1 = E3 = 2 (run_lsa_high),
+    the bend-splay anisotropy E3_eff_linear collapses from +2.0 (SI Eq. S28) to -0.0106 (a >99% loss,
+    failing cmp_lsa_E3_eff_code_vs_paper), leaving omega_xx nearly isotropic (~4 + E1*k^2).
+    (4) Crucially, this bug explains why ModelC_Cubic.py does NOT blow up at high actin (E1 = E3 = 2,
+    beta = 1, run_euler_high_shared blowup_flag = 0) despite BOTH the non-variational +E3/2 sign AND
+    the coupled-binodal backward-diffusion instability (|Q|_eq = 1.0543 > E1/E3 = 1 identified in
+    gubbala2025/q_coupled_binodal_illposedness): because line 91 wipes out the -2 Q_kl d_k d_l Q_ij
+    operator, effective nematic diffusivity remains strictly positive (~E1). Fixing line 91 to Q_fft[i][j]
+    with variational sign (modelc_cubic_operator_fixed, modelc_linear_stability_fixed) restores zero
+    uniform residual, +1.000 dissipation ratio, and exact E3_eff_linear = +2.0000.
+  citation:
+    file: ModelC_Cubic.py
+    lines: "89-91"
+    quote: "2 * Q[k][l] * self.ifft2(-K[k] * K[l] * Q[i][j]).real)"
+
+- id: q_cubic_nonvariational_plus_sign
+  kind: possible_error
+  about:
+    - cubic_prefactor_code
+    - modelc_cubic_operator_audit
+    - modelc_cubic_operator_fixed
+    - run_cubic_audit_high
+  text: >
+    ModelC_2D.euler_step() lines 126-127 and 133-134 add `+ 0.5 * self.E3 * fxx_fft` and `+ 0.5 * self.E3 *
+    fxy_fft`, matching printed Eq. (10) / Eq. (S20)'s non-variational +E3/2 sign (opposite to variational
+    gradient descent dQ/dt = -delta F/delta Q, which requires -0.5 * E3 * F_ij) while restoring the factor
+    1/2 omitted in SI Eqs. (S30) and (S32). Combined with the line 91 real-space Q bug, live
+    ModelC_2D.cubic() yields free-energy dissipation ratio -0.312 (increasing F_E3 on the test field rather
+    than decreasing it; fixing line 91 alone yields -1.000, and fixing both line 91 and the sign yields
+    +1.000000 in run_cubic_fixed_high).
+  citation:
+    file: ModelC_Cubic.py
+    lines: "126-127"
+    quote: "0.5 * self.E3 * fxx_fft)"
+
+- id: q_missing_inv_S_in_anchoring
+  kind: possible_error
+  about:
+    - modelc_linear_stability_probe
+    - run_lsa_beta2
+    - cmp_lsa_chi_eff_beta2_vs_code
+    - beta_nonunit_probe
+  text: >
+    In ModelC_2D.euler_step() lines 126, 133, and 140, the anchoring couplings are coded as `- 0.5 * self.CHI
+    * anch_qxx_fft`, `- 0.5 * self.CHI * anch_qxy_fft`, and `- self.CHI * anch_phi_fft`, completely omitting
+    the 1/S = sqrt(BETA) prefactor from Eqs. (9)-(10) and SI Eqs. (S19)-(S20) (matching the same omission in
+    SI Eqs. S29-S32). This omission is masked at BETA = 1 (S = 1), where cmp_lsa_chi_eff_beta1_vs_code
+    reproduces chi_eff = 1.0000, but at BETA = 2 (run_lsa_beta2) live ModelC_2D.euler_step() gives
+    chi_eff_linear = 0.7071 = 1/sqrt(2) (failing cmp_lsa_chi_eff_beta2_vs_code) and shifts high-k stability
+    bounds from +-2 to +-4.828.
+  citation:
+    file: ModelC_Cubic.py
+    lines: "126-140"
+    quote: "self.GAMMA * self.K ** 2 * dt * (f_eff_fft - self.CHI * anch_phi_fft))"
+
+- id: q_kappa_anch_abs_chi_vs_si_s27
+  kind: possible_error
+  about:
+    - modelc_linear_stability_probe
+    - run_lsa_high
+    - run_lsa_perp_chi
+    - cmp_lsa_chi_min_code_vs_paper
+    - cmp_lsa_chi_max_code_vs_paper
+  text: >
+    Line 114 computes `kappa_anch = 1 + np.abs(self.CHI) / 2`. This settles two open questions in gubbala2025:
+    (1) it explains why SI Eqs. (S29) and (S31) printed an undefined `kappa` instead of `lambda`, and (2) it
+    confirms the code follows main-text p. 3's `1 + |chi|/2` rather than SI Eq. (S13)'s `1 + chi/2` or SI
+    Sec. 3.2's `lambda_tilde + chi/2`. However, because of `abs(CHI)`, live ModelC_2D.euler_step() has high-k
+    anchoring stability bounds -2.000 <= chi <= +2.000 at beta = 1, failing to reproduce SI Eq. (S27)'s
+    printed lower bound -2/3 = -0.666667 (cmp_lsa_chi_min_code_vs_paper) and remaining high-k stable at
+    perpendicular anchoring chi = -1 (run_lsa_perp_chi).
+  citation:
+    file: ModelC_Cubic.py
+    lines: "114"
+    quote: "kappa_anch = 1 + np.abs(self.CHI) / 2"
+
+- id: q_shared_noise_initial_condition
+  kind: choice
+  about:
+    - noise_mean_code
+    - noise_std_code
+    - modelc_grids_and_init
+    - run_grids_init_readme
+    - run_euler_low_shared
+    - run_euler_low_indep
+  text: >
+    ModelC_2D.run() line 148 draws a SINGLE Gaussian noise array (`scale = 1e-2`, variance 1e-4 matching SI
+    p. 17) and assigns it identically to all three fields on lines 151-153: `phi = noise + self.PHI_AVG`,
+    `Qxx = noise`, `Qxy = noise`. Live run_grids_init_readme confirms init_qxx_qxy_corr = 1.000000 and
+    init_phi_qxx_corr = 1.000000. This undisclosed choice locks the initial director everywhere to
+    theta in {pi/8, 5*pi/8} and correlates Q 100% with phi - phi_0. On N=64, L=62.5 low-actin runs
+    (t = 200..1000), shared noise increases fitted coarsening exponent alpha relative to independent
+    Gaussian draws (run_euler_low_shared vs run_euler_low_indep).
+  citation:
+    file: ModelC_Cubic.py
+    lines: "148-153"
+    quote: "noise = self.prng.normal(loc=0, scale=1e-2, size=(self.N, self.N))"
+
+- id: q_adaptive_timestep_bugs_and_choices
+  kind: possible_error
+  about:
+    - dt_adapt_exp_code
+    - dt_min_abort_code
+    - modelc_adaptive_stepper_audit
+    - run_stepper_audit_low
+    - cmp_stepper_reported_t1_vs_dt0
+  text: >
+    ModelC_2D.run() lines 208-224 settle gubbala2025 SI p. 16's typo by multiplying by self.DT
+    (`self.DT = self.DT * self.xp.power(self.TOL / delta, 1 / 5)`), but reveal four bugs/undisclosed choices:
+    (1) Timestamp shift bug (line 224): fields are integrated for DT_old, then self.DT is overwritten by
+    DT_new on line 223, and THEN `T += self.DT` adds DT_new instead of DT_old. On step 0 (DT_init = 1e-8),
+    reported_time_step1 = 2.799e-6 overshoots true_time_step1 = 1e-8 by ~280x (failing
+    cmp_stepper_reported_t1_vs_dt0), accumulating max_time_shift = 0.302 by t = 20.
+    (2) Discards the more accurate half-step solution (phi_half_2, Qxx_half_2, Qxy_half_2) and advances
+    with the coarse 1-step Euler update (lines 214-216), with no step rejection when delta > TOL, no safety
+    factor, and no dt_max cap.
+    (3) Uses spatial L1 mean `average(abs(...))` (unstated in SI p. 16) and exponent 1/5 (appropriate for
+    RK45, sluggish for 1st-order IMEX Euler).
+    (4) Hidden abort cutoff `self.DT < 1e-12` (line 180, misleadingly labelled "picoseconds" for
+    dimensionless time) and NaN/Inf check applied only to phi (line 175).
+  citation:
+    file: ModelC_Cubic.py
+    lines: "214-224"
+    quote: "self.DT = self.DT * self.xp.power(self.TOL / delta, 1 / 5)"
+
+- id: q_tol_1e4_vs_paper_1e6
+  kind: possible_error
+  about:
+    - tol_default_code
+    - tol_readme
+    - paper_adaptive_dt_tol
+  text: >
+    Both ModelC_Cubic.py line 35 (`self.TOL = 1e-4`) and README.md line 32 (`mc.TOL = 1e-4`) set the
+    adaptive time-stepping error tolerance 100x looser than gubbala2025 SI Sec. 4 (p. 16), which prints
+    tau = 10^-6. In addition, self.TOL is overloaded in ModelC_2D.cubic() line 101 as the global grid-sum
+    tracelessness assertion bound `assert sum(abs(trF)) < self.TOL`.
+  citation:
+    file: ModelC_Cubic.py
+    lines: "35"
+    quote: "self.TOL = 1e-4"
+
+- id: q_k_zero_mode_floor_mass_leak
+  kind: possible_error
+  about:
+    - modelc_grids_and_init
+    - modelc_linear_stability_probe
+    - run_grids_init_readme
+    - run_lsa_high
+    - run_euler_low_shared
+  text: >
+    ModelC_2D.grids() line 54 sets `self.K[self.K == 0] = 1 / self.N ** 2` (yielding k_zero_mode = 3.81e-6
+    at N = 512, 9.77e-4 at N = 32) instead of keeping K = 0 at the zero mode (likely a leftover from a
+    hydrodynamics solver that divided by K, alongside dead method curl_fft on lines 68-69). Because
+    K[0,0] != 0, the conserved Cahn-Hilliard equation leaks mean concentration <phi> at rate
+    mass_leak_rate = 1.91e-7 (N = 32), producing measurable drift phi_mean_drift ~ 4e-6 to 8e-6 over
+    t = 1000 at N = 64 instead of exact machine-precision mass conservation.
+  citation:
+    file: ModelC_Cubic.py
+    lines: "54"
+    quote: "self.K[self.K == 0] = 1 / self.N ** 2"
+
+- id: q_dx_formula_and_dealias_details
+  kind: choice
+  about:
+    - dealias_cutoff_code
+    - modelc_grids_and_init
+    - run_grids_init_readme
+    - run_grids_init_default
+  text: >
+    ModelC_2D.grids() line 49 computes `self.DX = self.L / (self.N - 1)` (exported by export_params() to
+    params.txt as 0.97847 for L = 500, N = 512), inconsistent with the periodic FFT spacing L / N = 0.97656
+    used in fftfreq on lines 50-51 (DX itself is unused inside the solver). For de-aliasing (lines 56-62),
+    the code builds a square (L_inf) mask `|kx| < (2/3)*max([kx, ky])` where max(kx) = (N/2 - 1)*2*pi/L
+    (strict inequality, retaining 43.84% of modes at N = 512 vs 44.44% = 4/9) and applies this 2/3 rule to
+    cubic nonlinearities (phi^3, Tr(Q^2)Q, cubic()) as well as quadratic ones.
+  citation:
+    file: ModelC_Cubic.py
+    lines: "49-56"
+    quote: "self.DX = self.L / (self.N - 1)"
+
+- id: q_defaults_dead_code_and_settled_si_typos
+  kind: choice
+  about:
+    - N_default_code
+    - L_default_code
+    - dt_init_default_code
+    - time_default_code
+    - skips_default_code
+    - gamma_default_code
+    - unused_r_code
+    - k6_stab_coeff_code
+    - run_lsa_high
+  text: >
+    Constructor defaults in ModelC_Cubic.py (N=128, L=128, DT=1e-8, TIME=1000, SKIPS=10, GAMMA=1.0,
+    E1=E3=1.0) differ from README.md (N=512, L=500, DT=1e-6, TIME=100, SKIPS=100, GAMMA=0.1, E1=E3=1.0)
+    and main text Sec. 2.1 (E1=E3=0.1, phi0=0.3 low actin; E1=E3=2, phi0=0.75 high actin; Fig. S6 up to
+    t=30000). Initial DT and SKIPS are unstated in the paper; `curl_fft()` (lines 68-69) and `r = 1e-3`
+    (line 173) are dead unused code. Meanwhile, ModelC_Cubic.py directly settles three gubbala2025 SI
+    discrepancies: (1) line 138 implements `phi_^3 - phi_` (confirming SI Eqs. S29/S31's `phi^2 - phi` is
+    a misprint); (2) line 113 implements `bulk_q = (1 + phi_) - self.BETA * TrQ2` (confirming Eq. 10 over
+    Eq. 4's literal Tr(Q^4)); (3) live euler_step (run_lsa_high) gives c12 = 2*gamma*k^2/sqrt(beta),
+    confirming SI Eq. (S24)'s printed 4*gamma*k^2/sqrt(beta) is off by a factor of 2; and (4) lines 139-142
+    confirm unit coefficient 1 on the k^6 stabilization term.
+  citation:
+    file: ModelC_Cubic.py
+    lines: "30-46"
+    quote: "self.N = 128"
+
+- id: q_high_actin_metastability_and_coarsening_diff
+  kind: unexplained_difference
+  about:
+    - run_euler_high_shared
+    - cmp_euler_high_alpha
+    - paper_alpha_high_actin_sim
+  text: >
+    At the paper's high-actin parameters (E1 = E3 = 2, phi0 = 0.75, beta = 1), phi0 = 0.75 lies outside
+    the coupled bulk spinodal phi_sp = sqrt((1 + 1/(2*beta))/3) = 0.7071 (d^2 f_eff / dphi^2 = +0.1875 > 0),
+    making the uniform state metastable. On N = 64, L = 62.5 (run_euler_high_shared), live ModelC_2D.euler_step()
+    stays finite past t = 1000 (masked by the line 91 bug), nucleates droplets late (t ~ 200-400), and
+    exhibits rapid transient growth alpha_fit > 0.25 over t = 200..1000 (failing cmp_euler_high_alpha
+    against paper_alpha_high_actin_sim '< 0.25'), reflecting both the shorter pre-asymptotic horizon
+    compared to the paper's 512^2 GPU runs up to t = 30000 (Fig. S6) and the line 91 boundary-axis artifact.
+  citation:
+    file: ModelC_Cubic.py
+    lines: "89-91"
+    quote: "2 * Q[k][l] * self.ifft2(-K[k] * K[l] * Q[i][j]).real)"
+
+- id: q_cpu_reduced_box_and_h5py_shim
+  kind: choice
+  about:
+    - modelc_coarsening_native_run
+    - modelc_coarsening_euler_step
+    - run_native_low
+    - run_euler_low_shared
+    - run_euler_low_indep
+    - run_euler_high_shared
+    - t_end_native_cpu
+  text: >
+    ModelC_Cubic.py defaults to GPU (cupy) and imports h5py unconditionally at top level (line 3) to write
+    .h5 files on a 512^2 lattice up to t = 30000 (4 realizations). Because the validation environment lacks
+    cupy and h5py, our software adapters inject a tiny in-memory h5py shim before importing ModelC_Cubic
+    on device='cpu' (without modifying any file in corpus/actin_bundling/code/gubbala_code) and run reduced
+    periodic boxes (N = 48, L = 46.875 for unmodified adaptive ModelC_2D.run() over t = 0..400; N = 64,
+    L = 62.5 for fixed-dt ModelC_2D.euler_step() over t = 0..1000; 2 replicates for low actin, 1 for high
+    actin) preserving exact paper grid spacing dx = 500/512 = 0.9765625 so every call finishes in < 20 s
+    on CPU. Finite-box effects and the shorter horizon introduce ~10-15% realization spread in fitted alpha.
+  citation:
+    file: ModelC_Cubic.py
+    lines: "3-23"
+    quote: "import h5py"
+
+- id: q_gubbala2025_measured_validation_gaps
+  kind: unstated_input
+  about:
+    - modelc_coarsening_native_run
+    - modelc_coarsening_euler_step
+    - modelc_adaptive_stepper_audit
+    - t_fit_start_fig3_10x
+    - gubbala2025/R_ratio_low_exp_fig3_end
+    - gubbala2025/R_ratio_high_exp_fig3_end
+    - gubbala2025/R_ratio_fig3_exp_low
+    - gubbala2025/R_ratio_fig3_exp_high
+    - gubbala2025/R_ratio_fig3_inset_no_actin_exp
+    - gubbala2025/R_ratio_figS2_exp_low
+    - gubbala2025/R_ratio_figS2_exp_high
+    - gubbala2025/P_kappa_fig4c_exp_no_actin
+    - gubbala2025/P_kappa_fig4c_exp_low
+    - gubbala2025/P_kappa_fig4c_exp_high
+    - gubbala2025/actin_density_figS1_exp
+    - gubbala2025/domain_size_no_actin
+  text: >
+    Complete audit of all 16 `origin: measured` datums in gubbala2025 against all 8 live software
+    models in gubbala_code (and confirming gubbala_code holds zero `origin: measured` datums, so
+    no gubbala2025 model validates against gubbala_code):
+    (1) Directly validated (2 scalar datums -> 6 checked validations in validations.yaml):
+    `gubbala2025/R_ratio_low_exp_fig3_end` ("~1.55") and `gubbala2025/R_ratio_high_exp_fig3_end`
+    ("~1.55") are dimensionless scalar `domain_size_ratio` measurements directly predicted by
+    `R_growth_ratio` of `modelc_coarsening_native_run` and `modelc_coarsening_euler_step` (both
+    shared and independent noise) over the exact 7180/720 = 9.9722x window (`t_fit_start_fig3_10x`
+    = 100.28 to `time_default_code` = 1000). Their formal BoxGraph verdict is `no verdict` solely
+    because the scalar datums in gubbala2025/data.yaml carry approximate "~1.55" eye-reads; against
+    the calibrated digitized 7000 s endpoints (`fig3_exp_low`: 1.571 [1.541, 1.602]; `fig3_exp_high`:
+    1.522 [1.504, 1.540]), live `ModelC_Cubic.py` overshoots low actin by +10.4% to +16.1%
+    (1.734-1.824) and high actin by +33.5% to +50.6% (2.031-2.292).
+    (2) Excluded 5 calibrated digitized coarsening curves (`R_ratio_fig3_exp_low`,
+    `R_ratio_fig3_exp_high`, `R_ratio_fig3_inset_no_actin_exp`, `R_ratio_figS2_exp_low`,
+    `R_ratio_figS2_exp_high`): all 5 are tables indexed by physical `time` in seconds (`s`,
+    dimension `[time]`), whereas every gubbala_code model takes strictly `dimensionless`
+    `time_dimless` inputs and outputs a scalar `R_growth_ratio` rather than a curve port `R(t)/R(t0)`
+    parameterized by an explicit physical timescale `t_c = Gamma^-1` (which neither ModelC_Cubic.py,
+    README.md, nor gubbala2025 states; Pint rightly rejects `s -> dimensionless`). In addition,
+    `ModelC_2D` has no clean zero-nematic (`Q = 0`) no-actin mode for `R_ratio_fig3_inset_no_actin_exp`
+    (lines 151-153 always initialize Qxx = Qxy = noise and couple `-0.5 * Tr(Q^2)` into phi).
+    (3) Excluded 3 calibrated Fig. 4C experimental curvature distributions (`P_kappa_fig4c_exp_no_actin`,
+    `P_kappa_fig4c_exp_low`, `P_kappa_fig4c_exp_high`): the B-spline boundary-extraction and curvature
+    KDE pipeline (SI Sec. 2.3 / Fig. S3) is omitted from the released ActinNematics repository
+    (`ModelC_Cubic.py` only writes HDF5 field snapshots), so no gubbala_code model outputs `P(kappa)`.
+    (4) Excluded 6 remaining measured datums: `actin_density_figS1_exp` (experimental fluorescence
+    group-classification input `rho/rho_max`, not a PDE output), `domain_size_no_actin` ("≈ 1 to 10"
+    um: physical length requires unstated interface width `l_c = sqrt(lambda_tilde)` to map from
+    dimensionless `R_final`, plus no-actin mode is absent), `coarsening_time_actin` ("≈ 2" hr) and
+    `intermediate_time_start` ("≈ 10" min) (qualitative experimental observation window bounds),
+    `actin_unbinding_time` ("≳ 2" hr: actin unbinding explicitly outside Model C, p. 5), and
+    `actin_filament_length_exp` ("3 to 5" um: microscopic filament length not modeled by continuum Q).
+  citation:
+    file: ModelC_Cubic.py
+    lines: "34"
+    quote: "self.TIME = 1000"
+
+- id: q_gubbala2025_high_actin_regime_mismatch_live
+  kind: unexplained_difference
+  about:
+    - modelc_coarsening_native_run
+    - modelc_coarsening_euler_step
+    - t_fit_start_fig3_10x
+    - gubbala2025/R_ratio_high_exp_fig3_end
+    - gubbala2025/R_ratio_fig3_exp_high
+    - gubbala2025/R_ratio_figS2_exp_high
+  text: >
+    Across all three live ModelC_Cubic.py high-actin validations at the exact Fig. 3 9.9722x time
+    ratio (`t_fit_start = 100.28`, `t_end = 1000`, implied `t_c = 7.18 s`), high actin
+    `(E1, E3, phi0) = (2, 2, 0.75)` coarsens FASTER than low actin `(0.1, 0.1, 0.3)` and strongly
+    overshoots gubbala2025's measured high-actin Fig. 3 ratio (~1.55 eye-read; 1.522 [1.504, 1.540]
+    digitized at 7000 s): unmodified `ModelC_2D.run()` gives 2.040 +/- 0.359 (vs low 1.744 +/- 0.098),
+    fixed-dt `euler_step` shared noise gives 2.031 +/- 0.064 (vs low 1.824 +/- 0.020), and
+    independent noise gives 2.292 +/- 0.101 (vs low 1.734 +/- 0.018). Extended live `euler_step`
+    trajectory diagnostics on `N = 64, L = 62.5` up to `t = 5000` (seed 0, shared noise) resolve the
+    mechanism: because `phi0 = 0.75 > phi_sp = 0.7071` is metastable (and line 91 masks blowup by
+    destroying `-2 Q_kl d_k d_l Q_ij`), live `ModelC_2D` exhibits a slow nucleation plateau
+    (`t = 50..200`, `R = 1.87 -> 2.10`), followed by SI Fig. S2's rapid Regime II transient
+    (`t = 200..2000`, `R = 2.10 -> 5.48`, `alpha ~ 0.42`; keeping `R(3000)/R(300) = 2.53` and
+    `R(5000)/R(500) = 2.10` above 2.0), before entering late Regime III arrest only for `t > 2000-3000`
+    (`R = 5.48 -> 6.40` over `t = 2000..5000`, `alpha(3000..5000) = 0.092`, where `R = 6.40` also
+    reaches ~10% of the `L = 62.5` CPU box). This quantitatively corroborates
+    `gubbala2025/q_digitize_settles_deferred_and_timescale`: Fig. 3's `720..7180 s` window maps to
+    GPU horizon `t_tilde = 3008..30000` (`t_c ~ 0.239 s`), which cannot be reproduced on a CPU
+    `N = 64` box without severe finite-box saturation.
+  citation:
+    file: ModelC_Cubic.py
+    lines: "89-91"
+    quote: "2 * Q[k][l] * self.ifft2(-K[k] * K[l] * Q[i][j]).real)"
+

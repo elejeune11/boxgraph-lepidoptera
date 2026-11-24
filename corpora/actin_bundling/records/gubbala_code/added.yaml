@@ -1,0 +1,58 @@
+# Added probe inputs and CPU-budget horizon choices not stated in ModelC_Cubic.py or gubbala2025.
+
+- id: beta_nonunit_probe
+  quantity: ldg_quartic_coeff
+  unit: dimensionless
+  printed: "2"
+  basis: "Non-unit Landau-de Gennes quartic coefficient beta = 2 (S = 1/sqrt(2) != 1) to expose the missing 1/S = sqrt(beta) factor in ModelC_2D.euler_step() anchoring terms (lines 126, 133, 140), which is hidden at beta = 1."
+  alternatives: ["0.5", "4"]
+  stands_for: "BETA in ModelC_2D.euler_step()"
+
+- id: chi_perp_probe
+  quantity: anchoring_strength
+  unit: dimensionless
+  printed: "-1"
+  basis: "Perpendicular anchoring test value chi = -1 (inside (-2, -2/3)) to distinguish ModelC_2D.euler_step()'s kappa_anch = 1 + |chi|/2 (high-k stable for chi >= -2) from SI Eq. (S27)'s 1 + chi/2 (high-k unstable for chi < -2/3)."
+  alternatives: ["-0.5", "-1.5"]
+  stands_for: "CHI in ModelC_2D.euler_step()"
+
+- id: t_fit_start_euler_cpu
+  quantity: time_dimless
+  unit: dimensionless
+  printed: "200"
+  basis: "Start of intermediate power-law fitting window after spinodal nucleation for CPU euler_step coarsening runs (matching gubbala2025/pde_t_fit_start_dimless)."
+  alternatives: ["300"]
+  stands_for: "t_fit_start for R(t) ~ t^alpha power-law fit"
+
+- id: t_end_native_cpu
+  quantity: time_dimless
+  unit: dimensionless
+  printed: "400"
+  basis: "Reduced dimensionless final time for unmodified adaptive ModelC_2D.run() on CPU (N=48, L=46.875) to keep each run under 15 s (code default is 1000; paper Fig. S6 reaches 30000 on GPU)."
+  alternatives: ["300"]
+  stands_for: "TIME in ModelC_2D.run() CPU coarsening benchmark"
+
+- id: t_fit_start_native_cpu
+  quantity: time_dimless
+  unit: dimensionless
+  printed: "120"
+  basis: "Start of power-law fitting window after initial spinodal phase separation for the t_end = 400 native ModelC_2D.run() CPU benchmark."
+  alternatives: ["160"]
+  stands_for: "t_fit_start for native ModelC_2D.run() coarsening fit"
+
+- id: t_end_stepper_audit
+  quantity: time_dimless
+  unit: dimensionless
+  printed: "20"
+  basis: "Short integration horizon sufficient to capture the adaptive step-size ramp from DT = 1e-8 to O(0.1), the T += self.DT timestamp shift, and K[0,0] = 1/N^2 mass drift in < 2 s on CPU."
+  alternatives: ["10", "50"]
+  stands_for: "TIME in ModelC_2D.run() adaptive-stepper audit"
+
+- id: t_fit_start_fig3_10x
+  quantity: time_dimless
+  unit: dimensionless
+  printed: "100.28"
+  basis: "Dimensionless normalization time t_fit_start = (720 / 7180) * 1000 = 100.28 matching gubbala2025 Fig. 3's exact experimental time ratio t_end / t_0 = 7180 s / 720 s = 9.9722 when integrated to ModelC_2D's constructor default t_end = TIME = 1000 (equivalent to an unstated CPU-affordable timescale mapping t_c = t_bar / t_tilde = 7.18 s; gubbala2025 Sec. 3 p. 5 leaves t_c = Gamma^-1 unstated, while SI Fig. S6's GPU horizon t_tilde_max = 30000 implies t_c = 7180 / 30000 = 0.2393 s and t_fit_start = 3008.4)."
+  alternatives: ["80", "200"]
+  stands_for: "t_fit_start matching Fig. 3's t_0 = 720 s at t_end = 1000 (implied t_c = 7.18 s)"
+

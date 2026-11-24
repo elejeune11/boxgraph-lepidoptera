@@ -1,0 +1,1291 @@
+- id: q_eq10_e3_sign
+  kind: possible_error
+  about:
+    - model_c_pde_2d_eq9_10
+    - model_c_pde_2d_variational
+    - cubic_elastic_variational_sign_eq10
+    - elastic_free_energy_eq5
+  text: >
+    The cubic elastic term in printed Eq. (10) (p. 3), SI Eq. (S18) (p. 15), and SI Eq. (S20) (p. 15)
+    appears with the opposite sign of variational gradient descent dQ/dt = -delta F/delta Q (Eq. 8).
+    Direct Euler-Lagrange differentiation of Eq. (5) / Eq. (S14) f_elastic = (1/2)E_1(d_i Q_jk)^2 +
+    (1/2)E_3 Q_ij d_i Q_kl d_j Q_kl yields +(delta F_E3/delta Q_ij)^st = +(1/2)E_3(d_i Q_kl d_j Q_kl -
+    2 d_k Q_ij d_l Q_kl - 2 Q_kl d_k d_l Q_ij - (1/2) delta_ij (d_k Q_ml)^2), so -delta F_E3/delta Q_ij
+    requires -(1/2)E_3(...), not +(1/2)E_3(...). Numerically on a smooth periodic 2D test field
+    (run_e3_variational_sign), printed Eq. (10) gives dF_E3/dt ratio = -1.000000 (increasing F_E3)
+    whereas the negated variational form gives +1.000000. Moreover, the paper's own linear stability
+    Eq. (S25) (p. 16) prints -(E_3/sqrt(beta))(k_x^2 - k_y^2) Q_xx~, which follows ONLY from the
+    variational sign -(1/2)E_3(...), not the printed +(1/2)E_3(...).
+  citation: {page: 3, printed_page: "6245", quote: "The expanded forms of these coupled equations can be expressed as", where: "Eq. (10)"}
+
+- id: q_eq4_vs_eq10_trQ4_factor2
+  kind: possible_error
+  about:
+    - ldg_bulk_free_energy_eq4
+    - ldg_bulk_free_energy_eq10_consistent
+    - nematic_saturation_eq4_s5
+    - nematic_saturation_from_eq4_exact
+  text: >
+    Factor-of-2 discrepancy in 2D between the printed bulk free energy Eq. (4) / SI Eq. (S5) and the
+    evolution equations Eq. (10) / Eq. (S18) / Eq. (S20). For a 2D symmetric traceless Q tensor,
+    Tr(Q^2) = 2(Q_xx^2 + Q_xy^2) and Tr(Q^4) = 2(Q_xx^2 + Q_xy^2)^2 = (1/2)(Tr(Q^2))^2. Thus the
+    printed Eq. (4) quartic term (beta/4) Q_ij Q_jk Q_kl Q_li = (beta/2)(Q_xx^2 + Q_xy^2)^2 yields
+    -(delta f_bulk/delta Q_ij)^st = [1 + phi - (beta/2) Q_kl Q_kl] Q_ij with critical points
+    Q_xx = +-sqrt((1+phi)/beta) (sqrt(2/beta) at phi = 1), whereas Eq. (10), Eq. (S18), Eq. (S20)
+    print [1 + phi - beta Q_kl Q_kl] Q_ij and SI p. 13 states critical points +-sqrt(A/(2*beta))
+    (giving 1/sqrt(beta) at phi = 1), which instead follow from f_bulk = (beta/4)(Q_ij Q_ij)^2 -
+    ((1+phi)/2) Q_ij Q_ij.
+  citation: {page: 3, printed_page: "6245", quote: "The bulk free energy, which controls the isotropic-to", where: "Eq. (4)"}
+
+- id: q_eq3_vs_s33_S_convention
+  kind: possible_error
+  about:
+    - nematic_q_tensor_eq3
+    - nematic_saturation_eq4_s5
+    - linear_stability_s24_s28
+  text: >
+    Factor-of-2 convention mismatch between Eq. (3) and SI Sec. 3.3 (p. 15). Under Eq. (3),
+    Q_ij = S(n_i n_j - (1/2) delta_ij), a director parallel to the x-axis (n = (1, 0)) yields
+    Q_xx = S/2 and Q_yy = -S/2 (Tr(Q^2) = S^2/2). However, SI Sec. 3.3 states "the director is
+    parallel to the x-axis, giving Q_xx = S and Q_xy = 0. We choose S = 1/sqrt(beta) to satisfy the
+    non-linear bulk free energy in Eq. S20." Taking Q_xx = S makes Q_xx/S = 1 in the anchoring term
+    of Eq. (S19), producing chi*(k_x^2 - k_y^2) in Eq. (S24); under Eq. (3) strictly, Q_xx/S = 1/2
+    would halve the anchoring coefficient unless Q_ij = 2*S*(n_i n_j - delta_ij/2).
+  citation: {page: 15, printed_page: "SI-6", quote: "the director is parallel to the x-axis, giving", where: "SI Sec. 3.3"}
+
+- id: q_eq6_3d_vs_2d_frank
+  kind: possible_error
+  about:
+    - frank_elastic_constants_eq6
+    - frank_elastic_constants_2d
+    - k33_over_k11_printed
+    - cmp_k33_k11_2d_variant
+  text: >
+    Eq. (6) (p. 3) cites Beris & Edwards (Ref. 45) for k_11 = 2 E_1 S^2 - (2/3) E_3 S^3 and
+    k_33 = 2 E_1 S^2 + (4/3) E_3 S^3, which is the 3D mapping derived from Q_ij = S(n_i n_j - delta_ij/3).
+    That 3D formula reproduces the paper's printed k_33/k_11 = 2.5 at E_3/E_1 = 1, S = 1. However,
+    substituting the paper's own 2D tensor Q_ij = S(n_i n_j - delta_ij/2) (Eq. 3) into Eq. (5) yields
+    k_11 = 2 E_1 S^2 - E_3 S^3 and k_33 = 2 E_1 S^2 + E_3 S^3, which gives k_33/k_11 = 3.0 at
+    E_3/E_1 = 1, S = 1 and bounds -2/S <= E_3/E_1 <= 2/S.
+  citation: {page: 3, printed_page: "6245", quote: "first set bounds on E1 and E3. We relate kii and Ei", where: "Eq. (6)"}
+
+- id: q_p3_E3_lower_bound_typo
+  kind: possible_error
+  about:
+    - elastic_ratio_bounds_p3
+    - elastic_ratio_bounds_eq6_corrected
+    - E3_over_E1_min_S1
+  text: >
+    Below Eq. (6) on p. 3 (6245), the paper prints "-1.5S <= E_3/E_1 <= 3/S". Solving k_33 =
+    2 E_1 S^2 + (4/3) E_3 S^3 >= 0 (with E_1 >= 0, S > 0) gives E_3/E_1 >= -3/(2S) = -1.5/S, not
+    -1.5*S. The misprint is masked at the paper's parameter choice beta = 1 (S = 1), where
+    -1.5*S = -1.5/S = -1.5, but gives the wrong bound for any S != 1 (e.g., at S = 2: -3.0 vs. -0.75).
+  citation: {page: 3, printed_page: "6245", quote: "Given the constraints kii", where: "Sec. 2.1"}
+
+- id: q_coupled_binodal_illposedness
+  kind: possible_error
+  about:
+    - coupled_binodal_coexistence
+    - model_c_pde_2d_eq9_10
+    - model_c_pde_2d_variational
+    - run_pde_high_printed
+    - cmp_binodal_phi_Ld_vs_nominal
+  text: >
+    The paper's linear stability analysis (SI Sec. 3.3, pp. 15-16) linearizes around a nominal
+    nematic state phi = +1 with |Q| = 1/sqrt(beta), yielding the marginal bound beta >= (E_3/E_1)^2,
+    and chooses beta = 1, E_3 = E_1 right on that boundary. However, because the bulk free energy
+    couples phi and Q via -((1+phi)/2) Q_ij Q_ij, exact common-tangent thermodynamic coexistence at
+    beta = 1 shifts the coexisting phases from +-1 to phi_Lo = -1.1929 and phi_Ld = +1.2233
+    (mu_coex = -0.5045). In the true Ld phase, equilibrium nematic order is |Q|_eq =
+    sqrt((1+phi_Ld)/(2*beta)) = 1.0543 > 1, making the effective perpendicular nematic diffusivity
+    E_1 - E_3 |Q|_eq = -0.0543 E_1 < 0 (weakly ill-posed backward diffusion). At high stiffness
+    (E_1 = E_3 = 2), our 2D pseudospectral simulations blow up around t ~ 900-1100 for both E_3 signs,
+    whereas reducing E_3 slightly below E_1/|Q|_eq = 1.897 (e.g., E_3 = 1.8) restores long-time
+    stability and reproduces slowed late-time coarsening.
+  citation: {page: 16, printed_page: "SI-7", quote: "For the above expressions to be positive, we need to have", where: "SI Sec. 3.3"}
+
+- id: q_eqS2_curvature_denominator
+  kind: possible_error
+  about:
+    - boundary_curvature_s2
+    - boundary_curvature_s2_corrected
+    - cmp_curv_circle_printed
+    - cmp_curv_circle_corrected
+  text: >
+    SI Eq. (S2) (p. 13 / SI-4) prints kappa = |x'y'' - y'x''| / (x' + y')^(3/2), omitting the squares
+    on x' and y' in the standard planar curvature denominator ((x')^2 + (y')^2)^(3/2). As printed,
+    Eq. (S2) is dimensionally wrong ([length]^(1/2) instead of 1/[length]), diverges where x' + y' = 0,
+    and yields complex/NaN values on half of any closed circular loop, failing to reproduce the paper's
+    stated constant normalized curvature kappa = 1 for circular domains (p. 5, Fig. 4).
+  citation: {page: 13, printed_page: "SI-4", quote: "The unsigned curvature", where: "SI Eq. (S2)"}
+
+- id: q_eqS29_S31_phi2_kappa_typos
+  kind: possible_error
+  about:
+    - model_c_pde_2d_eq9_10
+    - pde_grid_N
+    - adaptive_dt_tol
+  text: >
+    SI Sec. 4 (p. 16 / SI-7) contains multiple notation and typographical errors in the numerical
+    implementation equations: (1) Eqs. (S29) and (S31) print phi^2 - phi instead of phi^3 - phi
+    (replacing phi^3 with phi^2 makes the double-well unbounded below and causes blowup by t ~ 91 in
+    our 2D solver); (2) Eqs. (S29) and (S31) write an undefined parameter kappa in place of the
+    dimensionless line tension lambda (kappa denotes boundary curvature in SI Sec. 2.3); (3) Eqs.
+    (S29)-(S32) omit the factor 1/S multiplying chi (inconsequential only when beta = 1 => S = 1) and
+    omit the explicit factor 1/2 before E_3{.} in Eqs. (S30) and (S32); (4) the adaptive time-step
+    update on p. 16 is printed as dt_new = (tau/Delta)^(1/5), missing the multiplicative dt_old factor.
+  citation: {page: 16, printed_page: "SI-7", quote: "After applying the forward Euler discretization for a time step", where: "SI Eqs. (S29)-(S32)"}
+
+- id: q_lsa_s24_s26_discrepancies
+  kind: possible_error
+  about:
+    - linear_stability_s24_s28
+    - linear_stability_s24_s28_corrected
+  text: >
+    SI Sec. 3.3 linear stability Eqs. (S24)-(S26) (p. 16 / SI-7) contain four algebraic discrepancies:
+    (1) Linearizing -(1/2) Q_ij Q_ij = -(Q_xx^2 + Q_xy^2) in Eq. (S19) around Q_xx = 1/sqrt(beta)
+    yields +(2*gamma/sqrt(beta))*k^2*Q_xx~, half of the printed +(4*gamma/sqrt(beta))*k^2*Q_xx~ in
+    Eq. (S24); (2) Eqs. (S24)-(S25) write +c_12 Q_xx~ = -omega_12 Q_xx~ and +c_21 phi~ = -omega_21 phi~,
+    making omega_12 < 0 and omega_21 < 0, yet the text immediately below asserts that omega_12 and
+    omega_21 are "strictly positive" (and calls decay rates omega_i "growth rates"); (3) Eq. (S26)
+    prints dQ_xy~/dt = -E_1 k^2 Q_xy~, omitting the non-vanishing cubic elastic contribution
+    -(E_3/sqrt(beta))*(k_x^2 - k_y^2)*Q_xy~; (4) Requiring only diagonal positivity omega_phi >= 0
+    and omega_xx >= 0 overlooks the coupled 2x2 Jacobian determinant det(M) = omega_phi*omega_xx -
+    c_12*c_21, which becomes negative as k -> 0 when beta < 1/4 (exact) or beta < 1/2 (printed Eq. S24).
+  citation: {page: 16, printed_page: "SI-7", quote: "Substituting the above expressions in Eqs. S19-S20 gives", where: "SI Eqs. (S24)-(S26)"}
+
+- id: q_lambda_three_definitions
+  kind: possible_error
+  about:
+    - effective_line_tension_p3
+    - effective_line_tension_s13
+    - nondim_parameters_s32
+  text: >
+    Three different expressions for the dimensionless line tension lambda appear in the paper:
+    (1) main text p. 3 prints lambda = 1 + |chi|/2; (2) SI Sec. 3.1 Eq. (S13) (p. 14) derives
+    lambda = 1 + chi/2 (without absolute value), which is the form actually used in SI Eq. (S27)
+    (p. 16) to obtain -2/3 <= chi <= 2 (since 1 + |chi|/2 would yield -2 <= chi <= 2 for chi < 0);
+    (3) SI Sec. 3.2 (p. 15) prints lambda = lambda_tilde + chi/2, mixing the dimensional parameter
+    lambda_tilde = l_c^2 with the dimensionless ratio chi = alpha/l_c^2 (dividing Eq. S17 by l_c^2
+    gives lambda = 1 + chi/2; SI p. 15 also writes "5 dimensional numbers" for dimensionless numbers).
+  citation: {page: 15, printed_page: "SI-6", quote: "The non-dimensional surface tension parameter is", where: "SI Sec. 3.2"}
+
+- id: q_si_anchoring_and_index_slips
+  kind: possible_error
+  about:
+    - anchoring_free_energy_eq7_s13
+    - elastic_free_energy_eq5
+  text: >
+    Three minor algebraic/wording slips in SI Sec. 3.1-3.3: (1) below Eq. (S11) (p. 14), the text
+    states "If the nematic director n is aligned with the interface normal grad phi, then the
+    anchoring energy is zero", which is backwards for f_anch = (1/2)*chi*(n . grad phi)^2 (it vanishes
+    when n is perpendicular to grad phi, i.e., parallel to the interface); (2) Eq. (S15) (p. 14) omits
+    the integration-by-parts minus sign in delta/delta Q_ij (d_m Q_mk d_n Q_nk) = -2 d_i d_k Q_jk and
+    prints a minus sign in entry (2,1) (d_x^2 Q_xy - d_x d_y Q_yy); (3) Eqs. (S18) and (S20) (p. 15)
+    print the trace subtraction as -(1/2) delta_ij (d_k Q_jl)^2 (violating Einstein summation with free
+    index j repeated three times, giving half the trace) instead of Eq. (10)'s -(1/2) delta_ij
+    (d_k Q_ml)^2.
+  citation: {page: 14, printed_page: "SI-5", quote: "If the nematic director", where: "SI Sec. 3.1 Eq. (S11)"}
+
+- id: q_experimental_discrepancies_main_vs_si
+  kind: possible_error
+  about:
+    - guv_main_DPPC_pct
+    - guv_si_DPPC_pct
+    - guv_alt_DOPC_pct
+    - melting_duration_main
+    - rupture_duration_si
+  text: >
+    Several experimental reporting inconsistencies occur between the main text and SI: (1) SI Sec. 1.5
+    (p. 12) states "F-actin spontaneously adsorbed to the liquid-ordered phase of lipid bilayer via
+    electrostatic attraction to DOTAP", directly contradicting main text pp. 1, 2, and 4 which state
+    DOTAP and F-actin partition into the liquid-disordered (Ld) phase; (2) main text Sec. 2.2 (p. 4)
+    lists 35% DPPC with no ATTO 647-DOPE whereas SI Sec. 1.3 (p. 11) lists 34.7% DPPC + 0.3%
+    ATTO 647-DOPE, and the second vesicle recipe in SI Sec. 1.3 (52.7% DOPC, 24.7% DPPC, 8% DOTAP,
+    0.3% DSPE-PEG2k-FITC, 0.3% ATTO 647-DOPE) sums to only 86.0% because the cholesterol fraction is
+    omitted; (3) SI Sec. 2.1 (p. 12) refers to "Fig. 2 of the main text" instead of Fig. 3 for the
+    average over 3 low and 2 high experimental samples; (4) heating at 37 degC is given as 15 min on
+    p. 4 (to melt Lo domains) vs. at least 20 min on SI p. 12 (for GUV rupture).
+  citation: {page: 12, printed_page: "SI-3", quote: "F-actin spontaneously adsorbed to the liquid-ordered phase", where: "SI Sec. 1.5"}
+
+- id: q_unstated_time_length_mapping
+  kind: unstated_input
+  about:
+    - nondim_parameters_s32
+    - pde_t_end_dimless
+    - pde_t_fit_start_dimless
+    - dim_M_probe
+    - dim_Gamma_probe
+  text: >
+    Sec. 3 (p. 5) states that "The non-dimensional simulation time is scaled to match the duration of
+    the experiment" (720 s to 7180 s in Fig. 3; 10 s to 6000 s in Fig. S2), while SI Fig. S6 plots
+    dimensionless times t = 10 to 30000, but neither the main text nor the SI reports the numerical
+    time-rescaling factor t_c = Gamma^-1, length scale l_c = sqrt(lambda_tilde), or dimensional values
+    of M, Gamma, lambda_tilde, alpha, L_1, L_3.
+  citation: {page: 5, printed_page: "6247", quote: "The non-dimensional simulation time is scaled to match the duration", where: "Sec. 3"}
+
+- id: q_pde_cpu_domain_and_dt_choice
+  kind: choice
+  about:
+    - model_c_pde_2d_eq9_10
+    - model_c_pde_2d_variational
+    - run_pde_low_printed
+    - run_pde_low_variational
+    - run_pde_high_printed
+    - run_pde_high_variational_stab
+  text: >
+    The paper integrates Eqs. (9)-(10) on a GPU using a 512^2 lattice (L = 500, dx = 500/512 =
+    0.9765625) averaged over 4 realizations up to dimensionless t = 30000 (Fig. S6). To keep CPU
+    execution fast (<20 s per run), our runs preserve the exact paper spatial resolution dx = 500/512
+    on a reduced periodic box N = 64, L = 62.5 with fixed time steps (dt = 0.4 for low actin, dt = 0.15
+    for high actin; 2 replicates for low actin, 1 for high actin) over t = 0..1200 (power-law fit
+    over t = 200..1200). Finite-box effects and the shorter time horizon cause ~10-15% realization
+    spread in fitted alpha compared to the 512^2 GPU ensemble.
+  citation: {page: 16, printed_page: "SI-7", quote: "Consider a square lattice of size N 2 where N = 512 and length L = 500", where: "SI Sec. 4"}
+
+- id: q_figure_digitization_deferred
+  kind: reading
+  about:
+    - R_ratio_no_actin_fig3_end
+    - R_ratio_low_sim_fig3_end
+    - R_ratio_high_sim_fig3_end
+    - R_ratio_low_exp_fig3_end
+    - R_ratio_high_exp_fig3_end
+  text: >
+    Calibrated digitization of the plotted curves in Fig. 3 (R(t)/R_0 vs. t for experiments and
+    simulations), Fig. 4(A)-(C) (curvature distributions P(kappa)), Fig. S1 (5 experimental actin
+    densities rho/rho_max), Fig. S2 (3-regime full growth curves), and Fig. S6 (structure factors
+    S(k, t) and self-similar master curves k_m^2 S(k, t)) is deferred to the separate digitize:gubbala2025
+    stage; the Fig. 3 endpoint values entered in data.yaml carry approximate '~' markers.
+  citation: {page: 6, printed_page: "6248", quote: "Average size of lipid domains, R(t), is plotted as a function of time t", where: "Fig. 3"}
+
+- id: q_eqS8_cayley_hamilton_3d_in_2d
+  kind: possible_error
+  about:
+    - ldg_bulk_free_energy_eq4
+    - nematic_q_tensor_eq3
+  text: >
+    SI Sec. 3.1 Eq. (S8) (p. 13 / SI-4) invokes the 3D Cayley-Hamilton theorem
+    Q^3 - Tr(Q) Q^2 + (1/2)(Tr(Q)^2 - Tr(Q^2)) Q - (det Q) I = 0, and p. 14 (SI-5) simplifies it for
+    traceless Q to Q^3 = (1/2) Tr(Q^2) Q + (det Q) I before substituting the 2D identity
+    det Q = -(1/2) Tr(Q^2). In 2D, the Cayley-Hamilton theorem is instead Q^2 - Tr(Q) Q + (det Q) I = 0,
+    yielding Q^2 = (1/2) Tr(Q^2) I and Q^3 = (1/2) Tr(Q^2) Q (without the +(det Q) I term). Applying the
+    3D formula to a 2D traceless matrix yields the false identity Q^3 = (1/2) Tr(Q^2) (Q - I), whose
+    trace is -Tr(Q^2) != 0 even though Tr(Q^3) = 0 identically for any 2D traceless matrix.
+  citation: {page: 14, printed_page: "SI-5", quote: "due to the traceless property of the Q tensor. In 2D", where: "SI Sec. 3.1 Eq. (S8)"}
+
+- id: q_high_actin_pde_fast_regime_mismatch
+  kind: unexplained_difference
+  about:
+    - run_pde_high_variational_stab
+    - cmp_pde_high_alpha_var_stab
+    - cmp_pde_high_Rratio_fig3
+    - alpha_high_actin_sim_printed
+    - R_ratio_high_sim_fig3_end
+  text: >
+    In run_pde_high_variational_stab (variational 2D PDE with stabilized E_3 = 1.8, E_1 = 2, phi_0 = 0.75,
+    N = 64, L = 62.5, dt = 0.15, fitted over t = 200..1200), the computed coarsening exponent is
+    alpha = 0.405 and growth ratio R(1200)/R(200) = 2.04, which is faster than both alpha = 1/4 and
+    alpha = 1/3 rather than reproducing the paper's printed alpha < 0.25 (p. 5, Fig. 3) and eye-read
+    Fig. 3 ratio ~1.32. As SI Fig. S2 (p. 18) shows, high-actin simulations pass through an intermediate
+    "fast" coarsening regime (faster than low-actin) before crossing over to a late-time "slow" arrested
+    regime (diagnostic evaluation of the same solver over t = 1000..3000 yields alpha = 0.156 < 0.25 and
+    R(3000)/R(1000) = 1.19). Because the paper omits its dimensionless time-to-seconds mapping, the shared
+    window t = 200..1200 samples the fast transient rather than the late slow regime, and
+    run_pde_high_variational_stab uses 1 replicate without a dt refinement in refinements.yaml.
+  citation: {page: 5, printed_page: "6247", quote: "In the high actin density samples, coarsening is slower than interface-driven growth", where: "Sec. 3 / Fig. 3 / Fig. S2"}
+
+- id: q_abstract_vs_results_alpha_bound
+  kind: overstated_claim
+  about:
+    - alpha_low_actin_sim_printed
+    - alpha_high_actin_sim_printed
+  text: >
+    The Abstract (p. 1 / 6243) states "finding R(t) ~ t^alpha with alpha < 1/4 for different actin
+    network stiffnesses" and Introduction (p. 2 / 6244) states "with growth exponents alpha < 0.25 for
+    varying densities", whereas Sec. 3 (p. 5 / 6247) and Fig. 3 (p. 6 / 6248) report alpha approx 0.25
+    (consistent with alpha = 1/4) for low actin density and alpha < 0.25 only for high actin density.
+  citation: {page: 1, printed_page: "6243", quote: "finding R(t) B ta with a o 1/4 for", where: "Abstract"}
+
+- id: q_si_methods_active_copy_paste
+  kind: possible_error
+  about:
+    - guv_alt_DOPC_pct
+    - guv_alt_DPPC_pct
+    - guv_alt_DOTAP_pct
+  text: >
+    SI Sec. 1.2 (p. 11 / SI-2) is titled "Actin and myosin preparation" yet describes only actin
+    purification and labeling (no myosin preparation is reported, although passive HMM is used for surface
+    treatment in Sec. 1.4), and SI Sec. 1.3 (p. 11 / SI-2) states that the second GUV formulation was
+    formed "to achieve the lowest area fraction sampled amongst the active samples", contradicting the
+    main text's statement that this study considers passive actin-membrane composites without activity
+    (p. 1). This points to protocol text carried over from an earlier active-matter study.
+  citation: {page: 11, printed_page: "SI-2", quote: "to achieve the lowest area fraction sampled amongst the active samples", where: "SI Sec. 1.3"}
+
+- id: q_audit_si_sec4_imex_prose_and_dt_exponent
+  kind: possible_error
+  about:
+    - model_c_pde_2d_eq9_10
+    - adaptive_dt_tol
+  text: >
+    Two additional discrepancies appear in SI Sec. 4 (p. 16 / SI-7) alongside those in
+    q_eqS29_S31_phi2_kappa_typos: (1) the text states "All linear terms are treated implicitly, with the
+    exception of the dampening terms, where only one of the terms is implicit", whereas Eqs. (S31)-(S32)
+    treat the linear reaction terms -phi and +Q_ij explicitly (only the gradient operators gamma*kappa*k^4,
+    k^6, and E_1*k^2 are implicit); and (2) the adaptive step update writes exponent 1/5 in
+    dt_new = (tau/Delta)^(1/5) (characteristic of a 4th-order scheme with O(dt^5) local error) despite
+    describing a 1st-order forward Euler IMEX discretization (O(dt^2) local error, exponent 1/2).
+  citation: {page: 16, printed_page: "SI-7", quote: "All linear terms are treated implicitly, with the exception of the dampening terms", where: "SI Sec. 4"}
+
+- id: q_audit_nondim_s32_lambda_prose
+  kind: reading
+  about:
+    - nondim_parameters_s32
+    - effective_line_tension_s13
+    - effective_line_tension_p3
+  text: >
+    Audit reading note: SI Sec. 3.2 (p. 15 / SI-6) literally prints "lambda = lambda_tilde + chi/2" in
+    prose (mixing dimensional lambda_tilde = l_c^2 with dimensionless chi), whereas dividing Eq. (S17)'s
+    -(lambda_tilde + alpha/2) grad_bar^2 phi by l_c^2 yields lambda = 1 + chi/2. Model
+    nondim_parameters_s32 implements lambda = 1 + chi/2 from Eq. (S17) rather than the dimensionally
+    inconsistent prose formula (which is logged in q_lambda_three_definitions). Preserved as the first
+    reader's scope judgement.
+  citation: {page: 15, printed_page: "SI-6", quote: "The non-dimensional surface tension parameter is", where: "SI Sec. 3.2"}
+
+- id: q_audit_bounds_S1_symbolic_eval
+  kind: reading
+  about:
+    - E3_over_E1_min_S1
+    - E3_over_E1_max_S1
+    - elastic_ratio_bounds_p3
+    - elastic_ratio_bounds_eq6_corrected
+  text: >
+    Audit reading note: Page 3 (6245) prints symbolic bounds -1.5*S <= E_3/E_1 <= 3/S rather than
+    explicitly printing the evaluated numbers -1.5 and 3 at S = 1. The first reader recorded -1.5 and 3
+    under conditions {nematic_order_magnitude: "1"} (implied by beta = 1 on p. 4) to evaluate
+    elastic_ratio_bounds_p3 and elastic_ratio_bounds_eq6_corrected, where the printed and corrected lower
+    bounds coincide at S = 1 while diverging for S != 1 (tested via run_bounds_p3_S2 and
+    run_bounds_eq6_corr_S2). Preserved as the first reader's judgement.
+  citation: {page: 3, printed_page: "6245", quote: "Given the constraints kii Z 0 and E1 Z 0", where: "Sec. 2.1"}
+
+- id: q_digitize_fig3_and_figS2_powerlaw_deviations
+  kind: unexplained_difference
+  about:
+    - R_ratio_fig3_sim_low
+    - R_ratio_fig3_exp_low
+    - R_ratio_figS2_left_sim_low
+    - cmp_powerlaw_fig3_sim_low_curve
+    - cmp_powerlaw_fig3_exp_low_curve
+    - cmp_powerlaw_figS2_left_sim_low_curve
+  text: >
+    Calibrated digitization of Fig. 3 (p. 6) and SI Fig. S2 (p. 18) shows quantitative deviations from
+    exact R(t)/R_0 = (t/t_0)^(1/4) scaling in all three low-actin power-law curve comparisons (while
+    both alpha = 1/3 reference lines are reproduced and the no-actin inset experiment is close):
+    (1) in Fig. 3 top (cmp_powerlaw_fig3_sim_low_curve, not reproduced), the low-actin simulation
+    follows effective slope alpha = 0.236 over t = 850..7180 s and reaches 1.724 [1.718, 1.730] at
+    7180 s, 3.0% below (7180/720)^(1/4) = 1.777; (2) in Fig. 3 bottom (cmp_powerlaw_fig3_exp_low_curve,
+    not reproduced), the low-actin experiment exhibits a slow early transient over t = 800..1500 s,
+    reaching 1.571 [1.541, 1.602] at 7000 s (~11% below (7000/720)^(1/4) = 1.766, overall alpha = 0.215),
+    although its late slope over t = 1500..7000 s recovers to alpha = 0.247; and (3) in SI Fig. S2 left
+    (cmp_powerlaw_figS2_left_sim_low_curve, not reproduced), normalizing at t_0 = 60 s includes the
+    early fast transient (alpha = 0.288 over t = 100..600 s before crossing to alpha = 0.236 over
+    t = 700..6000 s), placing the curve 7-11% above (t/60)^(1/4) (3.432 vs. 3.162 at t = 6000 s).
+  citation: {page: 6, printed_page: "6248", quote: "domain coarsening is hindered to a E 0.25 in the presence of low actin", where: "Fig. 3"}
+
+- id: q_digitize_settles_deferred_and_timescale
+  kind: reading
+  about:
+    - R_ratio_fig3_sim_no_actin
+    - R_ratio_fig3_sim_low
+    - R_ratio_fig3_sim_high
+    - R_ratio_fig3_inset_no_actin_ref
+    - R_ratio_figS2_left_sim_high
+    - R_ratio_figS2_sim_low
+    - R_ratio_figS2_sim_high
+    - S_k_figS6a_t30000
+    - S_k_figS6b_t30000
+    - run_pde_high_variational_stab
+    - pde_t_end_dimless
+  text: >
+    Digitization note (2026-11-24): 45 calibrated figure readings across Fig. 3, Fig. 4, SI Fig. S1,
+    Fig. S2, and Fig. S6 settle q_figure_digitization_deferred and clarify both
+    q_unstated_time_length_mapping and q_high_actin_pde_fast_regime_mismatch: (1) digitized Fig. 3
+    simulation endpoints confirm the eye-read values (low 1.724 [1.718, 1.730], high 1.324
+    [1.321, 1.328] at t = 7180 s; no-actin dashed line 2.134 [2.129, 2.140] at 7000 s); (2) comparing
+    Fig. S6's dimensionless horizon t_tilde = 30000 (where R = 1/k_m from left/right peak positions
+    grows by R(30000)/R(100) = 4.18 for low actin with uniform alpha = 0.251 and 4.64 for high actin)
+    against Fig. 3 (t_max = 7180 s) and Fig. S2 right (R(6000 s)/R_0 = 4.27 low, 4.07 high) implies
+    a time conversion t_c = Gamma^-1 ~ 0.24 s, mapping Fig. S2 left's early fast high-actin regime
+    (t = 100..600 s, digitized alpha = 0.429, before late arrest alpha = 0.088) to t_tilde ~ 400..2500
+    and directly matching run_pde_high_variational_stab (alpha = 0.405 over t_tilde = 200..1200);
+    (3) the Fig. 3 bottom inset dashed alpha = 1/3 guide line (fig3_inset_no_actin_ref, slope 0.332)
+    is shifted ~5.3% vertically above (t/10)^(1/3) for visual separation from the square markers; and
+    (4) Fig. S2 left normalizes at t_0 = 60 s (leaving high-actin 3.66 above low-actin 3.43 at 6000 s),
+    whereas Fig. S2 right normalizes at an earlier time so low-actin (4.27) overtakes high-actin (4.07)
+    near t ~ 4000 s.
+  citation: {page: 6, printed_page: "6248", quote: "Each data set is normalized by the domain", where: "Fig. 3 / Fig. S2 / Fig. S6"}
+
+- id: q_weirich2017_tactoid_regime_contrast
+  kind: unexplained_difference
+  about:
+    - anchoring_free_energy_eq7_s13
+    - effective_line_tension_s13
+    - anchoring_elastic_crossover
+    - linear_stability_s24_s28
+    - coarsening_power_law
+    - weirich2017/tactoid_aspect_ratio_scaling
+    - weirich2017/director_crossover_parameter
+    - weirich2017/capillary_dispersion_corrected
+    - weirich2017/tactoid_coarsening_power_law
+  text: >
+    Cross-paper ModelAtlas synthesis with weirich2017 (cited as Ref. 43 on pp. 2, 6, 7) identifies
+    three structural physical contrasts between Gubbala's 2D diffuse-interface Model C and Weirich's
+    3D sharp-interface homogeneous-tactoid theory: (1) Homogeneous Wulff cusps vs. defect-driven
+    cusps — in Weirich, sharp tactoid cusps under a uniform director require omega = gamma_A/gamma_I
+    > 1 (measured omega in [1.1, 2.2]) and small director crossover parameter gamma_A*V^(1/3)/K << 1;
+    in Gubbala, linear stability (SI Eq. S27) caps parallel anchoring at chi <= 2 (simulations use
+    chi = 1), for which 1D Cahn-Hilliard kink integration yields omega = chi/2 <= 1 (omega = 0.5 at
+    chi = 1) and exact variable-width kink tension sigma(psi) = sigma_0*sqrt(1 + chi*cos^2(psi))
+    whose Wulff stiffness sigma + sigma'' = sigma_0*(1+chi)/(1+chi*cos^2(psi))^(3/2) > 0 is strictly
+    positive for all chi > -1 (giving a smooth ellipse of aspect ratio sqrt(1+chi), never homogeneous
+    cusps). Meanwhile, Gubbala's anchoring-to-Frank crossover ratio xi_splay_eq6 = (sqrt(2)/3)*chi*R/k_11
+    is >> 1 at low actin (E_1 = E_3 = 0.1, xi ~ 35-180) and O(2-9) at high actin (E_1 = E_3 = 2),
+    showing that Gubbala's simulated tactoids arise from spatial director distortion and topological
+    defects (Weirich's bipolar/deformed regime), not Weirich's homogeneous Wulff mechanism; (2)
+    Dispersion anchoring mismatch — matching Gubbala's high-k longitudinal damping omega_phi(k, 0)
+    (stiffness 1 + 3*chi/2 from SI Sec. 3.3's Q_xx = S convention) to Weirich's exact corrected
+    capillary dispersion (stiffness 1 + 2*omega) requires omega = (3/4)*chi rather than the exact
+    kink-integrated omega = (1/2)*chi (a direct consequence of q_eq3_vs_s33_S_convention); and (3)
+    Inverted coarsening kinetics — freely diffusing 3D actin tactoids in Weirich coalesce with
+    alpha = 0.47 +/- 0.01 (~1/2), whereas isotropic lipid inclusions trapped inside Gubbala's
+    continuous 2D nematic actin network are hindered below Ostwald ripening (1/3) to alpha <= 0.25.
+  citation: {page: 7, printed_page: "6249", quote: "by reducing the role of anisotropic elasticity, one can", where: "Sec. 4 Conclusions (Ref. 43)"}
+
+- id: q_zwicker2015_cahn_hilliard_and_arrest_synthesis
+  kind: unexplained_difference
+  about:
+    - cahn_hilliard_free_energy_eq2
+    - nondim_parameters_s32
+    - coarsening_power_law
+    - linear_stability_s24_s28
+    - linear_stability_s24_s28_corrected
+    - coupled_binodal_coexistence
+    - zwicker2015/binary_free_energy_sec3
+    - zwicker2015/interface_width_w
+    - zwicker2015/interface_diffusion_rate_k0
+    - zwicker2015/lifshitz_slyozov_scaling_corrected
+    - zwicker2015/lifshitz_slyozov_scaling_printed
+    - zwicker2015/homogeneous_dispersion_eqF1
+    - zwicker2015/homogeneous_dispersion_eqF1_corrected
+    - zwicker2015/coexistence_exact_eqA1
+  text: >
+    Cross-paper ModelAtlas synthesis between gubbala2025 and zwicker2015 (which share the exact
+    passive Cahn-Hilliard phase-separation and Lifshitz-Slyozov t^(1/3) Ostwald-ripening baseline
+    under the affine order-parameter dictionary phi^B = (psi/2)*(1 + phi), a_0 = b*psi^2/8,
+    lambda_tilde = 2*kappa/b = w^2/2, l_c = w/sqrt(2), M = D_B/2, t_phi = lambda_tilde/M = 1/k_0,
+    and exact surface tension (2*sqrt(2)/3)*a_0*l_c = (1/6)*psi^2*sqrt(b*kappa)) reveals three
+    structural contrasts and three independent cross-paper error corroborations: (1) Coarsening
+    arrest mechanisms — zwicker2015 breaks local mass conservation via chemical turnover (k_b > 0),
+    completely arresting Ostwald ripening above a finite stability radius R_stab ~ (D_B*gamma*beta/k_b)^(1/3)
+    and cutting off homogeneous instability above (k_f + k_b)/k_0 = 1/4, whereas gubbala2025
+    preserves strict lipid mass conservation and instead couples phi to a non-conserved 2D nematic
+    tensor Q with anisotropic anchoring chi and cubic Frank elasticity E_3, slowing growth from
+    alpha = 1/3 to alpha <= 1/4 (log-slope discrepancy 1/12 at low actin), inducing an orientation-
+    dependent effective interface width w_eff(kx, ky; chi) = sqrt(2*[(1+3*chi/2)*kx^2 + (1-chi/2)*ky^2]/k^2),
+    softening long-wavelength bulk diffusivity from 2 to 2 - 1/(2*beta), and shifting the Ld
+    binodal outward as phi_Ld_eq = 1 + 1/(4*beta) + O(1/beta^2) (analogous to Zwicker's Gibbs-Thomson
+    Laplace-pressure binodal shift phi_-^B = 1 + gamma*beta_Z/R); (2) Origin of Zwicker p. 7's
+    dimensional typo — zwicker2015/lifshitz_slyozov_scaling_printed ((t*D_B/w^2)^(1/3)) matches
+    gubbala2025/coarsening_power_law R/R_0 = (t/t_0)^(1/3) identically across all three inputs
+    (t, D_B, w) when t_0 = 1/k_0 = w^2/D_B and R_0 = w, showing the printed RHS is normalized <R>/w
+    missing the factor w; and (3) Mutual linear-stability bug corroboration — Gubbala SI Eq. (S27)
+    independently refutes Zwicker printed Eq. (F1)'s doubled q^2 coefficient (49-50% error and
+    0.33 log-slope mismatch), while Zwicker's corrected off-binodal Eq. (F1_corrected) independently
+    refutes Gubbala printed Eq. (S24)'s doubled off-diagonal coupling c_12 (up to 97% error at
+    beta in [0.5, 5.0]).
+  citation: {page: 5, printed_page: "6247", quote: "compared to a bulk diffusion-driven growth", where: "Sec. 3 & SI Secs. 3.2-3.3"}
+
+- id: q_frohoff2021_model_c_vs_nonreciprocal_ch_synthesis
+  kind: reading
+  about:
+    - cahn_hilliard_free_energy_eq2
+    - ldg_bulk_free_energy_eq10_consistent
+    - ldg_bulk_free_energy_eq4
+    - nematic_saturation_eq4_s5
+    - nematic_saturation_from_eq4_exact
+    - nondim_parameters_s32
+    - linear_stability_s24_s28
+    - linear_stability_s24_s28_corrected
+    - coupled_binodal_coexistence
+    - frohoff2021/bulk_free_energy_eq3_A1
+    - frohoff2021/decoupled_binodals_appC
+    - frohoff2021/variational_coexistence_eqC1_C3
+    - frohoff2021/nondim_scales_eqA3_A6
+    - frohoff2021/linear_dispersion_general_eq12
+    - frohoff2021/linear_dispersion_dim_eq12_A1
+    - frohoff2021/linear_dispersion_variational_limit
+    - frohoff2021/linear_dispersion_specific_eqB1
+    - frohoff2021/ch_threshold_general_eq20
+  text: >
+    Cross-paper ModelAtlas synthesis between gubbala2025 (2D variational anisotropic Model C:
+    conserved scalar phi + nonconserved nematic tensor Q) and frohoff2021 (doubly conserved
+    nonvariational two-field Cahn-Hilliard; neither paper cites the other, so 0 cited.yaml links
+    apply) establishes 21 verified mathematical bridges and 4 cross-paper diagnostic corroborations
+    in gubbala2025/relations.yaml alongside four structural physical contrasts:
+    Verified bridges: (1) Exact shared zero-midpoint Landau double-well f(phi) = phi^4/4 - phi^2/2
+    and chemical potential mu = phi^3 - phi (matching both f and mu via scales_as, and reducing
+    dimensionlessly from Frohoff's variational_coexistence_eqC1_C3 as rho -> 0 at a = -1), plus
+    uniaxial LdG bulk potential f_bulk(Q_xx) = -(1+phi)*Q_xx^2 + beta*Q_xx^4 (a_1 = -2*(1+phi),
+    b_1 = 4*beta) and exact symbolic identity between nematic saturation S = sqrt((1+phi)/(2*beta))
+    and Frohoff Appendix C's temperature-shifted binodal phi_{2,bin} = sqrt(-a - a_Delta) at
+    a = -1/(2*beta), a_Delta = -phi/(2*beta); (2) Exact symbolic non-dimensionalization identities
+    t_phi = lambda_tilde/M = tau = L_0^4/(Q_1*kappa_1) [s] and E_1 = L_1/lambda_tilde = kappa =
+    kappa_2/kappa_1 under L_0 = l_c = sqrt(lambda_tilde), kappa_1 = a_0*lambda_tilde, kappa_2 =
+    a_0*L_1, Q_1 = M/a_0; (3) Exact 2x2 isospectrality across all 7 inputs (gamma, chi, beta, E_1,
+    E_3, k_x, k_y) between Gubbala's corrected Model C linear stability matrix M_G and Frohoff
+    Eq. (12)'s variational matrix -q^2*B(q) (alpha = 0) on both sigma_max and sigma_min (to ~1e-15,
+    symbolically derived in the isotropic limit chi = E_3 = 0, gamma = 1, and scaled across all 7
+    inputs against dimensional linear_dispersion_dim_eq12_A1 with pure wavevector-independent bare
+    parameters f_1'' = 2, f_2'' = 4, rho = sqrt(2/beta), alpha = 0 and directional scales
+    L_0(theta) = sqrt(Lambda_eff)*l_c, tau_0(theta) = (Lambda_eff/gamma)*t_Q) via the exact
+    conserved-to-nonconserved mobility conversion Q_eff(k) = 1/(gamma*k^2); in Gubbala's actual
+    fast-nematic simulation regime gamma in [0.01, 0.1], replacing Q_eff(k) by the pure
+    wavenumber-independent timescale ratio Q = 1/gamma still agrees to <= 0.34%; (4) Mutual
+    single-field passive Cahn-Hilliard reductions (-k^2*(2 + k^2)) as chi -> 0, beta -> oo
+    (Gubbala) and rho, alpha -> 0 (Frohoff Eq. B1); and (5) O(1/beta^2)-exact coupled binodal
+    equivalence phi_Ld_eq(beta) = sqrt(1 + 1/(2*beta)) + O(1/beta^3) matching Frohoff Appendix C's
+    a_Delta = -1/(2*beta) binodal to 0.12% at default beta = 1 (nearly 20x tighter than linearized
+    Gibbs-Thomson) while linking -mu_coex = 1/(2*beta) + O(1/beta^3) directly to Frohoff Eq. (20)'s
+    variational spinodal threshold f_1''^CH = rho^2/f_2'' = 1/(2*beta) (which immediately recovers
+    Gubbala's missing k -> 0 coupled stability boundary beta_min = 1/4).
+    Cross-paper bug corroborations: all 4 diagnostic checks independently corroborate two previously
+    logged errors in gubbala2025: printed Eq. (4) fails the uniaxial Landau dictionary (0.25
+    log-slope mismatch) and exact Eq. (4) saturation differs by constant factor sqrt(2) from
+    Frohoff's binodal (q_eq4_vs_eq10_trQ4_factor2), while printed SI Eq. (S24)'s doubled c_12 is
+    refuted against Frohoff Eq. (12) (6.2% median error) and reaches 97.3% low-k error against
+    Frohoff's a_eff(beta) = -1 - 1/(2*beta) passive dispersion (q_lsa_s24_s26_discrepancies).
+    Irreducible structural contrasts: (i) Model C branch crossing and high-k scaling — in Gubbala's
+    Model C, conserved O(k^4) interfacial damping crosses nonconserved O(k^2) nematic elasticity
+    at k_* ~ O(1), moving the Cahn-Hilliard branch from sigma_max to sigma_min while leaving
+    sigma_max = -(4 + E_eff*k^2) + O(k^-2) matching Frohoff's unconserved rescaled eigenvalue
+    re_lam_tilde_plus rather than Frohoff's doubly conserved -q^4 decay; (ii) Variational real
+    spectrum vs. nonreciprocal Hopf/Turing waves — Gubbala's variational coupling (alpha = 0,
+    Delta = -rho^2 < 0) forbids oscillatory Hopf instabilities, traveling/standing waves, and
+    finite-wavelength Turing arrest (Delta > 0 in Frohoff); (iii) 2D spatial anisotropy vs. 1D
+    isotropic gradients — Gubbala's tensorial anchoring chi and cubic Frank elasticity E_3 break
+    rotational symmetry (hyperbolic k_x^2 - k_y^2 terms and bend/splay splitting), whereas Frohoff's
+    scalar gradients are isotropic; and (iv) Coarsening slowdown mechanism — Gubbala hinders
+    2D Ostwald ripening to alpha <= 1/4 via elastic/topological defect trapping inside a passive
+    nematic network, whereas Frohoff arrests or reverses 1D coarsening via nonreciprocal chemical
+    cross-coupling.
+  citation: {page: 3, printed_page: "6245", quote: "eqn (9) takes the form of a modified Cahn–Hilliard equation.", where: "Sec. 2.1, p. 3 (Eqs. 8-10; cross-record ModelAtlas synthesis with frohoff2021)"}
+
+- id: q_graham2023_2d_nematic_vs_droplet_ring_synthesis
+  kind: reading
+  about:
+    - elastic_free_energy_eq5
+    - frank_elastic_constants_2d
+    - frank_elastic_constants_eq6
+    - anchoring_elastic_crossover
+    - anchoring_free_energy_eq7_s13
+    - boundary_curvature_s2
+    - boundary_curvature_s2_corrected
+    - coarsening_power_law
+    - graham2023/ring_confinement_bending_energy
+    - graham2023/ring_rod_transition_energy
+    - graham2023/bundle_bending_rigidity_bathe_eqS1
+    - graham2023/droplet_ring_minimization_corrected
+    - graham2023/wetting_tension_profile_eqS5_corrected
+    - graham2023/ring_thickness_scaling_eqS25
+    - graham2023/linear_bundle_elongation
+  text: >
+    Cross-record ModelAtlas, citation, and biophysical synthesis across all 26 runnable gubbala2025
+    models and 31 runnable graham2023 models (806 pairs; neither paper cites the other, 0 exact
+    shared bibliographic entries across 75 x 66 references, 0 cited.yaml links, 0 unit-compatible
+    same_as families) yields 11 proposed scales_as relations in gubbala2025/relations.yaml (6
+    verified, 5 honest diagnostic not_verified), two independent cross-paper bug corroborations,
+    and five irreducible physical contrasts:
+    Verified bridges (6): (1) Continuum-to-discrete 2D bend elasticity — Graham's 2D flat-sheet
+    actin ring of width T_ring = N_fil*delta (delta = 15 nm) and weakly coupled flexural rigidity
+    k_b = N_fil*k_{b,fil} (k_{b,fil} = L_p*k_B T = 72941 pN*nm^2) has 2D areal bending energy
+    density E_bend_0/(T_ring*L) = (1/2)*k_{33,2D}/R^2 with 2D Frank bend constant
+    k_{33,2D} = k_{b,fil}/delta = 4863 pN*nm (= 1182 k_B T per monolayer), matching Gubbala Eq. (5)
+    on a pure-bend tangential director slice (Q_xx = S/2, dQxy_x = S/R, zero splay) across both
+    (k_b, R) in the Graham->Gubbala direction (4.4e-13) and all four anisotropic parameters
+    (E_1, E_3, Q_xx, dQxy_x) in the Gubbala->Graham direction under exact 2D k_{33,2D} =
+    2*E_1*S^2 + E_3*S^3 (4.4e-13); (2) Elliptical curvature segregation — for a short bundle arc
+    (L = 0.05 um << b) on Graham's constant-area ellipse (ring_rod_transition_energy, SI Sec. 2.11),
+    bending minimization places the segment at the flat equator kappa_min = 1/(R*AR^(3/2)), matching
+    Gubbala Eq. (5) across (k_b, R, AR) with log-slopes (+1, -2, -3) to 5.3e-4; (3) Uncrosslinked /
+    weak-coupling stiffness linearity — Bathe Eq. S1 in Graham's fluid-VASP weak-coupling limit
+    (alpha in [1e-6, 1e-4]) shares exact (+1, +1) scaling in (N, k_{b,fil}) with Gubbala's
+    uncrosslinked linear density scaling k_{33,2D} proportional to E_1 (3.9e-5), whereas strong
+    crosslinking (alpha in [100, 1000]) stiffens quadratically as N^2 (not_verified, gap 1.1);
+    (4) 2D circular interfacial line energy — both papers employ 2D line tensions in [pN]
+    multiplying droplet perimeter 2*pi*R, so Gubbala's anchoring_elastic_crossover.xi_bend_2d (at
+    fixed 2D Frank bend stiffness) shares exact (+1, +1) scaling in (chi <-> gamma_I, R <-> R)
+    with Graham's ring_rod_transition_energy.E_surf at AR = 1 (2.0e-10); and (5) Planar parametric
+    boundary curvature — for a full circular ring (L = 2*pi*R, AR = 1), Graham's bending integral
+    E_bend = pi*k_b*kappa_circle(R) shares exact R^(-1) scaling with Gubbala's corrected SI Eq. (S2)
+    curvature (3.5e-10), and Graham's constant-area ellipse normalized curvature ratio
+    kappa_min/kappa_max = AR^(-3) reproduces Gubbala Fig. 4's shift from P(kappa) = delta(kappa - 1)
+    at AR = 1 toward kappa -> 0 (arc-median 0.855 at AR = 1.1, 0.434 at AR = 1.5, 0.198 at AR = 2,
+    0.060 at AR = 3, 0.0016 at AR = pi^2).
+    Cross-paper bug corroborations (2): (i) substituting Gubbala's printed 3D Beris-Edwards Eq. (6)
+    bend constant k_{33,eq6} = 2*E_1*S^2 + (4/3)*E_3*S^3 into Graham's ring_confinement_bending_energy
+    fails scales_as across (E_1, E_3, Q_xx, dQxy_x) by 0.072, corroborating q_eq6_3d_vs_2d_frank;
+    and (ii) Gubbala's printed SI Eq. (S2) curvature denominator (x' + y')^(3/2) scales as R^(+1/2)
+    instead of R^(-1) against Graham's exact circular-ring curvature integral (gap 1.50),
+    corroborating q_eqS2_curvature_denominator.
+    Irreducible structural contrasts (5): (i) Inverted confinement topology — Gubbala embeds
+    isotropic Lo lipid domains (1-10 um) INSIDE a continuous exterior 2D actin-rich Ld nematic
+    network (3-5 um filaments, ~10-50 nm composite thickness), whereas Graham polymerizes actin
+    rings INSIDE liquid-like 3D VASP droplets (median D = 2.86 um, max 7.22 um) that deform
+    outward; (ii) 2D continuum sheet (R^1) vs. thin 1D ring (R^2) elastocapillary scaling —
+    because 2D continuum Frank energy is scale-invariant (R^0), Gubbala's elastocapillary crossover
+    xi_bend_2d = gamma_{A,2D}*R / k_{33,2D} scales as R^1 with R_{ec,2D} = k_{33,2D}/gamma_I =
+    4.86, 0.973, 0.324 um at gamma_I = 1, 5, 15 pN, whereas Graham's thin-ring ratio
+    E_surf/E_bend_0 = 2*gamma_I*R^2/k_b scales as R^2 at fixed T_ring with geometric-mean radius
+    R_{ec,Graham} = sqrt(T_ring*R_{ec,2D}/2) (= 0.382 um, D = 0.764 um at T_ring = 300 nm,
+    gamma_I = 5 pN), recovering R^1 only in the disk-filling limit T_ring proportional to R;
+    (iii) Splay-bend anisotropy vs. pure 1D bend — Gubbala's 2D nematic has softer splay than bend
+    (k_{11,2D} = 2*E_1*S^2 - E_3*S^3 vs. k_{33,2D} = 2*E_1*S^2 + E_3*S^3, not_verified gap 0.65),
+    whereas Graham's 1D ring has only bend and exhibits global closed-ring tip-wrapping
+    (L = 2*pi*R, P(AR) < 2*L -> not_verified gap 4.5 against local flat-side AR^(-3) decay);
+    (iv) Orientational Rapini-Papoular anchoring vs. isotropic scalar wetting — Gubbala couples
+    actin to interfaces via f_anch = (chi/2)*(n . grad phi)^2 (orthogonal to Graham's isotropic
+    surface tension, as confirmed by their orthogonal 2-hop attachments to weirich2017/tactoid_free_energy),
+    whereas Graham confines filaments via an isotropic radial tanh wetting wall gamma(e); and
+    (v) Passive hindered Ostwald coarsening vs. active polymerization elongation — Gubbala
+    tracks passive conserved diffusion hindered below t^(1/3) to alpha <= 0.25 over ~2 h, whereas
+    Graham drives active ATP-dependent barbed-end elongation linearly (y = v*t, v = 23 +/- 3 nm/s,
+    alpha = 1) once rings unwind past AR_max = pi^2.
+  citation: {page: 4, printed_page: "6246", quote: "we impose a larger energetic penalty", where: "Sec. 2.1, p. 4 & Eqs. (5)-(6), SI Eq. (S2) (cross-record ModelAtlas synthesis with graham2023)"}
+
+- id: q_nastkolb2022_2d_slb_nematic_vs_vasp_bundling_synthesis
+  kind: reading
+  about:
+    - cahn_hilliard_free_energy_eq2
+    - ldg_bulk_free_energy_eq4
+    - elastic_free_energy_eq5
+    - frank_elastic_constants_2d
+    - anchoring_free_energy_eq7_s13
+    - nondim_parameters_s32
+    - linear_stability_s24_s28_corrected
+    - coupled_binodal_coexistence
+    - coarsening_power_law
+    - boundary_curvature_s2_corrected
+    - structure_factor_domain_size_s1_s34
+    - model_c_pde_2d_variational
+    - ref-5
+    - ref-S1
+    - phi0_low_actin
+    - phi0_high_actin
+    - composite_thickness_exp
+    - actin_filament_length_exp
+    - coarsening_time_actin
+    - nastkolb2022/frap_recovery_fit
+    - nastkolb2022/frap_recovery_by_half_time
+    - nastkolb2022/frap_half_time
+    - nastkolb2022/frap_tau_from_half_time
+    - nastkolb2022/frap_mobile_fraction_plateau
+    - nastkolb2022/frap_mobility_ratio
+    - nastkolb2022/bundle_filament_count_2d_spacing
+    - nastkolb2022/bundle_effective_spacing
+    - nastkolb2022/bundle_width_vasp_scaling
+    - nastkolb2022/cp_to_actin_ratio
+    - nastkolb2022/actin_concentration_fold_change
+    - nastkolb2022/bilayer_actin_decoration
+    - nastkolb2022/bundle_intensity_ratio
+    - nastkolb2022/ref-honigmann2014
+    - nastkolb2022/ref-spudich1971
+    - nastkolb2022/frap_t_half_vasp_slb
+    - nastkolb2022/frap_t_half_vasp_ml
+    - nastkolb2022/frap_bleach_circle_diameter
+    - nastkolb2022/bundle_width_median_vasp_025
+    - nastkolb2022/filament_count_1um_intensity_measured
+    - nastkolb2022/bilayer_decoration_vs_vasp_figs2g
+    - nastkolb2022/pore_size_vs_vasp_fig2e
+    - nastkolb2022/vasp_cluster_area_vs_vasp_figs4h
+    - nastkolb2022/lipid_depletion_kinetics_fig5c
+    - nastkolb2022/vasp_enrichment_kinetics_fig5c
+  text: >
+    Cross-record ModelAtlas, citation, and biophysical synthesis across all 26 runnable gubbala2025
+    models and 17 nastkolb2022 models (11 runnable, 6 non-runnable; 442 pairs total) yields 0
+    stated relations, 0 proposed equation-level relations in gubbala2025/relations.yaml, 0 same_as
+    families, and 0 cited.yaml data links:
+    (1) Citations & data provenance: neither paper cites the other (gubbala2025 ref-13 cites only
+    an earlier Bausch group study, Tharmann et al., PRL 98:088103, 2007, not nastkolb2022). Their
+    75 x 66 bibliographies share exactly 2 entries: Honigmann et al., eLife 3:e01671 (2014)
+    [gubbala2025/ref-5 = nastkolb2022/ref-honigmann2014] — the common experimental precursor on
+    membrane-bound actin organizing lipid phase separation — and Spudich & Watt, JBC 246:4866-4871
+    (1971) [gubbala2025/ref-S1 = nastkolb2022/ref-spudich1971] for actin purification. Neither
+    record's data.yaml borrows any value from the other (gubbala2025's 2 from_source entries cite
+    Bray & Emmott 1995 [ref-54]; nastkolb2022 has 0 from_source entries).
+    (2) Disjoint mathematical models & rejected trivial coincidences: nastkolb2022's only two
+    non-too_plain (>2 ops) runnable models are empirical single-exponential FRAP curve fits
+    (frap_recovery_fit, y = a*(1 - exp(-t/tau)) + c, 6 ops; frap_recovery_by_half_time, 8 ops),
+    which have no FRAP, diffusivity, or exponential time-course counterpart in gubbala2025's
+    continuum Cahn-Hilliard + Landau-de Gennes Model C framework (gubbala2025 tracks unbounded
+    power-law Lo-domain coarsening R(t)/R_0 = (t/t_0)^alpha with alpha <= 1/3, static structure
+    factors S(k), planar boundary curvature kappa, and Fourier linear-stability rates omega(k)).
+    All remaining 9 runnable nastkolb2022 models have <= 2 symbolic ops (too_plain=True:
+    bundle_filament_count_2d_spacing 1000*W/d_spacing, bundle_effective_spacing 1000*W/n_f,
+    bundle_width_vasp_scaling W ~ c_VASP [0 ops, prefactor: unknown], cp_to_actin_ratio,
+    actin_concentration_fold_change, frap_half_time, frap_tau_from_half_time,
+    frap_mobile_fraction_plateau, frap_mobility_ratio), and gubbala2025 treats actin as a continuum
+    2D nematic field Q_ij(x, t) without discrete bundle-width, interfilament-spacing, filament-count,
+    or capping-protein equations. Trivial low-op algebraic coincidences — such as mapping 1-op
+    frap_mobility_ratio (t_half_ml/t_half_slb, ML-vs-SLB VASP mobility) to nondim_parameters_s32.gamma
+    (t_Q/t_phi, nematic-vs-lipid timescale ratio), 0-op bundle_width_vasp_scaling to linear Frank
+    stiffness k_33 ~ E_1, or t/tau -> 0 linear Taylor expansion of FRAP to coarsening_power_law at
+    unphysical alpha = 1 — are excluded as physically spurious. All 6 non-runnable nastkolb2022
+    image-analysis models (bilayer_actin_decoration, bundle_filament_intensity_extrapolation,
+    bundle_intensity_ratio, bundle_width_lognormal_fit, frap_bleach_normalization,
+    vasp_actin_spearman_colocalization) likewise lack runnable equation counterparts in gubbala2025.
+    Symbol collisions: R (domain size vs. dimensionless ratios R_CP, R_mob, R_actin, R_I), alpha
+    (coarsening exponent or anchoring parameter vs. none), t (dimensionless or physical coarsening
+    time [s] vs. post-bleach FRAP time [min]), a (absent vs. FRAP recovery amplitude), and c
+    (absent vs. FRAP baseline offset).
+    (3) Quantitative biophysical comparison of the two 2D fluid-SLB actin-membrane systems:
+    (a) Inverted lipid-actin causality & substrate friction (bridging shared citation Honigmann 2014):
+    gubbala2025 starts from a thermodynamically phase-separating quaternary Lo/Ld bilayer (45.7%
+    DOPC, 34.7-35% DPPC, 15% cholesterol, 4% DOTAP) ruptured onto a low-friction polymer-cushioned
+    coverslip (200 nM HMM + 0.1 mg/mL PLL-g-PEG) so Lo domains spontaneously nucleate and coarsen
+    after quenching from 37 degC; pre-polymerized uncrosslinked 3-5 um F-actin electrostatically
+    adsorbs to DOTAP in the Ld phase and passively deforms/slows Lo coarsening via anisotropic
+    nematic elasticity (E_1, E_3; k_33/k_11 = 2.5 printed / 3.0 2D) and parallel anchoring (chi = 1).
+    Conversely, nastkolb2022 uses a single-phase fluid SLB on bare glass (87.45% egg-PC, 10%
+    DOGS-Ni-NTA, 2.5% DOPE-PEG2000, 0.05% Texas Red-DHPE; no Lo/Ld miscibility gap) where washed
+    His-tagged chimeric VASP (0.05-1 uM, 28-70 nm diameter) undergoes 2D LLPS before actin addition
+    (>=0.25-0.5 uM; cluster area 0.007-0.596 in Fig. S4H) and active barbed-end polymerization
+    (2 uM G-actin, 10 uM profilin, 50 nM CP -> R_CP = 2.5%) drives local VASP/Ni-NTA enrichment
+    under bundles (R_I,VASP = 1.47 -> 1.95 peak -> 1.62 at 60 min, Fig. 5C) and steric exclusion
+    of unbound Texas Red-DHPE lipids (R_I,lipid dipping 9.0% to 0.910 at 4.8 min and relaxing to
+    0.951 at 60.6 min, contrasting with p. 8's overstated 'half of initial intensity' text). As
+    nastkolb2022 p. 9 notes via Honigmann et al. (2014), active VASP-actin polymerization overcomes
+    bare-glass lipid friction that normally suppresses lipid phase separation (Goodchild et al.
+    2019), whereas gubbala2025 relies on a polymer cushion to reduce substrate friction (yet still
+    observes sample-to-sample friction variability, p. 4).
+    (b) Passive nematic defects vs. active polymerization-driven bundling: gubbala2025's passive
+    uncrosslinked F-actin (A-buffer ~47 mM ionic strength, no cross-linkers/profilin/CP) rearranges
+    viscoelastically in Ld around Lo domains, generating -1/2 triangular corner defects (experiments)
+    or tactoids (2D simulations). In nastkolb2022 (KMEI ~72 mM), pre-polymerized F-actin added to a
+    VASP bilayer is merely pulled down without bundling (Fig. S4D-E), and static crosslinking
+    (alpha-actinin1b) or barbed-end elongation alone (mDia1) fails to bundle; notably, nastkolb2022's
+    mDia1 + alpha-actinin1b control (Fig. 3D, p. 6) traps rapidly elongating membrane-tethered
+    filaments in a 'high-density nematic field' with 'nematic defects' — directly echoing
+    gubbala2025's high-actin nematic regime — whereas VASP (both tetrameric, median 0.942 um, and
+    monomeric VASP_DeltaTetra, median 0.584 um, max 3.0-3.2 um) bypasses defect trapping through
+    positive-feedback barbed-end capture and lateral bundle thickening (45 +/- 12 filaments/um).
+    (c) Lateral mobility & timescales: nastkolb2022 quantifies 2D VASP diffusion via FRAP (bleach
+    diameter 4.96 um, r_b = 2.48 um): pre-polymerization SLB t_1/2 = 0.102 min = 6.12 s (tau =
+    8.83 s, 2D Soumpasis D_SLB = 0.225 um^2/s, mobile fraction falling 0.97 -> 0.65 after 30 min
+    polymerization) vs. monolayer t_1/2 = 0.399 min = 23.94 s (tau = 34.54 s, D_ML = 0.0575 um^2/s,
+    3.91x slower, mobile fraction 0.61 -> 0.57), where a 4x drop in mobility completely abolishes
+    bundling via CP competition. gubbala2025 omits dimensional M and Gamma, but digitized Fig. S6 /
+    Fig. 3 scaling (q_digitize_settles_deferred_and_timescale) implies t_Q = Gamma^-1 ~ 0.24 s and
+    interfacial lipid diffusion timescale t_phi = t_Q/gamma ~ 2.4 s (at gamma = 0.1), while
+    macroscopic Lo coarsening unfolds over ~2 h (720-7180 s, alpha <= 0.25 vs. 1/3 passive) versus
+    nastkolb2022's rapid active bundle thickening (0-80 s diffraction-limited onset, saturating in
+    ~5-20 min over 60 min runs).
+    (d) Comparable 2D actin occupancy and pore scales, but distinct pore contents & quasi-2D
+    stacking: nastkolb2022's segmented actin bilayer decoration (Fig. S2G) rises from 37.6% (0.05
+    uM VASP) to 65.1% (0.25 uM) and 94.9% (1.0 uM) while open bare-bilayer median pore area shrinks
+    from 1.393 um^2 (equiv. diameter 1.33 um) to 0.594 um^2 (0.87 um) and 0.199 um^2 (0.50 um;
+    Fig. 2E). In gubbala2025's simulations, actin-occupied continuous Ld area fraction
+    (phi_0 - phi_Lo)/(phi_Ld - phi_Lo) (coupled binodals -1.1929, +1.2233) spans a closely matching
+    61.8% (low actin phi_0 = 0.3; nominal 65.0%) to 80.4% (high actin phi_0 = 0.75; nominal 87.5%),
+    leaving 38.2% to 19.6% area filled by phase-separated Lo domains (~1-10 um without actin) whose
+    boundaries shift from circular (kappa ~ 1) to flat-sided angular pores (kappa -> 0, Fig. 4).
+    Finally, both experimental composites show signs of thin quasi-2D multilayering: gubbala2025
+    p. 6 estimates O(10-50 nm) stacked bundle thickness permitting out-of-plane twist relaxation of
+    +1/2 defects, while nastkolb2022's 45 +/- 12 filaments/um implies 22.2 nm effective 2D spacing
+    below the 28-70 nm VASP diameter (consistent with compaction or ~1.26-layer stacking).
+  citation: {page: 4, printed_page: "6246", quote: "adsorbed to a quasi-2D viscous fluid", where: "Sec. 2.2, p. 4 / SI Sec. 1.5 (cross-record ModelAtlas & biophysical synthesis with nastkolb2022)"}
+
+# ==============================================================================
+# Cross-record validation audit with weirich2017 (2026-11-24)
+# ==============================================================================
+
+- id: q_weirich2017_no_cross_validation
+  kind: unstated_model
+  about:
+    - coarsening_power_law
+    - effective_line_tension_p3
+    - effective_line_tension_s13
+    - anchoring_elastic_crossover
+    - nondim_parameters_s32
+    - anchoring_free_energy_eq7_s13
+    - linear_stability_s24_s28
+    - linear_stability_s24_s28_corrected
+    - model_c_pde_2d_eq9_10
+    - model_c_pde_2d_variational
+    - frank_elastic_constants_eq6
+    - frank_elastic_constants_2d
+    - boundary_curvature_s2_corrected
+    - R_ratio_low_exp_fig3_end
+    - R_ratio_high_exp_fig3_end
+    - R_ratio_fig3_exp_low
+    - R_ratio_fig3_exp_high
+    - R_ratio_fig3_inset_no_actin_exp
+    - R_ratio_figS2_exp_low
+    - R_ratio_figS2_exp_high
+    - P_kappa_fig4c_exp_no_actin
+    - P_kappa_fig4c_exp_low
+    - P_kappa_fig4c_exp_high
+    - actin_density_figS1_exp
+    - domain_size_no_actin
+    - actin_filament_length_exp
+    - coarsening_time_actin
+    - intermediate_time_start
+    - actin_unbinding_time
+    - q_weirich2017_tactoid_regime_contrast
+    - weirich2017/d_fig3a_length_data
+    - weirich2017/d_fig2a_aspect_ratio
+    - weirich2017/d_fig3a_aspect_ratio_data
+    - weirich2017/aspect_ratio_2p5_filamin
+    - weirich2017/aspect_ratio_15_filamin
+    - weirich2017/tactoid_length_growth_60min
+    - weirich2017/tactoid_length_homogeneous_si
+    - weirich2017/capillary_lambda_observed
+    - weirich2017/capillary_lambda_to_R0_observed
+    - weirich2017/coarsening_exponent_measured
+    - weirich2017/tactoid_coarsening_power_law
+    - weirich2017/tactoid_equilibrium_minimizer
+    - weirich2017/tactoid_aspect_ratio_scaling
+    - weirich2017/director_crossover_parameter
+    - weirich2017/actin_filament_length_cp
+    - weirich2017/q_gubbala2025_no_cross_validation
+  citation:
+    page: 7
+    printed_page: "6249"
+    quote: "study the coarsening of tactoid structures, which is useful in"
+    where: "Sec. 4 Conclusions (p. 7 / 6249, citing weirich2017 as Ref. 43)"
+  text: >
+    No cross-record validations are entered in validations.yaml between gubbala2025 (26 runnable
+    models [22 role: model, 4 role: processing; 8 variant_of corrections; 82 output ports] and 16
+    origin: measured datums out of 121 total data) and weirich2017 (52 runnable models [33 role:
+    model, 3 role: fit, 16 role: processing; 8 variant_of corrections; 81 output ports] and 35
+    origin: measured datums out of 116 total data): 0 valid CrossValidation entries exist in either
+    direction across all 2,870 + 1,296 = 4,166 port-datum pairs (1,911 dimension-matched, 2,255
+    dimension-mismatched). Although gubbala2025 cites weirich2017 qualitatively (ref-43 on pp. 2,
+    6, 7 for tactoids in rod-like biopolymer solutions and future extension to tactoid coarsening)
+    and 11 proposed ModelAtlas structural relations connect their equations in relations.yaml,
+    neither paper's runnable models predict any measured quantity of the other on its experimental
+    conditions (no validations.yaml created in either record; 0 added.yaml entries needed).
+    (1) Direction A — gubbala2025 (26 models, 82 ports) vs weirich2017 (35 origin: measured datums;
+    2,870 pairs = 1,560 dimension-matched [1,540 dimensionless + 10 [length] + 10 [time]] + 1,310
+    dimension-mismatched):
+    - Coarsening curves (coarsening_power_law.R_over_R0 [domain_size_ratio, dimensionless] vs
+      weirich2017/d_fig3a_length_data [tactoid_major_axis, um]): strict dimension and quantity
+      mismatch (dimensionless normalized ratio R(t)/R_0 pinned to 1 at t_0 vs absolute major-axis
+      length L(t) in um from 1.461 to 4.237 um over t = 10.04-85.42 min; forcing a dimensionless
+      ratio onto a length violates Rule 3 and fails BoxGraph unit checking). Moreover, the coarsening
+      mechanisms are inverted: Weirich's freely diffusing 3D nematic tactoids coalesce hydrodynamically
+      (L_end/L_start = 2.900, single-dataset OLS slope 0.492, 4-dataset fitted coarsening_exponent_measured
+      = 0.47 +/- 0.01 vs alpha = 0.5 theory), whereas Gubbala's alpha = 1/3 (Ostwald ripening) and
+      alpha = 1/4 (interface-hindered) give only (85.42/10.04)^(1/3) = 2.041 and ^(1/4) = 1.708.
+    - 2D PDE coarsening exponent (model_c_pde_2d_{eq9_10,variational}.alpha_fit vs
+      weirich2017/coarsening_exponent_measured = '0.47 +/- 0.01', origin: fitted): excluded both
+      because the target is origin: fitted rather than origin: measured and because model_c_pde_2d
+      cannot be run on Weirich's conditions: (a) inverted phase topology (isotropic Lo droplets in a
+      continuous 2D nematic Ld matrix vs 3D nematic actin droplets in dilute isotropic solvent);
+      (b) purely diffusive 2D Model B/C dynamics lacking Brownian droplet translation and hydrodynamic
+      coalescence (Weirich p. 3 explicitly rules out Ostwald ripening); diagnostically, running
+      model_c_pde_2d_variational at Gubbala's E_3 = 0 tactoid limit (SI Fig. S4: phi_0=0.3, beta=1,
+      gamma=1, E_1=1, chi=1, E_3=0) yields alpha_fit = 0.319 (and 0.225 at gamma=E_1=0.1), capped
+      below diffusive 1/3 and far below 0.47 +/- 0.01; (c) 0/10 dimensionless PDE inputs are measured
+      in weirich2017, and mapping Weirich's 5 mol % filamin omega = 2.0 via Gubbala's kink relation
+      chi = 2*omega gives chi = 4.0 > 2, violating Gubbala's linear-stability limit chi <= 2
+      (SI Eq. S27: 1 - chi/2 = -1 < 0).
+    - Tactoid aspect ratios (effective_line_tension_{p3,s13}.lam and nondim_parameters_s32.lam
+      [dimensionless_line_tension] vs weirich2017/aspect_ratio_{2p5,15}_filamin, d_fig2a_aspect_ratio,
+      d_fig3a_aspect_ratio_data [tactoid_aspect_ratio]): lam = 1 + chi/2 is a Cahn-Hilliard isotropic
+      gradient-energy coefficient, not a geometric droplet aspect ratio L/r (Rule 3 forbids mapping
+      two distinct physical quantities sharing only dimensionless status). Furthermore, Weirich's
+      anchoring omega (d_fig2a_omega = 2.164, 1.977, 1.488, 1.039 at 2.5, 5, 10, 15% filamin) is
+      back-calculated from measured L/r via omega = (L/r)^2/4 rather than independently measured,
+      every single Fig. 2A point maps under chi = 2*omega to chi = 4.328, 3.953, 2.977, 2.078 > 2
+      (outside Gubbala's linear-stability window chi <= 2 and in Weirich's cusped omega > 1 regime),
+      and Gubbala's exact variable-width 1D kink Wulff aspect ratio sqrt(1 + chi) is capped at
+      sqrt(3) = 1.732 at chi = 2 (1.414 at chi = 1) with zero cusps — strictly below Weirich's
+      entire measured L/r = 2.037-2.938 (see q_weirich2017_tactoid_regime_contrast).
+    - Anchoring-elastic crossover (anchoring_elastic_crossover.xi_{splay,bend}_{eq6,2d}): weirich2017
+      prints zero numerical measurements of director_crossover_parameter or Frank constant K (at
+      Weirich's L = 5 um, omega = 2, gamma_A = 600 nN/m, added K = 10 pN, chi_W = 0.113 << 1 is in
+      the homogeneous-director regime vs Gubbala's deformed-director xi_splay_eq6 = 35-180 low actin,
+      1.8-9 high actin).
+    - Dimensional [length] and [time] ports (nondim_parameters_s32.{l_c, t_Q, t_phi}; 10 [length] +
+      10 [time] pairs): l_c = sqrt(lambda_tilde) is the Lo-Ld Cahn-Hilliard interface width (disjoint
+      from Weirich's 10 [length] datums: filament_length_tactoid_range, tactoid_length_*,
+      bundle_initial_{length,radius_main}, capillary_lambda_observed, d_fig3a_length_data,
+      d_fig3b_*), while t_Q = Gamma^-1 and t_phi = lambda_tilde/M are microscopic nematic/interfacial
+      relaxation scales (disjoint from Weirich's 5 [time] datums: bundle_shape_change_timescale and
+      macroscopic viscous coalescence tau in d_fig3c_inset_* and d_fig3d_*), with 0/6 dimensional
+      inputs measured in either paper.
+    - All remaining dimensionless ports & Weirich datums: gubbala2025's free-energy densities,
+      binodals, Q-tensor/S saturation, Frank ratios, LSA decay rates, structure-factor helpers, and
+      normalized boundary curvature (kappa_mean [1/um] has 0 target datums) have no measured
+      counterparts in weirich2017's remaining datums (filamin_frac_tactoid_range, 4 Fig. 1D phase-
+      diagram series, capillary_lambda_to_R0_observed, bundle_contractile_strain_range,
+      d_fig4e_contractile_strain, 3 FRAP intensity traces d_fig1c_frap_data / d_figS1_*, 2
+      exponentially contracting bundle curves d_fig4c_*_data where L(t)/L_i decays from 1 rather than
+      coarsening, and 3 rescaled exponential relaxation curves d_fig4d_*).
+    (2) Direction B — weirich2017 (52 models, 81 ports) vs gubbala2025 (16 origin: measured datums;
+    1,296 pairs = 351 dimension-matched [297 dimensionless + 30 [length] + 24 [time]] + 945
+    dimension-mismatched): 0 valid CrossValidation entries. Weirich's tactoid_coarsening_power_law
+    outputs dimensional tactoid_major_axis [um] (prefactor: unknown), which cannot cross onto
+    Gubbala's 7 dimensionless normalized coarsening datums R(t)/R_0 (R_ratio_fig3_*, R_ratio_figS2_*,
+    R_ratio_{low,high}_exp_fig3_end) and fails on domain_size_no_actin ('approx 1 to 10' um, actin-
+    free 2D circular lipid domains, unstated time, double no_verdict); actin_filament_length_cp
+    diverges at Gubbala's zero capping protein (r_CP = 0) and Gubbala's 3-5 um filaments lie in
+    Weirich's Fig. 1D space-spanning viscoelastic network phase rather than the 0.1-1 um liquid-
+    tactoid regime; Weirich's tactoid aspect-ratio models (tactoid_equilibrium_minimizer,
+    tactoid_aspect_ratio_scaling) predict L/r rather than Gubbala's Fig. 4C curvature PDFs P(kappa)
+    or Fig. S1 relative actin density rho/rho_max; and Weirich's 8 coalescence relaxation-time ports
+    are disjoint from Gubbala's 3 observation-window / actin-unbinding timescales. See
+    weirich2017/q_gubbala2025_no_cross_validation for the exhaustive Direction B item-by-item audit.
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with graham2023 (2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_graham2023_no_cross_validation
+  kind: unstated_model
+  about:
+    - coarsening_power_law
+    - model_c_pde_2d_eq9_10
+    - model_c_pde_2d_variational
+    - nondim_parameters_s32
+    - boundary_curvature_s2
+    - boundary_curvature_s2_corrected
+    - anchoring_elastic_crossover
+    - effective_line_tension_p3
+    - effective_line_tension_s13
+    - frank_elastic_constants_eq6
+    - frank_elastic_constants_2d
+    - elastic_free_energy_eq5
+    - anchoring_free_energy_eq7_s13
+    - coupled_binodal_coexistence
+    - domain_size_no_actin
+    - actin_filament_length_exp
+    - coarsening_time_actin
+    - intermediate_time_start
+    - actin_unbinding_time
+    - R_ratio_low_exp_fig3_end
+    - R_ratio_high_exp_fig3_end
+    - R_ratio_fig3_exp_low
+    - R_ratio_fig3_exp_high
+    - R_ratio_fig3_inset_no_actin_exp
+    - R_ratio_figS2_exp_low
+    - R_ratio_figS2_exp_high
+    - P_kappa_fig4c_exp_no_actin
+    - P_kappa_fig4c_exp_low
+    - P_kappa_fig4c_exp_high
+    - actin_density_figS1_exp
+    - q_graham2023_2d_nematic_vs_droplet_ring_synthesis
+    - graham2023/droplet_ring_minimization_corrected
+    - graham2023/droplet_ring_minimization_printed
+    - graham2023/ring_rod_transition_energy
+    - graham2023/ring_rod_critical_aspect_ratio
+    - graham2023/ring_rod_max_aspect_ratio
+    - graham2023/ring_filament_count
+    - graham2023/ring_thickness_scaling_eqS25
+    - graham2023/ring_thickness_scaling_exponent
+    - graham2023/circular_ring_contour_length
+    - graham2023/linear_bundle_elongation
+    - graham2023/power_law_thickness_fit
+    - graham2023/vasp_droplet_fusion_time
+    - graham2023/frap_t_half
+    - graham2023/frap_recovery_fig1f
+    - graham2023/fig1f_frap_avg_fig
+    - graham2023/fig6b_frap_3peg_fig
+    - graham2023/fig6b_frap_10peg_fig
+    - graham2023/droplet_diam_range_obs
+    - graham2023/droplet_diam_median_20uM
+    - graham2023/droplet_diam_max_20uM
+    - graham2023/linear_droplet_ar_high
+    - graham2023/fig3g_aspect_ratio_fig
+    - graham2023/fig5a_aspect_ratio_fig
+    - graham2023/edfig9e_aspect_ratio_fig
+    - graham2023/elongation_rate_mean_text
+    - graham2023/fig6g_actin_avg_fig
+    - graham2023/edfig2d_partition_fig
+    - graham2023/edfig3e_actin_partition_fig
+    - graham2023/q_gubbala2025_no_cross_validation
+  citation:
+    page: 7
+    printed_page: "6249"
+    quote: "viscous lipid domains. Our numerical results qualitatively"
+    where: "Sec. 4 Conclusions (p. 7 / 6249; bidirectional cross-validation audit with graham2023)"
+  text: >
+    No cross-record validations are entered in validations.yaml between gubbala2025 (26 runnable
+    models [22 role: model, 4 role: processing; 8 variant_of corrections; 82 output ports: 77
+    dimensionless, 2 [time], 2 1/[length], 1 [length]] and 16 origin: measured datums out of 121
+    total data [7 scalars + 9 digitized figures]) and graham2023 (31 runnable models [27 role:
+    model, 2 role: processing, 2 role: fit; 3 variant_of corrections; 40 output ports: 15 [length],
+    10 [energy], 8 dimensionless, 3 [force]*[length]^2, 3 [force]/[length], 1 1/[time]] and 38
+    origin: measured datums out of 133 total data [9 scalars + 29 digitized figures]): 0 genuine
+    CrossValidation entries exist in either direction across all 3,116 + 640 = 3,756 port-datum
+    pairs (2,589 dimension-matched, 1,167 dimension-mismatched). Neither paper cites the other (0
+    shared bibliographic entries across 75 x 66 references; gubbala2025 ref-7 cites an earlier
+    Yuan/Rangamani/Stachowiak 2021 membrane-curvature condensate study, not graham2023), 0 cited.yaml
+    links exist, and 0 same_as families connect their models (only 11 proposed scales_as structural
+    relations in gubbala2025/relations.yaml: 6 verified, 5 diagnostic not_verified; see
+    q_graham2023_2d_nematic_vs_droplet_ring_synthesis). Preexisting graham2023/validations.yaml
+    (val_ring_filament_count_vs_nastkolb_1um) is untouched, no gubbala2025/validations.yaml is
+    created, and 0 added.yaml entries are needed.
+    (1) Direction A — gubbala2025 (26 runnable models, 82 ports) vs graham2023 (38 origin: measured
+    datums; 3,116 pairs = 2,471 dimension-matched [2,464 dimensionless + 3 [length] + 4 [time]] +
+    645 dimension-mismatched): 0 valid CrossValidation entries.
+    - Temporal coarsening models (coarsening_power_law.R_over_R0 [domain_size_ratio],
+      model_c_pde_2d_{eq9_10,variational}.{alpha_fit, R_final, R_growth_ratio, Q_max_final}):
+      graham2023 measures zero passive droplet-coarsening curves R(t)/R_0, zero coarsening exponents
+      alpha, and zero nematic order parameters Q. Its 8 time-indexed origin: measured curves are
+      either FRAP fluorescence recovery inside static droplets (fig1f_frap_avg_fig,
+      fig6b_frap_{3,10}peg_fig; frap_recovery_fraction in %) or normalized total fluorescence
+      intensity during active ATP-dependent actin polymerization and photobleach recovery in
+      elongating rods (fig6f_d1_{actin,vasp}_fig, fig6f_d2_{actin,vasp}_fig, fig6g_actin_avg_fig;
+      normalized_total_intensity). Diagnostically, although fig6g_actin_avg_fig rises from 1.084
+      (t = 10 s) to 2.274 (t = 190 s) with an incidental log-log OLS slope of 0.2641 (an artifact
+      of linear active polymerization I(t)/I_0 ~ 1 + 0.00672*t over r*t in [0.07, 1.28]), it tracks
+      active actin mass accumulation in a 1D elongating bundle rather than passive 2D Ostwald
+      ripening domain radius R(t)/R_0 (mapping normalized_total_intensity onto domain_size_ratio
+      violates Rule 3). Furthermore, graham2023's bundle_elongation_rate (elongation_rate_mean_text
+      = '23 +/- 3' nm/s) has dimension [length]/[time] (0 matching ports in gubbala2025), and its
+      non-measured datums fig5h_linear_fit_fig (origin: predicted, dimensional um) and
+      fit_fig3e/3f/4h_*_b (origin: fitted, spatial thickness-vs-diameter exponents b = 1.72-1.97)
+      are neither origin: measured nor temporal coarsening observables.
+    - Droplet aspect ratios (linear_droplet_ar_high '> 15', fig3g_aspect_ratio_fig [medians 1.020,
+      1.029, 1.050 across Shell/Ring/Disc], fig5a_aspect_ratio_fig [medians 1.044, 1.158, 2.394
+      across actin:VASP 1:20, 1:10, 1:7.5], edfig9e_aspect_ratio_fig [means 11.52, 1.27, 1.19, 1.06
+      across 3-15% PEG]): zero runnable gubbala2025 models output droplet aspect ratio a/b or accept
+      actin:VASP ratio, morphology class, or PEG concentration as inputs. Mapping dimensionless line
+      tension lam = 1 + chi/2 (effective_line_tension_{p3,s13}), Frank ratio k_33/k_11
+      (frank_elastic_constants_{eq6,2d}), or anchoring_elastic_crossover.xi_* onto geometric aspect
+      ratio a/b violates Rule 3 (distinct physical quantities).
+    - Dimensional [length] and [time] ports (nondim_parameters_s32.{l_c, t_Q, t_phi}; 3 [length] +
+      4 [time] pairs): l_c = sqrt(lambda_tilde) is the Lo-Ld Cahn-Hilliard diffuse interface width,
+      disjoint from graham2023's macroscopic 3D VASP droplet diameters (droplet_diam_range_obs
+      '1 to 7' um, droplet_diam_median_20uM 2.86 um, droplet_diam_max_20uM 7.22 um; all actin-free
+      20 uM VASP); t_Q = Gamma^-1 and t_phi = lambda_tilde/M are microscopic nematic rotational and
+      interfacial Cahn-Hilliard relaxation times, disjoint from actin-free VASP droplet coalescence
+      (vasp_droplet_fusion_time 'about 1' s, approximate -> no verdict) and FRAP half-time
+      (frap_t_half '18 +/- 3' s in a 1.8 um ROI), and 0/6 dimensional inputs (M, Gamma,
+      lambda_tilde, alpha, L_1, L_3) are measured in either paper.
+    - Curvature, binodals, and remaining dimensionless ports & Graham measurements:
+      boundary_curvature_s2{_corrected}.kappa_mean [1/um] has 0 dimension-matched Graham targets and
+      kappa_norm_mean evaluates only a circle (1.0 corrected, 0.027 printed) while graham2023
+      measures zero boundary-curvature observables; coupled_binodal_coexistence.{phi_Lo_eq,
+      phi_Ld_eq} (-1.193, +1.223) are symmetric double-well order-parameter roots rather than
+      fluorescence concentration partition ratios (edfig2d_partition_fig,
+      edfig3e_actin_partition_fig); and none of gubbala2025's free-energy densities, Q-tensor
+      components, stability bounds/rates, or structure-factor helpers predicts graham2023's 11
+      morphology abundance bar charts (fig2d_*, fig3d_*, fig6d_*, edfig4c_*), 5 FRAP datums
+      (frap_recovery_{fig1f,text}, fig1f_frap_avg_fig, fig6b_frap_*), or 5 droplet size
+      histograms/distributions (edfig4e_size_hist_fig, edfig9c_*).
+    (2) Direction B — graham2023 (31 runnable models, 40 ports) vs gubbala2025 (16 origin: measured
+    datums; 640 pairs = 118 dimension-matched [30 [length] + 88 dimensionless] + 522
+    dimension-mismatched): 0 valid CrossValidation entries. None of graham2023's 8 dimensionless
+    ports (droplet_aspect_ratio x4, filament_count, ring_length_to_diameter_ratio,
+    perimeter_to_2L_ratio, ring_thickness_scaling_exponent) predicts Gubbala's 7 normalized
+    coarsening curves/endpoints R(t)/R_0 (R_ratio_fig3_*, R_ratio_figS2_*,
+    R_ratio_{low,high}_exp_fig3_end), 3 Fig. 4C boundary curvature PDFs P(kappa)
+    (P_kappa_fig4c_exp_*), or Fig. S1 relative actin density rho/rho_max (actin_density_figS1_exp);
+    graham2023 has 0 [time] output ports for Gubbala's 3 physical timescales (coarsening_time_actin,
+    intermediate_time_start, actin_unbinding_time); and none of graham2023's 15 [length] ports
+    predicts Gubbala's actin-free 2D lipid domain size range (domain_size_no_actin 'approx 1 to 10'
+    um) or pre-polymerized bulk F-actin length (actin_filament_length_exp '3 to 5' um), nor its
+    non-measured composite_thickness_exp ('~ 10 to 50' nm, origin: estimated). See
+    graham2023/q_gubbala2025_no_cross_validation for the exhaustive Direction B item-by-item audit.
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with nastkolb2022 (2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_nastkolb2022_no_cross_validation
+  kind: unstated_model
+  about:
+    - coarsening_power_law
+    - model_c_pde_2d_eq9_10
+    - model_c_pde_2d_variational
+    - nondim_parameters_s32
+    - boundary_curvature_s2
+    - boundary_curvature_s2_corrected
+    - coupled_binodal_coexistence
+    - cahn_hilliard_free_energy_eq2
+    - ldg_bulk_free_energy_eq4
+    - ldg_bulk_free_energy_eq10_consistent
+    - elastic_free_energy_eq5
+    - anchoring_free_energy_eq7_s13
+    - nematic_q_tensor_eq3
+    - nematic_saturation_eq4_s5
+    - nematic_saturation_from_eq4_exact
+    - effective_line_tension_p3
+    - effective_line_tension_s13
+    - frank_elastic_constants_eq6
+    - frank_elastic_constants_2d
+    - elastic_ratio_bounds_p3
+    - elastic_ratio_bounds_eq6_corrected
+    - anchoring_elastic_crossover
+    - linear_stability_s24_s28
+    - linear_stability_s24_s28_corrected
+    - cubic_elastic_variational_sign_eq10
+    - structure_factor_domain_size_s1_s34
+    - R_ratio_low_exp_fig3_end
+    - R_ratio_high_exp_fig3_end
+    - R_ratio_fig3_exp_low
+    - R_ratio_fig3_exp_high
+    - R_ratio_fig3_inset_no_actin_exp
+    - R_ratio_figS2_exp_low
+    - R_ratio_figS2_exp_high
+    - P_kappa_fig4c_exp_no_actin
+    - P_kappa_fig4c_exp_low
+    - P_kappa_fig4c_exp_high
+    - actin_density_figS1_exp
+    - domain_size_no_actin
+    - actin_filament_length_exp
+    - coarsening_time_actin
+    - intermediate_time_start
+    - actin_unbinding_time
+    - composite_thickness_exp
+    - q_nastkolb2022_2d_slb_nematic_vs_vasp_bundling_synthesis
+    - nastkolb2022/frap_recovery_fit
+    - nastkolb2022/frap_recovery_by_half_time
+    - nastkolb2022/frap_half_time
+    - nastkolb2022/frap_tau_from_half_time
+    - nastkolb2022/frap_mobile_fraction_plateau
+    - nastkolb2022/frap_mobility_ratio
+    - nastkolb2022/bundle_filament_count_2d_spacing
+    - nastkolb2022/bundle_effective_spacing
+    - nastkolb2022/bundle_width_vasp_scaling
+    - nastkolb2022/cp_to_actin_ratio
+    - nastkolb2022/actin_concentration_fold_change
+    - nastkolb2022/bundle_width_median_vasp_025
+    - nastkolb2022/bundle_width_median_vasp_dtetra_025
+    - nastkolb2022/bundle_width_max_vasp_025
+    - nastkolb2022/bundle_width_max_vasp_dtetra_025
+    - nastkolb2022/bundle_width_vs_vasp_fig2e
+    - nastkolb2022/bundle_width_median_vs_vasp_fig2e
+    - nastkolb2022/bundle_width_by_elongator_fig3f
+    - nastkolb2022/bundle_width_vs_actin_figs3f
+    - nastkolb2022/bundle_width_cp_substrate_figs4f
+    - nastkolb2022/pore_size_vs_vasp_fig2e
+    - nastkolb2022/pore_size_by_elongator_fig3f
+    - nastkolb2022/pore_size_vs_actin_figs3f
+    - nastkolb2022/pore_size_cp_substrate_figs4f
+    - nastkolb2022/filament_count_1um_intensity_measured
+    - nastkolb2022/frap_t_half_vasp_slb
+    - nastkolb2022/frap_t_half_vasp_ml
+    - nastkolb2022/frap_mobile_fraction_slb_prepol
+    - nastkolb2022/frap_mobile_fraction_slb_pol30
+    - nastkolb2022/frap_mobile_fraction_ml_prepol
+    - nastkolb2022/frap_mobile_fraction_ml_pol30
+    - nastkolb2022/frap_curve_slb_prepol_fig4c
+    - nastkolb2022/frap_curve_slb_pol30_fig4c
+    - nastkolb2022/frap_curve_ml_prepol_fig4c
+    - nastkolb2022/frap_curve_ml_pol30_fig4c
+    - nastkolb2022/bilayer_decoration_vs_vasp_figs2g
+    - nastkolb2022/vasp_cluster_area_vs_vasp_figs4h
+    - nastkolb2022/vasp_llps_threshold_main
+    - nastkolb2022/vasp_llps_range_si
+    - nastkolb2022/vasp_enrichment_kinetics_fig5c
+    - nastkolb2022/lipid_depletion_kinetics_fig5c
+    - nastkolb2022/lipid_relaxation_fraction_60min
+    - nastkolb2022/bundle_diffraction_limited_window
+    - nastkolb2022/mdia1_tirf_decline_onset_time
+    - nastkolb2022/q_gubbala2025_no_cross_validation
+  citation:
+    page: 7
+    printed_page: "6249"
+    quote: "viscous lipid domains. Our numerical results qualitatively"
+    where: "Sec. 4 Conclusions (p. 7 / 6249; bidirectional cross-validation audit with nastkolb2022)"
+  text: >
+    No cross-record validations are entered in validations.yaml between gubbala2025 (26 runnable
+    models [22 role: model, 4 role: processing; 8 variant_of corrections; 82 output ports: 77
+    dimensionless, 2 [time], 2 1/[length], 1 [length]] and 16 origin: measured datums out of 121
+    total data [7 scalars + 9 digitized figures]) and nastkolb2022 (17 models: 11 runnable [2 role:
+    model, 2 role: fit, 7 role: processing; 11 output ports: 7 dimensionless, 2 [length], 2 [time]]
+    + 6 non-runnable; and 66 origin: measured datums out of 119 total data [16 scalars + 50
+    digitized figures]): 0 genuine CrossValidation entries exist in either direction across all
+    5,412 + 176 = 5,588 runnable port-datum pairs (3,723 dimension-matched, 1,865
+    dimension-mismatched) plus all 6 non-runnable nastkolb2022 models. Neither paper cites the
+    other (0 stated relations, 0 proposed relations in relations.yaml, 0 cited.yaml links; 2 shared
+    references: Honigmann et al. 2014 and Spudich & Watt 1971; see
+    q_nastkolb2022_2d_slb_nematic_vs_vasp_bundling_synthesis). No gubbala2025/validations.yaml is
+    created, preexisting nastkolb2022/validations.yaml (val_frap_by_thalf_vs_graham_fig1f) is
+    untouched, and 0 added.yaml entries are needed.
+    (1) Direction A — gubbala2025 (26 runnable models, 82 ports) vs nastkolb2022 (66 origin:
+    measured datums; 5,412 pairs = 3,636 dimension-matched [3,619 dimensionless + 9 [length] + 8
+    [time]] + 1,776 dimension-mismatched): 0 valid CrossValidation entries.
+    - Dimension-mismatched exclusions (1,776 pairs): gubbala2025's 2 curvature ports
+      (boundary_curvature_s2{_corrected}.kappa_mean [1/um]) have 0 1/[length] targets in
+      nastkolb2022; conversely nastkolb2022's 4 network pore-area curves (pore_size_vs_vasp_fig2e,
+      pore_size_by_elongator_fig3f, pore_size_vs_actin_figs3f, pore_size_cp_substrate_figs4f;
+      [length]^2 in um^2) and 2 VASP LLPS concentration datums (vasp_llps_threshold_main '>= 0.5'
+      uM, vasp_llps_range_si '0.25 to 2' uM; [substance]/[length]^3) have 0 matching output ports
+      in gubbala2025.
+    - [length] pairs (1 port x 9 datums = 9 pairs): nondim_parameters_s32.l_c = sqrt(lambda_tilde)
+      is the Cahn-Hilliard diffuse Lo-Ld lipid interface width, physically disjoint from
+      nastkolb2022's 9 lateral 2D actin bundle-width datums (bundle_width_median_vasp_025 = 0.942
+      um, bundle_width_median_vasp_dtetra_025 = 0.584 um, bundle_width_max_vasp_025 = 3 um,
+      bundle_width_max_vasp_dtetra_025 = 3.2 um, bundle_width_vs_vasp_fig2e,
+      bundle_width_median_vs_vasp_fig2e [0.547-4.357 um], bundle_width_by_elongator_fig3f,
+      bundle_width_vs_actin_figs3f, bundle_width_cp_substrate_figs4f) formed on a single-phase
+      egg-PC/Ni-NTA SLB lacking any Lo/Ld miscibility gap. Moreover, 0/6 dimensional inputs of
+      nondim_parameters_s32 (M, Gamma, lambda_tilde, alpha, L_1, L_3) are measured in either paper.
+    - [time] pairs (2 ports x 4 datums = 8 pairs): nondim_parameters_s32.{t_Q, t_phi} are
+      microscopic nematic rotational (1/Gamma) and Lo-Ld interfacial diffusion (lambda_tilde/M)
+      timescales (with 0/6 dimensional inputs measured in either paper), disjoint from nastkolb2022's
+      circular-spot VASP FRAP half-times (frap_t_half_vasp_slb = 0.102 min, frap_t_half_vasp_ml =
+      0.399 min in a 4.96 um bleach disk) and experimental assay timing markers
+      (bundle_diffraction_limited_window = '0 to 80' s, mdia1_tirf_decline_onset_time = 6 min).
+    - dimensionless pairs (77 ports x 47 datums = 3,619 pairs):
+      (a) Coarsening models (coarsening_power_law.R_over_R0 [domain_size_ratio];
+      model_c_pde_2d_{eq9_10,variational}.{alpha_fit, R_final, R_growth_ratio, Q_max_final}):
+      nastkolb2022 measures 0 lipid-domain coarsening curves R(t)/R_0, 0 coarsening exponents alpha,
+      0 bundle-width-vs-time trajectories, and 0 nematic order parameters |Q|. All 27 time-indexed
+      curves in nastkolb2022 measure fluorescence observables rather than domain radius growth:
+      4 post-bleach VASP FRAP traces (frap_curve_{slb,ml}_{prepol,pol30}_fig4c, rising from 0 to
+      0.535-0.962 over 0.05-1.3 min), 16 TIRFM actin-mass polymerization kinetics curves
+      (6 normalized kinetics_*_fig3e, 9 raw AU raw_actin_kinetics_*_figs2f/s3e, 1 normalized bundle
+      trace bundle_actin_kinetics_fig5c), 2 non-monotonic under/next bundle intensity ratio traces
+      (vasp_enrichment_kinetics_fig5c peaking at 1.95 then relaxing to 1.62;
+      lipid_depletion_kinetics_fig5c dipping to 0.910 then relaxing to 0.951), and 4 Spearman
+      pixel-colocalization curves (coloc_{vasp,dtetra}_{slb,ml}_fig4b). Mapping any fluorescence
+      intensity, enrichment ratio, or correlation score onto domain_size_ratio violates Rule 3.
+      (b) Coupled binodal & free-energy / nematic / elastic / LSA / structure-factor / curvature
+      models (all remaining 72 dimensionless ports): coupled_binodal_coexistence outputs symmetric
+      double-well order-parameter roots (phi_Lo_eq = -1.193, phi_Ld_eq = +1.223), mu_coex, Q_eq_Ld,
+      and eff_diff_perp — NOT segmented actin bilayer coverage (bilayer_decoration_vs_vasp_figs2g:
+      0.376-0.950 vs c_VASP), pre-actin VASP cluster area fraction (vasp_cluster_area_vs_vasp_figs4h:
+      0.007-0.596), or lipid depletion/relaxation (lipid_relaxation_fraction_60min '~0.5'), and
+      gubbala2025 has no runnable model outputting area fraction as a function of VASP
+      concentration. Likewise, none of gubbala2025's free-energy densities, Q-tensor/saturation
+      values, effective line tensions, Frank elastic constants/bounds/crossovers, LSA decay rates,
+      variational sign diagnostics, structure-factor moments, or circle-only boundary_curvature_s2*
+      predicts nastkolb2022's remaining dimensionless datums: 4 VASP FRAP mobile fractions (0.97,
+      0.65, 0.61, 0.57), 1 bundle filament count (filament_count_1um_intensity_measured = '45 +/-
+      12'), 8 bundle-width histograms (width_hist_*_fig2d/s2i/s4c), 4 spatial line cross-sections
+      (actin_profile_{0s,405s}_fig2c, actin_profile_fig5b, lipid_profile_fig5b), or 1 bilayer VASP
+      fluorescence titration curve (bilayer_vasp_fluor_vs_vasp_figs2h).
+    (2) Direction B — nastkolb2022 (11 runnable models [11 ports] + 6 non-runnable) vs gubbala2025
+    (16 origin: measured datums; 176 runnable pairs = 87 dimension-matched [77 dimensionless + 4
+    [length] + 6 [time]] + 89 dimension-mismatched): 0 valid CrossValidation entries. None of
+    nastkolb2022's 6 FRAP models (frap_recovery_fit, frap_recovery_by_half_time,
+    frap_mobile_fraction_plateau, frap_half_time, frap_tau_from_half_time, frap_mobility_ratio)
+    applies because gubbala2025 performs 0 FRAP experiments (its 7 normalized coarsening datums
+    R_ratio_fig3_*, R_ratio_figS2_*, R_ratio_{low,high}_exp_fig3_end grow above 1 via power-law
+    domain ripening rather than photobleach recovery, and its 3 [time] datums coarsening_time_actin
+    'approx 2' hr, intermediate_time_start 'approx 10' min, and actin_unbinding_time '>=~ 2' hr are
+    approximate/inequality observation windows); none of nastkolb2022's 3 2D VASP bundle geometry
+    models (bundle_filament_count_2d_spacing, bundle_effective_spacing, bundle_width_vasp_scaling)
+    applies because gubbala2025 uses 0 VASP and measures neither bundle width, filament count, nor
+    interfilament spacing (domain_size_no_actin 'approx 1 to 10' um is actin-free Lo lipid domain
+    size, actin_filament_length_exp '3 to 5' um is single-filament contour length, and non-measured
+    composite_thickness_exp '~ 10 to 50' nm [origin: estimated] is out-of-plane stacking thickness);
+    neither cp_to_actin_ratio nor actin_concentration_fold_change applies (gubbala2025 uses 0 CP
+    and omits bulk G-actin molarity; actin_density_figS1_exp is Ld fluorescence ratio rho/rho_max);
+    and no nastkolb2022 model (runnable or non-runnable) predicts Fig. 4C boundary curvature PDFs
+    P_kappa_fig4c_exp_{no_actin,low,high}. See nastkolb2022/q_gubbala2025_no_cross_validation for
+    the complete Direction B item-by-item audit.
+

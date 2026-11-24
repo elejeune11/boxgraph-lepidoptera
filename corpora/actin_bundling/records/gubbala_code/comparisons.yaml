@@ -1,0 +1,97 @@
+# ==============================================================================
+# 1. Initialization, stability-bound, and operator consistency checks
+# ==============================================================================
+
+- id: cmp_noise_var_init_vs_paper
+  purpose: consistency
+  computed: noise_var_readme
+  printed: paper_init_noise_variance
+  note: "Empirical variance of ModelC_2D.run() noise (scale=1e-2 on 512x512 grid -> 9.97e-5) vs SI p. 17 printed sigma^2 = 10^-4 (order-of-magnitude printed value)."
+
+- id: cmp_lsa_chi_min_code_vs_paper
+  purpose: reproduction
+  computed: lsa_high_chi_min
+  printed: paper_chi_stability_min
+  note: "Live ModelC_2D.euler_step() uses kappa_anch = 1 + |chi|/2 (line 114), giving high-k stability lower bound chi_min = -2.000 rather than SI Eq. (S27)'s printed -2/3 = -0.666667 (which used 1 + chi/2)."
+
+- id: cmp_lsa_chi_max_code_vs_paper
+  purpose: reproduction
+  computed: lsa_high_chi_max
+  printed: paper_chi_stability_max
+  note: "Live ModelC_2D.euler_step() reproduces SI Eq. (S27)'s upper anchoring stability bound chi_max = 2 at beta = 1."
+
+- id: cmp_lsa_E3_eff_code_vs_paper
+  purpose: reproduction
+  computed: lsa_high_E3_eff
+  printed: paper_E3_high_actin
+  note: "Live ModelC_2D.euler_step() gives linearized bend-splay anisotropy E3_eff = -0.0106 instead of +2.0 (SI Eq. S28) because line 91 passes real-space Q[i][j] instead of Q_fft[i][j] into ifft2(-K_k K_l ...)."
+
+- id: cmp_lsa_E3_eff_fixed_vs_paper
+  purpose: reproduction
+  computed: lsafix_high_E3_eff
+  printed: paper_E3_high_actin
+  note: "Diagnostic variant fixing line 91 (Q_fft) and negating to variational -0.5*E3 restores E3_eff = +2.0000, exactly reproducing SI Eq. (S28)."
+
+- id: cmp_lsa_chi_eff_beta1_vs_code
+  purpose: consistency
+  computed: lsa_high_chi_eff
+  printed: chi_default_code
+  note: "At beta = 1 (S = 1), ModelC_2D.euler_step()'s linearized anchoring coupling matches CHI = 1.0."
+
+- id: cmp_lsa_chi_eff_beta2_vs_code
+  purpose: consistency
+  computed: lsa_b2_chi_eff
+  printed: chi_default_code
+  note: "At beta = 2 (S = 1/sqrt(2)), ModelC_2D.euler_step() yields chi_eff = 0.7071 = chi/sqrt(2) instead of 1.0, proving that lines 126, 133, 140 omit 1/S = sqrt(beta)."
+
+- id: cmp_stepper_reported_t1_vs_dt0
+  purpose: consistency
+  computed: step_rep_t1
+  printed: dt_init_default_code
+  note: "ModelC_2D.run() advances fields by DT_old = 1e-8 on step 0, updates DT to 2.799e-6 on line 223, and then executes T += self.DT on line 224, overshooting the true step-1 time by ~280x."
+
+- id: cmp_stepper_true_t1_vs_dt0
+  purpose: consistency
+  computed: step_true_t1
+  printed: dt_init_default_code
+  note: "True integrated time after step 0 (logged directly from euler_step dt) equals dt_init = 1e-8."
+
+# ==============================================================================
+# 2. Coarsening exponent & growth-ratio reproductions against gubbala2025
+# ==============================================================================
+
+- id: cmp_native_low_alpha
+  purpose: reproduction
+  computed: native_low_alpha
+  printed: paper_alpha_low_actin_sim
+  conditions_ok: "CPU-affordable periodic box N=48, L=46.875 (exact paper dx=500/512) integrated over t=120..400 with unmodified ModelC_2D.run() (TOL=1e-4, 2 replicates) vs paper's 512^2 GPU runs (no_verdict due to approximate printed '≈ 0.25')."
+
+- id: cmp_euler_low_shared_alpha
+  purpose: reproduction
+  computed: euler_low_sh_alpha
+  printed: paper_alpha_low_actin_sim
+  conditions_ok: "Live ModelC_2D.euler_step() on N=64, L=62.5 (dx=500/512) over t=200..1000 with ModelC_2D.run()'s shared noise array (2 replicates) vs printed '≈ 0.25'."
+
+- id: cmp_euler_low_indep_alpha
+  purpose: reproduction
+  computed: euler_low_in_alpha
+  printed: paper_alpha_low_actin_sim
+  conditions_ok: "Live ModelC_2D.euler_step() on N=64, L=62.5 over t=200..1000 with independent Gaussian noise (SI p. 17, 2 replicates) vs printed '≈ 0.25'."
+
+- id: cmp_euler_low_shared_Rratio
+  purpose: reproduction
+  computed: euler_low_sh_Rratio
+  printed: paper_R_ratio_low_sim
+  conditions_ok: "Dimensionless simulation window t=200..1000 (5x ratio) compared qualitatively against eye-read Fig. 3 endpoint (~1.73 over 10x time window; no_verdict)."
+
+- id: cmp_euler_high_alpha
+  purpose: reproduction
+  computed: euler_high_alpha
+  printed: paper_alpha_high_actin_sim
+  conditions_ok: "Live ModelC_2D.euler_step() on N=64, L=62.5 over t=200..1000 at high actin (E1=E3=2, phi0=0.75); tests printed bound '< 0.25' during intermediate coarsening."
+
+- id: cmp_euler_high_Rratio
+  purpose: reproduction
+  computed: euler_high_Rratio
+  printed: paper_R_ratio_high_sim
+  conditions_ok: "Dimensionless simulation window t=200..1000 (5x ratio) compared qualitatively against eye-read Fig. 3 high-actin endpoint (~1.32 over 10x time window; no_verdict)."

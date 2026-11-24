@@ -1,0 +1,23 @@
+id: modelc_cubic_operator_audit
+name: live ModelC_2D.cubic() variational dissipation, Eq. 10 error, and uniform-state residual audit
+role: model
+software: true
+stated:
+  file: ModelC_Cubic.py
+  lines: "71-102"
+  quote: "def cubic(self, qxx_, qxx_fft, qxy_, qxy_fft):"
+  where: "ModelC_Cubic.py::ModelC_2D.cubic (lines 71-102) and euler_step cubic term +0.5*E3*f_fft (lines 126-135)"
+equation: "RHS_E3 = +0.5 * E3 * cubic(Q), where cubic() computes (d_i Q_kl)(d_j Q_kl) - 2(d_l Q_kl)(d_k Q_ij) - 2 Q_kl ifft2(-K_k K_l Q_ij).real minus (1/2)Tr*I (passing real-space Q_ij instead of Q_fft on line 91)"
+inputs:
+  E3: {quantity: elastic_constant_dimless, unit: dimensionless}
+  beta: {quantity: ldg_quartic_coeff, unit: dimensionless}
+outputs:
+  dissipation_ratio_code: {quantity: free_energy_rate_ratio, unit: dimensionless}
+  rel_err_vs_eq10: {quantity: relative_operator_error, unit: dimensionless}
+  rel_err_second_deriv: {quantity: relative_operator_error, unit: dimensionless}
+  uniform_residual_max: {quantity: nematic_rhs_residual, unit: dimensionless}
+settings:
+  n_grid: 32
+  L_box: 32.0
+  eps_fd: 1.0e-6
+stochastic: false

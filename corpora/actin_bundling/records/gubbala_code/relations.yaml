@@ -1,0 +1,707 @@
+# Cross-record ModelAtlas relations between gubbala_code (ActinNematics: ModelC_Cubic.py)
+# and gubbala2025 (Gubbala, Jena, Arnold & Takatori, Soft Matter 21, 6243-6251, 2025).
+#
+# Structure:
+# - Section 1: Cubic elastic operator (modelc_cubic_operator_audit, modelc_cubic_operator_fixed)
+#   vs gubbala2025/cubic_elastic_variational_sign_eq10.
+# - Section 2: Unmodified live ModelC_2D.euler_step() Frechet linear stability
+#   (modelc_linear_stability_probe) vs gubbala2025/linear_stability_s24_s28,
+#   linear_stability_s24_s28_corrected, and nematic_saturation_eq4_s5.
+# - Section 3: Fixed diagnostic variant (modelc_linear_stability_fixed) restoring line 91 (Q_fft)
+#   and variational -0.5*E3 sign vs gubbala2025/linear_stability_s24_s28 and _corrected.
+# - Section 4: 2D PDE coarsening, adaptive timestepper, equilibrium binodal nematic order, and
+#   power-law coarsening (modelc_coarsening_euler_step, modelc_adaptive_stepper_audit) vs
+#   gubbala2025/model_c_pde_2d_eq9_10, model_c_pde_2d_variational, coupled_binodal_coexistence,
+#   and coarsening_power_law.
+#   (The paper's Data Availability stated equivalence between gubbala2025/model_c_pde_2d_eq9_10
+#   and gubbala_code/modelc_coarsening_native_run lives in gubbala2025/relations.yaml.)
+#
+# Notes on unlinked models (full 8 x 25 audit):
+# - gubbala_code/modelc_grids_and_init audits code-only discretization details (DX = L/(N-1),
+#   K[0,0] = 1/N^2 zero-mode floor, square 2/3 de-aliasing fraction, and t=0 shared-noise
+#   correlation) that have no counterpart analytical model among gubbala2025's 25 models
+#   (checked directly against gubbala2025 datums in gubbala_code/comparisons.yaml).
+# - gubbala2025's pointwise free-energy densities (cahn_hilliard_free_energy_eq2,
+#   ldg_bulk_free_energy_eq4/_eq10_consistent, elastic_free_energy_eq5,
+#   anchoring_free_energy_eq7_s13), Frank constant / Q-tensor definitions
+#   (nematic_q_tensor_eq3, frank_elastic_constants_eq6/_2d, elastic_ratio_bounds_p3/_eq6_corrected,
+#   nematic_saturation_from_eq4_exact), dimensional scale mapping (nondim_parameters_s32),
+#   synthetic-spectrum structure-factor quadrature (structure_factor_domain_size_s1_s34), and
+#   image-analysis boundary curvature (boundary_curvature_s2/_corrected) have no standalone
+#   counterpart entry point in ModelC_Cubic.py; effective_line_tension_p3/_s13 (1+|chi|/2 vs
+#   1+chi/2) are tested directly inside live euler_step() via omega_phi and chi_min below.
+
+# ==============================================================================
+# 1. Cubic elastic operator (ModelC_2D.cubic + euler_step +0.5*E3 sign)
+# ==============================================================================
+
+- id: rel_code_cubic_vs_eq10_printed
+  kind: same_as
+  a: gubbala_code/modelc_cubic_operator_audit
+  b: gubbala2025/cubic_elastic_variational_sign_eq10
+  mapping:
+    E3: "E3"
+  output_map:
+    dissipation_ratio_printed: dissipation_ratio_code
+  regime:
+    E3: [0.1, 3.0]
+    beta: [0.5, 2.0]
+  provenance: stated
+  citation:
+    file: README.md
+    lines: "35-40"
+    quote: "# Constants that appear in Eqs. 9 & 10 of main text"
+    where: "README.md (lines 3-5, 35-40) & ModelC_Cubic.py::ModelC_2D.cubic (lines 71-102, 126-134)"
+  assumptions:
+    - "Both models evaluate the cubic elastic dissipation ratio dF_E3/dt / (-2 int |RHS|^2 dA) on the identical smooth periodic 2D test field (N=32, L=32, eps_fd=1e-6). Because ModelC_Cubic.py line 91 multiplies wavevectors -K[k]*K[l] into real-space Q[i][j] instead of Q_fft[i][j], unmodified ModelC_2D.cubic() has 116.3% L2 error against Eq. (10) and yields dissipation_ratio = -0.3119 rather than printed Eq. (10)'s -1.0000."
+
+- id: rel_code_cubic_vs_eq8_variational
+  kind: same_as
+  a: gubbala_code/modelc_cubic_operator_audit
+  b: gubbala2025/cubic_elastic_variational_sign_eq10
+  mapping:
+    E3: "E3"
+  output_map:
+    dissipation_ratio_variational: dissipation_ratio_code
+  regime:
+    E3: [0.1, 3.0]
+    beta: [0.5, 2.0]
+  provenance: stated
+  citation:
+    file: README.md
+    lines: "3-5"
+    quote: "This repository contains the main simulation code for the following article:"
+    where: "README.md (lines 3-5) & ModelC_Cubic.py::ModelC_2D.euler_step (lines 126-135); cf. gubbala2025 Eq. (5), Eq. (8) dQ/dt = -delta F/delta Q, Data availability (p. 7 / 6249), and SI Sec. 4 (pp. 16-17)"
+  assumptions:
+    - "Tests unmodified ModelC_2D.cubic() with euler_step's +0.5*E3 prefactor against variational gradient descent -delta F_E3/delta Q (dissipation_ratio = +1.0000). Fails on both sign (non-variational +0.5*E3 increases F_E3) and magnitude (line 91 real-space FFT bug degrades alignment to -0.3119)."
+
+- id: rel_code_cubic_fixed_same_variational
+  kind: same_as
+  a: gubbala_code/modelc_cubic_operator_fixed
+  b: gubbala2025/cubic_elastic_variational_sign_eq10
+  mapping:
+    E3: "E3"
+  output_map:
+    dissipation_ratio_variational: dissipation_ratio_code
+  regime:
+    E3: [0.1, 3.0]
+    beta: [0.5, 2.0]
+  provenance: proposed
+  reason: "Fixing ModelC_Cubic.py line 91 to pass Fourier-space Q_fft[i][j] and negating euler_step's cubic prefactor from +0.5*E3 to variational -0.5*E3 (modelc_cubic_operator_fixed) makes live ModelC_2D's cubic operator identically match gubbala2025/cubic_elastic_variational_sign_eq10's variational gradient descent (dissipation_ratio = +1.000000, relative difference < 1e-8 across all E3, beta)."
+
+- id: rel_code_cubic_fixed_vs_eq10_printed
+  kind: same_as
+  a: gubbala_code/modelc_cubic_operator_fixed
+  b: gubbala2025/cubic_elastic_variational_sign_eq10
+  mapping:
+    E3: "E3"
+  output_map:
+    dissipation_ratio_printed: dissipation_ratio_code
+  regime:
+    E3: [0.1, 3.0]
+    beta: [0.5, 2.0]
+  provenance: proposed
+  reason: "Once the line 91 real-space FFT bug is removed, variational modelc_cubic_operator_fixed (+1.0000) differs from printed Eq. (10)'s +0.5*E3 term (-1.0000) by an exact constant factor of -1, isolating the non-variational sign error of printed Eq. (10) / SI Eq. (S20)."
+
+# ==============================================================================
+# 2. Unmodified ModelC_2D.euler_step() Frechet linear stability vs SI Sec. 3.3
+# ==============================================================================
+
+- id: rel_code_lsa_omega_xx_long_vs_s28
+  kind: same_as
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_xx: omega_xx_long
+  regime:
+    beta: [0.5, 2.0]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.5, 2.5]
+    E3: [0.2, 2.0]
+  tolerance: 1.0e-3
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "126-129"
+    quote: "numerator_qxx = qxx_fft + dt * (bulk_qxx_fft - 0.5 * self.CHI * anch_qxx_fft +"
+    where: "ModelC_Cubic.py::ModelC_2D.euler_step (lines 122-129), cubic (lines 89-91), & README.md (line 35); cf. gubbala2025 SI Eq. (S25)/(S28) (p. 16)"
+  assumptions:
+    - "Evaluated at longitudinal wavevector (kx, ky) = (2*pi*mode_m/L, 0) = (pi/8, 0) with 1e-3 tolerance to absorb O(dt_probe) = O(1e-4) IMEX discretization. Refuted across all E3 > 0 because line 91 passes real-space Q[i][j] into ifft2(-K_k K_l ...), collapsing E3_eff from +E3 to -0.005*E3 and leaving omega_xx nearly isotropic."
+
+- id: rel_code_lsa_omega_xx_trans_vs_s28
+  kind: same_as
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "0"
+    ky: "pi / 8"
+  output_map:
+    omega_xx: omega_xx_trans
+  regime:
+    beta: [0.5, 2.0]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.5, 2.5]
+    E3: [0.2, 2.0]
+  tolerance: 1.0e-3
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "89-91"
+    quote: "2 * Q[k][l] * self.ifft2(-K[k] * K[l] * Q[i][j]).real)"
+    where: "ModelC_Cubic.py::ModelC_2D.cubic (lines 89-91) & euler_step (lines 122-129); cf. gubbala2025 SI Eq. (S28) (p. 16)"
+  assumptions:
+    - "Evaluated at transverse wavevector (kx, ky) = (0, pi/8) with 1e-3 tolerance. Refuted across all E3 > 0 because line 91 wipes out the transverse -(E3/sqrt(beta))*ky^2 term, eliminating perpendicular backward diffusion at E3 > E1*sqrt(beta) and explaining why ModelC_Cubic.py never blows up at high actin (E1=E3=2, beta=1) despite |Q|_eq = 1.0543 > 1."
+
+- id: rel_code_lsa_omega_xx_reduces_s28_isotropic
+  kind: reduces_to
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_xx: omega_xx_long
+  limit:
+    E3: "0"
+  regime:
+    beta: [0.5, 2.0]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.5, 2.5]
+    E3: [0.2, 2.0]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: "In the isotropic nematic elasticity limit E3 -> 0, the buggy 0.5*E3*cubic() contribution in ModelC_2D.euler_step() vanishes and unmodified live omega_xx_long reduces to SI Eq. (S28)'s 4 + E1*k^2 (within O(dt_probe) ~ 4e-5 IMEX discretization)."
+
+- id: rel_code_lsa_omega_xy_vs_s26_corrected
+  kind: same_as
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28_corrected
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_xy: omega_xy_long
+  regime:
+    beta: [0.5, 2.0]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.5, 2.5]
+    E3: [0.2, 2.0]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: "Unmodified ModelC_2D.euler_step() refutes the exact variational linearization omega_xy = (E1 + E3/sqrt(beta))*kx^2 + (E1 - E3/sqrt(beta))*ky^2 (linear_stability_s24_s28_corrected) by up to ~50% because line 91 destroys the cubic elastic second-derivative term."
+
+- id: rel_code_lsa_omega_xy_approx_s26_printed
+  kind: approximated_by
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_xy: omega_xy_long
+  regime:
+    beta: [0.5, 2.0]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [1.0, 2.5]
+    E3: [0.2, 2.0]
+  tolerance: 0.02
+  provenance: proposed
+  reason: "Documents an accidental cancellation of two independent errors: printed SI Eq. (S26) (linear_stability_s24_s28) omitted the cubic elastic term +(E3/sqrt(beta))*(kx^2 - ky^2) from omega_xy = E1*k^2, and unmodified ModelC_Cubic.py line 91 wipes out >99% of that same term, leaving unmodified omega_xy_long within ~1-2% of printed E1*k^2."
+
+- id: rel_code_lsa_chi_min_vs_s27
+  kind: same_as
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    chi_min: chi_min_code
+  regime:
+    beta: [1.0, 1.0]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.1, 2.0]
+    E3: [0.1, 2.0]
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "114"
+    quote: "kappa_anch = 1 + np.abs(self.CHI) / 2"
+    where: "ModelC_Cubic.py::ModelC_2D.euler_step (line 114) & README.md (line 35); cf. gubbala2025 SI Eq. (S27) (p. 16) '-2/3 <= chi <= 2'"
+  assumptions:
+    - "Tested at the paper's exact beta = 1 (so missing 1/S = sqrt(beta) is masked and only kappa_anch = 1 + |CHI|/2 is isolated). Refuted because |CHI| yields lower high-k stability bound chi_min_code = -2.000 rather than SI Eq. (S27)'s printed -2/3 = -0.666667 (which followed from SI Eq. S13's lambda = 1 + chi/2)."
+
+- id: rel_code_lsa_chi_max_beta1_approx_s27
+  kind: approximated_by
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    chi_max: chi_max_code
+  regime:
+    beta: [1.0, 1.0]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.1, 2.0]
+    E3: [0.1, 2.0]
+  tolerance: 1.0e-3
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "114"
+    quote: "kappa_anch = 1 + np.abs(self.CHI) / 2"
+    where: "ModelC_Cubic.py::ModelC_2D.euler_step (line 114) & README.md (line 35); cf. gubbala2025 SI Eq. (S27) (p. 16) '-2/3 <= chi <= 2'"
+  assumptions:
+    - "At beta = 1 (S = 1) and parallel anchoring chi > 0, kappa_anch = 1 + |chi|/2 = 1 + chi/2 and omitted 1/S = 1, so live ModelC_2D.euler_step()'s upper high-k stability root chi_max_code reproduces SI Eq. (S27)'s chi_max = 2 within O(dt_probe) ~ 4e-4."
+
+- id: rel_code_lsa_chi_max_nonunit_beta_vs_s27
+  kind: same_as
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    chi_max: chi_max_code
+  regime:
+    beta: [1.1, 2.2]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.1, 2.0]
+    E3: [0.1, 2.0]
+  tolerance: 1.0e-3
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "139-140"
+    quote: "self.GAMMA * self.K ** 2 * dt * (f_eff_fft - self.CHI * anch_phi_fft))"
+    where: "ModelC_Cubic.py::ModelC_2D.euler_step (lines 126, 133, 140 omitting 1/S = sqrt(beta)) & README.md (line 35); cf. gubbala2025 Eq. (9) & SI Eq. (S27)"
+  assumptions:
+    - "For non-unit beta in [1.1, 2.2] (within the bisection bracket chi_max < 10 for beta < 2.78), omitting 1/S = sqrt(beta) on anch_phi_fft shifts the upper high-k stability root from 2 to 2*sqrt(beta)/(2 - sqrt(beta)) (2.20 to 5.75), refuting SI Eq. (S27)'s beta-independent chi_max = 2."
+
+- id: rel_code_lsa_omega_phi_parallel_beta1_approx_s27
+  kind: approximated_by
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_phi: omega_phi_long
+  regime:
+    beta: [1.0, 1.0]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.1, 2.0]
+    E3: [0.1, 2.0]
+  tolerance: 1.0e-3
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "139-143"
+    quote: "numerator_phi = (phi_fft * (1 + self.K ** 6 * dt) -"
+    where: "ModelC_Cubic.py::ModelC_2D.euler_step (lines 114, 116-117, 138-143); cf. gubbala2025 SI Eq. (S27) (p. 16)"
+  assumptions:
+    - "At beta = 1 and parallel anchoring chi > 0, ModelC_2D.euler_step()'s longitudinal concentration decay rate omega_phi_long matches SI Eq. (S27) gamma*k^2*(2 + (1 + 3*chi/2)*kx^2) within O(dt_probe) ~ 1e-5 IMEX discretization."
+
+- id: rel_code_lsa_omega_phi_perp_vs_s27
+  kind: same_as
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_phi: omega_phi_long
+  regime:
+    beta: [1.0, 1.0]
+    gamma: [0.05, 1.0]
+    chi: [-0.6, -0.1]
+    E1: [0.1, 2.0]
+    E3: [0.1, 2.0]
+  tolerance: 1.0e-3
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "114"
+    quote: "kappa_anch = 1 + np.abs(self.CHI) / 2"
+    where: "ModelC_Cubic.py::ModelC_2D.euler_step (line 114) vs gubbala2025 SI Eq. (S13) & Eq. (S27) for perpendicular anchoring chi < 0"
+  assumptions:
+    - "For perpendicular anchoring chi in [-0.6, -0.1] (inside SI Eq. S27's stable range [-2/3, 0) at beta = 1), ModelC_Cubic.py line 114's kappa_anch = 1 + |CHI|/2 produces longitudinal k^4 coefficient 1 + chi/2 instead of SI Eq. (S27)'s 1 + 3*chi/2, refuting SI Eq. (S27)."
+
+- id: rel_code_lsa_omega_phi_nonunit_beta_vs_s27
+  kind: same_as
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_phi: omega_phi_long
+  regime:
+    beta: [1.2, 2.2]
+    gamma: [0.05, 1.0]
+    chi: [0.5, 1.8]
+    E1: [0.1, 2.0]
+    E3: [0.1, 2.0]
+  tolerance: 1.0e-3
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "139-140"
+    quote: "self.GAMMA * self.K ** 2 * dt * (f_eff_fft - self.CHI * anch_phi_fft))"
+    where: "ModelC_Cubic.py::ModelC_2D.euler_step (line 140 omitting 1/S = sqrt(beta)) vs gubbala2025 Eq. (9) & SI Eq. (S27)"
+  assumptions:
+    - "Even for parallel anchoring chi > 0, omitting 1/S = sqrt(beta) on anch_phi_fft yields effective longitudinal k^4 coefficient 1 + chi/2 + chi/sqrt(beta) instead of SI Eq. (S27)'s 1 + 3*chi/2, refuting SI Eq. (S27) for all beta != 1."
+
+- id: rel_code_lsa_chi_eff_scales_as_nematic_S
+  kind: scales_as
+  a: gubbala_code/modelc_linear_stability_probe
+  b: gubbala2025/nematic_saturation_eq4_s5
+  mapping:
+    beta: "beta"
+    phi: "1"
+  output_map:
+    S: chi_eff_linear
+  regime:
+    beta: [0.5, 2.2]
+    gamma: [0.1, 1.0]
+    chi: [1.0, 1.0]
+    E1: [0.5, 2.0]
+    E3: [0.1, 1.0]
+  provenance: proposed
+  reason: "Quantitatively confirms that dropping 1/S = sqrt(beta) in ModelC_2D.euler_step() line 140 makes the live linearized anchoring anisotropy chi_eff_linear = chi/sqrt(beta) scale identically as beta^(-1/2) with gubbala2025/nematic_saturation_eq4_s5 (S = 1/sqrt(beta) at phi = 1), rather than remaining beta-independent as in Eq. (9) and SI Eq. (S27)."
+
+# ==============================================================================
+# 3. Fixed diagnostic variant (line 91 Q_fft + variational -0.5*E3) vs SI LSA
+# ==============================================================================
+
+- id: rel_code_lsa_fixed_omega_xx_long_approx_s28
+  kind: approximated_by
+  a: gubbala_code/modelc_linear_stability_fixed
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_xx: omega_xx_long
+  regime:
+    beta: [0.5, 2.2]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.5, 2.5]
+    E3: [0.2, 2.0]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: "Fixing line 91 (Q_fft[i][j]) and negating the cubic prefactor to variational -0.5*E3 on the live ModelC_2D instance restores SI Eq. (S28)'s longitudinal nematic decay rate omega_xx = 4 + (E1 + E3/sqrt(beta))*kx^2 across the full (beta, E1, E3) regime within O(dt_probe) ~ 4e-5."
+
+- id: rel_code_lsa_fixed_omega_xx_trans_approx_s28_corr
+  kind: approximated_by
+  a: gubbala_code/modelc_linear_stability_fixed
+  b: gubbala2025/linear_stability_s24_s28_corrected
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "0"
+    ky: "pi / 8"
+  output_map:
+    omega_xx: omega_xx_trans
+  regime:
+    beta: [0.5, 2.2]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.5, 2.5]
+    E3: [0.2, 2.0]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: "Fixing line 91 and variational sign restores SI Eq. (S28)'s transverse nematic decay rate omega_xx = 4 + (E1 - E3/sqrt(beta))*ky^2 (including the negative-diffusivity branch when E3 > E1*sqrt(beta)) across the full (beta, E1, E3) regime within O(dt_probe) ~ 4e-5."
+
+- id: rel_code_lsa_fixed_omega_xy_approx_s26_corr
+  kind: approximated_by
+  a: gubbala_code/modelc_linear_stability_fixed
+  b: gubbala2025/linear_stability_s24_s28_corrected
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_xy: omega_xy_long
+  regime:
+    beta: [0.5, 2.2]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.5, 2.5]
+    E3: [0.2, 2.0]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: "Fixing line 91 and variational sign on live ModelC_2D verifies linear_stability_s24_s28_corrected's restored cubic elastic term in omega_xy = (E1 + E3/sqrt(beta))*kx^2 + (E1 - E3/sqrt(beta))*ky^2 within O(dt_probe) ~ 4e-5."
+
+- id: rel_code_lsa_fixed_omega_xy_vs_s26_printed
+  kind: same_as
+  a: gubbala_code/modelc_linear_stability_fixed
+  b: gubbala2025/linear_stability_s24_s28
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "pi / 8"
+    ky: "0"
+  output_map:
+    omega_xy: omega_xy_long
+  regime:
+    beta: [0.5, 2.2]
+    gamma: [0.05, 1.0]
+    chi: [0.1, 1.8]
+    E1: [0.5, 2.5]
+    E3: [0.2, 2.0]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: "Once line 91 and the variational sign are fixed on live ModelC_2D, live omega_xy_long directly refutes printed SI Eq. (S26)'s isotropic omega_xy = E1*k^2 (which omitted the non-vanishing cubic elastic term +(E3/sqrt(beta))*(kx^2 - ky^2), confirming gubbala2025/q_lsa_s24_s26_discrepancies)."
+
+# ==============================================================================
+# 4. 2D PDE coarsening, adaptive stepper, coupled binodal & power-law scaling
+# ==============================================================================
+
+- id: rel_code_euler_low_actin_approx_pde_eq9_10
+  kind: approximated_by
+  a: gubbala_code/modelc_coarsening_euler_step
+  b: gubbala2025/model_c_pde_2d_eq9_10
+  mapping:
+    beta: "beta"
+    chi: "chi"
+    gamma: "gamma"
+    E1: "E1"
+    E3: "E3"
+    phi0: "phi0"
+    noise_var: "noise_std**2"
+    k_cut_ratio: "k_cut_ratio"
+    t_fit_start: "t_fit_start"
+    t_end: "t_end"
+  output_map:
+    R_final: R_final
+  regime:
+    beta: [1.0, 1.0]
+    gamma: [0.08, 0.12]
+    chi: [1.0, 1.0]
+    E1: [0.05, 0.2]
+    E3: [0.05, 0.2]
+    phi0: [0.2, 0.4]
+    noise_std: [0.01, 0.01]
+    t_fit_start: [20.0, 20.0]
+    t_end: [60.0, 100.0]
+    k_cut_ratio: [50.0, 50.0]
+  tolerance: 0.05
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "104-144"
+    quote: "def euler_step(self, phi_, qxx_, qxy_, dt):"
+    where: "ModelC_Cubic.py::ModelC_2D.euler_step (lines 104-144) & README.md (lines 3-5, 35-41); cf. gubbala2025 Eqs. (9)-(10) & SI Eqs. (S29)-(S32)"
+  assumptions:
+    - "Both drivers evolve N=64, L=62.5 (exact paper dx=500/512) at fixed dt=0.4 in the low-actin parallel-anchoring beta=1 regime (where omitted 1/S=1, |chi|=chi, and small E3<=0.2 suppress the line-91 bug); remaining ~1-3% R_final spread reflects shared vs independent noise initialization (lines 148-153), distinct PRNGs, and K[0,0]=1/N^2."
+
+- id: rel_code_euler_low_actin_approx_pde_variational
+  kind: approximated_by
+  a: gubbala_code/modelc_coarsening_euler_step
+  b: gubbala2025/model_c_pde_2d_variational
+  mapping:
+    beta: "beta"
+    chi: "chi"
+    gamma: "gamma"
+    E1: "E1"
+    E3: "E3"
+    phi0: "phi0"
+    noise_var: "noise_std**2"
+    k_cut_ratio: "k_cut_ratio"
+    t_fit_start: "t_fit_start"
+    t_end: "t_end"
+  output_map:
+    R_final: R_final
+  regime:
+    beta: [1.0, 1.0]
+    gamma: [0.08, 0.12]
+    chi: [1.0, 1.0]
+    E1: [0.05, 0.2]
+    E3: [0.05, 0.2]
+    phi0: [0.2, 0.4]
+    noise_std: [0.01, 0.01]
+    t_fit_start: [20.0, 20.0]
+    t_end: [60.0, 100.0]
+    k_cut_ratio: [50.0, 50.0]
+  tolerance: 0.05
+  provenance: proposed
+  reason: "At low actin elasticity (E1, E3 in [0.05, 0.2], beta = 1, chi = 1), live ModelC_2D.euler_step() tracks the corrected variational 2D Model C PDE solver (model_c_pde_2d_variational) within 5% on structure-factor domain size R_final because the cubic elastic term is subdominant to bulk phase separation and anchoring."
+
+- id: rel_code_euler_qmax_approx_coupled_binodal
+  kind: approximated_by
+  a: gubbala_code/modelc_coarsening_euler_step
+  b: gubbala2025/coupled_binodal_coexistence
+  mapping:
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+  output_map:
+    Q_eq_Ld: Q_max_final
+  regime:
+    beta: [0.6, 1.4]
+    gamma: [0.1, 0.1]
+    chi: [1.0, 1.0]
+    E1: [0.05, 0.15]
+    E3: [0.05, 0.15]
+    phi0: [0.25, 0.35]
+    noise_std: [0.01, 0.01]
+    t_fit_start: [40.0, 40.0]
+    t_end: [100.0, 120.0]
+    k_cut_ratio: [50.0, 50.0]
+  tolerance: 0.08
+  provenance: proposed
+  reason: "Peak Ld-phase nematic order Q_max_final reached by live ModelC_2D.euler_step() over t=100..120 closely tracks the exact coupled common-tangent equilibrium Q_eq_Ld = sqrt((1 + phi_Ld)/(2*beta)) (coupled_binodal_coexistence, overshooting nominal S = 1/sqrt(beta) by +5.4% at beta = 1) within 8% across beta in [0.6, 1.4]."
+
+- id: rel_code_euler_Rratio_approx_power_law_quarter
+  kind: approximated_by
+  a: gubbala_code/modelc_coarsening_euler_step
+  b: gubbala2025/coarsening_power_law
+  mapping:
+    t: "t_end"
+    t0: "t_fit_start"
+    alpha: "0.25"
+  output_map:
+    R_over_R0: R_growth_ratio
+  regime:
+    beta: [1.0, 1.0]
+    gamma: [0.1, 0.1]
+    chi: [1.0, 1.0]
+    E1: [0.08, 0.12]
+    E3: [0.08, 0.12]
+    phi0: [0.28, 0.32]
+    noise_std: [0.01, 0.01]
+    t_fit_start: [80.0, 100.0]
+    t_end: [120.0, 180.0]
+    k_cut_ratio: [50.0, 50.0]
+  tolerance: 0.10
+  provenance: stated
+  citation:
+    file: README.md
+    lines: "3-5"
+    quote: "This repository contains the main simulation code for the following article:"
+    where: "README.md (lines 3-5) & ModelC_Cubic.py::ModelC_2D.euler_step; cf. gubbala2025 Sec. 3 (p. 5) & Fig. 3 (p. 6) low-actin power-law R(t)/R_0 = (t/t_0)^alpha with alpha approx 0.25"
+  assumptions:
+    - "Dimensionless time ratio t_end / t_fit_start cancels the unstated dimensional time scale t_c = Gamma^-1 in coarsening_power_law. Measures the finite-time deviation of live ModelC_2D.euler_step() domain growth R(t_end)/R(t_fit_start) from the paper's stated low-actin alpha = 1/4 power law on the N=64, L=62.5 box."
+
+- id: rel_code_stepper_Rfinal_approx_pde_eq9_10
+  kind: approximated_by
+  a: gubbala_code/modelc_adaptive_stepper_audit
+  b: gubbala2025/model_c_pde_2d_eq9_10
+  mapping:
+    beta: "beta"
+    chi: "chi"
+    gamma: "gamma"
+    E1: "E1"
+    E3: "E3"
+    phi0: "phi0"
+    noise_var: "1e-4"
+    k_cut_ratio: "k_cut_ratio"
+    t_fit_start: "5.0"
+    t_end: "t_end"
+  output_map:
+    R_final: R_final
+  regime:
+    beta: [1.0, 1.0]
+    gamma: [0.1, 0.1]
+    chi: [1.0, 1.0]
+    E1: [0.05, 0.2]
+    E3: [0.05, 0.2]
+    phi0: [0.2, 0.4]
+    dt_init: [1.0e-6, 1.0e-6]
+    tol: [1.0e-4, 1.0e-4]
+    t_end: [15.0, 25.0]
+    k_cut_ratio: [50.0, 50.0]
+  tolerance: 0.12
+  provenance: stated
+  citation:
+    file: ModelC_Cubic.py
+    lines: "208-224"
+    quote: "self.DT = self.DT * self.xp.power(self.TOL / delta, 1 / 5)"
+    where: "ModelC_Cubic.py::ModelC_2D.run adaptive stepper (lines 208-224); cf. gubbala2025 SI Sec. 4 (p. 16)"
+  assumptions:
+    - "Compares live unmodified ModelC_2D.run() adaptive stepping (N=32, L=31.25, TOL=1e-4, T += DT_new timestamp shift, shared noise) against fixed-dt model_c_pde_2d_eq9_10 (N=64, L=62.5, independent noise) over early coarsening t_end in [15, 25], quantifying their combined finite-box and stepper discrepancy on R_final."

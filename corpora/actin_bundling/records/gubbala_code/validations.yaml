@@ -1,0 +1,292 @@
+# Cross-record validations of live `software: true` ModelC_Cubic.py adapters in `gubbala_code`
+# against experimental measurements (`origin: measured`) in `gubbala2025` (Gubbala, Jena,
+# Arnold & Takatori, Soft Matter 21, 6243-6251, 2025).
+#
+# Scope note: Only the two dimensionless scalar Fig. 3 experimental growth-ratio endpoints
+# (`gubbala2025/R_ratio_low_exp_fig3_end` and `gubbala2025/R_ratio_high_exp_fig3_end`, both
+# eye-read as "~1.55" at t = 7180 s normalized at t_0 = 720 s) share both quantity
+# (`domain_size_ratio`) and scalar shape with `gubbala_code`'s live PDE models
+# (`modelc_coarsening_native_run`, `modelc_coarsening_euler_step`, output `R_growth_ratio`).
+# All 14 other `origin: measured` datums in `gubbala2025` (5 physical-time [s]-indexed
+# digitized coarsening curves, 3 Fig. 4C curvature distributions P(kappa), Fig. S1 actin
+# densities, and 5 physical-unit scalar measurements) cannot be directly predicted by any
+# existing `gubbala_code` model without unstated dimensional scale factors (t_c, l_c), a
+# time-series curve port, or missing B-spline curvature post-processing; see
+# `q_gubbala2025_measured_validation_gaps` in `questions.yaml`.
+
+# ==============================================================================
+# 1. Low actin density: (E1, E3, phi0) = (0.1, 0.1, 0.3) vs Fig. 3 exp. low end
+# ==============================================================================
+
+- id: val_native_low_Rratio_vs_fig3_exp_low_end
+  model: modelc_coarsening_native_run
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: "gubbala2025/E1_low_actin"
+    E3: "gubbala2025/E3_low_actin"
+    phi0: "gubbala2025/phi0_low_actin"
+    dt_init: dt_init_readme
+    tol: tol_default_code
+    t_fit_start: t_fit_start_fig3_10x
+    t_end: time_default_code
+    k_cut_ratio: "gubbala2025/k_cut_over_k_max"
+  settings: {n_grid: 48, L_box: 46.875, skips: 25, tol_factor: 1.0, seed: 0}
+  replicates: 2
+  output: R_growth_ratio
+  against: "gubbala2025/R_ratio_low_exp_fig3_end"
+  purpose: validation
+  quantities:
+    "gubbala2025/elastic_constant_dimless": elastic_constant_dimless
+    "gubbala2025/mean_lipid_concentration": mean_lipid_concentration
+    "gubbala2025/wavenumber_ratio": wavenumber_ratio
+    "gubbala2025/domain_size_ratio": domain_size_ratio
+  conditions_ok: >
+    gubbala2025/R_ratio_low_exp_fig3_end measures normalized Lo domain growth R(7180 s)/R(720 s)
+    (time ratio 7180/720 = 9.9722) averaged over 3 low-actin quasi-2D supported lipid bilayer
+    experiments (Fig. 3 bottom, dark-blue squares). Because gubbala2025 Sec. 3 (p. 5) states
+    "The non-dimensional simulation time is scaled to match the duration of the experiment"
+    without reporting the timescale t_c = Gamma^-1 (SI Fig. S6's t_tilde_max = 30000 implies
+    t_c = 0.2393 s on GPU), unmodified live ModelC_2D.run() is integrated here on a CPU-affordable
+    periodic box (N = 48, L = 46.875 preserving exact paper dx = 500/512; TOL = 1e-4 code default;
+    2 replicates) over t_fit_start = 100.28 to t_end = 1000 (ModelC_2D constructor default TIME =
+    1000, exact 9.9722x window ratio corresponding to implied t_c = 7.18 s).
+  basis: >
+    Gubbala et al. (2025) Sec. 2.1 (p. 4 / 6246), Sec. 3 (p. 5 / 6247), and Fig. 3 caption
+    (p. 6 / 6248) compare numerical solutions of Eqs. (9)-(10) at low-actin parameters
+    (E1, phi0) = (0.1, 0.3), (beta, chi, gamma) = (1, 1, 0.1), E3 = E1 directly against the
+    experimental normalized domain size R(t)/R(720 s) from t = 720 s to 7180 s ("We compare the
+    performance of our model against previously measured metrics for the membrane-actin system -
+    the average size of domains over time ... To these ends, we measure the average size of
+    domains R(t), from t = 720 s to t = 7180 s. The resulting R(t) is normalized by the domain
+    size measured at t = 720 s", p. 5; "model parameters for low actin density are (E1, phi0) =
+    (0.1, 0.3)", p. 6; README.md lines 3-5 identify ModelC_Cubic.py as the main simulation code).
+    Parameters were chosen a priori rather than fitted to R(t)/R_0 ("as opposed to precisely
+    mapping quantitative parameters", p. 4).
+  note: >
+    Unmodified adaptive ModelC_2D.run() computes R(1000)/R(100.28) = 1.7444 +/- 0.0981 (seeds
+    1.8425, 1.6464; alpha_fit = 0.2665 +/- 0.0369; blowup_flag = 0) vs eye-read ~1.55 (+0.1944,
+    +12.5%; formal BoxGraph verdict: no verdict because printed "~1.55" carries an approximate
+    marker without precision). Compared against gubbala2025's calibrated Fig. 3 digitization
+    (fig3_exp_low: 1.571 [1.541, 1.602] at 7000 s), the mean overshoots by +11.0% while closely
+    matching Fig. 3's published low-actin simulation endpoint (fig3_sim_low: 1.724 [1.718, 1.730]).
+
+- id: val_euler_low_shared_Rratio_vs_fig3_exp_low_end
+  model: modelc_coarsening_euler_step
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: "gubbala2025/E1_low_actin"
+    E3: "gubbala2025/E3_low_actin"
+    phi0: "gubbala2025/phi0_low_actin"
+    noise_std: noise_std_code
+    t_fit_start: t_fit_start_fig3_10x
+    t_end: time_default_code
+    k_cut_ratio: "gubbala2025/k_cut_over_k_max"
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.4, init_mode: shared, n_samples: 6, seed: 0}
+  replicates: 2
+  output: R_growth_ratio
+  against: "gubbala2025/R_ratio_low_exp_fig3_end"
+  purpose: validation
+  quantities:
+    "gubbala2025/elastic_constant_dimless": elastic_constant_dimless
+    "gubbala2025/mean_lipid_concentration": mean_lipid_concentration
+    "gubbala2025/wavenumber_ratio": wavenumber_ratio
+    "gubbala2025/domain_size_ratio": domain_size_ratio
+  conditions_ok: >
+    Live ModelC_2D.euler_step() driven at fixed dt = 0.4 on a larger CPU periodic box (N = 64,
+    L = 62.5 preserving exact paper dx = 500/512; 2 replicates) with ModelC_2D.run()'s exact
+    shared-noise initialization (lines 148-153) over t_fit_start = 100.28 to t_end = 1000 (exact
+    9.9722x window ratio matching Fig. 3's 720-7180 s under implied t_c = 7.18 s), removing the
+    adaptive stepper's T += self.DT timestamp shift bug (line 224) while testing against the
+    3-sample low-actin experimental endpoint R_ratio_low_exp_fig3_end ("~1.55" at 7180 s).
+  basis: >
+    Same Fig. 3 low-actin model-to-experiment comparison as val_native_low_Rratio_vs_fig3_exp_low_end
+    (gubbala2025 Sec. 3 p. 5 & Fig. 3 p. 6; ModelC_Cubic.py lines 104-154), isolating live
+    ModelC_2D.euler_step() with shared-noise initialization on an N = 64 lattice free of the
+    adaptive stepper timestamp shift.
+  note: >
+    Computes R(1000)/R(100.28) = 1.8239 +/- 0.0194 (seeds 1.8434, 1.8045; alpha_fit = 0.2599 +/-
+    0.0006) vs eye-read ~1.55 (+0.2739, +17.7%; formal verdict: no verdict). Mean +/- 2 SE
+    [1.785, 1.863] lies well above both the calibrated Fig. 3 low-actin experimental endpoint
+    (1.571 [1.541, 1.602] at 7000 s, +16.1%) and Fig. 3's published low-actin simulation
+    (1.724 [1.718, 1.730], +5.8%), showing how ModelC_2D.run()'s shared-noise initialization
+    artificially elevates coarsening speed.
+
+- id: val_euler_low_indep_Rratio_vs_fig3_exp_low_end
+  model: modelc_coarsening_euler_step
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: "gubbala2025/E1_low_actin"
+    E3: "gubbala2025/E3_low_actin"
+    phi0: "gubbala2025/phi0_low_actin"
+    noise_std: noise_std_code
+    t_fit_start: t_fit_start_fig3_10x
+    t_end: time_default_code
+    k_cut_ratio: "gubbala2025/k_cut_over_k_max"
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.4, init_mode: independent, n_samples: 6, seed: 0}
+  replicates: 2
+  output: R_growth_ratio
+  against: "gubbala2025/R_ratio_low_exp_fig3_end"
+  purpose: validation
+  quantities:
+    "gubbala2025/elastic_constant_dimless": elastic_constant_dimless
+    "gubbala2025/mean_lipid_concentration": mean_lipid_concentration
+    "gubbala2025/wavenumber_ratio": wavenumber_ratio
+    "gubbala2025/domain_size_ratio": domain_size_ratio
+  conditions_ok: >
+    Same live ModelC_2D.euler_step() low-actin validation on N = 64, L = 62.5 (dx = 500/512,
+    dt = 0.4, t = 100.28..1000 matching Fig. 3's 9.9722x window under implied t_c = 7.18 s,
+    2 replicates), using independent Gaussian perturbations for phi, Qxx, Qxy as described in
+    gubbala2025 SI Sec. 4 (p. 17) rather than ModelC_2D.run()'s reused noise array, compared
+    against the 3-sample low-actin experimental endpoint R_ratio_low_exp_fig3_end ("~1.55").
+  basis: >
+    Same Fig. 3 low-actin model-to-experiment comparison (gubbala2025 Sec. 3 p. 5, Fig. 3 p. 6,
+    SI Sec. 4 p. 17; ModelC_Cubic.py lines 104-144), testing sensitivity to the undisclosed
+    shared-noise initialization choice (q_shared_noise_initial_condition).
+  note: >
+    Computes R(1000)/R(100.28) = 1.7340 +/- 0.0184 (seeds 1.7156, 1.7523; alpha_fit = 0.2407 +/-
+    0.0034) vs eye-read ~1.55 (+0.1840, +11.9%; formal verdict: no verdict). Independent noise
+    closely reproduces Fig. 3's published low-actin simulation (1.724 [1.718, 1.730], +0.6%;
+    slope 0.236), yet mean +/- 2 SE [1.697, 1.771] still exceeds the calibrated experimental
+    endpoint (1.571 [1.541, 1.602] at 7000 s) by +10.4% due to the slow experimental transient
+    over 800-1500 s. Over the shorter 5x window t = 200..1000 (alternative t_fit_start = 200),
+    euler_low_in_Rratio drops to 1.553 +/- 0.014, confirming the match requires the 10x ratio.
+
+# ==============================================================================
+# 2. High actin density: (E1, E3, phi0) = (2, 2, 0.75) vs Fig. 3 exp. high end
+# ==============================================================================
+
+- id: val_native_high_Rratio_vs_fig3_exp_high_end
+  model: modelc_coarsening_native_run
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: "gubbala2025/E1_high_actin"
+    E3: "gubbala2025/E3_high_actin"
+    phi0: "gubbala2025/phi0_high_actin"
+    dt_init: dt_init_readme
+    tol: tol_default_code
+    t_fit_start: t_fit_start_fig3_10x
+    t_end: time_default_code
+    k_cut_ratio: "gubbala2025/k_cut_over_k_max"
+  settings: {n_grid: 48, L_box: 46.875, skips: 25, tol_factor: 1.0, seed: 0}
+  replicates: 2
+  output: R_growth_ratio
+  against: "gubbala2025/R_ratio_high_exp_fig3_end"
+  purpose: validation
+  quantities:
+    "gubbala2025/elastic_constant_dimless": elastic_constant_dimless
+    "gubbala2025/mean_lipid_concentration": mean_lipid_concentration
+    "gubbala2025/wavenumber_ratio": wavenumber_ratio
+    "gubbala2025/domain_size_ratio": domain_size_ratio
+  conditions_ok: >
+    gubbala2025/R_ratio_high_exp_fig3_end measures normalized Lo domain growth R(7180 s)/R(720 s)
+    (time ratio 9.9722) averaged over 2 high-actin quasi-2D bilayer experiments (Fig. 3 bottom,
+    teal squares). Unmodified live ModelC_2D.run() is integrated on a CPU-affordable periodic box
+    (N = 48, L = 46.875, exact paper dx = 500/512; TOL = 1e-4; 2 replicates) at high-actin
+    parameters (E1, E3, phi0) = (2, 2, 0.75) over t = 100.28..1000 (exact 9.9722x window under
+    implied t_c = 7.18 s). Because gubbala2025 leaves t_c unstated and SI Fig. S6's GPU horizon
+    t_tilde_max = 30000 implies t_c = 0.2393 s (t_fit_start = 3008.4), this CPU horizon samples
+    the metastable nucleation-and-fast Regime II rather than Regime III arrest.
+  basis: >
+    Gubbala et al. (2025) Sec. 2.1 (p. 4 / 6246), Sec. 3 (p. 5 / 6247), and Fig. 3 caption
+    (p. 6 / 6248) compare Eqs. (9)-(10) at high-actin parameters (E1, phi0) = (2, 0.75), E3 = E1
+    against the high-actin experimental R(t)/R(720 s) curve ("For high actin density samples, we
+    choose (E1, phi0) = (2, 0.75)", p. 4; "In eqn (9) and (10), model parameters ... for high
+    actin density are (E1, phi0) = (2, 0.75)", p. 6; README.md lines 3-5).
+  note: >
+    Unmodified adaptive ModelC_2D.run() computes R(1000)/R(100.28) = 2.0401 +/- 0.3585 (seeds
+    2.3985, 1.6816; alpha_fit = 0.3012 +/- 0.0671; blowup_flag = 0) vs eye-read ~1.55 (+0.4901,
+    +31.6%; formal verdict: no verdict; +34.0% above calibrated fig3_exp_high 1.522 [1.504, 1.540]
+    at 7000 s). Two code-specific findings: (1) unmodified ModelC_2D.run() avoids backward-diffusion
+    blowup at E1 = E3 = 2, beta = 1 ONLY because ModelC_Cubic.py line 91 wipes out -2 Q_kl d_k d_l Q_ij
+    (q_cubic_line91_realspace_fft_bug); and (2) on t = 100.28..1000, metastable nucleation at
+    phi0 = 0.75 > phi_sp = 0.7071 causes large seed variance and faster growth than low actin
+    (2.040 vs 1.744), opposite to the paper's late-regime suppression claim (q_gubbala2025_high_actin_regime_mismatch_live).
+
+- id: val_euler_high_shared_Rratio_vs_fig3_exp_high_end
+  model: modelc_coarsening_euler_step
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: "gubbala2025/E1_high_actin"
+    E3: "gubbala2025/E3_high_actin"
+    phi0: "gubbala2025/phi0_high_actin"
+    noise_std: noise_std_code
+    t_fit_start: t_fit_start_fig3_10x
+    t_end: time_default_code
+    k_cut_ratio: "gubbala2025/k_cut_over_k_max"
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.4, init_mode: shared, n_samples: 6, seed: 0}
+  replicates: 2
+  output: R_growth_ratio
+  against: "gubbala2025/R_ratio_high_exp_fig3_end"
+  purpose: validation
+  quantities:
+    "gubbala2025/elastic_constant_dimless": elastic_constant_dimless
+    "gubbala2025/mean_lipid_concentration": mean_lipid_concentration
+    "gubbala2025/wavenumber_ratio": wavenumber_ratio
+    "gubbala2025/domain_size_ratio": domain_size_ratio
+  conditions_ok: >
+    Live ModelC_2D.euler_step() driven at fixed dt = 0.4 on N = 64, L = 62.5 (dx = 500/512;
+    2 replicates) with ModelC_2D.run()'s exact shared-noise initialization (lines 148-153) at
+    high-actin parameters (E1, E3, phi0) = (2, 2, 0.75) over t = 100.28..1000 (exact 9.9722x
+    window matching Fig. 3's 720-7180 s under implied CPU timescale t_c = 7.18 s; SI Fig. S6's
+    GPU horizon t_tilde_max = 30000 implies t_c = 0.2393 s), tested against R_ratio_high_exp_fig3_end.
+  basis: >
+    Same Fig. 3 high-actin model-to-experiment comparison as val_native_high_Rratio_vs_fig3_exp_high_end
+    (gubbala2025 Sec. 2.1 p. 4, Sec. 3 p. 5, Fig. 3 p. 6; ModelC_Cubic.py lines 104-154), isolating
+    live ModelC_2D.euler_step() at high actin on N = 64 without adaptive-stepper timestamp drift.
+  note: >
+    Computes R(1000)/R(100.28) = 2.0307 +/- 0.0643 (seeds 2.0950, 1.9664; blowup_flag = 0) vs
+    eye-read ~1.55 (+0.4807, +31.0%; formal verdict: no verdict). Mean +/- 2 SE [1.902, 2.159]
+    exceeds calibrated fig3_exp_high (1.522 [1.504, 1.540] at 7000 s) by +33.4% and overshoots
+    low actin (1.824 +/- 0.019). Extended trajectory diagnostics (t = 50..5000) confirm this
+    window falls in SI Fig. S2's Regime II fast transient (alpha ~ 0.42 over t = 200..2000;
+    R(3000)/R(300) = 2.53; R(5000)/R(500) = 2.10), with Regime III arrest (alpha = 0.092) emerging
+    only for t > 2000-3000.
+
+- id: val_euler_high_indep_Rratio_vs_fig3_exp_high_end
+  model: modelc_coarsening_euler_step
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: "gubbala2025/E1_high_actin"
+    E3: "gubbala2025/E3_high_actin"
+    phi0: "gubbala2025/phi0_high_actin"
+    noise_std: noise_std_code
+    t_fit_start: t_fit_start_fig3_10x
+    t_end: time_default_code
+    k_cut_ratio: "gubbala2025/k_cut_over_k_max"
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.4, init_mode: independent, n_samples: 6, seed: 0}
+  replicates: 2
+  output: R_growth_ratio
+  against: "gubbala2025/R_ratio_high_exp_fig3_end"
+  purpose: validation
+  quantities:
+    "gubbala2025/elastic_constant_dimless": elastic_constant_dimless
+    "gubbala2025/mean_lipid_concentration": mean_lipid_concentration
+    "gubbala2025/wavenumber_ratio": wavenumber_ratio
+    "gubbala2025/domain_size_ratio": domain_size_ratio
+  conditions_ok: >
+    Same live ModelC_2D.euler_step() high-actin validation on N = 64, L = 62.5 (dx = 500/512,
+    dt = 0.4, t = 100.28..1000 matching Fig. 3's 9.9722x window under implied t_c = 7.18 s,
+    2 replicates), replacing ModelC_2D.run()'s shared noise array with independent Gaussian draws
+    for phi, Qxx, Qxy (gubbala2025 SI Sec. 4 p. 17), tested against R_ratio_high_exp_fig3_end.
+  basis: >
+    Same Fig. 3 high-actin model-to-experiment comparison (gubbala2025 Sec. 2.1 p. 4, Sec. 3 p. 5,
+    Fig. 3 p. 6, SI Sec. 4 p. 17; ModelC_Cubic.py lines 104-144), checking whether independent
+    noise resolves the intermediate-horizon high-actin overshoot.
+  note: >
+    Computes R(1000)/R(100.28) = 2.2920 +/- 0.1005 (seeds 2.1916, 2.3925; alpha_fit = 0.3709 +/-
+    0.0246; blowup_flag = 0) vs eye-read ~1.55 (+0.7420, +47.9%; formal verdict: no verdict).
+    Mean +/- 2 SE [2.091, 2.493] exceeds calibrated fig3_exp_high (1.522 [1.504, 1.540]) by
+    +50.6%, confirming that independent noise does not remove the metastable Regime-II overshoot
+    (R(3000)/R(300) = 2.640).

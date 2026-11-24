@@ -1,0 +1,33 @@
+id: modelc_cubic_operator_fixed
+name: diagnostic variant of ModelC_2D.cubic() fixing line 91 (Q_fft) and variational -0.5*E3 sign
+role: model
+software: true
+variant_of: modelc_cubic_operator_audit
+corrections:
+  - equation: "ModelC_Cubic.py line 91 (ModelC_2D.cubic)"
+    change: "Pass Fourier-transformed Q_fft[i][j] instead of real-space Q[i][j] into self.ifft2(-K[k] * K[l] * ...)"
+    evidence: "Line 91 multiplies real-space Q[i][j] pointwise by Fourier wavevectors -K[k]*K[l] and applies ifft2, yielding 116% L2 error against Eq. (10), destroying the linearized bend-splay anisotropy in omega_xx, and generating a spurious residual of 2.10*E3 along x=0, y=0 on a spatially uniform nematic field."
+  - equation: "ModelC_Cubic.py lines 126-127 and 133-134 (ModelC_2D.euler_step)"
+    change: "Negate the cubic elastic RHS prefactor from +0.5 * self.E3 to -0.5 * self.E3 for variational gradient descent dQ/dt = -delta F/delta Q"
+    evidence: "Direct Euler-Lagrange differentiation of Eq. (5) yields +delta F_E3/delta Q_ij = +0.5*E3*F_ij, so -delta F_E3/delta Q_ij requires -0.5*E3*F_ij (giving free-energy dissipation ratio +1.000 vs -1.000 for +0.5*E3 and matching SI Eq. S25)."
+stated:
+  file: ModelC_Cubic.py
+  lines: "89-91"
+  quote: "2 * Q[k][l] * self.ifft2(-K[k] * K[l] * Q[i][j]).real)"
+  where: "ModelC_Cubic.py::ModelC_2D.cubic line 91 and euler_step lines 127, 134"
+equation: "RHS_E3 = -0.5 * E3 * F_exact(Q), using live ModelC_2D.grids() and ModelC_2D.grad() with Q_fft[i][j] in line 91"
+built_from:
+  - modelc_cubic_operator_audit
+inputs:
+  E3: {quantity: elastic_constant_dimless, unit: dimensionless}
+  beta: {quantity: ldg_quartic_coeff, unit: dimensionless}
+outputs:
+  dissipation_ratio_code: {quantity: free_energy_rate_ratio, unit: dimensionless}
+  rel_err_vs_eq10: {quantity: relative_operator_error, unit: dimensionless}
+  rel_err_second_deriv: {quantity: relative_operator_error, unit: dimensionless}
+  uniform_residual_max: {quantity: nematic_rhs_residual, unit: dimensionless}
+settings:
+  n_grid: 32
+  L_box: 32.0
+  eps_fd: 1.0e-6
+stochastic: false

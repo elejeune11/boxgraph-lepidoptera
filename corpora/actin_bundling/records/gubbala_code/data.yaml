@@ -1,0 +1,541 @@
+# ==============================================================================
+# 1. Class defaults in ModelC_Cubic.py (ModelC_2D.__init__, lines 30-46)
+# ==============================================================================
+
+- id: N_default_code
+  quantity: grid_points
+  unit: dimensionless
+  origin: reported
+  printed: "128"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "30"
+    quote: "self.N = 128"
+  note: "Constructor default lattice size N = 128 (overridden to 512 in README.md line 28 and gubbala2025 SI Sec. 4)."
+
+- id: L_default_code
+  quantity: dimensionless_length
+  unit: dimensionless
+  origin: reported
+  printed: "128"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "31"
+    quote: "self.L = 128"
+  note: "Constructor default square box side length L = 128 (overridden to 500 in README.md line 29 and gubbala2025 SI Sec. 4)."
+
+- id: dt_init_default_code
+  quantity: time_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-8"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "33"
+    quote: "self.DT = 1e-8"
+  note: "Constructor default initial time step DT = 1e-8 (overridden to 1e-6 in README.md line 30; unstated in gubbala2025)."
+
+- id: time_default_code
+  quantity: time_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1000"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "34"
+    quote: "self.TIME = 1000"
+  note: "Constructor default final simulation time TIME = 1000 (README.md line 31 sets 100; gubbala2025 Fig. S6 runs up to 30000)."
+
+- id: tol_default_code
+  quantity: error_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-4"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "35"
+    quote: "self.TOL = 1e-4"
+  from_source: gubbala2025
+  from_datum: adaptive_dt_tol
+  note: "100x looser than gubbala2025 SI Sec. 4 (p. 16 / SI-7), which prints tau = 10^-6. Also reused as the traceless sum assertion threshold in cubic() line 101."
+
+- id: skips_default_code
+  quantity: save_stride
+  unit: dimensionless
+  origin: reported
+  printed: "10"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "39"
+    quote: "self.SKIPS = 10"
+  note: "Constructor default snapshot save stride SKIPS = 10 (overridden to 100 in README.md line 33; unstated in gubbala2025)."
+
+- id: phi_avg_default_code
+  quantity: mean_lipid_concentration
+  unit: dimensionless
+  origin: reported
+  printed: "0.3"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "41"
+    quote: "self.PHI_AVG = 0.3"
+  from_source: gubbala2025
+  from_datum: phi0_low_actin
+  note: "Matches gubbala2025 low-actin mean concentration phi_0 = 0.3 (and SI Fig. S4)."
+
+- id: beta_default_code
+  quantity: ldg_quartic_coeff
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "42"
+    quote: "self.BETA = 1.0"
+  from_source: gubbala2025
+  from_datum: beta_default
+
+- id: gamma_default_code
+  quantity: timescale_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "43"
+    quote: "self.GAMMA = 1.0"
+  from_source: gubbala2025
+  from_datum: gamma_figS4
+  note: "Constructor default GAMMA = 1.0 matches gubbala2025 SI Fig. S4 (whereas main text Sec. 2.1 and README.md line 37 set GAMMA = 0.1)."
+
+- id: E1_default_code
+  quantity: elastic_constant_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "44"
+    quote: "self.E1 = 1.0"
+  from_source: gubbala2025
+  from_datum: E1_figS4
+  note: "Constructor default E1 = 1.0 matches gubbala2025 SI Fig. S4 and README.md line 39 (main text Sec. 2.1 uses E1 = 0.1 low actin and E1 = 2 high actin)."
+
+- id: E3_default_code
+  quantity: elastic_constant_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "45"
+    quote: "self.E3 = 1.0"
+  note: "Constructor default E3 = 1.0 matches SI Fig. S4 and README.md line 40 (main text Sec. 2.1 sets E3 = E1 = 0.1 or 2)."
+
+- id: chi_default_code
+  quantity: anchoring_strength
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "46"
+    quote: "self.CHI = 1.0"
+  from_source: gubbala2025
+  from_datum: chi_default
+
+# ==============================================================================
+# 2. Hardcoded numerical & algorithmic constants in ModelC_Cubic.py
+# ==============================================================================
+
+- id: dealias_cutoff_code
+  quantity: dealias_cutoff_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "0.666667"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "56"
+    quote: "anti_alias_trunc = self.xp.max(self.xp.array([kx, ky])) * 2 / 3"
+  note: "Exact fraction 2/3 applied to max([kx, ky]) = (N/2 - 1)*2*pi/L with strict inequality <, forming a square de-aliasing mask (removing slightly more than 1/3 of modes along each axis)."
+
+- id: cubic_prefactor_code
+  quantity: cubic_prefactor
+  unit: dimensionless
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "126-127"
+    quote: "0.5 * self.E3 * fxx_fft)"
+  note: "Signed prefactor +0.5 on E3 * F_ij in both Qxx (line 127) and Qxy (line 134). Matches printed Eq. (10) / Eq. (S20)'s non-variational +1/2 sign (opposite to variational -delta F_E3/delta Q = -1/2) and restores the 1/2 omitted in SI Eqs. (S30) and (S32)."
+
+- id: k6_stab_coeff_code
+  quantity: stabilization_coeff
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "139-142"
+    quote: "numerator_phi = (phi_fft * (1 + self.K ** 6 * dt) -"
+  note: "Unit prefactor 1 multiplying k^6 * dt in both numerator (1 + K^6*dt) and denominator (1 + (kappa_anch*GAMMA*K^4 + K^6)*dt), matching SI Eqs. (S29) and (S31) verbatim."
+
+- id: noise_mean_code
+  quantity: noise_mean
+  unit: dimensionless
+  origin: reported
+  printed: "0"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "148"
+    quote: "noise = self.prng.normal(loc=0, scale=1e-2, size=(self.N, self.N))"
+  note: "Zero-mean Gaussian noise drawn ONCE on line 148 and reused identically for phi - PHI_AVG, Qxx, and Qxy (lines 151-153)."
+
+- id: noise_std_code
+  quantity: noise_std
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-2"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "148"
+    quote: "noise = self.prng.normal(loc=0, scale=1e-2, size=(self.N, self.N))"
+  note: "Standard deviation 1e-2 corresponds to variance (1e-2)^2 = 10^-4, matching gubbala2025 SI p. 17 (init_noise_variance)."
+
+- id: unused_r_code
+  quantity: unused_param
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-3"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "173"
+    quote: "r = 1e-3"
+  note: "Dead unused local variable in ModelC_2D.run()."
+
+- id: dt_min_abort_code
+  quantity: time_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-12"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "180"
+    quote: "elif self.DT < 1e-12:"
+  note: "Hidden minimum adaptive time-step abort cutoff unstated in gubbala2025; line 182 misleadingly prints 'Time step is less than picoseconds.' even though time is dimensionless."
+
+- id: geom_mean_exp_code
+  quantity: adaptive_exponent
+  unit: dimensionless
+  origin: reported
+  printed: "0.333333"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "221"
+    quote: "delta = self.xp.power(delta_phi * delta_qxx * delta_qxy, 1 / 3)"
+  note: "Exact exponent 1/3 for the geometric mean of spatial-mean L1 errors over (phi, Qxx, Qxy), matching SI p. 16."
+
+- id: dt_adapt_exp_code
+  quantity: adaptive_exponent
+  unit: dimensionless
+  origin: reported
+  printed: "0.2"
+  citation:
+    file: ModelC_Cubic.py
+    lines: "223"
+    quote: "self.DT = self.DT * self.xp.power(self.TOL / delta, 1 / 5)"
+  note: "Exact exponent 1/5 = 0.2 WITH multiplicative self.DT, settling gubbala2025 SI p. 16's typo which omitted dt_old."
+
+# ==============================================================================
+# 3. Example utilization parameters in README.md (lines 28-41)
+# ==============================================================================
+
+- id: N_readme
+  quantity: grid_points
+  unit: dimensionless
+  origin: reported
+  printed: "512"
+  citation:
+    file: README.md
+    lines: "28"
+    quote: "mc.N     = 512"
+  from_source: gubbala2025
+  from_datum: pde_grid_N
+
+- id: L_readme
+  quantity: dimensionless_length
+  unit: dimensionless
+  origin: reported
+  printed: "500"
+  citation:
+    file: README.md
+    lines: "29"
+    quote: "mc.L     = 500"
+  from_source: gubbala2025
+  from_datum: pde_box_L
+
+- id: dt_init_readme
+  quantity: time_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-6"
+  citation:
+    file: README.md
+    lines: "30"
+    quote: "mc.DT    = 1e-6"
+  note: "Example initial time step 1e-6 (100x larger than constructor default 1e-8 on ModelC_Cubic.py line 33; unstated in gubbala2025)."
+
+- id: time_readme
+  quantity: time_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "100"
+  citation:
+    file: README.md
+    lines: "31"
+    quote: "mc.TIME  = 100"
+  note: "Example final time 100 (differs from constructor default 1000 and gubbala2025 Fig. S6 max time 30000)."
+
+- id: tol_readme
+  quantity: error_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-4"
+  citation:
+    file: README.md
+    lines: "32"
+    quote: "mc.TOL   = 1e-4"
+  from_source: gubbala2025
+  from_datum: adaptive_dt_tol
+  note: "Matches ModelC_Cubic.py line 35 (1e-4) and disagrees by 100x with gubbala2025 SI Sec. 4 (p. 16), which prints tau = 10^-6."
+
+- id: skips_readme
+  quantity: save_stride
+  unit: dimensionless
+  origin: reported
+  printed: "100"
+  citation:
+    file: README.md
+    lines: "33"
+    quote: "mc.SKIPS = 100"
+  note: "Example snapshot save stride 100 (differs from constructor default 10; unstated in gubbala2025)."
+
+- id: beta_readme
+  quantity: ldg_quartic_coeff
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: README.md
+    lines: "36"
+    quote: "mc.BETA    = 1.0"
+  from_source: gubbala2025
+  from_datum: beta_default
+
+- id: gamma_readme
+  quantity: timescale_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: README.md
+    lines: "37"
+    quote: "mc.GAMMA   = 0.1"
+  from_source: gubbala2025
+  from_datum: gamma_default
+  note: "Matches main-text Sec. 2.1 gamma = 0.1 (overriding constructor default 1.0)."
+
+- id: chi_readme
+  quantity: anchoring_strength
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: README.md
+    lines: "38"
+    quote: "mc.CHI     = 1.0"
+  from_source: gubbala2025
+  from_datum: chi_default
+
+- id: E1_readme
+  quantity: elastic_constant_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: README.md
+    lines: "39"
+    quote: "mc.E1      = 1.0"
+  from_source: gubbala2025
+  from_datum: E1_figS4
+
+- id: E3_readme
+  quantity: elastic_constant_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: README.md
+    lines: "40"
+    quote: "mc.E3      = 1.0"
+
+- id: phi_avg_readme
+  quantity: mean_lipid_concentration
+  unit: dimensionless
+  origin: reported
+  printed: "0.30"
+  citation:
+    file: README.md
+    lines: "41"
+    quote: "mc.PHI_AVG = 0.30"
+  from_source: gubbala2025
+  from_datum: phi0_low_actin
+
+# ==============================================================================
+# 4. Paper parameters & printed predictions copied from gubbala2025 for live checks
+# ==============================================================================
+
+- id: paper_E1_low_actin
+  quantity: elastic_constant_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "0.1"
+  citation:
+    none: "Copied simulation parameter from gubbala2025/E1_low_actin (Sec. 2.1, p. 4) to run ModelC_2D at the paper's low-actin condition."
+  from_source: gubbala2025
+  from_datum: E1_low_actin
+
+- id: paper_E3_low_actin
+  quantity: elastic_constant_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "0.1"
+  citation:
+    none: "Copied simulation parameter from gubbala2025/E3_low_actin (Sec. 2.1, p. 4) to run ModelC_2D at the paper's low-actin condition."
+  from_source: gubbala2025
+  from_datum: E3_low_actin
+
+- id: paper_E1_high_actin
+  quantity: elastic_constant_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    none: "Copied simulation parameter from gubbala2025/E1_high_actin (Sec. 2.1, p. 4) to run ModelC_2D at the paper's high-actin condition."
+  from_source: gubbala2025
+  from_datum: E1_high_actin
+
+- id: paper_E3_high_actin
+  quantity: elastic_constant_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    none: "Copied simulation parameter from gubbala2025/E3_high_actin (Sec. 2.1, p. 4) to run ModelC_2D at the paper's high-actin condition and test its linearized E3_eff."
+  from_source: gubbala2025
+  from_datum: E3_high_actin
+
+- id: paper_phi0_high_actin
+  quantity: mean_lipid_concentration
+  unit: dimensionless
+  origin: reported
+  printed: "0.75"
+  citation:
+    none: "Copied simulation parameter from gubbala2025/phi0_high_actin (Sec. 2.1, p. 4) to run ModelC_2D at the paper's high-actin condition."
+  from_source: gubbala2025
+  from_datum: phi0_high_actin
+
+- id: paper_adaptive_dt_tol
+  quantity: error_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "10^-6"
+  citation:
+    none: "Copied numerical tolerance tau = 10^-6 from gubbala2025/adaptive_dt_tol (SI Sec. 4, p. 16) for comparison against code's TOL = 1e-4."
+  from_source: gubbala2025
+  from_datum: adaptive_dt_tol
+
+- id: paper_init_noise_variance
+  quantity: noise_variance
+  unit: dimensionless
+  origin: reported
+  printed: "10^-4"
+  citation:
+    none: "Copied initial Gaussian noise variance sigma^2 = 10^-4 from gubbala2025/init_noise_variance (SI Sec. 4, p. 17) to verify ModelC_2D's scale = 1e-2."
+  from_source: gubbala2025
+  from_datum: init_noise_variance
+
+- id: paper_k_cut_over_k_max
+  quantity: wavenumber_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "50"
+  citation:
+    none: "Copied structure-factor integration cutoff ratio k_cut / k_max = 50 from gubbala2025/k_cut_over_k_max (SI Sec. 2.2 Eq. S1, p. 12)."
+  from_source: gubbala2025
+  from_datum: k_cut_over_k_max
+
+- id: paper_chi_stability_min
+  quantity: anchoring_strength
+  unit: dimensionless
+  origin: predicted
+  printed: "-0.666667"
+  citation:
+    none: "Copied linear stability lower bound chi_min = -2/3 from gubbala2025/chi_stability_min_printed (SI Sec. 3.3 Eq. S27, p. 16) to test against live ModelC_2D.euler_step()."
+  from_source: gubbala2025
+  from_datum: chi_stability_min_printed
+
+- id: paper_chi_stability_max
+  quantity: anchoring_strength
+  unit: dimensionless
+  origin: predicted
+  printed: "2"
+  citation:
+    none: "Copied linear stability upper bound chi_max = 2 from gubbala2025/chi_stability_max_printed (SI Sec. 3.3 Eq. S27, p. 16) to test against live ModelC_2D.euler_step()."
+  from_source: gubbala2025
+  from_datum: chi_stability_max_printed
+
+- id: paper_alpha_low_actin_sim
+  quantity: coarsening_exponent
+  unit: dimensionless
+  origin: predicted
+  printed: "≈ 0.25"
+  citation:
+    none: "Copied low-actin simulation coarsening exponent from gubbala2025/alpha_low_actin_sim_printed (Sec. 3, p. 5; Fig. 3, p. 6)."
+  conditions: {elastic_constant_dimless: "0.1", mean_lipid_concentration: "0.3"}
+  from_source: gubbala2025
+  from_datum: alpha_low_actin_sim_printed
+
+- id: paper_alpha_high_actin_sim
+  quantity: coarsening_exponent
+  unit: dimensionless
+  origin: predicted
+  printed: "< 0.25"
+  citation:
+    none: "Copied high-actin simulation coarsening exponent bound from gubbala2025/alpha_high_actin_sim_printed (Sec. 3, p. 5; Fig. 3, p. 6)."
+  conditions: {elastic_constant_dimless: "2", mean_lipid_concentration: "0.75"}
+  from_source: gubbala2025
+  from_datum: alpha_high_actin_sim_printed
+
+- id: paper_R_ratio_low_sim
+  quantity: domain_size_ratio
+  unit: dimensionless
+  origin: predicted
+  printed: "~1.73"
+  citation:
+    none: "Copied approximate Fig. 3 low-actin simulation growth ratio from gubbala2025/R_ratio_low_sim_fig3_end (Fig. 3, p. 6)."
+  conditions: {elastic_constant_dimless: "0.1", mean_lipid_concentration: "0.3"}
+  from_source: gubbala2025
+  from_datum: R_ratio_low_sim_fig3_end
+
+- id: paper_R_ratio_high_sim
+  quantity: domain_size_ratio
+  unit: dimensionless
+  origin: predicted
+  printed: "~1.32"
+  citation:
+    none: "Copied approximate Fig. 3 high-actin simulation growth ratio from gubbala2025/R_ratio_high_sim_fig3_end (Fig. 3, p. 6)."
+  conditions: {elastic_constant_dimless: "2", mean_lipid_concentration: "0.75"}
+  from_source: gubbala2025
+  from_datum: R_ratio_high_sim_fig3_end

@@ -1,0 +1,36 @@
+id: modelc_linear_stability_probe
+name: live ModelC_2D.euler_step() Frechet linear stability, chi-bounds, beta-scaling, and mass-leak probe
+role: model
+software: true
+stated:
+  file: ModelC_Cubic.py
+  lines: "104-144"
+  quote: "def euler_step(self, phi_, qxx_, qxy_, dt):"
+  where: "ModelC_Cubic.py::ModelC_2D.euler_step (lines 104-144) and grids() zero-mode floor (line 54)"
+equation: "Centered finite-difference Frechet derivative of live ModelC_2D.euler_step() around (phi=1, Qxx=1/sqrt(beta), Qxy=0) at longitudinal (m,0) and transverse (0,m) modes, plus live k^4 stability root-finding over chi and k=0 mass leak"
+inputs:
+  beta: {quantity: ldg_quartic_coeff, unit: dimensionless}
+  gamma: {quantity: timescale_ratio, unit: dimensionless}
+  chi: {quantity: anchoring_strength, unit: dimensionless}
+  E1: {quantity: elastic_constant_dimless, unit: dimensionless}
+  E3: {quantity: elastic_constant_dimless, unit: dimensionless}
+outputs:
+  omega_phi_long: {quantity: decay_rate_dimless, unit: dimensionless}
+  omega_phi_trans: {quantity: decay_rate_dimless, unit: dimensionless}
+  c12_phi_from_qxx: {quantity: decay_rate_dimless, unit: dimensionless}
+  c21_qxx_from_phi: {quantity: decay_rate_dimless, unit: dimensionless}
+  omega_xx_long: {quantity: decay_rate_dimless, unit: dimensionless}
+  omega_xx_trans: {quantity: decay_rate_dimless, unit: dimensionless}
+  omega_xy_long: {quantity: decay_rate_dimless, unit: dimensionless}
+  E3_eff_linear: {quantity: elastic_constant_dimless, unit: dimensionless}
+  chi_eff_linear: {quantity: anchoring_strength, unit: dimensionless}
+  chi_min_code: {quantity: anchoring_strength, unit: dimensionless}
+  chi_max_code: {quantity: anchoring_strength, unit: dimensionless}
+  mass_leak_rate: {quantity: decay_rate_dimless, unit: dimensionless}
+settings:
+  n_grid: 32
+  L_box: 32.0
+  mode_m: 2
+  dt_probe: 1.0e-4
+  eps_fd: 1.0e-4
+stochastic: false

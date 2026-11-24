@@ -8,7 +8,7 @@ notice:
   link: check a record before citing it
   href: https://github.com/elejeune11/boxgraph-public
 intro:
-  - All models are wrong, but some are useful (George E. P. Box). This page is an executable literature review of physical and mechanochemical models of actin bundle size control, liquid-liquid phase separation and condensate mechanics, active cortical patterning, curved-membrane rings, and actin-templated membrane buckling — spanning 14 papers (2007–2024), 100% of their Supplemental Information, and 8 released code and Source Data attachments (22 sources total, 156/156 pipeline jobs gated).
+  - All models are wrong, but some are useful (George E. P. Box). This page is an executable literature review of physical and mechanochemical models of actin bundle size control, liquid-liquid phase separation and condensate mechanics, active cortical patterning, curved-membrane rings, nematic inclusions, and actin-templated membrane buckling — spanning 15 papers (2007–2025), 100% of their Supplemental Information, and 9 released code and Source Data attachments (24 sources total, 172/172 pipeline jobs gated).
   - Every value is traced to the page, code line, or spreadsheet cell it came from. Every runnable model is rebuilt as stated, evaluated on its own inputs, refined numerically where applicable, and compared with printed text and calibrated figure readings at the precision printed. Relations between papers are tested symbolically or numerically rather than assumed, released code and Source Data are checked against their parent paper, and models of one paper are tested out-of-sample against another paper's measurements.
   - Nothing is silently corrected or overwritten. Where an equation is evidently misprinted, the printed model is kept and counted in the paper's tally while a corrected variant is added beside it with the evidence. Every disagreement is preserved as a structured finding and open question.
 links:
@@ -485,4 +485,58 @@ case_studies:
           bit-for-bit (0 ULPs across all 19 aspect ratios), supplying Graham's missing Fig. 5c
           Source Data and executably confirming both the 10^6 unit-scale error and AR = 10 > pi^2.
         show: "relation: chandrasekaran_source_data/rel_notebook_surface_approx_fig7f_fine_grid"
+
+  - id: gubbala_nematic_inclusions
+    teaches: Live PDE code forensics & five-paper phase-field synthesis
+    title: Viscous inclusions in nematic actin networks & ModelC_Cubic.py forensics
+    summary: >-
+      Gubbala et al. (2025) couple Cahn–Hilliard lipid phase separation to a 2D nematic Q-tensor
+      with cubic bend–splay elasticity, releasing their Python solver ModelC_Cubic.py. Running the
+      unmodified code live on CPU exposes a line-91 Fourier-space bug that collapses elastic
+      anisotropy by >99% (accidentally preventing blowup of the ill-posed printed PDE) while
+      linking Gubbala's model across Frohoff-Hülsmann (2021), Zwicker (2015), Weirich (2017), and
+      Graham (2023).
+    sources: [gubbala2025, gubbala_code, frohoff2021, zwicker2015, weirich2017, graham2023]
+    steps:
+      - text: >-
+          Line 91 of ModelC_Cubic.py multiplies Fourier wavevectors -K[k]*K[l] pointwise into
+          real-space Q[i][j] instead of Fourier-space Q_fft[i][j], producing 116.3% L2 error
+          against Eq. (10) and a spurious cross-shaped artifact (max 4.013) on a uniform field.
+        show: "question: gubbala_code/q_cubic_line91_realspace_fft_bug"
+      - text: >-
+          In live linearized dispersion of unmodified ModelC_2D.euler_step(), line 91 collapses
+          bend–splay anisotropy E3_eff from +2.0 to -0.0106 (>99% loss) — explaining why the code
+          stays finite at E1 = E3 = 2 despite both the non-variational +0.5*E3 sign in Eq. (10)
+          and coupled-binodal ill-posedness (|Q|_eq = 1.0543 > 1).
+        show: "comparison: gubbala_code/cmp_lsa_E3_eff_code_vs_paper"
+      - text: >-
+          An accidental double-error cancellation emerges on Q_xy: SI Eq. (S26) drops E3 from
+          omega_xy while line 91 wipes out E3 in code (matching to 2.02e-3), whereas fixing line 91
+          and the variational sign restores exact +1.000 free-energy dissipation (8.04e-9 diff).
+        show: "relation: gubbala_code/rel_code_cubic_fixed_same_variational"
+      - text: >-
+          In ModelC_2D.run(), line 224 updates T += self.DT after overwriting self.DT with DT_new
+          (overshooting step-1 time by ~280x), while lines 148–153 reuse one noise array identically
+          for phi, Qxx, and Qxy (corr = 1.0) and TOL = 1e-4 is 100x looser than SI 1e-6.
+        show: "comparison: gubbala_code/cmp_stepper_reported_t1_vs_dt0"
+      - text: >-
+          Across the phase-separation corpus, Gubbala's corrected 2x2 Model C dispersion is
+          isospectral to Frohoff-Hülsmann (2021) Eq. (12) under Q_eff = 1/q^2 (1.95e-14 max rel
+          diff) and its coupled binodal shift reduces to Zwicker (2015) Eq. (A1) to 4.4e-16 —
+          corroborating both papers' printed LSA factor-of-2 typos simultaneously.
+        show: "relation: gubbala2025/rel_frohoff2021_lsa_corr_same_eq12_sigma_max"
+      - text: >-
+          Mapping rigid-kink line tension 1 + chi/2 onto Weirich (2017)'s smooth-Wulff tactoid
+          branch 1 + omega (verified identically up to chi = 2 <=> omega = 1) proves Gubbala's
+          sharp-cusped tactoids sit in Weirich's deformed defect regime rather than the homogeneous
+          Wulff cusp regime (omega > 1), while exact 2D k33 matches Graham (2023)'s ring bending
+          stiffness to 4.4e-13.
+        show: "relation: gubbala2025/rel_weirich2017_nondim_lam_same_small_omega_ar"
+      - text: >-
+          Running unmodified ModelC_Cubic.py over Fig. 3's exact 9.97x window yields R/R0 = 1.734
+          (independent noise, within 0.6% of Fig. 3 sim 1.724 and +10.4% above digitized experiment
+          1.571), while high actin initially coarsens faster (2.03–2.29) before arresting past
+          t > 3000.
+        show: "validation: gubbala_code/val_euler_low_indep_Rratio_vs_fig3_exp_low_end"
+
 

@@ -1,0 +1,373 @@
+# ==============================================================================
+# Analytical, constitutive, and stability runs
+# ==============================================================================
+
+- id: run_nematic_sat_beta1_Ld
+  model: nematic_saturation_eq4_s5
+  inputs: {beta: beta_default, phi: phi_Ld_bulk}
+  outputs: {S: S_sat_beta1_Ld}
+
+- id: run_nematic_sat_beta1_Lo
+  model: nematic_saturation_eq4_s5
+  inputs: {beta: beta_default, phi: phi_Lo_bulk}
+  outputs: {S: S_sat_beta1_Lo}
+
+- id: run_nematic_sat_exact_eq4_Ld
+  model: nematic_saturation_from_eq4_exact
+  inputs: {beta: beta_default, phi: phi_Ld_bulk}
+  outputs: {S: S_sat_exact_eq4_Ld}
+
+- id: run_nematic_sat_exact_eq4_Lo
+  model: nematic_saturation_from_eq4_exact
+  inputs: {beta: beta_default, phi: phi_Lo_bulk}
+  outputs: {S: S_sat_exact_eq4_Lo}
+
+- id: run_q_tensor_x_axis
+  model: nematic_q_tensor_eq3
+  inputs: {S: S_sat_beta1_Ld, theta: theta_director_x}
+  outputs: {Q_xx: Qxx_eq3_x, Q_xy: Qxy_eq3_x, Q_yy: Qyy_eq3_x, tr_Q2: trQ2_eq3_x}
+
+- id: run_line_tension_p3_chi1
+  model: effective_line_tension_p3
+  inputs: {chi: chi_default}
+  outputs: {lam: lam_p3_chi1}
+
+- id: run_line_tension_s13_chi1
+  model: effective_line_tension_s13
+  inputs: {chi: chi_default}
+  outputs: {lam: lam_s13_chi1}
+
+- id: run_ch_energy_Ld
+  model: cahn_hilliard_free_energy_eq2
+  inputs: {phi: phi_Ld_bulk, lam: lam_p3_chi1, grad_phi: grad_phi_probe}
+  outputs: {f_phi: f_phi_Ld, df_dphi: df_dphi_Ld}
+
+- id: run_ldg_bulk_eq4_Ld
+  model: ldg_bulk_free_energy_eq4
+  inputs: {beta: beta_default, phi: phi_Ld_bulk, Q_xx: Qxx_eq3_x, Q_xy: Qxy_eq3_x}
+  outputs: {f_bulk: f_bulk_eq4_Ld, tr_Q2: trQ2_bulk_eq4}
+
+- id: run_ldg_bulk_eq10_Ld
+  model: ldg_bulk_free_energy_eq10_consistent
+  inputs: {beta: beta_default, phi: phi_Ld_bulk, Q_xx: Qxx_eq3_x, Q_xy: Qxy_eq3_x}
+  outputs: {f_bulk: f_bulk_eq10_Ld, tr_Q2: trQ2_bulk_eq10}
+
+- id: run_anchoring_eq7_x
+  model: anchoring_free_energy_eq7_s13
+  inputs:
+    chi: chi_default
+    S: S_sat_beta1_Ld
+    Q_xx: Qxx_eq3_x
+    Q_xy: Qxy_eq3_x
+    dphi_x: grad_phi_probe
+    dphi_y: grad_phi_zero
+  outputs:
+    f_anch: f_anch_eq7_x
+    f_anch_iso_residual: f_anch_iso_x
+    f_anch_total: f_anch_tot_x
+
+- id: run_elastic_energy_low
+  model: elastic_free_energy_eq5
+  inputs:
+    E1: E1_low_actin
+    E3: E3_low_actin
+    Q_xx: Qxx_eq3_x
+    Q_xy: Qxy_eq3_x
+    dQxx_x: grad_Q_probe
+    dQxx_y: grad_Q_probe
+    dQxy_x: grad_Q_probe
+    dQxy_y: grad_Q_probe
+  outputs: {f_elastic: f_el_low, f_E1: f_E1_low, f_E3: f_E3_low}
+
+- id: run_frank_eq6_low
+  model: frank_elastic_constants_eq6
+  inputs: {E1: E1_low_actin, E3: E3_low_actin, S: S_sat_beta1_Ld}
+  outputs: {k11: k11_eq6_low, k33: k33_eq6_low, k33_over_k11: k33_k11_eq6_low}
+
+- id: run_frank_eq6_high
+  model: frank_elastic_constants_eq6
+  inputs: {E1: E1_high_actin, E3: E3_high_actin, S: S_sat_beta1_Ld}
+  outputs: {k11: k11_eq6_high, k33: k33_eq6_high, k33_over_k11: k33_k11_eq6_high}
+
+- id: run_frank_2d_low
+  model: frank_elastic_constants_2d
+  inputs: {E1: E1_low_actin, E3: E3_low_actin, S: S_sat_beta1_Ld}
+  outputs: {k11: k11_2d_low, k33: k33_2d_low, k33_over_k11: k33_k11_2d_low}
+
+- id: run_bounds_p3_S1
+  model: elastic_ratio_bounds_p3
+  inputs: {S: S_sat_beta1_Ld}
+  outputs: {E3_over_E1_min: E3E1_min_p3_S1, E3_over_E1_max: E3E1_max_p3_S1}
+
+- id: run_bounds_eq6_corr_S1
+  model: elastic_ratio_bounds_eq6_corrected
+  inputs: {S: S_sat_beta1_Ld}
+  outputs: {E3_over_E1_min: E3E1_min_corr_S1, E3_over_E1_max: E3E1_max_corr_S1}
+
+- id: run_bounds_p3_S2
+  model: elastic_ratio_bounds_p3
+  inputs: {S: S_probe_nonunit}
+  outputs: {E3_over_E1_min: E3E1_min_p3_S2, E3_over_E1_max: E3E1_max_p3_S2}
+
+- id: run_bounds_eq6_corr_S2
+  model: elastic_ratio_bounds_eq6_corrected
+  inputs: {S: S_probe_nonunit}
+  outputs: {E3_over_E1_min: E3E1_min_corr_S2, E3_over_E1_max: E3E1_max_corr_S2}
+
+- id: run_nondim_low
+  model: nondim_parameters_s32
+  inputs:
+    M: dim_M_probe
+    Gamma: dim_Gamma_probe
+    lambda_tilde: dim_lambda_tilde_probe
+    alpha: dim_alpha_probe
+    L1: dim_L1_probe
+    L3: dim_L3_probe
+  outputs:
+    l_c: lc_nondim
+    t_Q: tQ_nondim
+    t_phi: tphi_nondim
+    gamma: gamma_nondim
+    E1: E1_nondim
+    E3: E3_nondim
+    chi: chi_nondim
+    lam: lam_nondim
+
+- id: run_lsa_low_x
+  model: linear_stability_s24_s28
+  inputs:
+    gamma: gamma_default
+    chi: chi_default
+    beta: beta_default
+    E1: E1_low_actin
+    E3: E3_low_actin
+    kx: kx_probe_lsa
+    ky: ky_probe_lsa
+  outputs:
+    omega_phi: wphi_lsa_low_x
+    omega_xx: wxx_lsa_low_x
+    omega_xy: wxy_lsa_low_x
+    sigma_max: smax_lsa_low_x
+    sigma_min: smin_lsa_low_x
+    chi_min: chimin_lsa_low_x
+    chi_max: chimax_lsa_low_x
+    beta_min: betamin_lsa_low_x
+
+- id: run_lsa_high_y
+  model: linear_stability_s24_s28
+  inputs:
+    gamma: gamma_default
+    chi: chi_default
+    beta: beta_default
+    E1: E1_high_actin
+    E3: E3_high_actin
+    kx: kx_probe_zero
+    ky: ky_probe_transverse
+  outputs:
+    omega_phi: wphi_lsa_high_y
+    omega_xx: wxx_lsa_high_y
+    omega_xy: wxy_lsa_high_y
+    sigma_max: smax_lsa_high_y
+    sigma_min: smin_lsa_high_y
+    chi_min: chimin_lsa_high_y
+    chi_max: chimax_lsa_high_y
+    beta_min: betamin_lsa_high_y
+
+- id: run_lsa_corr_low_x
+  model: linear_stability_s24_s28_corrected
+  inputs:
+    gamma: gamma_default
+    chi: chi_default
+    beta: beta_default
+    E1: E1_low_actin
+    E3: E3_low_actin
+    kx: kx_probe_lsa
+    ky: ky_probe_lsa
+  outputs:
+    omega_phi: wphi_lsac_low_x
+    omega_xx: wxx_lsac_low_x
+    omega_xy: wxy_lsac_low_x
+    sigma_max: smax_lsac_low_x
+    sigma_min: smin_lsac_low_x
+    chi_min: chimin_lsac_low_x
+    chi_max: chimax_lsac_low_x
+    beta_min: betamin_lsac_low_x
+
+- id: run_binodal_beta1_high
+  model: coupled_binodal_coexistence
+  inputs: {beta: beta_default, E1: E1_high_actin, E3: E3_high_actin}
+  settings: {tol: 1.0e-12}
+  outputs:
+    phi_Lo_eq: phi_Lo_coex_b1
+    phi_Ld_eq: phi_Ld_coex_b1
+    mu_coex: mu_coex_b1
+    Q_eq_Ld: Q_eq_Ld_b1
+    eff_diff_perp: eff_diff_high_b1
+
+- id: run_powerlaw_no_actin
+  model: coarsening_power_law
+  inputs: {t: growth_window_t_end, t0: growth_window_t0, alpha: alpha_bulk_diffusion_ref}
+  outputs: {R_over_R0: R_ratio_no_actin_pred}
+
+- id: run_powerlaw_low_actin
+  model: coarsening_power_law
+  inputs: {t: growth_window_t_end, t0: growth_window_t0, alpha: alpha_interface_driven_ref}
+  outputs: {R_over_R0: R_ratio_low_actin_pred}
+
+- id: run_sf_s1_s34
+  model: structure_factor_domain_size_s1_s34
+  inputs: {k_max: sf_peak_k_probe, k_cut_ratio: k_cut_over_k_max, L: pde_box_L, N: pde_grid_N}
+  settings: {n_quad: 2000, rel_width: 0.25}
+  outputs: {k_cut: sf_k_cut, k_m: sf_k_m, R: sf_R, F_peak: sf_F_peak}
+
+- id: run_curv_circle_printed
+  model: boundary_curvature_s2
+  inputs: {R: circle_radius_probe}
+  settings: {n_pts: 360}
+  outputs: {kappa_mean: kappa_circle_printed, kappa_norm_mean: kappa_norm_circle_printed}
+
+- id: run_curv_circle_corrected
+  model: boundary_curvature_s2_corrected
+  inputs: {R: circle_radius_probe}
+  settings: {n_pts: 360}
+  outputs: {kappa_mean: kappa_circle_corrected, kappa_norm_mean: kappa_norm_circle_corrected}
+
+- id: run_e3_variational_sign
+  model: cubic_elastic_variational_sign_eq10
+  inputs: {E3: E3_low_actin}
+  settings: {n_grid: 32, L_box: 32.0, eps_fd: 1.0e-6}
+  outputs:
+    dissipation_ratio_printed: e3_sign_ratio_printed
+    dissipation_ratio_variational: e3_sign_ratio_var
+
+# ==============================================================================
+# 2D Fourier pseudospectral Model C PDE runs (CPU-affordable periodic box)
+# ==============================================================================
+
+- id: run_pde_low_printed
+  model: model_c_pde_2d_eq9_10
+  inputs:
+    beta: beta_default
+    chi: chi_default
+    gamma: gamma_default
+    E1: E1_low_actin
+    E3: E3_low_actin
+    phi0: phi0_low_actin
+    noise_var: init_noise_variance
+    k_cut_ratio: k_cut_over_k_max
+    t_fit_start: pde_t_fit_start_dimless
+    t_end: pde_t_end_dimless
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.4, seed: 0, n_samples: 6}
+  replicates: 2
+  outputs:
+    alpha_fit: alpha_pde_low_printed
+    R_final: R_pde_low_printed
+    R_growth_ratio: Rratio_pde_low_printed
+    Q_max_final: Qmax_pde_low_printed
+  note: "Added CPU budget choices: N=64, L=62.5 preserves exact paper grid spacing dx=500/512=0.9765625; fixed dt=0.4 up to t_end=1200 with 2 replicates (paper used N=512, L=500 on GPU with 4 realizations)."
+
+- id: run_pde_low_variational
+  model: model_c_pde_2d_variational
+  inputs:
+    beta: beta_default
+    chi: chi_default
+    gamma: gamma_default
+    E1: E1_low_actin
+    E3: E3_low_actin
+    phi0: phi0_low_actin
+    noise_var: init_noise_variance
+    k_cut_ratio: k_cut_over_k_max
+    t_fit_start: pde_t_fit_start_dimless
+    t_end: pde_t_end_dimless
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.4, seed: 0, n_samples: 6}
+  replicates: 2
+  outputs:
+    alpha_fit: alpha_pde_low_var
+    R_final: R_pde_low_var
+    R_growth_ratio: Rratio_pde_low_var
+    Q_max_final: Qmax_pde_low_var
+  note: "Variational -E_3/2 sign variant at low actin density (E1, E3, phi0) = (0.1, 0.1, 0.3); same N=64, L=62.5, dt=0.4 CPU settings as run_pde_low_printed."
+
+- id: run_pde_high_printed
+  model: model_c_pde_2d_eq9_10
+  inputs:
+    beta: beta_default
+    chi: chi_default
+    gamma: gamma_default
+    E1: E1_high_actin
+    E3: E3_high_actin
+    phi0: phi0_high_actin
+    noise_var: init_noise_variance
+    k_cut_ratio: k_cut_over_k_max
+    t_fit_start: pde_t_fit_start_dimless
+    t_end: pde_t_end_dimless
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.15, seed: 0, n_samples: 6}
+  replicates: 1
+  outputs:
+    alpha_fit: alpha_pde_high_printed
+    R_final: R_pde_high_printed
+    R_growth_ratio: Rratio_pde_high_printed
+    Q_max_final: Qmax_pde_high_printed
+  note: "High actin density with paper's exact printed parameters (E1, E3, phi0) = (2, 2, 0.75); tests numerical stability when |Q|_eq = 1.0543 > E1/E3 = 1."
+
+- id: run_pde_high_variational_stab
+  model: model_c_pde_2d_variational
+  inputs:
+    beta: beta_default
+    chi: chi_default
+    gamma: gamma_default
+    E1: E1_high_actin
+    E3: E3_high_actin_stabilized
+    phi0: phi0_high_actin
+    noise_var: init_noise_variance
+    k_cut_ratio: k_cut_over_k_max
+    t_fit_start: pde_t_fit_start_dimless
+    t_end: pde_t_end_dimless
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.15, seed: 0, n_samples: 6}
+  replicates: 1
+  outputs:
+    alpha_fit: alpha_pde_high_var_stab
+    R_final: R_pde_high_var_stab
+    R_growth_ratio: Rratio_pde_high_var_stab
+    Q_max_final: Qmax_pde_high_var_stab
+  note: "High actin variational variant with E3 = 1.8 (below the coupled-binodal stability limit E1/|Q|_eq = 1.897) to avoid backward-diffusion blowup while preserving strong bend/splay anisotropy."
+
+# ==============================================================================
+# Curve sweeps over digitized figures (digitize:gubbala2025)
+# ==============================================================================
+
+- id: run_powerlaw_fig3_sim_no_actin
+  model: coarsening_power_law
+  inputs: {t0: growth_window_t0, alpha: alpha_bulk_diffusion_ref}
+  sweep: {t: R_ratio_fig3_sim_no_actin}
+  outputs: {R_over_R0: R_ratio_fig3_no_actin_curve_pred}
+
+- id: run_powerlaw_fig3_sim_low
+  model: coarsening_power_law
+  inputs: {t0: growth_window_t0, alpha: alpha_interface_driven_ref}
+  sweep: {t: R_ratio_fig3_sim_low}
+  outputs: {R_over_R0: R_ratio_fig3_sim_low_curve_pred}
+
+- id: run_powerlaw_fig3_exp_low
+  model: coarsening_power_law
+  inputs: {t0: growth_window_t0, alpha: alpha_interface_driven_ref}
+  sweep: {t: R_ratio_fig3_exp_low}
+  outputs: {R_over_R0: R_ratio_fig3_exp_low_curve_pred}
+
+- id: run_powerlaw_fig3_inset_exp
+  model: coarsening_power_law
+  inputs: {t0: fig3_inset_t0_added, alpha: alpha_bulk_diffusion_ref}
+  sweep: {t: R_ratio_fig3_inset_no_actin_exp}
+  outputs: {R_over_R0: R_ratio_fig3_inset_exp_curve_pred}
+
+- id: run_powerlaw_figS2_alpha_third
+  model: coarsening_power_law
+  inputs: {t0: figS2_left_t0_added, alpha: alpha_bulk_diffusion_ref}
+  sweep: {t: R_ratio_figS2_left_alpha_third}
+  outputs: {R_over_R0: R_ratio_figS2_alpha_third_curve_pred}
+
+- id: run_powerlaw_figS2_left_sim_low
+  model: coarsening_power_law
+  inputs: {t0: figS2_left_t0_added, alpha: alpha_interface_driven_ref}
+  sweep: {t: R_ratio_figS2_left_sim_low}
+  outputs: {R_over_R0: R_ratio_figS2_left_sim_low_curve_pred}

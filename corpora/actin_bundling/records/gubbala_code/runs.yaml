@@ -1,0 +1,334 @@
+# ==============================================================================
+# 1. Live ModelC_2D.grids() and t=0 initialization audits
+# ==============================================================================
+
+- id: run_grids_init_readme
+  model: modelc_grids_and_init
+  inputs:
+    N: N_readme
+    L: L_readme
+    phi0: phi_avg_readme
+    beta: beta_readme
+    gamma: gamma_readme
+    E1: E1_readme
+    E3: E3_readme
+    chi: chi_readme
+    dt_init: dt_init_readme
+    tol: tol_readme
+  settings: {grid_mult: 1, seed: 0}
+  replicates: 1
+  outputs:
+    dx_exported: dx_exp_readme
+    dx_fft: dx_fft_readme
+    k_zero_mode: k0_readme
+    dealias_kept_fraction: dealias_frac_readme
+    noise_var_init: noise_var_readme
+    init_qxx_qxy_corr: corr_qxx_qxy_readme
+    init_phi_qxx_corr: corr_phi_qxx_readme
+  note: "Runs live ModelC_2D.run(TIME=0) on CPU at the exact paper/README 512 x 512, L = 500 lattice (~2 s)."
+
+- id: run_grids_init_default
+  model: modelc_grids_and_init
+  inputs:
+    N: N_default_code
+    L: L_default_code
+    phi0: phi_avg_default_code
+    beta: beta_default_code
+    gamma: gamma_default_code
+    E1: E1_default_code
+    E3: E3_default_code
+    chi: chi_default_code
+    dt_init: dt_init_default_code
+    tol: tol_default_code
+  settings: {grid_mult: 1, seed: 0}
+  replicates: 1
+  outputs:
+    dx_exported: dx_exp_default
+    dx_fft: dx_fft_default
+    k_zero_mode: k0_default
+    dealias_kept_fraction: dealias_frac_default
+    noise_var_init: noise_var_default
+    init_qxx_qxy_corr: corr_qxx_qxy_default
+    init_phi_qxx_corr: corr_phi_qxx_default
+  note: "Audits constructor default 128 x 128, L = 128 lattice; refined over grid_mult = [1, 2] to confirm variance convergence."
+
+# ==============================================================================
+# 2. Live ModelC_2D.cubic() operator and variational dissipation audits
+# ==============================================================================
+
+- id: run_cubic_audit_high
+  model: modelc_cubic_operator_audit
+  inputs:
+    E3: paper_E3_high_actin
+    beta: beta_default_code
+  settings: {n_grid: 32, L_box: 32.0, eps_fd: 1.0e-6}
+  outputs:
+    dissipation_ratio_code: cubic_diss_ratio_code
+    rel_err_vs_eq10: cubic_rel_err_eq10
+    rel_err_second_deriv: cubic_rel_err_sec
+    uniform_residual_max: cubic_uniform_res_code
+
+- id: run_cubic_fixed_high
+  model: modelc_cubic_operator_fixed
+  inputs:
+    E3: paper_E3_high_actin
+    beta: beta_default_code
+  settings: {n_grid: 32, L_box: 32.0, eps_fd: 1.0e-6}
+  outputs:
+    dissipation_ratio_code: cubic_diss_ratio_fixed
+    rel_err_vs_eq10: cubic_rel_err_fixed
+    rel_err_second_deriv: cubic_rel_err_sec_fixed
+    uniform_residual_max: cubic_uniform_res_fixed
+
+# ==============================================================================
+# 3. Live ModelC_2D.euler_step() Frechet linear stability probes
+# ==============================================================================
+
+- id: run_lsa_high
+  model: modelc_linear_stability_probe
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: paper_E1_high_actin
+    E3: paper_E3_high_actin
+  settings: {n_grid: 32, L_box: 32.0, mode_m: 2, dt_probe: 1.0e-4, eps_fd: 1.0e-4}
+  outputs:
+    omega_phi_long: lsa_high_wphi_l
+    omega_phi_trans: lsa_high_wphi_t
+    c12_phi_from_qxx: lsa_high_c12
+    c21_qxx_from_phi: lsa_high_c21
+    omega_xx_long: lsa_high_wxx_l
+    omega_xx_trans: lsa_high_wxx_t
+    omega_xy_long: lsa_high_wxy_l
+    E3_eff_linear: lsa_high_E3_eff
+    chi_eff_linear: lsa_high_chi_eff
+    chi_min_code: lsa_high_chi_min
+    chi_max_code: lsa_high_chi_max
+    mass_leak_rate: lsa_high_mass_leak
+
+- id: run_lsa_fixed_high
+  model: modelc_linear_stability_fixed
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: paper_E1_high_actin
+    E3: paper_E3_high_actin
+  settings: {n_grid: 32, L_box: 32.0, mode_m: 2, dt_probe: 1.0e-4, eps_fd: 1.0e-4}
+  outputs:
+    omega_phi_long: lsafix_high_wphi_l
+    omega_phi_trans: lsafix_high_wphi_t
+    c12_phi_from_qxx: lsafix_high_c12
+    c21_qxx_from_phi: lsafix_high_c21
+    omega_xx_long: lsafix_high_wxx_l
+    omega_xx_trans: lsafix_high_wxx_t
+    omega_xy_long: lsafix_high_wxy_l
+    E3_eff_linear: lsafix_high_E3_eff
+    chi_eff_linear: lsafix_high_chi_eff
+    chi_min_code: lsafix_high_chi_min
+    chi_max_code: lsafix_high_chi_max
+    mass_leak_rate: lsafix_high_mass_leak
+
+- id: run_lsa_perp_chi
+  model: modelc_linear_stability_probe
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_perp_probe
+    E1: E1_default_code
+    E3: paper_E3_low_actin
+  settings: {n_grid: 32, L_box: 32.0, mode_m: 2, dt_probe: 1.0e-4, eps_fd: 1.0e-4}
+  outputs:
+    omega_phi_long: lsa_perp_wphi_l
+    omega_phi_trans: lsa_perp_wphi_t
+    c12_phi_from_qxx: lsa_perp_c12
+    c21_qxx_from_phi: lsa_perp_c21
+    omega_xx_long: lsa_perp_wxx_l
+    omega_xx_trans: lsa_perp_wxx_t
+    omega_xy_long: lsa_perp_wxy_l
+    E3_eff_linear: lsa_perp_E3_eff
+    chi_eff_linear: lsa_perp_chi_eff
+    chi_min_code: lsa_perp_chi_min
+    chi_max_code: lsa_perp_chi_max
+    mass_leak_rate: lsa_perp_mass_leak
+  note: "Tests perpendicular anchoring chi = -1 (inside (-2, -2/3)): stable in ModelC_2D because kappa_anch = 1 + |chi|/2, contradicting SI Eq. (S27)."
+
+- id: run_lsa_beta2
+  model: modelc_linear_stability_probe
+  inputs:
+    beta: beta_nonunit_probe
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: E1_default_code
+    E3: paper_E3_low_actin
+  settings: {n_grid: 32, L_box: 32.0, mode_m: 2, dt_probe: 1.0e-4, eps_fd: 1.0e-4}
+  outputs:
+    omega_phi_long: lsa_b2_wphi_l
+    omega_phi_trans: lsa_b2_wphi_t
+    c12_phi_from_qxx: lsa_b2_c12
+    c21_qxx_from_phi: lsa_b2_c21
+    omega_xx_long: lsa_b2_wxx_l
+    omega_xx_trans: lsa_b2_wxx_t
+    omega_xy_long: lsa_b2_wxy_l
+    E3_eff_linear: lsa_b2_E3_eff
+    chi_eff_linear: lsa_b2_chi_eff
+    chi_min_code: lsa_b2_chi_min
+    chi_max_code: lsa_b2_chi_max
+    mass_leak_rate: lsa_b2_mass_leak
+  note: "Tests beta = 2 (S = 1/sqrt(2) != 1), exposing missing 1/S = sqrt(beta) factor in ModelC_2D.euler_step() anchoring terms (chi_eff = 0.7071 instead of 1.0)."
+
+# ==============================================================================
+# 4. Live ModelC_2D.run() adaptive stepper audit
+# ==============================================================================
+
+- id: run_stepper_audit_low
+  model: modelc_adaptive_stepper_audit
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: paper_E1_low_actin
+    E3: paper_E3_low_actin
+    phi0: phi_avg_default_code
+    dt_init: dt_init_default_code
+    tol: tol_default_code
+    t_end: t_end_stepper_audit
+    k_cut_ratio: paper_k_cut_over_k_max
+  settings: {n_grid: 32, L_box: 31.25, skips: 1, tol_factor: 1.0, seed: 0}
+  replicates: 1
+  outputs:
+    reported_time_step1: step_rep_t1
+    true_time_step1: step_true_t1
+    max_time_shift: step_max_tshift
+    final_dt: step_final_dt
+    phi_mean_drift: step_mass_drift
+    R_final: step_R_final
+    blowup_flag: step_blowup
+  note: "Audits live ModelC_2D.run() adaptive stepping from DT=1e-8 to T=20 on N=32, L=31.25 (exact dx=500/512) in ~1.8 s."
+
+# ==============================================================================
+# 5. Live CPU coarsening runs (unmodified ModelC_2D.run() & ModelC_2D.euler_step())
+# ==============================================================================
+
+- id: run_native_low
+  model: modelc_coarsening_native_run
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: paper_E1_low_actin
+    E3: paper_E3_low_actin
+    phi0: phi_avg_default_code
+    dt_init: dt_init_readme
+    tol: tol_default_code
+    t_fit_start: t_fit_start_native_cpu
+    t_end: t_end_native_cpu
+    k_cut_ratio: paper_k_cut_over_k_max
+  settings: {n_grid: 48, L_box: 46.875, skips: 15, tol_factor: 1.0, seed: 0}
+  replicates: 2
+  outputs:
+    alpha_fit: native_low_alpha
+    R_final: native_low_R_final
+    R_growth_ratio: native_low_Rratio
+    Q_max_final: native_low_Qmax
+    phi_mean_drift: native_low_drift
+    blowup_flag: native_low_blowup
+  note: "Unmodified ModelC_2D.run() on CPU at low actin (E1=E3=0.1, phi0=0.3); reduced box N=48, L=46.875 (exact paper dx=500/512) and t=0..400 keep each replicate ~15 s."
+
+- id: run_native_readme
+  model: modelc_coarsening_native_run
+  inputs:
+    beta: beta_readme
+    gamma: gamma_readme
+    chi: chi_readme
+    E1: E1_readme
+    E3: E3_readme
+    phi0: phi_avg_readme
+    dt_init: dt_init_readme
+    tol: tol_readme
+    t_fit_start: t_end_stepper_audit
+    t_end: time_readme
+    k_cut_ratio: paper_k_cut_over_k_max
+  settings: {n_grid: 64, L_box: 62.5, skips: 20, tol_factor: 1.0, seed: 0}
+  replicates: 1
+  outputs:
+    alpha_fit: native_readme_alpha
+    R_final: native_readme_R_final
+    R_growth_ratio: native_readme_Rratio
+    Q_max_final: native_readme_Qmax
+    phi_mean_drift: native_readme_drift
+    blowup_flag: native_readme_blowup
+  note: "Unmodified ModelC_2D.run() at the exact README.md physics/time parameters (E1=E3=1, GAMMA=0.1, CHI=1, PHI_AVG=0.3, TIME=100, TOL=1e-4) on CPU-affordable N=64, L=62.5 (~8 s)."
+
+- id: run_euler_low_shared
+  model: modelc_coarsening_euler_step
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: paper_E1_low_actin
+    E3: paper_E3_low_actin
+    phi0: phi_avg_default_code
+    noise_std: noise_std_code
+    t_fit_start: t_fit_start_euler_cpu
+    t_end: time_default_code
+    k_cut_ratio: paper_k_cut_over_k_max
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.4, init_mode: shared, n_samples: 6, seed: 0}
+  replicates: 2
+  outputs:
+    alpha_fit: euler_low_sh_alpha
+    R_final: euler_low_sh_R_final
+    R_growth_ratio: euler_low_sh_Rratio
+    Q_max_final: euler_low_sh_Qmax
+    phi_mean_drift: euler_low_sh_drift
+    blowup_flag: euler_low_sh_blowup
+  note: "Live ModelC_2D.euler_step() at low actin (E1=E3=0.1, phi0=0.3) on N=64, L=62.5 (dx=500/512) up to t=1000 with ModelC_2D.run()'s shared noise array (~17 s/replicate)."
+
+- id: run_euler_low_indep
+  model: modelc_coarsening_euler_step
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: paper_E1_low_actin
+    E3: paper_E3_low_actin
+    phi0: phi_avg_default_code
+    noise_std: noise_std_code
+    t_fit_start: t_fit_start_euler_cpu
+    t_end: time_default_code
+    k_cut_ratio: paper_k_cut_over_k_max
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.4, init_mode: independent, n_samples: 6, seed: 0}
+  replicates: 2
+  outputs:
+    alpha_fit: euler_low_in_alpha
+    R_final: euler_low_in_R_final
+    R_growth_ratio: euler_low_in_Rratio
+    Q_max_final: euler_low_in_Qmax
+    phi_mean_drift: euler_low_in_drift
+    blowup_flag: euler_low_in_blowup
+  note: "Same live ModelC_2D.euler_step() low-actin run but with independent Gaussian draws for phi, Qxx, Qxy (SI p. 17), isolating the coarsening-rate effect of reusing noise on lines 148-153."
+
+- id: run_euler_high_shared
+  model: modelc_coarsening_euler_step
+  inputs:
+    beta: beta_default_code
+    gamma: gamma_readme
+    chi: chi_default_code
+    E1: paper_E1_high_actin
+    E3: paper_E3_high_actin
+    phi0: paper_phi0_high_actin
+    noise_std: noise_std_code
+    t_fit_start: t_fit_start_euler_cpu
+    t_end: time_default_code
+    k_cut_ratio: paper_k_cut_over_k_max
+  settings: {n_grid: 64, L_box: 62.5, dt: 0.4, init_mode: shared, n_samples: 6, seed: 0}
+  replicates: 1
+  outputs:
+    alpha_fit: euler_high_alpha
+    R_final: euler_high_R_final
+    R_growth_ratio: euler_high_Rratio
+    Q_max_final: euler_high_Qmax
+    phi_mean_drift: euler_high_drift
+    blowup_flag: euler_high_blowup
+  note: "Live ModelC_2D.euler_step() at high actin (E1=E3=2, phi0=0.75) on N=64, L=62.5 up to t=1000 (~17 s); stays finite (blowup_flag=0) only because line 91 destroys the backward-diffusion term."

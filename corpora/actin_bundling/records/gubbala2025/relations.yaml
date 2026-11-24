@@ -1,0 +1,2295 @@
+- id: rel_line_tension_p3_same_s13_parallel
+  kind: same_as
+  a: gubbala2025/effective_line_tension_p3
+  b: gubbala2025/effective_line_tension_s13
+  mapping:
+    chi: "chi"
+  output_map:
+    lam: lam
+  regime:
+    chi: [0.05, 2.0]
+  provenance: stated
+  citation:
+    page: 14
+    printed_page: "SI-5"
+    quote: "to give an effective line tension parameter"
+    where: "Sec. 2.1 (p. 3) & SI Sec. 3.1 Eq. (S13)"
+  assumptions:
+    - "Restricted to parallel anchoring chi > 0, where 1 + |chi|/2 = 1 + chi/2; the two printed forms diverge for perpendicular anchoring chi < 0."
+
+- id: rel_frank_eq6_reduces_to_2d_isotropic_k11
+  kind: reduces_to
+  a: gubbala2025/frank_elastic_constants_eq6
+  b: gubbala2025/frank_elastic_constants_2d
+  mapping:
+    E1: "E1"
+    E3: "E3"
+    S: "S"
+  output_map:
+    k11: k11
+  regime:
+    E1: [0.1, 2.0]
+    E3: [0.001, 0.01]
+    S: [0.5, 2.0]
+  limit:
+    E3: "0"
+  provenance: proposed
+  reason: "Both the printed 3D Beris-Edwards mapping Eq. (6) and the exact 2D mapping from Eq. (3)+Eq. (5) reduce to k11 = 2*E1*S^2 as cubic anisotropy E3 -> 0."
+  assumptions:
+    - "Vanishing cubic elastic constant E3 -> 0."
+
+- id: rel_frank_eq6_reduces_to_2d_isotropic_ratio
+  kind: reduces_to
+  a: gubbala2025/frank_elastic_constants_eq6
+  b: gubbala2025/frank_elastic_constants_2d
+  mapping:
+    E1: "E1"
+    E3: "E3"
+    S: "S"
+  output_map:
+    k33_over_k11: k33_over_k11
+  regime:
+    E1: [0.1, 2.0]
+    E3: [0.001, 0.01]
+    S: [0.5, 2.0]
+  limit:
+    E3: "0"
+  provenance: proposed
+  reason: "Both the printed 3D Beris-Edwards mapping Eq. (6) and the exact 2D mapping from Eq. (3)+Eq. (5) reduce to k33/k11 = 1 as cubic anisotropy E3 -> 0."
+  assumptions:
+    - "Vanishing cubic elastic constant E3 -> 0."
+
+- id: rel_lsa_omega_phi_same_as_corrected
+  kind: same_as
+  a: gubbala2025/linear_stability_s24_s28
+  b: gubbala2025/linear_stability_s24_s28_corrected
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "kx"
+    ky: "ky"
+  output_map:
+    omega_phi: omega_phi
+  regime:
+    gamma: [0.05, 1.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 2.0]
+    E1: [0.1, 2.0]
+    E3: [0.0, 0.5]
+    kx: [0.1, 2.0]
+    ky: [0.1, 2.0]
+  provenance: proposed
+  reason: "The concentration diagonal decay rate omega_phi (Eq. S27) is identical between the printed LSA and the exact variational linearization."
+
+- id: rel_lsa_omega_xx_same_as_corrected
+  kind: same_as
+  a: gubbala2025/linear_stability_s24_s28
+  b: gubbala2025/linear_stability_s24_s28_corrected
+  mapping:
+    gamma: "gamma"
+    chi: "chi"
+    beta: "beta"
+    E1: "E1"
+    E3: "E3"
+    kx: "kx"
+    ky: "ky"
+  output_map:
+    omega_xx: omega_xx
+  regime:
+    gamma: [0.05, 1.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 2.0]
+    E1: [0.1, 2.0]
+    E3: [0.0, 0.5]
+    kx: [0.1, 2.0]
+    ky: [0.1, 2.0]
+  provenance: proposed
+  reason: "The nematic diagonal decay rate omega_xx (Eq. S28) is identical between the printed LSA and the exact variational linearization (using the variational E3 sign already present in Eq. S25)."
+
+# ==============================================================================
+# Cross-record ModelAtlas relation with released simulation code (gubbala_code)
+# ==============================================================================
+# Note: Additional detailed code-vs-paper relations (cubic operator audit & fixed
+# variant, unmodified & fixed Frechet linear stability probes, fixed-dt euler_step
+# coarsening, adaptive stepper audit, binodal saturation, and power-law scaling)
+# live in gubbala_code/relations.yaml.
+
+- id: rel_paper_pde_stated_github_native_run
+  kind: approximated_by
+  a: gubbala2025/model_c_pde_2d_eq9_10
+  b: gubbala_code/modelc_coarsening_native_run
+  mapping:
+    beta: "beta"
+    gamma: "gamma"
+    chi: "chi"
+    E1: "E1"
+    E3: "E3"
+    phi0: "phi0"
+    dt_init: "1e-6"
+    tol: "1e-4"
+    t_fit_start: "t_fit_start"
+    t_end: "t_end"
+    k_cut_ratio: "k_cut_ratio"
+  output_map:
+    R_final: R_final
+  regime:
+    beta: [1.0, 1.0]
+    chi: [1.0, 1.0]
+    gamma: [0.08, 0.12]
+    E1: [0.05, 0.2]
+    E3: [0.05, 0.2]
+    phi0: [0.2, 0.4]
+    noise_var: [1.0e-4, 1.0e-4]
+    k_cut_ratio: [50.0, 50.0]
+    t_fit_start: [15.0, 15.0]
+    t_end: [35.0, 50.0]
+  tolerance: 0.08
+  provenance: stated
+  citation:
+    page: 7
+    printed_page: "6249"
+    quote: "Data for this article can be generated with the simulation code"
+    where: "Data availability (p. 7 / 6249) & SI Sec. 4 (pp. 16-17 / SI-7 to SI-8)"
+  assumptions:
+    - "Evaluated in the low-actin parallel-anchoring beta=1 regime (E1, E3 in [0.05, 0.2], chi=1, beta=1), where omitted 1/S=1, |chi|=chi, and small E3 mask ModelC_Cubic.py's line-91 bug; remaining ~4-6% R_final spread reflects adaptive TOL=1e-4 with T += DT_new shift, N=48 vs N=64 periodic box, and shared vs independent noise."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with weirich2017 (Ref. 43: pp. 2, 6, 7)
+# ==============================================================================
+# gubbala2025 cites weirich2017 (ref-43) qualitatively on pp. 2 (6244), 6 (6248),
+# and 7 (6249) for liquid-crystal tactoids in rod-like biopolymer solutions and
+# notes on p. 7 that reducing anisotropic elasticity enables studying tactoid
+# coarsening. Because gubbala2025 does not state explicit equation-to-equation
+# mappings to weirich2017's equations, all cross-record mathematical relations
+# below are entered with provenance: proposed.
+
+- id: rel_weirich2017_coarsening_power_law_scales
+  kind: scales_as
+  a: gubbala2025/coarsening_power_law
+  b: weirich2017/tactoid_coarsening_power_law
+  mapping:
+    t: "t / 60"
+    alpha: "alpha"
+  output_map:
+    L: R_over_R0
+  regime:
+    t: [600.0, 7200.0]
+    t0: [60.0, 60.0]
+    alpha: [0.2, 0.5]
+  provenance: proposed
+  reason: >
+    Both papers fit domain/tactoid growth to a power law: gubbala2025 models normalized lipid
+    domain size R(t)/R_0 = (t/t_0)^alpha (Fig. 3, pp. 5-6; p. 7 cites weirich2017 [ref-43] when
+    proposing to study tactoid coarsening by reducing anisotropic elasticity), while weirich2017
+    models average tactoid major-axis length L(t) ~ t^alpha at constant aspect ratio L/r (Fig. 3A,
+    pp. 3-4). With exact time unit conversion t [min] = t [s] / 60 and reference time t_0 = 60 s
+    (matching Weirich's unprefactored L = (t / 1 min)^alpha), both models share identical log-slopes
+    in elapsed time t (alpha) and exponent alpha across 10-120 min and alpha in [0.2, 0.5], while
+    contrasting the two physical coarsening regimes (Weirich free 3D tactoid coalescence alpha =
+    0.47 +/- 0.01 vs. Gubbala 2D elastic-hindered domains alpha <= 0.25).
+  assumptions:
+    - "Reference time fixed at t_0 = 60 s (1 min) to align with Weirich's unprefactored L = (t / 1 min)^alpha; changing t_0 only rescales R/R_0 by a constant factor without altering the time scaling exponent alpha."
+    - "Constant tactoid aspect ratio L/r during growth (Weirich Fig. 3A) implies major axis L and characteristic domain radius R share the same growth exponent alpha."
+
+- id: rel_weirich2017_anchoring_strength_scales_nondim_chi
+  kind: scales_as
+  a: gubbala2025/nondim_parameters_s32
+  b: weirich2017/anchoring_strength_definition
+  mapping:
+    gamma_A: "150 * alpha / sqrt(lambda_tilde)"
+    gamma_I: "300 * sqrt(lambda_tilde)"
+  output_map:
+    omega: chi
+  regime:
+    M: [0.1, 10.0]
+    Gamma: [0.1, 10.0]
+    lambda_tilde: [0.1, 10.0]
+    alpha: [0.05, 5.0]
+    L1: [0.1, 5.0]
+    L3: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Bridges Gubbala's dimensionless nematic anchoring parameter chi = alpha / lambda_tilde (SI
+    Sec. 3.2, p. 15, from dimensional gradient + anchoring density (1/2)|grad phi|^2 [lambda_tilde +
+    alpha (n . N)^2]) with Weirich's sharp-interface dimensionless surface anchoring strength
+    omega = gamma_A / gamma_I (Main Text p. 3, SI p. 8, from F = int dA [gamma_I + gamma_A (n . N)^2]).
+    Integrating Gubbala's 1D Cahn-Hilliard kink phi_0(s) = tanh(s / sqrt(2*lambda_tilde)) across the
+    double well (1/4)(1 - phi^2)^2 + (1/2)[lambda_tilde + alpha (n . N)^2]*(d_s phi)^2 yields
+    equipartition isotropic tension gamma_I = (2*sqrt(2)/3)*a_0*sqrt(lambda_tilde) and anchoring
+    tension gamma_A = (sqrt(2)/3)*a_0*alpha/sqrt(lambda_tilde), giving omega = gamma_A/gamma_I =
+    alpha/(2*lambda_tilde) = chi/2 (factor-of-2 equipartition shift relative to the bare gradient
+    ratio). Under this kink-integrated mapping (calibrated to Weirich's gamma_I = 300 nN/m at
+    lambda_tilde = 1 um^2), chi and omega share identical log-slopes in alpha (+1) and
+    lambda_tilde (-1).
+  assumptions:
+    - "1D bare Cahn-Hilliard kink integration maps dimensional (lambda_tilde, alpha) [um^2] to sharp-interface (gamma_I, gamma_A) [nN/m] with gamma_I proportional to sqrt(lambda_tilde) and gamma_A proportional to alpha / sqrt(lambda_tilde), yielding omega = chi / 2."
+    - "Reference bulk energy density scale chosen so gamma_I = 300 nN/m (Weirich p. 4) at lambda_tilde = 1 um^2."
+
+- id: rel_weirich2017_rapini_papoular_anchoring_scales
+  kind: scales_as
+  a: gubbala2025/anchoring_free_energy_eq7_s13
+  b: weirich2017/tactoid_free_energy
+  mapping:
+    R: "1 / sqrt(sin(dphi_x) - dphi_x * cos(dphi_x))"
+    alpha: "dphi_x"
+    gamma_I: "0"
+    gamma_A: "150 * chi"
+  output_map:
+    F: f_anch_total
+  regime:
+    chi: [0.1, 2.0]
+    S: [1.0, 1.0]
+    Q_xx: [0.5, 0.5]
+    Q_xy: [0.0, 0.0]
+    dphi_x: [0.005, 0.05]
+    dphi_y: [1.0, 1.0]
+  provenance: proposed
+  reason: >
+    Directly links the two papers' Rapini-Papoular anchoring free energies. In gubbala2025 Eqs. (7)
+    and (S11)-(S13) (anchoring_free_energy_eq7_s13), for a horizontal uniaxial nematic director
+    n = (1, 0) (Q_xx = S/2, Q_xy = 0) and unit-magnitude interface gradient (dphi_y = 1, small
+    normal-to-director projection n . N ~ dphi_x << 1), f_anch_total = (1/2)*chi*(n . grad phi)^2 =
+    (1/2)*chi*dphi_x^2. In weirich2017 SI p. 8 (tactoid_free_energy), isolating the pure anchoring
+    contribution (gamma_I = 0) of a slender circular-arc tactoid of fixed surface area A_0 = 4*pi
+    um^2 (R = 1/sqrt(sin(alpha) - alpha*cos(alpha))) and small cusp half-angle alpha = dphi_x
+    (peak normal-to-director projection sin(alpha) ~ alpha) gives F_anch = gamma_A * A_omega =
+    gamma_A * A_0 * (g(alpha)/(2*f(alpha))) = (1/5) * gamma_A * A_0 * alpha^2 * (1 + O(alpha^2)).
+    Both models share identical Rapini-Papoular log-slopes in anchoring strength (chi <-> gamma_A:
+    +1) and normal-to-director tilt (dphi_x <-> alpha: +2).
+  assumptions:
+    - "Horizontal uniaxial nematic state n = (1, 0) at Gubbala's default S = 1 (Q_xx = 1/2, Q_xy = 0) with dphi_y = 1 so n . N = dphi_x / sqrt(1 + dphi_x^2) ~ dphi_x."
+    - "Pure anchoring limit gamma_I = 0 in Weirich tactoid_free_energy with fixed surface area A_0 = 4*pi um^2 and small tactoid half-angle alpha in [0.005, 0.05] rad."
+
+- id: rel_weirich2017_nondim_lam_same_small_omega_ar
+  kind: same_as
+  a: gubbala2025/nondim_parameters_s32
+  b: weirich2017/tactoid_aspect_ratio_scaling
+  mapping:
+    omega: "alpha / (2 * lambda_tilde)"
+  output_map:
+    aspect_ratio: lam
+  regime:
+    M: [0.1, 10.0]
+    Gamma: [0.1, 10.0]
+    lambda_tilde: [0.5, 2.0]
+    alpha: [0.05, 0.9]
+    L1: [0.1, 5.0]
+    L3: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Connects Gubbala's effective dimensionless line tension lam = 1 + alpha/(2*lambda_tilde) =
+    1 + chi/2 (SI Eqs. S13, S17, Sec. 3.2) to Weirich's smooth-Wulff tactoid aspect ratio scaling
+    L/r = 1 + omega for 0 <= omega < 1 (SI p. 8, Fig. S2D). In Gubbala's fixed-profile 1D
+    Cahn-Hilliard kink limit, the normal-to-tangential interfacial tension ratio gamma(0)/gamma(pi/2)
+    equals 1 + alpha/(2*lambda_tilde) = lam, which equals Weirich's smooth-Wulff aspect ratio
+    (gamma_I + gamma_A)/gamma_I = 1 + omega under the exact kink-integrated identification
+    omega = alpha/(2*lambda_tilde) = chi/2. Crucially, Weirich's cusp-onset boundary omega = 1
+    maps to chi = 2, coinciding with Gubbala's upper linear-stability limit chi <= 2 (SI Eq. S27),
+    so Gubbala's linearly stable parallel-anchoring parameter space (including default chi = 1 ->
+    omega = 0.5) lies entirely inside Weirich's smooth-droplet branch omega < 1.
+  assumptions:
+    - "Restricted to 0 < alpha / (2*lambda_tilde) = omega < 1 (i.e. 0 < chi < 2, Gubbala's parallel-anchoring linear stability window and Weirich's smooth-Wulff branch)."
+    - "Rigid-kink diffuse-to-sharp mapping omega = alpha/(2*lambda_tilde) = chi/2; exact variable-width 1D kink relaxation lowers the normal-to-tangential tension ratio from 1 + chi/2 to sqrt(1 + chi)."
+
+- id: rel_weirich2017_line_tension_s13_approx_tactoid_min
+  kind: approximated_by
+  a: gubbala2025/effective_line_tension_s13
+  b: weirich2017/tactoid_equilibrium_minimizer
+  mapping:
+    omega: "chi / 2"
+  output_map:
+    aspect_ratio: lam
+  regime:
+    chi: [0.05, 1.95]
+  tolerance: 0.05
+  provenance: proposed
+  reason: >
+    Quantifies numerical agreement between Gubbala's fixed-kink normal-to-tangential tension ratio /
+    effective line tension lam = 1 + chi/2 (SI Eq. S13) and Weirich's exact circular-arc tactoid
+    equilibrium minimizer aspect ratio L/r(omega) (SI p. 8, Fig. S2C-D) under the kink-integrated
+    anchoring mapping omega = chi/2 across Gubbala's stable parallel-anchoring range chi in
+    [0.05, 1.95] (omega in [0.025, 0.975]). The maximum relative deviation is ~4.8% (peaking near
+    Gubbala's default chi = 1 / omega = 0.5, where 1 + chi/2 = 1.50 vs. circular-arc minimizer
+    1.5745), matching Weirich's own circular-arc-vs-Wulff discrepancy (rel_tactoid_min_approx_scaling_full).
+  assumptions:
+    - "Parallel anchoring in Gubbala's linearly stable window chi in [0.05, 1.95] mapped to Weirich's smooth-droplet regime omega = chi/2 in [0.025, 0.975]."
+    - "5% tolerance reflects the maximum circular-arc ansatz vs. exact Wulff deviation (~4.8% near omega ~ 0.5-0.7)."
+
+- id: rel_weirich2017_capillary_dispersion_highk_scales_lsa
+  kind: scales_as
+  a: gubbala2025/linear_stability_s24_s28
+  b: weirich2017/capillary_dispersion_corrected
+  mapping:
+    gamma_I: "gamma * 300"
+    eta: "3.0"
+    R_0: "200.0"
+    omega: "0.75 * chi"
+    k: "kx"
+  output_map:
+    Omega: omega_phi
+  regime:
+    gamma: [0.05, 1.0]
+    chi: [0.1, 2.0]
+    beta: [0.5, 2.0]
+    E1: [0.1, 2.0]
+    E3: [0.05, 0.5]
+    kx: [40.0, 120.0]
+    ky: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Connects the short-wavelength longitudinal dispersion relations for perturbations along a
+    homogeneously aligned nematic (wavevector k_x = k parallel to director n, k_y = 0). Both models
+    couple conserved k^2 transport (Model B diffusive mobility gamma*k^2 in gubbala2025 SI Eq. S27;
+    viscous Poiseuille axial flow Lambda(k) = (gamma_I/(eta*R_0))*k^2 in weirich2017 SI p. 9) to an
+    anchoring-stiffened interfacial gradient penalty: gubbala2025 gives decay rate
+    omega_phi(k, 0) = gamma*k^2*[2 + (1 + 3*chi/2)*k^2] ~ gamma*(1 + 3*chi/2)*k^4, while
+    weirich2017's corrected capillary dispersion gives growth rate
+    Omega(k) = (gamma_I/(eta*R_0))*k^2*[1 - (1 + 2*omega)*k^2] ~ -(gamma_I/(eta*R_0))*(1 + 2*omega)*k^4
+    (stabilizing decay at high k). Matching the anchoring stiffening factor (1 + 2*omega = 1 + 3*chi/2
+    -> omega = 3*chi/4, reflecting both Weirich's exact factor 2*omega and Gubbala SI Sec. 3.3's
+    Q_xx = S vs. S/2 linearization convention) yields identical high-k log-slopes across all three
+    shared parameters: mobility/capillary-rate (gamma: +1), anchoring strength (chi <-> omega), and
+    axial wavenumber (kx <-> k: +4).
+  assumptions:
+    - "Longitudinal wavevector along the aligned nematic director (k_y = 0) in the short-wavelength interfacial-damping regime (k_x in [40, 120] >> 1), where both omega_phi and -Omega are positive stabilizing rates."
+    - "Mapping omega = (3/4)*chi aligns Weirich's exact corrected axial stiffness (1 + 2*omega) with Gubbala SI Eq. (S27)'s printed longitudinal stiffness (1 + 3*chi/2), which exceeds the exact Eq. (3) Q_xx = S/2 value (1 + chi) due to SI Sec. 3.3 setting Q_xx = S."
+
+- id: rel_weirich2017_capillary_dynamic_factor_scales_lsa_lowk
+  kind: scales_as
+  a: gubbala2025/linear_stability_s24_s28
+  b: weirich2017/capillary_dynamic_factor_scaling
+  mapping:
+    gamma_I: "gamma * 300"
+    eta: "3.0"
+    R_0: "200.0"
+    k: "kx"
+  output_map:
+    Lambda: omega_phi
+  regime:
+    gamma: [0.05, 1.0]
+    chi: [0.1, 2.0]
+    beta: [0.5, 2.0]
+    E1: [0.1, 2.0]
+    E3: [0.05, 0.5]
+    kx: [0.005, 0.04]
+    ky: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Connects the long-wavelength conserved transport prefactors of both continuum models: for
+    long-wavelength longitudinal modes (k_y = 0, k_x << 1), Gubbala's Cahn-Hilliard concentration
+    rate omega_phi(k_x, 0) = 2*gamma*k_x^2*(1 + O(k_x^2)) (SI Eq. S27) and Weirich's viscous
+    Rayleigh-Plateau capillary dynamic factor Lambda(k) = (gamma_I/(eta*R_0))*k^2 (SI p. 9) share
+    identical conserved hydrodynamic/diffusive scaling in the driving mobility/capillary-rate
+    (gamma <-> gamma_I/(eta*R_0): +1) and axial wavenumber (kx <-> k: +2). Note that in the full
+    dispersion relations, the O(k^2) terms carry opposite stability signs (stable bulk double-well
+    relaxation -omega_phi < 0 in Gubbala vs. unstable cylindrical capillary growth +Omega > 0 in
+    Weirich).
+  assumptions:
+    - "Long-wavelength regime k_x in [0.005, 0.04] << 1 with k_y = 0 so O(k^4) gradient terms contribute < 0.3%."
+    - "Weirich viscosity eta = 3 Pa*s and bundle radius R_0 = 200 nm held at the paper's typical experimental values."
+
+- id: rel_weirich2017_crossover_reduces_from_eq6_splay
+  kind: reduces_to
+  a: gubbala2025/anchoring_elastic_crossover
+  b: weirich2017/director_crossover_parameter
+  mapping:
+    gamma_A: "(sqrt(2) / 3) * chi * 1000"
+    V: "R**3"
+    K: "2 * E1 * S**2"
+  output_map:
+    chi: xi_splay_eq6
+  regime:
+    chi: [0.1, 2.0]
+    R: [1.0, 50.0]
+    E1: [0.5, 2.0]
+    E3: [0.05, 0.3]
+    S: [0.5, 1.5]
+  limit:
+    E3: "0"
+  provenance: proposed
+  reason: >
+    Tests the exact isotropic-elasticity limit noted in gubbala2025 Conclusions (p. 7 / 6249,
+    citing weirich2017 [ref-43]: reducing anisotropic elasticity to study tactoids). Combining
+    Gubbala's 1D Cahn-Hilliard kink anchoring tension gamma_A_tilde = (sqrt(2)/3)*chi with the
+    printed Eq. (6) splay Frank elastic constant k_11 = 2*E_1*S^2 - (2/3)*E_3*S^3 defines the
+    anchoring-to-splay crossover ratio xi_splay_eq6 = gamma_A_tilde*R / k_11
+    (anchoring_elastic_crossover). As cubic elastic anisotropy E_3 -> 0, k_11 -> k_33 -> 2*E_1*S^2
+    (one-constant Frank elasticity), and xi_splay_eq6 reduces identically to Weirich's
+    homogeneous-to-bipolar director crossover parameter chi_W = gamma_A * V^(1/3) / K (SI p. 8)
+    under V^(1/3) = R*l_c, gamma_A = a_0*l_c*(sqrt(2)/3)*chi, and K = a_0*l_c^2*(2*E_1*S^2).
+  assumptions:
+    - "Vanishing cubic elastic anisotropy E_3 -> 0 recovers the one-constant Frank elastic limit K = k_11 = k_33 = 2*E_1*S^2."
+    - "Reference dimensional scales l_c = 1 um and a_0*l_c = 1000 nN/m = 1 pN/um cancel identically in the dimensionless crossover ratio."
+
+- id: rel_weirich2017_crossover_derived_from_eq6_bend
+  kind: derived_from
+  a: gubbala2025/anchoring_elastic_crossover
+  b: weirich2017/director_crossover_parameter
+  mapping:
+    gamma_A: "(sqrt(2) / 3) * chi * 1000"
+    V: "R**3"
+    K: "2 * E1 * S**2"
+  output_map:
+    chi: xi_bend_eq6
+  regime:
+    chi: [0.1, 2.0]
+    R: [1.0, 50.0]
+    E1: [0.5, 2.0]
+    E3: [0.05, 0.3]
+    S: [0.5, 1.5]
+  steps:
+    - "subs: E3 = 0"
+  provenance: proposed
+  reason: >
+    Exact symbolic derivation confirming that setting cubic elastic anisotropy E_3 = 0 in Gubbala's
+    Eq. (6) bend crossover ratio xi_bend_eq6 = (sqrt(2)/3)*chi*R / (2*E_1*S^2 + (4/3)*E_3*S^3)
+    yields Weirich's one-constant homogeneous-to-bipolar crossover parameter gamma_A * V^(1/3) / K
+    (SI p. 8). At Gubbala's finite actin anisotropy E_3/E_1 = 1, S = 1 (k_33/k_11 = 2.5), bend
+    distortions are suppressed by 0.6x while splay distortions are enhanced by 1.5x relative to the
+    one-constant Weirich crossover parameter at K = 2*E_1*S^2.
+  assumptions:
+    - "Symbolic substitution E_3 = 0 reduces both splay (k_11) and bend (k_33) Frank constants to K = 2*E_1*S^2."
+
+- id: rel_weirich2017_crossover_reduces_from_2d_splay
+  kind: reduces_to
+  a: gubbala2025/anchoring_elastic_crossover
+  b: weirich2017/director_crossover_parameter
+  mapping:
+    gamma_A: "(sqrt(2) / 3) * chi * 1000"
+    V: "R**3"
+    K: "2 * E1 * S**2"
+  output_map:
+    chi: xi_splay_2d
+  regime:
+    chi: [0.1, 2.0]
+    R: [1.0, 50.0]
+    E1: [0.5, 2.0]
+    E3: [0.05, 0.3]
+    S: [0.5, 1.5]
+  limit:
+    E3: "0"
+  provenance: proposed
+  reason: >
+    Verifies that Gubbala's exact 2D Frank splay constant k_11 = 2*E_1*S^2 - E_3*S^3 (obtained from
+    substituting 2D Eq. 3 into Eq. 5, frank_elastic_constants_2d) produces an anchoring-to-splay
+    crossover ratio xi_splay_2d that reduces to the exact same Weirich one-constant crossover
+    parameter gamma_A * V^(1/3) / K as E_3 -> 0, even though printed 3D Eq. (6) and exact 2D diverge
+    at finite E_3 (splitting splay vs. bend by 3.0x in 2D vs. 2.5x in Eq. 6 at E_3 = E_1, S = 1).
+  assumptions:
+    - "Vanishing cubic elastic anisotropy E_3 -> 0 eliminates the 2D vs. 3D Beris-Edwards discrepancy in k_11 and k_33."
+
+- id: rel_weirich2017_crossover_same_as_eq6_effective_K
+  kind: same_as
+  a: gubbala2025/anchoring_elastic_crossover
+  b: weirich2017/director_crossover_parameter
+  mapping:
+    gamma_A: "(sqrt(2) / 3) * chi * 1000"
+    V: "R**3"
+    K: "2 * E1 * S**2 - 2 * E3 * S**3 / 3"
+  output_map:
+    chi: xi_splay_eq6
+  regime:
+    chi: [0.1, 2.0]
+    R: [1.0, 50.0]
+    E1: [0.5, 2.0]
+    E3: [0.05, 0.3]
+    S: [0.5, 1.5]
+  provenance: proposed
+  reason: >
+    Exact symbolic equivalence across finite bend-splay anisotropy E_3 > 0 when Weirich's single
+    effective Frank elastic constant K in director_crossover_parameter (SI p. 8) is identified with
+    Gubbala's printed Eq. (6) splay elastic constant k_11 = 2*E_1*S^2 - (2/3)*E_3*S^3 (which is
+    strictly positive across the regime since E_3*S < 3*E_1). Evaluating xi_splay_eq6 at Gubbala's
+    simulation parameters (chi = 1, S = 1, R ~ 10-50 l_c, E_1 = E_3 = 0.1 or 2) gives xi ~ 35-180
+    at low actin and xi ~ 1.8-9 at high actin, placing Gubbala's simulated domains squarely in
+    Weirich's deformed/bipolar director regime (chi_W >> 1) rather than Weirich's homogeneous-director
+    tactoid regime (chi_W << 1).
+  assumptions:
+    - "Regime satisfies k_11 = 2*E_1*S^2 - (2/3)*E_3*S^3 > 0 (E_3/E_1 < 3/S)."
+    - "Identifies Weirich's effective bulk Frank elastic constant K with Gubbala's splay constant k_11 (the softer mode for E_3 > 0 governing splay-dominated defect onset)."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with zwicker2015 (Phys. Rev. E 92, 012317)
+# ==============================================================================
+# Neither paper directly cites the other (Gubbala Ref. 24 cites Rosowski,
+# Vidal-Henriquez, Zwicker, Style & Dufresne, Soft Matter 16, 5892-5897, 2020,
+# on elastic coarsening, rather than Zwicker, Hyman & Julicher 2015). Both
+# studies share passive Cahn-Hilliard phase separation and Lifshitz-Slyozov
+# t^(1/3) Ostwald ripening as their baseline before introducing distinct
+# coarsening-arrest mechanisms (first-order/autocatalytic chemical turnover in
+# zwicker2015 vs. anisotropic nematic actin elasticity in gubbala2025). All
+# cross-record relations below carry provenance: proposed.
+
+# --- 1. Shared Cahn-Hilliard Double-Well Bulk Chemical Potential ---
+
+- id: rel_zwicker2015_cahn_hilliard_mu_scales_binary_sec3
+  kind: scales_as
+  a: gubbala2025/cahn_hilliard_free_energy_eq2
+  b: zwicker2015/binary_free_energy_sec3
+  mapping:
+    b: "1"
+    psi: "1"
+    phi_B: "(1 + phi) / 2"
+  output_map:
+    mu_B: df_dphi
+  regime:
+    phi: [0.1, 0.9]
+    lam: [1.0, 1.0]
+    grad_phi: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Establishes the exact affine order-parameter equivalence between Gubbala's symmetric binary
+    Cahn-Hilliard potential f_phi(phi) = phi^4/4 - phi^2/2 = (1/4)*(phi^2 - 1)^2 - 1/4 (Eq. 2,
+    minima at phi = -1, +1) and Zwicker's Sec. III binary double-well potential
+    f(phi^B) = (b/2)*(phi^B)^2*(1 - phi^B)^2 (p. 4, minima at phi^B = 0, 1 for psi = 1). Under
+    phi^B = (1 + phi)/2, f(phi^B) = (b/8)*[(1/4)*(phi^2 - 1)^2] equals Gubbala's bulk potential
+    up to energy scale a_0 = b/8 and constant reference shift +1/4 (zero at the binodals vs. zero
+    at the spinodal peak phi = 0). Differentiating removes the constant shift identically, giving
+    mu^B = df/dphi^B = (b/4)*(phi^3 - phi) = (b/4)*df_dphi, so both models share the identical
+    nontrivial phi-dependent log-slope (3*phi^2 - 1)/(phi^2 - 1) across both the spinodal
+    (phi < 1/sqrt(3)) and metastable (1/sqrt(3) < phi < 1) intervals.
+  assumptions:
+    - "Binary strong-segregation mapping phi^B = (1 + phi)/2 (psi = 1) with reference interaction modulus b = 1 J/m^3 and uniform bulk state grad_phi = 0."
+
+- id: rel_zwicker2015_cahn_hilliard_mu_scales_ternary_eq1
+  kind: scales_as
+  a: gubbala2025/cahn_hilliard_free_energy_eq2
+  b: zwicker2015/ternary_free_energy_eq1
+  mapping:
+    a: "1"
+    b: "1"
+    psi: "0.1"
+    phi_A: "0"
+    phi_B: "0.05 * (1 + phi)"
+  output_map:
+    mu_B: df_dphi
+  regime:
+    phi: [0.1, 0.9]
+    lam: [1.0, 1.0]
+    grad_phi: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Extends the affine double-well equivalence phi^B = (psi/2)*(1 + phi) to Zwicker's general-psi
+    ternary free energy Eq. (1) at phi^A = 0 and Sec. IV droplet composition psi = 0.1, where
+    f(0, phi^B) = (b*psi^2/8)*[(1/4)*(phi^2 - 1)^2] and mu^B = (b*psi/4)*(phi^3 - phi) =
+    (b*psi/4)*df_dphi. Combining this bulk energy scale a_0 = b*psi^2/8 with the exact gradient
+    correspondence l_c = sqrt(2*kappa/b) and Gubbala's 1D Cahn-Hilliard kink integral 2*sqrt(2)/3
+    reproduces Zwicker's surface tension gamma = a_0*l_c*(2*sqrt(2)/3) = (1/6)*psi^2*sqrt(b*kappa)
+    (zwicker2015/surface_tension_gamma) identically.
+  assumptions:
+    - "Zero soluble-component background phi^A = 0 and Zwicker Sec. IV dense-phase volume fraction psi = 0.1 under phi^B = (psi/2)*(1 + phi)."
+
+# --- 2. Shared Microscopic Cahn-Hilliard Length, Timescale & Passive Coarsening Rate ---
+
+- id: rel_zwicker2015_interface_width_scales_nondim_lc
+  kind: scales_as
+  a: zwicker2015/interface_width_w
+  b: gubbala2025/nondim_parameters_s32
+  mapping:
+    M: "1.0"
+    Gamma: "1.0"
+    lambda_tilde: "2 * (kappa / b) * 10**12"
+    alpha: "1.0"
+    L1: "1.0"
+    L3: "1.0"
+  output_map:
+    l_c: w
+  regime:
+    kappa: [1.0e-13, 1.0e-11]
+    b: [0.5, 10.0]
+  provenance: proposed
+  reason: >
+    Rewriting Zwicker's passive Cahn-Hilliard free energy Eq. (1)-(2) (f_Z + (kappa/2)*|grad phi^B|^2)
+    in Gubbala's symmetric order parameter phi = 2*phi^B/psi - 1 yields
+    a_0*[(1/4)*(phi^2 - 1)^2 + (1/2)*(2*kappa/b)*|grad phi|^2] with a_0 = b*psi^2/8 and exact
+    gradient-coefficient identification lambda_tilde = 2*kappa/b (independent of psi). Consequently,
+    Zwicker's flat-interface tanh(x/w) width w = 2*sqrt(kappa/b) (p. 2) and Gubbala's bare
+    nondimensionalization length l_c = sqrt(lambda_tilde) (SI Sec. 3.2, p. 15; whose 1D kink is
+    tanh(x/(sqrt(2)*l_c))) satisfy the exact convention ratio w = sqrt(2)*l_c and share identical
+    (+1/2, -1/2) log-slopes in (kappa, b).
+  assumptions:
+    - "Exact passive Cahn-Hilliard gradient mapping lambda_tilde = 2*kappa/b (converted from m^2 to um^2 by 10^12), giving exact interface-width ratio w / l_c = sqrt(2)."
+
+- id: rel_zwicker2015_nondim_gamma_scales_k0
+  kind: scales_as
+  a: gubbala2025/nondim_parameters_s32
+  b: zwicker2015/interface_diffusion_rate_k0
+  mapping:
+    D_B: "2 * M * 10**(-12)"
+    w: "sqrt(2 * lambda_tilde) * 10**(-6)"
+  output_map:
+    k_0: gamma
+  regime:
+    M: [0.1, 10.0]
+    Gamma: [1.0, 1.0]
+    lambda_tilde: [0.1, 10.0]
+    alpha: [0.1, 5.0]
+    L1: [0.1, 5.0]
+    L3: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Transforming Zwicker's passive Cahn-Hilliard PDE Eq. (3b) (d_t phi^B = m_B*nabla^2[f'(phi^B) -
+    kappa*nabla^2 phi^B] with D_B = m_B*b) into phi = 2*phi^B - 1 gives
+    d_t phi = (D_B/2)*nabla^2[(phi^3 - phi) - (w^2/2)*nabla^2 phi], identifying Gubbala's
+    dimensional mobility M = D_B/2 and lambda_tilde = w^2/2 (SI Eq. S17). The factors of 2 cancel
+    identically in the interfacial diffusion timescale: t_phi = lambda_tilde/M = (w^2/2)/(D_B/2) =
+    w^2/D_B = 1/k_0, so k_0 = 1/t_phi = Gamma*gamma. Thus Gubbala's timescale ratio
+    gamma = t_Q/t_phi = k_0/Gamma and Zwicker's interface diffusion rate k_0 = D_B/w^2 share
+    identical (+1, -1) log-slopes in (M, lambda_tilde), and setting gamma = 1 (Gubbala SI Fig. S4)
+    makes Gubbala's dimensionless time t = t_bar*Gamma identically equal to Zwicker's t*k_0.
+  assumptions:
+    - "Exact Cahn-Hilliard PDE mapping D_B = 2*M (um^2/s -> m^2/s) and w = sqrt(2*lambda_tilde) (um -> m) at unit nematic relaxation rate Gamma = 1 s^-1."
+
+- id: rel_zwicker2015_nondim_gamma_scales_passive_coarsening_eq18
+  kind: scales_as
+  a: gubbala2025/nondim_parameters_s32
+  b: zwicker2015/passive_coarsening_rate_eq18
+  mapping:
+    D_B: "2 * M * 10**(-12)"
+    gamma_beta: "sqrt(2 * lambda_tilde) * 10**(-6) / 6"
+    R_bar: "10 * sqrt(lambda_tilde) * 10**(-6)"
+  output_map:
+    lam: gamma
+  regime:
+    M: [0.1, 10.0]
+    Gamma: [1.0, 1.0]
+    lambda_tilde: [0.1, 10.0]
+    alpha: [0.1, 5.0]
+    L1: [0.1, 5.0]
+    L3: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Connects Gubbala's dimensionless lipid-diffusivity timescale ratio gamma = M/(lambda_tilde*Gamma)
+    (SI Sec. 3.2) to Zwicker's passive 3D Ostwald ripening rate lam = D_B*gamma*beta/R_bar^3
+    (Eq. 18, k_b = 0). Under the exact Cahn-Hilliard dictionary D_B = 2*M, w = sqrt(2*lambda_tilde),
+    binary capillary length gamma*beta = w/6 (psi = 1), and a droplet of fixed dimensionless size
+    R_bar/l_c = R_tilde (here R_tilde = 10), Zwicker's passive coarsening rate becomes
+    lam = (sqrt(2)/(3*R_tilde^3))*(M/lambda_tilde) = (sqrt(2)/(3*R_tilde^3))*Gamma*gamma, sharing
+    identical (+1, -1) log-slopes in (M, lambda_tilde).
+  assumptions:
+    - "Binary Cahn-Hilliard capillary length gamma*beta = w/6 = sqrt(2*lambda_tilde)/6 (psi = 1) evaluated at fixed dimensionless droplet size R_bar = 10*l_c and Gamma = 1 s^-1."
+
+# --- 3. Passive Lifshitz-Slyozov t^(1/3) Coarsening vs. Actin-Hindered Growth & p. 7 Typo ---
+
+- id: rel_zwicker2015_coarsening_LS_passive_scales
+  kind: scales_as
+  a: gubbala2025/coarsening_power_law
+  b: zwicker2015/lifshitz_slyozov_scaling_corrected
+  mapping:
+    t: "t"
+    D_B: "1.0e-12"
+    w: "1.0e-7"
+  output_map:
+    R_mean: R_over_R0
+  regime:
+    t: [10.0, 10000.0]
+    t0: [1.0, 1.0]
+    alpha: [0.3333333333333333, 0.3333333333333333]
+  provenance: proposed
+  reason: >
+    Both papers use classical Lifshitz-Slyozov / Ostwald ripening R(t) ~ t^(1/3) as their passive
+    control baseline: gubbala2025 verifies R(t)/R_0 = (t/t_0)^(1/3) without actin (pp. 1, 2, 4-7,
+    Fig. 3; alpha_bulk_diffusion_ref = 1/3), while zwicker2015 Sec. III.B.3 (p. 7) states passive
+    Ostwald ripening <R> ~ (t*D_B*w)^(1/3) without chemical turnover (k_f = k_b = 0). At alpha =
+    1/3, both models share the exact temporal log-slope +1/3 across three decades in time.
+  assumptions:
+    - "Passive control limit (no actin in gubbala2025, alpha = 1/3; no chemical turnover in zwicker2015, k_f = k_b = 0) at fixed diffusivity D_B = 10^-12 m^2/s and interface width w = 10^-7 m."
+
+- id: rel_zwicker2015_coarsening_low_actin_vs_LS_diagnostic
+  kind: scales_as
+  a: gubbala2025/coarsening_power_law
+  b: zwicker2015/lifshitz_slyozov_scaling_corrected
+  mapping:
+    t: "t"
+    D_B: "1.0e-12"
+    w: "1.0e-7"
+  output_map:
+    R_mean: R_over_R0
+  regime:
+    t: [10.0, 10000.0]
+    t0: [1.0, 1.0]
+    alpha: [0.25, 0.25]
+  provenance: proposed
+  reason: >
+    Diagnostic scaling contrast comparing Gubbala's low-actin hindered coarsening regime
+    (alpha = 0.25, Sec. 3 pp. 5-6, Fig. 3; high actin slows further to alpha < 0.25) against
+    Zwicker's passive bulk-diffusion Lifshitz-Slyozov coarsening (<R> ~ t^(1/3), Sec. III.B.3).
+    Expected to be not_verified with temporal log-slope difference 1/3 - 1/4 = 1/12 = 0.0833,
+    quantifying elastic coarsening slowdown relative to passive Ostwald ripening.
+  assumptions:
+    - "Evaluates Gubbala's coarsening_power_law at the reported low-actin exponent alpha = 0.25 against passive t^(1/3) Lifshitz-Slyozov scaling."
+
+- id: rel_zwicker2015_LS_printed_scales_as_normalized_power_law
+  kind: scales_as
+  a: zwicker2015/lifshitz_slyozov_scaling_printed
+  b: gubbala2025/coarsening_power_law
+  mapping:
+    t: "t"
+    t0: "w**2 / D_B"
+    alpha: "1/3"
+  output_map:
+    R_over_R0: R_mean
+  regime:
+    t: [10.0, 10000.0]
+    D_B: [1.0e-12, 1.0e-11]
+    w: [1.0e-7, 1.0e-5]
+  provenance: proposed
+  reason: >
+    Explains the exact mathematical origin of Zwicker Sec. III.B.3 (p. 7)'s dimensionally
+    inconsistent printed Lifshitz-Slyozov expression <R> ~ (t*D_B/w^2)^(1/3) = (t*k_0)^(1/3).
+    Substituting Zwicker's interface diffusion timescale t_0 = 1/k_0 = w^2/D_B (= Gubbala's t_phi)
+    and alpha = 1/3 into Gubbala's dimensionless normalized power law R(t)/R_0 = (t/t_0)^alpha
+    yields (t*D_B/w^2)^(1/3) identically across all three parameters (t, D_B, w) with log-slopes
+    (+1/3, +1/3, -2/3). Thus Zwicker's printed RHS is actually the dimensionless normalized radius
+    <R>/w (with R_0 = w), missing the multiplicative factor w required for dimensional <R>.
+  assumptions:
+    - "Identifies reference time t_0 = w^2/D_B = 1/k_0 (= t_phi) and implicit reference length R_0 = w in Gubbala's coarsening_power_law at alpha = 1/3."
+
+# --- 4. Linear Stability Dispersion Relations & Cross-Paper Error Corroboration ---
+
+- id: rel_zwicker2015_lsa_iso_reduces_eqF1_corrected
+  kind: reduces_to
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "1"
+    w: "sqrt(2)"
+    k_f: "1 / beta"
+    k_b: "0"
+    q: "sqrt(kx**2 + ky**2)"
+  output_map:
+    lam_q_norm: sigma_max
+  limit:
+    chi: "0"
+    beta: "oo"
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [0.05, 0.5]
+    beta: [10.0, 100.0]
+    E1: [1.0, 5.0]
+    E3: [0.1, 1.0]
+    kx: [0.1, 0.6]
+    ky: [0.1, 0.6]
+  provenance: proposed
+  reason: >
+    Verifies the exact all-wavenumber passive Cahn-Hilliard binodal dispersion limit shared by both
+    papers. In gubbala2025 SI Sec. 3.3 (linearizing around the binodal phi = +1 where f''(+1) = +2),
+    turning off anchoring (chi -> 0) and nematic order (beta -> oo, so S = 1/sqrt(beta) -> 0 and
+    off-diagonal coupling c_12*c_21 -> 0) at matched timescale gamma = t_Q/t_phi = 1 reduces the
+    slow concentration eigenvalue sigma_max to -k^2*(2 + k^2) (since omega_phi = k^2*(2 + k^2) <
+    4 <= omega_xx for k^2 <= 0.72). In zwicker2015 Appendix F Eq. (F1_corrected), placing the
+    homogeneous state at the dense binodal phi_0^B = 1 (k_b = 0, so c_spin = -1) and taking the
+    passive limit k_f/k_0 = 2/beta -> 0 under the exact kink-width scaling w = sqrt(2)*l_c
+    (q*w = sqrt(2)*k) yields lam_q_norm = -(q*w)^2*(1 + (q*w)^2/4) = -k^2*(2 + k^2) identically.
+  assumptions:
+    - "Matched diffusive and nematic timescales gamma = t_Q/t_phi = 1 (Gubbala SI Fig. S4) and exact interface-width ratio w = sqrt(2)*l_c (with l_c = 1 m, D_B = 1 m^2/s)."
+    - "Wavenumber box kx, ky in [0.1, 0.6] ensures omega_phi < 4 <= omega_xx so sigma_max tracks the concentration branch -omega_phi."
+    - "Simultaneous uncoupling limit: chi -> 0, beta -> oo (S -> 0) in Gubbala and k_f = 1/beta -> 0 at k_b = 0 (passive dense binodal phi_0^B = 1) in Zwicker."
+
+- id: rel_zwicker2015_lsa_iso_vs_eqF1_printed
+  kind: reduces_to
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "1"
+    w: "sqrt(2)"
+    k_f: "1 / beta"
+    k_b: "0"
+    q: "sqrt(kx**2 + ky**2)"
+  output_map:
+    lam_q_norm: sigma_max
+  limit:
+    chi: "0"
+    beta: "oo"
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [0.05, 0.5]
+    beta: [10.0, 100.0]
+    E1: [1.0, 5.0]
+    E3: [0.1, 1.0]
+    kx: [0.1, 0.6]
+    ky: [0.1, 0.6]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing the exact passive binodal Cahn-Hilliard limit against
+    Zwicker's printed Appendix F Eq. (F1) under the exact same dictionary as
+    rel_zwicker2015_lsa_iso_reduces_eqF1_corrected. Fails to converge to zero because printed
+    Eq. (F1) doubles the q^2 term (converging to -k^2*(4 + k^2) instead of Gubbala SI Eq. S27's
+    exact -k^2*(2 + k^2)), plateauing at ~49% relative error (flagged ambiguous rather than
+    not_verified only because the finite-beta O(1/beta) transient shrinks from 4.91e-1 to 4.90e-1
+    while never approaching tolerance), providing an independent cross-paper corroboration of
+    zwicker2015/q_appF_factor_of_2_error.
+  assumptions:
+    - "Same exact passive binodal dictionary and limit as rel_zwicker2015_lsa_iso_reduces_eqF1_corrected."
+
+- id: rel_zwicker2015_lsa_anisotropic_omega_phi_scales_eqF1_corrected
+  kind: scales_as
+  a: gubbala2025/linear_stability_s24_s28
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "2 * gamma"
+    w: "sqrt(2 * ((1 + 3 * chi / 2) * kx**2 + (1 - chi / 2) * ky**2) / (kx**2 + ky**2))"
+    k_f: "1.0e-12"
+    k_b: "0"
+    q: "sqrt(kx**2 + ky**2)"
+  output_map:
+    lam_q: omega_phi
+  regime:
+    gamma: [0.05, 2.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 2.0]
+    E1: [0.1, 2.0]
+    E3: [0.0, 0.5]
+    kx: [0.2, 3.0]
+    ky: [0.2, 3.0]
+  provenance: proposed
+  reason: >
+    Demonstrates that across Gubbala's entire anchoring stability window -2/3 < chi < 2 and arbitrary
+    2D wavevector (kx, ky), Gubbala's anisotropic Cahn-Hilliard concentration decay rate
+    omega_phi(kx, ky) = gamma*k^2*[2 + (1 + 3*chi/2)*kx^2 + (1 - chi/2)*ky^2] (SI Eq. S27, identical
+    in printed and corrected LSA) equals -lam_q of Zwicker's passive binodal dispersion Eq.
+    (F1_corrected) identically for D_B = 2*gamma and an orientation-dependent effective interface
+    width w_eff(kx, ky; chi) = sqrt(2*[(1 + 3*chi/2)*kx^2 + (1 - chi/2)*ky^2]/k^2). Under this
+    identification, Gubbala's linear stability bounds -2/3 <= chi <= 2 correspond precisely to
+    non-negativity of w_eff^2 along the director (w_parallel = sqrt(2 + 3*chi)) and transverse to it
+    (w_perp = sqrt(2 - chi)). Verified across all four shared variables (gamma, chi, kx, ky) from
+    diffusive k^2 to interfacial k^4 regimes.
+  assumptions:
+    - "Anchoring strength chi in [-0.5, 1.8] strictly inside Gubbala's linear stability window (-2/3, 2) so w_eff > 0 for all wavevector angles."
+    - "Passive dense-binodal limit in Zwicker (k_b = 0 => c_spin = -1, k_f = 10^-12 s^-1 << D_B*q^2); opposite sign conventions (decay rate omega_phi vs. growth rate lam_q) drop out in scales_as."
+
+- id: rel_zwicker2015_lsa_anisotropic_omega_phi_vs_eqF1_printed
+  kind: scales_as
+  a: gubbala2025/linear_stability_s24_s28
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "2 * gamma"
+    w: "sqrt(2 * ((1 + 3 * chi / 2) * kx**2 + (1 - chi / 2) * ky**2) / (kx**2 + ky**2))"
+    k_f: "1.0e-12"
+    k_b: "0"
+    q: "sqrt(kx**2 + ky**2)"
+  output_map:
+    lam_q: omega_phi
+  regime:
+    gamma: [0.05, 2.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 2.0]
+    E1: [0.1, 2.0]
+    E3: [0.0, 0.5]
+    kx: [0.2, 3.0]
+    ky: [0.2, 3.0]
+  provenance: proposed
+  reason: >
+    Diagnostic scaling check against Zwicker's printed Appendix F Eq. (F1) under the exact same
+    anisotropic effective-interface-width dictionary as
+    rel_zwicker2015_lsa_anisotropic_omega_phi_scales_eqF1_corrected. Expected to be not_verified:
+    even ignoring overall constant prefactors, printed Eq. (F1)'s spurious factor of 2 on q^2
+    shifts the q^2-to-q^4 crossover wavenumber by sqrt(2), breaking log-slope agreement in
+    (chi, kx, ky) and independently corroborating zwicker2015/q_appF_factor_of_2_error.
+  assumptions:
+    - "Same anisotropic effective-interface-width dictionary and regime as rel_zwicker2015_lsa_anisotropic_omega_phi_scales_eqF1_corrected."
+
+- id: rel_zwicker2015_lsa_finite_beta_lowk_approx_eqF1_corrected
+  kind: approximated_by
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "1"
+    w: "sqrt(2)"
+    k_f: "kx**4 * (1 + sqrt(1 - 1 / (6 * beta))) / 2"
+    k_b: "kx**4 * (1 - sqrt(1 - 1 / (6 * beta))) / 2"
+    q: "kx"
+  output_map:
+    lam_q_norm: sigma_max
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.1, 2.0]
+    E3: [0.0, 0.5]
+    kx: [0.005, 0.05]
+    ky: [0.0, 0.0]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    At finite nematic quartic stiffness beta > 1/4 (including Gubbala's default beta = 1), eliminating
+    the fast nematic mode Q_xx at long wavelengths (kx -> 0, ky = 0, gamma = 1) softens Gubbala's
+    slow coupled concentration mode to sigma_max = -(2 - 1/(2*beta))*kx^2 + O(kx^4), reflecting the
+    exact effective bulk free-energy curvature f_eff''(+1) = 2 - 1/(2*beta). Identifying Zwicker's
+    off-binodal double-well curvature -c_spin = 1 - 6*phi_0^B*(1 - phi_0^B) with 1 - 1/(4*beta)
+    (via phi_0^B = [1 + sqrt(1 - 1/(6*beta))]/2, with negligible reaction rate k_f + k_b = kx^4)
+    maps Gubbala's exact k -> 0 coupled stability boundary beta_min = 1/4 directly onto Zwicker's
+    spinodal boundary c_spin = 0 (phi_0^B = (3 + sqrt(3))/6). Across long-wavelength box modes
+    kx in [0.005, 0.05] and beta in [0.5, 5.0], the two dispersion relations agree to <= 0.34%
+    (well within tolerance 0.005).
+  assumptions:
+    - "Long-wavelength longitudinal modes kx in [0.005, 0.05], ky = 0 (wavelengths 125-1250 l_c, matching Gubbala's L = 500 box) at gamma = 1 and beta in [0.5, 5.0] > 1/4."
+    - "Negligible total reaction rate k_f + k_b = kx^4 << kx^2 preserves Zwicker's off-binodal composition phi_0^B = k_f/(k_f + k_b) while suppressing the q^0 turnover sink."
+
+- id: rel_zwicker2015_lsa_printed_finite_beta_lowk_vs_eqF1_corrected
+  kind: approximated_by
+  a: gubbala2025/linear_stability_s24_s28
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "1"
+    w: "sqrt(2)"
+    k_f: "kx**4 * (1 + sqrt(1 - 1 / (6 * beta))) / 2"
+    k_b: "kx**4 * (1 - sqrt(1 - 1 / (6 * beta))) / 2"
+    q: "kx"
+  output_map:
+    lam_q_norm: sigma_max
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.1, 2.0]
+    E3: [0.0, 0.5]
+    kx: [0.005, 0.05]
+    ky: [0.0, 0.0]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    Cross-paper diagnostic check of Gubbala's printed linear stability Eq. (S24) against Zwicker's
+    exact off-binodal Cahn-Hilliard dispersion Eq. (F1_corrected) under the exact thermodynamic
+    curvature dictionary -c_spin = 1 - 1/(4*beta) from f_eff''(+1) = 2 - 1/(2*beta). Expected to be
+    not_verified (relative error up to ~97% near beta = 0.5, 33% at default beta = 1) because
+    printed Eq. (S24) erroneously doubles the off-diagonal coupling c_12 to 4*gamma*k^2/sqrt(beta),
+    yielding sigma_max = -(2 - 1/beta)*kx^2 (spurious instability at beta = 1/2 instead of 1/4;
+    corroborating gubbala2025/q_lsa_s24_s26_discrepancies).
+  assumptions:
+    - "Same long-wavelength thermodynamic curvature dictionary and regime as rel_zwicker2015_lsa_finite_beta_lowk_approx_eqF1_corrected."
+
+- id: rel_zwicker2015_lsa_finite_beta_lowk_vs_eqF1_printed
+  kind: approximated_by
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "1"
+    w: "sqrt(2)"
+    k_f: "kx**4 * (1 + sqrt(1 - 1 / (6 * beta))) / 2"
+    k_b: "kx**4 * (1 - sqrt(1 - 1 / (6 * beta))) / 2"
+    q: "kx"
+  output_map:
+    lam_q_norm: sigma_max
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.1, 2.0]
+    E3: [0.0, 0.5]
+    kx: [0.005, 0.05]
+    ky: [0.0, 0.0]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    Complementary cross-paper diagnostic testing Gubbala's exact variational long-wavelength
+    dispersion against Zwicker's printed Appendix F Eq. (F1) under the exact thermodynamic
+    curvature dictionary -c_spin = 1 - 1/(4*beta). Expected to be not_verified with ~50% relative
+    error across the entire regime because printed Eq. (F1) doubles the q^2 term (corroborating
+    zwicker2015/q_appF_factor_of_2_error).
+  assumptions:
+    - "Same long-wavelength thermodynamic curvature dictionary and regime as rel_zwicker2015_lsa_finite_beta_lowk_approx_eqF1_corrected."
+
+# --- 5. Common-Tangent Binodal Shifts: Nematic Coupling vs. Gibbs-Thomson Laplace Pressure ---
+
+- id: rel_zwicker2015_binodal_reduces_coexistence_eqA1
+  kind: reduces_to
+  a: gubbala2025/coupled_binodal_coexistence
+  b: zwicker2015/coexistence_exact_eqA1
+  mapping:
+    b: "2"
+    psi: "1"
+    gamma: "1"
+    R: "4 * beta"
+  output_map:
+    phi_minus_B: phi_Ld_eq
+  limit:
+    beta: "oo"
+  regime:
+    beta: [5.0, 50.0]
+    E1: [0.1, 2.0]
+    E3: [0.0, 0.5]
+  provenance: proposed
+  reason: >
+    Connects both papers' exact nonlinear common-tangent coexistence solvers
+    (gubbala2025/coupled_binodal_coexistence and zwicker2015/coexistence_exact_eqA1). In Gubbala,
+    nematic ordering lowers the Ld bulk free energy by -1/beta relative to the isotropic Lo phase,
+    shifting the dense-phase binodal to phi_Ld_eq = 1 + 1/(4*beta) + O(1/beta^2); in Zwicker
+    Appendix A Eq. (A1), capillary Laplace pressure 2*gamma/R shifts the dense-phase binodal to
+    phi_-^B = 1 + gamma*beta_Z/R + O((gamma*beta_Z/R)^2) (at psi = 1, beta_Z = 2/b). Matching
+    gamma*beta_Z/R = 1/(4*beta) (via b = 2, psi = 1, gamma = 1, R = 4*beta), both solvers agree
+    through O(1/beta) and converge quadratically (O(1/beta^2)) to the shared flat-interface passive
+    Cahn-Hilliard dense binodal phi_Ld = phi_-^B = 1 as beta -> oo (R -> oo).
+  assumptions:
+    - "Uncoupled / flat-interface limit beta -> oo with matched O(1/beta) common-tangent shift gamma*beta_Z/R = 2*gamma/(b*psi*R) = 1/(4*beta) at psi = 1."
+
+- id: rel_zwicker2015_binodal_approx_gibbs_thomson_eq6
+  kind: approximated_by
+  a: gubbala2025/coupled_binodal_coexistence
+  b: zwicker2015/gibbs_thomson_eq6
+  mapping:
+    psi: "1"
+    gamma_beta: "1"
+    R: "4 * beta"
+  output_map:
+    phi_minus_B: phi_Ld_eq
+  regime:
+    beta: [1.0, 50.0]
+    E1: [0.1, 2.0]
+    E3: [0.0, 0.5]
+  tolerance: 0.025
+  provenance: proposed
+  reason: >
+    Quantifies how accurately Zwicker's linearized Gibbs-Thomson common-tangent formula
+    phi_-^B = psi + gamma*beta_Z/R (Eq. 6, Appendix A Eq. A2) reproduces Gubbala's exact nonlinear
+    nematic-coupled Ld binodal phi_Ld_eq(beta) across Gubbala's entire physical stiffness range
+    beta in [1, 50] under the leading-order common-tangent shift correspondence psi = 1,
+    gamma*beta_Z/R = 1/(4*beta). Even down to Gubbala's default beta = 1 (where exact
+    phi_Ld_eq = 1.2233 vs. linearized 1.2500 — the 22% binodal overshoot that drives |Q|_eq =
+    1.0543 > 1 and high-actin E_3 = E_1 ill-posedness in gubbala2025/q_coupled_binodal_illposedness),
+    the maximum relative difference is 2.19%, falling as O(1/beta^2) to 0.0012% at beta = 50.
+  assumptions:
+    - "Linearized common-tangent mapping gamma*beta_Z/R = 1/(4*beta) at psi = 1 across beta in [1, 50]; tolerance 0.025 covers the 2.19% nonlinear quartic correction at beta = 1."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with frohoff2021 (Phys. Rev. E 103, 042602)
+# ==============================================================================
+# Neither paper cites the other. Both study conserved Cahn-Hilliard phase
+# separation coupled to a second field with linear stability analysis, binodal /
+# spinodal shifts, and slowed or arrested coarsening: doubly conserved
+# nonvariational two-field Cahn-Hilliard in frohoff2021 vs. variational 2D
+# anisotropic Model C (conserved scalar phi + nonconserved nematic tensor Q) in
+# gubbala2025. All cross-record relations below carry provenance: proposed.
+
+# --- 1. Shared Symmetric Landau Double-Well Free Energies & Saturation Binodals ---
+
+- id: rel_frohoff2021_cahn_hilliard_f_scales_eq3_A1
+  kind: scales_as
+  a: gubbala2025/cahn_hilliard_free_energy_eq2
+  b: frohoff2021/bulk_free_energy_eq3_A1
+  mapping:
+    a1: "-1"
+    b1: "1"
+    phi: "phi"
+  output_map:
+    f: f_phi
+  regime:
+    phi: [0.1, 1.2]
+    lam: [1.0, 1.0]
+    grad_phi: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Both papers adopt the identical zero-midpoint symmetric Landau quartic double-well bulk free
+    energy f(phi) = (a_1/2)*phi^2 + (b_1/4)*phi^4 with f(0) = 0 and minima at phi = +-1 for
+    a_1 = -b_1 = -a_0 (unlike zwicker2015's shifted binary potential vanishing at the binodals).
+    At grad_phi = 0, Gubbala Eq. (2)'s dimensionless f_phi = phi^4/4 - phi^2/2 equals Frohoff
+    Eqs. (3)/(A5)'s dimensional f(phi) divided by the bulk energy scale a_0 = b_1 = -a_1 [J/m^3],
+    sharing the exact nontrivial phi-dependent log-slope 2*(phi^2 - 1)/(phi^2 - 2) across both
+    spinodal and binodal intervals (strictly below the zero crossing phi = sqrt(2)).
+  assumptions:
+    - "Uniform bulk state grad_phi = 0 with symmetric double-well scale a_1 = -1 J/m^3, b_1 = 1 J/m^3."
+
+- id: rel_frohoff2021_cahn_hilliard_mu_scales_eq3_A1
+  kind: scales_as
+  a: gubbala2025/cahn_hilliard_free_energy_eq2
+  b: frohoff2021/bulk_free_energy_eq3_A1
+  mapping:
+    a1: "-1"
+    b1: "1"
+    phi: "phi"
+  output_map:
+    mu: df_dphi
+  regime:
+    phi: [0.1, 0.9]
+    lam: [1.0, 1.0]
+    grad_phi: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Directly links the bulk Cahn-Hilliard chemical potentials: Gubbala Eq. (2)'s dimensionless
+    df_dphi = phi^3 - phi equals Frohoff Eqs. (3)/(A5)'s mu = a_1*phi + b_1*phi^3 divided by
+    a_0 = b_1 = -a_1 [J/m^3], sharing the exact log-slope (3*phi^2 - 1)/(phi^2 - 1) across
+    spinodal (phi < 1/sqrt(3)) and metastable (1/sqrt(3) < phi < 1) compositions.
+  assumptions:
+    - "Symmetric double-well scale a_1 = -1 J/m^3, b_1 = 1 J/m^3 on phi in [0.1, 0.9] away from the binodal zero phi = 1."
+
+- id: rel_frohoff2021_coex_mu1_reduces_cahn_hilliard_mu
+  kind: reduces_to
+  a: frohoff2021/variational_coexistence_eqC1_C3
+  b: gubbala2025/cahn_hilliard_free_energy_eq2
+  mapping:
+    phi: "phi1_A"
+    lam: "1"
+    grad_phi: "0"
+  output_map:
+    df_dphi: mu1
+  limit:
+    rho: "0"
+  regime:
+    a: [-1.0, -1.0]
+    a_Delta: [-0.5, -0.1]
+    rho: [0.05, 0.4]
+    phi1_A: [1.3, 2.5]
+  provenance: proposed
+  reason: >
+    Dimensionless reduction connecting Frohoff Appendix C Eqs. (C1)-(C3)'s nonlinear two-phase
+    variational coexistence chemical potential mu_1 = a*phi_1^A + (phi_1^A)^3 - rho*phi_2^A to
+    Gubbala Eq. (2)'s dimensionless bare Cahn-Hilliard bulk chemical potential df_dphi = phi^3 - phi.
+    At Frohoff's bare Gubbala temperature a = -1, turning off interspecies variational coupling
+    (rho -> 0) decouples species 1 from the phase-separating species 2 (a + a_Delta < 0), reducing
+    mu_1 identically to df_dphi(phi_1^A).
+  assumptions:
+    - "Bare Gubbala double-well temperature a = -1 and phase-separating second species a + a_Delta < 0 in Frohoff Appendix C."
+
+- id: rel_frohoff2021_ldg_eq10_scales_eq3_A1
+  kind: scales_as
+  a: gubbala2025/ldg_bulk_free_energy_eq10_consistent
+  b: frohoff2021/bulk_free_energy_eq3_A1
+  mapping:
+    a1: "-2 * (1 + phi)"
+    b1: "4 * beta"
+    phi: "Q_xx"
+  output_map:
+    f: f_bulk
+  regime:
+    beta: [0.5, 4.0]
+    phi: [0.1, 1.5]
+    Q_xx: [0.05, 0.35]
+    Q_xy: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    For a uniaxial nematic aligned along x (Q_xy = 0), Gubbala's Eq. (10)/Eq. (S20)-consistent 2D
+    Landau-de Gennes bulk potential f_bulk = (beta/4)*(Tr(Q^2))^2 - ((1+phi)/2)*Tr(Q^2) =
+    -(1 + phi)*Q_xx^2 + beta*Q_xx^4 is structurally identical to Frohoff Eqs. (3)/(A5)'s quartic
+    Landau potential (a_1/2)*Phi^2 + (b_1/4)*Phi^4 under Phi = Q_xx, a_1 = -2*(1 + phi) [J/m^3],
+    and b_1 = 4*beta [J/m^3]. Both models share identical log-slopes across all three coupled
+    variables (Q_xx, beta, phi).
+  assumptions:
+    - "Uniaxial x-aligned nematic state Q_xy = 0 with Q_xx in [0.05, 0.35] strictly inside the negative-energy well (below Q_xx = sqrt((1+phi)/beta))."
+
+- id: rel_frohoff2021_ldg_eq4_vs_eq3_A1
+  kind: scales_as
+  a: gubbala2025/ldg_bulk_free_energy_eq4
+  b: frohoff2021/bulk_free_energy_eq3_A1
+  mapping:
+    a1: "-2 * (1 + phi)"
+    b1: "4 * beta"
+    phi: "Q_xx"
+  output_map:
+    f: f_bulk
+  regime:
+    beta: [0.5, 4.0]
+    phi: [0.1, 1.5]
+    Q_xx: [0.05, 0.35]
+    Q_xy: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check of Gubbala's printed Eq. (4)/Eq. (S5) Landau-de Gennes energy
+    (beta/4)*Tr(Q^4) - ((1+phi)/2)*Tr(Q^2) against Frohoff's Landau potential under the exact
+    Eq. (10)-consistent dictionary a_1 = -2*(1 + phi), b_1 = 4*beta. Expected to be not_verified
+    (log-slope mismatch up to 0.25) because in 2D Tr(Q^4) = (1/2)*(Tr(Q^2))^2 halves the quartic
+    term to (beta/2)*Q_xx^4 (b_1 = 2*beta instead of 4*beta), independently corroborating
+    gubbala2025/q_eq4_vs_eq10_trQ4_factor2.
+  assumptions:
+    - "Same uniaxial regime and Eq. (10)-consistent Landau dictionary as rel_frohoff2021_ldg_eq10_scales_eq3_A1."
+
+- id: rel_frohoff2021_nematic_sat_same_decoupled_binodal
+  kind: same_as
+  a: gubbala2025/nematic_saturation_eq4_s5
+  b: frohoff2021/decoupled_binodals_appC
+  mapping:
+    a: "-1 / (2 * beta)"
+    a_Delta: "-phi / (2 * beta)"
+  output_map:
+    phi2_bin: S
+  regime:
+    beta: [0.25, 10.0]
+    phi: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Exact symbolic identity mapping Gubbala's lipid-modulated nematic saturation S(beta, phi) =
+    sqrt((1 + phi)/(2*beta)) (Sec. 2.1 p. 3, SI p. 13, derived from minimizing Eq. 10's quartic
+    LdG well -(1+phi)*Q_xx^2 + beta*Q_xx^4) onto Frohoff Appendix C's second-field Landau binodal
+    phi_{2,bin} = sqrt(-a - a_Delta). The critical lipid composition phi = 0 sets the base
+    effective temperature a = -1/(2*beta), while the lipid order parameter phi acts directly as
+    Frohoff's temperature shift a_Delta = -phi/(2*beta), driving the isotropic-to-nematic
+    transition across a + a_Delta = 0 (phi = -1).
+  assumptions:
+    - "Ordered Ld-side lipid concentrations phi > 0 (strictly above the isotropic threshold phi = -1) with positive quartic stiffness beta > 0."
+
+- id: rel_frohoff2021_nematic_sat_eq4_exact_vs_decoupled_binodal
+  kind: same_as
+  a: gubbala2025/nematic_saturation_from_eq4_exact
+  b: frohoff2021/decoupled_binodals_appC
+  mapping:
+    a: "-1 / (2 * beta)"
+    a_Delta: "-phi / (2 * beta)"
+  output_map:
+    phi2_bin: S
+  regime:
+    beta: [0.25, 10.0]
+    phi: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check comparing the exact 2D critical point of printed Eq. (4)
+    (nematic_saturation_from_eq4_exact, S = sqrt((1+phi)/beta)) against Frohoff Appendix C's
+    Landau binodal under the Eq. (10)-consistent temperature dictionary a = -1/(2*beta),
+    a_Delta = -phi/(2*beta). Expected to be not_verified with constant factor sqrt(2) = 1.41421,
+    independently corroborating gubbala2025/q_eq4_vs_eq10_trQ4_factor2.
+  assumptions:
+    - "Same regime and Eq. (10)-consistent dictionary as rel_frohoff2021_nematic_sat_same_decoupled_binodal."
+
+# --- 2. Exact Non-Dimensionalization Scale Identities (SI Sec. 3.2 <-> Appendix A) ---
+
+- id: rel_frohoff2021_nondim_tphi_same_tau
+  kind: same_as
+  a: gubbala2025/nondim_parameters_s32
+  b: frohoff2021/nondim_scales_eqA3_A6
+  mapping:
+    L: "1"
+    L0: "sqrt(lambda_tilde) * 10**(-6)"
+    Q1: "M * 10**(-12)"
+    Q2: "M * 10**(-12)"
+    kappa1: "lambda_tilde * 10**(-12)"
+    kappa2: "L1 * 10**(-12)"
+    zeta1: "1"
+    zeta2: "1"
+    a1: "-1"
+    a2: "-1"
+    b1: "1"
+    b2: "1"
+    gamma1: "0"
+    gamma2: "0"
+  output_map:
+    tau: t_phi
+  regime:
+    M: [0.1, 10.0]
+    Gamma: [0.1, 10.0]
+    lambda_tilde: [0.1, 10.0]
+    alpha: [0.05, 5.0]
+    L1: [0.1, 5.0]
+    L3: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Exact symbolic identity in seconds [s] linking both papers' Cahn-Hilliard non-dimensionalizations
+    (Gubbala SI Sec. 3.2 Eq. S17 vs. Frohoff Appendix A Eqs. A1-A6). Writing Gubbala's bare lipid
+    PDE d_t phi = M*nabla^2(phi^3 - phi - lambda_tilde*nabla^2 phi) in Frohoff Eq. (A1) with bulk
+    energy density scale a_0 = 1 J/m^3 (zeta_1 = 1, b_1 = -a_1 = a_0, kappa_1 = a_0*lambda_tilde_SI,
+    Q_1 = M_SI/a_0) and choosing Frohoff's length scale L_0 = l_c = sqrt(lambda_tilde_SI) yields
+    phi_hat_1 = 1, a = -1, and Frohoff's diffusion timescale tau = L_0^4/(Q_1*kappa_1) =
+    lambda_tilde/M = t_phi identically (with a_0 cancelling identically and um -> m unit factors
+    10^-6 and 10^-12 cancelling to 1).
+  assumptions:
+    - "Reference bulk energy density scale a_0 = 1 J/m^3 (cancels identically in tau, phi_hat_1, a, and kappa) with L_0 = l_c = sqrt(lambda_tilde) converted from um to m."
+
+- id: rel_frohoff2021_nondim_E1_same_kappa
+  kind: same_as
+  a: gubbala2025/nondim_parameters_s32
+  b: frohoff2021/nondim_scales_eqA3_A6
+  mapping:
+    L: "1"
+    L0: "sqrt(lambda_tilde) * 10**(-6)"
+    Q1: "M * 10**(-12)"
+    Q2: "M * 10**(-12)"
+    kappa1: "lambda_tilde * 10**(-12)"
+    kappa2: "L1 * 10**(-12)"
+    zeta1: "1"
+    zeta2: "1"
+    a1: "-1"
+    a2: "-1"
+    b1: "1"
+    b2: "1"
+    gamma1: "0"
+    gamma2: "0"
+  output_map:
+    kappa: E1
+  regime:
+    M: [0.1, 10.0]
+    Gamma: [0.1, 10.0]
+    lambda_tilde: [0.1, 10.0]
+    alpha: [0.05, 5.0]
+    L1: [0.1, 5.0]
+    L3: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Exact symbolic identity under the same Appendix A <-> SI Sec. 3.2 dimensional dictionary:
+    identifying Frohoff's second-field square-gradient rigidity kappa_2 with Gubbala's quadratic
+    nematic elastic constant a_0*L_1 [J/m] maps Frohoff's dimensionless rigidity ratio
+    kappa = kappa_2/kappa_1 identically onto Gubbala's dimensionless nematic elastic constant
+    E_1 = L_1/l_c^2 = L_1/lambda_tilde.
+  assumptions:
+    - "Identifies Frohoff's second-field gradient stiffness kappa_2 = a_0*L_1 with Gubbala's quadratic Frank/LdG elastic constant L_1."
+
+# --- 3. Exact 2x2 Model C <-> Doubly Conserved Cahn-Hilliard Linear Dispersion Isomorphism ---
+
+- id: rel_frohoff2021_lsa_corr_same_eq12_sigma_max
+  kind: same_as
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))**(1/4)"
+    f1_pp: "2 * sqrt(gamma * (kx**2 + ky**2) / ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2))"
+    f2_pp: "4"
+    Q: "1 / sqrt(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))"
+    kappa: "((E1 + E3/sqrt(beta))*kx**2 + (E1 - E3/sqrt(beta))*ky**2) / sqrt(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))"
+    rho: "sqrt(2 / beta) * (gamma * (kx**2 + ky**2) / ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2))**(1/4)"
+    alpha: "0"
+  output_map:
+    re_lam_plus: sigma_max
+  regime:
+    gamma: [0.05, 2.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.8, 3.0]
+    E3: [0.05, 0.5]
+    kx: [0.1, 3.0]
+    ky: [0.1, 3.0]
+  provenance: proposed
+  reason: >
+    Establishes an exact 2x2 spectral isomorphism between Gubbala's variational 2D anisotropic Model C
+    linear stability matrix M_G (conserved phi + nonconserved Q_xx, SI Eqs. S24-S28 corrected) and
+    Frohoff's doubly conserved variational two-field Cahn-Hilliard dispersion matrix -q^2*B(q) (Eq. 12,
+    alpha = 0) across all seven parameters (gamma, chi, beta, E_1, E_3, k_x, k_y), spanning both
+    perpendicular (chi < 0) and parallel (chi > 0) anchoring as well as low-k and high-k regimes.
+    Defining directional stiffnesses Lambda_eff = [(1+3*chi/2)*kx^2 + (1-chi/2)*ky^2]/k^2 and
+    E_eff = [(E_1+E_3/sqrt(beta))*kx^2 + (E_1-E_3/sqrt(beta))*ky^2]/k^2, setting
+    q^2 = sqrt(gamma*Lambda_eff)*k^2 absorbs both anchoring anisotropy and timescale ratio into
+    f_1'' = 2*sqrt(gamma/Lambda_eff), kappa = E_eff/sqrt(gamma*Lambda_eff), and variational coupling
+    rho = sqrt(2/beta)*(gamma/Lambda_eff)^(1/4) (alpha = 0, f_2'' = 4), while converting Frohoff's
+    conserved Model B second field (-q^2*Q) into Gubbala's nonconserved Model A nematic relaxation
+    (-1) via the exact wavenumber-dependent effective mobility ratio Q_eff(k) = 1/q^2. Under this
+    mapping tr(M_G) = -q^2*tr(B) and det(M_G) = q^4*det(B) identically, giving sigma_max = re_lam_plus
+    to machine precision (~2e-14).
+  assumptions:
+    - "Anchoring chi in [-0.5, 1.8] strictly inside Gubbala's linear stability window (-2/3, 2) and E_1 > E_3/sqrt(beta) so Lambda_eff > 0 and E_eff > 0 at all wavevector angles."
+    - "Purely variational coupling (alpha = 0) with exact conserved-to-nonconserved mobility conversion Q_eff(k) = 1/q^2."
+
+- id: rel_frohoff2021_lsa_corr_same_eq12_sigma_min
+  kind: same_as
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))**(1/4)"
+    f1_pp: "2 * sqrt(gamma * (kx**2 + ky**2) / ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2))"
+    f2_pp: "4"
+    Q: "1 / sqrt(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))"
+    kappa: "((E1 + E3/sqrt(beta))*kx**2 + (E1 - E3/sqrt(beta))*ky**2) / sqrt(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))"
+    rho: "sqrt(2 / beta) * (gamma * (kx**2 + ky**2) / ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2))**(1/4)"
+    alpha: "0"
+  output_map:
+    re_lam_minus: sigma_min
+  regime:
+    gamma: [0.05, 2.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.8, 3.0]
+    E3: [0.05, 0.5]
+    kx: [0.1, 3.0]
+    ky: [0.1, 3.0]
+  provenance: proposed
+  reason: >
+    Completes the 2x2 spectral isomorphism between Gubbala's corrected Model C linear stability
+    matrix and Frohoff Eq. (12) on the fast eigenvalue branch: under the exact same dictionary as
+    rel_frohoff2021_lsa_corr_same_eq12_sigma_max, sigma_min = re_lam_minus identically across all
+    seven parameters to machine precision (~1e-15), confirming full 2x2 isospectrality.
+  assumptions:
+    - "Same regime and exact Model C <-> Model B-B dictionary as rel_frohoff2021_lsa_corr_same_eq12_sigma_max."
+
+- id: rel_frohoff2021_lsa_corr_iso_derived_eq12
+  kind: derived_from
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "sqrt(kx**2 + ky**2)"
+    f1_pp: "2"
+    f2_pp: "4"
+    Q: "1 / (kx**2 + ky**2)"
+    kappa: "E1"
+    rho: "sqrt(2 / beta)"
+    alpha: "0"
+  output_map:
+    re_lam_plus: sigma_max
+  steps:
+    - "subs: chi = 0"
+    - "subs: E3 = 0"
+    - "subs: gamma = 1"
+    - simplify
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [0.0, 0.0]
+    beta: [0.5, 5.0]
+    E1: [0.8, 3.0]
+    E3: [0.0, 0.0]
+    kx: [0.1, 3.0]
+    ky: [0.1, 3.0]
+  provenance: proposed
+  reason: >
+    Symbolic derivation proving that specializing Gubbala's corrected 2x2 Model C dispersion
+    sigma_max to isotropic anchoring (chi = 0), one-constant elasticity (E_3 = 0), and matched
+    timescales (gamma = 1) yields Frohoff Eq. (12)'s variational dispersion re_lam_plus identically
+    with bare binodal curvature f_1'' = 2, nematic mass curvature f_2'' = 4, rigidity ratio
+    kappa = E_1, variational coupling rho = sqrt(2/beta), alpha = 0, and exact conserved-to-
+    nonconserved mobility conversion Q = 1/k^2.
+  assumptions:
+    - "Isotropic one-constant matched-timescale specialization (chi = 0, E_3 = 0, gamma = 1)."
+
+- id: rel_frohoff2021_lsa_printed_vs_eq12_sigma_max
+  kind: same_as
+  a: gubbala2025/linear_stability_s24_s28
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))**(1/4)"
+    f1_pp: "2 * sqrt(gamma * (kx**2 + ky**2) / ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2))"
+    f2_pp: "4"
+    Q: "1 / sqrt(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))"
+    kappa: "((E1 + E3/sqrt(beta))*kx**2 + (E1 - E3/sqrt(beta))*ky**2) / sqrt(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))"
+    rho: "sqrt(2 / beta) * (gamma * (kx**2 + ky**2) / ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2))**(1/4)"
+    alpha: "0"
+  output_map:
+    re_lam_plus: sigma_max
+  regime:
+    gamma: [0.05, 2.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.8, 3.0]
+    E3: [0.05, 0.5]
+    kx: [0.1, 3.0]
+    ky: [0.1, 3.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing Gubbala's printed SI Eqs. (S24)-(S28) against Frohoff
+    Eq. (12) under the exact variational Model C <-> Model B-B dictionary. Expected to be refuted
+    at all 40 points (median relative error ~6.2%) because printed Eq. (S24) doubles the off-diagonal
+    coupling c_12 to 4*gamma*k^2/sqrt(beta) (corresponding to rho_printed = 2/sqrt(beta) =
+    sqrt(2)*rho_var), independently corroborating gubbala2025/q_lsa_s24_s26_discrepancies.
+  assumptions:
+    - "Same regime and exact variational dictionary as rel_frohoff2021_lsa_corr_same_eq12_sigma_max."
+
+- id: rel_frohoff2021_lsa_corr_scales_dim_eq12_A1
+  kind: scales_as
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_dim_eq12_A1
+  mapping:
+    q: "sqrt(kx**2 + ky**2)"
+    L0: "sqrt(((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) / (kx**2 + ky**2))"
+    tau0: "((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) / (gamma * (kx**2 + ky**2))"
+    f1_pp: "2"
+    f2_pp: "4"
+    Q: "1 / (gamma * (kx**2 + ky**2))"
+    kappa: "((E1 + E3/sqrt(beta))*kx**2 + (E1 - E3/sqrt(beta))*ky**2) / ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2)"
+    rho: "sqrt(2 / beta)"
+    alpha: "0"
+  output_map:
+    re_lam_plus: sigma_max
+  regime:
+    gamma: [0.05, 2.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.8, 3.0]
+    E3: [0.05, 0.5]
+    kx: [0.1, 3.0]
+    ky: [0.1, 3.0]
+  provenance: proposed
+  reason: >
+    Restoring Frohoff Appendix A's dimensional length and time scales (linear_dispersion_dim_eq12_A1)
+    separates Gubbala's directional anchoring and timescale factors cleanly out of the bare
+    thermodynamic parameters: identifying the directional interface width L_0(theta) = sqrt(Lambda_eff)*l_c,
+    directional interfacial diffusion time tau_0(theta) = (Lambda_eff/gamma)*t_Q, directional rigidity
+    ratio kappa(theta) = E_eff/Lambda_eff, and conserved-to-nonconserved mobility conversion
+    Q(k) = 1/(gamma*k^2) leaves Frohoff's bare curvatures and variational coupling completely pure
+    and wavevector-independent (f_1'' = 2, f_2'' = 4, rho = sqrt(2/beta), alpha = 0). Verified across
+    all seven shared variables (gamma, chi, beta, E_1, E_3, k_x, k_y) at 84 points (max slope diff ~1e-11).
+  assumptions:
+    - "Reference scales l_c = 1 m and t_Q = 1 s (cancelling identically in scales_as) with chi in [-0.5, 1.8] and E_1 > E_3/sqrt(beta)."
+
+# --- 4. Single-Field Passive CH Reductions, Model C Branch Crossing & Fast-Nematic Adiabatic Regimes ---
+
+- id: rel_frohoff2021_lsa_iso_reduces_variational_ch
+  kind: reduces_to
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_variational_limit
+  mapping:
+    q: "sqrt(kx**2 + ky**2)"
+    a: "-1"
+    a_Delta: "0"
+    kappa: "1"
+    phi1_bar: "1"
+    phi2_bar: "1"
+    rho: "0"
+  output_map:
+    lam_plus: sigma_max
+  limit:
+    chi: "0"
+    beta: "oo"
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [0.05, 0.5]
+    beta: [5.0, 50.0]
+    E1: [0.5, 3.0]
+    E3: [0.05, 0.5]
+    kx: [0.1, 0.65]
+    ky: [0.1, 0.65]
+  provenance: proposed
+  reason: >
+    Verifies Gubbala's single-field passive Cahn-Hilliard reduction in the low-to-moderate wavenumber
+    regime (omega_phi < omega_xx): turning off anchoring (chi -> 0) and nematic order (beta -> oo,
+    decoupling Q_xx via c_12*c_21 = 2*gamma*k^2/beta -> 0) at matched timescale gamma = 1 reduces
+    Gubbala's leading eigenvalue sigma_max identically to Frohoff's decoupled passive variational
+    Cahn-Hilliard dispersion lam_plus = -k^2*(2 + k^2) evaluated at the binodal a = -1, phi_bar_1 = 1.
+  assumptions:
+    - "Matched timescales gamma = 1 and wavevector box kx, ky in [0.1, 0.65] so k^2 <= 0.845 and omega_phi <= 2.40 < 4 <= omega_xx (sigma_max tracks the conserved lipid branch)."
+
+- id: rel_frohoff2021_eqB1_decoupled_reduces_lsa_corr
+  kind: reduces_to
+  a: frohoff2021/linear_dispersion_specific_eqB1
+  b: gubbala2025/linear_stability_s24_s28_corrected
+  mapping:
+    gamma: "1"
+    chi: "0"
+    beta: "1 / (rho**2 + alpha**2)"
+    E1: "1"
+    E3: "0"
+    kx: "q"
+    ky: "0"
+  output_map:
+    sigma_max: re_lam_plus
+  limit:
+    rho: "0"
+    alpha: "0"
+  regime:
+    q: [0.1, 0.9]
+    a: [-1.0, -1.0]
+    a_Delta: [0.0, 0.0]
+    kappa: [1.0, 1.0]
+    phi1_bar: [1.0, 1.0]
+    phi2_bar: [1.0, 1.0]
+    rho: [0.05, 0.5]
+    alpha: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    Symmetric reverse single-field passive Cahn-Hilliard reduction starting from Frohoff's full
+    nonreciprocal two-field dispersion Eq. (B1): sending both variational (rho -> 0) and
+    nonvariational (alpha -> 0) couplings to zero at the binodal (a = -1, a_Delta = 0, kappa = 1,
+    phi_bar_1 = phi_bar_2 = 1) while simultaneously decoupling Gubbala's isotropic nematic field
+    (beta = 1/(rho^2 + alpha^2) -> oo, chi = 0, gamma = 1) collapses both two-field models onto the
+    identical passive single-field binodal Cahn-Hilliard dispersion -q^2*(2 + q^2) (regardless of
+    whether Frohoff starts in the variational rho > alpha or oscillatory alpha > rho sector).
+  assumptions:
+    - "Binodal state a = -1, phi_bar_1 = phi_bar_2 = 1 with q in [0.1, 0.9] so omega_phi = q^2*(2 + q^2) <= 2.28 < 4 < omega_xx."
+
+- id: rel_frohoff2021_lsa_highk_sigma_min_reduces_variational_ch
+  kind: reduces_to
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_variational_limit
+  mapping:
+    q: "sqrt(kx**2 + ky**2)"
+    a: "-1"
+    a_Delta: "0"
+    kappa: "1"
+    phi1_bar: "1"
+    phi2_bar: "1"
+    rho: "0"
+  output_map:
+    lam_plus: sigma_min
+  limit:
+    chi: "0"
+    beta: "oo"
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [0.05, 0.5]
+    beta: [5.0, 50.0]
+    E1: [0.5, 2.0]
+    E3: [0.05, 0.5]
+    kx: [2.5, 8.0]
+    ky: [2.5, 8.0]
+  provenance: proposed
+  reason: >
+    Demonstrates the structural Model C vs. Model B-B eigenvalue branch crossing at short wavelengths:
+    in Gubbala's Model C system, biharmonic conserved interfacial damping omega_phi ~ gamma*k^4
+    overtakes nonconserved nematic elastic relaxation omega_xx ~ 4 + E_1*k^2 above the crossover
+    wavenumber k_* ~ O(1). Consequently, for kx, ky in [2.5, 8.0] (where omega_phi >= 181 >> omega_xx),
+    taking the isotropic uncoupled limit (chi -> 0, beta -> oo) sends the conserved Cahn-Hilliard
+    branch -k^2*(2 + k^2) to the FAST eigenvalue sigma_min rather than sigma_max.
+  assumptions:
+    - "Short-wavelength regime kx, ky in [2.5, 8.0] (k^2 >= 12.5) at gamma = 1 so omega_phi > omega_xx across the entire box."
+
+- id: rel_frohoff2021_lsa_highk_sigma_max_reduces_unconserved_eq12
+  kind: reduces_to
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "sqrt((E1 + E3/sqrt(beta))*kx**2 + (E1 - E3/sqrt(beta))*ky**2)"
+    f1_pp: "4"
+    f2_pp: "4"
+    Q: "1"
+    kappa: "1"
+    rho: "0"
+    alpha: "0"
+  output_map:
+    re_lam_tilde_plus: sigma_max
+  limit:
+    beta: "oo"
+  regime:
+    gamma: [0.5, 2.0]
+    chi: [-0.5, 1.8]
+    beta: [5.0, 50.0]
+    E1: [0.8, 3.0]
+    E3: [0.05, 0.5]
+    kx: [3.0, 10.0]
+    ky: [3.0, 10.0]
+  provenance: proposed
+  reason: >
+    Complementary short-wavelength branch identification: above the Model C branch crossing
+    (kx, ky in [3, 10], omega_phi >> omega_xx), Gubbala's SLOW eigenvalue sigma_max tracks the
+    nonconserved diffusive nematic elastic mode -omega_xx = -(4 + E_eff*k^2), decaying as O(k^2)
+    rather than O(k^4). As beta -> oo, sigma_max reduces identically to Frohoff Eq. (12)'s rescaled
+    (unconserved) Turing-operator eigenvalue re_lam_tilde_plus = lam_plus/q^2 = -(4 + q^2) with
+    q = sqrt(E_eff)*k (contrasting directly with Frohoff's doubly conserved -q^4 high-q damping).
+  assumptions:
+    - "Short-wavelength regime kx, ky in [3, 10] with gamma in [0.5, 2.0] and chi in [-0.5, 1.8] ensuring omega_phi > omega_xx."
+
+- id: rel_frohoff2021_lsa_highk_sigma_max_approx_unconserved_eq12
+  kind: approximated_by
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "sqrt((E1 + E3/sqrt(beta))*kx**2 + (E1 - E3/sqrt(beta))*ky**2)"
+    f1_pp: "4"
+    f2_pp: "4"
+    Q: "1"
+    kappa: "1"
+    rho: "0"
+    alpha: "0"
+  output_map:
+    re_lam_tilde_plus: sigma_max
+  regime:
+    gamma: [0.1, 2.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.8, 3.0]
+    E3: [0.05, 0.5]
+    kx: [10.0, 50.0]
+    ky: [1.0, 10.0]
+  tolerance: 0.001
+  provenance: proposed
+  reason: >
+    Shows that even at finite nematic coupling beta in [0.5, 5.0] (including Gubbala's default
+    beta = 1), finite anchoring chi in [-0.5, 1.8], and finite cubic elastic anisotropy E_3 > 0,
+    short-wavelength perturbations (kx in [10, 50]) dynamically decouple the nematic mode from the
+    biharmonic concentration mode because the Schur-complement shift c_12*c_21/omega_phi =
+    2/(beta*Lambda_eff*k^2) vanishes as O(k^-2). Consequently, Gubbala's leading rate sigma_max
+    agrees with Frohoff's unconserved rescaled eigenvalue re_lam_tilde_plus = -(4 + E_eff*k^2)
+    to <= 1.1e-5 across the entire 7-parameter short-wavelength box.
+  assumptions:
+    - "Short-wavelength regime kx in [10, 50], ky in [1, 10] with finite coupling beta in [0.5, 5.0] and E_1 > E_3/sqrt(beta)."
+
+- id: rel_frohoff2021_lsa_fast_nematic_approx_eq12_k_indep_Q
+  kind: approximated_by
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))**(1/4)"
+    f1_pp: "2 * sqrt(gamma * (kx**2 + ky**2) / ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2))"
+    f2_pp: "4"
+    Q: "1 / gamma"
+    kappa: "((E1 + E3/sqrt(beta))*kx**2 + (E1 - E3/sqrt(beta))*ky**2) / sqrt(gamma * ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2) * (kx**2 + ky**2))"
+    rho: "sqrt(2 / beta) * (gamma * (kx**2 + ky**2) / ((1 + 3*chi/2)*kx**2 + (1 - chi/2)*ky**2))**(1/4)"
+    alpha: "0"
+  output_map:
+    re_lam_plus: sigma_max
+  regime:
+    gamma: [0.01, 0.1]
+    chi: [-0.5, 1.8]
+    beta: [1.0, 5.0]
+    E1: [0.5, 2.0]
+    E3: [0.0, 0.4]
+    kx: [0.2, 1.0]
+    ky: [0.2, 1.0]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    Demonstrates that in Gubbala's actual fast-nematic simulation regime gamma = t_Q/t_phi in
+    [0.01, 0.1] (default gamma = 0.1 in Sec. 3, SI Fig. S4), adiabatic slaving of the fast second
+    field makes the exact wavenumber-dependent Model-C-to-Model-B mobility conversion Q_eff(k) =
+    1/q^2 unnecessary: replacing Q_eff(k) by the pure wavenumber-independent timescale ratio
+    Q = 1/gamma = t_phi/t_Q in Frohoff Eq. (12) still reproduces Gubbala's full 7-parameter
+    anisotropic coupled dispersion sigma_max = -gamma*k^2*[2 + Lambda_eff*k^2 - (2/beta)/(4 +
+    E_eff*k^2)] + O(gamma^2) to <= 0.34% max relative error (well within 0.5% tolerance).
+  assumptions:
+    - "Fast-nematic timescale separation gamma = t_Q/t_phi in [0.01, 0.1] (matching Gubbala's main-text default gamma = 0.1 and SI Fig. S4) at moderate wavenumbers kx, ky in [0.2, 1.0]."
+
+- id: rel_frohoff2021_lsa_finite_beta_lowk_approx_variational_ch
+  kind: approximated_by
+  a: gubbala2025/linear_stability_s24_s28_corrected
+  b: frohoff2021/linear_dispersion_variational_limit
+  mapping:
+    q: "sqrt(kx**2 + ky**2)"
+    a: "-1 - 1 / (2 * beta)"
+    a_Delta: "0"
+    kappa: "1"
+    phi1_bar: "1"
+    phi2_bar: "1"
+    rho: "0"
+  output_map:
+    lam_plus: sigma_max
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.8, 3.0]
+    E3: [0.05, 0.5]
+    kx: [0.005, 0.04]
+    ky: [0.005, 0.04]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    At finite nematic quartic stiffness beta > 1/4 and long wavelengths (kx, ky in [0.005, 0.04],
+    gamma = 1), adiabatically eliminating the massive nematic mode Q_xx softens Gubbala's slow
+    concentration branch to sigma_max = -(2 - 1/(2*beta))*k^2 + O(k^4), reflecting the exact
+    coupled effective bulk curvature f_eff''(+1) = 2 - 1/(2*beta). In Frohoff's decoupled
+    variational Cahn-Hilliard dispersion (linear_dispersion_variational_limit, rho = 0) at phi_bar_1 = 1,
+    this corresponds directly to shifting the effective temperature from a = -1 to
+    a_eff(beta) = -1 - 1/(2*beta) (which vanishes at Gubbala's exact coupled spinodal limit
+    beta_min = 1/4, where f_1'' = a_eff + 3 = 0). Across the full 7-parameter long-wavelength box,
+    both dispersions agree to <= 0.23% (well within tolerance 0.005).
+  assumptions:
+    - "Long-wavelength regime kx, ky in [0.005, 0.04] (domain scales ~150-1250 l_c, matching Gubbala's L = 500 box) at gamma = 1 and beta in [0.5, 5.0] > 1/4."
+
+- id: rel_frohoff2021_lsa_printed_finite_beta_lowk_vs_variational_ch
+  kind: approximated_by
+  a: gubbala2025/linear_stability_s24_s28
+  b: frohoff2021/linear_dispersion_variational_limit
+  mapping:
+    q: "sqrt(kx**2 + ky**2)"
+    a: "-1 - 1 / (2 * beta)"
+    a_Delta: "0"
+    kappa: "1"
+    phi1_bar: "1"
+    phi2_bar: "1"
+    rho: "0"
+  output_map:
+    lam_plus: sigma_max
+  regime:
+    gamma: [1.0, 1.0]
+    chi: [-0.5, 1.8]
+    beta: [0.5, 5.0]
+    E1: [0.8, 3.0]
+    E3: [0.05, 0.5]
+    kx: [0.005, 0.04]
+    ky: [0.005, 0.04]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check of Gubbala's printed SI Eq. (S24) against Frohoff's effective-
+    temperature-shifted passive Cahn-Hilliard dispersion at a_eff(beta) = -1 - 1/(2*beta). Expected
+    to be not_verified (max relative error 97.3% near beta = 0.5; 33% at default beta = 1) because
+    printed Eq. (S24)'s doubled c_12 = 4*gamma*k^2/sqrt(beta) gives sigma_max = -(2 - 1/beta)*k^2
+    with a spurious spinodal instability at beta = 1/2 instead of beta = 1/4, independently
+    corroborating gubbala2025/q_lsa_s24_s26_discrepancies.
+  assumptions:
+    - "Same long-wavelength effective-temperature dictionary and regime as rel_frohoff2021_lsa_finite_beta_lowk_approx_variational_ch."
+
+# --- 5. Coupled Binodal Shifts & Long-Wavelength Spinodal Threshold (Eq. 20 / Appendix C) ---
+
+- id: rel_frohoff2021_coupled_binodal_reduces_decoupled_appC
+  kind: reduces_to
+  a: gubbala2025/coupled_binodal_coexistence
+  b: frohoff2021/decoupled_binodals_appC
+  mapping:
+    a: "-1"
+    a_Delta: "0"
+  output_map:
+    phi1_bin: phi_Ld_eq
+  limit:
+    beta: "oo"
+  regime:
+    beta: [5.0, 50.0]
+    E1: [0.5, 2.0]
+    E3: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    In the vanishing-nematic-coupling limit beta -> oo (where nematic condensation energy
+    -(1+phi)^2/(4*beta) -> 0), Gubbala's nonlinear common-tangent Ld binodal phi_Ld_eq reduces
+    identically to Frohoff Appendix C's bare symmetric Cahn-Hilliard binodal phi_{1,bin} =
+    sqrt(-a) = 1 at a = -1.
+  assumptions:
+    - "Uncoupled limit beta -> oo removing nematic bulk condensation energy in the Ld phase."
+
+- id: rel_frohoff2021_coupled_binodal_approx_shifted_appC
+  kind: approximated_by
+  a: gubbala2025/coupled_binodal_coexistence
+  b: frohoff2021/decoupled_binodals_appC
+  mapping:
+    a: "-1"
+    a_Delta: "-1 / (2 * beta)"
+  output_map:
+    phi2_bin: phi_Ld_eq
+  regime:
+    beta: [0.5, 50.0]
+    E1: [0.5, 2.0]
+    E3: [0.05, 0.5]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    Minimizing out Gubbala's LdG nematic order parameter in the Ld phase yields the effective bulk
+    potential f_eff(phi) = phi^4/4 + (1/2)*(-1 - 1/(2*beta))*phi^2 - (1/(2*beta))*phi - 1/(4*beta),
+    which shifts the quadratic temperature by Frohoff's a_Delta = -1/(2*beta) relative to the bare
+    a = -1 well while adding a linear tilt -(1/(2*beta))*phi that is cancelled through O(1/beta^2)
+    by the common-tangent chemical potential mu_coex = -1/(2*beta) + O(1/beta^3). Consequently,
+    Frohoff Appendix C's shifted-temperature binodal phi_{2,bin} = sqrt(-a - a_Delta) =
+    sqrt(1 + 1/(2*beta)) matches Gubbala's exact nonlinear coupled binodal phi_Ld_eq(beta) through
+    O(1/beta^2) (O(1/beta^3) residual): max relative error is 0.12% at Gubbala's default beta = 1
+    (1.2247 vs. exact 1.2233 — nearly 20x tighter than linearized Gibbs-Thomson 1.2500) and <= 0.44%
+    all the way down to beta = 0.5 (well within tolerance 0.005).
+  assumptions:
+    - "Temperature-shifted binodal correspondence a = -1, a_Delta = -1/(2*beta) across beta in [0.5, 50.0]."
+
+- id: rel_frohoff2021_coex_mu_scales_ch_threshold_eq20
+  kind: scales_as
+  a: gubbala2025/coupled_binodal_coexistence
+  b: frohoff2021/ch_threshold_general_eq20
+  mapping:
+    f2_pp: "4"
+    rho: "sqrt(2 / beta)"
+    alpha: "0"
+  output_map:
+    f1_pp_CH: mu_coex
+  regime:
+    beta: [2.0, 50.0]
+    E1: [0.5, 2.0]
+    E3: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    Connects two consequences of the exact same quadratic nematic condensation term -(1+phi)^2/(4*beta)
+    in Gubbala's bulk free energy via Frohoff Eq. (20)'s variational long-wavelength Cahn-Hilliard
+    instability threshold f_1''^CH = (rho^2 - alpha^2)/f_2''. Under the exact variational dictionary
+    f_2'' = 4, rho = sqrt(2/beta), alpha = 0, Frohoff Eq. (20) evaluates to f_1''^CH = 1/(2*beta) —
+    which simultaneously gives the spinodal softening shifting Gubbala's binodal f_1''(+1) = 2 to
+    marginal stability at beta_min = 1/4 (missing from Gubbala's printed SI Sec. 3.3) and equals
+    -mu_coex = 1/(2*beta) + O(1/beta^3) through O(1/beta^2) (because the O(1/beta^2) grand-potential
+    corrections of the Lo and Ld phases cancel identically). Both models share log-slope -1 in beta
+    across beta in [2, 50] to within 2.4e-3.
+  assumptions:
+    - "Variational coupling dictionary f_2'' = 4, rho = sqrt(2/beta), alpha = 0 over beta in [2.0, 50.0]; opposite signs (mu_coex < 0 vs. f_1''^CH > 0) drop out in scales_as."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with graham2023 (Nature Physics 19, 574-585)
+# ==============================================================================
+# Neither paper cites the other (0 exact shared bibliographic entries across
+# 66 graham2023 x 75 gubbala2025 references; gubbala2025 ref-7 cites only an
+# earlier Rangamani & Stachowiak membrane paper, Yuan et al. PNAS 2021; 0 stated
+# relations; 0 cited.yaml links). Both studies model liquid-like phase-separated
+# droplets interacting with uncrosslinked or weakly coupled F-actin networks in
+# 2D (quasi-2D lipid Lo domains surrounded by continuous 2D nematic F-actin in
+# gubbala2025 vs. 3D VASP condensates modeled as 2D constant-area ellipses
+# deformed from within by a flat-sheet F-actin ring in graham2023). Because
+# gubbala2025 nondimensionalizes all energies and elastic constants while
+# graham2023 reports dimensional energies [pN*nm] and rigidities [pN*nm^2],
+# there are 0 unit-compatible same_as families across all 26 x 31 = 806 model
+# pairs; all 11 genuine cross-record bridges below carry kind: scales_as and
+# provenance: proposed (6 verified, 5 honest diagnostic not_verified).
+
+# --- 1. 2D Continuum Nematic Pure-Bend Elasticity <-> 2D Flat-Sheet Ring Bending ---
+
+- id: rel_graham2023_ring_confinement_scales_elastic_eq5
+  kind: scales_as
+  a: graham2023/ring_confinement_bending_energy
+  b: gubbala2025/elastic_free_energy_eq5
+  mapping:
+    E1: "k_b / 3e5"
+    E3: "k_b / 3e5"
+    Q_xx: "0.5"
+    Q_xy: "0"
+    dQxx_x: "0"
+    dQxx_y: "0"
+    dQxy_x: "1 / R"
+    dQxy_y: "0"
+  output_map:
+    f_elastic: E_bend_0
+  regime:
+    k_b: [73000.0, 2200000.0]
+    L: [1.0, 1.0]
+    R: [0.5, 4.0]
+  provenance: proposed
+  reason: >
+    Establishes the exact continuum-to-discrete 2D bending elasticity equivalence between Graham's
+    2D flat-sheet circular confinement bending energy per unit contour length
+    e_bend = E_bend_0 / L = (1/2)*(k_b / R^2) = T_ring * (1/2)*(k_{b,fil}/delta)/R^2 (SI Sec. 2.1,
+    2.6, 2.8, Eq. 1) and Gubbala's 2D Landau-de Gennes nematic elastic free energy density Eq. (5)
+    f_elastic = (1/2)*E_1*(d_i Q_jk)^2 + (1/2)*E_3*Q_ij*(d_i Q_kl)*(d_j Q_kl). For a tangential
+    pure-bend director field wrapping a circular droplet of radius R (theta = 0 locally,
+    d_x theta = 1/R, d_y theta = 0, zero splay), Gubbala Eq. (3) yields Q_xx = S/2, Q_xy = 0,
+    d_x Q_xy = S/R (all other gradients zero), so Eq. (5) evaluates independently to
+    f_elastic = (E_1 + E_3*Q_xx)*(d_x Q_xy)^2 = (1/2)*k_{33,2D}/R^2 with exact 2D Frank bend
+    constant k_{33,2D} = 2*E_1*S^2 + E_3*S^3 = 3*E_1 at Gubbala's actin parameters (E_3 = E_1,
+    S = 1). Identifying Graham's areal bend stiffness k_{b,fil}/delta = 4863 pN*nm (= 1182 k_B T)
+    with Gubbala's 2D Frank bend constant k_{33,2D,phys} = a_0*l_c^2*(3*E_1) (mapping k_b linearly
+    into E_1 = E_3 and 1/R linearly into dQxy_x with zero formula copying) yields exact (+1, -2)
+    log-slope agreement in (k_b, R) to machine precision (~4.4e-13) across 1-30 F-actin filaments
+    and R in [0.5, 4.0] um.
+  assumptions:
+    - "Pure-bend tangential director configuration around a circular droplet (theta = 0, d_x theta = 1/R, d_y theta = 0, zero splay) at Gubbala's default actin parameters E_3 = E_1, S = 1 (Q_xx = 1/2)."
+    - "Unit ring contour length L = 1 um and fixed ribbon width T_ring so k_b = T_ring*k_{33,2D,phys} maps linearly into E_1 = E_3; reference scale factor 3e5 drops out in scales_as."
+
+- id: rel_graham2023_elastic_eq5_bend_scales_ring_confinement_2d
+  kind: scales_as
+  a: gubbala2025/elastic_free_energy_eq5
+  b: graham2023/ring_confinement_bending_energy
+  mapping:
+    k_b: "1000 * (8 * E1 * Q_xx**2 + 8 * E3 * Q_xx**3)"
+    L: "1"
+    R: "2 * Q_xx / dQxy_x"
+  output_map:
+    E_bend_0: f_elastic
+  regime:
+    E1: [0.1, 2.0]
+    E3: [0.05, 2.0]
+    Q_xx: [0.25, 1.0]
+    Q_xy: [0.0, 0.0]
+    dQxx_x: [0.0, 0.0]
+    dQxx_y: [0.0, 0.0]
+    dQxy_x: [0.1, 2.0]
+    dQxy_y: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Converse 4-parameter continuum-to-ring bridge across arbitrary quadratic/cubic elastic
+    anisotropy (E_1, E_3), nematic order magnitude S = 2*Q_xx in [0.5, 2.0], and pure-bend
+    curvature 1/R = dQxy_x / (2*Q_xx): substituting Gubbala's exact 2D Frank bend constant
+    k_{33,2D} = 2*E_1*S^2 + E_3*S^3 = 8*E_1*Q_xx^2 + 8*E_3*Q_xx^3 (frank_elastic_constants_2d)
+    into Graham's circular confinement bending rigidity k_b = w*k_{33,2D} and geometric bend
+    radius R = S / dQxy_x reproduces Eq. (5)'s f_elastic = (E_1 + E_3*Q_xx)*dQxy_x^2 across all
+    four varying variables (E_1, E_3, Q_xx, dQxy_x) — including the nontrivial parameter-dependent
+    log-slopes E_1/(E_1 + E_3*Q_xx) and E_3*Q_xx/(E_1 + E_3*Q_xx) — to machine precision (~4.4e-13).
+  assumptions:
+    - "Pure-bend slice of 2D Q-tensor Eq. (3) (Q_xy = dQxx_x = dQxx_y = dQxy_y = 0, S = 2*Q_xx > 0, kappa = 1/R = dQxy_x/S)."
+    - "Exact 2D Frank bend constant k_{33,2D} = 2*E_1*S^2 + E_3*S^3 from substituting Eq. (3) into Eq. (5) (not printed 3D Eq. 6), evaluated at L = 1 um."
+
+- id: rel_graham2023_elastic_eq5_bend_vs_eq6_3d_ring_confinement
+  kind: scales_as
+  a: gubbala2025/elastic_free_energy_eq5
+  b: graham2023/ring_confinement_bending_energy
+  mapping:
+    k_b: "1000 * (8 * E1 * Q_xx**2 + (32 / 3) * E3 * Q_xx**3)"
+    L: "1"
+    R: "2 * Q_xx / dQxy_x"
+  output_map:
+    E_bend_0: f_elastic
+  regime:
+    E1: [0.1, 2.0]
+    E3: [0.05, 2.0]
+    Q_xx: [0.25, 1.0]
+    Q_xy: [0.0, 0.0]
+    dQxx_x: [0.0, 0.0]
+    dQxx_y: [0.0, 0.0]
+    dQxy_x: [0.1, 2.0]
+    dQxy_y: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing Gubbala's printed 3D Beris-Edwards Eq. (6) bend elastic
+    constant k_{33,eq6} = 2*E_1*S^2 + (4/3)*E_3*S^3 = 8*E_1*Q_xx^2 + (32/3)*E_3*Q_xx^3 inside
+    Graham's ring confinement bending energy against Gubbala's own 2D elastic energy Eq. (5) on
+    the exact same 4-parameter pure-bend slice as
+    rel_graham2023_elastic_eq5_bend_scales_ring_confinement_2d. Honestly not_verified: the
+    erroneous 3D coefficient 4/3 (instead of exact 2D 1) shifts the log-slopes in E_1, E_3, and
+    Q_xx by up to 0.072 across the regime, independently corroborating gubbala2025/q_eq6_3d_vs_2d_frank
+    through Graham's elastica bending energy.
+  assumptions:
+    - "Same 4-parameter pure-bend slice and regime as rel_graham2023_elastic_eq5_bend_scales_ring_confinement_2d, replacing k_{33,2D} with printed 3D Eq. (6) k_{33,eq6}."
+
+- id: rel_graham2023_elastic_eq5_splay_vs_bend_ring_confinement
+  kind: scales_as
+  a: gubbala2025/elastic_free_energy_eq5
+  b: graham2023/ring_confinement_bending_energy
+  mapping:
+    k_b: "1000 * (8 * E1 * Q_xx**2 + 8 * E3 * Q_xx**3)"
+    L: "1"
+    R: "2 * Q_xx / dQxy_y"
+  output_map:
+    E_bend_0: f_elastic
+  regime:
+    E1: [0.5, 2.0]
+    E3: [0.1, 0.4]
+    Q_xx: [0.25, 1.0]
+    Q_xy: [0.0, 0.0]
+    dQxx_x: [0.0, 0.0]
+    dQxx_y: [0.0, 0.0]
+    dQxy_x: [0.0, 0.0]
+    dQxy_y: [0.1, 2.0]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast highlighting the fundamental 2D nematic vs. 1D actin-ring elastic
+    asymmetry: evaluating Gubbala Eq. (5) on a pure-splay director deformation (theta = 0,
+    d_y theta = 1/R, d_x theta = 0 -> dQxy_y = S/R, zero bend) yields
+    f_elastic = (E_1 - E_3*Q_xx)*dQxy_y^2 = (1/2)*k_{11,2D}/R^2 with a negative cubic anisotropy
+    term (splay softer than bend by k_{33,2D}/k_{11,2D} = 3 at E_3 = E_1, S = 1), whereas Graham's
+    1D confined actin ring undergoes exclusively bend (k_b proportional to k_{33,2D} =
+    2*E_1*S^2 + E_3*S^3, positive E_3 sign) and has no splay mode. Honestly not_verified with
+    opposite-sign E_3 and Q_xx log-slopes (max difference 0.65 across E_1 in [0.5, 2.0],
+    E_3 in [0.1, 0.4]).
+  assumptions:
+    - "Pure-splay slice (dQxy_y > 0, dQxy_x = 0) restricted to E_3*Q_xx < E_1 so k_{11,2D} > 0 across the regime."
+    - "Tests Graham's bend-only ring rigidity k_b proportional to k_{33,2D} against Gubbala's splay elastic energy."
+
+- id: rel_graham2023_ring_rod_short_arc_scales_elastic_eq5
+  kind: scales_as
+  a: graham2023/ring_rod_transition_energy
+  b: gubbala2025/elastic_free_energy_eq5
+  mapping:
+    E1: "k_b / 3e5"
+    E3: "k_b / 3e5"
+    Q_xx: "0.5"
+    Q_xy: "0"
+    dQxx_x: "0"
+    dQxx_y: "0"
+    dQxy_x: "1 / (R * AR**(3/2))"
+    dQxy_y: "0"
+  output_map:
+    f_elastic: E_bend
+  regime:
+    R: [1.0, 4.0]
+    L: [0.05, 0.05]
+    k_b: [73000.0, 2200000.0]
+    gamma_I: [1.0, 15.0]
+    AR: [1.0, 4.0]
+  provenance: proposed
+  reason: >
+    Bridges Graham's flagship numerical continuum ring-to-rod curvature integral
+    E_bend = (k_b/2) int_0^L kappa(s)^2 ds on a constant-area 2D elliptical droplet (SI Sec. 2.11,
+    Fig. 5c-d) directly to Gubbala's 2D nematic bend energy density Eq. (5) across deformed
+    aspect ratios AR in [1.0, 4.0]. For a short actin bundle segment (L = 0.05 um << b =
+    R/sqrt(AR)), energy minimization in ring_rod_transition_energy slides the segment onto the
+    flat minimum-curvature ellipse equator (t = pi/2), where local boundary curvature is
+    kappa_min = b/a^2 = 1/(R*AR^(3/2)) — the same curvature-segregation mechanism that drives
+    Gubbala Fig. 4's flat-sided elongated/triangular domains. Evaluating Gubbala Eq. (5) at
+    pure-bend gradient dQxy_x = S*kappa_min = 1/(R*AR^(3/2)) (with E_1 = E_3 = k_b/3e5, S = 1)
+    agrees across all three mapped parameters (k_b: +1, R: -2, AR: -3) to 5.3e-4 across 36 points.
+  assumptions:
+    - "Short local bundle segment L = 0.05 um << b = R/sqrt(AR) (b >= 0.5 um across R in [1, 4] um, AR in [1, 4]) so int kappa^2 ds = L*kappa_min^2 + O((L/b)^2)."
+    - "Exact constant-area ellipse equatorial curvature kappa_min = b/a^2 = 1/(R*AR^(3/2)) mapped linearly into pure-bend tensor gradient dQxy_x = S*kappa_min at S = 1, E_3 = E_1."
+
+- id: rel_graham2023_ring_rod_full_ring_vs_flat_elastic_eq5
+  kind: scales_as
+  a: graham2023/ring_rod_transition_energy
+  b: gubbala2025/elastic_free_energy_eq5
+  mapping:
+    E1: "k_b / 3e5"
+    E3: "k_b / 3e5"
+    Q_xx: "0.5"
+    Q_xy: "0"
+    dQxx_x: "0"
+    dQxx_y: "0"
+    dQxy_x: "1 / (R * AR**(3/2))"
+    dQxy_y: "0"
+  output_map:
+    f_elastic: E_bend
+  regime:
+    R: [1.0, 1.0]
+    L: [6.2831853, 6.2831853]
+    k_b: [73000.0, 2200000.0]
+    gamma_I: [1.0, 15.0]
+    AR: [1.5, 8.0]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast between local flat-side elastic relaxation and global closed-ring
+    topological confinement: repeating rel_graham2023_ring_rod_short_arc_scales_elastic_eq5 for
+    Graham's full closed actin ring (L = 2*pi*R = 6.283 um at R = 1 um, Fig. 5c benchmark) across
+    pre-unwinding aspect ratios AR in [1.5, 8.0] (< ar_crit = 9.54 where P(AR) < 2*L). Because a
+    closed ring cannot retreat onto the flat ellipse sides before P(AR) exceeds 2*L, it is forced
+    to wrap around the sharp ellipse poles (kappa_max = AR^(3/2)/R), driving total bending energy
+    UPWARD with AR (positive log-slope up to +1.5) in direct opposition to local flat-equator
+    decay AR^(-3) (honestly not_verified, max log-slope discrepancy 4.5).
+  assumptions:
+    - "Graham Fig. 5c / SI Sec. 2.11 full-ring benchmark R = 1 um, L = 2*pi*R = 6.2831853 um across pre-cliff aspect ratios AR in [1.5, 8.0] where P(AR) < 2*L."
+
+# --- 2. Uncrosslinked / Weak-Coupling Linear Stiffness-vs-Actin-Density Scaling ---
+
+- id: rel_graham2023_bathe_weak_scales_frank_2d_k33
+  kind: scales_as
+  a: graham2023/bundle_bending_rigidity_bathe_eqS1
+  b: gubbala2025/frank_elastic_constants_2d
+  mapping:
+    E1: "N * k_b_fil / 1e5"
+    E3: "N * k_b_fil / 1e5"
+    S: "1"
+  output_map:
+    k33: k_b
+  regime:
+    k_b_fil: [10000.0, 200000.0]
+    N: [2.0, 30.0]
+    chi: [0.5, 3.0]
+    c_qj: [0.5, 5.0]
+    alpha: [1.0e-6, 1.0e-4]
+  provenance: proposed
+  reason: >
+    Links the shared uncrosslinked / weak-coupling filament-stiffness premise of both papers:
+    Graham SI Note 1 invokes the weak crosslinker-coupling limit (alpha -> 0 in Bathe et al.
+    Eq. S1, because fluid VASP tetramers permit inter-filament sliding) to reduce bundle flexural
+    rigidity to linear superposition k_b = N*k_{b,fil}, while Gubbala Sec. 2.1-2.2 (p. 4) studies
+    uncrosslinked F-actin adsorbed onto a fluid lipid bilayer, holding E_3/E_1 = 1 and S = 1
+    while scaling the bare elastic modulus E_1 linearly with local actin density (from 0.1 at low
+    actin to 2.0 at high actin), consistent with Onsager/semiflexible-rod linear density scaling
+    k_{33,2D} proportional to rho_fil*k_{b,fil}. In the weak-coupling regime alpha in [1e-6, 1e-4],
+    both models share identical (+1, +1) log-slopes in filament number N and single-filament
+    rigidity k_{b,fil} to 3.9e-5 across 24 points.
+  assumptions:
+    - "Weak inter-filament shear coupling alpha in [1e-6, 1e-4] in Bathe Eq. S1 (Graham SI Note 1 fluid-VASP regime) matched to Gubbala's uncrosslinked linear density scaling E_1 = E_3 proportional to N*k_{b,fil} at S = 1."
+
+- id: rel_graham2023_bathe_strong_vs_frank_2d_k33
+  kind: scales_as
+  a: graham2023/bundle_bending_rigidity_bathe_eqS1
+  b: gubbala2025/frank_elastic_constants_2d
+  mapping:
+    E1: "N * k_b_fil / 1e5"
+    E3: "N * k_b_fil / 1e5"
+    S: "1"
+  output_map:
+    k33: k_b
+  regime:
+    k_b_fil: [10000.0, 200000.0]
+    N: [5.0, 30.0]
+    chi: [1.0, 3.0]
+    c_qj: [0.5, 2.0]
+    alpha: [100.0, 1000.0]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast demonstrating why linear density-stiffness equivalence breaks
+    down for strongly crosslinked actin bundles (e.g., permanent fascin crosslinks with
+    alpha in [100, 1000] in Bathe Eq. S1): shear coupling drives quadratic solid-beam stiffening
+    k_b proportional to N^2, diverging from Gubbala's uncrosslinked linear density scaling
+    k_{33,2D} proportional to N^1 by a log-slope gap up to 1.1 in N (honestly not_verified).
+  assumptions:
+    - "Same linear E_1 = E_3 proportional to N*k_{b,fil} mapping as rel_graham2023_bathe_weak_scales_frank_2d_k33 evaluated in the strongly coupled rigid-beam regime alpha in [100, 1000]."
+
+# --- 3. 2D Circular Droplet Interfacial Line Energy & Elastocapillary Numerator ---
+
+- id: rel_graham2023_crossover_scales_ring_rod_esurf
+  kind: scales_as
+  a: gubbala2025/anchoring_elastic_crossover
+  b: graham2023/ring_rod_transition_energy
+  mapping:
+    R: "R"
+    L: "1.0"
+    k_b: "73000.0"
+    gamma_I: "(sqrt(2) / 3) * chi * 10"
+    AR: "1.0"
+  output_map:
+    E_surf: xi_bend_2d
+  regime:
+    chi: [0.1, 2.0]
+    R: [0.5, 4.0]
+    E1: [2.0, 2.0]
+    E3: [2.0, 2.0]
+    S: [1.0, 1.0]
+  provenance: proposed
+  reason: >
+    Connects the shared 2D interfacial line-energy numerator across both 2D droplet models:
+    Graham's circular droplet surface energy E_surf = 2*pi*R*gamma_I (ring_rod_transition_energy
+    at AR = 1, SI Sec. 2.11, with 2D line tension gamma_I in pN) and Gubbala's 2D anchoring-to-bend
+    crossover parameter xi_bend_2d = gamma_{A,2D}*R / k_{33,2D} = (sqrt(2)/3)*chi*R /
+    (2*E_1*S^2 + E_3*S^3) (anchoring_elastic_crossover). In 2D, both interfacial tensions have
+    dimensions of force [pN], so interfacial energy scales linearly with circular perimeter
+    2*pi*R (unlike 3D surface area 4*pi*R^2); at fixed 2D Frank bend energy k_{33,2D} (which is
+    scale-invariant, R^0, for a continuous 2D actin sheet surrounding the droplet), xi_bend_2d and
+    E_surf share identical bilinear (+1, +1) log-slopes in (chi <-> gamma_I, R <-> R) to 2.0e-10.
+    By contrast, Graham's full elastocapillary ratio E_surf/E_bend_0 = 2*gamma_I*R^2/k_b scales
+    as R^2 at fixed thin-ring width T_ring (recovering Gubbala's R^1 scaling only in the
+    disk-filling continuum limit T_ring proportional to R, with elastocapillary crossover radius
+    R_{ec,Graham} = sqrt(T_ring * R_{ec,2D} / 2)).
+  assumptions:
+    - "Circular droplet geometry (AR = 1, L = 1 um < 2*pi*R) and fixed Gubbala high-actin 2D Frank bend stiffness (E_1 = E_3 = 2, S = 1) isolating the 2D interfacial line-energy numerator gamma*R."
+    - "Identifies Gubbala's 1D Cahn-Hilliard kink anchoring line tension gamma_{A,2D} = a_0*l_c*(sqrt(2)/3)*chi [pN] with Graham's 2D droplet line tension gamma_I [pN] (scale factor a_0*l_c = 10 pN drops out in scales_as)."
+
+# --- 4. 2D Planar Boundary Curvature & Cross-Paper Error Corroboration of SI Eq. (S2) ---
+
+- id: rel_graham2023_curvature_corr_scales_ring_rod_full_circle
+  kind: scales_as
+  a: gubbala2025/boundary_curvature_s2_corrected
+  b: graham2023/ring_rod_transition_energy
+  mapping:
+    R: "R"
+    L: "2 * pi * R"
+    k_b: "73000.0"
+    gamma_I: "5.0"
+    AR: "1.0"
+  output_map:
+    E_bend: kappa_mean
+  regime:
+    R: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Links the exact 2D planar parametric boundary curvature kappa(u) = |x'y'' - y'x''| /
+    ((x')^2 + (y')^2)^(3/2) shared by both papers' droplet-shape analyses (Gubbala SI Sec. 2.3
+    Eq. S2 corrected for Fig. 4 Lo domains vs. Graham SI Sec. 2.11 ellipse curvature
+    kappa(t) = a*b / (a^2*sin^2 t + b^2*cos^2 t)^(3/2) inside ring_rod_transition_energy). For a
+    closed circular actin ring of contour length L = 2*pi*R wrapping a circular droplet (AR = 1),
+    Graham's bending integral evaluates to E_bend = (k_b/2) int_0^{2*pi*R} kappa^2 ds =
+    pi*k_b*kappa_circle(R) = pi*k_b/R, sharing the exact R^(-1) curvature log-slope with
+    boundary_curvature_s2_corrected.kappa_mean to 3.5e-10 across R in [0.5, 5.0] um.
+  assumptions:
+    - "Closed circular ring L = 2*pi*R on a circular droplet (AR = 1) at single-filament rigidity k_b = 73000 pN*nm^2 so E_bend = pi*k_b*kappa_mean."
+
+- id: rel_graham2023_curvature_printed_vs_ring_rod_full_circle
+  kind: scales_as
+  a: gubbala2025/boundary_curvature_s2
+  b: graham2023/ring_rod_transition_energy
+  mapping:
+    R: "R"
+    L: "2 * pi * R"
+    k_b: "73000.0"
+    gamma_I: "5.0"
+    AR: "1.0"
+  output_map:
+    E_bend: kappa_mean
+  regime:
+    R: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing Gubbala's printed SI Eq. (S2) curvature formula
+    kappa = |x'y'' - y'x''| / (x' + y')^(3/2) (boundary_curvature_s2, omitting the squares on x'
+    and y') against Graham's exact circular-ring curvature integral E_bend = pi*k_b/R under the
+    exact same dictionary as rel_graham2023_curvature_corr_scales_ring_rod_full_circle. Honestly
+    not_verified with an exact log-slope discrepancy of 1.50 (printed Eq. S2 scales as R^(+1/2)
+    instead of R^(-1)), independently corroborating gubbala2025/q_eqS2_curvature_denominator.
+  assumptions:
+    - "Same closed circular-ring dictionary and radius range R in [0.5, 5.0] um as rel_graham2023_curvature_corr_scales_ring_rod_full_circle."
+
+# ==============================================================================
+# Cross-record ModelAtlas audit with nastkolb2022
+# (Nast-Kolb, Bleicher, Payr & Bausch, Mol. Biol. Cell 33:ar91, 2022)
+# Neither paper cites the other (0 stated relations, 0 cited.yaml links; exact
+# 2 shared bibliographic entries across 75 x 66 references: Honigmann et al.,
+# eLife 2014 [ref-5 <-> ref-honigmann2014] and Spudich & Watt, JBC 1971
+# [ref-S1 <-> ref-spudich1971]). Exhaustive audit across all 26 runnable
+# gubbala2025 x 17 nastkolb2022 (11 runnable, 6 non-runnable) = 442 model pairs
+# finds 0 genuine equation-level relations (0 stated, 0 proposed, 0 same_as
+# families):
+# 1. FRAP single-exponential recovery (disjoint): nastkolb2022's only two
+#    non-too_plain (>2 ops) runnable models are empirical FRAP fits
+#    frap_recovery_fit (6 ops, y = a*(1 - exp(-t/tau)) + c) and
+#    frap_recovery_by_half_time (8 ops), whereas gubbala2025 performs no FRAP,
+#    has no exponential recovery curve model, and tracks unbounded passive/
+#    hindered power-law Lo-domain coarsening R(t)/R_0 = (t/t_0)^alpha (alpha
+#    <= 1/3) and Fourier linear-stability rates omega(k) without time curves.
+# 2. 2D ribbon packing, width scaling, & simple ratios (disjoint / too_plain):
+#    all other 9 runnable nastkolb2022 models have <= 2 ops (too_plain=True:
+#    bundle_filament_count_2d_spacing, bundle_effective_spacing,
+#    bundle_width_vasp_scaling [0 ops], cp_to_actin_ratio,
+#    actin_concentration_fold_change, frap_half_time, frap_tau_from_half_time,
+#    frap_mobile_fraction_plateau, frap_mobility_ratio). gubbala2025 treats
+#    F-actin as a continuum 2D nematic tensor Q_ij(x,t) with no bundle-width,
+#    interfilament-spacing, filament-count, capping-protein, or monomer-ratio
+#    equations; trivial 1-2 op ratio coincidences (e.g. frap_mobility_ratio
+#    t_half_ml/t_half_slb vs. nondim_parameters_s32.gamma = t_Q/t_phi, or
+#    0-op bundle_width_vasp_scaling vs. linear Frank stiffness) are rejected as
+#    physically spurious.
+# 3. Non-runnable nastkolb2022 image-processing models (6:
+#    bilayer_actin_decoration, bundle_filament_intensity_extrapolation,
+#    bundle_intensity_ratio, bundle_width_lognormal_fit,
+#    frap_bleach_normalization, vasp_actin_spearman_colocalization) have no
+#    runnable equation counterparts in gubbala2025.
+# Full ModelAtlas audit and quantitative 2D-SLB biophysical comparison are
+# documented in gubbala2025/questions.yaml
+# (q_nastkolb2022_2d_slb_nematic_vs_vasp_bundling_synthesis).
+# ==============================================================================

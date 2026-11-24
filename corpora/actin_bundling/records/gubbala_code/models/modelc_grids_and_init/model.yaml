@@ -1,0 +1,33 @@
+id: modelc_grids_and_init
+name: live ModelC_2D.grids() and t=0 initialization audit (ModelC_Cubic.py)
+role: model
+software: true
+stated:
+  file: ModelC_Cubic.py
+  lines: "48-62"
+  quote: "def grids(self):"
+  where: "ModelC_Cubic.py::ModelC_2D.grids and ModelC_2D.run initialization (lines 48-62, 146-153)"
+equation: "DX = L/(N-1), kx = 2*pi*fftfreq(N, L/N), K[K==0] = 1/N^2, ALIASING = (|kx| < (2/3)*max(kx)) & (|ky| < (2/3)*max(ky)); phi0 = noise + PHI_AVG, Qxx0 = Qxy0 = noise with noise ~ N(0, 1e-2^2)"
+inputs:
+  N: {quantity: grid_points, unit: dimensionless}
+  L: {quantity: dimensionless_length, unit: dimensionless}
+  phi0: {quantity: mean_lipid_concentration, unit: dimensionless}
+  beta: {quantity: ldg_quartic_coeff, unit: dimensionless}
+  gamma: {quantity: timescale_ratio, unit: dimensionless}
+  E1: {quantity: elastic_constant_dimless, unit: dimensionless}
+  E3: {quantity: elastic_constant_dimless, unit: dimensionless}
+  chi: {quantity: anchoring_strength, unit: dimensionless}
+  dt_init: {quantity: time_dimless, unit: dimensionless}
+  tol: {quantity: error_tolerance, unit: dimensionless}
+outputs:
+  dx_exported: {quantity: dimensionless_length, unit: dimensionless}
+  dx_fft: {quantity: dimensionless_length, unit: dimensionless}
+  k_zero_mode: {quantity: wavenumber_dimless, unit: dimensionless}
+  dealias_kept_fraction: {quantity: dealias_kept_fraction, unit: dimensionless}
+  noise_var_init: {quantity: noise_variance, unit: dimensionless}
+  init_qxx_qxy_corr: {quantity: field_correlation, unit: dimensionless}
+  init_phi_qxx_corr: {quantity: field_correlation, unit: dimensionless}
+settings:
+  grid_mult: 1
+  seed: 0
+stochastic: true

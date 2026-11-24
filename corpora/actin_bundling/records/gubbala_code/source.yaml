@@ -1,0 +1,93 @@
+id: gubbala_code
+kind: software
+title: "ActinNematics: 2D pseudo-spectral Model C + Q-tensor phase-field solver (Gubbala et al., 2025)"
+authors:
+  - Aakanksha Gubbala
+  - Anika M. Jena
+  - Daniel P. Arnold
+  - Sho C. Takatori
+year: 2025
+file: corpus/actin_bundling/code/gubbala_code
+url: https://github.com/aakanksha-gubbala/ActinNematics
+version: "sha256:b433ea72441b2c3de35de652e3ee21874c29392aae3a0c5bd09c162faac1c048"
+licence: MIT
+language: Python
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1"
+  date: "2026-11-24"
+notes: >
+  Full code audit and live CPU BoxGraph adapter verification of `corpus/actin_bundling/code/gubbala_code`
+  (`ModelC_Cubic.py`, 259 lines; `README.md`, 49 lines; `LICENSE`, MIT License, Copyright (c) 2025 Aakanksha
+  Gubbala; GitHub https://github.com/aakanksha-gubbala/ActinNematics, commit
+  bad784290e38b4a0ff350ca0047854d03c276942), the released 2D Fourier pseudo-spectral Model C + Q-tensor
+  simulation code accompanying Gubbala, Jena, Arnold & Takatori, Soft Matter 21, 6243-6251 (2025)
+  (`gubbala2025`). Entry points in `ModelC_Cubic.py` are `ModelC_2D.__init__` (lines 8-46), `grids()`
+  (lines 48-62), `grad()` (lines 64-66), unused `curl_fft()` (lines 68-69), `cubic()` (lines 71-102),
+  `euler_step()` (lines 104-144), `run()` (lines 146-242), and `export_params()` (lines 244-258).
+
+  Parameters and cross-links: recorded all 33 parameter defaults, algorithmic constants, and README example
+  settings written in `ModelC_Cubic.py` and `README.md` plus 14 target parameters and printed predictions
+  copied from `gubbala2025` (28 inline `from_source: gubbala2025` / `from_datum` links verified). Built 8
+  live `software: true` adapter models importing `ModelC_Cubic.py` unmodified from `BOXGRAPH_SOURCE` on
+  `device='cpu'` via an in-memory `h5py` shim (6 base adapters: `modelc_grids_and_init`,
+  `modelc_cubic_operator_audit`, `modelc_linear_stability_probe`, `modelc_adaptive_stepper_audit`,
+  `modelc_coarsening_native_run`, `modelc_coarsening_euler_step`, plus 2 diagnostic variants
+  `modelc_cubic_operator_fixed` and `modelc_linear_stability_fixed`), with 14 runs, 15 comparisons (4
+  reproduced, 4 not reproduced, 7 no verdict), 4 converged refinements (all `belongs_to = model`), and 12
+  open questions in `questions.yaml`.
+
+  What the code settles from `gubbala2025`:
+  (1) Confirms SI Eqs. (S29) and (S31)'s `phi^2 - phi` is a typo: line 138 implements `phi_**3 - phi_`.
+  (2) Confirms SI Eqs. (S29) and (S31)'s undefined `kappa` is the code's variable `kappa_anch = 1 + |CHI|/2`
+  (line 114), matching main text p. 3 rather than SI Eq. (S13)'s `1 + chi/2` or SI Sec. 3.2's `lambda_tilde + chi/2`.
+  (3) Confirms Eq. (10) over Eq. (4)'s literal Tr(Q^4): line 113 implements `bulk_q = (1 + phi_) - BETA*TrQ2`.
+  (4) Confirms SI p. 16 omitted `dt_old` in the adaptive update: line 223 implements `DT = DT * (TOL/delta)^(1/5)`.
+  (5) Confirms SI Eqs. (S30)/(S32) omitted the factor `1/2` on `E_3`: lines 127 & 134 use `0.5 * E3`.
+  (6) Confirms unit prefactor `1` on the `k^6` stabilization term (lines 139-142) and exact off-diagonal
+  linearized coupling `c12 = 2*gamma*k^2/sqrt(beta)` (half of SI Eq. S24's printed `4*gamma`).
+
+  Major bugs, failed reproductions, and every difference between `ModelC_Cubic.py` and `gubbala2025`:
+  (1) CRITICAL LINE-91 FOURIER BUG (`q_cubic_line91_realspace_fft_bug`): `ModelC_2D.cubic()` line 91 writes
+  `2 * Q[k][l] * self.ifft2(-K[k] * K[l] * Q[i][j]).real`, passing REAL-SPACE `Q[i][j]` instead of
+  Fourier-space `Q_fft[i][j]`. On the smooth periodic test field (`run_cubic_audit_high`), `cubic()` has
+  116.3% L2 error vs Eq. (10); on a spatially uniform constant nematic field (`Qxx=1, Qxy=0`), it creates a
+  spurious cross-shaped artifact along x=0 and y=0 with max amplitude `4.013` at `E3=2, N=32` (breaking
+  translational invariance); and in the linearized dispersion (`run_lsa_high`), bend-splay anisotropy
+  `E3_eff_linear` collapses from `+2.0` (SI Eq. S28) to `-0.0106` (`cmp_lsa_E3_eff_code_vs_paper`: NOT
+  REPRODUCED). Fixing line 91 + variational sign (`run_cubic_fixed_high`, `run_lsa_fixed_high`) restores
+  zero uniform residual, `+1.000` dissipation ratio, and `E3_eff_linear = +2.0000` (REPRODUCED). Crucially,
+  this line-91 bug explains why `ModelC_Cubic.py` never blows up at high actin (`E1=E3=2, beta=1`,
+  `run_euler_high_shared` `blowup_flag=0`) despite both the non-variational `+E3/2` sign and the
+  coupled-binodal instability (`|Q|_eq = 1.0543 > 1` in `gubbala2025`): wiping out `-2 Q_kl d_k d_l Q_ij`
+  leaves nematic diffusion strictly parabolic (`~E1`).
+  (2) NON-VARIATIONAL `+0.5 * E3` SIGN (`q_cubic_nonvariational_plus_sign`): lines 127 & 134 implement printed
+  Eq. (10)'s `+0.5 * E3` rather than variational `-0.5 * E3`; combined with line 91, free-energy dissipation
+  ratio is `-0.312` (increasing `F_E3`).
+  (3) MISSING `1/S = sqrt(beta)` IN ANCHORING (`q_missing_inv_S_in_anchoring`): lines 126, 133, 140 drop `1/S`;
+  masked at `beta=1` (`chi_eff = 1.0000`, REPRODUCED), but at `beta=2` (`run_lsa_beta2`) gives
+  `chi_eff = 0.7071 = 1/sqrt(2)` (`cmp_lsa_chi_eff_beta2_vs_code`: NOT REPRODUCED) and bounds `+-4.828`.
+  (4) `kappa_anch = 1 + |CHI|/2` STABILITY BOUND MISMATCH (`q_kappa_anch_abs_chi_vs_si_s27`): live
+  `ModelC_2D.euler_step()` gives `-2.000 <= chi <= +2.000` (`cmp_lsa_chi_max_code_vs_paper`: REPRODUCED,
+  `cmp_lsa_chi_min_code_vs_paper`: NOT REPRODUCED against SI Eq. S27's `-2/3`; `chi=-1` is stable).
+  (5) SHARED NOISE INITIALIZATION (`q_shared_noise_initial_condition`): lines 148-153 reuse one Gaussian draw
+  (`scale=1e-2`, variance `1e-4`) identically for `phi - PHI_AVG`, `Qxx`, and `Qxy` (`corr = 1.000000`),
+  locking the initial director to pi/8 or 5*pi/8; on `N=64, L=62.5` low-actin `euler_step` runs
+  (`t=200..1000`), shared noise raises fitted `alpha` from `0.275 +- 0.005` (independent noise, near `~0.25`)
+  to `0.311 +- 0.001` (unmodified adaptive `ModelC_2D.run()` on `N=48, t=120..400` gives `0.210 +- 0.029`).
+  (6) ADAPTIVE TIME-STEPPING BUGS (`q_adaptive_timestep_bugs_and_choices`): line 224 executes `T += self.DT`
+  AFTER overwriting `self.DT` on line 223, overshooting step-1 time by ~280x (`2.799e-6` vs `1e-8`,
+  `cmp_stepper_reported_t1_vs_dt0`: NOT REPRODUCED; `max_time_shift = 0.302` by `t=20`); discards the more
+  accurate two-half-step update (`phi_half_2`) with no step rejection or `dt_max` cap; uses spatial L1 mean
+  and `1/5` exponent; and hides a `DT < 1e-12` ("picoseconds") abort.
+  (7) TOLERANCE MISMATCH (`q_tol_1e4_vs_paper_1e6`): both `ModelC_Cubic.py:35` and `README.md:32` set
+  `TOL = 1e-4` (100x looser than SI p. 16's `tau = 10^-6`) and overload `TOL` for `cubic()` line 101.
+  (8) ZERO-MODE MASS LEAK (`q_k_zero_mode_floor_mass_leak`): line 54 sets `K[K == 0] = 1/N^2` (`3.81e-6` at
+  `N=512`), causing mass-conservation leak (`mass_leak_rate = 1.91e-7` at `N=32`; `phi_mean_drift = 4-7e-6`
+  over `t=1000` at `N=64`).
+  (9) GRID SPACING, DE-ALIASING, DEFAULTS, & HIGH-ACTIN METASTABILITY: `DX = L/(N-1)` (line 49, exported as
+  `0.97847` vs FFT `L/N = 0.97656`); square 2/3 de-aliasing keeps `43.84%` of modes at `N=512`; constructor
+  defaults (`N=128, L=128, DT=1e-8, TIME=1000, SKIPS=10, GAMMA=1`) differ from README (`512, 500, 1e-6, 100,
+  100, 0.1`) and main text; `curl_fft()` and `r=1e-3` are dead code; and high-actin `phi0=0.75` lies outside
+  the coupled spinodal (`0.7071`), causing late nucleation and `alpha = 0.442` over `t=200..1000` at `N=64`.

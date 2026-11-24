@@ -1,0 +1,24 @@
+id: ldg_bulk_free_energy_eq10_consistent
+name: Landau-de Gennes bulk free energy consistent with Eq. (10) and Eq. (S20)
+role: model
+stated:
+  page: 3
+  printed_page: "6245"
+  quote: "The bulk free energy, which controls the isotropic-to"
+  where: "Eq. (4) / Eq. (10) / SI Eq. (S20)"
+equation: "f_bulk = (beta / 4) * (Tr(Q^2))^2 - ((1 + phi) / 2) * Tr(Q^2) = beta * (Q_xx^2 + Q_xy^2)^2 - (1 + phi) * (Q_xx^2 + Q_xy^2)"
+variant_of: ldg_bulk_free_energy_eq4
+corrections:
+  - equation: "Eq. (4) / SI Eq. (S5)"
+    change: "Replace quartic term (beta/4) Tr(Q^4) with (beta/4) (Tr(Q^2))^2 = (beta/2) Tr(Q^4) in 2D"
+    evidence: "In 2D for traceless symmetric Q, Tr(Q^4) = (1/2)(Tr(Q^2))^2, so -delta[(beta/4)Tr(Q^4)]/delta Q_ij = -(beta/2)(Q_kl Q_kl)Q_ij, whereas Eq. (10), Eq. (S18), and Eq. (S20) all print -beta(Q_kl Q_kl)Q_ij and SI p. 13 states critical points +-sqrt(A/(2*beta)) (giving 1/sqrt(beta) at phi = 1), which require (beta/4)(Tr(Q^2))^2."
+inputs:
+  beta: {quantity: ldg_quartic_coeff, unit: dimensionless}
+  phi: {quantity: lipid_concentration_field, unit: dimensionless}
+  Q_xx: {quantity: nematic_tensor_component, unit: dimensionless}
+  Q_xy: {quantity: nematic_tensor_component, unit: dimensionless}
+outputs:
+  f_bulk: {quantity: free_energy_density_dimless, unit: dimensionless}
+  tr_Q2: {quantity: nematic_tensor_norm_sq, unit: dimensionless}
+settings: {}
+stochastic: false

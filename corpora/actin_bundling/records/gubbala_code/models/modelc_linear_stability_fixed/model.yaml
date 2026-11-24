@@ -1,0 +1,46 @@
+id: modelc_linear_stability_fixed
+name: diagnostic variant of ModelC_2D.euler_step() LSA probe with fixed line 91 (Q_fft) and variational -0.5*E3 sign
+role: model
+software: true
+variant_of: modelc_linear_stability_probe
+corrections:
+  - equation: "ModelC_Cubic.py line 91 (ModelC_2D.cubic)"
+    change: "Pass Fourier-transformed Q_fft[i][j] instead of real-space Q[i][j] into self.ifft2(-K[k] * K[l] * ...) on the live ModelC_2D instance"
+    evidence: "Unmodified ModelC_2D.euler_step() yields E3_eff_linear = -0.0106 instead of +2.0 at E1 = E3 = 2, beta = 1 (destroying >99% of the bend-splay anisotropy in SI Eq. S28)."
+  - equation: "ModelC_Cubic.py lines 126-127 and 133-134 (ModelC_2D.euler_step)"
+    change: "Negate the cubic tensor returned by mc.cubic() so euler_step's +0.5*E3*f_fft becomes variational -0.5*E3*F_exact"
+    evidence: "Restores SI Eq. (S25)/(S28) anisotropic nematic decay omega_xx = 4 + (E1 + E3/sqrt(beta))*kx^2 + (E1 - E3/sqrt(beta))*ky^2 with E3_eff_linear = +2.0000."
+stated:
+  file: ModelC_Cubic.py
+  lines: "122-136"
+  quote: "numerator_qxx = qxx_fft + dt * (bulk_qxx_fft - 0.5 * self.CHI * anch_qxx_fft +"
+  where: "ModelC_Cubic.py::ModelC_2D.euler_step (lines 122-136) with fixed mc.cubic()"
+equation: "Same live ModelC_2D.euler_step() Frechet derivative as modelc_linear_stability_probe, overriding only mc.cubic() on the instance with Q_fft and variational sign"
+built_from:
+  - modelc_linear_stability_probe
+inputs:
+  beta: {quantity: ldg_quartic_coeff, unit: dimensionless}
+  gamma: {quantity: timescale_ratio, unit: dimensionless}
+  chi: {quantity: anchoring_strength, unit: dimensionless}
+  E1: {quantity: elastic_constant_dimless, unit: dimensionless}
+  E3: {quantity: elastic_constant_dimless, unit: dimensionless}
+outputs:
+  omega_phi_long: {quantity: decay_rate_dimless, unit: dimensionless}
+  omega_phi_trans: {quantity: decay_rate_dimless, unit: dimensionless}
+  c12_phi_from_qxx: {quantity: decay_rate_dimless, unit: dimensionless}
+  c21_qxx_from_phi: {quantity: decay_rate_dimless, unit: dimensionless}
+  omega_xx_long: {quantity: decay_rate_dimless, unit: dimensionless}
+  omega_xx_trans: {quantity: decay_rate_dimless, unit: dimensionless}
+  omega_xy_long: {quantity: decay_rate_dimless, unit: dimensionless}
+  E3_eff_linear: {quantity: elastic_constant_dimless, unit: dimensionless}
+  chi_eff_linear: {quantity: anchoring_strength, unit: dimensionless}
+  chi_min_code: {quantity: anchoring_strength, unit: dimensionless}
+  chi_max_code: {quantity: anchoring_strength, unit: dimensionless}
+  mass_leak_rate: {quantity: decay_rate_dimless, unit: dimensionless}
+settings:
+  n_grid: 32
+  L_box: 32.0
+  mode_m: 2
+  dt_probe: 1.0e-4
+  eps_fd: 1.0e-4
+stochastic: false
