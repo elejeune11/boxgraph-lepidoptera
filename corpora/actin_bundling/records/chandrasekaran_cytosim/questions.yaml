@@ -1,0 +1,456 @@
+- id: q_vasp_stokes_vs_couple_diffusion_contradiction
+  kind: possible_error
+  about: [cytosim_sphere_solid_bead_diffusion, cytosim_semi_implicit_langevin_1d, paper_vasp_radius, paper_vasp_diffusion_rate, paper_vasp_valency, paper_boundary_stiffness_vasp, cmp_vasp_stokes_D_vs_paper, cmp_vasp_meca_free_D_vs_paper, cmp_vasp_couple_uniform_D_vs_paper]
+  text: >
+    Major architectural contradiction between chandrasekaran2024's VASP specification and CytoSim's
+    C++ object classes (deepening chandrasekaran2024/q_viscosity_unit_and_50x_water_error).
+    chandrasekaran2024 specifies VASP tetramers as 30 nm spheres with 4 surface actin-binding sites,
+    boundary confinement stiffness 100 pN/um, steric repulsion (radius 30 nm, stiffness 1.0 pN/um),
+    droplet viscosity 0.5 pN*s/um^2, AND diffusion rate 10 um^2/s. In CytoSim C++: (1) a Couple
+    accepts an independent diffusion = 10 (couple_prop.cc:146, moving via uniform steps
+    [-sqrt(6*D*dt), +sqrt(6*D*dt)]), but has only 2 hands (not 4), zero steric interactions
+    (meca_steric.cc only iterates fibers, spheres, beads, solids), and explicitly throws an error
+    if confine[1] stiffness is set (couple_prop.cc:100); (2) a Sphere or Solid supports radius 30 nm,
+    4 surface Wrist Singles, confine = inside 100, and sterics, but NEITHER SphereProp nor SolidProp
+    accepts a diffusion parameter — both hardcode Stokes' law drag = 6*pi*eta*R (sphere.cc:282,
+    solid.cc:1289; Solid also ignores SolidProp::drag, which only Bead reads at bead.cc:132), giving
+    D = kT/(6*pi*0.5*0.03) = 0.01485 um^2/s (673x slower than 10 um^2/s, or 67x slower even at
+    0.05 Pa*s)! (3) Crucially, SingleProp parses diffusion = 10 without error (single_prop.cc:131),
+    and Wrist's guard checking p->diffusion > 0 is commented out under '#if ( 0 )' (wrist.cc:19-22),
+    while Wrist::stepF() (wrist.cc:55-60) NEVER calls diffuse() — meaning setting diffusion = 10 on
+    the 4 VASP Wrist Singles is silently ignored! Achieving D = 10 um^2/s on a 30 nm Sphere/Solid
+    would require overriding per-class viscosity to 7.43e-4 pN*s/um^2 (lower than pure water!).
+  citation:
+    file: src/sim/sphere.cc
+    lines: "280-284"
+    quote: "spDrag    = ( 6 * M_PI ) * vr;"
+
+- id: q_viscosity_unit_and_500x_water_confirmed
+  kind: possible_error
+  about: [cyto_default_viscosity, cyto_water_viscosity_doc, paper_viscosity_ratio_water, viscosity_droplet_corrected_added, cmp_viscosity_ratio_vs_paper_50x]
+  text: >
+    CytoSim's SimulProp header (src/sim/simul_prop.h:83,88) and units guide (doc/sim/units.md:7,35)
+    explicitly specify that simul:viscosity has units of pN.s/um^2 = Pa.s and tabulate Water = 0.001.
+    This directly confirms chandrasekaran2024/q_viscosity_unit_and_50x_water_error: Supplementary
+    Table 2's '0.5 pN/s um^2' is a misprinted unit AND equals 500x water (not '50x water', which
+    would be 0.05 pN*s/um^2).
+  citation:
+    file: src/sim/simul_prop.h
+    lines: "83-88"
+    quote: "The viscosity of the medium should be given in units of pN.s/um^2 = Pa.s."
+
+- id: q_eq1_mu_and_semi_implicit_meca
+  kind: possible_error
+  about: [cytosim_semi_implicit_langevin_1d, cmp_semi_implicit_var_vs_boltzmann]
+  text: >
+    CytoSim's Meca::solve() (src/sim/meca.cc:522-564) and Bead::addBrownianForces() (bead.cc:109-119)
+    confirm chandrasekaran2024/q_eq1_mu_called_viscosity: the coefficient multiplying force in
+    overdamped Langevin dynamics is mobility = 1/drag (um/(pN*s)), not solvent viscosity. Moreover,
+    chandrasekaran2024 Eq. (1) omits three actual CytoSim numerical features: (1) inextensibility and
+    rigid-body constraint projection P (meca.cc:528); (2) semi-implicit linear solve
+    (I - dt*mu*P*M)(X_new - X_old) = dt*mu*P*(F + Noise) (meca.cc:552), which damps harmonic-trap
+    stationary variance by 1/(1 + 0.5*mu*k*dt) (a ~26% reduction for a 30 nm sphere at mu = 3.54
+    um/(pN*s), k = 100 pN/um, dt = 0.002 s); and (3) uniform [-sqrt(6*D*dt), +sqrt(6*D*dt)] stepping
+    (rather than Gaussian Langevin noise) for free diffusing Couples and Singles (couple_prop.cc:146,
+    single_prop.cc:207).
+  citation:
+    file: src/sim/meca.cc
+    lines: "550-556"
+    quote: "( I - time_step * mobP * M ) ( Xnew - Xold ) = time_step * mobP * ( F + Noise )"
+
+- id: q_default_kT_4p2_vs_4p11
+  kind: unstated_input
+  about: [cyto_default_kT, paper_kbt_lammps, cytosim_fiber_bending_mechanics, run_bending_ring_cyto_kT, run_bending_ring_paper_kT]
+  text: >
+    chandrasekaran2024 never states simul:kT or temperature for its CytoSim simulations (printing
+    4.11 pN*nm/k_B T only in LAMMPS Supplementary Table 1). If omitted from the .cym config, CytoSim
+    defaults to kT = 0.0042 pN*um = 4.2 pN*nm (~31 degC / 304 K, src/sim/simul_prop.cc:28), 2.19%
+    higher than 4.11 pN*nm, shifting actin persistence length from 18.25 um to 17.86 um and Stokes
+    diffusivities by +2.19%.
+  citation:
+    file: src/sim/simul_prop.cc
+    lines: "28"
+    quote: "kT = 0.0042;"
+
+- id: q_hidden_fiber_drag_radius_default
+  kind: unstated_input
+  about: [cyto_default_drag_radius, cyto_default_drag_length, cyto_tirado_ct_code, cyto_tirado_ct_doc, cytosim_fiber_drag_and_brownian, run_fiber_drag_default_radius, run_fiber_drag_actin_radius]
+  text: >
+    chandrasekaran2024 does not specify fiber:drag_radius or fiber:drag_length in Supplementary
+    Table 2. CytoSim's built-in default is FiberProp::drag_radius = 0.0125 um (a microtubule radius,
+    src/sim/fiber_prop.cc:307) with drag_length = 5 um (line 308), whereas actin has radius 3.5 nm
+    (explicitly overridden in cym/arp23.cym:31 but omitted in cym/actin.cym). Leaving drag_radius at
+    default increases a 2*pi-um filament's cylindrical drag by +22.7% (5.27 vs 4.30 pN*s/um; +74.6%
+    for a 0.1 um seed filament). Additionally, Fiber::dragCoefficientCylinder() hardcodes end-correction
+    0.32 on line 988 while its docstring on line 956 cites Tirado & de la Torre (1979)'s 0.312.
+  citation:
+    file: src/sim/fiber_prop.cc
+    lines: "307-308"
+    quote: "drag_radius = 0.0125;  // radius of a Microtubule"
+
+- id: q_steric_global_stiffness_and_ultrasoft_barrier
+  kind: choice
+  about: [cytosim_steric_repulsion, paper_actin_steric_stiffness, cyto_cym_bundle_steric_push, run_steric_actin_actin, run_steric_vasp_vasp, run_steric_actin_cyto_example]
+  text: >
+    Two hidden CytoSim steric mechanics findings: (1) In CytoSim, repulsive steric stiffness
+    steric_stiff_push[0] is a single global SimulProp parameter (simul_prop.cc:93, meca_steric.cc:80)
+    applied to all pairwise interactions (with cutoff d0 = r1 + r2, locus_grid.cc:99,123,404), NOT
+    independently configurable for actin vs VASP (though chandrasekaran2024 lists 1.0 pN/um for both).
+    (2) A stiffness of 1.0 pN/um is 10,000x softer than CytoSim's bundled actin bundle example
+    (cym/bundle_steric.cym:10 uses steric = 1, 10000): under CytoSim's exact potential
+    E = 0.5*k*(d0 - d)^2 (fiber_prop.h:270), complete actin-actin overlap (d0 = 7 nm) creates a
+    maximum force of only 0.007 pN and a barrier of 0.0058 kT (VASP-VASP complete overlap at d0 =
+    60 nm gives 0.06 pN and 0.43 kT < 1 kT), allowing easy thermal interpenetration rather than
+    hard excluded volume.
+  citation:
+    file: src/sim/meca_steric.cc
+    lines: "79-83"
+    quote: "locusGrid.stiffness(prp.steric_stiff_push[0]);"
+
+- id: q_monomer_depletion_and_nucleator_settled
+  kind: reading
+  about: [cytosim_polymerization_ratchet_depletion, cytosim_nucleation_monomer_depletion_sim, nucleated_fiber_init_length_added, cmp_figs6c_max_length_depletion, cmp_figs6b_nuc50_timeseries, cmp_figs6b_nuc150_timeseries]
+  text: >
+    Settles chandrasekaran2024/q_monomer_depletion_per_filament_vs_total and explains Supplementary
+    Fig. 6B-C quantitatively. CytoSim's FiberSet::steps() (fiber_set.cc:239) computes
+    free_polymer = max(0, 1 - used_polymer/total_polymer) and GrowingFiber::step() (growing_fiber.cc:72)
+    advances EACH filament at growing_speed * free_polymer (no N_fil multiplier), proving Supp.
+    Table 4's k_grow*N_fil*(1 - [F]/[T]) denotes the total network growth rate, not per-filament speed.
+    Furthermore, CytoSim's Nucleator defaults to hold_end = MINUS_END (nucleator_prop.cc:33), so each
+    unbound nucleator fires rapidly at 0.2/s (producing an initial ~0.95*N_nuc burst in ~10 s) and
+    remains bound/inactive until detaching at unbinding_rate = 0.005/s (Single::stepA, single.cc:148).
+    Porting these exact C++ rules reproduces both Supp. Fig. 6B filament-count curves (12/12 points
+    across 50 and 150 nM) and Supp. Fig. 6C upper filament lengths across 0..150 nM (with minor
+    sensitivity to the unstated initial length of newly nucleated fibers, nucleated_fiber_init_length_added,
+    and minor wall-force Brownian ratchet slowdown). Also confirms GrowingFiber::step() uses a
+    one-sided Brownian ratchet clamp: only antagonistic force (projectedForceEndP() < 0) scales speed
+    by exp(force / growing_force), while tensile force (>= 0) leaves speed unchanged.
+  citation:
+    file: src/sim/fiber_set.cc
+    lines: "238-248"
+    quote: "fp->free_polymer = 1.0 - fp->used_polymer / fp->total_polymer;"
+
+- id: q_unstated_crosslinker_stiffness_and_hand_kinetics
+  kind: unstated_input
+  about: [cytosim_hand_binding_unbinding, cytosim_hand_gillespie_mc, crosslinker_stiffness_probe_added, cyto_check_stiffness_kT_limit, cmp_hand_gillespie_mc_vs_discrete]
+  text: >
+    chandrasekaran2024 omits the crosslinker spring stiffness (SingleProp::stiffness or
+    CoupleProp::stiffness), even though link force F = stiffness*||d|| directly drives Bell's law
+    unbinding in Hand::checkKramersDetachment() (hand.h:286-302). At binding_range = 30 nm and
+    kT = 0.0042 pN*um, CytoSim's HandProp::checkStiffness() (hand_prop.cc:314-333) warns of
+    thermodynamically unfavorable binding (stiffness*r_bind^2/kT > 10) whenever stiffness > 46.7
+    pN/um (reaching 21.4 kT at 100 pN/um). Four additional hidden C++ kinetic details are documented:
+    (1) binding_prob = -expm1(-k_bind*dt) (hand_prop.cc:247, 0.99% below k_bind*dt at 10/s, dt = 2 ms);
+    (2) FiberGrid::tryToAttach() (BIND_CLOSEST_FIBER = 1, fiber_grid.cc:374-393) tests every segment
+    within binding_range from closest to farthest, so M nearby segments increase total attachment
+    probability to 1 - exp(-M*k_bind*dt); (3) Couple::stepFF() flips a coin (couple.cc:175-178) that
+    halves a free Couple's first-binding rate, whereas 4 Wrist Singles on a Sphere/Solid all attempt
+    binding every step; and (4) discrete-step float32 Gillespie subtraction in checkKramersDetachment()
+    adds an upward mean lifetime bias E[tau] = dt/(1 - exp(-k_off*dt)) (~+0.16% at 5 pN, +2.0% at
+    30 pN for k_unbind0 = 1/s, and +21% at 30 pN for k_unbind0 = 10/s).
+  citation:
+    file: src/sim/hand_prop.cc
+    lines: "314-323"
+    quote: "real en = ( stiff * dis * dis ) / kT;"
+
+- id: q_bending_resegmentation_and_endpoint_correction
+  kind: numerics
+  about: [cytosim_fiber_bending_mechanics, cmp_bending_cyto_vs_continuum]
+  text: >
+    CytoSim's Chain::adjustSegmentation() (chain.cc:36-40,1351-1371) chooses N_seg to minimize
+    |L/N_seg - segmentation|, so actual segment length s fluctuates over (2/3, 4/3)*segmentation
+    during filament growth (s = 0.09973 um with N_seg = 63 at L = 2*pi um, segmentation = 0.1 um).
+    Furthermore, Mecafil::addRigidity() (mecafil.cc:276-313) with iRigidity = rigidity/s^3
+    (fiber.cc:1097) differentiates the quadratic Hamiltonian over N_seg - 1 interior hinges
+    (0.23188 pN*um for an inextensible chord-spaced 2*pi ring, 1.59% or 1/63 below continuum
+    0.5*kappa*L/R^2 = 0.23562 pN*um), whereas Fiber::bendingEnergy() (chain.cc:1190) multiplies
+    by N_seg/(N_seg - 1) to report 0.23562 pN*um (identical to continuum for chord-spaced circular
+    vertices).
+  citation:
+    file: src/sim/chain.cc
+    lines: "1186-1190"
+    quote: "e *= ( lsp + 1 ) / ( fnCut * lsp );"
+
+- id: q_confinement_sphere_vs_ellipse_and_all_inside
+  kind: choice
+  about: [cytosim_confinement_sphere_ellipse, cmp_ellipse_thomsen_vs_exact_surface]
+  text: >
+    CytoSim's SpaceSphere::setConfinement() (space_sphere.cc:99 -> Meca::addSphereClamp) and
+    SpaceEllipse's inherited Space::setConfinement() (space.cc:359-367 -> Newton projectEllipsoid()
+    + Meca::addPlaneClamp) both produce the exact normal Hookean restoring force F = stiff * delta at
+    the current position X = W. However, two subtle C++ differences exist: (1) during the implicit
+    linear solve, SpaceSphere retains full spherical curvature in addSphereClamp while SpaceEllipse
+    linearizes onto a flat tangent plane via addPlaneClamp (and SpaceEllipse::surface() uses Knud
+    Thomsen p = 1.6075, giving 13.5225 vs 13.5306 um^2, -0.060% below exact prolate area at AR = 2);
+    and (2) chandrasekaran2024 does not specify whether VASP spheres used confine = inside (center
+    inside R) or confine = all_inside (entire 30 nm sphere inside R - 30 nm, sphere.cc:336-341,
+    space_sphere.cc:103-107).
+  citation:
+    file: src/sim/space.cc
+    lines: "359-367"
+    quote: "meca.addPlaneClamp(mp, dir, -dot(prj,dir), stiff/n);"
+
+- id: q_cytosim_snapshot_version_and_missing_cym
+  kind: unstated_input
+  about: [cyto_default_kT, cyto_cym_actin_confine_stiff]
+  text: >
+    The audited repository corpus/actin_bundling/code/chandrasekaran_cytosim is an upstream 2025/2026
+    main-branch snapshot of CytoSim from https://gitlab.com/f-nedelec/cytosim (copyright 1995-2026 in
+    C++ headers; README.md:149 lists contributor Shao-Heng Li 2025-) rather than a commit pinned to
+    2023/2024, and does not bundle chandrasekaran2024's .cym configuration files (archived separately
+    at Zenodo doi:10.5281/zenodo.10714332, Methods p. 11). Bundled cym/ examples confirm standard
+    CytoSim parameter conventions (e.g., cym/actin.cym:25 confine = inside, 200; cym/arp23.cym:31
+    drag_radius = 0.0035; cym/bundle_steric.cym:10 steric = 1, 10000).
+  citation:
+    file: README.md
+    lines: "148-150"
+    quote: "Shao-Heng Li            2025-"
+
+- id: q_source_data_nucleator_burst_and_excess_polymer
+  kind: unexplained_difference
+  about:
+    - cytosim_nucleation_monomer_depletion_sim
+    - cytosim_polymerization_ratchet_depletion
+    - cytosim_fiber_bending_mechanics
+    - chandrasekaran_source_data/nucleator_timecourse_reader
+    - chandrasekaran_source_data/nucleator_conc_sweep_reader
+  text: >
+    Direct cross-attachment check of CytoSim's ported Nucleator/depletion mechanics against raw
+    Excel Source Data sheets FigureS10B (8 concentrations x 601 timepoints) and FigureS10C (full
+    99-bin filament-length CDFs) yields two confirmations and a new quantitative discrepancy not
+    visible from upper-tail figure digitization alone: (1) FigureS10B confirms CytoSim's 2-state
+    hold_end = MINUS_END cycle across all 8 concentrations from the 1-s burst through t = 600 s
+    (t = 600 s counts within -1.6% to +2.1%; 4,093/4,197 nonzero-SD points within 2 SD; e.g., at
+    150 nM, t = 1, 10, 100, 600 s give 98.5 vs 97 +/- 11, 361.9 vs 362 +/- 5, 574.1 vs 574 +/- 11,
+    1496.0 vs 1488 +/- 36), and its constant late-time nucleation rate (179-193 filaments/100 s
+    across t = 100..600 s at 150 nM, vs theoretical 184.4/100 s) empirically confirms that
+    Nucleator::stepUnattached() (nucleator.cc:171-201) never gates nucleation on free_polymer;
+    (2) at 0 nM (30 seeds only), FigureS10C spans 5.515..5.712 um (median 5.581 um, CDF = 0.96 at
+    5.659 um) versus the force-free CytoSim depletion ceiling 5.692-5.702 um (dl = 2.7-2.75 nm,
+    total_polymer = 942.5-959.9 um), resolving a ~2.0% downward spread from CytoSim's one-sided
+    Brownian ratchet under wall confinement; (3) however, for [Nucleator] >= 75 nM, combining
+    FigureS10B N(585 s) with FigureS10C's CDF mean length E[L] yields total polymerized contour
+    length 1,010.5 um (75 nM), 1,099.8 um (100 nM), 1,184.6 um (125 nM), and 1,246.6 um (150 nM,
+    or 1,198.6 um using conservative left bin edges) — up to +32% above [T-actin] = 138.38 uM
+    (942.5 um at 2.7 nm/monomer) — while every nucleator CDF (10..150 nM) is strictly 0.0 for
+    L <= 0.1313 um before jumping abruptly in [0.1313, 0.1970) um (22.5% at 150 nM) and shows a
+    150 nM median (0.684 um) >2x the unfiltered 942.5 um model (0.315-0.337 um). This points to
+    either post-processing exclusion of 2-vertex fibers (L < 4/3 * segmentation = 0.1333 um from
+    Chain::bestNumberOfPoints(), chain.cc:36-40) from FigureS10C, a larger total_polymer / nonzero
+    L_nuc_init overshoot after free_polymer clamps to 0 in the unreleased .cym config, or both.
+  citation:
+    file: src/sim/hands/nucleator.cc
+    lines: "176-185"
+    quote: "float damp = 1.f - float(fip->nbFibers()) * prop()->nucleation_limit;"
+
+- id: q_source_data_valency_ellipse_icosphere_cross_audit
+  kind: reading
+  about:
+    - cytosim_sphere_solid_bead_diffusion
+    - cytosim_confinement_sphere_ellipse
+    - cytosim_fiber_bending_mechanics
+    - chandrasekaran_source_data/kinetic_grid_reader
+    - chandrasekaran_source_data/nucleator_conc_sweep_reader
+    - chandrasekaran_source_data/figs14c_schedule_reader
+    - chandrasekaran_source_data/figs2b_icosphere_reader
+  text: >
+    Three additional cross-attachment links connect CytoSim C++ mechanics directly to raw Source
+    Data sheets in chandrasekaran_source_data: (1) Figure3D (frac_3 up to 0.5191 at (10, 0.01),
+    frac_4 up to 0.6673 at (10, 1)) and FigureS10D (frac_4 = 0.7027 at 150 nM) empirically confirm
+    4-filament VASP crosslinking, proving the simulations instantiated 4-hand Sphere/Solid + Wrist
+    objects rather than 2-hand Couples and thus locking in q_vasp_stokes_vs_couple_diffusion_contradiction
+    (Stokes D = 0.01485 um^2/s at 0.5 Pa*s, 673x slower than 10 um^2/s, unless per-class viscosity
+    was silently overridden below water); (2) FigureS14C's 213 SpaceEllipse snapshots (t = 604.502..
+    1028.502 s in 2.0 s steps, aligned to dt = 0.002 s; AR = 1.0302..5.5641) confirm CytoSim's
+    SpaceEllipse::surface() Knud Thomsen formula (p = 1.6075) remains within 0.52% of exact prolate
+    area even at peak elongation AR = 5.5641 (17.6423 vs 17.7342 um^2); and (3) FigureS2B's chosen
+    n = 4 icosphere has equilateral triangle side length 0.0725..0.0826 um (median 0.07341 um,
+    truncated to 1,281/5,120 faces), finer than CytoSim's Chain::adjustSegmentation() segment length
+    (s = 0.0982..0.1013 um across L = pi/2..2*pi), consistent with Methods p. 10's monomer-level
+    resampling prior to surface-triangle assignment.
+  citation:
+    file: src/sim/spaces/space_ellipse.cc
+    lines: "112-118"
+    quote: "constexpr real POW = 1.6075;"
+
+- id: q_chandrasekaran_source_data_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_confinement_sphere_ellipse
+    - cytosim_fiber_bending_mechanics
+    - cytosim_fiber_drag_and_brownian
+    - cytosim_hand_binding_unbinding
+    - cytosim_hand_gillespie_mc
+    - cytosim_nucleation_monomer_depletion_sim
+    - cytosim_polymerization_ratchet_depletion
+    - cytosim_semi_implicit_langevin_1d
+    - cytosim_sphere_solid_bead_diffusion
+    - cytosim_steric_repulsion
+    - paper_figs6b_nuc50_curve
+    - paper_figs6b_nuc150_curve
+    - paper_figs6c_max_length_curve
+    - q_source_data_nucleator_burst_and_excess_polymer
+    - q_source_data_valency_ellipse_icosphere_cross_audit
+    - chandrasekaran_source_data/paper_exp_gabmut_ring_1_7p5
+    - chandrasekaran_source_data/paper_exp_gabmut_shell_1_7p5
+    - chandrasekaran_source_data/paper_exp_gabmut_disk_1_7p5
+    - chandrasekaran_source_data/wb_f6d_1_7p5_shell_mean
+    - chandrasekaran_source_data/wb_f6d_1_7p5_ring_mean
+    - chandrasekaran_source_data/wb_f6d_1_7p5_disk_mean
+    - chandrasekaran_source_data/fig6d_gabmut_experiment_reader
+    - chandrasekaran_source_data/q_chandrasekaran_cytosim_no_cross_validation
+  text: >
+    No cross-record validations are entered in validations.yaml between chandrasekaran_cytosim and
+    chandrasekaran_source_data (0 entries in both directions; all 101 existing validations in
+    chandrasekaran_source_data/validations.yaml target chandrasekaran2024 and remain preserved):
+    (1) chandrasekaran_cytosim models (10 single-mechanism C++ physics ports) vs
+    chandrasekaran_source_data/data.yaml (77 total datums, of which ONLY 3 have origin: measured):
+    all 3 origin: measured datums come from sheet Figure6D's fluorescence-microscopy experiments on
+    VASP-GABmut droplets at Actin:VASP = 1:7.5 (N = 3 replicates, 240 droplets at 1:7.5 out of 655
+    total, copied from chandrasekaran2024 p. 7) — namely paper_exp_gabmut_ring_1_7p5 (ring_abundance
+    = 53 +/- 6%), paper_exp_gabmut_shell_1_7p5 (shell_abundance = 37 +/- 4%), and
+    paper_exp_gabmut_disk_1_7p5 (disk_abundance < 10%, an inequality bound that also yields no
+    verdict). None of chandrasekaran_cytosim's 10 ported C++ physics/numerics subroutines
+    (cytosim_fiber_bending_mechanics, cytosim_steric_repulsion, cytosim_hand_binding_unbinding,
+    cytosim_hand_gillespie_mc, cytosim_fiber_drag_and_brownian, cytosim_sphere_solid_bead_diffusion,
+    cytosim_semi_implicit_langevin_1d, cytosim_confinement_sphere_ellipse,
+    cytosim_polymerization_ratchet_depletion, cytosim_nucleation_monomer_depletion_sim) takes an
+    experimental Actin:VASP molar ratio, runs the full 3D many-body crosslinked-droplet .cym
+    configuration (which is not bundled in this upstream CytoSim snapshot), or outputs ring, shell,
+    or disk droplet morphology abundances. The 6 accompanying Figure6D workbook summaries with
+    origin: derived (wb_f6d_1_7p5_shell_mean, wb_f6d_1_7p5_ring_mean, wb_f6d_1_7p5_disk_mean,
+    wb_f6d_1_7p5_shell_sd, wb_f6d_1_7p5_ring_sd, wb_f6d_1_7p5_ring_sem_stored_buggy) are excluded
+    for the identical reason. All remaining 68 datums in chandrasekaran_source_data/data.yaml are
+    non-empirical: 37 origin: reported (35 workbook query coordinates q_*, paper_exp_replicates = 3,
+    paper_n_seed_filaments = 30), 8 origin: run (4 PCA cumulative variances and 4 Supp. Table 3
+    CytoSim cluster abundances), and 23 origin: derived simulation/analytical/post-processing
+    summaries (CytoSim outputs wb_f3b_*, wb_s2c_*, wb_f3d_*, wb_f5d_*, wb_f6b_*, wb_f7b_*,
+    wb_s10e_*, wb_s11_*, paper_fig7aii_schedule, paper_aspect_ratio_max_approx; 2D continuum
+    energies wb_f7f_ar1_bend/surf; LAMMPS MD wb_s1ef_*; silhouette scores wb_s11biii/s12c_k4_sil).
+    Similarly, raw Source Data sheets FigureS10B, FigureS10C, FigureS10D, Figure3D, FigureS14C, and
+    FigureS2B contain CytoSim simulation outputs and icosphere mesh geometry rather than empirical
+    measurements (and are not origin: measured datums in data.yaml); their direct solver-vs-workbook
+    audit is already recorded in q_source_data_nucleator_burst_and_excess_polymer and
+    q_source_data_valency_ellipse_icosphere_cross_audit (while comparisons.yaml already tests
+    cytosim_nucleation_monomer_depletion_sim against the digitized Supp. Fig. 6B-C CytoSim curves).
+    (2) Reverse direction — chandrasekaran_source_data models (20 role: processing, software: true
+    Excel workbook readers) vs chandrasekaran_cytosim/data.yaml (55 total datums):
+    chandrasekaran_cytosim contains 0 origin: measured datums (50 origin: reported = 23 CytoSim C++
+    built-in defaults/constants cyto_* + 27 simulation input parameters paper_*; 2 origin: derived =
+    paper_time_to_2R, paper_viscosity_ratio_water; 3 origin: run = paper_figs6c_max_length_curve,
+    paper_figs6b_nuc50_curve, paper_figs6b_nuc150_curve). The 3 origin: run curves are CytoSim
+    simulation outputs copied verbatim from chandrasekaran2024 (from_source: chandrasekaran2024,
+    from_datum: figs6*), not empirical measurements; chandrasekaran_source_data's Excel readers are
+    data-extraction adapters rather than predictive physical models and already validate FigureS10B/C
+    directly against chandrasekaran2024 (val_figs6b_nuc50, val_figs6b_nuc150, val_figs6c_max_length).
+    See also chandrasekaran_source_data/q_chandrasekaran_cytosim_no_cross_validation.
+  citation:
+    file: README.md
+    lines: "11"
+    quote: "Simulations are defined using a [configuration file](doc/sim/config.md) which specifies objects"
+
+- id: q_chandrasekaran2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_confinement_sphere_ellipse
+    - cytosim_fiber_bending_mechanics
+    - cytosim_fiber_drag_and_brownian
+    - cytosim_hand_binding_unbinding
+    - cytosim_hand_gillespie_mc
+    - cytosim_nucleation_monomer_depletion_sim
+    - cytosim_polymerization_ratchet_depletion
+    - cytosim_semi_implicit_langevin_1d
+    - cytosim_sphere_solid_bead_diffusion
+    - cytosim_steric_repulsion
+    - paper_figs6b_nuc50_curve
+    - paper_figs6b_nuc150_curve
+    - paper_figs6c_max_length_curve
+    - paper_time_to_2R
+    - paper_viscosity_ratio_water
+    - paper_vasp_diffusion_rate
+    - paper_nucleator_molecules_table
+    - cmp_figs6b_nuc50_timeseries
+    - cmp_figs6b_nuc150_timeseries
+    - cmp_figs6c_max_length_depletion
+    - cmp_vasp_stokes_D_vs_paper
+    - cmp_viscosity_ratio_vs_paper_50x
+    - rel_cyto_sphere_stokes_einstein
+    - q_cytosim_snapshot_version_and_missing_cym
+    - chandrasekaran2024/exp_wt_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_ring_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_shell_pct_1_7p5
+    - chandrasekaran2024/fig6d_wt_shell_fig
+    - chandrasekaran2024/fig6d_wt_ring_fig
+    - chandrasekaran2024/fig6d_wt_disk_fig
+    - chandrasekaran2024/fig6d_gabmut_shell_fig
+    - chandrasekaran2024/fig6d_gabmut_ring_fig
+    - chandrasekaran2024/fig6d_gabmut_disk_fig
+    - chandrasekaran2024/cytosim_actin_vasp_droplet
+    - chandrasekaran2024/q_chandrasekaran_cytosim_no_cross_validation
+  text: >
+    No cross-record validations are entered in validations.yaml between chandrasekaran_cytosim and
+    chandrasekaran2024 (0 entries in both directions):
+    (1) Forward direction — chandrasekaran_cytosim models (10 runnable single-mechanism C++ physics
+    ports) vs chandrasekaran2024/data.yaml (224 total datums, of which ONLY 10 carry origin: measured):
+    all 10 origin: measured datums come from confocal fluorescence microscopy of phalloidin-stained
+    actin in VASP droplets in Fig. 6D and main text p. 7 (Actin:VASP = 1:20, 1:10, 1:7.5; N = 3
+    independent replicates; WT VASP replotted from ref-15 [Graham et al. 2023] and VASP-GABmut newly
+    measured in Chandrasekaran et al. 2024) — namely 4 text scalars at 1:7.5
+    (exp_wt_disk_pct_1_7p5 = 70 +/- 13% [from_source: ref-15], exp_gabmut_ring_pct_1_7p5 = 53 +/- 6%,
+    exp_gabmut_shell_pct_1_7p5 = 37 +/- 4%, and exp_gabmut_disk_pct_1_7p5 = < 10%, an inequality
+    bound yielding no verdict) plus 6 digitized Fig. 6D stacked-bar curves across
+    vasp_to_actin_ratio = {20, 10, 7.5} (fig6d_wt_shell_fig = 58.09/20.07/5.84%, fig6d_wt_ring_fig =
+    31.28/57.14/24.41%, fig6d_wt_disk_fig = 10.63/22.80/69.76% [all from_source: ref-15];
+    fig6d_gabmut_shell_fig = 75.00/39.18/37.33%, fig6d_gabmut_ring_fig = 21.38/55.14/52.74%,
+    fig6d_gabmut_disk_fig = 3.61/5.68/9.94%). None of chandrasekaran_cytosim's 10 ported C++
+    subroutines (cytosim_confinement_sphere_ellipse, cytosim_fiber_bending_mechanics,
+    cytosim_fiber_drag_and_brownian, cytosim_hand_binding_unbinding, cytosim_hand_gillespie_mc,
+    cytosim_nucleation_monomer_depletion_sim, cytosim_polymerization_ratchet_depletion,
+    cytosim_semi_implicit_langevin_1d, cytosim_sphere_solid_bead_diffusion, cytosim_steric_repulsion)
+    takes an experimental Actin:VASP molar ratio or WT/GABmut kinetic rates (neither k_bind nor
+    k_unbind is experimentally measured for WT or VASP-GABmut in chandrasekaran2024), executes the
+    full 3D many-body crosslinked-droplet .cym configuration (archived externally at Zenodo
+    doi:10.5281/zenodo.10714332 and absent from this upstream CytoSim snapshot), or outputs
+    shell_abundance, ring_abundance, or disk_abundance. Indeed, even chandrasekaran2024's full
+    non-runnable 3D simulation (cytosim_actin_vasp_droplet, Fig. 6B) draws only a qualitative trend
+    comparison against Fig. 6D (varying unmeasured k_unbind in an undeformable sphere that cannot
+    produce disks). All remaining 214 datums in chandrasekaran2024/data.yaml are non-empirical
+    (88 origin: reported, 15 origin: derived, 107 origin: run, 3 origin: predicted, 1 origin: assumed):
+    the cited literature dissociation constant kd_vasp_actin = 1.8 nM (origin: reported, ref-18) is
+    not predicted by any CytoSim subroutine (cytosim_hand_binding_unbinding computes 3D capture
+    section rate in um^2/s and loaded k_off in 1/s, not molar K_d); non-empirical simulation/derived
+    targets matching ported CytoSim outputs are already checked via (a) 9 paper-vs-code comparisons
+    in chandrasekaran_cytosim/comparisons.yaml (cmp_viscosity_ratio_vs_paper_50x,
+    cmp_vasp_stokes_D_vs_paper, cmp_vasp_meca_free_D_vs_paper [not reproduced];
+    cmp_vasp_couple_uniform_D_vs_paper, cmp_time_to_2R_undepleted, cmp_nucleator_molecule_counts,
+    cmp_figs6c_max_length_depletion, cmp_figs6b_nuc50_timeseries, cmp_figs6b_nuc150_timeseries
+    [reproduced]) and (b) 31 cross-record relations in relations.yaml (9 in chandrasekaran2024 + 22
+    in chandrasekaran_cytosim, generating 2 automatic Synthesis cross-checks via
+    rel_cyto_sphere_stokes_einstein on vasp_diffusion_rate, both verdict=not reproduced). For
+    completeness, a diagnostic sweep of cytosim_nucleation_monomer_depletion_sim across all 8
+    digitized origin: run Supp. Fig. 6B filament-count curves (figs6b_nuc0..150_fig, 48 points over
+    t = 100..580 s) gives 45/48 reproduced and 3/48 close (0 not reproduced: 6/6 at 0, 10, 25, 50,
+    75, 150 nM; 4/6 reproduced + 2/6 close at 100 nM, max diff +17.2; 5/6 reproduced + 1/6 close at
+    125 nM, max diff -21.4), but all 8 curves are origin: run simulation outputs rather than
+    empirical measurements and are excluded from validations.yaml. Likewise, aspect-ratio datums
+    (fig7aii_aspect_ratio_vs_time, aspect_ratio_max_approx, fig7b_length_limited_curve_fig,
+    fig7b_aspect_ratio_bars_fig, fig7c_representative_aspect_ratios, figs1f_aspect_ratio_fig) are
+    non-empirical derived/predicted/run outputs, and cytosim_confinement_sphere_ellipse merely
+    returns a_z/b_xy from prescribed semi-axes rather than predicting aspect ratio from time or L_max.
+    (2) Reverse direction — chandrasekaran2024 models (46 models: 27 role: model + 19 role:
+    processing; 42 runnable, 4 non-runnable: actin_nucleation_ode, cytosim_actin_vasp_droplet,
+    droplet_2d_energy_balance, lammps_vasp_actin_droplet) vs chandrasekaran_cytosim/data.yaml (55
+    total datums, no figures.yaml): chandrasekaran_cytosim contains 0 origin: measured datums
+    (50 origin: reported = 23 CytoSim C++ built-in defaults/constants cyto_* + 27 simulation input
+    parameters paper_* copied from chandrasekaran2024; 2 origin: derived = paper_time_to_2R,
+    paper_viscosity_ratio_water; 3 origin: run = paper_figs6c_max_length_curve,
+    paper_figs6b_nuc50_curve, paper_figs6b_nuc150_curve). All 31 matching paper_* entries are
+    non-empirical copies already linked inline via from_datum and audited internally and through
+    relations.yaml. See also chandrasekaran2024/q_chandrasekaran_cytosim_no_cross_validation.
+  citation:
+    file: README.md
+    lines: "11"
+    quote: "Simulations are defined using a [configuration file](doc/sim/config.md) which specifies objects"
+
+

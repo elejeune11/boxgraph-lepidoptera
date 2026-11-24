@@ -1,0 +1,33 @@
+id: notebook_critical_ring_thickness
+name: live notebook adapter solving for critical ring thickness T_crit where AR crosses 1.1 (Fig. 4h)
+role: model
+software: true
+stated:
+  file: VASPDroplet_simulate.ipynb
+  lines: "893-895"
+  quote: "lcylvec = [diavec[0]*0.1*1e3]#convert from microns to nanometer"
+  where: "VASPDroplet_simulate.ipynb cells 7, 9, 11, 15, 17 (IEEE-754 Nbeads = int(D*1e3/lcyl) + 20; AR = 1.1 threshold)"
+equation: "T_crit = R_fil * Nfil* solving AR(D, gamma_I, Nfil*) = AR_thresh with exact notebook Nbeads = int(D*1e3/(D*0.1*1e3)) + int((pi-1)*D/(lcyl*1e-3)) - 1"
+built_from:
+  - notebook_droplet_ring_slsqp
+inputs:
+  D_droplet: {quantity: droplet_diameter, unit: um}
+  gamma_I: {quantity: droplet_line_tension, unit: pN}
+  AR_thresh: {quantity: droplet_aspect_ratio, unit: dimensionless}
+  R_fil: {quantity: filament_spacing, unit: nm}
+  kflex_fil: {quantity: flexural_rigidity, unit: pN*nm^2}
+  lcyl_fixed: {quantity: segment_length, unit: nm}
+  lcyl_scale_frac: {quantity: ring_extension_step_fraction, unit: dimensionless}
+  kstr: {quantity: stretching_constant, unit: pN/nm}
+  gamma_AVR: {quantity: wetting_surface_tension, unit: pN/nm}
+  gamma_AVD: {quantity: wetting_surface_tension, unit: pN/nm}
+  noisefactor: {quantity: noise_scale_divisor, unit: dimensionless}
+  ellipse_com: {quantity: droplet_center_offset, unit: nm}
+outputs:
+  T_crit: {quantity: ring_thickness_critical, unit: um}
+  n_beads_final: {quantity: bead_count, unit: dimensionless}
+settings:
+  seed: 0
+  lcylscalewithD: true
+  ftol: 1.0e-7
+stochastic: true

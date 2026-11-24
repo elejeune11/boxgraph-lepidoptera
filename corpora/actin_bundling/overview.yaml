@@ -1,15 +1,15 @@
 # The overview's text: what the page says that the build cannot. Every number on the page
 # comes from the build; this file holds the words around them. Used by
 #   make build site CORPUS=actin_bundling
-title: "Actin bundling, cortical patterning, and scale mechanics: an executable literature review"
+title: "Actin bundling, phase separation, cortical patterning, and scale mechanics: an executable literature review"
 notice:
   title: "Work in progress:"
   text: results are produced by multi-agent BoxGraph audits and verified by the validator, but not yet reviewed by people;
   link: check a record before citing it
   href: https://github.com/elejeune11/boxgraph-public
 intro:
-  - All models are wrong, but some are useful (George E. P. Box). This page is an executable literature review of physical and mechanochemical models of actin bundle size control, active cortical patterning, and actin-templated membrane buckling — spanning 7 papers (2007–2024), 100% of their Supplemental Information, and 4 released code and data sources.
-  - Every value is traced to the page, code line, or spreadsheet cell it came from. Every runnable model is rebuilt as stated, evaluated on its own inputs, refined numerically where applicable, and compared with printed text and 900–1800 dpi calibrated figure readings at the precision printed. Relations between papers are tested symbolically or numerically rather than assumed, released code and Source Data are checked against their parent paper, and models of one paper are tested out-of-sample against another paper's measurements.
+  - All models are wrong, but some are useful (George E. P. Box). This page is an executable literature review of physical and mechanochemical models of actin bundle size control, liquid-liquid phase separation and condensate mechanics, active cortical patterning, curved-membrane rings, and actin-templated membrane buckling — spanning 14 papers (2007–2024), 100% of their Supplemental Information, and 8 released code and Source Data attachments (22 sources total, 156/156 pipeline jobs gated).
+  - Every value is traced to the page, code line, or spreadsheet cell it came from. Every runnable model is rebuilt as stated, evaluated on its own inputs, refined numerically where applicable, and compared with printed text and calibrated figure readings at the precision printed. Relations between papers are tested symbolically or numerically rather than assumed, released code and Source Data are checked against their parent paper, and models of one paper are tested out-of-sample against another paper's measurements.
   - Nothing is silently corrected or overwritten. Where an equation is evidently misprinted, the printed model is kept and counted in the paper's tally while a corrected variant is added beside it with the evidence. Every disagreement is preserved as a structured finding and open question.
 links:
   - {text: "All reviews", href: "../"}
@@ -271,3 +271,218 @@ case_studies:
           diffusivity have not yet been measured, and bimodal alternating ridges in A. vanillae
           go beyond single-mode linear instability.
         show: "question: totz2024/q_hannezo2015_no_cross_validation"
+
+  - id: active_turnover_square
+    teaches: Unifying continuum theories across fields
+    title: The four-paper active-turnover commutative square & Ohta–Kawasaki bridge
+    summary: >-
+      Bois et al. (2011), Hannezo et al. (2015), Zwicker et al. (2015), Frohoff-Hülsmann et al.
+      (2021), and Dutta et al. (2016) address seemingly distinct phenomena — active gels, tracheal
+      rings, chemically driven emulsions, nonreciprocal Cahn–Hilliard fields, and electrostatic
+      bundles. ModelAtlas testing connects all five through exact symbolic reductions and exposes
+      an algebraic factor-of-2 error in Zwicker's Appendix F.
+    sources: [bois2011, hannezo2015, zwicker2015, frohoff2021, dutta2016]
+    steps:
+      - text: >-
+          Zwicker et al. (2015) print Appendix F Eqs. (F1)–(F2) with a factor-of-2 error in the
+          diffusion term, inflating the homogeneous spinodal arrest cutoff fourfold to 1.0 instead
+          of 1/4.
+        show: "comparison: zwicker2015/cmp_appF_cutoff_printed"
+      - text: >-
+          Correcting the factor of 2 restores the exact cutoff (k_f + k_b) / k_0 = 1/4, matching
+          our independent 1D active-emulsion PDE simulations.
+        show: "comparison: zwicker2015/cmp_appF_cutoff_corrected"
+      - text: >-
+          Adiabatically eliminating Frohoff-Hülsmann et al.'s fast second conserved field
+          (Q -> infinity, f_2'' -> 0) symbolically derives Zwicker's corrected Eq. (F1), mapping
+          Frohoff's conserved Turing arrest threshold (Delta/kappa)_max = 1/4 identically to
+          Zwicker's corrected 1/4 while independently refuting printed Eq. (F1).
+        show: "relation: frohoff2021/rel_zwicker2015_eq12_adiabatic_derived_eqF1_corrected"
+      - text: >-
+          Hannezo's tracheal-ring dispersion SI Eq. (7) factors identically as
+          lambda_H(q) = lambda_Z_corr(q) / (1 + l_h^2 q^2), uniting Hannezo Eq. (3), Zwicker's
+          corrected onset wavelength, and Frohoff Eq. (17) into one verified three-paper
+          ModelAtlas family.
+        show: "relation: zwicker2015/rel_hannezo2015_lambda_c_eq3_same_as_eqF1_onset"
+      - text: >-
+          Closing the fourth edge of the square, Bois et al.'s two-species ASDM at Pe = 0 is
+          algebraically isomorphic to Frohoff Eq. (12) to machine precision (1.5e-15).
+        show: "relation: frohoff2021/rel_bois2011_asdm_pe0_same_as_eq12_tilde"
+      - text: >-
+          Taking the long-range Ohta–Kawasaki limit (lambda_R -> infinity, k -> 0) of Dutta et al.'s
+          competing-interaction RPA dispersion symbolically derives Zwicker's corrected Eq. (F1),
+          while cleanly separating the three finite-size arrest exponents (-1/2, -1/4, -1/3).
+        show: "relation: dutta2016/rel_zwicker2015_rpa_modelB_derived_eqF1_corrected"
+
+  - id: membrane_curvature_tubes
+    teaches: Testing competing mechanisms out-of-sample
+    title: Curved-membrane rings vs. chitin-stiffened tracheal tubes
+    summary: >-
+      Gov (2018) reviews continuum theories coupling curved membrane proteins to active actin
+      forces on flat membranes and cylindrical tubes. ModelAtlas links Gov's flat-membrane
+      equations directly to Bois (2011) and Hannezo (2015), while out-of-sample cross-validations
+      against Drosophila tracheal tubes reveal exactly when cylindrical curvature sets ring
+      spacing — and when chitin ECM overrides it.
+    sources: [gov2018, bois2011, hannezo2015, sekine2024, totz2024]
+    steps:
+      - text: >-
+          In the fast-membrane limit (xi -> 0, J -> 0), Gov's flat-membrane dispersion reduces
+          algebraically to Bois Eq. (12), mapping the membrane length l_mem = sqrt(kappa / sigma)
+          directly to the hydrodynamic screening length l = sqrt(eta / gamma).
+        show: "relation: gov2018/rel_bois2011_flat_qs_reduces_eq12"
+      - text: >-
+          Gov's quasi-steady propagating myosin-wave dispersion is algebraically identical to
+          Hannezo SI Eq. (7), expanding the Bois Eq. (15) / Hannezo Eq. (7) ModelAtlas family
+          across three papers.
+        show: "relation: gov2018/rel_hannezo2015_myosin_qs_same_eq7"
+      - text: >-
+          Tested out-of-sample on Sekine et al.'s wild-type embryonic tracheal tubes (R_0 = 1.97 um),
+          Gov's cylindrical curvature-ring fastest mode predicts 4454 nm — 9.90x wider than the
+          measured 450 ± 13.2 nm cable interval, failing across all 4,374 parameter combinations.
+        show: "validation: gov2018/val_cyl_ring_lambda_max_vs_sekine_cable_interval"
+      - text: >-
+          The exact same parameter-invariant falsification holds against Hannezo et al.'s wild-type
+          chitin-filled dorsal trunk (4.94 um predicted vs. 0.5 ± 0.1 um measured, 9.88x larger),
+          confirming Hannezo's rejection of tube-radius selection in intact trachea.
+        show: "validation: gov2018/val_cyl_ring_lambda_max_vs_hannezo_wt"
+      - text: >-
+          Remarkably, once chitin ECM is removed in kkv1 mutant tubes (R_0 = 1.54 um), Gov's
+          cylindrical curvature-ring mode predicts 3.91 um — reproducing Hannezo's measured
+          4.5 ± 2 um pearling constriction spacing across all six measured radius definitions.
+        show: "validation: gov2018/val_cyl_ring_lambda_max_vs_hannezo_kkv1"
+      - text: >-
+          Auditing the cylindrical geometry further proves that Gov's passive (A = 0) instability
+          is an artifact of dropping 1 / sqrt(1 + h'^2) from the azimuthal curvature c_theta;
+          with exact surface-of-revolution geometry, passive cylinders remain linearly stable.
+        show: "question: gov2018/q_audit_cylinder_ctheta_geometry"
+
+  - id: nematic_tactoids
+    teaches: Fluid condensates vs. crystalline bundles
+    title: Liquid-crystalline F-actin tactoids vs. solid bundles
+    summary: >-
+      Weirich et al. (2017) show that flexible filamin crosslinkers condense short capped F-actin
+      rods into fluid nematic tactoids rather than solid finite-diameter bundles. Calibrated
+      digitization settles three SI algebra discrepancies, while ModelAtlas bridges tactoids to
+      Grason (2007), Claessens (2008), Dutta (2016), and Graham (2023).
+    sources: [weirich2017, grason2007, claessens2008, dutta2016, graham2023]
+    steps:
+      - text: >-
+          Weirich et al.'s Rayleigh–Plateau pearling equation omits a factor of 2 on the anchoring
+          ratio omega, shifting the predicted fastest wavelength from 3.08 to 3.97 um and breaking
+          the exact limit from their capillary energy integral.
+        show: "comparison: weirich2017/cmp_cap_lambda_max_printed"
+      - text: >-
+          Calibrated digitization of Fig. 3D settles two unstated SI assumptions at once: the
+          coalescence ODE omits a factor of 2 in the Rayleigh dissipation function, and the two
+          plotted curves use unequal tactoid volumes.
+        show: "comparison: weirich2017/cmp_fig3d_w2p0_rayleigh2"
+      - text: >-
+          Digitizing Fig. S2C catches a missing (2*pi)^(1/3) normalization prefactor in the
+          rescaled tactoid free energy across all three anchoring curves.
+        show: "comparison: weirich2017/cmp_figS2c_Fhat_norm_w2"
+      - text: >-
+          In the achiral zero-twist limit (f_0 -> 0, epsilon -> 0), Grason & Bruinsma's Eq. (6)
+          columnar bundle free energy reduces identically to Weirich's cylindrical capillary surface
+          energy per unit length.
+        show: "relation: weirich2017/rel_grason2007_eq6_reduces_to_weirich_cylinder_surface"
+      - text: >-
+          Claessens's confined droplet critical concentration maps directly to Weirich's semi-dilute
+          actin mesh-size law via the parameter-free geometric identity xi = D_d / sqrt(2*n_f).
+        show: "relation: weirich2017/rel_claessens2008_droplet_conc_approx_mesh_size"
+      - text: >-
+          Comparing Weirich's 3D volume-conserving tactoids to Graham's 2D area-conserving rings
+          quantifies their exact high-aspect-ratio divergence: 2D ellipse surface energy scales as
+          AR^(1/2), whereas 3D isotropic tactoid energy scales as AR^(1/3).
+        show: "relation: graham2023/rel_weirich2017_2d_ellipse_vs_3d_rescaled_ar_scaling"
+      - text: >-
+          In Weirich's polymerization buffer (Debye length 1.3 nm, filamin range 150 nm), the range
+          ratio lambda_A / lambda_R ~ 115 sits nearly 60x above Dutta Eq. (8)'s global
+          no-finite-bundle bound (lambda_A >= 2*lambda_R), explaining macroscopic tactoid LLPS.
+        show: "question: dutta2016/q_weirich2017_no_cross_validation"
+
+  - id: vasp_droplets_code_data
+    teaches: Paper vs. notebook code, 11 Excel files, and 2D SLB bundles
+    title: Inside a Nature Physics notebook & 11 Source Data workbooks
+    summary: >-
+      Graham et al. (2023) combine VASP protein droplets with a 2D continuum ring-buckling model,
+      releasing VASPDroplet_simulate.ipynb and 11 Source Data workbooks (MOESM12–22). Running live
+      code adapters and Excel readers alongside Nast-Kolb et al. (2022)'s 2D SLB VASP bundles
+      exposes silent floating-point artifacts, indexing offsets, and plotting slips.
+    sources: [graham2023, graham_code, graham_source_data, nastkolb2022, claessens2008]
+    steps:
+      - text: >-
+          Running the released VASPDroplet_simulate.ipynb wetting profile directly against Graham's
+          printed SI Eqs. (S4)–(S5) refutes the printed equation (median error 100%), diagnosing an
+          inverted sign between inside and outside wetting tensions.
+        show: "relation: graham2023/rel_printed_wetting_eqS5_vs_notebook_code"
+      - text: >-
+          Inspecting generatering() resolves two blind-digitization mysteries: a double off-by-one
+          bug builds a 2.9*D ring (29 segments) instead of the printed 3.1*D, and IEEE-754 float
+          truncation int(D*1e3/(D*0.1*1e3)) = 9 at D = 3.0 and 3.5 um literally creates the
+          published Fig. 4h sawtooth dips (absent from raw Excel droplets, p = 0.70).
+        show: "question: graham_code/q_generatering_double_off_by_one_and_ieee754_sawtooth"
+      - text: >-
+          A universal +2 filament (+30 nm) indexing offset in the notebook sweeps reproduces 61/61
+          points across all nine Fig. 4g and Extended Data Fig. 7 heatmaps (MAE 0.0012–0.0043) and
+          20/22 points of Fig. 4f.
+        show: "comparison: graham_code/cmp_plus2_fig4f"
+      - text: >-
+          Running 47 live cross-validations over all 11 Excel workbooks (MOESM12–22) confirms 34/35
+          digitized curves while exposing swapped D1/D2 labels in Fig. 6f, a -1.0 offset in Fig. 6g,
+          mean plotted as "median" in Fig. 5a, and a +47% bar overshoot at 3% PEG in ED Fig. 9e.
+        show: "validation: graham_source_data/val_fig6f_d1_actin_literal"
+      - text: >-
+          Tested out-of-sample against Nast-Kolb et al. (2022)'s 2D SLB VASP bundles, Graham's
+          assumed 15 nm spacing predicts 66.7 filaments/um — 1.48x denser than Nast-Kolb's
+          measured 45 ± 12 filaments/um (close, softening ring bending rigidity by 1.48–1.87x).
+        show: "validation: graham2023/val_ring_filament_count_vs_nastkolb_1um"
+      - text: >-
+          In the reverse direction, Nast-Kolb's single-exponential FRAP model fails on Graham's
+          Fig. 1f 3D VASP droplet recovery (RMSE 6.50%), revealing the exact same diffusive S-curve
+          failure seen on 2D bilayers (where 2D Soumpasis hits 11/12 points).
+        show: "validation: nastkolb2022/val_frap_by_thalf_vs_graham_fig1f"
+
+  - id: cytosim_forensics
+    teaches: Auditing C++ simulation source & 37-sheet Source Data
+    title: Forensic audit of CytoSim C++ source & 37-sheet Source Data
+    summary: >-
+      Chandrasekaran et al. (2024) model actin-VASP droplets in CytoSim, releasing the CytoSim C++
+      source and a 37-sheet Source Data workbook (MOESM9_ESM.xlsx). Porting the exact C++
+      subroutines and running 103 live spreadsheet validations exposes a 673x hidden diffusion
+      contradiction, a factor-N_fil depletion error, a buffer mismatch on Fig. 6D, and bit-for-bit
+      provenance linking MOESM9 back to Graham's 2023 notebook.
+    sources: [chandrasekaran2024, chandrasekaran_cytosim, chandrasekaran_source_data, graham_code, graham_source_data]
+    steps:
+      - text: >-
+          Auditing CytoSim's C++ source reveals a smoking gun: 4-hand Sphere/Solid+Wrist VASP
+          instantiation (proven by Figure 3D valencies up to 70.3%) hardcodes Stokes drag
+          D = 0.01485 um^2/s — 673x slower than the printed 10 um^2/s — while Wrist::stepF()
+          silently ignores diffusion = 10.
+        show: "comparison: chandrasekaran_cytosim/cmp_vasp_stokes_D_vs_paper"
+      - text: >-
+          Comparing CytoSim's C++ Nucleator/Fiber implementation against Supplementary Table 4
+          refutes the printed monomer-depletion rate by a factor of N_fil (97.2% error across the
+          regime).
+        show: "relation: chandrasekaran2024/rel_cyto_monomer_depletion_per_filament_discrepancy"
+      - text: >-
+          Our faithful Python port of CytoSim's Nucleator reproduces all 20 digitized points of
+          Supplementary Figs. 6B–C (and 45/48 across all 8 curves) while exposing a +32% excess
+          polymer mass at nucleator concentrations >= 75 nM.
+        show: "comparison: chandrasekaran_cytosim/cmp_figs6c_max_length_depletion"
+      - text: >-
+          Running 103 live validations over all 37 sheets of MOESM9_ESM.xlsx confirms 94/99 blindly
+          digitized curves while catching an off-by-one header shift and missing 2*pi series in
+          Figure 4B.
+        show: "validation: chandrasekaran_source_data/val_fig4bii_pi_literal_block4"
+      - text: >-
+          MOESM9's Figure 6D leaves wild-type rows 1–19 blank and stores SEM = SD/3; cross-checking
+          MOESM14 'Fig 3d' reproduces Chandrasekaran's printed 70 ± 13% WT disk fraction (69.69%)
+          and proves Fig. 6D juxtaposes EDTA/EGTA WT against EDTA-free GABmut — erasing the 1:20
+          shift vs. buffer-matched Fig S4c (p >= 0.51) while strengthening 1:7.5 to p = 6.4e-5.
+        show: "validation: graham_source_data/val_chandrasekaran2024_exp_wt_disk_1to7p5_fig3d"
+      - text: >-
+          Finally, MOESM9 sheet Figure 7F Column C reproduces VASPDroplet_simulate.ipynb::getsurfaceF()
+          bit-for-bit (0 ULPs across all 19 aspect ratios), supplying Graham's missing Fig. 5c
+          Source Data and executably confirming both the 10^6 unit-scale error and AR = 10 > pi^2.
+        show: "relation: chandrasekaran_source_data/rel_notebook_surface_approx_fig7f_fine_grid"
+

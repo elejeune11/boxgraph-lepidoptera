@@ -1,0 +1,39 @@
+id: capillary_energy_cost_corrected
+name: leading-order capillary perturbation energy cost delta F (corrected 1 + 2*omega from SI p. 9 integrals)
+role: model
+variant_of: capillary_energy_cost_printed
+corrections:
+  - equation: "delta F expansion (SI p. 9 col 2)"
+    change: "replace (1 + omega)*k^2 with (1 + 2*omega)*k^2 in delta F"
+    evidence: "Expanding the paper's own printed surface integrals A = 2*pi*int_0^lambda rho*sqrt(1 + rho'^2) dz and A_omega = 2*pi*int_0^lambda rho*rho'^2/sqrt(1 + rho'^2) dz in F = gamma_I*(A + omega*A_omega) with rho(z) = R_0 + u*sin(2*pi*z/lambda) - u^2/(4*R_0) to O(u^2) gives A - 2*pi*R_0*lambda = (pi*lambda*u^2/(2*R_0))*(k^2 - 1) (factor 1/2 from sqrt(1 + rho'^2) ~ 1 + rho'^2/2) whereas A_omega = (pi*lambda*u^2/R_0)*k^2 = (pi*lambda*u^2/(2*R_0))*(2*k^2) (no factor 1/2 in rho'^2/sqrt(1 + rho'^2) ~ rho'^2). Adding them yields delta F = (pi*lambda*u^2*gamma_I/(2*R_0))*[(1 + 2*omega)*k^2 - 1]. Moreover, at R_0 = 200 nm and omega = 2, the resulting fastest-growing wavelength 2*pi*R_0*sqrt(2*(1 + 2*omega)) = 3.97 um matches the paper's printed lambda_max ~ 4 um (whereas 1 + omega gives 3.08 um)."
+built_from:
+  - capillary_free_energy_integral
+  - capillary_wavenumber_definition
+stated:
+  page: 9
+  printed_page: "SI-3"
+  quote: "To leading order in u, the interfacial energy cost for the sinu-"
+  where: "SI Text, Capillary Instabilities in Long Droplets"
+equation: "delta_F = (pi * lambda * u^2 * gamma_I / (2 * R_0)) * [(1 + 2*omega) * k^2 - 1], k = 2*pi*R_0/lambda"
+inputs:
+  R_0:
+    quantity: bundle_radius
+    unit: um
+  u:
+    quantity: perturbation_amplitude
+    unit: um
+  lam:
+    quantity: perturbation_wavelength
+    unit: um
+  gamma_I:
+    quantity: interfacial_tension_isotropic
+    unit: "nN/m"
+  omega:
+    quantity: anchoring_strength
+    unit: dimensionless
+outputs:
+  delta_F:
+    quantity: capillary_energy_change
+    unit: J
+settings: {}
+stochastic: false

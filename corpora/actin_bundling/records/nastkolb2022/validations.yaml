@@ -1,0 +1,70 @@
+# Cross-record fit-quality check of nastkolb2022's single-exponential FRAP recovery model
+# against graham2023's measured Fig. 1f VASP droplet FRAP recovery curve (Graham et al.,
+# Nature Physics 2023).
+
+- id: val_frap_by_thalf_vs_graham_fig1f
+  model: frap_recovery_by_half_time
+  inputs:
+    a: frap_amp_graham_fig1f_added
+    t_half: "graham2023/frap_t_half"
+    c: frap_baseline_offset_added
+  sweep:
+    t: "graham2023/fig1f_frap_avg_fig"
+  output: y
+  against: "graham2023/fig1f_frap_avg_fig"
+  purpose: fit_quality
+  quantities:
+    "graham2023/frap_half_time": frap_recovery_half_time
+    "graham2023/frap_post_bleach_time": frap_recovery_time
+    "graham2023/frap_recovery_fraction": frap_normalized_intensity
+  conditions_ok: >
+    Both papers perform circular-ROI VASP FRAP using the same photobleaching-corrected double
+    normalization pinning pre-bleach fluorescence to 100% (1.0) and the minimum post-bleach
+    frame at t = 0 to 0% (0.0): Nast-Kolb et al. (2022, Data analysis p. 11) normalize Alexa532-
+    VASP on 2D Ni-NTA fluid SLBs / MLs (4.96 um bleach diameter) using prebleach and first
+    bleach frame (Siggia et al., 2000), while Graham et al. (2023, Methods p. 15; Fig. 1f p. 2)
+    normalize Alexa647-VASP inside 3D 3% PEG8k-crowded 15 uM VASP droplets (1.8 um bleach
+    diameter, n = 9 droplets, 50 mM Tris pH 7.4, 150 mM NaCl) to maximum pre-bleach and minimum
+    post-bleach intensity using ImageJ FRAP_Profiler_v2.java (confirmed visually in Fig. 1f,
+    where the average red trace hits 0% at t = 0). Here frap_recovery_by_half_time is run on
+    Graham's own Fig. 1f parameters (t_half = graham2023/frap_t_half = 18 +/- 3 s, a = 0.939
+    from graham2023/frap_recovery_fig1f = 93.9 +/- 4.89%, c = 0) to evaluate single-exponential
+    fit quality rather than cross-system parameter transfer. Domain caveat: the digitized
+    13-point curve graham2023/fig1f_frap_avg_fig retains 1 pre-bleach point at t = -10 s
+    (100.4%), which lies outside the t >= 0 post-bleach recovery domain of the exponential model
+    and evaluates to -44.11%; however, the 12 post-bleach points (t = 5 to 290 s) independently
+    determine the exact same not-reproduced verdict.
+  basis: >
+    Nast-Kolb et al. (2022, Data analysis, p. 11) fit normalized VASP FRAP recovery curves with
+    "the formula y = a*(1 - e(-t/tau)) + c and the recovery half-time calculated with t1/2 =
+    tau*ln 2" (combined in frap_recovery_by_half_time as y = a*(1 - exp(-t*ln(2)/t_1/2)) + c,
+    role: fit). Graham et al. (2023, Main p. 2 / p. 575; Methods p. 15) report "fractional
+    recovery 94 +/- 5% ... (t1/2 of 18 +/- 3 s) (Fig. 1f)" and caption "average recovery is
+    93.9 +/- 4.89% (n = 9 droplets)", analysing curves with the ImageJ FRAP Profiler plugin
+    (FRAP_Profiler_v2.java, which performs per-droplet single-exponential fits to extract t_1/2)
+    without printing any FRAP equation in the paper. Because both t_half (18 +/- 3 s, mean of
+    per-trial single-exponential fits) and a (0.939, final recovery at t = 297 s) were obtained
+    from the same Fig. 1f droplet dataset, this comparison is entered with purpose: fit_quality
+    to test whether a single exponential with Graham's printed parameters actually fits the
+    measured Fig. 1f average recovery curve.
+  note: >
+    Verdict: not reproduced (3/13 reproduced, 4/13 close, 6/13 not reproduced). Separating the
+    single pre-bleach domain-boundary point (t = -10 s: -44.11% vs. 100.40%, diff -144.51%),
+    the 12 post-bleach points (t = 5-290 s) independently yield not reproduced (3/12 reproduced
+    at t = 30, 240, 290 s; 4/12 close at t = 5, 10, 18, 190 s; 5/12 not reproduced at t = 40,
+    60, 90, 120, 150 s; RMSE = 6.50%, max |err| = 10.44% at t = 10 s). Residuals follow the
+    exact same S-shaped diffusive-vs-single-exponential signature seen on Nast-Kolb's own SLB
+    trace (cmp_frap_by_thalf_slb_prepol_fig4c, 3/15 reproduced): single-exponential underpredicts
+    early recovery (16.45% vs. 26.13% at 5 s; 30.01% vs. 40.45% at 10 s; 46.95% vs. 52.69% at
+    18 s), crosses at 30 s (64.32% vs. 64.29%), systematically overshoots mid-recovery (+4.33%
+    at 40 s, +9.19% at 60 s, +9.50% at 90 s, +6.41% at 120 s, +5.41% at 150 s, +2.63% at 190 s),
+    and converges at the late plateau (93.89% vs. 93.17% at 240 s; 93.90% vs. 94.14% at 290 s).
+    The post-bleach not-reproduced verdict is invariant across all 45 combinations of a in
+    [87.91, 89.01, 93.9, 94.0, 98.79]%, t_1/2 in [15, 18, 21] s, and c in [-2, 0, +2]% (at most
+    3/12 reproduced, >= 4/12 not reproduced, RMSE >= 5.11%; free 2-parameter c = 0 fit gives
+    a = 87.91%, t_1/2 = 14.42 s, RMSE = 5.07%, 3/12 in band; free 3-parameter fit gives
+    a = 69.81%, t_1/2 = 23.66 s, c = 20.83%, RMSE = 2.78%, 4/12 in band). By contrast, 2D
+    Soumpasis circular-disk diffusive recovery (c = 0, a = 99.66%, tau_D = 18.38 s) reproduces
+    11/12 post-bleach points (RMSE = 1.12%), and a 2-component biexponential (c = 0) reproduces
+    12/12 (RMSE = 0.60%), showing that both 2D SLB and 3D condensate VASP FRAP exhibit
+    non-single-exponential diffusive tails.

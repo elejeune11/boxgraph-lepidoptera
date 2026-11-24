@@ -1,0 +1,116 @@
+id: chandrasekaran_cytosim
+kind: software
+title: "Cytosim: Open-Source C++ cytoskeleton Brownian dynamics engine (main branch snapshot audited against Chandrasekaran et al., 2024)"
+authors:
+  - Francois J. Nedelec
+  - Dietrich Foethke
+  - Cleopatra Kozlowski
+  - Elizabeth Loughlin
+  - Ludovic Brun
+  - Beat Rupp
+  - Jonathan Ward
+  - Antonio Politi
+  - Andre-Claude Clapson
+  - Serge Dmitrieff
+  - Jamie-Li Rickman
+  - Gaelle Letort
+  - Julio Belmonte
+  - Manuel Lera-Ramirez
+  - Maud Formanek
+  - Daniel Cortes
+  - Wei-Xiang Chew
+  - Shao-Heng Li
+year: 2026
+file: corpus/actin_bundling/code/chandrasekaran_cytosim
+url: https://gitlab.com/f-nedelec/cytosim
+version: "sha256:71226664361f73e0fc254a8cc8ab196421168d70d2e91b92923aa52ca82bd775"
+licence: GPL-3.0-only
+language: C++
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "careful_v3"
+  date: "2026-11-24"
+notes: |
+  Audit of the CytoSim C++ source repository (corpus/actin_bundling/code/chandrasekaran_cytosim,
+  GPL-3.0-only, tree digest sha256:71226664361f73e0fc254a8cc8ab196421168d70d2e91b92923aa52ca82bd775;
+  upstream 2025/2026 main-branch snapshot without chandrasekaran2024's Zenodo .cym configs) against
+  every CytoSim equation, parameter, and open question cited in chandrasekaran2024 (Nat. Commun. 15,
+  3139, 2024).
+
+  C++ files audited:
+  - Core & units: README.md, LICENSE.txt, doc/sim/units.md, src/sim/cymdef.h, simul_prop.h/.cc,
+    simul_step.cc, simul_solve.cc.
+  - Bending & mechanics: src/sim/chain.cc, fiber.h/.cc, fiber_prop.h/.cc, mecafil.cc, meca.cc,
+    meca_rigidity.cc.
+  - Steric interactions: src/sim/meca_steric.cc, locus_grid.cc, point_grid.cc, meca_inter.cc.
+  - Crosslinkers / Hands / Couples / Singles / Wrists: src/sim/hand.h/.cc, hand_prop.h/.cc,
+    fiber_grid.cc, couple.cc, couple_prop.h/.cc, couples/couple_long.cc, single.cc, single_prop.cc,
+    singles/wrist.cc, singles/wrist_long.cc.
+  - Brownian drag & mobility: src/sim/fiber.cc (setDragCoefficient, dragCoefficientCylinder),
+    sphere.cc, sphere_prop.h/.cc, solid.cc, solid_prop.h/.cc, bead.cc, bead_prop.h/.cc, meca.cc.
+  - Confinement: src/sim/space.cc, spaces/space_sphere.cc, spaces/space_ellipse.h/.cc,
+    spaces/space_dynamic_ellipse.cc, src/math/project_ellipse.cc, src/sim/meca_inter.cc.
+  - Polymerization & nucleation: src/sim/fiber_set.cc, fibers/classic_fiber.cc, classic_fiber_prop.cc,
+    fibers/growing_fiber.cc, growing_fiber_prop.cc, hands/nucleator.cc, hands/nucleator_prop.h/.cc.
+  - Bundled configs: cym/actin.cym, cym/arp23.cym, cym/bundle_steric.cym, cym/change_space.cym.
+
+  Record contents: 49 quantities, 55 data (23 CytoSim C++ built-in defaults/constants + 32 copied
+  from chandrasekaran2024, 31 cross-linked via from_datum), 17 added probe inputs, 10 faithful
+  line-by-line Python ports of C++ physics/numerics, 19 runs, 13 comparisons (6 reproduced, 3 not
+  reproduced highlighting genuine paper-vs-code discrepancies, 4 internal code-vs-continuum
+  consistency/approximation checks), 3 refinements (all settling within tolerance), and 11 questions.
+
+  Key agreements, discrepancies, and settled chandrasekaran2024 questions:
+  1. VASP tetramer Stokes drag vs prescribed diffusion contradiction (MAJOR, not reproduced):
+     chandrasekaran2024 specifies VASP as a 30 nm sphere with 4 surface binding sites, boundary
+     stiffness 100 pN/um, sterics (30 nm, 1.0 pN/um), viscosity 0.5, AND diffusion = 10 um^2/s.
+     In CytoSim, Couple accepts diffusion = 10 (uniform step [-sqrt(6*D*dt), +sqrt(6*D*dt)],
+     reproducing D = 10.00 +/- 0.04 um^2/s in cmp_vasp_couple_uniform_D_vs_paper) but has only 2
+     hands, no sterics, and rejects confine[1] stiffness (couple_prop.cc:100). Sphere and Solid
+     support 4 surface Wrist Singles, confine = inside 100, and sterics, but hardcode Stokes drag
+     6*pi*eta*R (sphere.cc:282, solid.cc:1289; Solid ignores SolidProp::drag), yielding D = 0.01485
+     um^2/s at 0.5 Pa*s (673x slower than 10 um^2/s; cmp_vasp_stokes_D_vs_paper and
+     cmp_vasp_meca_free_D_vs_paper both not reproduced). Setting diffusion = 10 on the 4 Wrist
+     Singles is silently ignored because Wrist's diffusion>0 guard is '#if (0)' disabled
+     (wrist.cc:19-22) and Wrist::stepF() never calls diffuse() (wrist.cc:55-60). Matching 10 um^2/s
+     on a 30 nm Sphere/Solid requires per-class viscosity 7.43e-4 pN*s/um^2 (lower than water).
+  2. Viscosity unit & 500x water confirmed (not reproduced): simul_prop.h:83,88 and doc/sim/units.md
+     define viscosity in pN*s/um^2 = Pa*s with Water = 0.001, confirming chandrasekaran2024's
+     0.5 pN/s um^2 is unit-misprinted and equals 500x water (not 50x water; cmp_viscosity_ratio_vs_paper_50x
+     flips from not reproduced to reproduced under the 0.05 Pa*s alternative).
+  3. Monomer depletion & Nucleator cycle settled + Supp. Fig. 6B-C reproduced (20/20 points):
+     FiberSet::steps() (fiber_set.cc:239) computes free_polymer = max(0, 1 - used/total) and
+     GrowingFiber::step() / ClassicFiber::stepPlusEnd() advance EACH filament at
+     growing_speed * free_polymer (no N_fil multiplier), settling chandrasekaran2024's
+     q_monomer_depletion_per_filament_vs_total. Nucleator defaults to hold_end = MINUS_END
+     (nucleator_prop.cc:33), creating a ~10 s nucleation burst (0.2/s) followed by detachment-limited
+     cycling (0.005/s). Porting these exact C++ equations reproduces all 8 nucleator counts
+     (cmp_nucleator_molecule_counts), t_2R = 184.47 s (cmp_time_to_2R_undepleted), all 12 digitized
+     Supp. Fig. 6B filament-count points at 50 and 150 nM (cmp_figs6b_nuc50_timeseries,
+     cmp_figs6b_nuc150_timeseries), and all 8 digitized Supp. Fig. 6C max filament lengths across
+     0..150 nM (cmp_figs6c_max_length_depletion). Brownian ratchet (growing_fiber.cc:75-76) is
+     one-sided (antagonistic force < 0 only).
+  4. Hidden CytoSim mechanics & numerical details:
+     - Default kT = 0.0042 pN*um = 4.2 pN*nm (simul_prop.cc:28, +2.19% vs LAMMPS 4.11 pN*nm),
+       shifting actin persistence length from 18.25 um to 17.86 um.
+     - Default FiberProp::drag_radius = 0.0125 um (microtubule radius, fiber_prop.cc:307) vs actin
+       3.5 nm (+22.7% drag at L = 2*pi um, +74.6% at 0.1 um); dragCoefficientCylinder() hardcodes
+       0.32 (fiber.cc:988) while its docstring cites Tirado 0.312 (line 956).
+     - Global steric stiffness steric_stiff_push[0] (meca_steric.cc:80) with cutoff r1 + r2: at
+       1.0 pN/um (10,000x softer than cym/bundle_steric.cym's 10000 pN/um), full actin-actin
+       overlap barrier is 0.0058 kT (VASP-VASP 0.43 kT < 1 kT).
+     - Semi-implicit Meca::solve() (I - dt*mu*P*M)*dx = dt*mu*P*(F + Noise) (meca.cc:552) damps
+       harmonically trapped variance by 1/(1 + 0.5*mu*k*dt) = 0.7387 (MC: 3.101e-5 vs Boltzmann
+       4.200e-5 um^2, -26.1% at mu = 3.54, k = 100, dt = 0.002).
+     - Chain resegmentation (s = 0.09973 um, N_seg = 63 at L = 2*pi um): add_rigidity3D differentiates
+       an N_seg - 1 hinge Hamiltonian 1.59% (1/63) below continuum (0.23188 vs 0.23562 pN*um), while
+       Fiber::bendingEnergy() applies N_seg/(N_seg - 1) to match continuum identically for chord-spaced
+       circular vertices.
+     - Unstated crosslinker stiffness triggers HandProp::checkStiffness() warning above 46.7 pN/um
+       at 30 nm; binding_prob = -expm1(-k_bind*dt); float32 Gillespie detachment has discrete bias
+       E[tau] = dt/(1 - exp(-k_off*dt)).
+     - SpaceSphere (addSphereClamp) retains curvature implicitly whereas SpaceEllipse
+       (projectEllipsoid + addPlaneClamp) linearizes to a tangent plane and estimates surface area
+       via Knud Thomsen p = 1.6075 (-0.060% at AR = 2); confine = inside vs all_inside is unstated.
+

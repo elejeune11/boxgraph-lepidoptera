@@ -1,0 +1,23 @@
+id: lammps_crowder_volume_fraction_diameter
+name: LAMMPS crowder volume fraction treating sigma = 1 as sphere diameter (corrected variant)
+role: processing
+stated:
+  page: 20
+  printed_page: "SI-6"
+  quote: "10% by volume crowder (41,250 molecules)"
+  where: "Supplementary Methods 1 & Supplementary Table 1"
+equation: "phi = N_crowder * (pi / 6) * d_crowder^3 / L_box^3"
+inputs:
+  N_crowder: {quantity: molecule_count, unit: dimensionless}
+  d_crowder: {quantity: lj_length, unit: dimensionless}
+  L_box: {quantity: lj_length, unit: dimensionless}
+outputs:
+  phi: {quantity: volume_fraction, unit: percent}
+settings: {}
+from_words: true
+stochastic: false
+variant_of: lammps_crowder_volume_fraction
+corrections:
+  - equation: "Supplementary Table 1 (p. 16) & Supplementary Methods 1 (p. 20) sphere geometry"
+    change: "Use sphere volume (pi/6) * sigma^3 (diameter d = 1 sigma, radius = 0.5 sigma) instead of (4/3) * pi * sigma^3 (radius r = 1 sigma)."
+    evidence: "Supplementary Table 1 row 2 (p. 16) defines sigma as 'distance between centers' (diameter of a Lennard-Jones sphere), and 41,250 spheres of radius 1 sigma in a 60^3 box occupy 80.0% volume (and 120% with 20,625 VASP spheres), whereas diameter 1 sigma gives 9.999% = 10% by volume as printed on p. 20."

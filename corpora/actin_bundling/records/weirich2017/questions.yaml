@@ -1,0 +1,2467 @@
+- id: q_capillary_missing_factor_of_2_omega
+  kind: possible_error
+  about:
+    - capillary_free_energy_integral
+    - capillary_energy_cost_printed
+    - capillary_energy_cost_corrected
+    - capillary_instability_threshold_printed
+    - capillary_instability_threshold_corrected
+    - capillary_dispersion_printed
+    - capillary_dispersion_corrected
+    - capillary_fastest_mode_printed
+    - capillary_fastest_mode_corrected
+    - capillary_lambda_max_predicted
+    - rel_cap_integral_reduces_to_energy_printed
+    - rel_cap_integral_reduces_to_energy_corrected
+  text: >
+    On SI p. 9 col 2, the paper writes the exact nematic capillary surface integrals
+    A = 2*pi*int_0^lambda rho*sqrt(1 + rho'^2) dz, A_omega = 2*pi*int_0^lambda rho*rho'^2/sqrt(1 + rho'^2) dz,
+    and F = gamma_I*(A + omega*A_omega) with rho(z) = R_0 + u*sin(2*pi*z/lambda) - u^2/(4*R_0),
+    consistent with gamma_ij = gamma_I*delta_ij + gamma_A*n_i*n_j (SI p. 8, no factor of 1/2).
+    Expanding both integrals to O(u^2) gives A - 2*pi*R_0*lambda = (pi*lambda*u^2/(2*R_0))*(k^2 - 1)
+    (factor 1/2 from sqrt(1 + rho'^2) = 1 + rho'^2/2 + ...) and omega*A_omega = (pi*lambda*u^2/R_0)*omega*k^2
+    = (pi*lambda*u^2/(2*R_0))*(2*omega*k^2) (no factor 1/2 in rho'^2/sqrt(1 + rho'^2) = rho'^2 + ...).
+    Hence the exact O(u^2) expansion is delta F = (pi*lambda*u^2*gamma_I/(2*R_0))*[(1 + 2*omega)*k^2 - 1],
+    giving lambda_c = 2*pi*R_0*sqrt(1 + 2*omega) and k_max = 1/sqrt(2*(1 + 2*omega)), whereas SI p. 9
+    and Fig. S3 caption print (1 + omega) throughout. Notably, at the paper's typical parameters
+    R_0 ~ 200 nm and omega ~ 2, the printed (1 + omega) formula gives lambda_max = 3.08 um, whereas
+    the corrected (1 + 2*omega) formula gives lambda_max = 3.97 um, closely matching the paper's own
+    printed prediction lambda_max ~ 4 um.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "To leading order in u, the interfacial energy cost for the sinu-"
+    where: "SI Text, Capillary Instabilities in Long Droplets"
+
+- id: q_capillary_volume_integral_and_figS3_typo
+  kind: possible_error
+  about:
+    - capillary_volume_conservation_printed
+    - capillary_volume_conservation_corrected
+  text: >
+    On SI p. 9 col 2, the capillary volume conservation constraint is printed as
+    2*pi*int_0^lambda dz rho^2(z) = pi*R_0^2*lambda, which carries an extraneous factor of 2 on the
+    left-hand side (the volume of revolution is pi*int_0^lambda dz rho^2(z), for which the printed
+    profile rho(z) = R_0 + u*sin(2*pi*z/lambda) - u^2/(4*R_0) indeed gives pi*R_0^2*lambda + O(u^4)).
+    In addition, the schematic Fig. S3 (SI p. 10) labels the mean radius as R_0 - u^2/2 instead of
+    R_0 - u^2/(4*R_0), which is dimensionally inconsistent and omits 2*R_0 in the denominator.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "of volume, 2π dzρ2 ðzÞ = πR20 λ."
+    where: "SI Text, Capillary Instabilities in Long Droplets & Fig. S3"
+
+- id: q_isotropic_relaxation_inverted_ratio
+  kind: possible_error
+  about:
+    - isotropic_relaxation_rate_printed
+    - isotropic_relaxation_rate_corrected
+  text: >
+    On SI p. 8 col 2 (Liquid Droplets with Isotropic Interfacial Tension), the paper balances
+    dE/dt ~ -gamma_I*r*(dL/dt) with D ~ eta*(r^2*L)*(dL/dt)^2/L^2 and then prints
+    dL/dt proportional to -L*(r*eta/gamma_I) with a timescale tau proportional to gamma_I/eta.
+    Both expressions invert the viscosity-to-surface-tension ratio and are dimensionally invalid:
+    [r*eta/gamma_I] = [time] (making [L*(r*eta/gamma_I)] = [length*time] != [length/time]) and
+    [gamma_I/eta] = [length/time] != [time]. Solving the paper's own energy balance yields
+    dL/dt ~ -L*(gamma_I/(r*eta)) and tau ~ r*eta/gamma_I (proportional to eta/gamma_I), which
+    agrees with the very next sentence on SI p. 8 col 2 ('slope proportional to eta/gamma_I').
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "nentially as dL=dt ∝ − Lðrη=γ I Þ, with a timescale τ that is pro-"
+    where: "SI Text, Liquid Droplets with Isotropic Interfacial Tension"
+
+- id: q_dissipation_tensor_missing_strain_rate
+  kind: possible_error
+  about:
+    - tactoid_dissipation_power
+  text: >
+    At the bottom of SI p. 8 col 2, the rate of energy dissipation (dissipated power) is printed as
+    D = int dV eta_ij v_ij, where eta_ij is the viscosity tensor (Pa*s) and v_ij = (1/2)*(d_i v_j + d_j v_i)
+    is the symmetric strain rate tensor (1/s). That integrand has dimensions of energy density (J/m^3),
+    giving total energy (J) rather than power (J/s); it is missing a second strain-rate factor
+    (e.g., int dV eta_ijkl v_ij v_kl or int dV sigma_ij v_ij). The scaling form immediately following
+    on SI p. 9 col 1 correctly uses quadratic strain rates and has dimensions of power (W).
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "D = dV ηij vij ,"
+    where: "SI Text, Liquid Droplets with Isotropic and Anisotropic Interfacial Tension"
+
+- id: q_figS2C_missing_2pi_one_third_factor
+  kind: possible_error
+  about:
+    - tactoid_rescaled_free_energy
+    - tactoid_equilibrium_minimizer
+  text: >
+    SI p. 8 states that Fig. S2C (p. 10) plots the rescaled free energy F/(gamma_I * V^(2/3)) as a
+    function of alpha for omega = 0, 0.5, and 2. From the printed expressions A = 4*pi*R^2*f(alpha),
+    A_omega = 2*pi*R^2*g(alpha), and circular-arc volume V = 2*pi*R^3*g(alpha), the exact value for
+    a sphere (omega = 0, alpha = pi/2) is F/(gamma_I * V^(2/3)) = (36*pi)^(1/3) = 4.8360 (and minima
+    at omega = 0.5 and 2 are 5.4849 and 6.4989). However, Fig. S2C plots minima at ~2.62, ~2.97, and
+    ~3.52 (and values at alpha = 3.0 of ~2.92, ~3.65, and ~5.84), which match (2*f(alpha) + omega*g(alpha))/g(alpha)^(2/3)
+    — exactly F/(gamma_I * V^(2/3)) divided by the constant factor (2*pi)^(1/3) = 1.8453. Because
+    this is a constant overall factor independent of alpha, equilibrium angles alpha_eq and aspect
+    ratios L/r in Fig. S2D are unaffected.
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "F=γ I V 2=3, is simply a function of α, and their dependence is"
+    where: "SI Text & Fig. S2C"
+
+- id: q_tableS1_coal_10_omega_inconsistency
+  kind: unexplained_difference
+  about:
+    - tableS1_coal_10_omega
+    - omega_fig2a_10_filamin
+    - cmp_omega_10_fig2a_vs_tableS1
+  text: >
+    Main Text p. 4 and Fig. 3D state that coalescence relaxation times for 5 and 10 mol % filamin
+    agree with theoretical curves for omega = 2.0 and omega = 1.4, respectively ('values corresponding
+    to those in Fig. 2A'). However, Table S1 (SI p. 11) reports the continuum-model best fit for
+    10 mol % filamin coalescence as omega = 1.87 +/- 0.07 — more than 6 standard errors above 1.4
+    and nearly indistinguishable from the 5 mol % coalescence fit (omega = 1.90 +/- 0.53). The paper
+    does not explain this discrepancy between Table S1 and Fig. 3D / Main Text p. 4.
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "Coalescence              10        1.87 ± 0.07"
+    where: "Table S1 vs Main Text p. 2134 & Fig. 3D"
+
+- id: q_ode_rayleigh_factor_and_unstated_fig3d_inputs
+  kind: unstated_input
+  about:
+    - tactoid_shape_dynamics_ode
+    - tactoid_geometry_circular_arc
+    - run_ode_coal_5
+    - run_ode_coal_10
+    - run_ode_contr_10
+  text: >
+    Several details of the continuum ODE model (SI pp. 8-9) are not stated explicitly: (1) the
+    circular-arc volume formula V(R, alpha) = 2*pi*R^3*(sin(alpha) - alpha*cos(alpha) - (1/3)*sin^3(alpha))
+    is implied by Fig. S2B and the fixed-volume constraint dV/dt = 0 but never printed; (2) the fixed
+    droplet volume V (or L_eq), initial stretched length L_i, and fitting time window t_max used to
+    generate the theoretical dashed curves (omega = 2.0 and 1.4) in Fig. 3D are not stated; and
+    (3) integrating the literally printed dF/dt + D = 0 with D = (1/2)*V*eta*[(dR/dt/R)^2 + (da/dt/a)^2]
+    at Table S1 parameters gives relaxation times tau (~4.4 s for 5% coalescence, ~14 s for 10%
+    coalescence, ~137-147 s for contraction) that are roughly 2x shorter than the plotted curves in
+    Fig. 3B, Fig. 3D, and Fig. 4C — suggesting the authors' Mathematica implementation may have used
+    the Rayleigh dissipation variational convention d(dF/dt + Phi)/d(alpha_dot) = 0 (equivalently
+    D = 2*Phi without the factor of 1/2). This can be tested quantitatively once Figs. 3B, 3D, and 4C
+    are digitized in the digitize stage.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "NDSolve), subject to the initial conditions for the shape pa-"
+    where: "SI Text, Liquid Droplets with Isotropic and Anisotropic Interfacial Tension"
+
+- id: q_filament_length_180nm_vs_1pct_cp
+  kind: unexplained_difference
+  about:
+    - actin_filament_length_cp
+    - filament_length_avg_main
+    - cp_frac_1p0
+    - cp_frac_1p5
+    - cmp_filament_len_1p0_vs_180nm
+  text: >
+    Main Text p. 1 states an average F-actin length of '~180 nm' while citing Fig. 1A and Movie S1.
+    Under the SI p. 7 formula (L_f = 2.7 nm / r_CP), 180 nm corresponds to 1.5 mol % capping protein
+    (used in Figs. 1C, 2A, 3A, and Movie S2), whereas both Fig. 1A and Movie S1 captions state
+    '1 mol % capping protein', which yields L_f = 270 nm.
+  citation:
+    page: 1
+    printed_page: "2131"
+    quote: "∼180 nm, such that filaments freely diffuse"
+    where: "text p. 2131 vs Fig. 1A & Movie S1 captions"
+
+- id: q_frap_unstated_bleached_size_and_L_convention
+  kind: unstated_input
+  about:
+    - frap_diffusion_scaling
+    - stokes_einstein_ellipsoid_viscosity
+    - frap_bleached_size_added
+    - filament_half_length_frap_si
+    - D_frap_est
+  text: >
+    SI p. 7 obtains D ~ 0.3 x 10^-2 um^2/s from tau_R ~ 900 s by 'Scaling by the approximate size of
+    the bleached region', without stating the numerical bleached-region size L_b or geometric factor
+    (e.g., L_b^2/tau_R vs L_b^2/(4*tau_R); sqrt(D*tau_R) = 1.64 um). In addition, SI p. 7 defines the
+    ellipsoidal filament axes as 2L and 2r, so at 1.5 mol % CP (full length 180 nm) the semimajor axis
+    is L = 90 nm; SI p. 8 uses the right value (L ~ 90 nm, giving eta = 3.13 Pa*s ~ 3 Pa*s) but
+    casually refers to L as 'length L ~ 90 nm' rather than half-length.
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "length L ∼ 90 nm and diameter 2r ∼ 7 nm"
+    where: "SI Text, Fluorescence Recovery After Photobleaching and Viscosity Estimate"
+
+- id: q_actin_mw_and_total_concentration_ambiguity
+  kind: unstated_input
+  about:
+    - actin_mass_concentration
+    - actin_mesh_size
+    - actin_mw_added
+    - c_actin_monomeric_si
+    - c_actin_tmr_si
+  text: >
+    SI p. 7 evaluates the uncross-linked mesh size xi = 0.3 * c^(-1/2) (c in mg/mL) without stating
+    the G-actin molar mass (~42 kDa) used to convert molar concentration to mg/mL. Furthermore, SI p. 7
+    states 'monomeric actin [2.64 uM]' followed by 'fluorescently labeled actin [0.32 uM]' without
+    clarifying whether 2.64 uM is the total actin concentration (including the 0.32 uM labeled fraction,
+    as suggested by 10 mol % filamin = 0.26 uM on p. 1 and '2.64 uM actin' in Movies S1-S6) or unlabeled
+    actin only (giving 2.96 uM total). At 2.64 uM (42 kDa), xi = 0.90 um; at 2.96 uM, xi = 0.85 um;
+    both round to '~1 um'.
+  citation:
+    page: 7
+    printed_page: "SI-1"
+    quote: "To form actin filaments, monomeric actin [2.64 μM"
+    where: "SI Text, Experimental Assay"
+
+- id: q_coarsening_exponent_3sigma_gap
+  kind: overstated_claim
+  about:
+    - coarsening_exponent_measured
+    - coarsening_exponent_theory
+    - cmp_coarsening_exponent_vs_theory
+  text: >
+    Main Text p. 3 reports a power-law growth exponent alpha = 0.47 +/- 0.01 (mean across 4 datasets,
+    Fig. 3A) and states it is 'consistent with that expected for coarsening of isotropic liquid droplets
+    via interfacial tension-driven coalescence (alpha = 0.5)'. Numerically, 0.50 lies 3 standard
+    deviations above 0.47 +/- 0.01 (a small but statistically resolved difference relative to the
+    printed uncertainty).
+  citation:
+    page: 3
+    printed_page: "2133"
+    quote: "where α = 0.47 ± 0.01 (Fig. 3A, dashed"
+    where: "text, p. 2133 col 2"
+
+- id: q_tableS1_contraction_large_omega_and_slow_vcap
+  kind: unexplained_difference
+  about:
+    - tableS1_contr_2p5_omega
+    - tableS1_contr_5_omega
+    - tableS1_contr_10_omega
+    - tableS1_contr_2p5_gamma_eta
+    - tableS1_contr_5_gamma_eta
+    - tableS1_contr_10_gamma_eta
+  text: >
+    Table S1 (SI p. 11) reports fitted anchoring strengths omega = 23.9 +/- 14.4 (2.5%), 11.9 +/- 5.48
+    (5%), and 15.0 +/- 7.78 (10%) for contracting bundles — roughly 6-13x larger than coalescence
+    tactoids (omega = 1.87-1.90) — and fitted capillary velocities gamma_I/eta = (2.5-4.5) x 10^-3 um/s
+    that are 25-55x slower than coalescence (0.11-0.14 um/s), with non-monotonic filamin dependence and
+    50-60% relative uncertainties. The paper does not discuss whether the ~40x drop in gamma_I/eta
+    reflects increased viscosity of longer (~1.08 um at 0.25 mol % CP) entangled filaments or why
+    omega increases by an order of magnitude in the bundle contraction regime.
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "Contraction               2.5      23.9 ± 14.4"
+    where: "Table S1"
+
+- id: q_minor_fig4e_tick_and_si_crossref_typos
+  kind: possible_error
+  about:
+    - bundle_contractile_strain_range
+    - tactoid_geometry_circular_arc
+    - capillary_fastest_mode_printed
+  text: >
+    Several typographical / figure-labeling errors appear in the published article and SI: (1) on
+    p. 5, Fig. 4E misprints the second y-axis tick label from the bottom as '0.6' instead of '0.3'
+    (the ticks read 0.2, 0.6, 0.4, 0.5, 0.6 from bottom to top — important to note when digitizing
+    Fig. 4E); (2) SI p. 7 col 1 prints '(longer than ~2 uM)' with capital M instead of 'um' for
+    methylcellulose crowding of filaments; (3) SI text contains four misdirected figure/movie
+    cross-references: 'Movie S4' instead of Movie S2 for FRAP (SI p. 7), 'Fig. S1A' instead of
+    Fig. S2A for unit normal N_hat (SI p. 8), 'Fig. 2A' instead of Fig. 3A for size-independence
+    of tactoid aspect ratio (SI p. 8, twice), and 'Fig. 3A' instead of Fig. 4A for the capillary
+    pearling instability (SI p. 9).
+  citation:
+    page: 5
+    printed_page: "2135"
+    quote: "Fig. 4. Interfacial tension drives instabilities and contraction"
+    where: "Fig. 4E (p. 2135) and SI Text (pp. SI-1 to SI-3)"
+
+- id: q_gamma_I_filamin_condition_choice
+  kind: choice
+  about:
+    - gamma_I_est_main
+    - eta_frap_est
+    - tableS1_coal_5_gamma_eta
+    - tableS1_coal_10_gamma_eta
+    - cmp_gamma_I_coal_5_printed_eta
+  text: >
+    Main Text p. 4 estimates gamma_I ~ 300 nN/m from Table S1's fitted capillary velocity and the
+    FRAP viscosity eta ~ 3 Pa*s (note p. 4 writes 'eta/gamma_I obtained in the fit (Table S1)',
+    whereas Table S1 prints the reciprocal gamma_I/eta). The FRAP viscosity was measured at 5 mol %
+    filamin (Fig. 1C, 1.5 mol % CP), where Table S1's coalescence gamma_I/eta = 0.14 +/- 0.02 um/s
+    gives gamma_I = 420 nN/m (439 nN/m with recomputed eta = 3.13 Pa*s); using Table S1's 10 mol %
+    filamin value (0.11 +/- 0.03 um/s) with the 5%-filamin FRAP viscosity gives 330 nN/m (345 nN/m
+    chained), closer to the rounded '~300 nN/m' (equivalent to ~0.1 um/s * 3 Pa*s).
+  citation:
+    page: 4
+    printed_page: "2134"
+    quote: "γ I ∼ 300 nN/m. This interfacial tension is ∼10 times less than"
+    where: "text, p. 2134 col 1 & Table S1"
+
+- id: q_fig3d_omega_vs_volume_separation
+  kind: unexplained_difference
+  about:
+    - tactoid_shape_dynamics_ode
+    - run_ode_coal_5
+    - run_ode_coal_10
+    - run_ode_coal_10_fig2a_omega
+    - tableS1_coal_5_Leq
+    - tableS1_coal_10_Leq
+  text: >
+    SI p. 9 col 1 states that the theoretical curves in Fig. 3D (labeled omega = 2.0 and omega = 1.4)
+    are generated by numerically solving the coalescence ODE 'for fixed volume' and repeating for
+    different values of omega. However, under the continuum ODE at fixed droplet volume V (e.g.,
+    V = 1.0 um^3, gamma_I/eta = 0.1 um/s, 50% initial stretch), reducing omega from 2.0 to 1.4
+    increases tau by only ~5% (5.86 s vs 6.17 s; tau_linearized 5.28 s vs 5.52 s), and even at fixed
+    L_eq = 6.04 um the change from omega = 1.87 to 1.4 increases tau by only 14% (12.52 s vs 14.33 s).
+    In contrast, the two dashed curves in Fig. 3D (p. 4) are separated by a factor of ~2.7-3x at the
+    same gamma_I/eta, which instead matches the ~2.2x ratio of equilibrium droplet lengths L_eq in
+    Table S1 (2.74 um for 5 mol % vs 6.04 um for 10 mol %, since tau scales as V^(1/3) ~ L_eq).
+    Thus the separation between the two curves in Fig. 3D appears driven primarily by different
+    droplet sizes/volumes rather than omega = 2.0 vs 1.4 at fixed volume.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "coalesced droplet for fixed volume. To calculate τ, we fit an"
+    where: "SI Text, p. SI-3 col 1 & Fig. 3D"
+
+- id: q_inverted_eta_over_gamma_text_vs_fig3d_tableS1
+  kind: possible_error
+  about:
+    - tactoid_shape_dynamics_ode
+    - interfacial_tension_from_capillary_velocity
+    - tableS1_coal_5_gamma_eta
+    - tableS1_coal_10_gamma_eta
+  text: >
+    Main Text p. 4 col 1 writes 'we calculate tau as a function of eta/gamma_I for varying values of
+    omega = gamma_A/gamma_I (Fig. 3D, dashed lines)' and 'From the eta/gamma_I obtained in the fit
+    (Table S1)', and SI p. 9 col 1 likewise writes 'To determine the dependence of tau on eta/gamma_I
+    as well as omega ... by varying gamma_I relative to eta ... as in Fig. 3D'. However, both Fig. 3D's
+    horizontal axis ('gamma_I/eta (nm/s)', with tau decreasing as 1/(gamma_I/eta)) and Table S1's
+    fitted column ('gamma_I/eta, um/s') actually plot and tabulate the reciprocal capillary velocity
+    gamma_I/eta rather than eta/gamma_I.
+  citation:
+    page: 4
+    printed_page: "2134"
+    quote: "function of η/γ I for varying values of ω= γ A/γ I (Fig. 3D, dashed"
+    where: "text, p. 2134 col 1, SI p. SI-3 col 1, Fig. 3D & Table S1"
+
+- id: q_cross_cp_condition_mixing_and_movies3_mismatch
+  kind: unexplained_difference
+  about:
+    - coarsening_exponent_measured
+    - cp_frac_1p5
+    - cp_frac_1p0
+    - eta_frap_est
+    - tableS1_coal_5_gamma_eta
+    - tableS1_coal_10_gamma_eta
+    - omega_fig2a_5_filamin
+    - omega_fig2a_10_filamin
+  text: >
+    Two capping-protein (filament-length) discrepancies appear across figures, movies, and cross-figure
+    parameter combinations: (1) Main Text p. 3 cites Fig. 3A and Movie S3 together for tactoid
+    coarsening, yet Fig. 3A caption (p. 4) states 1.5 mol % capping protein (L_f = 180 nm) whereas
+    Movie S3 caption (p. 12) states 1 mol % capping protein (L_f = 270 nm); (2) Main Text p. 4 compares
+    coalescence fits from 1 mol % CP samples (Figs. 3B-C, Movie S4, Table S1) with anchoring strengths
+    omega = 2 and 1.4 measured at 1.5 mol % CP (Fig. 2A), and combines 1 mol % CP coalescence
+    gamma_I/eta (Table S1) with 1.5 mol % CP FRAP viscosity eta ~ 3 Pa*s (Fig. 1C, Movie S2) to
+    estimate gamma_I ~ 300 nN/m, without addressing the 50% difference in mean filament length
+    (270 nm vs 180 nm).
+  citation:
+    page: 12
+    printed_page: "SI-6"
+    quote: "tactoids (2.64 μM actin, 1 mol % capping protein, and 5 mol % filamin)"
+    where: "Movie S3 caption vs Fig. 3A, Fig. 2A, Fig. 1C & Table S1"
+
+- id: q_isotropic_dEdt_sign_and_capillary_velocity_pi
+  kind: possible_error
+  about:
+    - isotropic_relaxation_rate_printed
+    - isotropic_relaxation_rate_corrected
+    - capillary_axial_velocity
+    - capillary_dissipation_power
+  text: >
+    Two minor sign/prefactor discrepancies appear in the SI scaling derivations: (1) SI p. 8 col 2
+    prints 'rate of change in mechanical energy, dE/dt ~ -gamma_I * r * dL/dt' for a shortening droplet
+    (dL/dt < 0), which carries the sign of the energy decrease rate (-dE/dt > 0) rather than dE/dt < 0
+    (matching dE/dt + D = 0 requires dE/dt ~ +gamma_I * r * dL/dt); (2) SI p. 9 col 2 prints the axial
+    fluid velocity at the capillary center with an equality sign as v = 2*pi*(du/dt)/k, whereas exact
+    linearized incompressible continuity d(pi*rho^2)/dt + d(pi*R_0^2*v_z)/dz = 0 for
+    rho = R_0 + u*sin(2*pi*z/lambda) - u^2/(4*R_0) yields amplitude v_z = (2/k)*(du/dt) (smaller by a
+    factor of pi; 2*pi/k = lambda/R_0 reflects order-of-magnitude scaling d(v_z)/dz ~ v/lambda and
+    does not change the scaling Lambda(k) ~ (gamma_I / (eta*R_0)) * k^2).
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "mechanical energy, dE=dt ∼ − γ I rdL=dt, with the rate of energy"
+    where: "SI Text, p. SI-2 col 2 & p. SI-3 col 2"
+
+- id: q_audit_reading_tableS1_coal_conditions
+  kind: reading
+  about:
+    - tableS1_coal_5_omega
+    - tableS1_coal_5_gamma_eta
+    - tableS1_coal_5_Leq
+    - tableS1_coal_10_omega
+    - tableS1_coal_10_gamma_eta
+    - tableS1_coal_10_Leq
+  text: >
+    Audit reading disagreement on condition annotation symmetry in data.yaml: the first reader
+    attached capping_protein_mole_fraction: '0.25 percent' to all Table S1 contraction rows
+    (tableS1_contr_*) from Figs. 4B-D, but omitted capping_protein_mole_fraction: '1 percent' on the
+    Table S1 coalescence rows (tableS1_coal_5_*, tableS1_coal_10_*) even though Figs. 3B-C and
+    Movie S4 specify 1 mol % capping protein for coalescence events (Table S1 itself omits capping
+    protein % for both event types). Leaving capping protein % unstated on tableS1_coal_* masks the
+    1 mol % vs 1.5 mol % CP condition mismatch against Fig. 1C FRAP viscosity (eta_frap_est) and
+    Fig. 2A anchoring strengths (omega_fig2a_*).
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "Coalescence               5        1.90 ± 0.53"
+    where: "Table S1 vs Figs. 3B-C & 4B-D"
+
+- id: q_audit_reading_ambient_temp_and_frap_spot
+  kind: reading
+  about:
+    - ambient_temperature_si
+    - frap_bleached_size_added
+    - run_se_viscosity_frap
+    - run_frap_diff_scaling
+  text: >
+    Audit reading disagreements on two input-provenance choices: (1) ambient_temperature_si (~20 degC,
+    SI p. 7) is explicitly stated only for lipid vesicle preparation ('Vesicles are prepared at ambient
+    temperature (~20 C...)'), whereas the confocal FRAP assay temperature on SI pp. 7-8 is unstated;
+    an alternative reading treats imaging T as an added.yaml input (e.g., 20 degC with 22-25 degC
+    alternatives, though Kelvin changes by <2% and eta only shifts from 3.13 to 3.19 Pa*s);
+    (2) frap_bleached_size_added uses baseline 1.65 um, which equals sqrt(D * tau_R) = 1.643 um
+    (weakly tuned to match D ~ 0.3 x 10^-2 um^2/s with prefactor 1, even though frap_diffusion_scaling
+    carries prefactor: unknown and Fig. 1C shows a ~1.5-2.5 um bleached half-tactoid; its alternatives
+    1.0, 2.0, 2.5 um adequately span the visual range).
+  citation:
+    page: 7
+    printed_page: "SI-1"
+    quote: "temperature (∼20 °C, well above the gel transition temperature"
+    where: "SI Text, p. SI-1 col 1"
+
+- id: q_audit_reading_mesh_and_ratio_from_source
+  kind: reading
+  about:
+    - mesh_size_dilute_main
+    - gamma_I_ratio_protein_droplets
+  text: >
+    Audit reading disagreements on two from_source attributions in data.yaml: (1) mesh_size_dilute_main
+    (~1 um, p. 1) sets from_source: ref-18, whereas Ref. 18 (Schmidt et al. 1989) supplies the scaling
+    formula xi = 0.3 * c^(-1/2) (already recorded via described_from: ref-18 on actin_mesh_size)
+    rather than the numerical value ~1 um for Weirich et al.'s 2.6 uM sample;
+    (2) gamma_I_ratio_protein_droplets (~10, p. 4) sets from_source: ref-24, whereas '~10 times less'
+    is Weirich et al.'s own comparison ratio against two cited works ((24, 29), Brangwynne et al. 2009
+    and Elbaum-Garfinkle et al. 2015), and from_source only accepts a single reference ID.
+  citation:
+    page: 1
+    printed_page: "2131"
+    quote: "is ∼1 μm (18) and much larger than"
+    where: "text, p. 2131 col 2 & p. 2134 col 1"
+
+- id: q_digitized_fig3d_rayleigh2_and_volume_settled
+  kind: possible_error
+  about:
+    - tactoid_shape_dynamics_ode
+    - tactoid_shape_dynamics_ode_rayleigh2
+    - d_fig3d_theory_w2p0
+    - d_fig3d_theory_w1p4
+    - cmp_fig3d_w2p0_printed
+    - cmp_fig3d_w2p0_rayleigh2
+    - cmp_fig3d_w1p4_printed
+    - cmp_fig3d_w1p4_rayleigh2
+    - cmp_fig3d_w1p4_fixedV_rayleigh2
+  text: >
+    Digitization of Fig. 3D's two theoretical dashed curves at 1200 dpi settles both open questions
+    about the continuum ODE (q_ode_rayleigh_factor_and_unstated_fig3d_inputs and
+    q_fig3d_omega_vs_volume_separation): both dashed curves are exact hyperbolas with
+    (gamma_I/eta)*tau = 1278 +/- 2 nm for omega = 2.0 and 3607 +/- 3 nm for omega = 1.4 (a 2.822x
+    separation). (1) Evaluating the literally printed dF/dt + D = 0 with D = (1/2)*V*eta*[...] gives
+    614 nm (5% Table S1 L_eq = 2.74 um, omega = 2.0) and 1577 nm (10% Table S1 L_eq = 6.04 um,
+    omega = 1.4) — 2.08x and 2.29x too fast, confirming that the authors' Mathematica implementation
+    used the Rayleigh dissipation power convention dF/dt + 2*Phi = 0 (without the factor of 1/2,
+    implemented in tactoid_shape_dynamics_ode_rayleigh2, which yields 1228 nm — within 4% — and
+    3153 nm — within 13%). (2) Even with the Rayleigh factor of 2, holding droplet volume fixed at
+    V = 1.088 um^3 while reducing omega from 2.0 to 1.4 increases (gamma_I/eta)*tau by only 5.8%
+    (1228 -> 1299 nm, 2.78x below Fig. 3D's 3607 nm curve), proving that Fig. 3D's two curves were
+    generated at different droplet sizes/volumes (matching Table S1's L_eq = 2.74 vs 6.04 um) rather
+    than at fixed volume as stated on SI p. 9.
+  citation:
+    page: 4
+    printed_page: "2134"
+    quote: "falls on the theoretically predicted curve for anisotropic droplets."
+    where: "Fig. 3D & SI Text p. SI-3"
+
+- id: q_digitized_fig3c_inset_nonzero_intercept
+  kind: unexplained_difference
+  about:
+    - coalescence_tau_linear_scaling
+    - d_fig3c_inset_linear_fit
+    - d_fig3c_inset_5pct
+    - d_fig3c_inset_10pct
+    - cmp_fig3c_inset_linear_fit
+  text: >
+    Main Text p. 4 and SI p. 8 derive a zero-intercept linear scaling tau ~ (eta/gamma_eff)*(L_i - L_f)
+    (with slope eta/gamma_eff ~ 10 s/um at eta ~ 3 Pa*s and gamma_eff ~ 300 nN/m). Digitizing Fig. 3C
+    inset's dashed linear fit reveals an unconstrained regression tau = 13.72*(L_i - L_f) - 8.34 s
+    with a substantial negative y-intercept (-8.3 s, crossing tau = 0 at L_i - L_f = 0.61 um) and
+    slope 13.7 s/um (~37% steeper than 10 s/um). The paper does not mention or explain the non-zero
+    intercept.
+  citation:
+    page: 4
+    printed_page: "2134"
+    quote: "Linear scaling between relaxation time and deformation length"
+    where: "Fig. 3C (Inset)"
+
+- id: q_digitized_fig3a_slope_and_fig1c_fit_tau
+  kind: unexplained_difference
+  about:
+    - d_fig3a_length_data
+    - d_fig3a_length_fit
+    - d_fig1c_frap_fit
+    - coarsening_exponent_measured
+    - tau_R_frap_fig1c
+    - cmp_fig3a_fit_measured_alpha
+  text: >
+    Two minor quantitative discrepancies emerge between digitized plotted fit curves and their
+    accompanying caption numbers: (1) Fig. 3A's caption states 'dashed line indicates a power law fit
+    L ~ t^alpha, where alpha = 0.47 +/- 0.01 for four datasets', whereas the digitized dashed line
+    plotted in Fig. 3A itself has log-log slope 0.494 (closely matching the single dataset plotted in
+    Fig. 3A, whose 16 points have log-log slope 0.492, and statistically closer to the theoretical
+    coalescence exponent 0.50 than the 4-dataset mean 0.47); (2) Fig. 1C's caption states 'dashed line
+    indicates exponential fit with tau_R = 880 s', whereas an unconstrained 3-parameter rising
+    exponential fit I_inf - (I_inf - I_0)*exp(-t/tau) to the digitized dashed curve yields
+    I_0 = 0.224, I_inf = 0.947, tau = 712 s (fixing I_inf = 1.00 gives tau ~ 815 s; fixing
+    tau = 880 s requires I_inf ~ 1.03-1.05).
+  citation:
+    page: 4
+    printed_page: "2134"
+    quote: "dashed line indicates a power law fit L ∼ t α"
+    where: "Fig. 3A & Fig. 1C captions"
+
+- id: q_dutta2016_distinct_mechanisms_no_relation
+  kind: reading
+  about:
+    - tactoid_free_energy
+    - tactoid_rescaled_free_energy
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_scaling
+    - tactoid_aspect_ratio_large_omega
+    - tactoid_coarsening_power_law
+    - tactoid_shape_dynamics_ode
+    - capillary_free_energy_integral
+    - capillary_energy_cost_printed
+    - capillary_energy_cost_corrected
+    - capillary_dispersion_printed
+    - capillary_dispersion_corrected
+    - capillary_instability_threshold_printed
+    - capillary_instability_threshold_corrected
+    - capillary_fastest_mode_printed
+    - capillary_fastest_mode_corrected
+    - capillary_wavenumber_definition
+    - capillary_wavelength_from_wavenumber
+    - actin_mesh_size
+    - anchoring_strength_definition
+    - director_crossover_parameter
+    - dutta2016/wlc_aligned_hamiltonian_eq1_eq3
+    - dutta2016/landau_wilson_free_energy_eq4_eq7
+    - dutta2016/real_space_potential
+    - dutta2016/potential_fourier
+    - dutta2016/debye_factor_b
+    - dutta2016/stability_function_eq8
+    - dutta2016/stability_function_eq8_mixed2pi
+    - dutta2016/bundle_size_eq8
+    - dutta2016/bundle_size_eq8_mixed2pi
+    - dutta2016/finite_bundle_boundary_eq8
+    - dutta2016/macrophase_boundary_k0
+    - dutta2016/in_plane_rg_def
+    - dutta2016/dimensionless_wavenumber_def
+    - dutta2016/dimensionless_screening_length_def
+    - dutta2016/dimensionless_areal_density_def
+    - dutta2016/effective_tension_def
+    - dutta2016/screening_length_salt_scaling
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "The equilibrium shape of a liquid droplet is determined by mini-"
+    where: "SI Text, Continuum Theory of Elongated Droplets"
+  text: >
+    No stated or proposed mathematical relation (same_as, reduces_to, derived_from, scales_as, or
+    approximated_by) connects any model of dutta2016 and weirich2017, and no cited.yaml link
+    applies (neither paper cites the other, their reference lists share zero papers, and neither
+    borrows any numerical datum from the other). Although both treat cross-linked F-actin
+    bundling/phase separation, their mathematical formulations are structurally disjoint across
+    four axes:
+    (1) Orthogonal physical regimes and degrees of freedom: dutta2016 models a dense, pre-aligned
+    melt of long strongly stretched directed polymers (explicitly excluding the isotropic-nematic
+    transition on p. 3 and dropping WLC bending rigidity kappa in Eq. 3 in favor of aligning
+    tension epsilon = 3*kappa_0) interacting via pairwise transverse SALR potentials (short-range
+    Gaussian attraction -Gamma_A*exp(-r^2/lambda_A^2) vs. long-range 2D Yukawa/Bessel repulsion
+    Gamma_R*K_0(r/lambda_R)), stopping at a static quadratic spinodal analysis around the uniform
+    nematic melt (stability_function_eq8) with no interfacial tension, droplet geometry, viscosity,
+    or dynamics. Conversely, weirich2017 starts from a dilute isotropic gas (c_A = 2.6 uM, mesh
+    size xi ~ 1 um >> L_f) of short rigid rods (L_f ~ 0.18-1 um << l_p ~ 10 um) condensed ~100-fold
+    into ~250 uM nematic liquid tactoids by the long (~150 nm), flexible, transient cross-linker
+    filamin, and builds exclusively post-condensation macroscopic continuum models: sharp-interface
+    Rapini-Papoular/Wulff surface free energy F = gamma_I*A + gamma_A*A_omega, equilibrium aspect
+    ratio L/r(omega), coarsening L ~ t^alpha, overdamped viscous relaxation dF/dt + D = 0, FRAP
+    ellipsoid diffusion/viscosity, and axial Rayleigh-Plateau capillary instability of cylindrical
+    threads. weirich2017 has no model predicting bundle radius R_0 (treated as a measured input
+    ~200 nm) or the empirical phase boundaries of Fig. 1D, while dutta2016 has no surface energy,
+    aspect ratio, viscosity, or relaxation dynamics.
+    (2) Orthogonal instability geometries, classes, and cross-linker responses: dutta2016's spinodal
+    instability (stability_function_eq8, bundle_size_eq8) is a static transverse (x-y plane
+    perpendicular to the aligned polymers) Type-Is (finite-wavelength microphase) instability in
+    which k = 0 is thermodynamically stabilized by long-range electrostatic repulsion (F(0) < 1)
+    and an intermediate band 0 < k_min < k < k_max is unstable; increasing attraction strength
+    Gamma_A drives superlinear growth of transverse spacing D* = 2*pi/k_min until it diverges at
+    the k = 0 macrophase spinodal. By contrast, weirich2017's capillary instability
+    (capillary_energy_cost_*, capillary_dispersion_*, capillary_instability_threshold_*,
+    capillary_fastest_mode_*) is a dynamic axial (z-axis parallel to the nematic director along an
+    already-formed cylinder of radius R_0) Type-IIs (long-wavelength conserved) Rayleigh-Plateau
+    instability in which all long wavelengths 0 < k < k_c = 1/sqrt(1 + c*omega) (c = 1 printed,
+    c = 2 corrected) are thermodynamically unstable (delta F < 0, largest driving force at k -> 0)
+    and k = 0 is suppressed only dynamically by volume-conserving viscous axial flow
+    (Lambda(k) ~ (gamma_I/(eta*R_0))*k^2), selecting k_max = k_c/sqrt(2). Furthermore, increasing
+    filamin concentration (2.5-15 mol %) decreases anchoring strength omega = gamma_A/gamma_I
+    (~2.2 -> 1.1), making tactoids rounder (L/r ~ 3 -> 2), shortening the capillary pearling
+    wavelength lambda_max ~ sqrt(1 + c*omega), and increasing contractile strain (Fig. 4E).
+    (3) Rejected spurious algebraic coincidences: dutta2016/screening_length_salt_scaling
+    (lambda_R_phys ~ n^(-1/2)) and weirich2017/actin_mesh_size (xi = 0.3*c^(-1/2)) share an
+    inverse-square-root concentration exponent but describe unrelated physics (3D Debye-Huckel
+    electrostatic screening vs. bulk electrolyte concentration n [M] vs. 3D semidilute geometric
+    rod-network spacing vs. actin mass concentration c [mg/mL]); dutta2016/dimensionless_wavenumber_def
+    (k* = k*sqrt(L*kT/epsilon)) and weirich2017/capillary_wavenumber_definition (k = 2*pi*R_0/lam)
+    are generic wavenumber nondimensionalizations of orthogonal wavevectors by unrelated length
+    scales (single-chain transverse wandering R_g vs. macroscopic liquid cylinder radius R_0); and
+    trivial 1-2 op ratios/scalings (dimensionless_screening_length_def, effective_tension_def,
+    dimensionless_areal_density_def vs. anchoring_strength_definition,
+    concentration_enrichment_ratio, actin_filament_length_cp, filament_half_length_from_length,
+    filament_radius_from_diameter, filamin_concentration_from_fraction) are too_plain.
+    (4) Symbol collisions across the two records: L (polymer contour length [nm] in dutta2016 vs.
+    tactoid/bundle major axis [um] or filament half-length [nm] in weirich2017), k (transverse
+    spinodal wavenumber vs. axial capillary wavenumber), r (dimensionless inter-polymer separation
+    vs. tactoid minor axis or filament radius), F (dimensionless spinodal stability function vs.
+    interfacial free energy [J]), Omega (Hubbard-Stratonovich density-mode field vs. capillary
+    growth rate [1/s]), rho (transverse polymer areal density [1/nm^2] vs. perturbed cylinder
+    radius profile rho(z) [um]), lambda (interaction ranges lambda_R, lambda_A vs. axial capillary
+    wavelengths lambda, lambda_c, lambda_max), A (transverse area vs. droplet surface area), and
+    D (dimensionless bundle size D* vs. diffusion coefficient or viscous dissipation power).
+
+- id: q_dutta2016_inverted_salr_regime_in_weirich2017
+  kind: reading
+  about:
+    - filamin_length_main
+    - c_actin_tactoid_est
+    - c_actin_dilute_main
+    - filament_diameter_frap_si
+    - actin_monomer_spacing_si
+    - coarsening_exponent_measured
+    - tactoid_coarsening_power_law
+    - ambient_temperature_si
+    - dutta2016/stability_function_eq8
+    - dutta2016/stability_function_eq8_mixed2pi
+    - dutta2016/potential_fourier
+    - dutta2016/debye_factor_b
+    - dutta2016/bundle_size_eq8
+    - dutta2016/bundle_size_eq8_mixed2pi
+    - dutta2016/macrophase_boundary_k0
+    - dutta2016/finite_bundle_boundary_eq8
+    - dutta2016/screening_length_salt_scaling
+  citation:
+    page: 3
+    printed_page: "2133"
+    quote: "less orientationally constrained, long-range attractive interaction"
+    where: "text, p. 2133 col 1 & SI p. SI-1 col 1"
+  text: >
+    Regime-level physical contrast linking dutta2016's exact SALR stability criterion to
+    weirich2017's experimental filamin/F-actin phase separation:
+    (1) Exact global no-finite-bundle theorem in dutta2016 Eq. (8): using the exact integral
+    representation b(k) = 2 * int_0^1 (1 - t) * exp(-k^2 * t / 2) dt (strictly decreasing for all
+    k > 0) and writing x = (q * lambda_R)^2 (with q = k in consistent stability_function_eq8 and
+    q = 2*pi*k in stability_function_eq8_mixed2pi) and alpha = (lambda_A / (2 * lambda_R))^2,
+    whenever lambda_A >= 2 * lambda_R (alpha >= 1) we have exp(alpha * x) / (1 + x) > 1 and
+    1 - exp(-alpha * x) >= x / (1 + x) for all x > 0. Consequently, if beta V(0) >= 0 then
+    beta V(k) > 0 for all k > 0 (no instability), whereas if beta V(0) < 0 then
+    -beta V(k) < -beta V(0) and b(k) < 1 for all k > 0, giving F(k) < F(0) strictly for all k > 0
+    (likewise on the F(0) = 1 macrophase boundary the O(k^2) curvature is
+    c_2 = 2*pi*rho* * Gamma_R * lambda_R^4 * (1 - lambda_A^2/(4*lambda_R^2)) - lambda_A^2/4 - 1/6 < 0).
+    Thus for lambda_A >= 2 * lambda_R, dutta2016's Eq. (8) mathematically forbids finite-bundle
+    microphase separation for all (rho*, Gamma_R, Gamma_A), independent of 2*pi Fourier convention
+    and length normalization R_g, permitting only uniform liquid or k = 0 macroscopic phase
+    separation.
+    (2) Inverted SALR hierarchy in weirich2017: in weirich2017's actin polymerization buffer
+    (SI p. 7: 50 mM KCl, 1 mM MgCl2, 10 mM imidazole pH 7.5, 0.2 mM EGTA, 300 uM ATP at ~20 degC),
+    the ionic strength is I ~= 53-58 mM, yielding a Debye screening length lambda_D ~= 1.27-1.32 nm.
+    By contrast, filamin is a long, flexible cross-linker of length lambda_{A,phys} ~ 150 nm
+    (filamin_length_main, p. 3), producing an attraction-to-repulsion range ratio
+    lambda_A / lambda_R = lambda_{A,phys} / lambda_D ~= 113-119 >> 2 that inverts dutta2016's SALR
+    ordering by two orders of magnitude. Moreover, inside weirich2017's ~250 uM tactoids
+    (c_actin_tactoid_est, 1 monomer per 2.7 nm), the mean aligned filament areal density is
+    rho = c_A * a_m ~= 4.07 x 10^-4 nm^-2 (center-to-center inter-filament spacing ~50 nm ~=
+    38 * lambda_D, where 2D Debye-Huckel repulsion K_0(38.2) ~= 5.5 x 10^-18 is negligible).
+    Qualitatively, weirich2017's experimental observation of unbounded macroscopic liquid-liquid
+    phase separation into coarsening nematic tactoids (L ~ t^(0.47 +/- 0.01), with no equilibrium
+    finite-bundle thickness arrest) accords with dutta2016's lambda_A >= 2*lambda_R macrophase
+    regime, but because dutta2016 assumes a dense pre-aligned melt and stops at quadratic spinodal
+    onset without interfacial tension, droplet shape, or viscosity, no quantitative ModelAtlas
+    mapping connects their models.
+
+- id: q_grason2007_cylindrical_limit_vs_distinct_regimes
+  kind: reading
+  about:
+    - capillary_free_energy_integral
+    - capillary_free_energy_per_length
+    - capillary_energy_cost_printed
+    - capillary_energy_cost_corrected
+    - capillary_instability_threshold_printed
+    - capillary_instability_threshold_corrected
+    - capillary_fastest_mode_printed
+    - capillary_fastest_mode_corrected
+    - capillary_wavenumber_definition
+    - tactoid_free_energy
+    - tactoid_geometry_circular_arc
+    - tactoid_rescaled_free_energy
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_scaling
+    - tactoid_coarsening_power_law
+    - tactoid_exponential_relaxation
+    - tactoid_shape_dynamics_ode
+    - director_crossover_parameter
+    - anchoring_strength_definition
+    - filament_radius_from_diameter
+    - ref-21
+    - rel_grason2007_eq6_reduces_to_weirich_cylinder_surface
+    - rel_grason2007_eq5_reduces_to_weirich_cylinder_surface
+    - rel_weirich_capillary_reduces_to_grason2007_achiral_cylinder
+    - rel_weirich_capillary_integral_scales_grason2007_eq6
+    - rel_grason2007_eq6_scales_weirich_tactoid_slender
+    - grason2007/columnar_free_energy_eq6
+    - grason2007/columnar_free_energy_from_eq5
+    - grason2007/columnar_elastic_energy_eq5
+    - grason2007/solid_elastic_energy_eq9
+    - grason2007/columnar_equilibrium_radius_muc
+    - grason2007/critical_surface_tension_eq8
+    - grason2007/columnar_critical_surface_tension_exact
+    - grason2007/solid_equilibrium_radius_muc
+    - grason2007/characteristic_length_lambda3
+    - grason2007/chiral_torque_coupling
+    - grason2007/effective_frank_moduli
+    - grason2007/cluster_size_distribution_eq7
+    - grason2007/bundle_diameter_from_radius
+    - grason2007/stability_criterion_microscopic
+    - grason2007/ref-15
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "elastic energies associated with distortions in the director field"
+    where: "SI Text, Continuum Theory of Elongated Droplets & Capillary Instabilities (pp. SI-2 to SI-3)"
+  text: >
+    Cross-record ModelAtlas synthesis between grason2007 (chiral hexagonal-columnar/solid twisted
+    F-actin bundles) and weirich2017 (achiral fluid nematic F-actin tactoids and capillaries).
+    Neither paper cites the other and no datum is shared (no cited.yaml links apply); their
+    reference lists share only de Gennes & Prost (1993) [grason2007/ref-15 = weirich2017/ref-21]
+    and Alberts et al. [4th vs. 6th ed.].
+    (1) Exact limiting intersection on the uniform achiral cylinder (5 verified proposed relations):
+    both continuum theories reduce to the exact same lateral interfacial free energy per unit
+    axial length, 2*pi*R*Sigma = 2*pi*R_0*gamma_I (with 1 pN/nm = 10^6 nN/m and R_0 = R/1000 um),
+    in their respective reference limits: turning off chirality (f_0 -> 0 or gamma -> 0) and bulk
+    cohesive offset (epsilon -> 0, equivalent to excess free energy Delta F - mu_c*rho_0*pi*R^2 at
+    bulk coexistence mu = mu_c) in grason2007/columnar_free_energy_eq6 and
+    columnar_free_energy_from_eq5, and taking the unperturbed straight-cylinder limit (u -> 0) in
+    weirich2017/capillary_free_energy_per_length (helper F/lambda built from
+    capillary_free_energy_integral), where Rapini-Papoular anchoring A_omega = int dA (n_hat.N_hat)^2
+    vanishes identically as O(u^2) for arbitrary omega because the homogeneous axial director
+    n_hat = z_hat is tangent to the lateral wall. For an elongated out-of-equilibrium circular-arc
+    bundle of fixed major axis L_0 >> R (weirich2017/tactoid_free_energy, used for contracting
+    >50 um bundles in Fig. 4B-C), parabolic cusp tapering gives A/L_0 -> (4*pi/3)*R_eq = (2/3)*(2*pi*R_eq)
+    (volume V -> (8/15)*pi*R_eq^2*L_0; anchoring A_omega/A ~ (1/5)*alpha^2 -> 0), preserving exact
+    linear scaling in (R, Sigma <-> gamma_I) up to the geometric factor 2/3.
+    (2) Structural bifurcation away from the common cylindrical baseline (no same_as family and no
+    equilibrium-radius, critical-tension, or dynamical relation):
+    (a) Twist-arrested solid/columnar bundles vs. coarsening fluid nematic droplets: grason2007
+    adds bulk chiral twist torque (-gamma*Omega), nonlinear in-plane hexagonal shear
+    (mu_perp_bar*(Omega*R)^4; plus harmonic out-of-plane solid shear mu_par_bar*(Omega*R)^2 in
+    Eq. 9), and Frank bending (K3_bar*Omega^4*R^2) at fixed filament/bundle length L and uniform
+    radius R, yielding an interior negative free-energy minimum at finite radius R_0 >= lambda_{3 perp}
+    for Sigma < Sigma_c (thermodynamic arrest of coarsening). Conversely, weirich2017 treats short,
+    transiently cross-linked F-actin as an achiral (gamma = 0), zero-shear (mu_perp = mu_par = 0)
+    viscous nematic liquid (eta ~ 3 Pa*s) with anisotropic Rapini-Papoular anchoring gamma_A =
+    omega*gamma_I. At fixed droplet volume V, the equilibrium tactoid free energy scales strictly
+    as F_eq(V) = F_hat_min(omega)*gamma_I*V^(2/3) (proportional to gamma_I^(5/6)*gamma_A^(1/6)*V^(2/3)
+    for omega >= 1, where gamma_A*A_omega / (gamma_I*A) -> 1/5 at equilibrium alpha_eq ~ omega^(-1/2)),
+    so F_eq/V proportional to V^(-1/3) decreases monotonically with size and drives unbounded
+    coalescence (L ~ t^(0.47 +/- 0.01) vs. 0.5) rather than finite-radius arrest. Meanwhile,
+    unperturbed fluid cylinders of radius R_0 (treated as an experimental input ~200 nm rather than
+    a predicted output) are linearly unstable to volume-conserving axial Rayleigh-Plateau pearling
+    (lambda >= 2*pi*R_0*sqrt(1 + 2*omega) corrected; 1 + omega printed) and axial contraction.
+    (b) Opposite limits of Frank elasticity (shared reference de Gennes & Prost 1993): grason2007
+    Eq. (3) assumes K_3 >> K_1, K_2 and retains bulk bend K_3 and chiral twist coupling gamma =
+    2*K_2/P coupled to hexagonal lattice shear (lambda_{3 perp} = sqrt(K3_bar/mu_perp_bar)) while
+    using isotropic lateral tension Sigma; weirich2017 SI p. 8 invokes one-constant Frank elasticity
+    K solely in chi = gamma_A*V^(1/3)/K << 1 (director_crossover_parameter) to drop all bulk
+    director distortion (homogeneous n_hat = z_hat) and retain purely interfacial tension + anchoring.
+    (c) Static thermodynamics vs. overdamped hydrodynamics: grason2007 has no viscosity, diffusion,
+    time evolution, or hydrodynamic dispersion; weirich2017 has no chirality, lattice shear, or
+    equilibrium bundle-diameter prediction.
+    (3) Rejected trivial or spurious pairings and symbol collisions: bundle_diameter_from_radius
+    (D = 2*R) vs. filament_radius_from_diameter (r = d/2) is a 1-op too_plain identity on distinct
+    objects (multi-filament bundle vs. single filament); chiral_torque_coupling (gamma = 2*K_2/P)
+    vs. director_crossover_parameter (chi = gamma_A*V^(1/3)/K) involve unrelated physical quantities
+    with opposite K exponents despite sharing the symbol gamma; capillary_wavenumber_definition
+    (k = 2*pi*R_0/lambda) vs. helical tilt theta = Omega*R = 2*pi*R/Lambda_twist describe orthogonal
+    deformations (axisymmetric varicose pearling vs. helical braiding); and cluster_size_distribution_eq7
+    vs. tactoid_exponential_relaxation are unrelated Boltzmann vs. temporal exponentials.
+    Key symbol collisions across the two records: gamma (chiral torque coupling [pN/nm] in grason2007
+    vs. interfacial tension gamma_I, gamma_A, gamma_eff [nN/m] in weirich2017; Grason denotes surface
+    tension by Sigma), Omega (spatial torsional twist rate [1/nm] vs. temporal Rayleigh-Plateau growth
+    rate [1/s]), R (cylindrical bundle radius [nm] vs. tactoid circular-arc radius [um]; Weirich uses
+    R_0 for bundle radius), L (fixed filament/bundle contour length [nm] vs. tactoid major axis [um]
+    or ellipsoid filament half-length [nm]), lambda (bend-shear length lambda_{3 perp} [nm] vs. axial
+    capillary wavelength [um]), and rho_0/rho (in-plane filament areal density [1/nm^2] vs. perturbed
+    cylinder radius profile rho(z) [um]).
+
+- id: q_grason2007_parameter_regime_in_weirich2017
+  kind: reading
+  about:
+    - c_actin_tactoid_est
+    - actin_monomer_spacing_si
+    - filament_persistence_length_si
+    - filamin_length_main
+    - gamma_I_est_main
+    - omega_range_fig2a_si
+    - tactoid_length_homogeneous_si
+    - tactoid_length_bipolar_ref23
+    - D_frap_est
+    - ambient_temperature_si
+    - director_crossover_parameter
+    - grason2007/characteristic_length_lambda3
+    - grason2007/lambda_3perp_microscopic
+    - grason2007/columnar_radius_low_sigma
+    - grason2007/critical_surface_tension_eq8
+    - grason2007/stability_criterion_microscopic
+    - grason2007/factin_chain_spacing
+    - grason2007/factin_linker_binding_energy_kBT
+    - grason2007/factin_persistence_length
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "nematic liquid capillary, the total interfacial free energy is given"
+    where: "Main Text p. 2134 & SI Text pp. SI-1 to SI-3"
+  text: >
+    Quantitative regime comparison evaluating grason2007's microscopic F-actin scaling parameters on
+    weirich2017's experimental filamin/F-actin droplets:
+    (1) Absence of chiral/shear arrest in weirich2017: inside weirich2017's ~250 uM tactoids
+    (c_actin_tactoid_est, 1 monomer per 2.7 nm), the mean aligned filament areal density is
+    rho = c_A * a_m ~= 4.07 x 10^-4 nm^-2, corresponding to an inter-filament center-to-center
+    spacing d ~= 50 nm (53 nm hexagonal) — 5-50x wider than grason2007's tight-bundle regime
+    (d ~ 1-10 nm) — cross-linked by long (~150 nm), flexible, transiently binding filamin with
+    measured diffusive filament mobility (FRAP D ~ 3 x 10^-3 um^2/s). In grason2007's continuum
+    framework, liquid-like filament rearrangement sets hexagonal lattice shear elasticity mu_perp -> 0
+    (driving lambda_{3 perp} = sqrt(K3_bar/mu_perp_bar) -> oo and columnar R_0 ~ gamma^4/(mu_perp_bar*Sigma^3)
+    -> oo), while wide filament spacing and flexible linkers suppress chiral torque coupling gamma -> 0
+    (driving f_0 -> 0 and Sigma_c -> 0), placing weirich2017's droplets strictly in grason2007's
+    achiral unbounded-coarsening limit.
+    (2) Three-order-of-magnitude surface-tension contrast: weirich2017's measured isotropic
+    interfacial tension gamma_I ~ 300 nN/m = 3.0 x 10^-4 pN/nm (~7.4 x 10^-5 k_B T/nm^2 at 20 degC)
+    is ~1350-4500x smaller than grason2007's tight-bundle cohesive surface-tension scale Delta E/d^2
+    ~ 0.40-1.34 pN/nm (4.0 x 10^5 to 1.34 x 10^6 nN/m for Delta E ~ 10 k_B T and d = 5.5-10 nm),
+    reflecting dilute liquid-crystalline interfacial cohesion (~50 nm filament spacing) versus
+    close-packed bundle surface-bond rupture.
+    (3) Cross-check of weirich2017's homogeneous-director assumption via grason2007's Frank bend
+    scaling: applying grason2007's microscopic Frank bend modulus scaling K_3 ~ k_B T * l_p / d^2
+    (grason2007 p. 4) to weirich2017's tactoids (d ~= 50-53 nm, l_p ~ 10 um, k_B T = 4.05 pN*nm at
+    20 degC) estimates K_3 ~= 14.2-16.5 pN. Evaluating weirich2017/director_crossover_parameter
+    (chi = gamma_A * V^(1/3) / K) for L ~ 5 um tactoids across omega in [1.1, 2.2] (gamma_A =
+    omega*gamma_I = 330-660 nN/m, circular-arc V^(1/3) ~= 1.81-2.28 um) gives chi ~= 0.046-0.073 << 1,
+    quantitatively corroborating weirich2017's homogeneous-director regime (while 10x longer L ~ 50 um
+    entropic actin tactoids from Oakes et al. [Ref. 23] reach chi ~ 0.5-0.7, crossing toward the
+    bipolar regime as noted on SI p. 8).
+
+- id: q_sekine2024_nanoclusters_vs_tactoids_synthesis
+  kind: reading
+  about:
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - frap_diffusion_scaling
+    - tactoid_exponential_relaxation
+    - tactoid_coarsening_power_law
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_scaling
+    - tactoid_shape_dynamics_ode
+    - coalescence_tau_linear_scaling
+    - capillary_fastest_mode_corrected
+    - c_actin_tactoid_est
+    - filamin_length_main
+    - filament_length_avg_main
+    - filament_half_length_frap_si
+    - filament_diameter_frap_si
+    - filament_persistence_length_si
+    - D_frap_est
+    - eta_frap_est
+    - gamma_I_est_main
+    - aspect_ratio_2p5_filamin
+    - aspect_ratio_15_filamin
+    - coarsening_exponent_measured
+    - tableS1_coal_5_gamma_eta
+    - tableS1_coal_10_gamma_eta
+    - capillary_lambda_max_predicted
+    - capillary_lambda_observed
+    - sekine2024/filament_einstein_stokes_diffusion
+    - sekine2024/cylindrical_friction_filament
+    - sekine2024/cgmd_anisotropic_langevin
+    - sekine2024/cgmd_2d_network
+    - sekine2024/rel_weirich2017_filament_diffusion_scales_stokes_einstein
+    - sekine2024/q_weirich2017_modelatlas_and_hydrodynamic_drag
+    - sekine2024/q_weirich2017_tactoids_vs_nanoclusters_biophysical_contrast
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "using the Stokes–Einstein relationship for an ellip-"
+    where: "SI Text (pp. SI-1 to SI-3) & Main Text (pp. 2131-2135) vs sekine2024"
+  text: >
+    Cross-record ModelAtlas synthesis with sekine2024 (in vivo Drosophila tracheal actin nanoclusters
+    and 2D CGMD of circumferential actin cable assembly; neither paper cites the other, zero shared
+    references, zero cited.yaml links). Across all 51 weirich2017 and 31 sekine2024 models, zero
+    exact mathematical equivalences (same_as, reduces_to, approximated_by) exist; in particular, the
+    shape-matched pair weirich2017/tactoid_exponential_relaxation (macroscopic deterministic droplet
+    shortening L(t) = L_f + (L_i - L_f)*exp(-t/tau)) vs sekine2024/cgmd_anisotropic_langevin
+    (single-filament passive Brownian t^(1/2) spreading) is purely a dimensional coincidence. The
+    sole verified cross-record ModelAtlas relation — entered in sekine2024/relations.yaml as
+    sekine2024/rel_weirich2017_filament_diffusion_scales_stokes_einstein (scales_as, proposed) —
+    bridges weirich2017/stokes_einstein_ellipsoid_diffusion (D = k_B T ln(2*L/r)/(6*pi*eta*L)) and
+    sekine2024/filament_einstein_stokes_diffusion (D_fil = k_B T / (6*pi*eta_cyto*(3*d_f + 2*L0_f/5)))
+    on exact shared Stokes-Einstein thermal-viscous scaling (D proportional to T/eta at fixed rod
+    geometry). Under full rod-geometry mapping (L = L_f/2, r = d/2), however, Sekine's cylindrical
+    endpoint drag exceeds Weirich/Perrin's slender-ellipsoid drag by R_drag(p) = (6/p + 4/5)*ln(2*p)
+    = 4.06-4.19x across short F-actin aspect ratios p = L_f/d in [10, 30] (accidentally cancelled at
+    each paper's default parameters to yield D_Sekine = 0.00314 vs D_Weirich = 0.00313 um^2/s).
+    Despite comparable condensed actin/crosslinker stoichiometry (~250 vs ~308 uM, ~2.5-10 vs ~4.1
+    mol%) and assembly aspect ratios (2-3 vs 1.95-2.42), the two systems occupy opposite biophysical
+    regimes: passive 3D long-flexible-filamin (150 nm) liquid tactoids undergoing irreversible 10-60 s
+    capillary coalescence, unbounded t^(0.47) coarsening, motor-free contraction, and ~4-10 um axial
+    Rayleigh-Plateau pearling versus active 2D short-rigid-alpha-actinin (35 nm) cortical nanoclusters
+    undergoing rapid reversible 0.64 s fusion-fission, filament turnover arrest (omega^f = 0.1 s^-1),
+    myosin II bridging, DAAM/friction-anisotropy circumferential alignment, and 450 nm transverse
+    inter-cable periodicity (see full quantitative breakdown in
+    sekine2024/q_weirich2017_modelatlas_and_hydrodynamic_drag and
+    sekine2024/q_weirich2017_tactoids_vs_nanoclusters_biophysical_contrast).
+
+- id: q_claessens2008_modelatlas_and_spurious_exclusions
+  kind: reading
+  about:
+    - actin_mesh_size
+    - actin_concentration_from_mesh_size
+    - actin_mass_concentration
+    - filamin_concentration_from_fraction
+    - actin_filament_length_cp
+    - tactoid_geometry_circular_arc
+    - tactoid_coarsening_power_law
+    - anchoring_strength_from_aspect_ratio
+    - capillary_wavelength_from_wavenumber
+    - capillary_volume_conservation_corrected
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - ref-12
+    - ref-18
+    - ref-25
+    - ref-39
+    - rel_claessens2008_droplet_conc_scales_mesh_size
+    - rel_claessens2008_droplet_conc_approx_mesh_size
+    - claessens2008/droplet_critical_concentration
+    - claessens2008/droplet_ring_filament_number
+    - claessens2008/actin_molar_from_mass
+    - claessens2008/molar_ratio_fascin_actin
+    - claessens2008/effective_bound_ratio
+    - claessens2008/saturation_ratio_from_stoichiometry
+    - claessens2008/diameter_scaling_Rstar
+    - claessens2008/diameter_filament_scaling
+    - claessens2008/filament_number_from_diameter_ratio
+    - claessens2008/hexagonal_lattice_spacing
+    - claessens2008/hexagonal_shell_filaments
+    - claessens2008/bundle_geometry_saturation
+    - claessens2008/twist_energy_per_monomer
+    - claessens2008/thermal_energy_scale
+    - claessens2008/ref-44
+    - claessens2008/q_fig2e_quantified_factor_2p22
+  citation:
+    page: 7
+    printed_page: "SI-1"
+    quote: "mg/mL, c, using the relation ξ = 0.3c−1/2 (18)"
+    where: "SI Text, Filament Length, Mesh Size, and Filament Spacing vs claessens2008"
+  text: >
+    Cross-record ModelAtlas audit across all 28 runnable claessens2008 models and 50 runnable
+    scalar weirich2017 models (plus 1 helper inverse model):
+    (1) Citations and data provenance (zero cited.yaml links): weirich2017 does NOT cite
+    claessens2008 (PNAS 105:8819-8822, 2008); it cites only two later Bausch-group papers
+    (ref-25: Lieleg, Claessens, Bausch 2010 Soft Matter 6:218-225; ref-12: Lieleg et al. 2011 Nat
+    Mater 10:236-242). Their reference lists share only Spudich & Watt (1971) [claessens2008/ref-44
+    = weirich2017/ref-39, rabbit skeletal muscle G-actin purification]. Neither record imports any
+    numerical datum from the other (0 cited.yaml links).
+    (2) Zero exact model equivalences (same_as, reduces_to, derived_from) and sole verified
+    physical bridge: the two papers model orthogonal physical mechanisms (claessens2008: discrete
+    hexagonal solid packing, SAXS Bragg peaks, single-filament helical overtwist, 1:1 mass-action
+    fascin binding; weirich2017: continuum Rapini-Papoular/Wulff nematic tactoid interfacial energy,
+    FRAP ellipsoid viscosity, overdamped droplet/bundle viscous relaxation, and axial Rayleigh-Plateau
+    capillary instability). Their sole verified quantitative bridge connects F-actin 3D
+    contour-length conservation rho_L = (c/M_actin)*N_A*d in claessens2008/droplet_critical_concentration
+    (c_a = 6*n_f*M_actin/(N_A*d*D_d^2), spherical droplet equatorial ring rho_L = 6*n_f/D_d^2) to
+    weirich2017/actin_mesh_size (xi = 0.3*c^(-1/2), cubic lattice rho_L = 3/xi^2, inverted via
+    helper weirich2017/actin_concentration_from_mesh_size c = (0.3/xi)^2) under the parameter-free
+    geometric identity xi = D_d/sqrt(2*n_f) (n_f = (1/2)*(D_d/xi)^2): verified via
+    rel_claessens2008_droplet_conc_scales_mesh_size (scales_as, exact log-slopes -2 in D_d and +1
+    in n_f) and rel_claessens2008_droplet_conc_approx_mesh_size (approximated_by on identical
+    output actin_mass_concentration [mg/mL], max relative error 13.9% at Weirich's 42 kDa / 2.7 nm
+    purely from Schmidt et al.'s rounding of 0.2784 -> 0.30, and 19.8% across both papers'
+    2.7-2.9 nm monomer-rise conventions; note claessens2008 Fig. 2E's plotted n_f = 20 line sits
+    2.23x higher per claessens2008/q_fig2e_quantified_factor_2p22).
+    (3) Explicitly rejected too_plain and coincidental pairings:
+    (a) claessens2008/actin_molar_from_mass (c_a_molar = 1e6*c_a/M_actin) vs
+    weirich2017/actin_mass_concentration (c = c_A*M_w/1e6): 2-op too_plain inverse unit conversions
+    with opposite output dimensions (uM vs mg/mL; both records supply M_w = 42000 g/mol in added.yaml);
+    (b) claessens2008/molar_ratio_fascin_actin (R = c_f/c_a) vs
+    weirich2017/filamin_concentration_from_fraction (c_fil = c_A*f_fil): 1-op too_plain inverse
+    stoichiometry definitions (dimensionless vs uM; weirich2017 has no K_d bound-fraction model
+    corresponding to claessens2008/effective_bound_ratio);
+    (c) claessens2008/saturation_ratio_from_stoichiometry (1/r_sat) vs
+    weirich2017/actin_filament_length_cp (1/r_CP): 1-op too_plain reciprocals on unrelated proteins;
+    (d) claessens2008/diameter_scaling_Rstar (D ~ (R*)^0.3) vs weirich2017/tactoid_coarsening_power_law
+    (L ~ t^alpha): 1-2 op prefactor-unknown power laws on orthogonal independent variables
+    (equilibrium stoichiometry vs coarsening time);
+    (e) claessens2008/filament_number_from_diameter_ratio (n_f_0*D_ratio^2) vs
+    weirich2017/anchoring_strength_from_aspect_ratio ((L/r)^2/4): 2-op too_plain quadratic monomials
+    on unrelated physics;
+    (f) claessens2008/hexagonal_lattice_spacing (4*pi/(sqrt(3)*q_10)) vs
+    weirich2017/capillary_wavelength_from_wavenumber (2*pi*R_0/k): reciprocal Fourier/wavenumber
+    definitions spanning 3 orders of magnitude (12.4 nm 2D Bragg crystal vs 4-10 um 1D capillary wave);
+    (g) claessens2008/droplet_ring_filament_number (L = (pi/6)*D_d^3*rho_L) vs
+    weirich2017/tactoid_geometry_circular_arc (V -> (pi/6)*D^3 at alpha = pi/2): distinct physical
+    objects (external water-in-oil confining emulsion sphere vs phase-separated liquid-crystalline
+    F-actin tactoid) and distinct output dimensions ([length] vs [length]^3);
+    (h) claessens2008/hexagonal_shell_filaments (n_f, D_fil) vs
+    weirich2017/capillary_volume_conservation_corrected (V -> pi*R_0^2*lam) or
+    capillary_instability_threshold_corrected (lambda_c ~ R_0): rigid solid hexagonal bundles vs
+    unstable fluid capillaries where R_0 is an arbitrary unmodeled input;
+    (i) claessens2008/thermal_energy_scale (k_B*T) vs weirich2017/stokes_einstein_ellipsoid_*
+    (embedding k_B*T): 1-op scale definition vs hydrodynamic transport law.
+    (4) Symbol collisions across the two records: R (dimensionless fascin/actin molar ratio in
+    claessens2008 vs tactoid circular-arc radius [um] in weirich2017; Weirich uses f_fil for
+    cross-linker fraction and R_0 for bundle radius), L (total F-actin contour length in a
+    confining droplet [um] vs tactoid/bundle major axis [um] or ellipsoid filament half-length [nm]),
+    D (TEM bundle diameter [nm] vs FRAP diffusion coefficient [um^2/s] or viscous dissipation power
+    [W]), tau (single-filament torsional stiffness [N*m^2] vs FRAP or shape relaxation time [s]),
+    and d (monomer axial spacing 2.9 nm in claessens2008 vs a_m ~ 2.7 nm in weirich2017).
+
+- id: q_claessens2008_rigid_fascin_vs_flexible_filamin_regimes
+  kind: reading
+  about:
+    - c_actin_dilute_main
+    - c_actin_tactoid_est
+    - filamin_length_main
+    - filament_length_avg_main
+    - filament_length_tactoid_range
+    - mesh_size_dilute_main
+    - filamin_frac_fig2a_range
+    - aspect_ratio_2p5_filamin
+    - aspect_ratio_15_filamin
+    - omega_range_fig2a_si
+    - coarsening_exponent_measured
+    - D_frap_est
+    - eta_frap_est
+    - gamma_I_est_main
+    - bundle_initial_radius_main
+    - ambient_temperature_si
+    - tactoid_equilibrium_minimizer
+    - tactoid_coarsening_power_law
+    - capillary_fastest_mode_corrected
+    - claessens2008/ca_fig1a
+    - claessens2008/ca_fig1b
+    - claessens2008/D_Rstar_exponent
+    - claessens2008/Rstar_plateau
+    - claessens2008/nf_max_confinement
+    - claessens2008/aH_hex_saxs
+    - claessens2008/interfilament_sep_fascin
+    - claessens2008/Delta_theta_max
+    - claessens2008/E_twist_per_fascin_printed
+    - claessens2008/DeltaG_fascin_printed
+    - claessens2008/Kd_fascin
+    - claessens2008/T_experiment
+    - claessens2008/effective_bound_ratio
+    - claessens2008/bundle_geometry_saturation
+    - claessens2008/hexagonal_shell_filaments
+    - claessens2008/diameter_scaling_Rstar
+    - claessens2008/ref-41
+  citation:
+    page: 3
+    printed_page: "2133"
+    quote: "However, filamin is a long (∼150 nm) and flexible actin cross-"
+    where: "Main Text pp. 2131-2135 & SI pp. SI-1 to SI-3 vs claessens2008 pp. 8819-8822"
+  text: >
+    Quantitative biophysical regime contrast between rigid-fascin solid bundles (claessens2008) and
+    flexible-filamin fluid tactoids/bundles (weirich2017):
+    (1) Overlapping bulk starting conditions, divergent material phases: both papers perform their
+    primary fluorescence microscopy assays at virtually identical dilute bulk actin concentrations
+    (claessens2008 Figs. 1-2: 0.04-0.10 mg/mL = 0.95-2.38 uM; weirich2017 Figs. 1-4: 2.6-2.64 uM
+    = 0.11 mg/mL; uncross-linked mesh size xi = 0.90-0.95 um at 0.10-0.11 mg/mL), identical ambient
+    temperature (20 degC), and overlapping cross-linker stoichiometries (claessens2008: R* = 0.01
+    to plateau 0.25; weirich2017: added f_fil = 1-15 mol%, R = 0.01-0.15). Yet fascin produces
+    rigid, straight, twist-arrested hexagonal solid bundles, whereas filamin condenses short F-actin
+    into fluid nematic tactoids and unstable fluid threads.
+    (2) Cross-linker architecture and 17-18x internal packing contrast: compact rigid fascin enforces
+    ~5 nm inter-filament separation and a 2D hexagonal crystal lattice with SAXS spacing a_H = 12.4 nm
+    (areal filament density rho_0 = 2/(sqrt(3)*a_H^2) = 7.51 x 10^-3 nm^-2), corresponding to an
+    internal actin monomer concentration of 4300 uM (181 mg/mL at d = 2.9 nm; 4535 uM at 2.75 nm;
+    4619 uM at 2.7 nm). In contrast, long (~150 nm), flexible, transiently binding filamin condenses
+    actin 100-fold into ~250 uM (10.5 mg/mL) nematic droplets — 17.2-18.5x more dilute — with areal
+    filament density rho = c_A*N_A*a_m = 4.06 x 10^-4 nm^-2 and mean center-to-center filament
+    spacing ~50 nm (53.3 nm hexagonal, 4.30x wider than Claessens's a_H = 12.4 nm). Wide spacing
+    and flexible linkers eliminate steric azimuthal registration and helical-twist frustration
+    (-13/6 -> -28/13, Delta_theta ~ 1 deg/monomer in claessens2008) while maintaining liquid
+    diffusive mobility (FRAP D ~ 3 x 10^-3 um^2/s, eta ~ 3 Pa*s).
+    (3) Opposite cross-linker stoichiometry response and arrest vs unbounded coarsening: in
+    claessens2008, increasing bound fascin R* (modeled via 1:1 mass action at K_d = 0.3 uM, where
+    R*/R = 88-89% at c_a = 2.38 uM) thickens bundles as D ~ (R*)^(+0.3) (0.327 digitized) until
+    equilibrium arrest at R* ~ 0.25, n_f ~ 20 filaments (2 hexagonal shells; hydrated width
+    50-57 nm, TEM plateau 28.2 nm; in droplets of D_d > 5.4-8.0 um at 0.1 mg/mL, rings split into
+    multiple bundles rather than thickening). In weirich2017, added f_fil is used directly without
+    a K_d binding model (though inside 250 uM tactoids, Claessens's mass-action law gives
+    R*/R > 99% even for K_d = 1 uM), and increasing filamin from 2.5 to 15 mol% DECREASES tactoid
+    aspect ratio L/r from ~3 to ~2 (anchoring strength omega = gamma_A/gamma_I drops from 2.2 to
+    1.1 as isotropic cohesion gamma_I grows relative to alignment gamma_A), increases bundle
+    contractile strain (20-60%, Fig. 4E), and never arrests droplet size: tactoids coarsen
+    unboundedly via capillary coalescence as L ~ t^(0.47 +/- 0.01) (a typical L = 5 um, omega = 2
+    tactoid holds V = 6.61 um^3, L_tot ~ 2687 um = ~15,000 filaments of 180 nm, and ~974 filaments
+    across its r = 1.75 um equatorial midplane; pre-pearling R_0 ~ 200 nm fluid bundles hold
+    ~51 filaments at 250 uM vs fascin's n_f ~ 20 cap at R ~ 25-28 nm).
+    (4) Filament-length sensitivity and ~443x interfacial-tension separation: claessens2008 uses
+    long uncapped F-actin (L_f >> xi) and finds bundle thickness D independent of filament length
+    ('Whether long or shortened', p. 1) and c_a, whereas weirich2017 requires short capped rods
+    (L_f = 0.18-1 um <= xi ~ 1 um, L_f << l_p ~ 10 um) to stay in the liquid droplet/fluid-bundle
+    window of Fig. 1D before crossing into kinetically arrested viscoelastic networks at L_f > 1-2 um
+    (interestingly, claessens2008 p. 4 cites Limozin & Sackmann 2002 [ref-41] on supercoiled
+    filamin/actin bundle rings in giant vesicles — long-filament solid/elastic behavior outside
+    Weirich's short-filament fluid regime). Energetically, converting Claessens's SI hexagonal
+    surface-bond deficit (bundle_geometry_saturation sigma = -1: 3.5*n_f^(-1/2)/u lost linkers per
+    monomer, u = 13.5, d = 2.9 nm, Delta G = 15.02 k_B T) to an effective cylindrical interfacial
+    tension yields Sigma_fascin = (3.5/(2*u*d))*sqrt(rho_0/pi)*Delta G ~ 1.33 x 10^5 nN/m
+    (0.133 mN/m) — ~443x larger than Weirich's measured fluid-tactoid isotropic tension
+    gamma_I ~ 300 nN/m (where a 180 nm x 50 nm filament surface footprint costs only ~0.67 k_B T,
+    ~22x less than a single ~15 k_B T fascin bond).
+
+- id: q_nastkolb2022_2d_vasp_bilayer_vs_3d_tactoids
+  kind: reading
+  about:
+    - tactoid_exponential_relaxation
+    - tactoid_exponential_master_curve
+    - frap_diffusion_scaling
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - actin_filament_length_cp
+    - actin_mesh_size
+    - concentration_enrichment_ratio
+    - filamin_concentration_from_fraction
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_scaling
+    - tactoid_coarsening_power_law
+    - tactoid_shape_dynamics_ode
+    - capillary_fastest_mode_corrected
+    - tau_R_frap_fig1c
+    - D_frap_est
+    - eta_frap_est
+    - gamma_I_est_main
+    - c_actin_dilute_main
+    - c_actin_tactoid_est
+    - filamin_length_main
+    - filament_length_avg_main
+    - filament_length_tactoid_range
+    - d_fig1c_frap_fit
+    - q_digitized_fig3a_slope_and_fig1c_fit_tau
+    - ref-4
+    - ref-11
+    - ref-39
+    - nastkolb2022/frap_recovery_fit
+    - nastkolb2022/frap_recovery_by_half_time
+    - nastkolb2022/frap_mobility_ratio
+    - nastkolb2022/bundle_filament_count_2d_spacing
+    - nastkolb2022/bundle_effective_spacing
+    - nastkolb2022/bundle_width_vasp_scaling
+    - nastkolb2022/cp_to_actin_ratio
+    - nastkolb2022/actin_concentration_fold_change
+    - nastkolb2022/frap_t_half_vasp_slb
+    - nastkolb2022/frap_t_half_vasp_ml
+    - nastkolb2022/q_weirich2017_modelatlas_disjoint_and_frap_audit
+    - nastkolb2022/q_weirich2017_3d_tactoid_vs_2d_bilayer_vasp_contrast
+  citation:
+    page: 2
+    printed_page: "2132"
+    quote: "yielding a recovery time of τR ∼ 900 s"
+    where: "Main Text pp. 2131-2135 & SI pp. SI-1 to SI-3 vs nastkolb2022"
+  text: >
+    Cross-record ModelAtlas synthesis with nastkolb2022 (2D supported lipid bilayer VASP phase
+    separation and active polymerization-driven actin bundling; neither paper cites the other, their
+    bibliographies share 3 references [ref-4, ref-11, ref-39], and neither imports data from the other,
+    yielding 0 cited.yaml links and 0 stated or proposed relations across all 52 weirich2017 and 17
+    nastkolb2022 models). Although both studies combine liquid-like phase separation, actin bundling,
+    and FRAP, their formalized models are structurally disjoint: nastkolb2022's only non-too_plain
+    runnable models (frap_recovery_fit y = a*(1 - exp(-t/tau)) + c and frap_recovery_by_half_time)
+    describe dimensionless rising 2D VASP fluorescence recovery and cannot legitimately map onto
+    weirich2017/tactoid_exponential_relaxation (micrometer decaying 3D droplet length shortening;
+    incompatible output dimensions and opposite monotonicity) or tactoid_exponential_master_curve
+    (too_plain 2-op decay exp(-t_scaled)), while weirich2017's own rising-exponential TMR-actin FRAP
+    fit (Fig. 1C, tau_R = 880 s caption / 712 s unconstrained digitized fit) has no printed equation or
+    model, and weirich2017's transport models (frap_diffusion_scaling, stokes_einstein_ellipsoid_*)
+    have no counterpart in nastkolb2022 (all other 9 runnable nastkolb2022 models are <= 2 op too_plain
+    definitions). Core biophysical contrasts (documented in full in
+    nastkolb2022/q_weirich2017_modelatlas_disjoint_and_frap_audit and
+    nastkolb2022/q_weirich2017_3d_tactoid_vs_2d_bilayer_vasp_contrast): (1) passive 3D filamin-induced
+    co-condensation of pre-polymerized actin above an inert passivating DOPC SLB (250 uM nematic
+    tactoids, gamma_I ~ 300 nN/m, omega = 1.1-2.2, t^(0.47) coarsening, Rayleigh-Plateau pearling,
+    20-60% contraction) vs. pre-actin 2D VASP LLPS tethered to a 10% DOGS-Ni-NTA SLB driving active
+    barbed-end elongation, lipid exclusion (~9% -> 5%), and positive-feedback 2D ribbon widening (up to
+    95% coverage, failing on pre-polymerized F-actin); (2) 25-100x slower 3D F-actin filament FRAP
+    inside tactoids (tau_R ~ 712-880 s, t_1/2 ~ 494-610 s, D ~ 0.003 um^2/s, eta ~ 3 Pa*s) vs. rapid
+    2D membrane-tethered VASP FRAP (prePol t_1/2 = 6.12 s SLB / 23.94 s ML, tau = 8.83 / 34.54 s,
+    Soumpasis D = 0.225 / 0.058 um^2/s); (3) short equilibrium CP-capped rods (0.25-1.5 mol% CP ->
+    L_f = 180-1080 nm <= xi ~ 0.9 um) vs. >10-50 um actively growing filaments despite higher CP
+    stoichiometry (2.5 mol% standard, 1.25-10 mol% range, where L_f = 2.7 nm/r_CP fails >100x due to
+    10 uM profilin + anti-capping chimeric VASP); and (4) 3D ~150 nm flexible filamin spacing (~50 nm
+    center-to-center at 250 uM, ~51 filaments in R_0 = 200 nm fluid bundles) vs. 2D VASP (28-70 nm)
+    effective lateral spacing (~22.2 nm from 45 +/- 12 filaments/um).
+
+- id: q_grason2007_no_cross_validation
+  kind: unstated_model
+  about:
+    - capillary_instability_threshold_printed
+    - capillary_instability_threshold_corrected
+    - capillary_fastest_mode_printed
+    - capillary_fastest_mode_corrected
+    - capillary_wavelength_from_wavenumber
+    - capillary_free_energy_per_length
+    - tactoid_geometry_circular_arc
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_scaling
+    - tactoid_coarsening_power_law
+    - tactoid_shape_dynamics_ode
+    - actin_filament_length_cp
+    - actin_mesh_size
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - bundle_initial_radius_main
+    - gamma_I_est_main
+    - q_grason2007_parameter_regime_in_weirich2017
+    - grason2007/factin_diameter_lai2007
+    - grason2007/factin_twist_pitch_ikawa2007
+    - grason2007/factin_chain_spacing
+    - grason2007/factin_linker_binding_energy_kBT
+    - grason2007/factin_persistence_length
+    - grason2007/factin_lambda_3perp_est
+    - grason2007/factin_cholesteric_pitch_est
+    - grason2007/factin_stability_threshold
+    - grason2007/q_weirich2017_no_cross_validation
+  citation:
+    page: 5
+    printed_page: "2135"
+    quote: "After rapid assembly, these bundles continue to change"
+    where: "Main Text p. 2135 col 1"
+  text: >
+    No cross-record validations are entered in validations.yaml for weirich2017's 52 models against
+    grason2007 data, because grason2007 is a pure continuum elasticity theory paper with zero
+    origin: measured entries out of 8 total data (2 reported literature citations, 3 estimated
+    generic F-actin parameter scales, 3 predicted outputs), and none of weirich2017's models predicts
+    even the two cited experimental values in grason2007:
+    (1) grason2007/factin_diameter_lai2007 ("40 to 100" nm, bundle_diameter, origin: reported, Lai
+    et al. 2007 [grason2007/ref-12], nontoroidal counterion-condensed F-actin bundles): weirich2017
+    has no model predicting equilibrium cylindrical bundle diameter or radius — in weirich2017,
+    bundle_radius R_0 is strictly an experimental input to the Rayleigh-Plateau capillary instability
+    models (capillary_instability_threshold_*, capillary_fastest_mode_*, capillary_dispersion_*),
+    and tactoid_geometry_circular_arc outputs equatorial droplet width r = 2*R*(1 - cos(alpha)) only
+    from an input circular-arc radius R and angle alpha of a coarsening macroscopic (~1-5 um) liquid
+    tactoid rather than a thermodynamically arrested cylindrical bundle diameter.
+    (2) grason2007/factin_twist_pitch_ikawa2007 ("~100" nm, bundle_twist_pitch = 2*pi/Omega,
+    origin: reported, Ikawa et al. 2007 [grason2007/ref-22], braided bundles of 2-3 F-actin
+    filaments in Mg2+): weirich2017 is a strictly achiral nematic liquid theory with a homogeneous
+    untwisted axial director (n_hat = z_hat) and zero chiral torque or torsional strain; its
+    wavelength models (capillary_instability_threshold_*, capillary_fastest_mode_*,
+    capillary_wavelength_from_wavenumber) predict axisymmetric varicose Rayleigh-Plateau pearling
+    wavelengths (lambda ~ 4-10 um) of a fluid cylinder, which are physically unrelated to helical
+    braiding pitch (and "~100" carries no printed precision).
+    (3) Remaining 6 non-measured entries in grason2007/data.yaml: generic F-actin input estimates
+    factin_chain_spacing ("~1 to 10" nm), factin_linker_binding_energy_kBT ("~10"), and
+    factin_persistence_length ("~1 to 10" um) (all origin: estimated) and grason2007 theoretical
+    predictions factin_lambda_3perp_est ("~100" nm), factin_cholesteric_pitch_est ("~1 to 10" nm),
+    and factin_stability_threshold ("≳ 1") (all origin: predicted) have no matching model outputs in
+    weirich2017 (which models neither hexagonal inter-filament spacing, linker binding energy,
+    persistence length, bend-shear length lambda_{3 perp}, cholesteric pitch, nor Grason's
+    surface-tension arrest ratio Sigma_c/Sigma).
+    See grason2007/q_weirich2017_no_cross_validation for the exhaustive item-by-item exclusion of
+    all 35 origin: measured data in weirich2017 against grason2007's models.
+
+- id: q_chandrasekaran2024_vasp_droplets_vs_tactoids_synthesis
+  kind: reading
+  about:
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - frap_diffusion_scaling
+    - tactoid_geometry_circular_arc
+    - tactoid_rescaled_free_energy
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_large_omega
+    - tactoid_exponential_relaxation
+    - tactoid_coarsening_power_law
+    - tactoid_shape_dynamics_ode
+    - coalescence_tau_linear_scaling
+    - capillary_fastest_mode_corrected
+    - actin_mesh_size
+    - actin_concentration_from_mesh_size
+    - c_actin_dilute_main
+    - c_actin_tactoid_est
+    - filamin_length_main
+    - filament_length_avg_main
+    - D_frap_est
+    - eta_frap_est
+    - gamma_I_est_main
+    - gamma_I_ratio_protein_droplets
+    - aspect_ratio_2p5_filamin
+    - aspect_ratio_15_filamin
+    - omega_range_fig2a_si
+    - coarsening_exponent_measured
+    - chandrasekaran2024/stokes_einstein_diffusion
+    - chandrasekaran2024/langevin_overdamped_1d
+    - chandrasekaran2024/prolate_spheroid_volume_conserving
+    - chandrasekaran2024/filament_length_limited_aspect_ratio
+    - chandrasekaran2024/final_actin_concentration
+    - chandrasekaran2024/filament_elongation_length
+    - chandrasekaran2024/rel_weirich2017_stokes_einstein_diffusion
+    - chandrasekaran2024/rel_weirich2017_ellipsoid_diff_approx_langevin1d
+    - chandrasekaran2024/rel_weirich2017_tactoid_area_approx_prolate_spheroid
+    - chandrasekaran2024/rel_weirich2017_tactoid_area_scales_prolate_spheroid_slender
+    - chandrasekaran2024/rel_weirich2017_tactoid_length_matched_approx_prolate_ar
+    - chandrasekaran2024/rel_weirich2017_tactoid_rescaled_energy_scales_spheroid_area
+    - chandrasekaran2024/rel_weirich2017_final_actin_conc_scales_mesh_size
+    - chandrasekaran2024/q_weirich2017_modelatlas_and_spurious_exclusions
+    - chandrasekaran2024/q_weirich2017_tactoids_vs_vasp_droplets_biophysical_contrast
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "The equilibrium shape of a liquid droplet is determined by mini-"
+    where: "SI Text (pp. SI-1 to SI-3) & Main Text (pp. 2131-2135) vs chandrasekaran2024"
+  text: >
+    Cross-record ModelAtlas synthesis with chandrasekaran2024 (Nat. Commun. 15, 3139, 2024; 3D
+    CytoSim & LAMMPS VASP protein droplets confining elongating F-actin; neither paper cites the
+    other — chandrasekaran2024 cites only Weirich et al. 2019 as Ref. 12 — zero shared references,
+    0 stated relations, 0 cited.yaml links). Seven verified proposed relations entered in
+    chandrasekaran2024/relations.yaml bridge the two records across three shared physical cores
+    while rejecting spurious coincidences (notably `tactoid_exponential_relaxation` capillary
+    shortening vs `chandrasekaran2024/filament_elongation_length` chemical polymerization):
+    (1) Stokes-Einstein hydrodynamic diffusion family: although Berg's slender-body formula
+    `stokes_einstein_ellipsoid_diffusion` fails the literal L -> r spherical limit by 1 - ln(2) =
+    30.69%, mapping the translational Stokes radius R_H = L/ln(2*L/r) (22.84 nm for 180 nm x 7 nm
+    F-actin vs 30 nm VASP sphere) verifies `same_as` (`rel_weirich2017_stokes_einstein_diffusion`,
+    max diff 3.47e-16), uniting weirich2017, chandrasekaran2024, and sekine2024 in one ModelAtlas
+    family, while `rel_weirich2017_ellipsoid_diff_approx_langevin1d` verifies Chandrasekaran's
+    Eq. (1) stochastic Langevin solver reproduces Weirich's analytical D within 4.39% MC error.
+    (2) 3D volume-conserving elongated droplet geometry & isotropic surface energy: equating volume
+    V and aspect ratio L/r = a/b shows `tactoid_geometry_circular_arc.A` and
+    `chandrasekaran2024/prolate_spheroid_volume_conserving.surface_area` agree to <= 1.60% across
+    all AR in [1, oo) (`rel_weirich2017_tactoid_area_approx_prolate_spheroid`, slender-limit ratio
+    1.01525) with matching R^2*alpha^3 ~ V^(2/3)*AR^(1/3) slender scaling
+    (`rel_weirich2017_tactoid_area_scales_prolate_spheroid_slender`, max slope diff 8.2e-4), and
+    `tactoid_rescaled_free_energy` in the isotropic limit omega -> 0 follows the exact same
+    fixed-volume alpha^(-1/3) ~ AR^(+1/3) surface-energy scaling
+    (`rel_weirich2017_tactoid_rescaled_energy_scales_spheroid_area`, max slope diff 8.3e-4). At
+    equal volume V and equal major axis 2*a = L, sharp circular-arc cusps vs rounded spheroid poles
+    shift aspect ratio by <= sqrt(5)/2 = 1.1180 (rel diff <= 10.5%,
+    `rel_weirich2017_tactoid_length_matched_approx_prolate_ar`), also bounding Weirich SI p. 7's
+    ImageJ ellipse approximation.
+    (3) 3D F-actin contour-length concentration & mesh size:
+    `rel_weirich2017_final_actin_conc_scales_mesh_size` links `actin_concentration_from_mesh_size`
+    [mg/mL] and `chandrasekaran2024/final_actin_concentration` [uM] via xi =
+    sqrt(4*pi*R_drop^3/(N_fil*L_fil)) with exact 3-variable scaling (max diff 8.9e-13).
+    Key biophysical contrasts (detailed in
+    `chandrasekaran2024/q_weirich2017_tactoids_vs_vasp_droplets_biophysical_contrast`):
+    actin-as-the-droplet filamin nematic tactoids (~250 uM short ~180 nm rigid rods, eta ~ 3 Pa*s
+    FRAP, gamma_I ~ 300 nN/m, equilibrium L/r = 2-3 from anchoring omega = 1.1-2.2 decreasing with
+    filamin, unbounded t^0.47 coarsening, Rayleigh-Plateau pearling) versus isotropic VASP protein
+    condensates confining long elongating semiflexible F-actin (27.67 uM CytoSim / 138.38 uM
+    nucleator, eta = 0.5 Pa*s printed / 0.05 Pa*s '50x water' with 688x Stokes-Einstein excess in
+    D_VASP = 10 um^2/s, omega = 0 spherical equilibrium deformed mechanically to AR = 1.1-5.56 by
+    confined ring bending up to filament length limit (L_max/(2*R_drop))^(3/2) and halted by
+    4-valent Bell slip-bond kinetic trapping).
+
+- id: q_dutta2016_no_cross_validation
+  kind: unstated_model
+  about:
+    - filament_radius_from_diameter
+    - filament_half_length_from_length
+    - actin_filament_length_cp
+    - actin_mesh_size
+    - actin_concentration_from_mesh_size
+    - tactoid_geometry_circular_arc
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_scaling
+    - tactoid_coarsening_power_law
+    - tactoid_shape_dynamics_ode
+    - capillary_instability_threshold_printed
+    - capillary_instability_threshold_corrected
+    - capillary_fastest_mode_printed
+    - capillary_fastest_mode_corrected
+    - capillary_wavelength_from_wavenumber
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - filament_diameter_frap_si
+    - filamin_length_main
+    - q_dutta2016_distinct_mechanisms_no_relation
+    - q_dutta2016_inverted_salr_regime_in_weirich2017
+    - dutta2016/screening_length_actin
+    - dutta2016/filament_thickness_actin
+    - dutta2016/rho_star_1
+    - dutta2016/Gamma_R_fig2_3
+    - dutta2016/lambda_R_fig2_3a
+    - dutta2016/lambda_A_fig2_3
+    - dutta2016/Gamma_A_fig2_no_bundle
+    - dutta2016/Gamma_A_fig2_finite
+    - dutta2016/Gamma_A_fig2_macro
+    - dutta2016/Gamma_A_fig3b
+    - dutta2016/Gamma_R_fig4
+    - dutta2016/lambda_A_fig4
+    - dutta2016/betaV_fig2a_GA4
+    - dutta2016/F_fig2b_GA4
+    - dutta2016/bundle_size_fig3a
+    - dutta2016/bundle_size_fig3b
+    - dutta2016/bundle_size_over_lR_fig3b_inset
+    - dutta2016/lambda_R_finite_fig4
+    - dutta2016/lambda_R_infinite_fig4
+    - dutta2016/q_weirich2017_no_cross_validation
+  citation:
+    page: 3
+    printed_page: "2133"
+    quote: "However, filamin is a long (∼150 nm) and flexible actin cross-"
+    where: "Main Text p. 2133 col 1 & SI Text pp. SI-1 to SI-3"
+  text: >
+    No cross-record validations are entered in validations.yaml for weirich2017's 52 runnable
+    models against dutta2016 data, because dutta2016 is a pure analytical field-theory paper with
+    zero origin: measured entries out of 23 total data (12 origin: reported, 11 origin: predicted),
+    neither paper cites the other (0 shared references across 49 and 45 bibliographic entries),
+    and none of weirich2017's models predicts any datum in dutta2016:
+    (1) Two cited experimental F-actin length scales in dutta2016 (both origin: reported,
+    from_source: ref-11 [Borukhov et al. 2005], p. 5):
+    (a) dutta2016/screening_length_actin ("~1" nm, screening_length_physical): weirich2017 has
+    zero models predicting electrostatic Debye screening length (none of its 52 continuum,
+    geometric, or hydrodynamic models includes ionic strength, electrostatics, or counterion
+    screening), and "~1" is an approximate cited literature scale rather than an experimental
+    measurement by Dutta et al.
+    (b) dutta2016/filament_thickness_actin ("~8" nm, typed as in_plane_radius_of_gyration):
+    weirich2017 has zero models predicting single F-actin filament diameter or thermal transverse
+    wandering R_g; weirich2017 treats F-actin diameter (filament_diameter_frap_si = "~7" nm, SI
+    p. 8, origin: reported) strictly as a fixed textbook input to filament_radius_from_diameter
+    (r = d/2, outputting filament_radius ~ 3.5 nm rather than filament thickness), and both "~8"
+    and "~7" are approximate literature values rather than measurements.
+    (2) Remaining 10 origin: reported entries in dutta2016 (rho_star_1, Gamma_R_fig2_3,
+    lambda_R_fig2_3a, lambda_A_fig2_3, Gamma_A_fig2_no_bundle, Gamma_A_fig2_finite,
+    Gamma_A_fig2_macro, Gamma_A_fig3b, Gamma_R_fig4, lambda_A_fig4): dimensionless theoretical
+    plotting parameters chosen for Figs. 2-4, not experimental measurements, and none matches any
+    weirich2017 model output.
+    (3) Remaining 11 origin: predicted entries in dutta2016 (digitized theoretical SALR spinodal
+    curves betaV_fig2a_*, F_fig2b_*, bundle_size_fig3a, bundle_size_fig3b,
+    bundle_size_over_lR_fig3b_inset, lambda_R_finite_fig4, lambda_R_infinite_fig4): theoretical
+    predictions rather than measurements, and none of weirich2017's post-condensation liquid-
+    crystal, FRAP/Stokes-Einstein, or axial Rayleigh-Plateau capillary models predicts transverse
+    SALR pair potentials, spinodal stability functions, equilibrium finite-bundle widths, or
+    Debye-screening phase boundaries.
+    See dutta2016/q_weirich2017_no_cross_validation for the exhaustive item-by-item exclusion of
+    all 35 origin: measured data in weirich2017 against dutta2016's 20 models (and the exact
+    lambda_A >= 2*lambda_R macrophase-only theorem).
+
+- id: q_sekine2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - frap_diffusion_scaling
+    - capillary_instability_threshold_corrected
+    - capillary_instability_threshold_printed
+    - capillary_fastest_mode_corrected
+    - capillary_fastest_mode_printed
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_scaling
+    - tactoid_aspect_ratio_large_omega
+    - tactoid_geometry_circular_arc
+    - tactoid_coarsening_power_law
+    - tactoid_exponential_relaxation
+    - tactoid_shape_dynamics_ode
+    - tactoid_shape_dynamics_ode_rayleigh2
+    - coalescence_tau_linear_scaling
+    - isotropic_relaxation_rate_corrected
+    - capillary_axial_velocity
+    - actin_mesh_size
+    - actin_filament_length_cp
+    - D_frap_est
+    - eta_frap_est
+    - q_sekine2024_nanoclusters_vs_tactoids_synthesis
+    - sekine2024/cable_interval_in_vivo
+    - sekine2024/d_figs1d_intervals
+    - sekine2024/d_fig1j_diameter
+    - sekine2024/d_fig1k_length
+    - sekine2024/d_figs1g_skeleton
+    - sekine2024/st15_aspect_ratio_mean
+    - sekine2024/st16_aspect_ratio_mean
+    - sekine2024/st15_major_mean
+    - sekine2024/st15_minor_mean
+    - sekine2024/st15_area_mean
+    - sekine2024/st16_major_mean
+    - sekine2024/st16_minor_mean
+    - sekine2024/st16_area_mean
+    - sekine2024/d_fig5c_vx
+    - sekine2024/d_fig5c_vy
+    - sekine2024/d_fig5f_vx
+    - sekine2024/d_fig5f_vy
+    - sekine2024/dist_st16_ctrl
+    - sekine2024/fusion_frames_typical
+    - sekine2024/fusion_dur_2frames_s
+    - sekine2024/q_weirich2017_no_cross_validation
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "initial bundle radius R0 ∼ 200 nm, and surface anchoring"
+    where: "Main Text (pp. 2132-2135) & SI Text (pp. SI-1 to SI-3) vs sekine2024 Results (pp. 2-10)"
+  text: >
+    No cross-record validations are entered in validations.yaml for weirich2017's 52 runnable
+    models against sekine2024's 214 origin: measured Drosophila embryonic tracheal actin
+    nanocluster and circumferential-cable data (across 27 quantities), because neither paper cites
+    the other (0 shared references across 49 and 82 entries) and no weirich2017 model validly
+    predicts any sekine2024 measurement on Sekine et al.'s conditions without conflating distinct
+    physical quantities or fabricating unmeasured continuum parameters:
+    (1) Periodic circumferential cable spacing (cable_interval_in_vivo = 450 +/- 13.2 nm,
+    d_figs1d_intervals; 2 measured data) vs capillary instability and mesh-size models
+    (capillary_instability_threshold_corrected/printed, capillary_fastest_mode_corrected/printed,
+    actin_mesh_size): unlike gov2018/cylindrical_ring_critical_mode (which explicitly models
+    circumferential actomyosin rings on a hollow cylindrical cell membrane), weirich2017's
+    Rayleigh-Plateau models govern axial pearling breakup (perturbation_wavelength) along a solid
+    3D cylindrical liquid column of axially aligned F-actin (bundle_radius R_0, anchoring omega =
+    gamma_A/gamma_I). By contrast, sekine2024's cables are transversely spaced parallel
+    circumferential rings (pattern_interval) in a 2D apical cortical sheet lining a hollow
+    chitin-filled epithelial lumen (d_fig1j_diameter = 3.942 um, R_tube = 1.971 um at 0* min),
+    assembled by nanocluster fusion (opposite in direction to pearling) with neither R_0 nor omega
+    measured. Mapping hollow tube radius to solid bundle_radius or transverse cable spacing to
+    axial perturbation_wavelength would conflate distinct physical quantities. Diagnostically,
+    evaluating capillary_instability_threshold_corrected and capillary_fastest_mode_corrected at
+    tracheal radius R_0 = 1.971 um gives lambda_c = 12.38-27.69 um (27.5x-61.5x 450 nm) and
+    lambda_max = 17.51-39.16 um (38.9x-87.0x; printed 17.51-30.34 um) across omega in [0, 2.0]
+    (and still >= 11.54 um = 25.7x at -80 min, R_0 = 1.299 um); even substituting a single Stage-16
+    cable half-minor-axis (R_0 = 84.1 nm) compares orthogonal axes and yields lambda_c =
+    0.528-1.182 um (1.17x-2.63x) and lambda_max = 0.747-1.671 um (1.66x-3.71x). Likewise,
+    actin_mesh_size (xi = 0.3*c^(-1/2)) predicts uncrosslinked 3D semidilute mesh spacing rather
+    than crosslinked cable spacing, and sekine2024 measures no 3D actin mass concentration c
+    (diagnostically, Sekine's 2D CGMD density at 100 nm cortex thickness corresponds to ~307.5 uM
+    = 12.92 mg/mL -> xi = 83.5 nm, 5.4x below 450 nm).
+    (2) Nanocluster aspect ratios (st15_aspect_ratio_mean = 1.9458, st16_aspect_ratio_mean =
+    2.4241, 28 RNAi/mutant conditions in Table 2 spanning 1.981-2.534, 2 SDs, and 2 KDE curves
+    d_fig1f_st15/st16; 34 measured data) vs tactoid equilibrium shape models
+    (tactoid_equilibrium_minimizer, tactoid_aspect_ratio_scaling, tactoid_aspect_ratio_large_omega):
+    sekine2024 neither defines nor measures nematic surface anchoring omega = gamma_A/gamma_I (even
+    in weirich2017, omega is inverted from measured L/r rather than predicted from molecular inputs).
+    Moreover, the two systems have opposite crosslinker-density trends and mechanisms: 3D passive
+    equilibrium long-filamin (150 nm) tactoids round up with higher crosslinker concentration
+    (L/r drops from ~3 to ~2, omega = 2.2 to 1.1), whereas 2D nonequilibrium active-turnover
+    (omega^f = 0.1 s^-1) short-alpha-actinin (35 nm)/Zasp52/myosin-II/DAAM cortical nanoclusters
+    elongate with higher crosslinker density (2-M: 1.49 -> 2-H: 2.12) and maturation (1.9458 ->
+    2.4241). Diagnostically, inverting tactoid_equilibrium_minimizer on Sekine's L/r = 1.9458-2.534
+    would require hypothetical omega = 0.861-1.548 (with Weirich's 10% filamin omega = 1.4 giving
+    2.417 vs st16 = 2.424 purely by coincidence, while 5% filamin omega = 2.0 gives 2.862), so no
+    non-fabricated prediction exists.
+    (3) Single-filament Stokes-Einstein models (stokes_einstein_ellipsoid_diffusion,
+    stokes_einstein_ellipsoid_viscosity, frap_diffusion_scaling) vs tracked nanocluster
+    displacements (dx_*, dy_*, dist_*; 27 measured data) and reported viscosities: sekine2024
+    contains zero measured diffusion_coefficient, zero frap_recovery_time, and zero measured
+    cytosolic_viscosity entries (eta_cyto_table_s1 = 1, eta_cyto_si_text = 0.1, and
+    eta_cyto_bulk_lit = 1e-3 to 1e-1 Pa*s are origin: reported simulation/literature parameters).
+    Tracked displacements (dist = 94.7-141.3 nm per dt = 0.32 s) have dimension [length] rather
+    than [length]^2/[time] and reflect active motility of 10-40-filament crosslinked nanoclusters
+    rather than passive single-filament diffusion (diagnostically, apparent 2D cluster diffusivity
+    D_app >= d^2/(4*dt) = 0.0070-0.0156 um^2/s is 2.3x-5.2x faster than Weirich's intra-tactoid
+    FRAP ~0.003 um^2/s, while stokes_einstein_ellipsoid_diffusion on Sekine's 100 nm x 10 nm single
+    filament yields 0.0132 um^2/s at eta = 1 Pa*s and 0.132 um^2/s at eta = 0.1 Pa*s, 4.194x above
+    Sekine's cylindrical drag).
+    (4) PIV cortical displacement speeds (d_fig5c_vx, d_fig5c_vy, d_fig5f_vx, d_fig5f_vy; 4
+    measured data, 17-35 nm/s) vs droplet/capillary velocity models
+    (isotropic_relaxation_rate_corrected/printed.dL_dt, capillary_axial_velocity.v): unsigned 2D
+    cortical actin PIV flow speeds are distinct physical quantities from negative droplet
+    shortening rate dL/dt or Poiseuille axial center velocity v = 2*pi*(du/dt)/k, and sekine2024
+    measures none of gamma_I, eta, du/dt, or k (diagnostically, Weirich's fitted capillary
+    velocities 110-140 nm/s for coalescence and 2.5-4.5 nm/s for contraction bracket Sekine's
+    17-35 nm/s PIV speeds).
+    (5) Remaining 147 of 214 origin: measured data in sekine2024: (a) cluster major/minor lengths,
+    SDs, KDEs, and 2D projected areas (38 cluster_major_length, 2 SD, 33 cluster_minor_length,
+    2 SD, 4 cluster_length_density KDEs, 2 cluster_area = 0.0530-0.0576 um^2, 2 area SD; 83 data):
+    tactoid_geometry_circular_arc requires unmeasured circular-arc (R, alpha) and outputs 3D outer
+    surface area A (0.143-0.150 um^2 at St 15-16 mean L, r — ~2.8x larger than 2D projected ellipse
+    area, a distinct quantity), while actin_filament_length_cp requires unmeasured capping-protein
+    mole fraction r_CP; (b) developmental time courses (d_figs1g_skeleton, d_fig1j_diameter,
+    d_fig1k_length; 3 data): multicellular tracheal organ growth and cortical cable elongation over
+    relative developmental times -80..20 min (undefined at t <= 0 for tactoid_coarsening_power_law
+    L ~ t^alpha, and opposite in physics/sign to tactoid_exponential_relaxation, which only
+    coincides dimensionally with sekine2024/cgmd_anisotropic_langevin); (c) fusion-event frame
+    counts (fusion_frames_typical = 2, fusion_frames_ex_s2b = 4, d_fig2b_mean_*, d_fig3e_mean_*;
+    8 data): dimensionless frame counts (sekine2024 has zero origin: measured [time] data;
+    fusion_dur_2frames_s = 0.64 s is origin: derived) measuring reversible fusion-before-fission
+    dwell time rather than irreversible exponential capillary coalescence relaxation time tau
+    (diagnostically, coalescence_tau_linear_scaling at eta/gamma_eff = 10 s/um extrapolated to
+    delta_L = 0.15-0.30 um gives 1.5-3.0 s, but none of eta, gamma_eff, or delta_L is measured in
+    sekine2024); and (d) orientation, statistics, colocalization, polarity, and counts
+    (31 pattern_orientation, 12 p_value, 2 pearson_correlation, 2 cluster_count, 2 roi_count,
+    2 sample_count, 1 orientation_coherency, 1 junctional_intensity_ratio; 53 data): unmodeled by
+    any weirich2017 model. See sekine2024/q_weirich2017_no_cross_validation for the exhaustive
+    reverse-direction audit of all 32 sekine2024 models against all 35 origin: measured (plus
+    estimated/derived/fitted) data in weirich2017.
+
+- id: q_nastkolb2022_no_cross_validation
+  kind: unstated_model
+  about:
+    - frap_diffusion_scaling
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - actin_filament_length_cp
+    - filament_half_length_from_length
+    - filament_radius_from_diameter
+    - actin_mesh_size
+    - actin_concentration_from_mesh_size
+    - actin_mass_concentration
+    - concentration_enrichment_ratio
+    - filamin_concentration_from_fraction
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_scaling
+    - tactoid_aspect_ratio_large_omega
+    - tactoid_geometry_circular_arc
+    - tactoid_free_energy
+    - tactoid_rescaled_free_energy
+    - tactoid_rescaled_free_energy_figS2c_norm
+    - anchoring_strength_definition
+    - anchoring_strength_from_aspect_ratio
+    - anchoring_strength_from_aspect_ratio_curve
+    - director_crossover_parameter
+    - tactoid_coarsening_power_law
+    - tactoid_exponential_relaxation
+    - tactoid_exponential_master_curve
+    - tactoid_shape_dynamics_ode
+    - tactoid_shape_dynamics_ode_rayleigh2
+    - tactoid_dissipation_power
+    - coalescence_tau_linear_scaling
+    - isotropic_coalescence_tau_energy_balance
+    - isotropic_relaxation_rate_printed
+    - isotropic_relaxation_rate_corrected
+    - bundle_contractile_strain
+    - interfacial_tension_from_capillary_velocity
+    - capillary_instability_threshold_printed
+    - capillary_instability_threshold_corrected
+    - capillary_fastest_mode_printed
+    - capillary_fastest_mode_corrected
+    - capillary_dispersion_printed
+    - capillary_dispersion_corrected
+    - capillary_dynamic_factor_scaling
+    - capillary_rate_scale
+    - capillary_energy_cost_printed
+    - capillary_energy_cost_corrected
+    - capillary_free_energy_integral
+    - capillary_free_energy_per_length
+    - capillary_volume_conservation_printed
+    - capillary_volume_conservation_corrected
+    - capillary_wavelength_from_wavenumber
+    - capillary_wavenumber_definition
+    - capillary_axial_velocity
+    - capillary_dissipation_power
+    - q_nastkolb2022_2d_vasp_bilayer_vs_3d_tactoids
+    - nastkolb2022/frap_t_half_vasp_slb
+    - nastkolb2022/frap_t_half_vasp_ml
+    - nastkolb2022/frap_mobile_fraction_slb_prepol
+    - nastkolb2022/frap_mobile_fraction_slb_pol30
+    - nastkolb2022/frap_mobile_fraction_ml_prepol
+    - nastkolb2022/frap_mobile_fraction_ml_pol30
+    - nastkolb2022/frap_curve_slb_prepol_fig4c
+    - nastkolb2022/frap_curve_slb_pol30_fig4c
+    - nastkolb2022/frap_curve_ml_prepol_fig4c
+    - nastkolb2022/frap_curve_ml_pol30_fig4c
+    - nastkolb2022/bundle_width_median_vasp_025
+    - nastkolb2022/bundle_width_median_vasp_dtetra_025
+    - nastkolb2022/bundle_width_max_vasp_025
+    - nastkolb2022/bundle_width_max_vasp_dtetra_025
+    - nastkolb2022/bundle_width_vs_vasp_fig2e
+    - nastkolb2022/bundle_width_median_vs_vasp_fig2e
+    - nastkolb2022/bundle_width_by_elongator_fig3f
+    - nastkolb2022/bundle_width_vs_actin_figs3f
+    - nastkolb2022/bundle_width_cp_substrate_figs4f
+    - nastkolb2022/pore_size_vs_vasp_fig2e
+    - nastkolb2022/pore_size_by_elongator_fig3f
+    - nastkolb2022/pore_size_vs_actin_figs3f
+    - nastkolb2022/pore_size_cp_substrate_figs4f
+    - nastkolb2022/filament_count_1um_intensity_measured
+    - nastkolb2022/vasp_enrichment_kinetics_fig5c
+    - nastkolb2022/lipid_depletion_kinetics_fig5c
+    - nastkolb2022/lipid_relaxation_fraction_60min
+    - nastkolb2022/vasp_llps_threshold_main
+    - nastkolb2022/vasp_llps_range_si
+    - nastkolb2022/bundle_diffraction_limited_window
+    - nastkolb2022/mdia1_tirf_decline_onset_time
+    - nastkolb2022/q_weirich2017_no_cross_validation
+  citation:
+    page: 7
+    printed_page: "SI-1"
+    quote: "bleached spot or the ratio is fit to a single exponential"
+    where: "SI Text (pp. SI-1 to SI-3) & Main Text (pp. 2131-2135) vs nastkolb2022"
+  text: >
+    No cross-record validations are entered in validations.yaml for weirich2017's 52 runnable
+    models against nastkolb2022's 66 origin: measured data (16 scalars, 50 digitized curves
+    across 22 quantities), because neither paper cites the other and no weirich2017 model
+    predicts any nastkolb2022 measurement on Nast-Kolb et al.'s conditions without conflating
+    distinct physical quantities or fabricating unmeasured parameters:
+    (1) FRAP and Stokes-Einstein hydrodynamic models (3: frap_diffusion_scaling,
+    stokes_einstein_ellipsoid_diffusion, stokes_einstein_ellipsoid_viscosity) vs. nastkolb2022
+    VASP FRAP data (10 measured data: frap_t_half_vasp_slb = 0.102 min, frap_t_half_vasp_ml =
+    0.399 min, 4 frap_mobile_fraction_*, 4 frap_curve_*_fig4c): nastkolb2022 contains zero
+    measured diffusion_coefficient ([length]^2/[time]) and zero measured dynamic_viscosity
+    ([mass]/[length]/[time]) data, and weirich2017 has no inverted model outputting FRAP
+    recovery half-time, mobile fraction, or FRAP intensity curves I(t). Physically, nastkolb2022
+    tracks 2D lipid-anchored Alexa532-VASP tetramers (bleach circle diameter d_b = 4.96 um,
+    r_b = 2.48 um) rather than 3D prolate F-actin rods in a bulk Newtonian fluid, measuring
+    neither membrane viscosity eta nor filament length 2L. Diagnostically, frap_diffusion_scaling
+    (D ~ L_b^2/tau_R) gives 0.697 um^2/s (L_b = r_b) or 2.786 um^2/s (L_b = d_b) on SLB
+    (tau = 8.83 s) and 0.178 or 0.712 um^2/s on ML (tau = 34.54 s), vs. 2D uniform-disk
+    Soumpasis D = 0.2251 um^2/s (SLB, 75x Weirich's ~0.003 um^2/s) and 0.0575 um^2/s (ML, 19x).
+    (2) Capping-protein length, concentration, and semidilute mesh-size models (8:
+    actin_filament_length_cp, filament_half_length_from_length, filament_radius_from_diameter,
+    actin_mesh_size, actin_concentration_from_mesh_size, actin_mass_concentration,
+    concentration_enrichment_ratio, filamin_concentration_from_fraction) vs. nastkolb2022
+    capping-protein, actin-titration, pore-size, enrichment, and VASP-LLPS measurements:
+    nastkolb2022 measures zero filament_length, monomers_per_filament, filament_half_length,
+    filament_radius, 3D uncrosslinked mesh_size [um], actin_mass_concentration [mg/mL],
+    actin_concentration_ratio, or filamin_molar_concentration (all actin_conc_* and
+    cp_conc_standard are origin: reported recipe values, Nast-Kolb uses zero filamin, and
+    vasp_llps_threshold_main / vasp_llps_range_si are VASP incubation thresholds rather than
+    filamin concentrations). Diagnostically: (a) actin_filament_length_cp (L_f = 2.7 nm/r_CP) at
+    Nast-Kolb's 50 nM CP over 0.5, 1, 2, 4 uM actin (r_CP = 10%, 5%, 2.5%, 1.25%) predicts
+    27.0, 54.0, 108.0, and 216.0 nm, breaking down >100x against Nast-Kolb's actively elongating
+    >10-50 um filaments in 10 uM profilin + anti-capping VASP; (b) actin_mesh_size (xi =
+    0.3*c^(-1/2) [um], 3D uncrosslinked bulk spacing) is both dimensionally ([length] vs
+    [length]^2) and physically distinct from Nast-Kolb's 2D inter-bundle bundle_pore_size (4
+    curves: pore_size_vs_actin_figs3f, pore_size_vs_vasp_fig2e, pore_size_by_elongator_fig3f,
+    pore_size_cp_substrate_figs4f), though diagnostically xi = 2.070, 1.464, 1.035, 0.732 um
+    (xi^2 = 4.286, 2.143, 1.071, 0.536 um^2) tracks 1.4x-2.0x above Fig. S3F median 2D pore
+    areas 2.109, 1.229, 0.599, 0.382 um^2 (pore/xi^2 = 0.49-0.71); and (c)
+    concentration_enrichment_ratio (3D dense/dilute actin molar ratio) is distinct from
+    vasp_enrichment_kinetics_fig5c and lipid_depletion_kinetics_fig5c (2D under-bundle vs
+    next-to-bundle VASP and lipid fluorescence intensity ratios I_under/I_next).
+    (3) Tactoid equilibrium shape, free-energy, and anchoring models (11:
+    tactoid_equilibrium_minimizer, tactoid_aspect_ratio_scaling, tactoid_aspect_ratio_large_omega,
+    tactoid_geometry_circular_arc, tactoid_free_energy, tactoid_rescaled_free_energy,
+    tactoid_rescaled_free_energy_figS2c_norm, anchoring_strength_definition,
+    anchoring_strength_from_aspect_ratio, anchoring_strength_from_aspect_ratio_curve,
+    director_crossover_parameter): nastkolb2022 forms continuous spanning 2D membrane-bound
+    bundle networks rather than isolated finite-volume 3D tactoids and measures zero aspect
+    ratios, droplet volumes, circular-arc radii R, cusp angles alpha, droplet surface areas,
+    anchoring strengths omega, or interfacial tensions (gamma_I, gamma_A). In particular,
+    tactoid_geometry_circular_arc.r (equatorial width 2*R*(1 - cos(alpha))) cannot predict
+    nastkolb2022's bundle_width (7 data) or bundle_width_max (2 data) without circular-arc
+    inputs (R, alpha) that do not exist for continuous 2D ribbons.
+    (4) Tactoid coarsening, coalescence, and contraction dynamics models (12:
+    tactoid_coarsening_power_law, tactoid_exponential_relaxation,
+    tactoid_exponential_master_curve, tactoid_shape_dynamics_ode,
+    tactoid_shape_dynamics_ode_rayleigh2, tactoid_dissipation_power,
+    coalescence_tau_linear_scaling, isotropic_coalescence_tau_energy_balance,
+    isotropic_relaxation_rate_printed, isotropic_relaxation_rate_corrected,
+    bundle_contractile_strain, interfacial_tension_from_capillary_velocity): nastkolb2022
+    observes neither tactoid coalescence nor motor-free bundle contraction, reporting zero
+    length-vs-time curves L(t), zero mechanical shape-relaxation times tau, zero contractile
+    strain measurements (lipid_relaxation_fraction_60min = "~0.5" is lipid fluorescence
+    relaxation, not mechanical shortening), and zero dissipated power or interfacial-tension
+    data. Mapping shape relaxation_time to frap_recovery_half_time (0.102, 0.399 min) or
+    assay_elapsed_time (bundle_diffraction_limited_window = 0 to 80 s,
+    mdia1_tirf_decline_onset_time = 6 min), or decaying rescaled_length to rising TIRF/FRAP
+    fluorescence curves, would conflate distinct physical quantities that only share a dimension.
+    (5) Rayleigh-Plateau capillary instability models (18:
+    capillary_instability_threshold_printed/corrected, capillary_fastest_mode_printed/corrected,
+    capillary_dispersion_printed/corrected, capillary_dynamic_factor_scaling,
+    capillary_rate_scale, capillary_energy_cost_printed/corrected, capillary_free_energy_integral,
+    capillary_free_energy_per_length, capillary_volume_conservation_printed/corrected,
+    capillary_wavelength_from_wavenumber, capillary_wavenumber_definition,
+    capillary_axial_velocity, capillary_dissipation_power): nastkolb2022's 2D membrane-anchored
+    VASP ribbons exhibit no Rayleigh-Plateau pearling and report zero perturbation_wavelength,
+    wavenumber, wavelength_to_radius_ratio, or growth-rate data. Diagnostically, evaluating
+    capillary_fastest_mode_corrected (2*pi*R_0*sqrt(2*(1 + 2*omega))) on Nast-Kolb's Fig. 2E
+    median bundle half-widths R_0 = W/2 = 0.274-2.179 um yields lambda_max = 5.44-43.29 um at
+    omega = 2 (9.38 um at 0.25 uM VASP, W = 0.945 um; 4.20 um isotropic omega = 0), with no
+    pearling observable in nastkolb2022.
+    (6) Remaining 39 of 66 origin: measured data in nastkolb2022 (completing all 22 measured
+    quantities): intensity-extrapolated filament count (1: filament_count_1um_intensity_measured
+    = 45 +/- 12), transverse fluorescence cross-sections (4: actin_profile_0s_fig2c,
+    actin_profile_405s_fig2c, lipid_profile_fig5b, actin_profile_fig5b), bundle-width histograms
+    (8: width_hist_vasp_005/0125/025/050_fig2d, width_hist_vasp_100_figs2i,
+    width_hist_vasp_slb/nocp_slb/nocp_ml_figs4c), TIRF actin polymerization kinetics (16: 6
+    kinetics_*_fig3e, bundle_actin_kinetics_fig5c, 5 raw_actin_kinetics_vasp_*_figs2f, 4
+    raw_actin_kinetics_actin_*_figs3e), VASP-actin Spearman colocalization (4: coloc_*_fig4b),
+    bilayer decoration / VASP fluorescence / pre-actin cluster area (3:
+    bilayer_decoration_vs_vasp_figs2g, bilayer_vasp_fluor_vs_vasp_figs2h,
+    vasp_cluster_area_vs_vasp_figs4h), VASP LLPS concentration thresholds (2), and lipid
+    relaxation fraction (1) have zero matching model outputs among weirich2017's 52 models. See
+    nastkolb2022/q_weirich2017_no_cross_validation for the exhaustive reverse-direction audit.
+
+- id: q_claessens2008_no_cross_validation
+  kind: unstated_model
+  about:
+    - actin_concentration_from_mesh_size
+    - actin_filament_length_cp
+    - actin_mass_concentration
+    - actin_mesh_size
+    - anchoring_strength_definition
+    - anchoring_strength_from_aspect_ratio
+    - anchoring_strength_from_aspect_ratio_curve
+    - bundle_contractile_strain
+    - capillary_axial_velocity
+    - capillary_dispersion_corrected
+    - capillary_dispersion_printed
+    - capillary_dissipation_power
+    - capillary_dynamic_factor_scaling
+    - capillary_energy_cost_corrected
+    - capillary_energy_cost_printed
+    - capillary_fastest_mode_corrected
+    - capillary_fastest_mode_printed
+    - capillary_free_energy_integral
+    - capillary_free_energy_per_length
+    - capillary_instability_threshold_corrected
+    - capillary_instability_threshold_printed
+    - capillary_rate_scale
+    - capillary_volume_conservation_corrected
+    - capillary_volume_conservation_printed
+    - capillary_wavelength_from_wavenumber
+    - capillary_wavenumber_definition
+    - coalescence_tau_linear_scaling
+    - concentration_enrichment_ratio
+    - director_crossover_parameter
+    - filament_half_length_from_length
+    - filament_radius_from_diameter
+    - filamin_concentration_from_fraction
+    - frap_diffusion_scaling
+    - interfacial_tension_from_capillary_velocity
+    - isotropic_coalescence_tau_energy_balance
+    - isotropic_relaxation_rate_corrected
+    - isotropic_relaxation_rate_printed
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - tactoid_aspect_ratio_large_omega
+    - tactoid_aspect_ratio_scaling
+    - tactoid_coarsening_power_law
+    - tactoid_dissipation_power
+    - tactoid_equilibrium_minimizer
+    - tactoid_exponential_master_curve
+    - tactoid_exponential_relaxation
+    - tactoid_free_energy
+    - tactoid_geometry_circular_arc
+    - tactoid_rescaled_free_energy
+    - tactoid_rescaled_free_energy_figS2c_norm
+    - tactoid_shape_dynamics_ode
+    - tactoid_shape_dynamics_ode_rayleigh2
+    - rel_claessens2008_droplet_conc_scales_mesh_size
+    - rel_claessens2008_droplet_conc_approx_mesh_size
+    - q_claessens2008_modelatlas_and_spurious_exclusions
+    - q_claessens2008_rigid_fascin_vs_flexible_filamin_regimes
+    - claessens2008/ca_fig2e_single_ring_max
+    - claessens2008/ca_fig2e_two_bundle_min
+    - claessens2008/ca_fig2e_nf20_boundary
+    - claessens2008/ca_fig1a
+    - claessens2008/ca_fig4cd
+    - claessens2008/D_fig1c_measured
+    - claessens2008/nf_max_abstract
+    - claessens2008/nf_max_confinement
+    - claessens2008/D_fil_fig2d_caption
+    - claessens2008/D_fil_fig2d_text
+    - claessens2008/D_ratio_fig4d
+    - claessens2008/Rstar_plateau
+    - claessens2008/Rstar_figS1_experiment
+    - claessens2008/q10_saxs
+    - claessens2008/q_layer6_unbundled
+    - claessens2008/q_layer7_unbundled
+    - claessens2008/q_helical_a_bundled
+    - claessens2008/q_helical_b_bundled
+    - claessens2008/q_helical_c_bundled
+    - claessens2008/I_saxs_fig3a_R0p5
+    - claessens2008/I_saxs_fig3a_R0p05
+    - claessens2008/I_saxs_fig3a_R0p005
+    - claessens2008/I_saxs_fig3a_inset_R0p5
+    - claessens2008/I_saxs_fig3c_data_R0p05
+    - claessens2008/I_saxs_fig3c_data_R0p1
+    - claessens2008/I_saxs_fig3c_data_R0p5
+    - claessens2008/Delta_theta_fig3d_ca0p8
+    - claessens2008/Delta_theta_fig3d_ca2
+    - claessens2008/Delta_theta_fig3d_ca3
+    - claessens2008/q_fig2e_quantified_factor_2p22
+    - claessens2008/q_weirich2017_no_cross_validation
+  citation:
+    page: 7
+    printed_page: "SI-1"
+    quote: "mg/mL, c, using the relation ξ = 0.3c−1/2 (18)"
+    where: "SI Text (pp. SI-1 to SI-3) & Main Text (pp. 2131-2135) vs claessens2008"
+  text: >
+    No cross-record validations are entered in validations.yaml for weirich2017's 52 runnable
+    models (81 output ports) against claessens2008's 26 origin: measured data (12 scalars, 14
+    digitized curves across 9 quantities; plus 57 non-measured entries), because neither paper
+    cites the other (sharing only Spudich & Watt 1971) and no weirich2017 model predicts any
+    claessens2008 measurement on Claessens et al.'s conditions without circularity, fabricating
+    unmeasured inputs, or conflating distinct physical quantities:
+    (1) Semidilute mesh-size and actin-concentration models (3: actin_concentration_from_mesh_size,
+    actin_mesh_size, actin_mass_concentration) vs. claessens2008 Fig. 2E confinement phase
+    boundaries (ca_fig2e_single_ring_max and ca_fig2e_two_bundle_min, origin: measured,
+    actin_mass_concentration [mg/ml] indexed by droplet_diameter [um]):
+    (a) actin_concentration_from_mesh_size (c = (0.3/xi)^2, role: processing helper inverse of
+    Schmidt et al. 1989) is the sole weirich2017 model connected to claessens2008 by verified
+    ModelAtlas relations (rel_claessens2008_droplet_conc_scales_mesh_size and
+    rel_claessens2008_droplet_conc_approx_mesh_size via xi = D_d/sqrt(2*n_f)), and shares the
+    output quantity actin_mass_concentration with Fig. 2E. However, it cannot be honestly validated
+    against ca_fig2e_single_ring_max or ca_fig2e_two_bundle_min because claessens2008 never
+    independently measures the uncross-linked cubic-network mesh size xi: sweeping xi directly over
+    ca_fig2e_* would illegally map droplet_diameter to mesh_size (two physically distinct
+    quantities sharing only [length], yielding c = (0.3/D_d)^2 that underpredicts
+    ca_fig2e_single_ring_max [D_d = 6.88-22.71 um, c_a = 0.10-0.02 mg/ml] by 52.5x-113.9x and
+    ca_fig2e_two_bundle_min [D_d = 9.60-26.96 um] by 94.8x-241.6x); computing xi = 0.3*c_a^(-1/2)
+    from c_a itself is an algebraic tautology (c = c); and substituting the cross-paper geometric
+    identity xi = D_d/sqrt(2*n_f) at n_f = 20 requires pre-transforming D_d outside the model using
+    Claessens's own droplet-ring assumption (fabricating unmeasured xi values in added.yaml and
+    still incompatible with sweeping droplet_diameter). Diagnostically, even that hybrid formula
+    gives c*D_d^2 = 3.600 (mg/ml)*um^2 (+24.7% above claessens2008/droplet_critical_concentration's
+    2.886 at d = 2.9 nm from Schmidt's 1-sig-fig rounding of 0.2686 to 0.30), still underpredicting
+    ca_fig2e_single_ring_max by 1.31x-2.85x (c_a*D_d^2 = 4.73-10.25, implied D_d/xi = 7.25-10.67,
+    n_f_mesh = 26.3-57.0), ca_fig2e_two_bundle_min by 2.37x-6.04x (c_a*D_d^2 = 8.53-21.74,
+    D_d/xi = 9.74-15.54, n_f_mesh = 47.4-120.8), and the non-measured plotted boundary
+    ca_fig2e_nf20_boundary by 1.77x-1.81x (c_a*D_d^2 = 6.43; see
+    claessens2008/q_fig2e_quantified_factor_2p22).
+    (b) actin_mass_concentration (c = c_A*M_w, role: processing) cannot be validated against
+    ca_fig2e_* because Fig. 2E reports only mass concentration c_a [mg/ml] vs. D_d with no molar
+    c_A input (the sole molar concentration in claessens2008, ca_fig4cd = 0.95 uM, and ca_fig1a =
+    0.04 mg/ml are both origin: reported preparation recipes from separate assays anchored to the
+    same added M_w = 42000 g/mol).
+    (c) actin_mesh_size (xi = 0.3*c^(-1/2)) has no measured mesh_size target in claessens2008
+    (diagnostically yielding xi = 2.12, 1.73, 1.50, 1.34, 0.95 um across Fig. 2E's 0.02-0.10 mg/ml
+    and 0.34, 0.21, 0.17, 0.13 um across SAXS 0.8-5.0 mg/ml).
+    (2) Tactoid shape, anchoring, and Rayleigh-Plateau capillary instability models (29:
+    tactoid_equilibrium_minimizer, tactoid_aspect_ratio_scaling, tactoid_aspect_ratio_large_omega,
+    tactoid_geometry_circular_arc, tactoid_free_energy, tactoid_rescaled_free_energy,
+    tactoid_rescaled_free_energy_figS2c_norm, anchoring_strength_definition,
+    anchoring_strength_from_aspect_ratio, anchoring_strength_from_aspect_ratio_curve,
+    director_crossover_parameter, plus all 18 capillary_* models) vs. claessens2008 bundle
+    thickness, filament count, and cross-linker ratio data (8: D_fig1c_measured, nf_max_abstract,
+    nf_max_confinement, D_fil_fig2d_caption, D_fil_fig2d_text, D_ratio_fig4d, Rstar_plateau,
+    Rstar_figS1_experiment): weirich2017 has no model predicting equilibrium bundle diameter
+    (bundle_radius R_0 is strictly an experimental input; tactoid_geometry_circular_arc.r =
+    2*R*(1 - cos(alpha)) is the equatorial width of a finite-volume circular-arc spindle tactoid
+    requiring (R, alpha) inputs that do not exist for straight rigid fascin bundles), filament
+    count n_f, filament-unit diameter D_fil, multi-ABP diameter ratio, or bound cross-linker ratio
+    R* (filamin_mole_fraction is strictly an input). Conversely, claessens2008 observes zero
+    Rayleigh-Plateau pearling, perturbation_wavelength, tactoid aspect ratio, or anchoring strength
+    omega (diagnostically, evaluating capillary_fastest_mode_corrected on Claessens's bundle radii
+    R_0 = D/2 = 4.21-14.07 nm [TEM] or 29.1-31.0 nm [hydrated n_f = 20] yields sub-micron
+    lambda_max = 37-125 nm [TEM, omega = 0] to 84-280 nm [TEM, omega = 2] and 259-616 nm
+    [hydrated], unobservable and physically suppressed by solid crystalline shear elasticity).
+    (3) Remaining 20 weirich2017 models (5 capping-protein/stoichiometry/geometry helpers:
+    actin_filament_length_cp, filament_half_length_from_length, filament_radius_from_diameter,
+    concentration_enrichment_ratio, filamin_concentration_from_fraction; 3 FRAP/Stokes-Einstein
+    hydrodynamic models: frap_diffusion_scaling, stokes_einstein_ellipsoid_diffusion,
+    stokes_einstein_ellipsoid_viscosity; and 12 coarsening/coalescence/contraction dynamics models:
+    tactoid_coarsening_power_law, tactoid_exponential_relaxation, tactoid_exponential_master_curve,
+    tactoid_shape_dynamics_ode, tactoid_shape_dynamics_ode_rayleigh2, tactoid_dissipation_power,
+    coalescence_tau_linear_scaling, isotropic_coalescence_tau_energy_balance,
+    isotropic_relaxation_rate_printed, isotropic_relaxation_rate_corrected,
+    bundle_contractile_strain, interfacial_tension_from_capillary_velocity) and remaining 16 of 26
+    origin: measured datums in claessens2008 (6 SAXS scattering_wavevector peaks: q10_saxs,
+    q_layer6_unbundled, q_layer7_unbundled, q_helical_a_bundled, q_helical_b_bundled,
+    q_helical_c_bundled; 7 SAXS saxs_intensity curves: I_saxs_fig3a_R0p5/R0p05/R0p005/inset_R0p5
+    and I_saxs_fig3c_data_R0p05/R0p1/R0p5; and 3 monomer_overtwist curves:
+    Delta_theta_fig3d_ca0p8/ca2/ca3): zero matching quantities — claessens2008 measures no FRAP,
+    diffusivity, viscosity, relaxation time, contractile strain, or capping-protein filament
+    length, while weirich2017 is an achiral continuum fluid theory with no SAXS intensity, no
+    dimensional scattering wavevector (capillary_wavenumber_definition.k is dimensionless), and no
+    microscopic monomer helical overtwist (tactoid_central_angle alpha is a macroscopic circular-
+    arc opening angle). See claessens2008/q_weirich2017_no_cross_validation for the exhaustive
+    reverse-direction audit.
+
+# ---------------------------------------------------------------------------
+# Cross-record ModelAtlas & biophysical contrast with graham2023 (2026-11-24)
+# ---------------------------------------------------------------------------
+
+- id: q_graham2023_modelatlas_and_tactoid_vs_vasp_droplet_contrast
+  kind: reading
+  about:
+    - tactoid_free_energy
+    - tactoid_rescaled_free_energy
+    - tactoid_geometry_circular_arc
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_large_omega
+    - director_crossover_parameter
+    - capillary_free_energy_integral
+    - capillary_free_energy_per_length
+    - capillary_energy_cost_corrected
+    - capillary_instability_threshold_corrected
+    - capillary_fastest_mode_corrected
+    - tactoid_shape_dynamics_ode
+    - tactoid_coarsening_power_law
+    - stokes_einstein_ellipsoid_viscosity
+    - frap_diffusion_scaling
+    - c_actin_dilute_main
+    - c_actin_tactoid_est
+    - filament_length_avg_main
+    - filament_persistence_length_si
+    - filamin_length_main
+    - tau_R_frap_fig1c
+    - D_frap_est
+    - eta_frap_est
+    - gamma_I_est_main
+    - gamma_I_ratio_protein_droplets
+    - aspect_ratio_2p5_filamin
+    - aspect_ratio_15_filamin
+    - omega_range_fig2a_si
+    - coarsening_exponent_measured
+    - bundle_initial_length
+    - bundle_initial_radius_main
+    - capillary_lambda_max_predicted
+    - capillary_lambda_observed
+    - bundle_contractile_strain_range
+    - q_chandrasekaran2024_vasp_droplets_vs_tactoids_synthesis
+    - graham2023/ring_rod_transition_energy
+    - graham2023/droplet_ring_minimization_corrected
+    - graham2023/effective_spherical_diameter
+    - graham2023/ellipse_axes_constant_area
+    - graham2023/ellipse_perimeter_integral_eqS10
+    - graham2023/ellipse_perimeter_series_eqS11
+    - graham2023/droplet_surface_energy_eqS12
+    - graham2023/ring_confinement_bending_energy
+    - graham2023/ring_excess_bending_energy_eqS22
+    - graham2023/linear_bundle_elongation
+    - graham2023/rel_weirich2017_ring_rod_reduces_tactoid_sphere
+    - graham2023/rel_weirich2017_tactoid_reduces_ring_rod_sphere
+    - graham2023/rel_weirich2017_slsqp_reduces_tactoid_sphere
+    - graham2023/rel_weirich2017_2d_ellipse_approx_3d_iso_tactoid
+    - graham2023/rel_weirich2017_2d_ellipse_vs_3d_rescaled_ar_scaling
+    - graham2023/rel_weirich2017_capillary_reduces_ring_rod_circle
+    - graham2023/rel_weirich2017_capillary_per_len_scales_ring_rod
+    - graham2023/rel_weirich2017_eff_diam_scales_director_crossover
+    - graham2023/rel_weirich2017_ellipse_axes_vs_tactoid_major_axis_scaling
+    - graham2023/q_weirich2017_modelatlas_and_vasp_droplet_vs_tactoid_contrast
+  citation:
+    page: 4
+    printed_page: "2134"
+    quote: "γ I ∼ 300 nN/m. This interfacial tension is ∼10 times less than"
+    where: "Main Text pp. 1-5 (2131-2135) & SI Text pp. 7-9 (SI-1 to SI-3) vs graham2023"
+  text: >
+    Cross-record ModelAtlas audit and biophysical synthesis with graham2023 (Graham et al., Nature
+    Physics 19:574-585, 2023; isotropic liquid-like VASP protein condensates that polymerize and
+    bundle long semiflexible F-actin; 31 runnable graham2023 x 52 runnable weirich2017 = 1,612
+    model pairs). Neither paper cites the other (graham2023 Discussion p. 10 cites only the
+    Gardel-lab follow-up Scheff et al. 2020 [ref-40]; the two reference lists share exactly 1
+    review: Blanchoin et al., Physiol. Rev. 94:235-263, 2014 [weirich2017/ref-4 <->
+    graham2023/ref-43, misprinted 2022]; 0 stated relations; 0 cited.yaml links). Nine proposed
+    non-too_plain (>2 ops / numeric) relations entered in the later record graham2023/relations.yaml
+    (7 verified, 2 honest diagnostic not_verified; 0 same_as families) connect the two records
+    across three physical cores while rejecting spurious matches:
+    (1) 3D nematic tactoid vs. 2D isotropic droplet interfacial free energy (5 relations):
+    In the isotropic spherical limit (gamma_A -> 0, alpha -> pi/2 <-> AR -> 1),
+    tactoid_free_energy.F and graham2023/ring_rod_transition_energy.E_surf reduce identically to
+    one another under diameter-projected tension gamma_I_3D = gamma_I_2D / (2*R)
+    (graham2023/rel_weirich2017_ring_rod_reduces_tactoid_sphere [6.3e-15] and converse
+    graham2023/rel_weirich2017_tactoid_reduces_ring_rod_sphere [7.5e-8]), and Graham's discrete 2D
+    SLSQP energy minimizer (graham2023/droplet_ring_minimization_corrected.total_energy) converges
+    to the same bare spherical energy as ring thickness T_ring -> 0
+    (graham2023/rel_weirich2017_slsqp_reduces_tactoid_sphere [3.3e-7]). Across Weirich's
+    experimental tactoid aspect ratios AR in [1.01, 3.0], Graham's constant-area 2D ellipse
+    approximates Weirich's constant-volume isotropic (gamma_A = 0) tactoid energy within 5.17%
+    sampled (5.20% exact at AR = 3.0; graham2023/rel_weirich2017_2d_ellipse_approx_3d_iso_tactoid,
+    verified <= 0.06), before diverging cleanly at high elongations AR in [2, 15] because 2D
+    constant-area perimeter scales as AR^(1/2) versus 3D constant-volume tactoid surface area
+    AR^(1/3) (diagnostic not_verified
+    graham2023/rel_weirich2017_2d_ellipse_vs_3d_rescaled_ar_scaling, max log-slope diff 0.16;
+    relative error 18.2% at AR = 10 and 23.1% at AR = 15 — complementing
+    q_chandrasekaran2024_vasp_droplets_vs_tactoids_synthesis where Chandrasekaran 2024's 3D
+    volume-conserving prolate spheroid recovers Weirich's AR^(1/3) scaling to <= 1.60% across all
+    AR in [1, oo)). Turning on Weirich's nematic anchoring (omega = 2, 5 mol % filamin) reverses
+    dF_hat/d(AR) < 0 below AR_eq = 2.83 (log-slope diff 0.42 over AR in [1.1, 3.0]).
+    (2) 3D nematic capillary cylinder vs. 2D circular droplet surface energy (2 relations):
+    In the straight-cylinder limit u -> 0, Weirich's axial director n_hat = z_hat lies tangent to
+    the lateral wall so Rapini-Papoular anchoring A_omega = O(u^2) vanishes for all omega, reducing
+    capillary_free_energy_integral.F identically to graham2023/ring_rod_transition_energy.E_surf
+    (AR = 1) under slab projection gamma_I_2D = gamma_I_3D * lam
+    (graham2023/rel_weirich2017_capillary_reduces_ring_rod_circle [8.4e-14]), with matching (+1, +1)
+    bilinear scaling in (R_0, gamma_I) for capillary_free_energy_per_length.F_over_lam
+    (graham2023/rel_weirich2017_capillary_per_len_scales_ring_rod [9.7e-7]).
+    (3) 3D volume-equivalent droplet size & 2D vs. 3D axis elongation (2 relations):
+    Under 3D prolate spheroid volume V = (pi/6)*a*b^2, graham2023/effective_spherical_diameter
+    (D = (a*b^2)^(1/3)) scales identically with director_crossover_parameter
+    (chi = gamma_A*V^(1/3)/K) in (a, b) to 2.2e-13
+    (graham2023/rel_weirich2017_eff_diam_scales_director_crossover), while applying Graham's
+    spheroid formula to Weirich's sharp-cusped circular-arc tactoids overestimates true
+    volume-equivalent diameter D_vol = (6*V_tac/pi)^(1/3) by 5.36-6.62% at L/r = 2-3 (<= 7.72%
+    ceiling from V_tac/V_spheroid >= 4/5). By contrast, Graham's 2D constant-area parameterization
+    (graham2023/ellipse_axes_constant_area: a ~ AR^(1/2)) diverges from 3D volume-conserving
+    tactoid major-axis growth (tactoid_geometry_circular_arc.L ~ AR^(2/3); diagnostic not_verified
+    graham2023/rel_weirich2017_ellipse_axes_vs_tactoid_major_axis_scaling, max log-slope diff 0.18).
+    Explicitly excluded: all 14 too_plain + 1 curve weirich2017 models and 11 too_plain graham2023
+    models (including droplet_surface_energy_eqS12, 2 ops), the scheduler-flagged
+    droplet_ring_minimization_corrected vs. capillary_energy_cost_corrected pair (positive 2D
+    droplet-ring energy vs. sign-changing O(u^2) Rayleigh-Plateau perturbation energy delta_F),
+    and the spurious 2*pi*R coincidence between capillary_instability_threshold_*.lambda_c and
+    graham2023/ellipse_perimeter_*.
+    (4) Deep biophysical contrast — actin-as-the-droplet nematic tactoids vs. isotropic VASP
+    protein condensates deformed by stiff actin rings:
+    (a) Material architecture & interfacial tension: weirich2017 forms nematic droplets directly
+    from ~250 uM short capped F-actin rods (~180 nm << L_p ~ 10 um, rigid-rod limit with zero
+    filament bending) condensed 100-fold from 2.6 uM bulk by 1-15 mol % long (~150 nm) flexible
+    filamin, yielding ultra-soft interfacial tension gamma_I ~ 300 nN/m (0.3 uN/m). In graham2023,
+    tetrameric VASP + 3% PEG8k forms passive isotropic droplets (D = 1-7 um, median 2.86 um,
+    gamma_I_2D = 1-15 pN -> gamma_3D = gamma_I_2D/D ~ 1-15 uN/m at D = 1 um or 1.75 uN/m at
+    benchmark 5 pN, D = 2.86 um — ~6-17x stiffer than actin tactoids, matching Weirich's '~10x
+    less than protein droplets' benchmark) that encapsulate and polymerize long semiflexible actin
+    filaments (L_p = 17.73 um >> D).
+    (b) Opposite elongation mechanisms & crosslinker/fluidity dependence: Weirich tactoids adopt
+    elongated spindle equilibrium shapes (L/r = 2-3, size-independent) driven by anisotropic
+    anchoring omega = 1.1-2.2, and increasing filamin (2.5 -> 15 mol %) REDUCES L/r from ~3 to ~2
+    by raising isotropic cohesion; Graham's bare VASP droplets are spherical (omega = 0) and deform
+    out of sphericity up to AR > 15 only when confined actin-ring bending energy (k_b/2)*L/R^2
+    overcomes isotropic surface tension (while solidifying VASP droplets at 10% PEG suppresses rods
+    from 89.4% to 12.6%).
+    (c) Transport kinetics & opposite fate of long bundles: Weirich tactoids exhibit slow filament
+    diffusion (FRAP tau_R = 880-900 s, D_actin ~ 0.003 um^2/s, eta ~ 3 Pa*s, coalescence
+    v_cap = 0.11-0.14 um/s, coarsening L ~ t^0.47) versus faster VASP condensate turnover (FRAP
+    t_1/2 = 18 +/- 3 s, tau_exp = 26 s [~34x faster], Soumpasis D_VASP = 0.0101 um^2/s [~3.4x
+    faster], fusion ~1 s). Above all, transient long filamin-actin bundles (>50 um, R_0 ~ 200 nm)
+    behave as unstable fluid threads that undergo Rayleigh-Plateau pearling (lambda_max ~ 4 um
+    predicted / ~10 um observed) or capillary-driven contraction (20-60% over ~10 min), whereas
+    Graham's VASP-coated parallel actin rods resist capillary breakup via single/bundle filament
+    bending rigidity and grow linearly via ATP-driven tip polymerization (23 +/- 3 nm/s = 8-9
+    monomers/s). See graham2023/q_weirich2017_modelatlas_and_vasp_droplet_vs_tactoid_contrast.
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with chandrasekaran2024 (2026-11-24)
+# ---------------------------------------------------------------------------
+
+- id: q_chandrasekaran2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - actin_concentration_from_mesh_size
+    - actin_filament_length_cp
+    - actin_mass_concentration
+    - actin_mesh_size
+    - anchoring_strength_definition
+    - anchoring_strength_from_aspect_ratio
+    - anchoring_strength_from_aspect_ratio_curve
+    - bundle_contractile_strain
+    - capillary_axial_velocity
+    - capillary_dispersion_corrected
+    - capillary_dispersion_printed
+    - capillary_dissipation_power
+    - capillary_dynamic_factor_scaling
+    - capillary_energy_cost_corrected
+    - capillary_energy_cost_printed
+    - capillary_fastest_mode_corrected
+    - capillary_fastest_mode_printed
+    - capillary_free_energy_integral
+    - capillary_free_energy_per_length
+    - capillary_instability_threshold_corrected
+    - capillary_instability_threshold_printed
+    - capillary_rate_scale
+    - capillary_volume_conservation_corrected
+    - capillary_volume_conservation_printed
+    - capillary_wavelength_from_wavenumber
+    - capillary_wavenumber_definition
+    - coalescence_tau_linear_scaling
+    - concentration_enrichment_ratio
+    - director_crossover_parameter
+    - filament_half_length_from_length
+    - filament_radius_from_diameter
+    - filamin_concentration_from_fraction
+    - frap_diffusion_scaling
+    - interfacial_tension_from_capillary_velocity
+    - isotropic_coalescence_tau_energy_balance
+    - isotropic_relaxation_rate_corrected
+    - isotropic_relaxation_rate_printed
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - tactoid_aspect_ratio_large_omega
+    - tactoid_aspect_ratio_scaling
+    - tactoid_coarsening_power_law
+    - tactoid_dissipation_power
+    - tactoid_equilibrium_minimizer
+    - tactoid_exponential_master_curve
+    - tactoid_exponential_relaxation
+    - tactoid_free_energy
+    - tactoid_geometry_circular_arc
+    - tactoid_rescaled_free_energy
+    - tactoid_rescaled_free_energy_figS2c_norm
+    - tactoid_shape_dynamics_ode
+    - tactoid_shape_dynamics_ode_rayleigh2
+    - D_frap_est
+    - eta_frap_est
+    - aspect_ratio_2p5_filamin
+    - aspect_ratio_15_filamin
+    - d_fig2a_aspect_ratio
+    - d_fig3a_aspect_ratio_data
+    - d_fig3a_length_data
+    - d_fig3b_coalesced_data
+    - d_fig3c_inset_5pct
+    - d_fig3c_inset_10pct
+    - d_fig3d_5pct_data
+    - d_fig3d_10pct_data
+    - bundle_initial_radius_main
+    - capillary_lambda_observed
+    - q_chandrasekaran2024_vasp_droplets_vs_tactoids_synthesis
+    - chandrasekaran2024/exp_wt_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_ring_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_shell_pct_1_7p5
+    - chandrasekaran2024/fig6d_wt_shell_fig
+    - chandrasekaran2024/fig6d_wt_ring_fig
+    - chandrasekaran2024/fig6d_wt_disk_fig
+    - chandrasekaran2024/fig6d_gabmut_shell_fig
+    - chandrasekaran2024/fig6d_gabmut_ring_fig
+    - chandrasekaran2024/fig6d_gabmut_disk_fig
+    - chandrasekaran2024/vasp_diffusion_rate
+    - chandrasekaran2024/stokes_einstein_diffusion
+    - chandrasekaran2024/prolate_spheroid_volume_conserving
+    - chandrasekaran2024/filament_length_limited_aspect_ratio
+    - chandrasekaran2024/filament_elongation_length
+    - chandrasekaran2024/rel_weirich2017_stokes_einstein_diffusion
+    - chandrasekaran2024/q_weirich2017_cross_validation_summary
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "The equilibrium shape of a liquid droplet is determined by mini-"
+    where: "SI Text (pp. SI-1 to SI-3) & Main Text (pp. 2131-2135) vs chandrasekaran2024"
+  text: >
+    No cross-record validations are entered in validations.yaml for weirich2017's 52 runnable
+    models (81 output ports) against chandrasekaran2024's 10 origin: measured datums (4 scalars
+    and 6 digitized curves across 3 quantities; 810 total pairs, 270 dimension-matched), nor in
+    the reverse direction (42 runnable chandrasekaran2024 models [56 output ports] + 4 non-runnable
+    vs weirich2017's 35 origin: measured datums [12 scalars + 23 digitized curves across 15
+    quantities]; 1,960 total pairs, 625 dimension-matched). Neither paper cites the other
+    (chandrasekaran2024 cites only Weirich et al. 2019 as Ref. 12; 0 shared references; 0
+    cited.yaml links). Synthesis ALREADY executes 2 automatic same_as cross-checks via
+    chandrasekaran2024/rel_weirich2017_stokes_einstein_diffusion (mapping R_H = L/ln(2*L/r)):
+    (a) weirich2017/stokes_einstein_ellipsoid_diffusion on
+    chandrasekaran2024/run_stokes_einstein_vasp computes 0.014536 um^2/s vs
+    chandrasekaran2024/vasp_diffusion_rate ('10', origin: reported -> not reproduced, matching
+    cmp_stokes_einstein_vs_vasp_D); and (b) chandrasekaran2024/stokes_einstein_diffusion on
+    weirich2017/run_se_diffusion_check computes 0.003133 um^2/s vs weirich2017/D_frap_est
+    ('~0.3 x 10^-2', origin: estimated -> no verdict, matching cmp_se_diffusion_consistency and
+    circular with eta_frap_est).
+    (1) Forward direction — weirich2017 models (52 runnable, 81 ports) vs chandrasekaran2024
+    origin: measured data (10 datums):
+    - Every single origin: measured datum in chandrasekaran2024 quantifies 3D VASP-droplet
+      Shell/Ring/Disk population percentage abundances from Fig. 6D (exp_wt_disk_pct_1_7p5 =
+      '70 ± 13'%, exp_gabmut_disk_pct_1_7p5 = '< 10'% [inequality -> no verdict],
+      exp_gabmut_ring_pct_1_7p5 = '53 ± 6'%, exp_gabmut_shell_pct_1_7p5 = '37 ± 4'%, and the 6
+      digitized stacked-bar series fig6d_{wt,gabmut}_{shell,ring,disk}_fig across Actin:VASP =
+      1:20, 1:10, 1:7.5). Although 27 weirich2017 output ports are dimensionless (270 pairs), ZERO
+      models predict 3D protein-droplet actin-morphology population percentages (shell_abundance,
+      ring_abundance, disk_abundance); weirich2017's dimensionless ports instead output nematic
+      tactoid geometry/energy (aspect_ratio, alpha_eq, F_hat, omega, chi), capping-protein monomer
+      counts (N_m), actin enrichment ratio, capillary instability wavenumbers/enhancements
+      (k, k_max, lambda_to_R0, enhancement), contractile strain, and exponential collapse curves.
+    - All 214 remaining datums in chandrasekaran2024 are non-measured (107 run, 88 reported, 15
+      derived, 3 predicted, 1 assumed) and also lack valid non-circular validation targets for
+      weirich2017: chandrasekaran2024 measures no FRAP recovery or diffusivity (vasp_diffusion_rate
+      = 10 um^2/s is a reported CytoSim input already tested by the automatic same_as cross-check),
+      uses no capping protein or filamin, observes no Rayleigh-Plateau pearling or bundle
+      contraction, measures no 3D mesh size (diagnostically, actin_mesh_size gives xi = 0.896 um
+      at Fig. 6D 1:7.5 bulk 2.67 uM actin — matching Weirich's 0.908 um at 2.6 uM — and 0.278 /
+      0.124 um at intradroplet CytoSim 27.67 uM / nucleator 138.38 uM), and its deformed aspect
+      ratios (Fig. 7B, 7A.ii, S1F) are simulation outputs (origin: run/derived) of isotropic
+      omega = 0 VASP condensates deformed by confined ring bending where weirich2017's equilibrium
+      anchoring models predict spherical AR = 1.
+    (2) Reverse direction — chandrasekaran2024 models (42 runnable [56 ports] + 4 non-runnable) vs
+    weirich2017's 35 origin: measured datums (plus non-measured D_frap_est,
+    filament_persistence_length_si, c_actin_tactoid_est): 0 valid cross-validations.
+    - weirich2017 measures zero tactoid_minor_axis, zero tactoid_volume, and zero droplet_radius
+      (R_drop), so prolate_spheroid_volume_conserving cannot predict weirich2017's measured aspect
+      ratios (aspect_ratio_{2p5,15}_filamin, d_fig2a_aspect_ratio, d_fig3a_aspect_ratio_data)
+      without circularly deriving R_drop from L/r or fabricating a fixed volume (whereas Fig. 3A
+      coarsening grows tactoid volume 24.4x at constant L/r ~ 2.1); filament_length_limited_aspect_ratio
+      and ellipse_2d_constant_area fail because weirich2017's capped filaments (~0.18 um) are
+      10x-30x shorter than tactoid length (~1-5 um), yielding unphysical AR = 0.015-0.099 << 1.
+    - The scheduler-flagged filament_elongation_length (L0 + k_grow*t, chemical polymerization)
+      and filament_growth_time cannot predict weirich2017's capped-filament tactoid coarsening
+      (d_fig3a_length_data, tactoid_length_growth_60min), capillary coalescence shortening
+      (d_fig3b_coalesced_data, opposite sign dL/dt < 0; d_fig3c_inset_*, d_fig3d_*), or phase
+      diagram (filament_length_tactoid_range, d_fig1d_*).
+    - stokes_einstein_diffusion vs D_frap_est ('~0.3 x 10^-2', origin: estimated) is circular with
+      eta_frap_est ('~3', origin: derived) and already handled automatically via
+      rel_weirich2017_stokes_einstein_diffusion; droplet_characteristic_lengths.L_circ (1.257 um at
+      R = 200 nm) conflates sphere circumference with cylindrical pearling wavelength
+      capillary_lambda_observed ('~10' um); and none of chandrasekaran2024's models predicts
+      weirich2017's remaining FRAP intensity, phase-diagram, bundle-radius, or contraction-strain
+      measurements. See chandrasekaran2024/q_weirich2017_cross_validation_summary for full
+      quantitative diagnostics across all 1,960 + 810 pairs.
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with graham2023 (2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_graham2023_no_cross_validation
+  kind: unstated_model
+  about:
+    - tactoid_equilibrium_minimizer
+    - tactoid_aspect_ratio_scaling
+    - tactoid_aspect_ratio_large_omega
+    - tactoid_geometry_circular_arc
+    - anchoring_strength_from_aspect_ratio
+    - coalescence_tau_linear_scaling
+    - isotropic_coalescence_tau_energy_balance
+    - isotropic_relaxation_rate_printed
+    - isotropic_relaxation_rate_corrected
+    - tactoid_shape_dynamics_ode
+    - tactoid_shape_dynamics_ode_rayleigh2
+    - tactoid_coarsening_power_law
+    - tactoid_exponential_relaxation
+    - tactoid_exponential_master_curve
+    - capillary_fastest_mode_printed
+    - capillary_fastest_mode_corrected
+    - capillary_instability_threshold_printed
+    - capillary_instability_threshold_corrected
+    - capillary_axial_velocity
+    - frap_diffusion_scaling
+    - stokes_einstein_ellipsoid_diffusion
+    - stokes_einstein_ellipsoid_viscosity
+    - actin_filament_length_cp
+    - actin_mesh_size
+    - concentration_enrichment_ratio
+    - aspect_ratio_2p5_filamin
+    - aspect_ratio_15_filamin
+    - d_fig2a_aspect_ratio
+    - d_fig3a_aspect_ratio_data
+    - d_fig3a_length_data
+    - d_fig3b_coalesced_data
+    - d_fig3c_inset_5pct
+    - d_fig3c_inset_10pct
+    - d_fig3d_5pct_data
+    - d_fig3d_10pct_data
+    - d_fig1c_frap_data
+    - d_fig4c_2p5pct_data
+    - d_fig4c_10pct_data
+    - d_fig4e_contractile_strain
+    - bundle_initial_radius_main
+    - capillary_lambda_observed
+    - q_graham2023_modelatlas_and_tactoid_vs_vasp_droplet_contrast
+    - graham2023/vasp_droplet_fusion_time
+    - graham2023/frap_t_half
+    - graham2023/frap_recovery_fig1f
+    - graham2023/frap_recovery_text
+    - graham2023/fig1f_frap_avg_fig
+    - graham2023/fig6b_frap_3peg_fig
+    - graham2023/fig6b_frap_10peg_fig
+    - graham2023/droplet_diam_range_obs
+    - graham2023/droplet_diam_median_20uM
+    - graham2023/droplet_diam_max_20uM
+    - graham2023/linear_droplet_ar_high
+    - graham2023/fig3g_aspect_ratio_fig
+    - graham2023/fig5a_aspect_ratio_fig
+    - graham2023/edfig9e_aspect_ratio_fig
+    - graham2023/elongation_rate_mean_text
+    - graham2023/edfig2d_partition_fig
+    - graham2023/edfig3e_actin_partition_fig
+    - graham2023/droplet_ring_minimization_corrected
+    - graham2023/ring_rod_transition_energy
+    - graham2023/ring_rod_critical_aspect_ratio
+    - graham2023/ring_rod_max_aspect_ratio
+    - graham2023/linear_bundle_elongation
+    - graham2023/effective_spherical_diameter
+    - graham2023/circular_ring_contour_length
+    - graham2023/q_weirich2017_no_cross_validation
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "The equilibrium shape of a liquid droplet is determined by mini-"
+    where: "SI Text (pp. SI-1 to SI-3) & Main Text (pp. 2131-2135) vs graham2023"
+  text: >
+    No cross-record validations are entered in validations.yaml between weirich2017 (52 runnable
+    models [81 output ports], 0 non-runnable; 35 origin: measured datums across 3 dimensions) and
+    graham2023 (31 runnable models [40 output ports], 0 non-runnable; 38 origin: measured datums
+    across 4 dimensions): 0 valid CrossValidation entries exist in either direction across all
+    3,078 + 1,400 = 4,478 port-datum pairs (neither paper cites the other — graham2023 Discussion
+    p. 10 cites only Scheff et al. 2020 as ref-40; 0 same_as relations; 0 cited.yaml links;
+    preexisting graham2023/validations.yaml entry val_ring_filament_count_vs_nastkolb_1um is
+    preserved intact, and no weirich2017/validations.yaml is created).
+    (1) Forward direction — all 52 runnable weirich2017 models (81 output ports) vs all 38 origin:
+    measured datums in graham2023 (3,078 total pairs; 928 dimension-matched = 16 [time] + 864
+    dimensionless + 45 [length] + 3 [length]/[time]; 2,150 dimension-mismatched):
+    - [time] (8 ports x 2 datums = 16 pairs):
+      (a) graham2023/vasp_droplet_fusion_time ('about 1' s, Fig. 1d bare VASP droplet fusion) is
+      printed with an approximate marker ('about' -> no verdict), AND graham2023 measures zero
+      dynamic viscosity eta, zero 3D interfacial tension gamma_I (only assumed 2D simulation line
+      tension 1-15 pN), zero capillary velocity v_cap = gamma_I/eta, and zero pre-/post-fusion
+      dimensions (L_i, L_f, delta_L, r, V) for the Fig. 1d fusing droplets. Applying Weirich's
+      actin-tactoid material parameters (eta ~ 3 Pa*s, gamma_I ~ 300 nN/m) to bare VASP droplets
+      conflates two different materials (Weirich p. 4 explicitly notes actin tactoid gamma_I is
+      ~10x lower than protein-based condensates) and diagnostically predicts tau_lin = 7.40-21.17 s
+      (coalescence_tau_linear_scaling) and tau_iso = 10.00-28.60 s (isotropic_relaxation_rate_corrected)
+      across D = 1.0-2.86 um (delta_L = 0.74-2.12 um), ~10-30x slower than 'about 1' s (while
+      isotropic_relaxation_rate_printed is dimensionally inverted).
+      (b) graham2023/frap_t_half ('18 +/- 3' s, 1.8 um bleach ROI) is a diffusive FRAP half-time,
+      not a hydrodynamic coalescence relaxation time (all 8 weirich2017 [time] ports output droplet
+      relaxation_time). Weirich's FRAP models (frap_diffusion_scaling,
+      stokes_einstein_ellipsoid_{diffusion,viscosity}) output D or eta, neither of which is measured
+      in graham2023 (diagnostically, frap_diffusion_scaling at L_b = 1.8 um, tau_R = 18/ln(2) =
+      25.97 s gives D ~ 0.125 um^2/s vs 2D Soumpasis 0.0101 um^2/s, 12.4x higher due to the
+      unstated circular-ROI prefactor).
+    - dimensionless (27 ports x 32 datums = 864 pairs):
+      (a) graham2023's 4 droplet_aspect_ratio measurements (linear_droplet_ar_high '> 15' [no
+      verdict], fig3g_aspect_ratio_fig [Shell/Ring/Disc medians 1.020, 1.020, 1.050],
+      fig5a_aspect_ratio_fig [actin:VASP 1:20, 1:10, 1:7.5 medians 1.044, 1.368, 2.394], and
+      edfig9e_aspect_ratio_fig [3-15% PEG means 11.52, 1.27, 1.15, 1.06]) all measure isotropic
+      (omega = 0) VASP droplets mechanically deformed by internal confined stiff F-actin rings and
+      bundles (L_p = 17.73 um >> D). Weirich's equilibrium tactoid models
+      (tactoid_equilibrium_minimizer, tactoid_aspect_ratio_scaling, tactoid_aspect_ratio_large_omega)
+      depend solely on nematic anchoring omega = gamma_A/gamma_I, predict strictly spherical AR = 1.0
+      at omega = 0, lack actin:VASP, ring-thickness, PEG %, or morphology-index inputs to sweep any
+      of the three plotted curves, and would spuriously attribute Graham's bending-driven elongation
+      to unphysical anchoring omega = (L/r)^2/4 = 1.43 (Fig. 5a 1:7.5), 33.2 (EDFig. 9e 3% PEG), or
+      >56.25 (AR > 15).
+      (b) graham2023's 2 partition-coefficient bar charts (edfig2d_partition_fig,
+      edfig3e_actin_partition_fig) report direct fluorescence ratios I_in/I_out without separate
+      c_dense and c_dilute measurements needed by concentration_enrichment_ratio.
+      (c) graham2023's 5 frap_recovery_fraction datums (frap_recovery_{fig1f,text},
+      fig1f_frap_avg_fig, fig6b_frap_{3,10}peg_fig) have no rising FRAP recovery model in
+      weirich2017 (tactoid_exponential_master_curve models decaying length shortening exp(-t/tau)).
+      (d) graham2023's remaining 21 dimensionless datums (morphology_abundance x11,
+      normalized_total_intensity x5, droplet_size_frequency x4, droplet_size_count x1) have zero
+      matching models in weirich2017.
+    - [length] (15 ports x 3 datums = 45 pairs; targets: droplet_diam_{range_obs,median_20uM,max_20uM},
+      actin-free VASP droplet diameters 1-7 um, median 2.86 um, max 7.22 um): disjoint from
+      actin_filament_length_cp / filament_* (no CP, no measured filament length in graham2023),
+      actin_mesh_size (actin network mesh size, unmeasured in graham2023; diagnostically xi =
+      1.464 / 1.035 um at bulk 1 / 2 uM actin and 0.292 um at 12.6x enriched 25.2 uM),
+      capillary_{fastest_mode,instability_threshold,wavelength}* (axial Rayleigh-Plateau pearling
+      wavelength; Graham's rods are stabilized against pearling by stiff long F-actin;
+      diagnostically lambda_max = 8.89*R_0 = 1.78-4.44 um at omega = 0, R_0 = 200-500 nm),
+      tactoid_coarsening_power_law (no <D(t)> coarsening curve in graham2023), and
+      tactoid_{exponential_relaxation,shape_dynamics_ode*,geometry_circular_arc} (unmeasured
+      coalescence traces or circular equilibrium-length inputs).
+    - [length]/[time] (3 ports x 1 datum = 3 pairs; target: graham2023/elongation_rate_mean_text =
+      '23 +/- 3' nm/s): ATP-driven positive barbed-end polymerization growth has opposite sign and
+      mechanism to isotropic_relaxation_rate_{printed,corrected}.dL_dt (negative capillary
+      retraction) and is disjoint from capillary_axial_velocity.v.
+    (2) Reverse direction — all 31 runnable graham2023 models (40 output ports) vs all 35 origin:
+    measured datums in weirich2017 (1,400 total pairs; 310 dimension-matched = 150 [length] + 160
+    dimensionless; 1,090 dimension-mismatched): 0 valid CrossValidation entries. Weirich forms
+    homogeneous 3D nematic tactoids of short ~180 nm capped rods with zero peripheral actin ring
+    (T_ring = 0) and zero measured 2D line tension gamma_I, wetting tensions gamma_AVR/gamma_AVD,
+    tactoid_minor_axis, droplet_diameter, ring_thickness, filament_count, or monomer polymerization
+    rate. At T_ring -> 0, graham2023/droplet_ring_minimization_{printed,corrected} predict a circle
+    AR = 1.0 (zero anisotropic anchoring gamma_A, failing to predict d_fig2a_aspect_ratio L/r =
+    2.94 -> 2.04 and d_fig3a_aspect_ratio_data ~ 2.1, with opposite crosslinker-concentration
+    dependence); ring_rod_{critical,max}_aspect_ratio fail outside the L >= 2*pi*R closed-ring
+    regime (L_f = 0.18 um at R = 1-2 um gives ar_max = 0.0020-0.0081 << 1);
+    linear_bundle_elongation (barbed-end growth) is disjoint from capped-rod coalescence coarsening
+    (d_fig3a_length_data) and coalescence shortening (d_fig3b_coalesced_data, dL/dt < 0);
+    circular_ring_contour_length (1.257 um at R_0 = 200 nm) conflates lateral circumference with
+    axial pearling wavelength capillary_lambda_observed ('~10' um); and graham2023 has zero [time]
+    outputs or models for Weirich's FRAP traces, phase diagram, coalescence timescales, or bundle
+    contraction curves. See graham2023/q_weirich2017_no_cross_validation for full details.
+

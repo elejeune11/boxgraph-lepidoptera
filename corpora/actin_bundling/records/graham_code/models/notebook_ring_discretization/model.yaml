@@ -1,0 +1,25 @@
+id: notebook_ring_discretization
+name: live notebook adapter for generatering/simulate ring bead count, contour length ratio, and noise amplitude (VASPDroplet_simulate.ipynb)
+role: model
+software: true
+stated:
+  file: VASPDroplet_simulate.ipynb
+  lines: "712-745"
+  quote: "Nreps=int((np.pi-1)*diameter/(sparams.lcyl*1e-3))"
+  where: "VASPDroplet_simulate.ipynb cells 11, 15, 17 (initializestraight2, extendstraight, addrandomnoise, generatering)"
+equation: "lcyl = 0.1*D (or 100 nm); Nbeads_init = int(D*1e3/lcyl); Nreps = int((pi-1)*D/(lcyl*1e-3)); Nbeads_final = Nbeads_init + Nreps - 1; L_ratio = (Nbeads_final - 1) * lcyl / (D*1e3); noise_amp = 1 / noisefactor"
+inputs:
+  D_droplet: {quantity: droplet_diameter, unit: um}
+  lcyl_fixed: {quantity: segment_length, unit: nm}
+  lcyl_scale_frac: {quantity: ring_extension_step_fraction, unit: dimensionless}
+  noisefactor: {quantity: noise_scale_divisor, unit: dimensionless}
+  ellipse_com: {quantity: droplet_center_offset, unit: nm}
+outputs:
+  n_reps: {quantity: ring_extension_cycles, unit: dimensionless}
+  n_beads_final: {quantity: bead_count, unit: dimensionless}
+  L_ratio_final: {quantity: ring_length_to_diameter_ratio, unit: dimensionless}
+  noise_amp: {quantity: coordinate_noise_amplitude, unit: nm}
+settings:
+  lcylscalewithD: true
+  seed: 0
+stochastic: false

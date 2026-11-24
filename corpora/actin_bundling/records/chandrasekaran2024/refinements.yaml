@@ -1,0 +1,29 @@
+- id: ref_langevin_dt
+  run: run_langevin_1d_vasp
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: D_eff
+  tolerance: "5%"
+  tolerance_basis: "added: 1D Brownian variance at n_particles = 4000 across 5 replicates has ~1.5% sampling SE; 5% checks whether dt = 0.002 s introduces time-discretization bias in D_eff."
+  tolerance_added: true
+
+- id: ref_langevin_n_particles
+  run: run_langevin_1d_vasp
+  setting: n_particles
+  factors: [1, 2, 4, 8]
+  mode: multiply
+  output: D_eff
+  tolerance: "5%"
+  tolerance_basis: "added: verifies Monte Carlo ensemble convergence of effective diffusivity D_eff as particle count increases from 4000 to 32000."
+  tolerance_added: true
+
+- id: ref_cap_bisection_tol
+  run: run_cap_geometry_baseline
+  setting: tol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: u_cap
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies convergence of the bisection root-finder for the prolate spheroid 12.5% polar-cap cut u_cap = z_cap / a."
+  tolerance_added: true

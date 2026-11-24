@@ -1,0 +1,154 @@
+id: chandrasekaran_source_data
+kind: software
+title: >
+  Source Data for "Kinetic trapping organizes actin filaments within liquid-like protein droplets"
+  (41467_2024_46726_MOESM9_ESM.xlsx)
+authors:
+  - Aravind Chandrasekaran
+  - Kristin Graham
+  - Jeanne C. Stachowiak
+  - Padmini Rangamani
+year: 2024
+venue: "Nature Communications 15, 3139 (Source Data, 41467_2024_46726_MOESM9_ESM.xlsx)"
+doi: "10.1038/s41467-024-46726-6"
+url: "https://doi.org/10.1038/s41467-024-46726-6"
+file: corpus/actin_bundling/code/chandrasekaran_source_data
+version: "sha256:8e9ebe1e48fa26db0a18377e1d75bdd59e58708a54cbc32f11641f40323e0a8c"
+licence: CC-BY-4.0
+language: "Excel (.xlsx) workbook read via Python stdlib zipfile+xml"
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "careful_v3+source_data"
+  date: "2026-11-24"
+notes: >
+  Complete BoxGraph record of the released Source Data workbook 41467_2024_46726_MOESM9_ESM.xlsx
+  (2,040,829 bytes; 37 worksheets; 0 Excel formulas; Microsoft Macintosh Excel, author Aravind
+  Chandrasekaran, modified 2024-02-26) accompanying Chandrasekaran, Graham, Stachowiak & Rangamani,
+  Nature Communications 15, 3139 (2024) (record `chandrasekaran2024`). No .xlsx files or raw dumps
+  are copied into this record; 20 zero-dependency Python stdlib (zipfile + xml.etree.ElementTree)
+  `software: true` reader models under models/ load 41467_2024_46726_MOESM9_ESM.xlsx directly from
+  $BOXGRAPH_SOURCE on every build to verify all 37 sheets, recompute exact summary statistics from
+  raw replicates/snapshots, test 45 intra-record comparisons (15 targets linked via
+  `from_source: chandrasekaran2024` + `from_datum`), and run 101 cross-record validations directly
+  against chandrasekaran2024's printed tables and all 99 workbook-backed blindly digitized figure
+  curves (out of 106 digitized curves total; 7 curves are absent or overwritten in the workbook).
+
+  BLIND-DIGITIZATION CROSS-CHECK SUMMARY (99 workbook-backed curves + Fig. 7Aii table):
+  Across 99 workbook-backed digitized figure curves in chandrasekaran2024, live cross-validation
+  yields 52 `reproduced` (every digitized point inside its reading band), 42 `close`, and only 5
+  `not reproduced` (two thin-bar-edge Fig. 3D curves, heavily overlapping Fig. 4B.ii 5*pi/3, 1/28
+  steep interface marker in Supp. Fig. 1B, and 0-width/cliff points in Supp. Fig. 6F 0 nM) — 94/99
+  (94.9%) `reproduced` or `close` with sub-percent accuracy across Fig. 5D (<=0.017% except one
+  0.49% clip at 100%), Fig. 6B (<=0.04%, 42/42 bars), Fig. 6D GABmut (<=0.095%, 9/9 bars), Fig. 7B
+  (MAE 0.0032, 10/10 bars), Fig. 7F surface energy (MAE 0.0032), Supp. Fig. 2B (MAE 0.00030 um),
+  Supp. Fig. 2C (MAE 0.0022, 36/36 bars), Supp. Figs. 5 & 10 spans (MAE 0.0014 um, 18/18 medians),
+  Supp. Fig. 6B filament counts (MAE 0.04-2.3 out of 1500, 48/48 pts), Supp. Fig. 6C (MAE 0.0048 um),
+  Supp. Fig. 6E (MAE 0.0043), and Supp. Fig. 13C (MAE 0.26 uM). Crucially, blind digitization
+  independently uncovered an off-by-one header shift in sheet `Figure4B`.
+
+  KEY DISCREPANCIES & SETTLED OPEN QUESTIONS:
+  (1) `Figure4B` off-by-one header shift & missing 2*pi curve: only 7 blocks exist (headers skipping
+      2*pi/3), and matching against digitized Fig. 4B proves blocks 4-7 labeled {1.0, 4/3, 5/3, 2}*pi
+      actually hold {2/3, 1.0, 4/3, 5/3}*pi (MAE 0.017-0.042 vs 0.112-0.129 literal), while true 2*pi
+      is absent.
+  (2) `Figure6D` settles SD vs SEM AND exposes a buggy SEM formula & omitted WT data: rows 1-19 (WT
+      replotted from graham2023) are blank; N = 3 GABmut replicates (655 total droplets) reproduce
+      stored AVERAGE and sample SD (ddof=1: 37.39 +/- 6.87% shell, 52.71 +/- 9.63% ring, 9.89 +/- 6.90%
+      disc at 1:7.5, matching Fig. 6D error bars), and true SEM = SD/sqrt(3) (3.97% -> 4%, 5.56% -> 6%)
+      matches main text p. 7, whereas workbook cells L36:N38 erroneously store SD/3 (2.29%, 3.21%, 2.30%).
+  (3) `Figure3E`, `FigureS5`, `FigureS9` scrambled cluster legends & inverted spans: `Figure3E`/`FigureS5`
+      Row 2 legend ('0-Ring, 1-Shell-SB, 2-Shell-WB, 3-Shell') is wrong (actual codes: 0=Shell, 1=Shell-SB,
+      2=Ring, 3=Shell-WB); `FigureS9` Row 2 ('0-Ring, 1-Shell-SB') is inverted (0=Shell-SB, 1=Ring);
+      columns A-C ('spanc, spanb, spana') are ordered largest-to-smallest (plotted a >= b >= c).
+  (4) Supplementary Table 3 settled: `Figure3E` matches 35/36 cells verbatim and proves (1.0, 10.0) is
+      15/15 Cluster 0 (Shell; AF=0.5016, 95.62% unbound VASP), confirming a Table 3 typo. At (1.0, 1.0),
+      `Figure3E` (N=3) and `Figure5C` give 100% Shell-SB (matching Table 3), whereas `Figure6B` (N=5)
+      gives 40% Ring / 60% Shell-SB; `Figure6B` cell E5 also literally stores the '1.5625' typo (for
+      1.15625), 0.1 uses N=3 (0.67/0.33), and 1.375 stores 0.5/0.5 (even split despite caption 'N=5').
+  (5) Replicate counts settled across every study: `Figure5C` (900 T_2piR rows = 30 cells x 6 reps x 5
+      snaps) reproduces 30/30 `Figure5D` entries to 0.0 diff -> N = 6 replicates (refuting both '10'
+      and '5'); `Figure7B` has 5 raw replicate cols D..H (refuting caption 'six replicates', using
+      ddof=0, and containing all 10 Fig. 7C representative ARs verbatim); `FigureS2C`, `Figure3D`,
+      `FigureS10D`, `FigureS10E` all have 93 raw cols = 3 reps x 31 frames (t=570..600 s; refuting
+      captions claiming 5 reps x 30 = 150, using ddof=0); `FigureS11C` has 6 reps (30 snaps) for 11/12
+      cells and 5 reps (25 snaps) at ([VASP]=2.0, N_fil=165).
+  (6) PCA captions & missing `FigureS11Bi`: `FigureS4A` PC1-3 = 95.83% (PC1-2 = 86.16%; refutes main
+      text 97.64% and proves Supp. Fig. 4A caption mislabeled 3 PCs as 'two PCs'); `FigureS8A` (=Supp.
+      Fig. 9A) PC1-3 = 99.06% (PC1-2 = 94.95%; same 3-PC mislabel); `FigureS12A` PC1-3 = 94.72% (exact
+      match); `FigureS11Bi` is an exact duplicate of Varimax matrix `FigureS11Bii` (omitting Supp.
+      Fig. 11B.i variance data). `FigureS11Biii` confirms k=4 (0.5789) and k=9 (0.5755) > k=3 (0.5754).
+  (7) `FigureS2B` confirms area-equivalent equilateral triangle side lengths ('Side of equilateral
+      triangle (um) RAW DATA') and uncovers 1,281-column truncation (B..AWH) for n = 4 (missing 3,839
+      of 5,120 faces) and n = 5 (missing 19,199 of 20,480 faces).
+  (8) Twelve SI sheet tabs retain pre-revision numbering (`FigureS6`->S8, `FigureS8A-C`->S9A-C,
+      `FigureS9`->S10, `FigureS10B-F`->S6B-F, `FigureS11`->S11D, `FigureS14C`->S13C). `FigureS6`
+      stores all-zero placeholder clusters; `FigureS14C` starts at Clocal = 90.99 uM (>80 uM plot
+      ceiling) and reproduces all 6 Fig. 7A.ii (time, AR) labels verbatim.
+
+  COMPLETE SHEET-BY-SHEET INVENTORY (37 sheets, 0 formulas):
+  01. Figure3B (21,709 rows, A:F): 36 (k_bind, k_unbind) x 601 frames (t=0..600 s) x 3 replicates +
+      Mean/pop-SD (max internal err 1.1e-16).
+  02. Figure3D (252 rows, A:CS): 36 kinetic pairs x 5 VASP valencies (0..4) x 93 raw cols + Mean/pop-SD
+      (max err 2.2e-16; valency sums = 1.0 to 2.2e-16).
+  03. Figure3E (545 rows, A:E): 540 snapshots (36 pairs x 3 reps x 5 snaps 595..599), PC1-3 + Cluster
+      ID (Row 2 legend scrambled; decoded 0=Shell, 1=Shell-SB, 2=Ring, 3=Shell-WB).
+  04. Figure4B (708 rows, A:B): 7 pairwise filament-end distance PDF blocks (integrals = 1.0000);
+      blocks 4-7 shifted off by one; true L_fil^max = 2*pi missing.
+  05. Figure5C (1,036 rows, A:F): 1,035 snapshots (900 T_2piR + 135 kinetic ref), PC1-3 + Cluster ID
+      (0=Shell-SB, 1=Ring); reproduces 30/30 Figure5D cells to 0.0.
+  06. Figure5D (7 rows, A:G): 5 [VASP-tet] x 6 T_2piR ring-probability grid (all exact multiples of 1/30).
+  07. Figure6B (15 rows, A:E): 14 k_unbind points at k_bind=1.0 (shell, ring_like, ring probabilities);
+      cell E5 stores '1.5625' typo for 1.15625; k_unbind=1.0 is 40% Ring / 60% Shell-SB.
+  08. Figure6D (21 non-empty rows, A20:N43): N=3 experimental GABmut droplet counts, AVERAGE, sample SD
+      (ddof=1), and buggy SEM (=SD/3); rows 1-19 (WT) blank.
+  09. Figure7B (11 rows, A:H): 10 L_fil^max rows x 5 raw replicates (D..H) + Mean/pop-SD (ddof=0);
+      contains all 10 Fig. 7C representative ARs verbatim.
+  10. Figure7F (20 rows, A:C): 19 aspect ratios (1.0..10.0), continuum Bending Energy (pi at AR=1, peak
+      19.69 at AR=9.5, drop to 0.66 at AR=10) & Surface Energy (matches 4*sqrt(AR)*E(m) to 3.2e-4).
+  11. FigureS1B (85 rows, A:C): LAMMPS radial VASP & crowder densities (r=1.01..85.0 sigma; VASP crosses
+      0.1 at r=19.18 sigma, plateau 0.748, bulk crowder 0.208).
+  12. FigureS1EF (3 rows, A:C): LAMMPS final asphericity & aspect ratio at 6 (1.0347, 1.0698) and 20
+      (1.0714, 1.185) filaments (implied b/a = 1.033, 1.142).
+  13. FigureS2B (7 rows, A:AWH): area-equivalent equilateral triangle side lengths for icosphere n=0..5
+      (exact counts 20, 80, 320, 1280 for n=0..3; truncated at 1,281 cols for n=4, 5).
+  14. FigureS2C (37 rows, A:CT): 36 kinetic pairs x 93 raw AF cols + Mean/pop-SD; matches Figure3B
+      t=570..600 (31x3) with 0.00e+00 max difference.
+  15. FigureS4A (2 rows, A:E): Fig. 3E PCA variance ratios [0.50042, 0.36120, 0.09668, 0.02726, 0.01445]
+      (cum PC1-3 = 95.8294%).
+  16. FigureS4B (5 rows, A:F): 3-PC Varimax loading matrix (mean squared communality 95.40%).
+  17. FigureS4C (10 rows, A:B): Silhouette scores k=2..10 (argmax k=4 at 0.74785).
+  18. FigureS5 (543 rows, A:D): 540 gyration ellipsoid spans (spanc>=spanb>=spana) + Cluster ID (Row 2
+      legend scrambled identically to Figure3E).
+  19. FigureS6 (901 rows, A:F; =Supp. Fig. 8): 900 T_2piR snapshots projected into Fig. 3E PCA space;
+      Predicted Cluster column is 0 for all 900/900 rows.
+  20. FigureS8A (2 rows, A:E; =Supp. Fig. 9A): Fig. 5C PCA variance ratios [0.75897, 0.19048, 0.04118,
+      0.00833, 0.00104] (cum PC1-3 = 99.0631%).
+  21. FigureS8B (4 rows, A:F; =Supp. Fig. 9B): 2-PC Varimax loading matrix (mean communality 85.47%).
+  22. FigureS8C (10 rows, A:B; =Supp. Fig. 9C): Silhouette scores k=2..10 (argmax k=2 at 0.45926).
+  23. FigureS9 (1,038 rows, A:D; =Supp. Fig. 10): 1,035 gyration spans + Cluster ID (Row 2 legend
+      inverted: 0=Shell-SB, 1=Ring).
+  24. FigureS10B (4,817 rows, A:C; =Supp. Fig. 6B): 8 [Nucleator] blocks x 601 frames (t=0..600 s) mean
+      & SD filament counts (0 nM stays 30.0; 150 nM reaches 1488 +/- 36).
+  25. FigureS10C (801 rows, A:B; =Supp. Fig. 6C): 8 [Nucleator] filament-length CDFs (0 nM reaches
+      CDF=0.96 at 5.659 um and CDF=1.0 at 5.712 um < 2*pi).
+  26. FigureS10D (56 rows, A:CS; =Supp. Fig. 6D): 8 [Nucleator] x 5 valencies x 93 raw cols + Mean/pop-SD.
+  27. FigureS10E (9 rows, A:CR; =Supp. Fig. 6E): 8 [Nucleator] x 93 raw AF cols + Mean/pop-SD (peaks
+      0.3130 +/- 0.0208 at 25 nM).
+  28. FigureS10F (17 rows, A:AP; =Supp. Fig. 6F): 8 [Nucleator] normalized radial density profiles on 41
+      radii r=0..1.0 um (dr=0.025 um; 0 nM peaks 4.78 at 0.975 um; 150 nM peaks 28.61 at 0.075 um).
+  29. FigureS11Bi (5 rows, A:F): OVERWRITTEN exact cell-for-cell duplicate of FigureS11Bii Varimax
+      loadings (actual Supp. Fig. 11B.i PCA variance vector is absent).
+  30. FigureS11Bii (5 rows, A:F): 3-PC Varimax loading matrix (mean communality 98.63%).
+  31. FigureS11Biii (10 rows, A:B): Silhouette scores k=2..10 (argmax k=4 at 0.57892 > k=9 at 0.57553 >
+      highlighted k=3 at 0.57544).
+  32. FigureS11C (496 rows, A:D): 490 snapshots (355 Actin:VASP + 135 kinetic ref), PC1-2 + Cluster ID
+      (0=Shell-SB, 1=Ring/Multi-ring, 2=Locally-bundled); reproduces FigureS11 to 3.3e-10; 25 snaps
+      (5 reps) at (2.0 uM, 165) vs 30 snaps (6 reps) elsewhere.
+  33. FigureS11 (19 rows, A:E; =Supp. Fig. 11D): 3 [VASP-tet] x 4 N_fil stacked morphology probabilities.
+  34. FigureS12A (2 rows, A:F): Fig. 6B PCA variance ratios [0.57860, 0.28353, 0.08505, 0.03411, 0.01872]
+      (cum PC1-3 = 94.7176%).
+  35. FigureS12B (5 rows, A:F): 3-PC Varimax loading matrix (mean communality 94.45%).
+  36. FigureS12C (10 rows, A:B): Silhouette scores k=2..10 (argmax k=4 at 0.63839 vs k=3 at 0.63520).
+  37. FigureS14C (214 rows, A:G; =Supp. Fig. 13C & Fig. 7A.ii): 213 deformation snapshots (t=604.502..
+      1028.502 s, AR=1.0302..5.5641, Clocal=90.9906..0.0 uM, volume conserved to 2.5e-6).

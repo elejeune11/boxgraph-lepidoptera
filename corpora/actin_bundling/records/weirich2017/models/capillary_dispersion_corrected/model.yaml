@@ -1,0 +1,41 @@
+id: capillary_dispersion_corrected
+name: viscous nematic capillary instability dispersion relation Omega(k) (corrected 1 + 2*omega)
+role: model
+prefactor: unknown
+variant_of: capillary_dispersion_printed
+corrections:
+  - equation: "dispersion relation Omega(k) (SI p. 9 col 2)"
+    change: "replace (1 + omega)*k^2 with (1 + 2*omega)*k^2 in Omega(k) = Lambda(k)*[1 - (1 + 2*omega)*k^2]"
+    evidence: "Equating D = -d(delta F)/dt using the exact O(u^2) expansion delta F = (pi*lambda*u^2*gamma_I/(2*R_0))*[(1 + 2*omega)*k^2 - 1] derived from the paper's own printed surface integrals A, A_omega, and F on SI p. 9 yields Omega(k) = Lambda(k)*[1 - (1 + 2*omega)*k^2]."
+described_from: ref-49
+built_from:
+  - capillary_energy_cost_corrected
+  - capillary_dynamic_factor_scaling
+stated:
+  page: 9
+  printed_page: "SI-3"
+  quote: "form (49) ΩðkÞ = ΛðkÞ½1 − ð1 + ωÞk2  , where ΛðkÞ is a dynamical"
+  where: "SI Text, Capillary Instabilities in Long Droplets"
+equation: "Omega(k) ~ (gamma_I / (eta * R_0)) * k^2 * [1 - (1 + 2*omega) * k^2]"
+inputs:
+  gamma_I:
+    quantity: interfacial_tension_isotropic
+    unit: "nN/m"
+  eta:
+    quantity: dynamic_viscosity
+    unit: "Pa*s"
+  R_0:
+    quantity: bundle_radius
+    unit: nm
+  omega:
+    quantity: anchoring_strength
+    unit: dimensionless
+  k:
+    quantity: perturbation_wavenumber_dimensionless
+    unit: dimensionless
+outputs:
+  Omega:
+    quantity: capillary_growth_rate
+    unit: "1/s"
+settings: {}
+stochastic: false

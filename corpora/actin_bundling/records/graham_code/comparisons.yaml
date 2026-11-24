@@ -1,0 +1,197 @@
+# ==========================================================================
+# 1. Wetting tension, surface energy, and ring-discretization checks
+# ==========================================================================
+- id: cmp_edfig5c_ke64_code_gavd
+  purpose: reproduction
+  computed: gamma_edfig5c_code_gavd
+  printed: target_edfig5c_ke64
+  note: "Live getsurfaceTension() with code's hardcoded gamma_AVD = 0.5e4 pN/nm fails Extended Data Fig. 5c plateau (5000 vs 10000 pN/nm), confirming code/paper parameter mismatch."
+
+- id: cmp_edfig5c_ke64_paper_gavd
+  purpose: reproduction
+  computed: gamma_edfig5c_paper_gavd
+  printed: target_edfig5c_ke64
+  note: "Live getsurfaceTension() with Table 1's gamma_AVD = 1e4 pN/nm reproduces Extended Data Fig. 5c (6/6), settling graham2023 q_eqS4_S5_wetting_sign_inverted."
+
+- id: cmp_fig5c_surface_1um
+  purpose: reproduction
+  computed: esurf_fig5c_1um
+  printed: target_fig5c_surface
+  note: "Live getsurfaceF() with SI Section 2.11 literal R = 1 um gives 1000x larger surface energy than Fig. 5c (confirming graham2023 q_fig5c_unit_mismatch)."
+
+- id: cmp_fig5c_surface_1nm
+  purpose: reproduction
+  computed: esurf_fig5c_1nm
+  printed: target_fig5c_surface
+  note: "Live getsurfaceF() with consistent R = 1 nm, gamma_I = 1 pN reproduces Fig. 5c surface energy across all 10 aspect ratios."
+
+- id: cmp_nreps_vs_paper
+  purpose: reproduction
+  computed: nreps_d1
+  printed: paper_ring_extension_cycles
+  note: "Live generatering() loop count Nreps = int((pi - 1) * D / (0.1 * D)) = 21 matches SI Section 2.6's 21 cycles."
+
+- id: cmp_lratio_d1_vs_paper
+  purpose: reproduction
+  computed: lratio_d1
+  printed: paper_final_ring_length_ratio
+  note: "Live generatering() at D = 1.0 um yields L_final / D = 2.9 (30 beads = 29 segments), disagreeing with SI Section 2.6's printed L_final = 3.1 D due to double off-by-one bug."
+
+- id: cmp_lratio_d1p5_vs_paper
+  purpose: reproduction
+  computed: lratio_d1p5
+  printed: paper_final_ring_length_ratio
+  note: "Live generatering() at sample D = 1.5 um yields L_final / D = 2.8 (29 beads = 28 segments) due to additional IEEE-754 int(9.999999999999998) = 9 truncation."
+
+- id: cmp_noise_amp_vs_paper
+  purpose: consistency
+  computed: noise_amp_code_run
+  printed: paper_noise_amp
+  note: "Live addrandomnoise() with noisefactor = 1 applies uniform [0, 1.0] nm noise, 10x larger than SI Section 2.6's stated [0, 0.1] nm."
+
+# ==========================================================================
+# 2. Live notebook 2D SLSQP AS WRITTEN vs all 10 digitized Fig. 4f / 4g / ED Fig. 7 curves
+# ==========================================================================
+- id: cmp_nb_fig4f
+  purpose: reproduction
+  computed: ar_nb_fig4f
+  printed: target_fig4f_droplet_ar
+  note: "Live notebook SLSQP as written (Nbeads = 30 / 2.9 D, unshifted Nfil) vs all 22 rendered Fig. 4f droplets (reproduces high-T_ring plateau T = 315-480 nm; underpredicts low T_ring by ~0.05-0.08)."
+
+- id: cmp_nb_fig4g_d1_gI1
+  purpose: reproduction
+  computed: ar_nb_fig4g_d1_gI1
+  printed: target_fig4g_d1_gI1
+  note: "Live notebook SLSQP as written vs Fig. 4g (D = 1.0 um, gamma_I = 1.0 pN); reproduces T >= 240 nm plateau without the 3.1 D buckling overshoot."
+
+- id: cmp_nb_fig4g_d1_gI5
+  purpose: reproduction
+  computed: ar_nb_fig4g_d1_gI5
+  printed: target_fig4g_d1_gI5
+  note: "Live notebook SLSQP as written vs Fig. 4g (D = 1.0 um, gamma_I = 5.0 pN)."
+
+- id: cmp_nb_fig4g_d2_gI1
+  purpose: reproduction
+  computed: ar_nb_fig4g_d2_gI1
+  printed: target_fig4g_d2_gI1
+  note: "Live notebook SLSQP as written (lcyl = 0.1*D = 200 nm, Nbeads = 30) vs Fig. 4g (D = 2.0 um, gamma_I = 1.0 pN); reproduces T >= 400 nm plateau."
+
+- id: cmp_nb_fig4g_d2_gI1_fixed_lcyl
+  purpose: reproduction
+  computed: ar_nb_fig4g_d2_gI1_fixed
+  printed: target_fig4g_d2_gI1
+  note: "Contrast run with Table 1 fixed lcyl = 100 nm (Nbeads = 61) at D = 2.0 um, gamma_I = 1.0 pN: severely overshoots to AR = 1.89 vs 1.701, proving published figures used lcylscalewithD = True."
+
+- id: cmp_nb_fig4g_d2_gI5
+  purpose: reproduction
+  computed: ar_nb_fig4g_d2_gI5
+  printed: target_fig4g_d2_gI5
+  note: "Live notebook SLSQP as written (lcyl = 200 nm, Nbeads = 30) vs Fig. 4g (D = 2.0 um, gamma_I = 5.0 pN); reproduces T >= 250 nm."
+
+- id: cmp_nb_edfig7b_d1_gI2p5
+  purpose: reproduction
+  computed: ar_nb_edfig7b
+  printed: target_edfig7b_d1_gI2p5
+  note: "Live notebook SLSQP as written vs Extended Data Fig. 7b (D = 1.0 um, gamma_I = 2.5 pN)."
+
+- id: cmp_nb_edfig7d_d1_gI7p5
+  purpose: reproduction
+  computed: ar_nb_edfig7d
+  printed: target_edfig7d_d1_gI7p5
+  note: "Live notebook SLSQP as written vs Extended Data Fig. 7d (D = 1.0 um, gamma_I = 7.5 pN)."
+
+- id: cmp_nb_edfig7e_d1_gI10
+  purpose: reproduction
+  computed: ar_nb_edfig7e
+  printed: target_edfig7e_d1_gI10
+  note: "Live notebook SLSQP as written vs Extended Data Fig. 7e (D = 1.0 um, gamma_I = 10.0 pN)."
+
+- id: cmp_nb_edfig7f_d1_gI12p5
+  purpose: reproduction
+  computed: ar_nb_edfig7f
+  printed: target_edfig7f_d1_gI12p5
+  note: "Live notebook SLSQP as written vs Extended Data Fig. 7f (D = 1.0 um, gamma_I = 12.5 pN)."
+
+- id: cmp_nb_edfig7g_d1_gI15
+  purpose: reproduction
+  computed: ar_nb_edfig7g
+  printed: target_edfig7g_d1_gI15
+  note: "Live notebook SLSQP as written vs Extended Data Fig. 7g (D = 1.0 um, gamma_I = 15.0 pN)."
+
+# ==========================================================================
+# 3. Diagnostic Nfil + 2 variant vs all 10 digitized Fig. 4f / 4g / ED Fig. 7 curves
+# ==========================================================================
+- id: cmp_plus2_fig4f
+  purpose: reproduction
+  computed: ar_plus2_fig4f
+  printed: target_fig4f_droplet_ar
+  note: "Diagnostic Nfil + 2 variant vs all 22 Fig. 4f droplets (eliminates the low-T_ring offset from T = 5 nm upward)."
+
+- id: cmp_plus2_fig4g_d1_gI1
+  purpose: reproduction
+  computed: ar_plus2_fig4g_d1_gI1
+  printed: target_fig4g_d1_gI1
+  note: "Diagnostic Nfil + 2 variant vs Fig. 4g (D = 1.0 um, gamma_I = 1.0 pN)."
+
+- id: cmp_plus2_fig4g_d1_gI5
+  purpose: reproduction
+  computed: ar_plus2_fig4g_d1_gI5
+  printed: target_fig4g_d1_gI5
+  note: "Diagnostic Nfil + 2 variant vs Fig. 4g (D = 1.0 um, gamma_I = 5.0 pN)."
+
+- id: cmp_plus2_fig4g_d2_gI1
+  purpose: reproduction
+  computed: ar_plus2_fig4g_d2_gI1
+  printed: target_fig4g_d2_gI1
+  note: "Diagnostic Nfil + 2 variant vs Fig. 4g (D = 2.0 um, gamma_I = 1.0 pN)."
+
+- id: cmp_plus2_fig4g_d2_gI5
+  purpose: reproduction
+  computed: ar_plus2_fig4g_d2_gI5
+  printed: target_fig4g_d2_gI5
+  note: "Diagnostic Nfil + 2 variant vs Fig. 4g (D = 2.0 um, gamma_I = 5.0 pN)."
+
+- id: cmp_plus2_edfig7b_d1_gI2p5
+  purpose: reproduction
+  computed: ar_plus2_edfig7b
+  printed: target_edfig7b_d1_gI2p5
+  note: "Diagnostic Nfil + 2 variant vs Extended Data Fig. 7b (D = 1.0 um, gamma_I = 2.5 pN)."
+
+- id: cmp_plus2_edfig7d_d1_gI7p5
+  purpose: reproduction
+  computed: ar_plus2_edfig7d
+  printed: target_edfig7d_d1_gI7p5
+  note: "Diagnostic Nfil + 2 variant vs Extended Data Fig. 7d (D = 1.0 um, gamma_I = 7.5 pN)."
+
+- id: cmp_plus2_edfig7e_d1_gI10
+  purpose: reproduction
+  computed: ar_plus2_edfig7e
+  printed: target_edfig7e_d1_gI10
+  note: "Diagnostic Nfil + 2 variant vs Extended Data Fig. 7e (D = 1.0 um, gamma_I = 10.0 pN)."
+
+- id: cmp_plus2_edfig7f_d1_gI12p5
+  purpose: reproduction
+  computed: ar_plus2_edfig7f
+  printed: target_edfig7f_d1_gI12p5
+  note: "Diagnostic Nfil + 2 variant vs Extended Data Fig. 7f (D = 1.0 um, gamma_I = 12.5 pN)."
+
+- id: cmp_plus2_edfig7g_d1_gI15
+  purpose: reproduction
+  computed: ar_plus2_edfig7g
+  printed: target_edfig7g_d1_gI15
+  note: "Diagnostic Nfil + 2 variant vs Extended Data Fig. 7g (D = 1.0 um, gamma_I = 15.0 pN)."
+
+# ==========================================================================
+# 4. Fig. 4h critical ring thickness T_crit(D) with IEEE-754 Nbeads truncation
+# ==========================================================================
+- id: cmp_nb_fig4h_gI5
+  purpose: reproduction
+  computed: tcrit_nb_fig4h_gI5
+  printed: target_fig4h_gI5
+  note: "Live notebook T_crit(D) at gamma_I = 5.0 pN vs Fig. 4h; reproduces the non-monotonic sawtooth dips at D = 3.0 and 3.5 um caused by IEEE-754 int(D*1e3/(D*0.1*1e3)) = 9 truncation."
+
+- id: cmp_nb_fig4h_gI15
+  purpose: reproduction
+  computed: tcrit_nb_fig4h_gI15
+  printed: target_fig4h_gI15
+  note: "Live notebook T_crit(D) at gamma_I = 15.0 pN vs Fig. 4h."

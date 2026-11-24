@@ -1,0 +1,22 @@
+id: lammps_md_time_unit_sqrt
+name: LAMMPS molecular dynamics time scale tau_MD with square root (corrected variant)
+role: model
+stated:
+  page: 21
+  printed_page: "SI-7"
+  quote: "with time step δt = 0.0005τMD"
+  where: "Supplementary Methods 1"
+equation: "tau_MD = sigma * sqrt(m / eps_VV)"
+inputs:
+  sigma: {quantity: particle_radius, unit: nm}
+  m: {quantity: particle_mass, unit: kg}
+  eps_VV: {quantity: thermal_energy, unit: pN*nm}
+outputs:
+  tau_MD: {quantity: time, unit: s}
+settings: {}
+stochastic: false
+variant_of: lammps_md_time_unit
+corrections:
+  - equation: "Supplementary Methods 1 (p. 21), tau_MD definition"
+    change: "Take the square root of (m / eps_VV): tau_MD = sigma * sqrt(m / eps_VV) instead of the printed sigma * (m / eps_VV)."
+    evidence: "Dimensional analysis: [sigma * (m / eps_VV)] = L * M / (M L^2 T^-2) = T^2 / L, which is not a time scale; the standard Lennard-Jones MD time unit requires the square root so [sigma * sqrt(m / eps_VV)] = T."

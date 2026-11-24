@@ -1,0 +1,83 @@
+# Cross-record provenance links from workbook cells in chandrasekaran_source_data/data.yaml
+# to their corresponding printed statistics/parameters in chandrasekaran2024/data.yaml.
+#
+# Notes on scope:
+# 1. All 15 `paper_*` datums in chandrasekaran_source_data/data.yaml already declare both
+#    `from_source: chandrasekaran2024` and `from_datum: <id>` inline (0 missing; 13 reproduced,
+#    2 no verdict for '< 10' and '~5.56').
+# 2. The 3 Figure6D workbook summary means (`wb_f6d_1_7p5_shell_mean`, `wb_f6d_1_7p5_ring_mean`,
+#    `wb_f6d_1_7p5_disk_mean`) are linked in this direction (following the sekine_source_data
+#    convention) so each 6-digit Excel cell is checked against chandrasekaran2024's rounded
+#    printed text ('37 ± 4%', '53 ± 6%', '< 10%') at the paper's stated precision.
+# 3. `q_t_600s` links to `t_sim_baseline` (which already carries `from_source: ref-15` in
+#    chandrasekaran2024/data.yaml) and `q_nfil_30` links to `n_seed_filaments` (the baseline
+#    30-filament condition also used in FigureS11). Four other shared scalar coordinates
+#    (`q_nfil_6`, `q_nfil_20`, `q_sub_4`, `q_ku_0p1`) are linked from chandrasekaran2024/cited.yaml.
+# 4. Audit against chandrasekaran_cytosim (0 direct links added): none of CytoSim's 23 built-in
+#    C++ constants (`cyto_*`) appear in chandrasekaran_source_data/data.yaml, and all shared
+#    simulation coordinates/parameters (`q_t_600s`, `q_nfil_30`, `paper_n_seed_filaments`,
+#    `q_ku_1p0`, `q_nuc_150`) originate from chandrasekaran2024 rather than from CytoSim's C++
+#    source repository (linking workbook cells to `chandrasekaran_cytosim/paper_*` copies would
+#    create backwards/duplicate provenance chains).
+# 5. Audit against graham_source_data (all 77 x 94 datum pairs; 0 direct cross-workbook links added):
+#    the two Source Data archives are strictly complementary rather than duplicating datums across
+#    their data.yaml files. On Fig. 6D vs Fig. 3d, MOESM9 'Figure6D' left WT rows 1-19 blank so
+#    chandrasekaran_source_data/data.yaml holds only VASP-GABmut datums (linked to chandrasekaran2024),
+#    whereas graham_source_data/data.yaml holds only WT datums (`f3d_*`, `s4c_*`); query ratio inputs
+#    `q_ratio_{20,10,7p5}` (20, 10, 7.5 VASP:Actin for GABmut Figure6D) vs `ratio_1to{20,10,7p5}`
+#    (0.05, 0.1, 0.1333 Actin:VASP for WT Fig S5a/b & S8a) use reciprocal definitions for distinct
+#    experiments. On Fig. 7F vs Fig. 5c, MOESM9 'Figure7F' holds `wb_f7f_ar1_{bend,surf}` while
+#    MOESM12-22 omitted all 26 theoretical/simulation panels including Fig. 5c (0 matching datums in
+#    graham_source_data/data.yaml). Keeping 0 direct links avoids spurious/circular provenance chains.
+# 6. Audit against graham_code (all 77 x 72 = 5,544 datum pairs; 0 direct links added):
+#    On the sole shared calculation (MOESM9 'Figure7F' Column C vs VASPDroplet_simulate.ipynb::
+#    getsurfaceF()), chandrasekaran_source_data/data.yaml stores scalar AR = 1.0 workbook cells
+#    `wb_f7f_ar1_surf` (6.28319 pN*nm) and `wb_f7f_ar1_bend` (3.14159 pN*nm) plus query scalars
+#    `q_ar_1` / `q_ar_9p5`, whereas graham_code/data.yaml has 0 scalar datums for Fig. 5c surface
+#    or bending energy (only the 10-point digitized table `target_fig5c_surface`, copied from
+#    `graham2023/fig5c_surface_fig` with inline `from_source: graham2023` + `from_datum`).
+#    BoxGraph Synthesis `_cited_table` rejects scalar-to-table links, and linking exact workbook
+#    cells to a digitized PDF table copy in graham_code would invert provenance. All numerically
+#    matching scalar pairs across the 77 x 72 matrix are coincidental unitless integers for
+#    unrelated quantities (e.g., `q_pc_2 = 2` vs `nfil_loop_start_code = 2`, `q_k_4 = 4` vs
+#    `wetting_subsegments_code = 4`). Keeping 0 links preserves an acyclic provenance DAG (0 cycles).
+# 7. Audit against graham2023 (all 77 x 133 = 10,241 datum pairs; 0 direct links added):
+#    Neither data.yaml declares any `from_source` entry pointing to the other record. On Fig. 7F vs
+#    Graham Fig. 5c, chandrasekaran_source_data/data.yaml stores only scalar AR = 1 workbook cells
+#    `wb_f7f_ar1_{bend,surf}` and query scalars `q_ar_{1,9p5}` (0 Figure7F table datums), whereas
+#    graham2023/data.yaml stores Fig. 5c solely as 12- and 10-point digitized figure curves
+#    (`fig5c_bending_fig`, `fig5c_surface_fig`) plus input parameters (`fig5c_droplet_radius`,
+#    `fig5c_kb_printed`, `fig5c_gamma_i_printed`) and inequality `pred_ring_rod_transition_ar` (> 9);
+#    BoxGraph Synthesis `_cited_table` rejects scalar-to-table links. On Fig. 6D vs Graham Fig. 3d /
+#    Extended Data Fig. 4c, MOESM9 'Figure6D' left WT rows 1-19 blank, so all `wb_f6d_*` and
+#    `paper_exp_gabmut_*` datums are VASP-GABmut data already linked to chandrasekaran2024 (and
+#    MOESM9 'FigureS4C' is CytoSim silhouette scores, not Graham ED Fig. 4c). `q_t_600s` is already
+#    linked below to `chandrasekaran2024/t_sim_baseline` (which itself cites `ref-15` -> graham2023,
+#    where Methods prints 15 min = 900 s). All 111 numerically overlapping scalar pairs across the
+#    77 x 133 matrix are coincidental unrelated quantities. Keeping 0 direct links avoids type errors
+#    and circular/duplicate provenance chains.
+
+- datum: wb_f6d_1_7p5_shell_mean
+  from_source: chandrasekaran2024
+  from_datum: exp_gabmut_shell_pct_1_7p5
+  evidence: "41467_2024_46726_MOESM9_ESM.xlsx sheet 'Figure6D' cell L24 stores the N=3 VASP-GABmut 1:7.5 mean shell abundance 37.3926%, printed rounded as '37 ± 4% mean ± SEM' on p. 7 of chandrasekaran2024."
+
+- datum: wb_f6d_1_7p5_ring_mean
+  from_source: chandrasekaran2024
+  from_datum: exp_gabmut_ring_pct_1_7p5
+  evidence: "41467_2024_46726_MOESM9_ESM.xlsx sheet 'Figure6D' cell M24 stores the N=3 VASP-GABmut 1:7.5 mean ring abundance 52.7138%, printed rounded as '53 ± 6% mean ± SEM' on p. 7 of chandrasekaran2024."
+
+- datum: wb_f6d_1_7p5_disk_mean
+  from_source: chandrasekaran2024
+  from_datum: exp_gabmut_disk_pct_1_7p5
+  evidence: "41467_2024_46726_MOESM9_ESM.xlsx sheet 'Figure6D' cell N24 stores the N=3 VASP-GABmut 1:7.5 mean disc abundance 9.8936%, reported as '< 10%' on p. 7 of chandrasekaran2024."
+
+- datum: q_t_600s
+  from_source: chandrasekaran2024
+  from_datum: t_sim_baseline
+  evidence: "41467_2024_46726_MOESM9_ESM.xlsx sheet 'Figure3B' cell A604 ('Time = 600.0') is the final frame of the baseline 600 s CytoSim trajectory (`t_sim_baseline = 600 s`, p. 3)."
+
+- datum: q_nfil_30
+  from_source: chandrasekaran2024
+  from_datum: n_seed_filaments
+  evidence: "41467_2024_46726_MOESM9_ESM.xlsx sheet 'FigureS11' cell B16 ('Nfil = 30') is the baseline 30-filament condition (`n_seed_filaments = 30`, p. 3) in the Supp. Fig. 11D filament-count sweep."

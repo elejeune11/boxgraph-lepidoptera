@@ -1,0 +1,433 @@
+- id: rel_tactoid_min_approx_scaling_full
+  kind: approximated_by
+  a: weirich2017/tactoid_equilibrium_minimizer
+  b: weirich2017/tactoid_aspect_ratio_scaling
+  mapping:
+    omega: "omega"
+  output_map:
+    aspect_ratio: aspect_ratio
+  regime:
+    omega: [0.05, 10.0]
+  provenance: stated
+  tolerance: 0.05
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "close agreement between the above"
+    where: "SI Text, Equilibrium Droplet Shapes & Fig. S2D"
+  assumptions:
+    - "Compares circular-arc free-energy minimization against the piecewise exact-Wulff scaling relation (1 + omega for omega < 1, 2*omega^(1/2) for omega >= 1); 5% tolerance reflects the maximum circular-arc-vs-Wulff deviation near omega ~ 0.5-1."
+
+- id: rel_tactoid_min_approx_scaling_large_w
+  kind: approximated_by
+  a: weirich2017/tactoid_equilibrium_minimizer
+  b: weirich2017/tactoid_aspect_ratio_large_omega
+  mapping:
+    omega: "omega"
+  output_map:
+    aspect_ratio: aspect_ratio
+  regime:
+    omega: [1.0, 25.0]
+  provenance: stated
+  tolerance: 0.05
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "close agreement between the above"
+    where: "SI Text, Equilibrium Droplet Shapes & Fig. S2D"
+  assumptions:
+    - "High-anchoring regime omega >= 1; 5% tolerance covers the 3.8% circular-arc-vs-Wulff deviation at omega = 1."
+
+- id: rel_tactoid_min_reduces_to_large_w
+  kind: reduces_to
+  a: weirich2017/tactoid_equilibrium_minimizer
+  b: weirich2017/tactoid_aspect_ratio_large_omega
+  mapping:
+    omega: "omega"
+  output_map:
+    aspect_ratio: aspect_ratio
+  regime:
+    omega: [1.0, 10.0]
+  limit:
+    omega: "oo"
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "minimization of the free energy. Using the above equation, ω can"
+    where: "SI Text, Equilibrium Droplet Shapes & Fig. S2D"
+  assumptions:
+    - "As omega -> infinity, alpha_eq -> omega^(-1/2) -> 0 and cot(alpha_eq/2) -> 2*omega^(1/2)."
+
+- id: rel_aspect_scaling_same_as_large_w
+  kind: same_as
+  a: weirich2017/tactoid_aspect_ratio_scaling
+  b: weirich2017/tactoid_aspect_ratio_large_omega
+  mapping:
+    omega: "omega"
+  output_map:
+    aspect_ratio: aspect_ratio
+  regime:
+    omega: [1.0, 25.0]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "2133"
+    quote: "using the theoretical relation L=r = 2ω 2 for ω≥ 1 (20) (SI Text)."
+    where: "text, p. 2133 col 2"
+  assumptions:
+    - "Restricted to omega >= 1 where the upper branch of the piecewise relation applies."
+
+- id: rel_cap_integral_reduces_to_energy_printed
+  kind: reduces_to
+  a: weirich2017/capillary_free_energy_integral
+  b: weirich2017/capillary_energy_cost_printed
+  mapping:
+    R_0: "R_0"
+    u: "u"
+    lam: "lam"
+    gamma_I: "gamma_I"
+    omega: "omega"
+  output_map:
+    delta_F: delta_F
+  regime:
+    R_0: [0.1, 0.5]
+    u: [0.001, 0.01]
+    lam: [3.0, 10.0]
+    gamma_I: [100.0, 500.0]
+    omega: [0.5, 5.0]
+  limit:
+    u: "0"
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "To leading order in u, the interfacial energy cost for the sinu-"
+    where: "SI Text, Capillary Instabilities in Long Droplets"
+  assumptions:
+    - "Tests the paper's stated small-u expansion from printed integrals A, A_omega, F to printed delta F with (1 + omega)*k^2; expected to fail for omega > 0 because the exact O(u^2) expansion has (1 + 2*omega)*k^2."
+
+- id: rel_cap_integral_reduces_to_energy_corrected
+  kind: reduces_to
+  a: weirich2017/capillary_free_energy_integral
+  b: weirich2017/capillary_energy_cost_corrected
+  mapping:
+    R_0: "R_0"
+    u: "u"
+    lam: "lam"
+    gamma_I: "gamma_I"
+    omega: "omega"
+  output_map:
+    delta_F: delta_F
+  regime:
+    R_0: [0.1, 0.5]
+    u: [0.001, 0.01]
+    lam: [3.0, 10.0]
+    gamma_I: [100.0, 500.0]
+    omega: [0.5, 5.0]
+  limit:
+    u: "0"
+  provenance: proposed
+  reason: "Verifies that the exact O(u^2) limit of the paper's printed integrals A, A_omega, and F = gamma_I*(A + omega*A_omega) on SI p. 9 matches capillary_energy_cost_corrected with (1 + 2*omega)*k^2 - 1."
+
+- id: rel_cap_thresh_reduces_isotropic
+  kind: reduces_to
+  a: weirich2017/capillary_instability_threshold_printed
+  b: weirich2017/capillary_instability_threshold_corrected
+  mapping:
+    R_0: "R_0"
+    omega: "omega"
+  output_map:
+    lambda_c: lambda_c
+  regime:
+    R_0: [50.0, 500.0]
+    omega: [0.1, 5.0]
+  limit:
+    omega: "0"
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "when δF < 0, which occurs for wavelengths λ ≥ 1 + ω ð2πR0 Þ."
+    where: "SI Text, Capillary Instabilities in Long Droplets"
+  assumptions:
+    - "In the isotropic limit omega -> 0, both printed and corrected nematic thresholds reduce to the classical Rayleigh-Plateau limit 2*pi*R_0."
+
+- id: rel_cap_fastest_scales_as_threshold_printed
+  kind: scales_as
+  a: weirich2017/capillary_fastest_mode_printed
+  b: weirich2017/capillary_instability_threshold_printed
+  mapping:
+    R_0: "R_0"
+    omega: "omega"
+  output_map:
+    lambda_c: lambda_max
+  regime:
+    R_0: [50.0, 500.0]
+    omega: [0.1, 10.0]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "kmax = 1= 2ð1 + ωÞ. Using typical parameter values from the ex-"
+    where: "SI Text, Capillary Instabilities in Long Droplets"
+  assumptions:
+    - "With quadratic dynamic factor Lambda(k) ~ k^2, lambda_max = sqrt(2) * lambda_c for all R_0 and omega."
+
+- id: rel_cap_fastest_scales_as_threshold_corrected
+  kind: scales_as
+  a: weirich2017/capillary_fastest_mode_corrected
+  b: weirich2017/capillary_instability_threshold_corrected
+  mapping:
+    R_0: "R_0"
+    omega: "omega"
+  output_map:
+    lambda_c: lambda_max
+  regime:
+    R_0: [50.0, 500.0]
+    omega: [0.1, 10.0]
+  provenance: proposed
+  reason: "Verifies the same sqrt(2) proportionality between lambda_max and lambda_c in the corrected (1 + 2*omega) capillary instability variant."
+
+- id: rel_iso_coalescence_scales_as_linear
+  kind: scales_as
+  a: weirich2017/isotropic_coalescence_tau_energy_balance
+  b: weirich2017/coalescence_tau_linear_scaling
+  mapping:
+    eta: "eta"
+    gamma_eff: "gamma_I"
+    delta_L: "delta_L"
+  output_map:
+    tau: tau
+  regime:
+    eta: [0.5, 10.0]
+    gamma_I: [100.0, 1000.0]
+    V: [1.0, 20.0]
+    r: [0.5, 3.0]
+    L_i: [2.0, 10.0]
+    delta_L: [0.5, 5.0]
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "scale linearly with Li − Lf with a slope proportional to η=γ I ."
+    where: "SI Text, Liquid Droplets with Isotropic Interfacial Tension"
+  assumptions:
+    - "Fixed geometric factor V/(r*L_i^2); slope in delta_L scales as eta / gamma_I."
+
+- id: rel_iso_rate_corrected_same_as_linear
+  kind: same_as
+  a: weirich2017/isotropic_relaxation_rate_corrected
+  b: weirich2017/coalescence_tau_linear_scaling
+  mapping:
+    eta: "eta"
+    gamma_eff: "gamma_I"
+    delta_L: "r"
+  output_map:
+    tau: tau
+  regime:
+    L: [2.0, 10.0]
+    r: [0.5, 3.0]
+    eta: [0.5, 10.0]
+    gamma_I: [100.0, 1000.0]
+  provenance: proposed
+  reason: "Verifies that the dimensionally corrected isotropic timescale tau = r*eta/gamma_I has the exact same functional form as tau = (eta/gamma_eff)*delta_L when delta_L = r and gamma_eff = gamma_I."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with grason2007 (proposed; neither paper cites the other)
+# ==========================================================================
+
+- id: rel_grason2007_eq6_reduces_to_weirich_cylinder_surface
+  kind: reduces_to
+  a: grason2007/columnar_free_energy_eq6
+  b: weirich2017/capillary_free_energy_per_length
+  mapping:
+    R_0: "R / 1000"
+    u: "0"
+    lam: "4.0"
+    gamma_I: "Sigma * 1e6"
+    omega: "2.0"
+  output_map:
+    F_over_lam: dF_over_L
+  regime:
+    R: [20.0, 200.0]
+    f_0: [0.01, 1.0]
+    lambda_3perp: [20.0, 100.0]
+    epsilon: [0.01, 1.0]
+    Sigma: [2.0, 10.0]
+  limit:
+    f_0: "0"
+    epsilon: "0"
+  provenance: proposed
+  reason: "In the achiral zero-twist limit (f_0 -> 0) and bulk phase coexistence limit (epsilon -> 0, equivalent to grand-canonical excess free energy Delta F(R) - mu_c*rho_0*pi*R^2 at mu = mu_c = -epsilon*L/rho_0), Grason & Bruinsma Eq. (6) reduces identically to the lateral surface free energy per unit length 2*pi*R*Sigma = 2*pi*R_0*gamma_I (with 1 pN/nm = 10^6 nN/m and R_0 = R/1000 um) of Weirich et al.'s unperturbed (u = 0) straight nematic cylinder (SI p. 9), where anisotropic anchoring A_omega vanishes identically because the axial director n_hat = z_hat is tangent to the lateral cylinder wall."
+  assumptions:
+    - "Achiral limit f_0 -> 0 (vanishing chiral torque gamma -> 0) removes Grason's finite-radius stabilization."
+    - "Bulk coexistence offset epsilon -> 0 aligns Grason's Delta F(R)/L with Weirich's fixed-volume interfacial free energy per length F/lambda."
+    - "Unperturbed uniform cylinder u = 0 in Weirich SI p. 9 gives F/lambda = 2*pi*R_0*gamma_I independent of axial period lam and anchoring strength omega."
+
+- id: rel_grason2007_eq5_reduces_to_weirich_cylinder_surface
+  kind: reduces_to
+  a: grason2007/columnar_free_energy_from_eq5
+  b: weirich2017/capillary_free_energy_per_length
+  mapping:
+    R_0: "R / 1000"
+    u: "0"
+    lam: "4.0"
+    gamma_I: "Sigma * 1e6"
+    omega: "2.0"
+  output_map:
+    F_over_lam: dF_over_L
+  regime:
+    R: [20.0, 200.0]
+    gamma: [0.01, 1.0]
+    mu_perp_bar: [0.01, 1.0]
+    K3_bar: [10.0, 500.0]
+    epsilon: [0.01, 1.0]
+    Sigma: [2.0, 10.0]
+  limit:
+    gamma: "0"
+    epsilon: "0"
+  provenance: proposed
+  reason: "Directly turning off the microscopic chiral torque coupling (gamma = 2*K_2/P -> 0) and bulk cohesive offset (epsilon -> 0) in Grason & Bruinsma Eqs. (5)-(6) (independent of the printed f_0 prefactor misprint 16 vs 256) reduces the cylindrical bundle free energy per length identically to Weirich et al.'s unperturbed nematic cylinder interfacial free energy per length 2*pi*R_0*gamma_I (SI p. 9)."
+  assumptions:
+    - "Vanishing chiral torque gamma -> 0 eliminates optimal bundle torsion Omega_0(R) -> 0 and all chiral/elastic bulk energy in Eq. (5)."
+    - "Bulk coexistence offset epsilon -> 0 and unit conversions R_0 = R/1000 um, gamma_I = 10^6 * Sigma [nN/m]."
+
+- id: rel_weirich_capillary_reduces_to_grason2007_achiral_cylinder
+  kind: reduces_to
+  a: weirich2017/capillary_free_energy_per_length
+  b: grason2007/columnar_free_energy_eq6
+  mapping:
+    R: "R_0 * 1000"
+    f_0: "0"
+    lambda_3perp: "100.0"
+    epsilon: "0"
+    Sigma: "gamma_I * 1e-6"
+  output_map:
+    dF_over_L: F_over_lam
+  regime:
+    R_0: [0.05, 0.5]
+    u: [0.001, 0.01]
+    lam: [2.0, 10.0]
+    gamma_I: [100.0, 1000.0]
+    omega: [0.5, 5.0]
+  limit:
+    u: "0"
+  provenance: proposed
+  reason: "Converse limit across Weirich et al.'s experimental fluid-bundle regime (R_0 in 50-500 nm, lam in 2-10 um, gamma_I in 100-1000 nN/m, omega in 0.5-5): as the Rayleigh-Plateau sinusoidal perturbation amplitude u -> 0, the Rapini-Papoular anchoring integral A_omega vanishes as O(u^2) for all anchoring strengths omega, and Weirich's exact capillary free energy per length F/lambda reduces identically to Grason & Bruinsma Eq. (6)'s achiral bulk-coexistence cylindrical surface free energy 2*pi*R*Sigma (with Sigma = 10^-6 * gamma_I [pN/nm])."
+  assumptions:
+    - "Uniform straight-cylinder limit u -> 0 makes the axial director n_hat = z_hat strictly tangent to the lateral surface (n_hat . N_hat = 0), annihilating anchoring energy omega * A_omega."
+    - "Grason Eq. (6) is evaluated in its achiral (f_0 = 0), bulk-coexistence (epsilon = 0) limit where finite-radius arrest disappears."
+
+- id: rel_weirich_capillary_integral_scales_grason2007_eq6
+  kind: scales_as
+  a: weirich2017/capillary_free_energy_integral
+  b: grason2007/columnar_free_energy_eq6
+  mapping:
+    R: "R_0 * 1000"
+    f_0: "0"
+    lambda_3perp: "100.0"
+    epsilon: "0"
+    Sigma: "gamma_I * 1e-6"
+  output_map:
+    dF_over_L: F
+  regime:
+    R_0: [0.05, 0.5]
+    u: [1.0e-5, 1.0e-4]
+    lam: [2.0, 10.0]
+    gamma_I: [100.0, 1000.0]
+    omega: [0.5, 5.0]
+  provenance: proposed
+  reason: "Direct scaling correspondence between the two records' existing cylindrical free-energy models (without intermediate helper): for small axial undulation (u << R_0) and arbitrary anchoring strength omega, Weirich's exact nematic capillary free energy F [J] over segment length lam and Grason's achiral coexistence Eq. (6) free energy per length dF/L [pN] share identical linear log-slopes in cylinder radius (R_0 <-> R) and isotropic surface tension (gamma_I <-> Sigma)."
+  assumptions:
+    - "Small-perturbation regime u/R_0 <= 2e-3 so F = 2*pi*R_0*lam*gamma_I * (1 + O((u/R_0)^2))."
+    - "Grason Eq. (6) evaluated at f_0 = 0, epsilon = 0."
+
+- id: rel_grason2007_eq6_scales_weirich_tactoid_slender
+  kind: scales_as
+  a: grason2007/columnar_free_energy_eq6
+  b: weirich2017/tactoid_free_energy
+  mapping:
+    R: "(50**2 + 4 * (R / 1000)**2) / (8 * (R / 1000))"
+    alpha: "2 * atan(2 * (R / 1000) / 50)"
+    gamma_I: "Sigma * 1e6"
+    gamma_A: "2 * Sigma * 1e6"
+  output_map:
+    F: dF_over_L
+  regime:
+    R: [50.0, 250.0]
+    f_0: [1.0e-9, 1.0e-8]
+    lambda_3perp: [20.0, 100.0]
+    epsilon: [1.0e-11, 1.0e-10]
+    Sigma: [0.0001, 0.001]
+  provenance: proposed
+  reason: "For an elongated out-of-equilibrium circular-arc bundle of fixed major axis length L_0 = 50 um >> R (matching Weirich Fig. 4B-C contracting bundles, >50 um long and ~200 nm radius) and equatorial radius r/2 = R, Weirich's circular-arc tactoid free energy F = gamma_I*A + gamma_A*A_omega approaches (4*pi/3)*L_0*R*gamma_I (exact parabolic-taper factor 2/3 below a uniform cylinder 2*pi*L_0*R*gamma_I, with anchoring A_omega/A ~ (1/5)*alpha^2 -> 0), sharing identical linear scaling in radius R and isotropic tension Sigma <-> gamma_I with Grason Eq. (6) in its achiral coexistence regime."
+  assumptions:
+    - "Exact circular-arc inversion L_0 = 2*R_arc*sin(alpha) = 50 um, r/2 = R_arc*(1 - cos(alpha)) = R/1000 um gives R_arc = (L_0^2 + 4*(R/1000)^2)/(8*(R/1000)) and alpha = 2*atan(2*(R/1000)/L_0) in [0.004, 0.02] rad."
+    - "Fixed anchoring ratio omega = gamma_A/gamma_I = 2 (Weirich 5 mol % filamin); at fixed L_0 >> R, anchoring contributes < 2e-4 of total F."
+    - "Achiral coexistence regime of Grason Eq. (6) (negligible f_0, epsilon) with Weirich's physical tension range Sigma in [1e-4, 1e-3] pN/nm = [100, 1000] nN/m."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with claessens2008 (proposed; neither paper cites the other)
+# ==========================================================================
+
+- id: rel_claessens2008_droplet_conc_scales_mesh_size
+  kind: scales_as
+  a: claessens2008/droplet_critical_concentration
+  b: weirich2017/actin_concentration_from_mesh_size
+  mapping:
+    xi: "D_d / sqrt(2 * n_f)"
+  output_map:
+    c: c_a
+  regime:
+    n_f: [1.0, 20.0]
+    D_d: [5.0, 30.0]
+    M_actin: [42000.0, 43000.0]
+    d: [2.7, 2.9]
+  provenance: proposed
+  reason: >
+    Both Claessens et al.'s (2008) confined spherical emulsion droplet ring mass-conservation law
+    (p. 2, Fig. 2E: c_a = 6*n_f*M_actin / (N_A*d*D_d^2), derived from L = (pi/6)*D_d^3*rho_L and
+    n_f = L/(pi*D_d)) and Weirich et al.'s (2017) pre-cross-linking semidilute F-actin cubic mesh
+    size (SI p. 7, Schmidt et al. 1989 [ref-18]: xi = 0.3*c^(-1/2), inverted in
+    actin_concentration_from_mesh_size as c = (0.3/xi)^2) rest on the exact same 3D F-actin
+    contour-length density rho_L = (c/M_actin)*N_A*d. Equating the 3D cubic-lattice density
+    rho_L = 3/xi^2 (three orthogonal filaments per cell xi^3) with the spherical-droplet
+    equatorial-ring density rho_L = 6*n_f/D_d^2 yields the parameter-free geometric identity
+    n_f = (1/2)*(D_d/xi)^2, i.e., xi = D_d / sqrt(2*n_f). Under this mapping, both models output
+    actin_mass_concentration [mg/mL] with identical log-slopes in droplet diameter D_d (-2) and
+    ring filament number n_f (+1) across both papers' experimental ranges.
+  assumptions:
+    - "Parameter-free geometric identification xi = D_d / sqrt(2*n_f) equating cubic-network contour density rho_L = 3/xi^2 with spherical-droplet equatorial-ring density rho_L = 6*n_f/D_d^2."
+    - "M_actin in [42000, 43000] g/mol and monomer axial rise d in [2.7, 2.9] nm span both papers' conventions (Weirich SI p. 7: a_m ~ 2.7 nm; Claessens p. 2: d = 2.9 nm); scales_as isolates exact (D_d, n_f) exponent agreement independent of the prefactor offset."
+
+- id: rel_claessens2008_droplet_conc_approx_mesh_size
+  kind: approximated_by
+  a: claessens2008/droplet_critical_concentration
+  b: weirich2017/actin_concentration_from_mesh_size
+  mapping:
+    xi: "D_d / sqrt(2 * n_f)"
+  output_map:
+    c: c_a
+  regime:
+    n_f: [1.0, 20.0]
+    D_d: [5.0, 30.0]
+    M_actin: [42000.0, 43000.0]
+    d: [2.7, 2.9]
+  tolerance: 0.21
+  provenance: proposed
+  reason: >
+    Quantifies the absolute dimensional agreement between Claessens et al.'s (2008) microscopic
+    F-actin contour-length concentration law c_a = 6*n_f*M_actin/(N_A*d*D_d^2) [mg/mL] and the
+    inverted Schmidt/Weirich cubic-mesh law c = (0.3/xi)^2 [mg/mL] under the parameter-free
+    geometric identity xi = D_d/sqrt(2*n_f) (n_f = (1/2)*(D_d/xi)^2). Because Schmidt et al.
+    (1989) round sqrt(3*M_actin/(N_A*d)) = 0.2784 um*(mg/mL)^(1/2) (at M_actin = 42 kDa,
+    d = 2.7 nm) to 1 significant digit (0.3), the two concentration predictions differ by a
+    constant prefactor of 13.9% at Weirich's parameters (42 kDa, 2.7 nm; 11.9% at 43 kDa, 2.7 nm)
+    and up to 19.8% across both papers' monomer-spacing conventions (d = 2.9 nm in Claessens p. 2,
+    where sqrt(3*M/(N_A*d)) = 0.2686). Note that Claessens Fig. 2E's plotted n_f = 20 dashed
+    boundary sits 2.23x above droplet_critical_concentration (claessens2008/q_fig2e_quantified_factor_2p22).
+  assumptions:
+    - "Parameter-free geometric identification xi = D_d / sqrt(2*n_f) equating 3D cubic mesh contour density rho_L = 3/xi^2 with spherical-droplet equatorial ring density rho_L = 6*n_f/D_d^2."
+    - "21% tolerance captures the exact worst-case prefactor offset (19.8% at M_actin = 42 kDa, d = 2.9 nm; 13.9% at M_actin = 42 kDa, d = 2.7 nm) due solely to Schmidt et al.'s 1-sig-fig rounding (0.2784 -> 0.30) and Claessens's 2.9 vs 2.7 nm monomer spacing."
+    - "Compares Claessens's analytical equatorial-ring model (droplet_critical_concentration), not the 2.23x higher dashed boundary drawn in Claessens Fig. 2E."

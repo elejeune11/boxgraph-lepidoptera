@@ -1365,3 +1365,770 @@
     printed_page: "6"
     quote: "between cables was ~0.5 µm (Supplementary Fig. 7c"
     where: "Results (p. 6, col. 1) & Supp. Table 4 vs hannezo2015/ring_wavelength_embryo_wt"
+
+- id: q_weirich2017_modelatlas_and_hydrodynamic_drag
+  kind: reading
+  about:
+    - cgmd_anisotropic_langevin
+    - cgmd_2d_network
+    - cylindrical_friction_filament
+    - anisotropic_filament_friction
+    - filament_einstein_stokes_diffusion
+    - thermal_energy
+    - structure_factor_interval_wavenumber
+    - motor_walking_velocity
+    - rel_weirich2017_filament_diffusion_scales_stokes_einstein
+    - eta_cyto_table_s1
+    - eta_cyto_si_text
+    - temp_sim
+    - kBT_sim
+    - L0_f_sim
+    - d_f_sim
+    - d_f_lit
+    - l_p_actin_lit
+    - weirich2017/stokes_einstein_ellipsoid_diffusion
+    - weirich2017/stokes_einstein_ellipsoid_viscosity
+    - weirich2017/frap_diffusion_scaling
+    - weirich2017/tactoid_exponential_relaxation
+    - weirich2017/tactoid_coarsening_power_law
+    - weirich2017/coalescence_tau_linear_scaling
+    - weirich2017/capillary_wavelength_from_wavenumber
+    - weirich2017/eta_frap_est
+    - weirich2017/D_frap_est
+    - weirich2017/filament_half_length_frap_si
+    - weirich2017/filament_diameter_frap_si
+    - weirich2017/filament_persistence_length_si
+    - weirich2017/ambient_temperature_si
+    - weirich2017/q_sekine2024_nanoclusters_vs_tactoids_synthesis
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "where the diffusion coefficient is about ten times smaller than"
+    where: "SI Notes I-II (pp. 28-31, Table S1) vs weirich2017 SI Text (pp. SI-1 to SI-2)"
+  text: >
+    Cross-record ModelAtlas audit between sekine2024 (in vivo Drosophila tracheal actin nanoclusters
+    and 2D CGMD) and weirich2017 (in vitro F-actin + filamin nematic tactoid droplets and fluid
+    bundles). Neither paper cites or mentions the other, their reference lists share zero overlapping
+    citations (82 refs in sekine2024 vs 49 refs in weirich2017), and neither data.yaml has any
+    from_source pointing to the other (zero stated relations, zero cited.yaml links).
+    (1) Zero exact mathematical model equivalences across all 31 sekine2024 and 51 weirich2017 models;
+    why sekine2024/cgmd_anisotropic_langevin vs weirich2017/tactoid_exponential_relaxation is purely
+    a dimensional coincidence: both models have the coarse dimensional signature (lengths, time ->
+    length), yet their functional forms and physics are incompatible. cgmd_anisotropic_langevin
+    simulates passive overdamped thermal Brownian motion of a single 2-bead actin filament whose
+    ensemble mean absolute displacement grows unboundedly as a t^(1/2) power law (log-slope +0.5 in
+    t_obs, zero at t_obs = 0), whereas tactoid_exponential_relaxation is a deterministic single-
+    exponential fit L(t) = L_f + (L_i - L_f)*exp(-t/tau) describing macroscopic capillary-driven
+    shortening of a coalesced nematic droplet monotonically decaying (negative time log-slope) from
+    initial merged length L_i toward equilibrium length L_f. Other dimensional overlaps are likewise
+    spurious or too_plain: structure_factor_interval_wavenumber (2*pi/mu) vs
+    capillary_wavelength_from_wavenumber (2*pi*R_0/k) is a 2-op Fourier identity on orthogonal
+    geometries (transverse inter-cable spacing vs axial pearling wavelength); motor_walking_velocity
+    (tau_walk = zeta*l_f/f^walk) vs coalescence_tau_linear_scaling (tau = (eta/gamma_eff)*delta_L)
+    is a 2-op linear-time ratio on unrelated mechanisms (active myosin stepping vs passive capillary
+    coalescence); and cgmd_anisotropic_langevin vs tactoid_coarsening_power_law (L ~ t^alpha at
+    alpha = 0.5) compares unrelated quantities (single-filament thermal spread vs macroscopic droplet
+    coarsening over 100 min).
+    (2) Single shared microscopic law — single-filament Stokes-Einstein Brownian hydrodynamics — and
+    a 4.1x rod-drag discrepancy: both papers treat short F-actin filaments (L_f = 100 nm in sekine2024
+    Table S1; L_f = 2*L = 180 nm in weirich2017 SI p. 8) as rigid rods (<< l_p; note however a 10x
+    discrepancy in cited F-actin persistence length: l_p ~ 1 um on sekine2024 p. 28 [sref-15] vs
+    ~10 um on weirich2017 SI p. 8) undergoing overdamped Stokes-Einstein diffusion D = k_B T / gamma.
+    Forming sekine2024's exact center-of-mass filament diffusivity via helper
+    filament_einstein_stokes_diffusion (D_fil = k_B T / (2*gamma^f) = k_B T / (6*pi*eta_cyto*(3*d_f +
+    2*L0_f/5))) verifies exact shared thermal-viscous scaling D proportional to T / eta against
+    weirich2017/stokes_einstein_ellipsoid_diffusion (D = k_B T ln(2*L/r) / (6*pi*eta*L), Perrin's
+    prolate-ellipsoid formula with L = L_f/2, r = d/2) in
+    rel_weirich2017_filament_diffusion_scales_stokes_einstein. However, under full rod-geometry
+    mapping (L = L_f/2, r = d/2), the two hydrodynamic drag formulas disagree in both magnitude and
+    aspect-ratio scaling by the exact dimensionless ratio R_drag(p) = (2*gamma_Sekine^f) /
+    gamma_Weirich = D_Weirich / D_Sekine = (6/p + 4/5)*ln(2*p) for p = L_f/d: R_drag(10) = 4.194 at
+    Sekine's default (100 nm / 10 nm), R_drag(25.7) = 4.072 at Weirich's default (180 nm / 7 nm),
+    attaining a broad stationary minimum R_drag(20.27) = 4.058 across short-actin aspect ratios
+    p in [10, 30], diverging logarithmically as (4/5)*ln(2*p) as p -> oo because Sekine's cylindrical
+    drag omits the slender-body 1/ln(2*p) factor, and giving 2*gamma^f = 20.4*pi*eta*d = 6.8x the
+    exact Stokes sphere drag 3*pi*eta*d at p = 1. Remarkably, at each paper's own default parameters,
+    this 4.1x drag offset almost exactly cancels Sekine's lower viscosity and shorter filament
+    (Table S1: eta_cyto = 1 Pa*s, L_f = 100 nm, d = 10 nm, 300 K -> D_Sekine = 0.00314 um^2/s vs
+    Weirich SI p. 8: eta = 3 Pa*s, L_f = 180 nm, d = 7 nm, 293.15 K -> D_Weirich = 0.00313 um^2/s,
+    matching printed FRAP D ~ 0.3 x 10^-2 um^2/s), whereas at Sekine's SI-text viscosity (eta_cyto =
+    0.1 Pa*s) D_Sekine = 0.0314 um^2/s is 10x larger than Weirich's intra-tactoid diffusivity.
+
+- id: q_weirich2017_tactoids_vs_nanoclusters_biophysical_contrast
+  kind: unexplained_difference
+  about:
+    - cgmd_2d_network
+    - fusion_duration_time
+    - structure_factor_interval
+    - motion_anisotropy_ratio
+    - anisotropic_diffusion_ratio
+    - N_f_sim
+    - N_cl_sim
+    - N_m_sim
+    - sim_box_length
+    - L0_f_sim
+    - L0_cl_sim
+    - omega_f_sim
+    - omega_cl_sim
+    - f_walk_table_s1
+    - f_walk_fig_s7b3_4m
+    - friction_asymmetry_stripe
+    - st15_major_mode
+    - st15_minor_mode
+    - st15_major_mean
+    - st15_minor_mean
+    - st15_aspect_ratio_mean
+    - st16_major_mean
+    - st16_minor_mean
+    - st16_aspect_ratio_mean
+    - st15_median_orientation
+    - st16_median_orientation
+    - cable_interval_in_vivo
+    - interval_sim_1m
+    - interval_sim_4m
+    - fusion_dur_2frames_s
+    - dt_frame_live
+    - dist_st15_0
+    - dist_st16_ctrl
+    - aniso_ratio_st15_0
+    - aniso_ratio_st16_ctrl
+    - sim_2m_major
+    - sim_2m_minor
+    - sim_2h_major
+    - sim_2h_minor
+    - sim_4m_major
+    - sim_4m_minor
+    - weirich2017/tactoid_free_energy
+    - weirich2017/tactoid_equilibrium_minimizer
+    - weirich2017/tactoid_aspect_ratio_scaling
+    - weirich2017/tactoid_coarsening_power_law
+    - weirich2017/tactoid_exponential_relaxation
+    - weirich2017/tactoid_shape_dynamics_ode
+    - weirich2017/coalescence_tau_linear_scaling
+    - weirich2017/capillary_fastest_mode_corrected
+    - weirich2017/c_actin_dilute_main
+    - weirich2017/c_actin_tactoid_est
+    - weirich2017/c_filamin_main
+    - weirich2017/filamin_length_main
+    - weirich2017/filament_length_avg_main
+    - weirich2017/tau_R_frap_fig1c
+    - weirich2017/D_frap_est
+    - weirich2017/eta_frap_est
+    - weirich2017/gamma_I_est_main
+    - weirich2017/aspect_ratio_2p5_filamin
+    - weirich2017/aspect_ratio_15_filamin
+    - weirich2017/omega_range_fig2a_si
+    - weirich2017/coarsening_exponent_measured
+    - weirich2017/tableS1_coal_5_gamma_eta
+    - weirich2017/tableS1_coal_10_gamma_eta
+    - weirich2017/bundle_initial_radius_si
+    - weirich2017/capillary_lambda_max_predicted
+    - weirich2017/capillary_lambda_observed
+    - weirich2017/bundle_contractile_strain_range
+    - weirich2017/bundle_shape_change_timescale
+    - weirich2017/q_sekine2024_nanoclusters_vs_tactoids_synthesis
+  citation:
+    page: 3
+    printed_page: "3"
+    quote: "indicating that the cluster fusion was unstable"
+    where: "Results (pp. 3, 6) & SI Notes (pp. 31-33) vs weirich2017 Main Text (pp. 2131-2135)"
+  text: >
+    Biophysical comparison between in vitro filamin/F-actin nematic tactoids (weirich2017) and in
+    vivo Drosophila tracheal actin nanoclusters & circumferential cables (sekine2024), explaining why
+    superficially similar condensed actin regimes follow opposite dynamical pathways:
+    (1) Similar condensed actin & crosslinker stoichiometry, opposite crosslinker-length requirement:
+    weirich2017 condenses dilute 3D short F-actin (2.6 uM, L_f ~ 180 nm) into ~250 uM dense tactoids
+    with 1-15 mol% filamin; sekine2024's 2D CGMD box (N^f = 4500 filaments of L0^f = 100 nm and
+    N^cl = 6750 alpha-actinin dimers in 3 x 3 um^2 = 500 filaments/um^2) corresponds, for a ~100 nm
+    apical cortex thickness at 2.7 nm/monomer, to a nearly identical ~308 uM monomeric actin density
+    and ~4.1 mol% crosslinker/monomer stoichiometry. Yet the crosslinker mechanics are inverted:
+    weirich2017 hypothesizes that filamin's long (~150 nm ~= 0.83*L_f), flexible, transient linkers
+    are uniquely required to keep condensed actin liquid ("Thus far, we have only observed tactoid
+    formation with filamin", p. 2), whereas sekine2024 SI Notes p. 32 (Fig. S7a5) finds that short
+    rigid alpha-actinin (35 nm, stabilized in vivo by Zasp52) is required and lengthening crosslinkers
+    to just 40-60 nm (0.4-0.6*L0^f) destroys compact nanocluster condensation.
+    (2) Coalescence / fusion dynamics, motility, and arrested vs unbounded coarsening: weirich2017
+    tactoids (L ~ 1-6 um) undergo irreversible passive capillary coalescence relaxing exponentially
+    over tau ~ 10-60 s (v_cap = gamma_I/eta = 0.11-0.14 um/s, gamma_I ~ 300 nN/m, Fig. 3C-D),
+    driving unbounded power-law coarsening L ~ t^(0.47 +/- 0.01) over 100 min with zero filament
+    turnover. sekine2024 nanoclusters (mode 210 x 140 nm, mean 329 x 178 nm at Stage 15; 384 x
+    168 nm at Stage 16) undergo rapid reversible fusion-fission cycles lasting typically <= 2 frames =
+    0.64 s (dt = 0.32 s, p. 3) — 15-100x faster than tactoid relaxation, though notably Weirich's
+    capillary scaling tau = (eta/gamma_I)*delta_L extrapolated down to nanocluster deformation scales
+    delta_L = 0.15-0.30 um gives a comparable 1.1-2.7 s timescale. Live nanoclusters also move at
+    apparent frame-step speeds v ~ 0.32-0.43 um/s (103-137 nm per 0.32 s, Table 5; apparent 2D
+    diffusivity D_app ~ d^2/(4*dt) ~ 0.008-0.015 um^2/s, 3-5x faster than Weirich's intra-tactoid
+    FRAP D ~ 0.003 um^2/s). Crucially, rapid actin filament turnover (omega^f = 0.1 s^-1, tau_f =
+    10 s) and crosslinker unbinding (omega^cl = 0.01 s^-1) in sekine2024 continuously disperse
+    filaments and arrest unbounded coarsening at finite nanocluster size (~200-350 nm) and finite
+    steady-state cable spacing (~450 nm).
+    (3) Opposite aspect-ratio response to crosslinker density and distinct alignment mechanisms: both
+    assemblies exhibit elongated elliptical shapes of comparable aspect ratio (L/r ~ 2.0-3.0 in
+    weirich2017 vs 1.95 +/- 0.88 at Stage 15 and 2.42 +/- 1.48 at Stage 16 in sekine2024). In
+    weirich2017, equilibrium Wulff minimization (L/r = 2*omega^(1/2), omega = gamma_A/gamma_I in
+    1.1-2.2) predicts that increasing filamin concentration rounds droplets (L/r drops from ~3 at
+    2.5% to ~2 at 15%) because filamin boosts isotropic cohesion gamma_I relative to anchoring
+    gamma_A, with globally random droplet orientations. In sekine2024, increasing crosslinkers in
+    CGMD elongates clusters instead (2-M: 282.9/190.3 = 1.49 -> 2-H: 439.6/206.9 = 2.12), and global
+    circumferential alignment (44.5 -> 66.5 deg) requires an external symmetry-breaking cue (formin
+    DAAM / anisotropic friction gamma_y^f/gamma_x^f >= 1.5) plus active myosin II bridging (N^m = 900,
+    f^walk = 0.001-0.005 pN), whereas weirich2017 is strictly motor-free (bundles contract 20-60%
+    over ~10 min purely by interfacial tension).
+    (4) Orthogonal periodic length scales: weirich2017's periodic length scale is an axial
+    Rayleigh-Plateau pearling wavelength along a single long fluid bundle (R_0 ~ 200 nm, lambda_max
+    = 2*pi*R_0*sqrt(2*(1 + 2*omega)) ~= 4.0 um corrected [3.08 um printed], observed ~10 um),
+    whereas sekine2024's periodic length scale is the transverse center-to-center spacing between
+    parallel circumferential cables (450 +/- 13.2 nm in vivo, 404-571 nm in CGMD), an order of
+    magnitude smaller and controlled by attraction-vs-turnover-diffusion balance rather than
+    capillary surface-area minimization.
+
+- id: q_gov2018_curvature_ring_vs_cgmd_contrasts
+  kind: reading
+  about:
+    - cgmd_2d_network
+    - cgmd_anisotropic_langevin
+    - anisotropic_filament_friction
+    - cylindrical_friction_filament
+    - filament_einstein_stokes_diffusion
+    - motor_walking_velocity
+    - structure_factor_interval
+    - structure_factor_interval_wavenumber
+    - persistence_length_bending
+    - harmonic_stretching_potential
+    - bending_potential
+    - cable_interval_in_vivo
+    - interval_sim_1m
+    - interval_sim_4m
+    - d_fig1j_diameter
+    - d_fig1k_length
+    - sim_box_length
+    - friction_asymmetry_stripe
+    - eta_cyto_table_s1
+    - eta_cyto_si_text
+    - kBT_sim
+    - N_f_sim
+    - N_cl_sim
+    - N_m_sim
+    - L0_f_sim
+    - L0_cl_sim
+    - L0_m_sim
+    - omega_f_sim
+    - omega_cl_sim
+    - omega_m_sim
+    - f_walk_table_s1
+    - f_walk_fig_s7b3_4m
+    - aniso_ratio_sim_2m
+    - aniso_ratio_sim_4m
+    - aniso_ratio_st16_ctrl
+    - t2_myosin_dn_orient
+    - t2_myosin_dn_major
+    - t2_daam_orient
+    - t2_zasp52_orient
+    - t2_actn14_orient
+    - q_cgmd_2d_not_runnable_unstated_algorithm
+    - q_f_walk_contradiction
+    - gov2018/cylindrical_ring_critical_mode
+    - gov2018/cylindrical_ring_dispersion
+    - gov2018/cylindrical_critical_tube_length
+    - gov2018/tube_equilibrium_radius
+    - gov2018/flat_membrane_dispersion
+    - gov2018/flat_membrane_dispersion_quasisteady
+    - gov2018/flat_membrane_instability_thresholds
+    - gov2018/flat_membrane_fastest_mode
+    - gov2018/cmc_diffusion_einstein
+    - gov2018/wavelength_from_wavenumber
+    - gov2018/membrane_height_dynamics_eq2_3
+    - gov2018/myosin_wave_dispersion_quasisteady
+    - gov2018/myosin_kinetics_eq5_2
+    - gov2018/passive_cylinder_interaction_zero
+    - gov2018/critical_tube_wavelength_ratio
+    - gov2018/q_audit_cylinder_ctheta_geometry
+    - gov2018/q_hannezo2015_structural_contrasts
+    - gov2018/q_sekine2024_tracheal_cgmd_vs_curvature_rings
+  citation:
+    page: 1
+    printed_page: "1"
+    quote: "introduce periodic circumferential actin cables"
+    where: "Introduction (p. 1) & SI Notes (pp. 28-33) vs gov2018 Section 2, 4, 5 (pp. 2-8)"
+  text: >
+    Cross-record ModelAtlas audit between gov2018 (N. S. Gov, Phil. Trans. R. Soc. B 373:20170115,
+    2018; continuum curved-membrane-component [CMC] + cytoskeletal active-force review) and
+    sekine2024 (in vivo Drosophila embryonic tracheal actin nanocluster condensation + 2D CGMD
+    filament/crosslinker/motor simulation) establishes 0 stated relations, 0 non-trivial proposed
+    relations across all 37 x 32 = 1,184 model pairs, and 0 cited.yaml links. Neither paper cites
+    the other (sekine2024 cites zero Gov/Shlomovitz/Veksler/Kabaso/Peleg/Srivastava papers across
+    all 82 main+SI references), their full bibliographies (131 vs 82 references) share zero
+    overlapping publications, and neither data.yaml has any from_source pointing to the other; the
+    sole indirect literature bridge is transitive via hannezo2015 (cited in sekine2024 as
+    ref-14/sref-21, which in turn cites Gov's group ref-12 [Srivastava et al. 2013] and ref-44
+    [Shlomovitz & Gov 2009 = gov2018/ref-88]).
+    (1) Why gov2018/cylindrical_ring_critical_mode vs sekine2024/cgmd_2d_network is purely a
+    dimensional coincidence and why all remaining pairs fail ModelAtlas equivalence: although both
+    models share the coarse dimensional signature ([length], [energy], dimensionless -> [length])
+    and address periodic circumferential actin rings/cables on biological tubes, sekine2024's
+    cgmd_2d_network is non-runnable (q_cgmd_2d_not_runnable_unstated_algorithm) and describes a
+    flat rigid 3 x 3 um^2 periodic 2D box of 12,150 discrete agents with zero membrane height
+    field h, zero lipid bending rigidity kappa, zero curvature H, zero curved membrane proteins,
+    and zero tube radius R_0 parameter, whereas gov2018/cylindrical_ring_critical_mode is a 1D
+    axisymmetric continuum linear-stability analysis of a deformable cylindrical Helfrich membrane
+    R(z) = R_0 + h(z). Across the remaining 33 x 31 runnable pairs, only trivial too_plain
+    (<= 2 ops) or accidental dimensional overlaps occur: (a) sekine2024/filament_einstein_stokes_diffusion
+    (D_fil = k_B T / (6*pi*eta_cyto*(3*d_f + 2*L0_f/5)), 8 ops) vs gov2018/cmc_diffusion_einstein
+    (D = Lambda * k_B T, 1 op, too_plain) — both apply the Einstein fluctuation-dissipation law
+    (with Sekine's effective two-bead F-actin mobility Lambda_fil,x = 1/(2*gamma_x^f) = 0.758
+    um/(pN*s) at Table S1 eta_cyto = 1 Pa*s and 7.58 um/(pN*s) at SI-text 0.1 Pa*s, giving
+    D_fil,x = 0.00314-0.0314 um^2/s bracketing Gov's added CMC mobility Lambda = 2.43 um/(pN*s) /
+    D_CMC = 0.010 um^2/s), but substituting a 4-input hydrodynamic drag formula into the single
+    free mobility Lambda of a 1-op product is tautological and maps a 3D cytoplasmic actin rod
+    onto a 2D lipid-membrane protein; (b) wavelength_from_wavenumber (2*pi/q) and
+    cylindrical_critical_tube_length vs structure_factor_interval[_wavenumber] (2*pi/mu, 1-2 ops,
+    too_plain Fourier definitions); (c) motor_walking_velocity.v_walk (f_walk/zeta, 1 op,
+    too_plain) vs membrane_height_dynamics_eq2_3; and (d) symbol/dimensional collisions including
+    kappa (2D lipid bending modulus [pN*um] in gov2018 vs 1D rod stretching modulus [pN] in
+    sekine2024, while sekine2024's k^{X,bend} [pN*um] is a 1D molecular hinge rigidity yielding
+    polymer persistence length l_bend = k_bend*L_0/(2*k_B T) unrelated to tube_equilibrium_radius
+    = sqrt(kappa/(2*sigma))), xi (membrane normal friction [pN*s/um^3] vs thermal noise), A
+    (normal active stress [pN/um^2] vs Gaussian S(q) amplitude [1/um]), sigma (membrane tension
+    [pN/um] vs S(q) width [1/um]), and [force]/[length] (2D membrane free-energy density vs 1D
+    spring stiffness k_eff = kappa/L_0).
+    (2) Sharp quantitative contrast in Drosophila trachea — tube-radius curvature instability vs
+    curvature-independent ~450 nm CGMD cables: evaluating gov2018/cylindrical_ring_critical_mode
+    (and its exact surface-of-revolution geometry counterpart H_hh = (kappa/R_0^4)*(1 + (q*R_0)^4),
+    see gov2018/q_audit_cylinder_ctheta_geometry) at Sekine's measured live Drosophila dorsal-trunk
+    radii (d_fig1j_diameter: expanding +51.7% from D = 2.598 um [R_0 = 1.299 um] at -60 min through
+    D = 3.151 um [R_0 = 1.575 um] at -40 min to D = 3.942 um [R_0 = 1.971 um] at 0* min when
+    cables complete) shows direct quantitative falsification of tube-radius selection: (a) in the
+    quasi-steady membrane limit (xi -> 0) under exact surface-of-revolution geometry, strong
+    contractility selects the Rayleigh-Plateau circumference lambda_max -> 2*pi*R_0 = 8.16-12.38 um
+    (18.1x-27.5x larger than Sekine's in vivo 450 +/- 13.2 nm cables and 15.4x-23.4x larger than
+    CGMD 4-M's 529 nm); (b) at Gov's finite baseline parameters (kappa = 0.0823 pN*um, k_B T =
+    0.004114 pN*um, Lambda = 2.43 um/(pN*s), H_0 = 100 um^-1, n_s = 10^4 um^-2, n_0 = 0.05,
+    xi = 100 pN*s/um^3, A = -1200 pN/um^2), finite radial drag shifts lambda_max between lambda_c
+    propto R_0^(1/2) and 2*pi*R_0, yielding lambda_max = 3.58-4.45 um in cylindrical_ring_critical_mode
+    (4.27-5.40 um under exact geometry; d(ln lambda_max)/d(ln R_0) = 0.535-0.573, widening +24.5%
+    to +26.5% over -60 to 0* min) — still 8.0x-12.0x larger than 450 nm; (c) even the shortest
+    unstable cutoff wavelength lambda_c = 2*pi/q_c is 2.65 um (3.02 um exact geometry) at 0* min
+    (5.9x-6.7x too large), and forcing lambda_c down to 450 nm on an R_0 = 1.971 um tube would
+    require unphysical contractile stress |A| = 2.43 MPa (2,025x Gov's baseline 1.2 kPa); and
+    (d) Gov's Helfrich tube equilibrium R_tube = sqrt(kappa/(2*sigma)) would require sigma_eq =
+    0.0106 pN/um at R_0 = 1.971 um (377x below Gov's 4 pN/um plasma membrane tension), confirming
+    that micron-scale epithelial tracheal tubes are supported by luminal chitin/pressure rather
+    than lipid bending-tension equilibrium, consistent with hannezo2015 Fig. 4G observing the same
+    ~0.5 um spacing on ~3x narrower tracheal side branches.
+    (3) Symmetry-breaking cue, turnover-arrested coarsening, passive crosslinking, and myosin II
+    role: four further mechanistic oppositions separate the two models. First, gov2018 Sec. 4
+    aligns rings directly via anisotropic CMC spontaneous curvature sensing c_theta = 1/R_0
+    (R_0 > 1/H_0), whereas sekine2024 uses no curvature coupling and aligns cables via
+    mechanosensitive formin DAAM / alpha-actinin / Zasp52 responding to anisotropic luminal stress
+    modeled as directional filament friction gamma_y^f/gamma_x^f >= 1.5 (with full CGMD and in
+    vivo tracking showing enhanced circumferential motion |dy|/|dx| = 1.45-1.60 > 1 along the
+    high-friction axis). Second, gov2018 conserves CMC (Eq. 2.4, zero turnover), causing unbounded
+    nonlinear ring coarsening (Fig. 3c(iii)-(iv)) and first instability at a single central ring
+    L_c = lambda_c/2 (p. 7), whereas sekine2024's finite actin/crosslinker turnover (omega^f =
+    0.1 s^-1, omega^cl = 0.01 s^-1) arrests coarsening to maintain ~50 stable periodic cables along
+    the 22.65 um dorsal-trunk segment (d_fig1k_length at 0* min). Third, gov2018 Sec. 4 sets
+    direct CMC attraction J = 0 (and exact circumferential-only geometry is linearly stable at
+    A = 0, J = 0; gov2018/q_audit_cylinder_ctheta_geometry), whereas sekine2024 requires passive
+    short rigid alpha-actinin crosslinkers (N^cl >= 6750, L_0^cl = 35 nm) to nucleate periodic
+    404 nm nanoclusters even at zero motors (1-M, N^m = 0), failing completely at N^cl = 4500
+    (4-L). Fourth, gov2018 explicitly excludes tangential lateral propulsion (p. 3 col. 1) and
+    uses normal active stresses A, A* (Eqs. 2.3, 5.1-5.2, k_off ~ 0.1 s^-1) where rising |A|
+    monotonically strengthens ring instability and large A* drives propagating acoustic membrane
+    waves (omega'' ~= q*c, c propto sqrt(A*)), whereas sekine2024 uses purely in-plane, force-
+    and torque-free tangential motor ABD walking (v^walk = f^walk/zeta, Eq. S4) where myosin II
+    is dispensable for clustering (myosin II[DN] retains 325.6 nm clusters, 54.4 deg orientation,
+    and |dy|/|dx| = 1.20), fuses clusters into stationary cables only within an intermediate force
+    window (f^walk = 0.001-0.005 pN), and destroys the pattern via active agitation at f^walk =
+    0.05 pN (SI Notes p. 33; q_f_walk_contradiction).
+
+- id: q_chandrasekaran2024_langevin_drag_and_elastic_synthesis
+  kind: reading
+  about:
+    - filament_einstein_stokes_diffusion
+    - cgmd_anisotropic_langevin
+    - anisotropic_filament_friction
+    - cylindrical_friction_filament
+    - anisotropic_diffusion_ratio
+    - harmonic_stretching_potential
+    - connector_arm_stretching_potential
+    - bending_potential
+    - persistence_length_bending
+    - persistence_length_from_temperature
+    - cgmd_2d_network
+    - kBT_sim
+    - temp_sim
+    - eta_cyto_table_s1
+    - eta_cyto_si_text
+    - L0_f_sim
+    - d_f_sim
+    - kappa_f_str_sim
+    - L0_cl_sim
+    - kappa_cl_str_sim
+    - k_cl_bend_sim
+    - l_cl_bend_sim
+    - l_p_actin_lit
+    - dt_sim
+    - friction_asymmetry_stripe
+    - q_fdt_missing_kBT
+    - q_eta_cyto_contradiction
+    - q_table_s1_cl_persistence
+    - q_cgmd_2d_not_runnable_unstated_algorithm
+    - chandrasekaran2024/stokes_einstein_diffusion
+    - chandrasekaran2024/langevin_overdamped_1d
+    - chandrasekaran2024/brownian_noise_from_mobility
+    - chandrasekaran2024/brownian_noise_stddev
+    - chandrasekaran2024/lammps_harmonic_bond_potential
+    - chandrasekaran2024/lammps_harmonic_angle_potential
+    - chandrasekaran2024/persistence_length_from_rigidity
+    - chandrasekaran2024/harmonic_repulsion_force
+    - chandrasekaran2024/cytosim_actin_vasp_droplet
+    - chandrasekaran2024/lammps_vasp_actin_droplet
+    - chandrasekaran2024/rel_sekine2024_stokes_einstein_diffusion
+    - chandrasekaran2024/rel_sekine2024_filament_diff_approx_langevin1d
+    - chandrasekaran2024/rel_sekine2024_cgmd_dx_approx_brownian_noise
+    - chandrasekaran2024/rel_sekine2024_cgmd_dy_approx_brownian_noise
+    - chandrasekaran2024/rel_sekine2024_cgmd_dy_scales_brownian_noise
+    - chandrasekaran2024/rel_sekine2024_harmonic_stretch_scales_lammps_bond
+    - chandrasekaran2024/q_sekine2024_langevin_drag_and_elastic_synthesis
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "where γyf /γxf measures the friction asymmetry"
+    where: "SI Notes I-II & Table S1 (pp. 28-31)"
+  text: >
+    Cross-record ModelAtlas audit linking sekine2024 (Jan 2024) and chandrasekaran2024 (Apr 2024;
+    all 6 proposed relations entered in chandrasekaran2024/relations.yaml, 0 stated relations, 0
+    cited.yaml links). Key cross-paper findings:
+    (1) Stokes-Einstein family & overdamped Langevin bridge: `filament_einstein_stokes_diffusion`
+    (R_H = 3*d_f + 2*L0_f/5 = 70 nm) verifies `same_as` `chandrasekaran2024/stokes_einstein_diffusion`
+    (spherical R_H = r = 30 nm; max diff 3.70e-16, non-plain family) and `approximated_by`
+    `chandrasekaran2024/langevin_overdamped_1d` (4.39% MC error at n_particles = 4000, seed = 42).
+    `cgmd_anisotropic_langevin` (`mean_abs_dx`, `mean_abs_dy`) matches `brownian_noise_from_mobility`
+    (`sigma_B`) in 5-variable scaling (L0_f, d_f, eta_cyto, friction_asymmetry, kBT; max log-slope
+    diff 4.4e-13) and via `approximated_by` (max error 22.1% <= 25% along both axes), where the exact
+    half-normal-to-RMS factor `1 - sqrt(2/pi) = 20.21%` persists even in the isotropic limit
+    `friction_asymmetry -> 1`, blocking an exact `reduces_to` onto `sigma_B`.
+    (2) Harmonic stretching vs inverted bending roles: `harmonic_stretching_potential` verifies
+    3-variable nonlinear `scales_as` (max diff 6.6e-13) against `lammps_harmonic_bond_potential`
+    (Sekine F-actin k_eff = 100 pN/um is ~2,740x softer than Chandrasekaran LAMMPS 2.74e5 pN/um,
+    while crosslinker springs are comparable: 571 pN/um arm vs 913 pN/um). By contrast,
+    `bending_potential` (`-k_bend*cos(theta)` for myosin/alpha-actinin connectors) has nonzero ground
+    state `-k_bend`, physical units [pN*um], and applies to connectors rather than rigid 100 nm actin
+    rods, whereas Chandrasekaran bends long actin filaments (`l_p = 18.25 um`, `lammps_harmonic_angle_potential`)
+    with flexible VASP tetramers; 1-2 op identities (`persistence_length_from_rigidity`,
+    `harmonic_repulsion_force`, `einstein_diffusion_relation`, `mobility_from_diffusion`,
+    `thermal_energy`) are excluded as `too_plain`. See
+    `chandrasekaran2024/q_sekine2024_langevin_drag_and_elastic_synthesis` for full quantitative comparison.
+
+- id: q_gov2018_cross_validation_summary
+  kind: unstated_model
+  about:
+    - cable_interval_in_vivo
+    - d_figs1d_intervals
+    - d_fig1j_diameter
+    - d_fig1k_length
+    - d_fig5c_vx
+    - d_fig5c_vy
+    - d_fig5f_vx
+    - d_fig5f_vy
+    - temp_experiment
+    - kBT_sim
+    - cgmd_2d_network
+    - structure_factor_interval
+    - cgmd_anisotropic_langevin
+    - q_gov2018_curvature_ring_vs_cgmd_contrasts
+    - gov2018/cylindrical_ring_critical_mode
+    - gov2018/flat_membrane_fastest_mode
+    - gov2018/flat_membrane_instability_thresholds
+    - gov2018/tube_equilibrium_radius
+    - gov2018/cylindrical_critical_tube_length
+    - gov2018/myosin_wave_dispersion_quasisteady
+    - gov2018/R0_trachea_sekine_0min_added
+    - gov2018/q_sekine2024_cross_validation_summary
+  citation:
+    page: 3
+    printed_page: "3"
+    quote: "ular intervals (450 ± 13.2 nm, Supplementary Fig. 1d)"
+    where: "Results (p. 3, col. 1) & Fig. 1j vs gov2018/cylindrical_ring_critical_mode"
+  text: >
+    Cross-validation assessment between sekine2024 (32 models; 214 origin: measured data across 27
+    quantities) and gov2018 (37 models; 0 origin: measured data among 55 entries) yields 0 entries
+    in sekine2024/validations.yaml against gov2018 (existing val_sf_interval_4m_vs_hannezo_wt_spacing
+    against hannezo2015 remains preserved) and 1 entry in gov2018/validations.yaml against
+    sekine2024 (gov2018/val_cyl_ring_lambda_max_vs_sekine_cable_interval):
+    (1) Reverse direction (sekine2024 models vs gov2018 data): 0 cross-validations are possible
+    because gov2018 is a purely theoretical review article with 0 origin: measured entries in
+    gov2018/data.yaml (24 origin: run digitized theoretical simulation curves reprinted from [116]
+    and [41], 15 origin: reported review ranges/simulation timestamps/cited wave speed, 13 origin:
+    predicted qualitative stability/current signs, ratio 2, and analytical dispersion curves, and
+    3 origin: assumed zero-parameter definitions).
+    (2) Forward direction (gov2018 models vs sekine2024 measurements):
+    gov2018/val_cyl_ring_lambda_max_vs_sekine_cable_interval judges Gov Section 4's reconstructed
+    axisymmetric cylindrical curvature-ring instability (gov2018/cylindrical_ring_critical_mode,
+    output lambda_max) against sekine2024/cable_interval_in_vivo (450 +/- 13.2 nm, early stage 16
+    wild-type Drosophila dorsal trunk, N = 8 embryos, n = 294 cables) using R_0 = 1.971 um
+    (gov2018/R0_trachea_sekine_0min_added, half of d_fig1j_diameter = 3.942 um at t = 0* min),
+    k_B*T = 0.004114 pN*um (298 K = 25 degC matching temp_experiment), and Gov's baseline active-
+    contractile plasma-membrane parameters. It predicts lambda_max = 4.454 um (4454.1 nm, 9.90x
+    larger than 450 nm) -> verdict: not reproduced. This falsification is strictly invariant across
+    all 4,374 combinations of gov2018/added.yaml alternatives (lambda_max in [2.591, 16.520] um =
+    5.76x-36.71x), all Fig. 1j developmental radii (3.578-4.870 um across R_0 = 1.299-2.327 um),
+    Gov p. 3's full kappa/(k_B*T) = 1-100 range (4.325-5.139 um), 14 decades of normal drag xi
+    (4.258-5.886 um), and exact surface-of-revolution geometry (5.399-12.387 um, 12.0x-27.5x),
+    directly ruling out tube-radius-coupled curvature selection for the ~450 nm Drosophila tracheal
+    actin cables.
+    (3) All other 213/214 sekine2024 measured data are excluded from gov2018/validations.yaml:
+    d_figs1d_intervals (1-point boxplot curve of the same N = 8 embryo dataset already tested via
+    scalar cable_interval_in_vivo), d_fig1j_diameter and d_fig1k_length (developmental time-course
+    curves; tube_diameter != tube_radius and L_c = 1.326 um is single-ring onset rather than
+    multicellular 22.65 um metamere length), PIV speeds d_fig5c_vx/vy and d_fig5f_vx/vy (in-plane
+    stationary-nanocluster displacement rates persisting in myosin II[DN], distinct from acoustic
+    propagating membrane wave speed c propto sqrt(A*)), and all 206 discrete 2D nanocluster
+    morphometry, orientation, coherency, KDE, tracked-displacement, fusion-frame, colocalization,
+    RhoGEF2-ratio, count, and P-value measurements (unmodeled by continuum 1D/axisymmetric gov2018).
+    Gov's flat-membrane models (flat_membrane_fastest_mode, flat_membrane_instability_thresholds)
+    are excluded because they take 0 measured inputs from sekine2024 and span [0.172, 81.754] um
+    (including 0.4499 um = 449.9 nm, plus 43.4% stable combos) across gov2018/added.yaml
+    alternatives, making any verdict arbitrary. See gov2018/q_sekine2024_cross_validation_summary
+    for complete numerical details.
+
+- id: q_weirich2017_no_cross_validation
+  kind: unstated_model
+  about:
+    - filament_einstein_stokes_diffusion
+    - cylindrical_friction_filament
+    - cgmd_anisotropic_langevin
+    - cgmd_2d_network
+    - structure_factor_interval
+    - structure_factor_interval_wavenumber
+    - persistence_length_from_temperature
+    - rel_weirich2017_filament_diffusion_scales_stokes_einstein
+    - eta_cyto_table_s1
+    - eta_cyto_si_text
+    - temp_sim
+    - d_f_sim
+    - L0_f_sim
+    - q_weirich2017_modelatlas_and_hydrodynamic_drag
+    - q_weirich2017_tactoids_vs_nanoclusters_biophysical_contrast
+    - q_cgmd_2d_not_runnable_unstated_algorithm
+    - weirich2017/stokes_einstein_ellipsoid_diffusion
+    - weirich2017/stokes_einstein_ellipsoid_viscosity
+    - weirich2017/tactoid_exponential_relaxation
+    - weirich2017/D_frap_est
+    - weirich2017/eta_frap_est
+    - weirich2017/tau_R_frap_fig1c
+    - weirich2017/tau_R_frap_text
+    - weirich2017/d_fig1c_frap_data
+    - weirich2017/d_figS1_bleached
+    - weirich2017/d_figS1_unbleached
+    - weirich2017/d_fig3a_length_data
+    - weirich2017/d_fig3b_coalesced_data
+    - weirich2017/d_fig2a_aspect_ratio
+    - weirich2017/capillary_lambda_observed
+    - weirich2017/capillary_lambda_to_R0_observed
+    - weirich2017/bundle_initial_radius_main
+    - weirich2017/q_sekine2024_no_cross_validation
+  citation:
+    page: 30
+    printed_page: "SI Notes 3"
+    quote: "where the diffusion coefficient is about ten times smaller than"
+    where: "SI Notes I-II (pp. 28-31, Table S1) vs weirich2017 Main Text (pp. 2132-2135) & SI (pp. SI-1 to SI-3)"
+  text: >
+    No cross-record validations are entered in validations.yaml between sekine2024 and weirich2017
+    in either direction (0 entries added to sekine2024/validations.yaml, preserving existing
+    val_sf_interval_4m_vs_hannezo_wt_spacing against hannezo2015; 0 entries in weirich2017).
+    Neither paper cites or mentions the other (0 shared references across 82 and 49 bibliographic
+    entries), and an exhaustive audit of all 32 sekine2024 models (31 runnable plus non-runnable
+    cgmd_2d_network) against all 35 origin: measured entries (and all 38 estimated/derived/fitted
+    entries) in weirich2017 finds no non-circular, quantity-matched cross-validation:
+    (1) Stokes-Einstein single-filament diffusion (filament_einstein_stokes_diffusion) vs
+    weirich2017 FRAP and viscosity data: although filament_einstein_stokes_diffusion is linked to
+    weirich2017/stokes_einstein_ellipsoid_diffusion via
+    rel_weirich2017_filament_diffusion_scales_stokes_einstein, that relation is kind: scales_as
+    (not same_as, because Sekine's two-bead cylindrical drag exceeds Weirich/Perrin's prolate-
+    ellipsoid drag by R_drag(p) = (6/p + 4/5)*ln(2*p) = 4.072x at Weirich's 180 nm x 7 nm rod),
+    so Synthesis carries no automatic same_as cross-check. Auditing every FRAP/viscosity datum in
+    weirich2017 shows none supports a genuine cross-validation: (a) weirich2017's three origin:
+    measured FRAP datasets (d_fig1c_frap_data, d_figS1_bleached, d_figS1_unbleached) are raw or
+    normalized fluorescence intensity time traces (not diffusion coefficients), and tau_R_frap_fig1c
+    (880 s) / tau_R_frap_text (~900 s) are origin: fitted recovery times unpredicted by sekine2024;
+    (b) weirich2017/D_frap_est ("~0.3 x 10^-2" um^2/s, diffusion_coefficient) is origin: estimated
+    (scaling L_b^2 / tau_R with unprinted bleached spot size L_b, not origin: measured) and carries
+    approximate "~" precision (yielding no verdict in BoxGraph); and (c) weirich2017/eta_frap_est
+    ("~3" Pa*s, dynamic_viscosity) is origin: derived (not an independent viscosity measurement —
+    it was algebraically inverted directly from D_frap_est via weirich2017/stokes_einstein_ellipsoid_viscosity,
+    giving 3.133 Pa*s). Evaluating filament_einstein_stokes_diffusion on Weirich's conditions
+    (T = 20 degC = 293.15 K, L_f = 180 nm, d = 7 nm, eta = 3 Pa*s) is therefore strictly circular,
+    merely echoing the known 4.072x model-to-model drag discrepancy (D_Sekine = 7.696e-4 um^2/s vs
+    D_Weirich = 3.133e-3 um^2/s, -75.4%, no verdict; inversely, Sekine's drag law would infer
+    eta_Sekine = 0.770 Pa*s from D_frap = 0.003 um^2/s vs Weirich's 3.133 Pa*s). Conversely,
+    substituting Sekine's Drosophila apical-cytosol viscosities (eta_cyto_table_s1 = 1 Pa*s ->
+    D_Sekine = 2.309e-3 um^2/s at Weirich's rod or 3.139e-3 um^2/s at Sekine's 100 nm x 10 nm rod;
+    eta_cyto_si_text = 0.1 Pa*s -> 2.309e-2 um^2/s) applies the wrong physical medium to a 250 uM
+    in vitro filamin tactoid and still hits an approximate estimated datum (no verdict).
+    (2) Shape-matched pair (cgmd_anisotropic_langevin vs weirich2017/tactoid_exponential_relaxation)
+    and all 11 tactoid length/relaxation measurements: weirich2017's 6 measured tactoid_major_axis
+    data (tactoid_length_growth_60min, tactoid_length_homogeneous_si, d_fig3a_length_data,
+    d_fig3b_pre_upper, d_fig3b_pre_lower, d_fig3b_coalesced_data) and 5 measured time data
+    (bundle_shape_change_timescale, d_fig3c_inset_5pct, d_fig3c_inset_10pct, d_fig3d_5pct_data,
+    d_fig3d_10pct_data) measure macroscopic droplet lengths L(t) undergoing exponential capillary
+    shortening or t^0.47 coarsening and coalescence relaxation times tau. None is predicted by
+    cgmd_anisotropic_langevin (whose single-filament passive Brownian step spread E[|dx|], E[|dy|]
+    grows as t^(1/2) from zero) or fusion_duration_time (N_frames * dt_frame); mapping
+    tactoid_major_axis onto mean_longitudinal_displacement would conflate physically unrelated
+    quantities sharing only dimension [length].
+    (3) Remaining 21 of 35 origin: measured data in weirich2017 excluded across all other sekine2024
+    models: (a) tactoid aspect ratios (aspect_ratio_2p5_filamin, aspect_ratio_15_filamin,
+    d_fig2a_aspect_ratio, d_fig3a_aspect_ratio_data; 4 data): cgmd_2d_network is non-runnable
+    (q_cgmd_2d_not_runnable_unstated_algorithm) and models 2D active cortical alpha-actinin/myosin
+    clusters rather than 3D passive filamin droplets, and no runnable sekine2024 model outputs
+    aspect ratio; (b) fluid bundle geometry and Rayleigh-Plateau pearling (bundle_initial_length,
+    bundle_initial_radius_main, capillary_lambda_observed = "~10" um, capillary_lambda_to_R0_observed;
+    4 data): axial pearling wavelength along a single 3D filamin bundle is physically orthogonal to
+    structure_factor_interval (a 1/(mu/(2*pi)) processing helper on Sekine's 2D CGMD transverse
+    inter-cable spacing, with no structure-factor peak measured in weirich2017); (c) motor-free
+    bundle contraction and master-curve collapse (bundle_contractile_strain_range,
+    d_fig4e_contractile_strain, d_fig4c_2p5pct_data, d_fig4c_10pct_data, d_fig4d_2p5pct,
+    d_fig4d_5pct, d_fig4d_10pct; 7 data): unmodeled by sekine2024; and (d) actin-filamin phase
+    diagram and filament-length range (filamin_frac_tactoid_range, filament_length_tactoid_range,
+    d_fig1d_gas, d_fig1d_liquid_droplets, d_fig1d_fluid_bundles, d_fig1d_viscoelastic_networks;
+    6 data): no runnable sekine2024 model predicts filamin phase boundaries or filament length
+    (nor does persistence_length_from_temperature apply to weirich2017's reported textbook
+    filament_persistence_length_si = "~10" um, which is not a measurement and lacks connector
+    k_bend). See weirich2017/q_sekine2024_no_cross_validation for the exhaustive reverse-direction
+    audit of all 52 weirich2017 models against all 214 origin: measured data in sekine2024.
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with chandrasekaran2024 (2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_chandrasekaran2024_cross_validation_summary
+  kind: unstated_model
+  about:
+    - cgmd_anisotropic_langevin
+    - filament_einstein_stokes_diffusion
+    - anisotropic_diffusion_ratio
+    - motion_anisotropy_ratio
+    - cgmd_2d_network
+    - structure_factor_interval
+    - gaussian_structure_factor
+    - gaussian_structure_factor_freq_variant
+    - gaussian_structure_factor_literal_p11
+    - gaussian_structure_factor_peak
+    - cgmd_dimer_rk4
+    - cgmd_dimer_rk4_corrected
+    - filament_force_distribution
+    - filament_force_distribution_corrected
+    - cable_interval_in_vivo
+    - d_figs1d_intervals
+    - st15_aspect_ratio_mean
+    - st16_aspect_ratio_mean
+    - st15_major_mean
+    - st16_major_mean
+    - st15_minor_mean
+    - st16_minor_mean
+    - st15_area_mean
+    - st16_area_mean
+    - dx_st15_m40
+    - dy_st15_0
+    - dx_st16_ctrl
+    - dy_st16_ctrl
+    - dist_st15_m40
+    - dist_st16_ctrl
+    - d_fig5c_vx
+    - d_fig5c_vy
+    - d_fig5f_vx
+    - d_fig5f_vy
+    - d_figs1g_skeleton
+    - dt_frame_live
+    - eta_cyto_table_s1
+    - eta_cyto_si_text
+    - L0_f_sim
+    - q_chandrasekaran2024_langevin_drag_and_elastic_synthesis
+    - q_cgmd_2d_not_runnable_unstated_algorithm
+    - chandrasekaran2024/brownian_noise_from_mobility
+    - chandrasekaran2024/brownian_noise_stddev
+    - chandrasekaran2024/langevin_overdamped_1d
+    - chandrasekaran2024/stokes_einstein_diffusion
+    - chandrasekaran2024/filament_length_limited_aspect_ratio
+    - chandrasekaran2024/ellipse_2d_constant_area
+    - chandrasekaran2024/prolate_spheroid_volume_conserving
+    - chandrasekaran2024/lammps_droplet_aspect_ratio
+    - chandrasekaran2024/brownian_ratchet_growth_rate
+    - chandrasekaran2024/elongation_rate_from_growth_time
+    - chandrasekaran2024/rel_sekine2024_stokes_einstein_diffusion
+    - chandrasekaran2024/exp_wt_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_ring_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_shell_pct_1_7p5
+    - chandrasekaran2024/fig6d_wt_shell_fig
+    - chandrasekaran2024/fig6d_wt_ring_fig
+    - chandrasekaran2024/fig6d_wt_disk_fig
+    - chandrasekaran2024/fig6d_gabmut_shell_fig
+    - chandrasekaran2024/fig6d_gabmut_ring_fig
+    - chandrasekaran2024/fig6d_gabmut_disk_fig
+    - chandrasekaran2024/vasp_diffusion_rate
+    - chandrasekaran2024/q_sekine2024_cross_validation_summary
+  citation:
+    page: 10
+    printed_page: "10"
+    quote: "By comparing the coordinates of the center of masses"
+    where: "Methods (p. 10), Supplementary Tables 1-2 & 5 (pp. 24, 26), and SI Notes I-II (pp. 29-31)"
+  text: >
+    No cross-record validations are entered in validations.yaml between sekine2024 and
+    chandrasekaran2024 in either direction (0 entries added to sekine2024/validations.yaml,
+    preserving existing val_sf_interval_4m_vs_hannezo_wt_spacing against hannezo2015; 0 entries in
+    chandrasekaran2024). Neither paper cites or mentions the other (published Jan 2024 vs Apr 2024;
+    0 stated relations, 0 cited.yaml links).
+    (1) Synthesis automatic same_as cross-checks: although filament_einstein_stokes_diffusion is
+    verified same_as chandrasekaran2024/stokes_einstein_diffusion via
+    chandrasekaran2024/rel_sekine2024_stokes_einstein_diffusion (max diff 3.70e-16, non-plain),
+    Synthesis carries 0 checked automatic cross-checks between the two records because
+    filament_einstein_stokes_diffusion has 0 runs in sekine2024/runs.yaml and mapping
+    r = 1000*(3*d_f + 2*L0_f/5) is underdetermined in (d_f, L0_f) when attempting to evaluate
+    filament_einstein_stokes_diffusion on chandrasekaran2024/run_stokes_einstein_vasp ('not
+    checked: the mapping cannot be inverted for these inputs'). Even if inverted,
+    chandrasekaran2024/vasp_diffusion_rate = 10 um^2/s is origin: reported (not measured), and
+    sekine2024 has no measured diffusion coefficient.
+    (2) Forward direction — all 31 runnable sekine2024 models (49 output ports) plus non-runnable
+    cgmd_2d_network against all 10 origin: measured Fig. 6D VASP-droplet morphology datums in
+    chandrasekaran2024 (exp_wt_disk_pct_1_7p5 = '70 +/- 13%', exp_gabmut_disk_pct_1_7p5 = '< 10%',
+    exp_gabmut_ring_pct_1_7p5 = '53 +/- 6%', exp_gabmut_shell_pct_1_7p5 = '37 +/- 4%', plus 6
+    digitized Fig. 6D bar curves; 490 pairs, 110 dimensionless matches): 0 valid cross-validations.
+    None of sekine2024's 11 dimensionless output ports (motion_anisotropy_ratio from
+    anisotropic_diffusion_ratio/cgmd_anisotropic_langevin/motion_anisotropy_ratio,
+    rk4_stability_number from cgmd_dimer_rk4[_corrected], force_conservation_ratio from
+    filament_force_distribution[_corrected], structure_factor from gaussian_structure_factor*) nor
+    non-runnable cgmd_2d_network models 3D VASP-actin droplet Shell/Ring/Disk percentage
+    abundances. All remaining 214 chandrasekaran2024 datums are non-measured (88 reported, 15
+    derived, 107 run, 1 assumed, 3 predicted).
+    (3) Reverse direction — all 42 runnable chandrasekaran2024 models (56 output ports) plus 4
+    non-runnable models against all 214 origin: measured sekine2024 datums (11,984 pairs, 3,691
+    dimension matches): 0 valid cross-validations. Specifically: (a) Tracked nanocluster
+    displacements (27 datums in Supp. Table 5: |dx| = 49.3-82.3 nm, |dy| = 58.4-107.4 nm,
+    distance = 94.7-141.3 nm over dt_frame_live = 0.32 s) vs shape-matched
+    brownian_noise_from_mobility/brownian_noise_stddev/langevin_overdamped_1d: sigma_B is 1D
+    Gaussian RMS step rather than E[|dx|] = sqrt(2/pi)*sigma_B (-20.21%) or 2D step (+25.33%),
+    mean_dx is signed drift (0 at f = 0), sekine2024 measures no nanocluster mobility/diffusivity
+    (and its 10x viscosity contradiction 1 vs 0.1 Pa*s spans single-filament sigma_B = 44.8 vs
+    141.7 nm and whole-cluster R_cl = 100-130 nm sigma_B = 32.9-37.5 vs 104.0-118.6 nm), and in
+    vivo clusters exhibit active circumferential motion bias |dy|/|dx| = 1.08-1.72 > 1 opposite to
+    passive Brownian anisotropy 1/sqrt(1.5) = 0.8165 < 1; (b) Periodic cable intervals
+    (cable_interval_in_vivo = 450 +/- 13.2 nm, d_figs1d_intervals): unmodeled by all 46
+    chandrasekaran2024 models; (c) Nanocluster aspect ratios (30 datums 1.9458-2.5340, 2 SDs, 2
+    KDEs) and major/minor lengths/areas (79 datums): 2D fusing cortical clusters (area grows +8.7%
+    from 0.0530 to 0.0576 um^2) are not constant-volume/constant-area droplets stretched by a
+    spanning filament (no R_drop or semi-axes in sekine2024; assumed L0_f_sim = 100 nm yields
+    inverted ratios < 1 [0.224-0.239 3D, 0.136-0.148 2D], Chandrasekaran's droplet baseline gives
+    5.568/9.870 and 3D surface area >= 12.57 um^2, and lammps_droplet_aspect_ratio takes
+    dimensionless lj_length inputs); (d) PIV mean velocities (d_fig5c_vx/vy, d_fig5f_vx/vy =
+    17.1-34.8 nm/s) and skeleton elongation (d_figs1g_skeleton, 0.0598 nm/s): cortical optical flow
+    and multi-cluster fusion are distinct from single-filament polymerization speed k_grow =
+    10.305 nm/s (172x faster than skeleton elongation, and bounding brownian_ratchet_growth_rate
+    below all PIV velocities for f >= 0); and (e) remaining 67 measured datums (pattern_orientation
+    31, p_value 12, frame_count 8, cluster_length_density 4, cluster_count/roi_count/sample_count/
+    pearson_correlation 2 each, orientation_coherency/junctional_intensity_ratio/tube_diameter/
+    tube_length 1 each) are completely unmodeled by chandrasekaran2024. See also
+    chandrasekaran2024/q_sekine2024_cross_validation_summary.
+
+
+

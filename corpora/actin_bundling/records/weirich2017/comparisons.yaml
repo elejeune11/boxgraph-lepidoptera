@@ -1,0 +1,469 @@
+# ==========================================================================
+# Reproduction and internal consistency checks of printed values
+# ==========================================================================
+
+- id: cmp_filament_len_1p5_vs_180nm
+  purpose: reproduction
+  computed: L_f_1p5_cp
+  printed: filament_length_avg_main
+  note: "At 1.5 mol % capping protein (Figs. 1C, 2A, 3A), 2.7 nm / 0.015 = 180 nm exactly matches '~180 nm'."
+
+- id: cmp_filament_len_1p0_vs_180nm
+  purpose: consistency
+  computed: L_f_1p0_cp
+  printed: filament_length_avg_main
+  note: "Main text p. 1 cites '~180 nm' alongside Fig. 1A / Movie S1, which use 1 mol % capping protein (giving 2.7 nm / 0.01 = 270 nm)."
+
+- id: cmp_filament_half_len_frap
+  purpose: reproduction
+  computed: L_half_1p5_cp_derived
+  printed: filament_half_length_frap_si
+  note: "Half of full 180 nm filament length at 1.5 mol % CP is L = 90 nm, matching SI p. 8 'length L ~ 90 nm' for axes 2L and 2r."
+
+- id: cmp_mesh_size_si
+  purpose: reproduction
+  computed: xi_mesh_pred_si
+  printed: mesh_size_dilute_main
+  conditions_ok: "SI p. 7 gives monomeric actin 2.64 uM vs rounded 2.6 uM in main text p. 1."
+
+- id: cmp_mesh_size_main
+  purpose: reproduction
+  computed: xi_mesh_pred_main
+  printed: mesh_size_dilute_main
+
+- id: cmp_filamin_conc_main
+  purpose: reproduction
+  computed: c_filamin_pred_main
+  printed: c_filamin_main
+  conditions_ok: "Main text p. 1 gives 2.6 uM actin and 0.26 uM filamin; Fig. 1A caption gives 10 mol % filamin."
+
+- id: cmp_filamin_conc_si
+  purpose: consistency
+  computed: c_filamin_pred_si
+  printed: c_filamin_main
+  conditions_ok: "SI p. 7 gives 2.64 uM monomeric actin vs 2.6 uM in main text p. 1 (0.264 vs 0.26 uM)."
+
+- id: cmp_enrichment_ratio_main
+  purpose: reproduction
+  computed: enrichment_ratio_pred_main
+  printed: c_actin_enrichment_factor
+  note: "250 uM / 2.6 uM = 96.15 vs printed '100-fold'."
+
+- id: cmp_enrichment_ratio_fig1b
+  purpose: reproduction
+  computed: enrichment_ratio_pred_fig1b
+  printed: c_actin_enrichment_factor
+  note: "250 uM / 2.5 uM = 100 exactly matches printed '100-fold'."
+
+- id: cmp_frap_tau_fig1c_vs_text
+  purpose: consistency
+  computed: tau_R_frap_fig1c
+  printed: tau_R_frap_text
+  note: "Fig. 1C caption prints exact fit tau_R = 880 s; main text p. 2 and SI p. 7 round to ~900 s."
+
+- id: cmp_frap_diff_scaling
+  purpose: reproduction
+  computed: D_frap_scaling_pred
+  printed: D_frap_est
+  conditions_ok: "Bleached region size is unstated in SI p. 7; prefactor: unknown."
+
+- id: cmp_se_viscosity_frap
+  purpose: reproduction
+  computed: eta_frap_pred
+  printed: eta_frap_est
+  conditions_ok: "Ambient temperature ~20 degC (SI p. 7) used for FRAP viscosity estimate (SI p. 8)."
+
+- id: cmp_se_diffusion_consistency
+  purpose: consistency
+  computed: D_se_from_printed_eta
+  printed: D_frap_est
+  conditions_ok: "Checks round-trip Stokes-Einstein D(eta ~ 3 Pa*s) = 0.313 x 10^-2 um^2/s vs D ~ 0.3 x 10^-2 um^2/s."
+
+- id: cmp_gamma_I_coal_5_printed_eta
+  purpose: reproduction
+  computed: gamma_I_pred_coal_5_printed_eta
+  printed: gamma_I_est_main
+  conditions_ok: "Evaluated with Table S1 5% coalescence gamma_I/eta (0.14 um/s, matching 5% filamin FRAP) and FRAP viscosity (~3 Pa*s)."
+
+- id: cmp_gamma_I_coal_5_chained_eta
+  purpose: reproduction
+  computed: gamma_I_pred_coal_5_chained_eta
+  printed: gamma_I_est_main
+  conditions_ok: "Chained from recomputed Stokes-Einstein viscosity (3.13 Pa*s) and Table S1 5% coalescence gamma_I/eta (0.14 um/s)."
+
+# ==========================================================================
+# Tactoid aspect ratio, anchoring strength, and coarsening
+# ==========================================================================
+
+- id: cmp_omega_from_ar_2p5_vs_range
+  purpose: reproduction
+  computed: omega_from_ar_2p5
+  printed: omega_range_fig2a_si
+  conditions_ok: "Inverted from main text rounded L/r ~ 3 at 2.5% filamin (giving omega = 2.25 vs SI p. 8 upper bound 2.2)."
+
+- id: cmp_omega_from_ar_15_vs_range
+  purpose: reproduction
+  computed: omega_from_ar_15
+  printed: omega_range_fig2a_si
+  conditions_ok: "Inverted from main text rounded L/r ~ 2 at 15% filamin (giving omega = 1.0 vs SI p. 8 lower bound 1.1)."
+
+- id: cmp_omega_5_fig2a_vs_tableS1
+  purpose: consistency
+  computed: omega_fig2a_5_filamin
+  printed: tableS1_coal_5_omega
+  note: "Main text p. 4 cites omega = 2 for 5% filamin (Fig. 2A/3D) vs Table S1 coalescence best fit 1.90 +/- 0.53."
+
+- id: cmp_omega_10_fig2a_vs_tableS1
+  purpose: consistency
+  computed: omega_fig2a_10_filamin
+  printed: tableS1_coal_10_omega
+  note: "Main text p. 4 cites omega = 1.4 for 10% filamin (Fig. 2A/3D), whereas Table S1 reports 1.87 +/- 0.07 (>6 sigma discrepancy)."
+
+- id: cmp_tactoid_ar_min_vs_scaling_w2
+  purpose: approximation
+  computed: ar_min_w2
+  printed: ar_scaling_w2
+  note: "Exact circular-arc free-energy minimization (2.862) vs asymptotic 2*omega^(1/2) (2.828) at omega = 2 (+1.2%)."
+
+- id: cmp_tactoid_ar_min_vs_scaling_w1p4
+  purpose: approximation
+  computed: ar_min_w1p4
+  printed: ar_scaling_w1p4
+  note: "Exact circular-arc free-energy minimization (2.417) vs asymptotic 2*omega^(1/2) (2.366) at omega = 1.4 (+2.2%)."
+
+- id: cmp_tactoid_ar_min_vs_scaling_contr2p5
+  purpose: approximation
+  computed: ar_min_contr2p5
+  printed: ar_scaling_contr2p5
+  note: "Exact circular-arc minimization (9.781) vs asymptotic 2*omega^(1/2) (9.778) at omega = 23.9 (+0.04%)."
+
+- id: cmp_coarsening_exponent_vs_theory
+  purpose: validation
+  computed: coarsening_exponent_theory
+  printed: coarsening_exponent_measured
+  conditions_ok: "Paper compares measured tactoid coarsening exponent alpha = 0.47 +/- 0.01 (Fig. 3A) with theoretical coalescence exponent alpha = 0.5 (Ref. 28)."
+
+- id: cmp_strain_contr_2p5_vs_range
+  purpose: consistency
+  computed: strain_contr_2p5_pred
+  printed: bundle_contractile_strain_range
+  conditions_ok: "Checks consistency of added L_i and Table S1 L_eq with stated 20-60% contractile strain range."
+
+- id: cmp_strain_contr_10_vs_range
+  purpose: consistency
+  computed: strain_contr_10_pred
+  printed: bundle_contractile_strain_range
+  conditions_ok: "Checks consistency of added L_i and Table S1 L_eq with stated 20-60% contractile strain range."
+
+- id: cmp_ode_Lfinal_coal_10_vs_Leq
+  purpose: consistency
+  computed: ode_Lfin_coal_10
+  printed: tableS1_coal_10_Leq
+  note: "Verifies ODE trajectory relaxes accurately to equilibrium length L_eq by t_max = 250 s."
+
+- id: cmp_ode_Lfinal_contr_10_vs_Leq
+  purpose: consistency
+  computed: ode_Lfin_contr_10
+  printed: tableS1_contr_10_Leq
+  note: "Verifies ODE contraction trajectory relaxes accurately to equilibrium length L_eq by t_max = 1500 s."
+
+# ==========================================================================
+# Capillary instability: printed (1+omega) vs corrected (1+2*omega) vs exact integral
+# ==========================================================================
+
+- id: cmp_cap_lambda_max_printed
+  purpose: reproduction
+  computed: cap_lam_max_printed
+  printed: capillary_lambda_max_predicted
+  note: "Printed formula 2*pi*R_0*sqrt(2*(1+omega)) gives 3.08 um at R_0 = 200 nm, omega = 2 vs printed '~4 um'."
+
+- id: cmp_cap_lambda_max_corrected
+  purpose: reproduction
+  computed: cap_lam_max_corrected
+  printed: capillary_lambda_max_predicted
+  note: "Corrected formula 2*pi*R_0*sqrt(2*(1+2*omega)) gives 3.97 um at R_0 = 200 nm, omega = 2, matching printed '~4 um'."
+
+- id: cmp_cap_lambda_max_printed_vs_obs
+  purpose: validation
+  computed: cap_lam_max_printed
+  printed: capillary_lambda_observed
+  conditions_ok: "SI p. 9 compares predicted lambda_max against observed pearling wavelength ~10 um (noting entanglement elasticity increases experimental scale)."
+
+- id: cmp_cap_lambda_max_corrected_vs_obs
+  purpose: validation
+  computed: cap_lam_max_corrected
+  printed: capillary_lambda_observed
+  conditions_ok: "SI p. 9 compares predicted lambda_max against observed pearling wavelength ~10 um."
+
+- id: cmp_cap_ratio_printed_vs_obs
+  purpose: validation
+  computed: cap_lam_to_R0_printed
+  printed: capillary_lambda_to_R0_observed
+  conditions_ok: "Predicted lambda_max / R_0 = 15.4 vs observed ~10-100x bundle radius."
+
+- id: cmp_cap_ratio_corrected_vs_obs
+  purpose: validation
+  computed: cap_lam_to_R0_corrected
+  printed: capillary_lambda_to_R0_observed
+  conditions_ok: "Corrected lambda_max / R_0 = 19.9 vs observed ~10-100x bundle radius."
+
+- id: cmp_cap_dF_printed_vs_integral
+  purpose: approximation
+  computed: cap_dF_printed_probe
+  printed: cap_dF_integral_probe
+  note: "Compares printed delta F [(1+omega)k^2 - 1] against direct numerical quadrature of printed integrals A and A_omega at u = 5 nm."
+
+- id: cmp_cap_dF_corrected_vs_integral
+  purpose: approximation
+  computed: cap_dF_corrected_probe
+  printed: cap_dF_integral_probe
+  note: "Compares corrected delta F [(1+2*omega)k^2 - 1] against direct numerical quadrature of printed integrals A and A_omega at u = 5 nm."
+
+- id: cmp_cap_lam_roundtrip_printed
+  purpose: consistency
+  computed: cap_lam_from_kmax_printed
+  printed: cap_lam_max_printed
+
+- id: cmp_cap_lam_roundtrip_corrected
+  purpose: consistency
+  computed: cap_lam_from_kmax_corrected
+  printed: cap_lam_max_corrected
+
+# ==========================================================================
+# Audit additions: additional printed-result & internal consistency checks
+# ==========================================================================
+
+- id: cmp_enrichment_ratio_entropic
+  purpose: reproduction
+  computed: enrichment_ratio_pred_entropic
+  printed: c_actin_enrichment_factor
+  note: "Directly pairs p. 2 col 1 entropic nematic concentration (~250 uM, Ref. 23) with dilute bulk concentration (2.6 uM): 250 / 2.6 = 96.15 vs printed '100-fold'."
+
+- id: cmp_frap_diff_scaling_fig1c
+  purpose: reproduction
+  computed: D_frap_scaling_fig1c_pred
+  printed: D_frap_est
+  conditions_ok: "Evaluates FRAP scaling D ~ L_b^2 / tau_R using Fig. 1C exact fit tau_R = 880 s (prefactor: unknown)."
+
+- id: cmp_gamma_I_coal_10_printed_eta
+  purpose: reproduction
+  computed: gamma_I_pred_coal_10_printed_eta
+  printed: gamma_I_est_main
+  conditions_ok: "Evaluated with Table S1 10% coalescence gamma_I/eta (0.11 +/- 0.03 um/s) and printed FRAP viscosity (~3 Pa*s, 5% filamin) -> 330 nN/m vs '~300 nN/m'."
+
+- id: cmp_gamma_I_coal_10_chained_eta
+  purpose: reproduction
+  computed: gamma_I_pred_coal_10_chained_eta
+  printed: gamma_I_est_main
+  conditions_ok: "Chained from recomputed Stokes-Einstein viscosity (3.13 Pa*s, 5% filamin) and Table S1 10% coalescence gamma_I/eta (0.11 +/- 0.03 um/s) -> 345 nN/m vs '~300 nN/m'."
+
+- id: cmp_filament_len_1p5_vs_short_range
+  purpose: consistency
+  computed: L_f_1p5_cp
+  printed: filament_length_short_range_si
+  note: "Checks 1.5 mol % CP filament length (180 nm = 0.18 um) against the lower bound of SI p. 8 'between 180 nm and 2 um'."
+
+- id: cmp_filament_len_0p5_vs_short_range
+  purpose: consistency
+  computed: L_f_0p5_cp
+  printed: filament_length_short_range_si
+  note: "Checks 0.5 mol % CP filament length (540 nm = 0.54 um) lies within SI p. 8 'between 180 nm and 2 um'."
+
+- id: cmp_filament_len_0p25_vs_short_range
+  purpose: consistency
+  computed: L_f_0p25_cp
+  printed: filament_length_short_range_si
+  note: "Checks 0.25 mol % CP filament length (1080 nm = 1.08 um) lies within SI p. 8 'between 180 nm and 2 um'."
+
+- id: cmp_tactoid_ar_min_vs_scaling_contr10
+  purpose: approximation
+  computed: ar_min_contr10
+  printed: ar_scaling_contr10
+  note: "Exact circular-arc free-energy minimization (7.751) vs asymptotic 2*omega^(1/2) (7.746) at omega = 15.0 (+0.06%)."
+
+- id: cmp_strain_contr_5_vs_range
+  purpose: consistency
+  computed: strain_contr_5_pred
+  printed: bundle_contractile_strain_range
+  conditions_ok: "Checks consistency of added L_i (9.0 um) and Table S1 5% contraction L_eq (5.87 um) with stated 20-60% contractile strain range."
+
+- id: cmp_ode_Lfinal_coal_5_vs_Leq
+  purpose: consistency
+  computed: ode_Lfin_coal_5
+  printed: tableS1_coal_5_Leq
+  note: "Verifies 5% coalescence ODE trajectory relaxes accurately to equilibrium length L_eq = 2.74 um by t_max = 250 s."
+
+- id: cmp_ode_Lfinal_coal_10_fig2a_vs_Leq
+  purpose: consistency
+  computed: ode_Lfin_coal_10_fig2a
+  printed: tableS1_coal_10_Leq
+  note: "Verifies 10% coalescence ODE trajectory at Fig. 2A omega = 1.4 relaxes accurately to L_eq = 6.04 um by t_max = 250 s."
+
+- id: cmp_ode_Lfinal_contr_2p5_vs_Leq
+  purpose: consistency
+  computed: ode_Lfin_contr_2p5
+  printed: tableS1_contr_2p5_Leq
+  note: "Verifies 2.5% contraction ODE trajectory relaxes accurately to equilibrium length L_eq = 5.77 um by t_max = 1500 s."
+
+- id: cmp_ode_Lfinal_contr_5_vs_Leq
+  purpose: consistency
+  computed: ode_Lfin_contr_5
+  printed: tableS1_contr_5_Leq
+  note: "Verifies 5% contraction ODE trajectory relaxes accurately to equilibrium length L_eq = 5.87 um by t_max = 1500 s."
+
+# ==========================================================================
+# Digitized figure comparisons (Figs. 2A, 3A, 3C inset, 3D, S2C, S2D)
+# ==========================================================================
+
+- id: cmp_fig2a_omega_from_ar
+  purpose: reproduction
+  computed: fig2a_omega_from_ar_pred
+  printed: d_fig2a_omega
+  note: "Tests omega = (L/r)^2 / 4 applied to Fig. 2A's 4 measured aspect ratios (2.938, 2.808, 2.438, 2.037) against Fig. 2A's plotted green diamonds (2.164, 1.977, 1.488, 1.039); agrees to ~0.2% across all 4 points."
+
+- id: cmp_fig3a_fit_measured_alpha
+  purpose: reproduction
+  computed: fig3a_L_fit_measured_alpha_pred
+  printed: d_fig3a_length_fit
+  note: "Tests L ~ t^alpha (prefactor: unknown) at the caption's 4-dataset mean alpha = 0.47 +/- 0.01 against Fig. 3A's plotted dashed power-law line (whose own digitized log-log slope is 0.494)."
+
+- id: cmp_fig3a_fit_theory_alpha
+  purpose: validation
+  computed: fig3a_L_fit_theory_alpha_pred
+  printed: d_fig3a_length_fit
+  conditions_ok: "Compares universal coalescence coarsening exponent alpha = 0.5 (Ref. 28) against Fig. 3A's plotted dashed line (1.5 mol % CP, 5 mol % filamin)."
+  note: "Tests L ~ t^0.5 (prefactor: unknown) against Fig. 3A's plotted dashed power-law line (digitized slope 0.494)."
+
+- id: cmp_fig3a_data_measured_alpha
+  purpose: fit_quality
+  computed: fig3a_L_data_measured_alpha_pred
+  printed: d_fig3a_length_data
+  note: "Tests L ~ t^0.47 (prefactor: unknown) against Fig. 3A's 16 measured average tactoid lengths (+/-1 SD error bars)."
+
+- id: cmp_fig3a_data_theory_alpha
+  purpose: validation
+  computed: fig3a_L_data_theory_alpha_pred
+  printed: d_fig3a_length_data
+  conditions_ok: "Compares theoretical coalescence coarsening exponent alpha = 0.5 (Ref. 28) against Fig. 3A's 16 measured lengths (1.5 mol % CP, 5 mol % filamin)."
+  note: "Tests L ~ t^0.5 (prefactor: unknown) against Fig. 3A's 16 measured average tactoid lengths (whose empirical log-log slope is 0.492)."
+
+- id: cmp_fig3c_inset_linear_fit
+  purpose: reproduction
+  computed: fig3c_inset_tau_linear_pred
+  printed: d_fig3c_inset_linear_fit
+  conditions_ok: "Fig. 3C inset pools 5% and 10% filamin coalescence events (1 mol % CP), whereas eta_frap_est comes from 5% filamin (1.5 mol % CP); gamma_eff = 300 nN/m."
+  note: "Tests zero-intercept tau = (eta/gamma_eff)*(L_i - L_f) (slope 10 s/um) against Fig. 3C inset's dashed linear regression line (slope 13.7 s/um, non-zero intercept -8.3 s)."
+
+- id: cmp_fig3d_w2p0_printed
+  purpose: reproduction
+  computed: fig3d_tau_w2p0_printed_pred
+  printed: d_fig3d_theory_w2p0
+  note: "Tests literally printed ODE (dF/dt + D = 0 with D = (1/2) V eta [...]) at omega = 2.0, Table S1 5% L_eq = 2.74 um against Fig. 3D's lower dashed curve (v_cap*tau = 614 vs 1278 nm, 2.08x too fast)."
+
+- id: cmp_fig3d_w2p0_rayleigh2
+  purpose: reproduction
+  computed: fig3d_tau_w2p0_rayleigh2_pred
+  printed: d_fig3d_theory_w2p0
+  note: "Tests Rayleigh 2*Phi corrected ODE variant at omega = 2.0, Table S1 5% L_eq = 2.74 um against Fig. 3D's lower dashed curve (v_cap*tau = 1228 vs 1278 nm, within 4%)."
+
+- id: cmp_fig3d_w1p4_printed
+  purpose: reproduction
+  computed: fig3d_tau_w1p4_printed_pred
+  printed: d_fig3d_theory_w1p4
+  note: "Tests literally printed ODE (with 1/2 in D) at omega = 1.4, Table S1 10% L_eq = 6.04 um against Fig. 3D's upper dashed curve (v_cap*tau = 1577 vs 3607 nm, 2.29x too fast)."
+
+- id: cmp_fig3d_w1p4_rayleigh2
+  purpose: reproduction
+  computed: fig3d_tau_w1p4_rayleigh2_pred
+  printed: d_fig3d_theory_w1p4
+  note: "Tests Rayleigh 2*Phi corrected ODE variant at omega = 1.4, Table S1 10% L_eq = 6.04 um against Fig. 3D's upper dashed curve (v_cap*tau = 3153 vs 3607 nm, within 13%)."
+
+- id: cmp_fig3d_w1p4_fixedV_rayleigh2
+  purpose: reproduction
+  computed: fig3d_tau_w1p4_fixedV_rayleigh2_pred
+  printed: d_fig3d_theory_w1p4
+  note: "Tests SI p. 9's explicit claim that Fig. 3D's omega = 2.0 and 1.4 curves were generated at fixed volume (V = 1.088 um^3, L_eq = 2.455 um): even with Rayleigh 2*Phi, v_cap*tau = 1299 vs 3607 nm (2.78x too fast), settling q_fig3d_omega_vs_volume_separation."
+
+- id: cmp_figS2c_Fhat_w0
+  purpose: reproduction
+  computed: figS2c_Fhat_w0_pred
+  printed: d_figS2c_Fhat_w0
+  note: "Directly tests tactoid_rescaled_free_energy F/(gamma_I V^(2/3)) at omega = 0 against Fig. S2C blue curve; pred/read = 1.8453 = (2*pi)^(1/3) across all 9 points."
+
+- id: cmp_figS2c_Fhat_w0p5
+  purpose: reproduction
+  computed: figS2c_Fhat_w0p5_pred
+  printed: d_figS2c_Fhat_w0p5
+  note: "Directly tests tactoid_rescaled_free_energy F/(gamma_I V^(2/3)) at omega = 0.5 against Fig. S2C orange curve; pred/read = 1.8453 = (2*pi)^(1/3) across all 9 points."
+
+- id: cmp_figS2c_Fhat_w2
+  purpose: reproduction
+  computed: figS2c_Fhat_w2_pred
+  printed: d_figS2c_Fhat_w2
+  note: "Directly tests tactoid_rescaled_free_energy F/(gamma_I V^(2/3)) at omega = 2 against Fig. S2C green curve; pred/read = 1.8453 = (2*pi)^(1/3) across all 8 points."
+
+- id: cmp_figS2d_numerical_min
+  purpose: reproduction
+  computed: figS2d_ar_min_pred
+  printed: d_figS2d_numerical_min
+  note: "Tests numerical free-energy minimization (tactoid_equilibrium_minimizer) across 14 points spanning omega = 0.1 to 4.0 in Fig. S2D."
+
+- id: cmp_figS2d_scaling_small_w
+  purpose: reproduction
+  computed: figS2d_ar_small_w_pred
+  printed: d_figS2d_scaling_small_w
+  note: "Tests piecewise asymptotic scaling L/r = 1 + omega (tactoid_aspect_ratio_scaling) against Fig. S2D red curve (omega = 0.08 to 0.5)."
+
+- id: cmp_figS2d_scaling_large_w
+  purpose: reproduction
+  computed: figS2d_ar_large_w_pred
+  printed: d_figS2d_scaling_large_w
+  note: "Tests piecewise asymptotic scaling L/r = 2*omega^(1/2) (tactoid_aspect_ratio_scaling) against Fig. S2D green curve (omega = 1.2 to 4.0)."
+
+- id: cmp_figS2d_large_omega_eq
+  purpose: reproduction
+  computed: figS2d_ar_large_omega_eq_pred
+  printed: d_figS2d_scaling_large_w
+  note: "Tests large-omega asymptotic formula L/r = 2*omega^(1/2) (tactoid_aspect_ratio_large_omega) against Fig. S2D green curve (omega = 1.2 to 4.0)."
+
+- id: cmp_fig3c_master_curve
+  purpose: reproduction
+  computed: fig3c_master_curve_pred
+  printed: d_fig3c_master_curve
+  note: "Tests exp(-t/tau) (tactoid_exponential_master_curve) against the solid black master exponential curve in Fig. 3C across t/tau = 0.2 to 11.5."
+
+- id: cmp_fig4d_2p5pct_collapse
+  purpose: fit_quality
+  computed: fig4d_master_2p5_pred
+  printed: d_fig4d_2p5pct
+  note: "Tests single-exponential collapse exp(-t/tau) against binned 2.5% filamin bundle contraction data in Fig. 4D."
+
+- id: cmp_fig4d_5pct_collapse
+  purpose: fit_quality
+  computed: fig4d_master_5_pred
+  printed: d_fig4d_5pct
+  note: "Tests single-exponential collapse exp(-t/tau) against binned 5.0% filamin bundle contraction data in Fig. 4D."
+
+- id: cmp_fig4d_10pct_collapse
+  purpose: fit_quality
+  computed: fig4d_master_10_pred
+  printed: d_fig4d_10pct
+  note: "Tests single-exponential collapse exp(-t/tau) against binned 10.0% filamin bundle contraction data in Fig. 4D."
+
+- id: cmp_figS2c_Fhat_norm_w0
+  purpose: reproduction
+  computed: figS2c_Fhat_norm_w0_pred
+  printed: d_figS2c_Fhat_w0
+  note: "Tests (2*pi)^(1/3)-normalized free energy (2*f + omega*g)/g^(2/3) against Fig. S2C omega = 0 curve."
+
+- id: cmp_figS2c_Fhat_norm_w0p5
+  purpose: reproduction
+  computed: figS2c_Fhat_norm_w0p5_pred
+  printed: d_figS2c_Fhat_w0p5
+  note: "Tests (2*pi)^(1/3)-normalized free energy (2*f + omega*g)/g^(2/3) against Fig. S2C omega = 0.5 curve."
+
+- id: cmp_figS2c_Fhat_norm_w2
+  purpose: reproduction
+  computed: figS2c_Fhat_norm_w2_pred
+  printed: d_figS2c_Fhat_w2
+  note: "Tests (2*pi)^(1/3)-normalized free energy (2*f + omega*g)/g^(2/3) against Fig. S2C omega = 2 curve."

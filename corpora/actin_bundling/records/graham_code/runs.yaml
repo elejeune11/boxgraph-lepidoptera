@@ -1,0 +1,760 @@
+# ==========================================================================
+# 1. Live notebook component tests (wetting, kbend, surfaceF, discretization, wetted frac)
+# ==========================================================================
+- id: run_edfig5c_ke64_code_gavd
+  model: notebook_wetting_tension
+  inputs: {gamma_AVR: gamma_avr_code, gamma_AVD: gamma_avd_code}
+  sweep: {e: target_edfig5c_ke64}
+  settings: {}
+  outputs: {gamma: gamma_edfig5c_code_gavd}
+  note: "Calls live getsurfaceTension() with the notebook's hardcoded gamma_AVD = 0.5e4 pN/nm (half of Table 1's 1e4 pN/nm)."
+
+- id: run_edfig5c_ke64_paper_gavd
+  model: notebook_wetting_tension
+  inputs: {gamma_AVR: gamma_avr_code, gamma_AVD: paper_gamma_avd}
+  sweep: {e: target_edfig5c_ke64}
+  settings: {}
+  outputs: {gamma: gamma_edfig5c_paper_gavd}
+  note: "Calls live getsurfaceTension() with Table 1's gamma_AVD = 1e4 pN/nm; confirms code sign matches Extended Data Fig. 5c (settling q_eqS4_S5_wetting_sign_inverted)."
+
+- id: run_kbend_linear_n1
+  model: notebook_bundle_kbend
+  inputs: {Nfil: nfil_default_code, lcyl: lcyl_fixed_code, kflex_fil: kflex_rigidity_f_code, alpha: alpha_default_code}
+  settings: {nonlinearbool: false}
+  outputs: {k_bend: kbend_linear_n1, k_flex_bundle: kflex_linear_n1}
+  note: "Linear getkbend() for Nfil = 1, lcyl = 100 nm (729 pN*nm vs generatering line 697's 726.93 pN*nm)."
+
+- id: run_kbend_linear_n20
+  model: notebook_bundle_kbend
+  inputs: {Nfil: test_nfil_20_added, lcyl: lcyl_fixed_code, kflex_fil: kflex_rigidity_f_code, alpha: alpha_default_code}
+  settings: {nonlinearbool: false}
+  outputs: {k_bend: kbend_linear_n20, k_flex_bundle: kflex_linear_n20}
+  note: "Linear getkbend() for Nfil = 20 (T_ring = 300 nm), lcyl = 100 nm."
+
+- id: run_kbend_nonlinear_n20
+  model: notebook_bundle_kbend
+  inputs: {Nfil: test_nfil_20_added, lcyl: lcyl_fixed_code, kflex_fil: kflex_rigidity_f_code, alpha: sample_alpha_code}
+  settings: {nonlinearbool: true}
+  outputs: {k_bend: kbend_nonlinear_n20, k_flex_bundle: kflex_nonlinear_n20}
+  note: "Nonlinear 10-mode Bathe getkbend() for Nfil = 20, alpha = 10000 (sample call line 672) using hidden constants df=10, delta=50, t=15, Ef=2600 pN/nm^2."
+
+- id: run_fig5c_surface_1um
+  model: notebook_surface_energy
+  inputs: {R: paper_fig5c_radius_1um, gamma_I: paper_fig5c_gamma_i}
+  sweep: {AR: target_fig5c_surface}
+  settings: {}
+  outputs: {E_surf: esurf_fig5c_1um}
+  note: "Live getsurfaceF() with SI Section 2.11 literal R = 1 um, gamma_I = 1 pN (1000x too large vs Fig. 5c)."
+
+- id: run_fig5c_surface_1nm
+  model: notebook_surface_energy
+  inputs: {R: fig5c_radius_1nm_added, gamma_I: paper_fig5c_gamma_i}
+  sweep: {AR: target_fig5c_surface}
+  settings: {}
+  outputs: {E_surf: esurf_fig5c_1nm}
+  note: "Live getsurfaceF() with consistent R = 1 nm, gamma_I = 1 pN; reproduces Fig. 5c surface energy across AR = 1 to 9.8."
+
+- id: run_ring_disc_d1
+  model: notebook_ring_discretization
+  inputs: {D_droplet: paper_diam_1um, lcyl_fixed: lcyl_fixed_code, lcyl_scale_frac: lcyl_scale_frac_code, noisefactor: noisefactor_code, ellipse_com: ellipse_com_sim_code}
+  settings: {lcylscalewithD: true, seed: 0}
+  outputs: {n_reps: nreps_d1, n_beads_final: nbeads_d1, L_ratio_final: lratio_d1, noise_amp: noise_amp_code_run}
+  note: "Live generatering() discretization at D = 1 um: Nreps = 21, Nbeads_final = 30 (29 segments -> L_final/D = 2.9, not 3.1), noise_amp = 1.0 nm (not 0.1 nm)."
+
+- id: run_ring_disc_d1p5
+  model: notebook_ring_discretization
+  inputs: {D_droplet: sample_diam_code, lcyl_fixed: lcyl_fixed_code, lcyl_scale_frac: lcyl_scale_frac_code, noisefactor: noisefactor_code, ellipse_com: ellipse_com_sim_code}
+  settings: {lcylscalewithD: true, seed: 0}
+  outputs: {n_reps: nreps_d1p5, n_beads_final: nbeads_d1p5, L_ratio_final: lratio_d1p5, noise_amp: noise_amp_d1p5}
+  note: "Live generatering() discretization at sample D = 1.5 um: IEEE-754 int(1.5*1e3/(1.5*0.1*1e3)) = int(9.999999999999998) = 9 gives Nbeads_final = 29 (28 segments -> L_final/D = 2.8)."
+
+- id: run_wetted_frac_edfig6_11seg
+  model: notebook_wetted_fraction_check
+  inputs: {D_droplet: paper_diam_1um, lcyl: lcyl_fixed_code, ellipse_com: ellipse_com_sim_code}
+  settings: {scenario: edfig6_11seg}
+  outputs: {wetted_fraction: wf_edfig6_11seg}
+  note: "Live getlinefracinsidedroplet() on 12-bead (11-segment = 1.1 um) chord in 1.0 um droplet -> 10/11 = 0.9091 (matching Extended Data Fig. 6A's 0.9092)."
+
+- id: run_wetted_frac_edfig6_12seg
+  model: notebook_wetted_fraction_check
+  inputs: {D_droplet: paper_diam_1um, lcyl: lcyl_fixed_code, ellipse_com: ellipse_com_sim_code}
+  settings: {scenario: edfig6_12seg}
+  outputs: {wetted_fraction: wf_edfig6_12seg}
+  note: "Live getlinefracinsidedroplet() on 13-bead (12-segment = 1.2 um) chord in 1.0 um droplet -> 10/12 = 0.8333."
+
+- id: run_wetted_frac_two_intersect_bug
+  model: notebook_wetted_fraction_check
+  inputs: {D_droplet: paper_diam_1um, lcyl: lcyl_fixed_code, ellipse_com: ellipse_com_sim_code}
+  settings: {scenario: single_chord_two_intersect}
+  outputs: {wetted_fraction: wf_two_intersect_bug}
+  note: "Exposes lines 313-314 bug in getlinefracinsidedroplet() (= overwrite and inside/outside swap): returns 0.1667 instead of 0.8333 for a 1.2 um single segment crossing a 1.0 um droplet."
+
+# ==========================================================================
+# 2. Live notebook 2D SLSQP runs AS WRITTEN against all 10 digitized AR curves
+# ==========================================================================
+- id: run_nb_fig4f
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4f_droplet_ar}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_fig4f, total_energy: e_nb_fig4f, surface_energy: es_nb_fig4f, filament_energy: ef_nb_fig4f, a: a_nb_fig4f, b: b_nb_fig4f}
+  note: "Live notebook SLSQP across all 22 Fig. 4f ring thicknesses (D = 1 um, gamma_I = 5.0 pN, Nbeads = 30 / 2.9 D)."
+
+- id: run_nb_fig4g_d1_gI1
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_1
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4g_d1_gI1}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_fig4g_d1_gI1, total_energy: e_nb_fig4g_d1_gI1, surface_energy: es_nb_fig4g_d1_gI1, filament_energy: ef_nb_fig4g_d1_gI1, a: a_nb_fig4g_d1_gI1, b: b_nb_fig4g_d1_gI1}
+  note: "Live notebook SLSQP for Fig. 4g (D = 1.0 um, gamma_I = 1.0 pN)."
+
+- id: run_nb_fig4g_d1_gI5
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4g_d1_gI5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_fig4g_d1_gI5, total_energy: e_nb_fig4g_d1_gI5, surface_energy: es_nb_fig4g_d1_gI5, filament_energy: ef_nb_fig4g_d1_gI5, a: a_nb_fig4g_d1_gI5, b: b_nb_fig4g_d1_gI5}
+  note: "Live notebook SLSQP for Fig. 4g (D = 1.0 um, gamma_I = 5.0 pN)."
+
+- id: run_nb_fig4g_d2_gI1
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_2um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_1
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4g_d2_gI1}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_fig4g_d2_gI1, total_energy: e_nb_fig4g_d2_gI1, surface_energy: es_nb_fig4g_d2_gI1, filament_energy: ef_nb_fig4g_d2_gI1, a: a_nb_fig4g_d2_gI1, b: b_nb_fig4g_d2_gI1}
+  note: "Live notebook SLSQP for Fig. 4g (D = 2.0 um, gamma_I = 1.0 pN, lcyl = 0.1*D = 200 nm, Nbeads = 30)."
+
+- id: run_nb_fig4g_d2_gI1_fixed_lcyl
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_2um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_1
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4g_d2_gI1}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: false, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_fig4g_d2_gI1_fixed, total_energy: e_nb_fig4g_d2_gI1_fixed, surface_energy: es_nb_fig4g_d2_gI1_fixed, filament_energy: ef_nb_fig4g_d2_gI1_fixed, a: a_nb_fig4g_d2_gI1_fixed, b: b_nb_fig4g_d2_gI1_fixed}
+  note: "Contrast run with Table 1's fixed lcyl = 100 nm (lcylscalewithD = False, Nbeads = 61) at D = 2.0 um, gamma_I = 1.0 pN: overshoots published asymptote 1.701 to 1.890."
+
+- id: run_nb_fig4g_d2_gI5
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_2um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4g_d2_gI5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_fig4g_d2_gI5, total_energy: e_nb_fig4g_d2_gI5, surface_energy: es_nb_fig4g_d2_gI5, filament_energy: ef_nb_fig4g_d2_gI5, a: a_nb_fig4g_d2_gI5, b: b_nb_fig4g_d2_gI5}
+  note: "Live notebook SLSQP for Fig. 4g (D = 2.0 um, gamma_I = 5.0 pN, lcyl = 200 nm, Nbeads = 30)."
+
+- id: run_nb_edfig7b_d1_gI2p5
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_2p5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7b_d1_gI2p5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_edfig7b, total_energy: e_nb_edfig7b, surface_energy: es_nb_edfig7b, filament_energy: ef_nb_edfig7b, a: a_nb_edfig7b, b: b_nb_edfig7b}
+  note: "Live notebook SLSQP for Extended Data Fig. 7b (D = 1.0 um, gamma_I = 2.5 pN)."
+
+- id: run_nb_edfig7d_d1_gI7p5
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_7p5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7d_d1_gI7p5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_edfig7d, total_energy: e_nb_edfig7d, surface_energy: es_nb_edfig7d, filament_energy: ef_nb_edfig7d, a: a_nb_edfig7d, b: b_nb_edfig7d}
+  note: "Live notebook SLSQP for Extended Data Fig. 7d (D = 1.0 um, gamma_I = 7.5 pN)."
+
+- id: run_nb_edfig7e_d1_gI10
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_10
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7e_d1_gI10}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_edfig7e, total_energy: e_nb_edfig7e, surface_energy: es_nb_edfig7e, filament_energy: ef_nb_edfig7e, a: a_nb_edfig7e, b: b_nb_edfig7e}
+  note: "Live notebook SLSQP for Extended Data Fig. 7e (D = 1.0 um, gamma_I = 10.0 pN)."
+
+- id: run_nb_edfig7f_d1_gI12p5
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_12p5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7f_d1_gI12p5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_edfig7f, total_energy: e_nb_edfig7f, surface_energy: es_nb_edfig7f, filament_energy: ef_nb_edfig7f, a: a_nb_edfig7f, b: b_nb_edfig7f}
+  note: "Live notebook SLSQP for Extended Data Fig. 7f (D = 1.0 um, gamma_I = 12.5 pN)."
+
+- id: run_nb_edfig7g_d1_gI15
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_15
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7g_d1_gI15}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_nb_edfig7g, total_energy: e_nb_edfig7g, surface_energy: es_nb_edfig7g, filament_energy: ef_nb_edfig7g, a: a_nb_edfig7g, b: b_nb_edfig7g}
+  note: "Live notebook SLSQP for Extended Data Fig. 7g (D = 1.0 um, gamma_I = 15.0 pN)."
+
+# --- Protocol and unassisted pure-FD SLSQP verification runs ---
+- id: run_nb_bench_300nm
+  model: notebook_droplet_ring_slsqp
+  replicates: 3
+  inputs:
+    D_droplet: paper_diam_1um
+    T_ring: test_tring_300nm_added
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 12}
+  outputs: {aspect_ratio: ar_nb_bench_300nm, total_energy: e_nb_bench_300nm, surface_energy: es_nb_bench_300nm, filament_energy: ef_nb_bench_300nm, a: a_nb_bench_300nm, b: b_nb_bench_300nm}
+  note: "3-replicate benchmark at D = 1 um, gamma_I = 5 pN, T_ring = 300 nm for ftol and polish_maxiter refinements."
+
+- id: run_nb_extension_5nm
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    T_ring: rcyl_init_code
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: extension, use_warmstart: true, polish_maxiter: 12}
+  outputs: {aspect_ratio: ar_nb_ext_5nm, total_energy: e_nb_ext_5nm, surface_energy: es_nb_ext_5nm, filament_energy: ef_nb_ext_5nm, a: a_nb_ext_5nm, b: b_nb_ext_5nm}
+  note: "Executes full 21-cycle generatering() extension via live initializestraight2 + extendstraight at Nfil = 1 (T_ring = 5 nm, D = 1 um, gamma_I = 5 pN); confirms exact agreement with circular initialization (AR = 1.0358)."
+
+- id: run_nb_pure_fd_5nm
+  model: notebook_droplet_ring_slsqp
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    T_ring: rcyl_init_code
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: false, polish_maxiter: 12}
+  outputs: {aspect_ratio: ar_nb_fd_5nm, total_energy: e_nb_fd_5nm, surface_energy: es_nb_fd_5nm, filament_energy: ef_nb_fd_5nm, a: a_nb_fd_5nm, b: b_nb_fd_5nm}
+  note: "Unassisted pure finite-difference SLSQP calling unmodified ns['gettotalenergy'] with zero warm-start at D = 1 um, gamma_I = 5 pN, T_ring = 5 nm (Nfil = 1); confirms warm-start + polish matches to < 0.0005 in AR."
+
+# ==========================================================================
+# 3. Diagnostic +2 filament-index offset variant against all 10 digitized AR curves
+# ==========================================================================
+- id: run_nb_plus2_fig4f
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4f_droplet_ar}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_fig4f, total_energy: e_plus2_fig4f, surface_energy: es_plus2_fig4f, filament_energy: ef_plus2_fig4f, a: a_plus2_fig4f, b: b_plus2_fig4f}
+  note: "Diagnostic Nfil + 2 variant across all 22 Fig. 4f droplets."
+
+- id: run_nb_plus2_fig4g_d1_gI1
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_1
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4g_d1_gI1}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_fig4g_d1_gI1, total_energy: e_plus2_fig4g_d1_gI1, surface_energy: es_plus2_fig4g_d1_gI1, filament_energy: ef_plus2_fig4g_d1_gI1, a: a_plus2_fig4g_d1_gI1, b: b_plus2_fig4g_d1_gI1}
+  note: "Diagnostic Nfil + 2 variant for Fig. 4g (D = 1.0 um, gamma_I = 1.0 pN)."
+
+- id: run_nb_plus2_fig4g_d1_gI5
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4g_d1_gI5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_fig4g_d1_gI5, total_energy: e_plus2_fig4g_d1_gI5, surface_energy: es_plus2_fig4g_d1_gI5, filament_energy: ef_plus2_fig4g_d1_gI5, a: a_plus2_fig4g_d1_gI5, b: b_plus2_fig4g_d1_gI5}
+  note: "Diagnostic Nfil + 2 variant for Fig. 4g (D = 1.0 um, gamma_I = 5.0 pN)."
+
+- id: run_nb_plus2_fig4g_d2_gI1
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_2um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_1
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4g_d2_gI1}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_fig4g_d2_gI1, total_energy: e_plus2_fig4g_d2_gI1, surface_energy: es_plus2_fig4g_d2_gI1, filament_energy: ef_plus2_fig4g_d2_gI1, a: a_plus2_fig4g_d2_gI1, b: b_plus2_fig4g_d2_gI1}
+  note: "Diagnostic Nfil + 2 variant for Fig. 4g (D = 2.0 um, gamma_I = 1.0 pN)."
+
+- id: run_nb_plus2_fig4g_d2_gI5
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_2um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_fig4g_d2_gI5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_fig4g_d2_gI5, total_energy: e_plus2_fig4g_d2_gI5, surface_energy: es_plus2_fig4g_d2_gI5, filament_energy: ef_plus2_fig4g_d2_gI5, a: a_plus2_fig4g_d2_gI5, b: b_plus2_fig4g_d2_gI5}
+  note: "Diagnostic Nfil + 2 variant for Fig. 4g (D = 2.0 um, gamma_I = 5.0 pN)."
+
+- id: run_nb_plus2_edfig7b_d1_gI2p5
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_2p5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7b_d1_gI2p5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_edfig7b, total_energy: e_plus2_edfig7b, surface_energy: es_plus2_edfig7b, filament_energy: ef_plus2_edfig7b, a: a_plus2_edfig7b, b: b_plus2_edfig7b}
+  note: "Diagnostic Nfil + 2 variant for Extended Data Fig. 7b (D = 1.0 um, gamma_I = 2.5 pN)."
+
+- id: run_nb_plus2_edfig7d_d1_gI7p5
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_7p5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7d_d1_gI7p5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_edfig7d, total_energy: e_plus2_edfig7d, surface_energy: es_plus2_edfig7d, filament_energy: ef_plus2_edfig7d, a: a_plus2_edfig7d, b: b_plus2_edfig7d}
+  note: "Diagnostic Nfil + 2 variant for Extended Data Fig. 7d (D = 1.0 um, gamma_I = 7.5 pN)."
+
+- id: run_nb_plus2_edfig7e_d1_gI10
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_10
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7e_d1_gI10}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_edfig7e, total_energy: e_plus2_edfig7e, surface_energy: es_plus2_edfig7e, filament_energy: ef_plus2_edfig7e, a: a_plus2_edfig7e, b: b_plus2_edfig7e}
+  note: "Diagnostic Nfil + 2 variant for Extended Data Fig. 7e (D = 1.0 um, gamma_I = 10.0 pN)."
+
+- id: run_nb_plus2_edfig7f_d1_gI12p5
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_12p5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7f_d1_gI12p5}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_edfig7f, total_energy: e_plus2_edfig7f, surface_energy: es_plus2_edfig7f, filament_energy: ef_plus2_edfig7f, a: a_plus2_edfig7f, b: b_plus2_edfig7f}
+  note: "Diagnostic Nfil + 2 variant for Extended Data Fig. 7f (D = 1.0 um, gamma_I = 12.5 pN)."
+
+- id: run_nb_plus2_edfig7g_d1_gI15
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 1
+  inputs:
+    D_droplet: paper_diam_1um
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_15
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  sweep: {T_ring: target_edfig7g_d1_gI15}
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_edfig7g, total_energy: e_plus2_edfig7g, surface_energy: es_plus2_edfig7g, filament_energy: ef_plus2_edfig7g, a: a_plus2_edfig7g, b: b_plus2_edfig7g}
+  note: "Diagnostic Nfil + 2 variant for Extended Data Fig. 7g (D = 1.0 um, gamma_I = 15.0 pN)."
+
+- id: run_nb_plus2_bench_300nm
+  model: notebook_droplet_ring_slsqp_nfil_plus2
+  replicates: 3
+  inputs:
+    D_droplet: paper_diam_1um
+    T_ring: test_tring_300nm_added
+    R_fil: r_fil_code
+    rcyl_init: rcyl_init_code
+    L_p: lp_fil_code
+    kBT_ring: kbt_ring_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_I: paper_gamma_i_5
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+    alpha: alpha_default_code
+  settings: {seed: 0, ftol: 1.0e-6, lcylscalewithD: true, nonlinearbool: false, init_mode: circle, use_warmstart: true, polish_maxiter: 10}
+  outputs: {aspect_ratio: ar_plus2_bench, total_energy: e_plus2_bench, surface_energy: es_plus2_bench, filament_energy: ef_plus2_bench, a: a_plus2_bench, b: b_plus2_bench}
+  note: "Single-point benchmark for refinement check on diagnostic Nfil + 2 variant."
+
+# ==========================================================================
+# 4. Fig. 4h critical ring thickness (AR = 1.1) & IEEE-754 sawtooth check
+# ==========================================================================
+- id: run_nb_fig4h_gI5
+  model: notebook_critical_ring_thickness
+  replicates: 1
+  inputs:
+    gamma_I: paper_gamma_i_5
+    AR_thresh: ring_ar_accept_max_code
+    R_fil: r_fil_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+  sweep: {D_droplet: target_fig4h_gI5}
+  settings: {seed: 0, lcylscalewithD: true, ftol: 1.0e-7}
+  outputs: {T_crit: tcrit_nb_fig4h_gI5, n_beads_final: nbeads_fig4h_gI5}
+  note: "Live notebook T_crit(D) at gamma_I = 5.0 pN preserving IEEE-754 int(D*1e3/(D*0.1*1e3)) = 9 dips at D = 1.5, 1.75, 3.0, 3.5 um."
+
+- id: run_nb_fig4h_gI15
+  model: notebook_critical_ring_thickness
+  replicates: 1
+  inputs:
+    gamma_I: paper_gamma_i_15
+    AR_thresh: ring_ar_accept_max_code
+    R_fil: r_fil_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+  sweep: {D_droplet: target_fig4h_gI15}
+  settings: {seed: 0, lcylscalewithD: true, ftol: 1.0e-7}
+  outputs: {T_crit: tcrit_nb_fig4h_gI15, n_beads_final: nbeads_fig4h_gI15}
+  note: "Live notebook T_crit(D) at gamma_I = 15.0 pN preserving IEEE-754 Nbeads = 29 dips at D = 1.5, 1.75, 3.0, 3.5 um."
+
+- id: run_nb_tcrit_bench_d2
+  model: notebook_critical_ring_thickness
+  replicates: 3
+  inputs:
+    D_droplet: paper_diam_2um
+    gamma_I: paper_gamma_i_5
+    AR_thresh: ring_ar_accept_max_code
+    R_fil: r_fil_code
+    kflex_fil: kflex_rigidity_f_code
+    lcyl_fixed: lcyl_fixed_code
+    lcyl_scale_frac: lcyl_scale_frac_code
+    kstr: kstr_default_code
+    gamma_AVR: gamma_avr_code
+    gamma_AVD: gamma_avd_code
+    noisefactor: noisefactor_code
+    ellipse_com: ellipse_com_sim_code
+  settings: {seed: 0, lcylscalewithD: true, ftol: 1.0e-7}
+  outputs: {T_crit: tcrit_bench_d2, n_beads_final: nbeads_bench_d2}
+  note: "Single-point benchmark (D = 2.0 um, gamma_I = 5.0 pN) for ftol refinement on notebook_critical_ring_thickness."

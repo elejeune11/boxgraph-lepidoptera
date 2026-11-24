@@ -756,5 +756,356 @@
     Debye screening length to test screening_length_salt_scaling (lambda_R_phys ~ 1/sqrt(n),
     prefactor: unknown) at mgcl2_min_conc = 2 mM.
 
+- id: q_zwicker2015_salr_vs_active_emulsion_arrest
+  kind: reading
+  about:
+    - rpa_spinodal_dispersion
+    - stability_function_eq8
+    - potential_fourier
+    - real_space_potential
+    - bundle_size_eq8
+    - finite_bundle_boundary_eq8
+    - macrophase_boundary_k0
+    - screening_length_salt_scaling
+    - landau_wilson_free_energy_eq4_eq7
+    - rel_zwicker2015_rpa_modelB_derived_eqF1_corrected
+    - rel_zwicker2015_rpa_modelB_approx_eqF1_corrected
+    - rel_zwicker2015_rpa_modelB_vs_eqF1_printed
+    - rel_zwicker2015_static_lifshitz_derived_eqF1_corrected
+    - rel_zwicker2015_bundle_size_unscreened_scales_eq16
+    - rel_zwicker2015_bundle_size_unscreened_vs_eq19_Rstab
+    - zwicker2015/homogeneous_dispersion_eqF1_corrected
+    - zwicker2015/homogeneous_dispersion_eqF1
+    - zwicker2015/homogeneous_instability_eqF2_corrected
+    - zwicker2015/binary_single_radius_eq16
+    - zwicker2015/binary_stability_radius_eq19
+    - zwicker2015/Rbar_kb_scaling
+    - zwicker2015/Rstab_kb_scaling
+    - zwicker2015/reaction_diffusion_length_l
+    - zwicker2015/outer_profile_eqC1
+    - zwicker2015/binary_coarsening_rate_eq18
+    - zwicker2015/autocatalytic_growth_eq22
+    - zwicker2015/autocatalytic_stability_Qstab_eq25
+  citation:
+    page: 2
+    printed_page: "28001-p1"
+    quote: "microphase separation of directed polymers with"
+    where: text
+  text: >
+    Cross-paper ModelAtlas synthesis comparing dutta2016 (equilibrium SALR microphase separation in
+    parallel aligned polymers) and zwicker2015 (nonequilibrium suppression of Ostwald ripening in
+    chemically active emulsions). Neither paper cites the other (0 shared references across 45 and
+    46 bibliographic entries; 0 stated cross-record relations; 0 cited.yaml links — zwicker2015
+    data.yaml has no from_source entries and dutta2016's two from_source entries cite Borukhov et al.
+    ref-11). However, zwicker2015 (Sec. I, p. 1) explicitly remarks that first-order chemical
+    reactions in an infinite active Cahn-Hilliard emulsion are formally related to phase separation
+    with unscreened long-range repulsive interactions (citing Christensen, Elder & Fogedby 1996
+    [ref-22], Motoyama & Ohta 1997 [ref-28], and Muratov 2002 [ref-30]). ModelAtlas testing reveals
+    one exact asymptotic bridge, one local Type-Is normal-form correspondence, and five deep
+    physical/mathematical divergences:
+    (1) Exact unscreened-Coulomb Model-B bridge (Ohta-Kawasaki correspondence): expressing
+    dutta2016's quadratic Landau-Wilson / RPA free-energy curvature chi^-1(k) = 1/(rho* b(k)) +
+    beta V(k) (Eqs. 5 and 8) under conserved Model-B dynamics (helper model rpa_spinodal_dispersion,
+    lam_B = -k^2 * chi^-1(k)) and taking the unscreened 2D Coulomb limit (lambda_R -> oo, zero salt)
+    plus long-wavelength gradient expansion to O(k^4) reduces symbolically (verified in
+    rel_zwicker2015_rpa_modelB_derived_eqF1_corrected) and quantitatively (verified to 0.51% max
+    relative error inside the unstable peak band in rel_zwicker2015_rpa_modelB_approx_eqF1_corrected)
+    to zwicker2015's exact active dispersion Eq. (F1_corrected), lam_q_norm = -(k_f+k_b)/k_0 +
+    c_spin*(q*w)^2 - (1/4)*(q*w)^4. The physical dictionary maps unscreened Coulomb strength
+    2*pi*Gamma_R <-> chemical turnover rate (k_f+k_b)/k_0 = (w/l)^2, net attraction minus chain
+    entropy pi*Gamma_A*lambda_A^2 - 1/rho* <-> bulk spinodal curvature c_spin*(q*w/k)^2, and
+    Gaussian range plus Debye chain stiffness pi*Gamma_A*lambda_A^4/4 + 1/(6*rho*) <-> interfacial
+    gradient stiffness (1/4)*(q*w/k)^4. Testing the same dictionary against zwicker2015's printed
+    Eq. (F1) fails (not_verified in rel_zwicker2015_rpa_modelB_vs_eqF1_printed), independently
+    corroborating zwicker2015/q_appF_factor_of_2_error.
+    (2) Local finite-lambda_R Lifshitz normal form vs. global phase-diagram incompatibility: even at
+    finite screening length lambda_R without Model-B dynamics, dutta2016's static Eq. (8) margin
+    g_static(k) = -rho* beta V(k) b(k) - 1 expands near its Lifshitz point (e.g. Fig. 4 consistent
+    Lifshitz point Gamma_A = 138.14, lambda_R = 0.2306 where c_0 = 0, c_2 = 0, c_4 = -0.0164 < 0)
+    into the exact same quartic Type-Is normal form (verified symbolically in
+    rel_zwicker2015_static_lifshitz_derived_eqF1_corrected). Globally, however, finite Debye
+    screening fundamentally separates the phase diagrams: in dutta2016, the k = 0 damping
+    |c_0| = 1 - F(0) vanishes and flips sign at macrophase_boundary_k0, producing a macroscopic
+    infinite-bundle phase and a finite-parameter Lifshitz point (Fig. 4); in zwicker2015, the q = 0
+    damping -(k_f + k_b) is strictly negative for EVERY active rate k_f + k_b > 0, so macrophase
+    separation occurs only at the singular passive limit k_f = k_b = 0 and no Lifshitz point exists
+    at finite reaction rates.
+    (3) Equilibrium thermodynamics vs. broken detailed balance and subcritical nucleation / active
+    cores: dutta2016 is a purely equilibrium thermodynamic spinodal theory (detailed balance holds;
+    only quadratic Eq. 8 around the uniform nematic melt is evaluated, leaving nonlinear Eq. 7
+    unsolved). By contrast, zwicker2015 (Sec. II.B, p. 3) proves that chemical reactions obeying
+    detailed balance relax to a homogeneous mixed state with no droplets; finite active emulsions
+    strictly require nonequilibrium fuel-driven breaking of detailed balance. Moreover, zwicker2015's
+    primary stable-emulsion regime (Sec. III, blue wedges in Fig. 6b, 3*k_f < k_b < 16*k_0*(phi_0^B)^3)
+    lies outside the linear spinodal (lambda(q) < 0 for all q), requiring subcritical nucleation
+    above R_crit = gamma*beta/phi_0^B and arresting Ostwald ripening via diffusive-reactive balance
+    (Eq. 18); and Sec. IV's autocatalytic droplets (A + B -> 2B) actually accelerate Ostwald
+    ripening unless localized catalytic cores Q_i > Q_stab (Eq. 25) pin droplet positions externally
+    (no counterpart in translationally invariant dutta2016).
+    (4) Three distinct arrest-size scaling exponents and failure at finite lambda_R: under the
+    unscreened Ohta-Kawasaki dictionary (Gamma_R <-> k_b at fixed k_f/k_b), dutta2016/bundle_size_eq8
+    (D* = 2*pi/k_min) scales as Gamma_R^(-1/2), matching zwicker2015/binary_single_radius_eq16
+    (R_bar ~ k_b^(-1/2) ~ l, verified in rel_zwicker2015_bundle_size_unscreened_scales_eq16, max
+    slope diff 1.3e-3) and Appendix F's linear neutral-stability edge 2*pi/q_min ~ (k_f+k_b)^(-1/2),
+    while its static peak / onset mode 2*pi/k_peak ~ Gamma_R^(-1/4) matches Appendix F's onset
+    wavelength 2*pi/q_* ~ (w*l)^(1/2) ~ (k_f+k_b)^(-1/4). Neither reproduces zwicker2015's nonlinear
+    sharp-interface multi-droplet Ostwald-arrest scaling R_stab ~ k_b^(-1/3) (Eq. 19 / strong-
+    segregation Ohta-Kawasaki [22, 28]; refuted in rel_zwicker2015_bundle_size_unscreened_vs_eq19_Rstab
+    with exact slope gap 1/6). Furthermore, in dutta2016's actual finite-lambda_R screened regime
+    (Figs. 2-4), D*(Gamma_R) obeys no power law at all (local log-slope ranges from -2.6 to -10.6
+    across Fig. 3a and diverges as (Gamma_R - Gamma_R_inf)^(-1/2) at the k = 0 macrophase boundary).
+    (5) Dimensionality of real-space Helmholtz profiles, rejected too_plain coincidences, and symbol
+    collisions: dutta2016/real_space_potential's repulsive core Gamma_R*K_0(r/lambda_R) is the 2D
+    screened Helmholtz Green's function (integrating 3D Yukawa e^(-r/lambda_R)/r along parallel
+    z-aligned chains, decaying as r^(-1/2)*e^(-r/lambda_R)), whereas zwicker2015/outer_profile_eqC1
+    (phi_0^B + (phi_+^B - phi_0^B)*(R/r)*e^((R-r)/l)) is the 3D spherical Helmholtz profile decaying
+    as r^(-1)*e^(-r/l) — same screened-Laplacian structure in 2D vs. 3D, so not algebraically
+    identical. Likewise, screening_length_salt_scaling (lambda_R ~ n^(-1/2)) and
+    reaction_diffusion_length_l (l = [D_B/(k_f+k_b)]^(1/2)) share the generic Helmholtz screening
+    exponent -1/2 (too_plain) across unrelated equilibrium ionic concentration n [M] vs. kinetic
+    turnover rate k_f + k_b [1/s] and are intentionally left unlinked. Seven symbols collide with
+    incompatible meanings and dimensions: beta (1/(k_B T) vs. Laplace coefficient 2/(b*psi)), kappa
+    (WLC bending rigidity [energy]*[length] vs. gradient penalty [energy]/[length]), k (dimensionless
+    wavenumber vs. autocatalytic rate [1/s]), k_0 (critical wavenumber vs. interface diffusion rate
+    D_B/w^2 [1/s]), lambda (screening/attraction ranges vs. coarsening/growth rate [1/s]), b (Debye
+    form factor vs. double-well modulus [energy]/[length]^3), and F (dimensionless stability function
+    vs. total Cahn-Hilliard free energy [energy]).
 
+- id: q_weirich2017_no_cross_validation
+  kind: unstated_input
+  about:
+    - bundle_size_eq8
+    - bundle_size_eq8_mixed2pi
+    - finite_bundle_boundary_eq8
+    - finite_bundle_boundary_eq8_mixed2pi
+    - macrophase_boundary_k0
+    - stability_function_eq8
+    - stability_function_eq8_mixed2pi
+    - potential_fourier
+    - potential_fourier_cyclic
+    - real_space_potential
+    - debye_factor_b
+    - rpa_spinodal_dispersion
+    - in_plane_rg_def
+    - screening_length_salt_scaling
+    - dimensionless_screening_length_def
+    - dimensionless_areal_density_def
+    - dimensionless_wavenumber_def
+    - effective_tension_def
+    - wlc_aligned_hamiltonian_eq1_eq3
+    - landau_wilson_free_energy_eq4_eq7
+    - q_audit_actin_quantity_and_salr
+    - weirich2017/filamin_length_main
+    - weirich2017/bundle_initial_radius_main
+    - weirich2017/bundle_initial_length
+    - weirich2017/filament_length_tactoid_range
+    - weirich2017/filamin_frac_tactoid_range
+    - weirich2017/d_fig1d_gas
+    - weirich2017/d_fig1d_liquid_droplets
+    - weirich2017/d_fig1d_fluid_bundles
+    - weirich2017/d_fig1d_viscoelastic_networks
+    - weirich2017/tactoid_length_growth_60min
+    - weirich2017/tactoid_length_homogeneous_si
+    - weirich2017/d_fig3a_length_data
+    - weirich2017/d_fig3b_pre_upper
+    - weirich2017/d_fig3b_pre_lower
+    - weirich2017/d_fig3b_coalesced_data
+    - weirich2017/aspect_ratio_2p5_filamin
+    - weirich2017/aspect_ratio_15_filamin
+    - weirich2017/d_fig2a_aspect_ratio
+    - weirich2017/d_fig3a_aspect_ratio_data
+    - weirich2017/capillary_lambda_observed
+    - weirich2017/capillary_lambda_to_R0_observed
+    - weirich2017/bundle_shape_change_timescale
+    - weirich2017/d_fig3c_inset_5pct
+    - weirich2017/d_fig3c_inset_10pct
+    - weirich2017/d_fig3d_5pct_data
+    - weirich2017/d_fig3d_10pct_data
+    - weirich2017/bundle_contractile_strain_range
+    - weirich2017/d_fig4e_contractile_strain
+    - weirich2017/d_fig4c_2p5pct_data
+    - weirich2017/d_fig4c_10pct_data
+    - weirich2017/d_fig4d_2p5pct
+    - weirich2017/d_fig4d_5pct
+    - weirich2017/d_fig4d_10pct
+    - weirich2017/d_fig1c_frap_data
+    - weirich2017/d_figS1_bleached
+    - weirich2017/d_figS1_unbleached
+    - weirich2017/q_dutta2016_distinct_mechanisms_no_relation
+    - weirich2017/q_dutta2016_inverted_salr_regime_in_weirich2017
+    - weirich2017/q_dutta2016_no_cross_validation
+  citation:
+    page: 5
+    printed_page: "28001-p4"
+    quote: "the origin F (k = 0) = 1 in ﬁg. 2(b) causing macroscopic"
+    where: "text, Eq. 8 & Figs. 2-4"
+  text: >
+    No cross-record validations are entered in validations.yaml for dutta2016's 20 models (18
+    runnable, 2 non-runnable) against weirich2017's 35 origin: measured data (12 scalars, 23
+    digitized figure datasets). Neither paper cites the other (0 shared references across 45 and 49
+    bibliographic entries), and no runnable model of dutta2016 validly predicts any measured
+    quantity of weirich2017 on Weirich et al.'s experimental conditions:
+    (1) Exact global no-finite-bundle theorem (lambda_A >= 2*lambda_R) and qualitative macrophase
+    accord without quantitative cross-validation: in weirich2017's actin polymerization buffer (SI
+    p. 7: 50 mM KCl, 1 mM MgCl2, 10 mM imidazole pH 7.5, 0.2 mM EGTA, 300 uM ATP at ~20 degC), the
+    ionic strength is I ~= 53-59 mM, yielding a Debye screening length lambda_D ~= 1.25-1.32 nm,
+    whereas the flexible filamin cross-linker spans lambda_{A,phys} ~ 150 nm (filamin_length_main,
+    p. 3). The resulting attraction-to-repulsion range ratio lambda_A / lambda_R = lambda_{A,phys}
+    / lambda_D ~= 113-120 >> 2 (independent of transverse length normalization R_g) inverts
+    dutta2016's SALR ordering by ~60x above the exact global no-finite-bundle bound lambda_A >=
+    2*lambda_R established in weirich2017/q_dutta2016_inverted_salr_regime_in_weirich2017. Under
+    Eq. (8) — identically in both consistent (bundle_size_eq8, finite_bundle_boundary_eq8) and
+    mixed-2*pi (bundle_size_eq8_mixed2pi, finite_bundle_boundary_eq8_mixed2pi) conventions —
+    lambda_A >= 2*lambda_R strictly enforces F(k) < F(0) for all k > 0 whenever beta V(0) < 0 (and
+    beta V(k) > 0 for all k > 0 whenever beta V(0) >= 0), so both bundle_size_eq8 and
+    bundle_size_eq8_mixed2pi return None (no finite bundle) for every (rho*, Gamma_R, Gamma_A) and
+    every choice of R_g. Reaching a finite-bundle phase at lambda_{A,phys} = 150 nm would require
+    lambda_D > 75 nm, i.e., ionic strength I < 16.5 uM (~3,200-3,500x lower salt than Weirich's
+    buffer and far below the 1 mM MgCl2 required to polymerize actin). At k = 0, attraction
+    outweighs electrostatic repulsion by lambda_A^2/(2*lambda_R^2) ~= 6,400-7,200, and at
+    Weirich's ~50 nm inter-filament spacing inside ~250 uM tactoids (rho ~= 4.06 x 10^-4 nm^-2),
+    2D Debye repulsion K_0(49.6/lambda_D) ~= 10^-18-10^-17 is negligible. Qualitatively,
+    weirich2017's observation of unbounded macroscopic liquid-liquid phase separation into
+    coarsening nematic tactoids (L ~ t^(0.47 +/- 0.01)) and droplet coalescence rather than
+    equilibrium finite-diameter bundles accords with dutta2016's lambda_A >= 2*lambda_R
+    macrophase-only (k = 0) regime, but this qualitative regime compatibility produces no numeric
+    model prediction matching any measured observable in weirich2017.
+    (2) Exhaustive exclusion of all 35 origin: measured data in weirich2017:
+    (a) Initial fluid bundle radius (1 datum: weirich2017/bundle_initial_radius_main, "~200" nm,
+    bundle_radius, p. 5, Fig. 4A-B): (i) dimension and quantity mismatch — bundle_size_eq8 and
+    bundle_size_eq8_mixed2pi output only dimensionless_bundle_size (D* = 2*pi/k_min or 1/k_min,
+    scaled by single-chain thermal wandering R_g = sqrt(L*k_B T/epsilon)) and
+    bundle_size_over_screening_length, while dutta2016 has no model outputting bundle_size_physical
+    in nm; (ii) exact non-existence — both models return None across all (rho*, Gamma_R, Gamma_A)
+    at Weirich's lambda_A/lambda_R ~= 113-120 >> 2; (iii) physical phenomenon mismatch — "~200" nm
+    is a rapidly assembled (~1 min), non-equilibrium, thermodynamically UNSTABLE initial column
+    radius near the liquid-solid boundary that destabilizes via Rayleigh-Plateau pearling or
+    20-60% axial contraction over ~10 min, not an equilibrium finite bundle; (iv) unmeasured
+    SALR inputs (Gamma_R, Gamma_A, aligning tension epsilon, R_g); and (v) "~200" carries no
+    printed precision (no verdict).
+    (b) Phase-diagram windows and Fig. 1D phase boundaries (6 data: filamin_frac_tactoid_range
+    "1 to 10" %, filament_length_tactoid_range "0.1 to 1" um, and Fig. 1D d_fig1d_gas,
+    d_fig1d_liquid_droplets, d_fig1d_fluid_bundles, d_fig1d_viscoelastic_networks):
+    macrophase_boundary_k0 and finite_bundle_boundary_eq8* output dimensionless_screening_length
+    (lambda_R), not filamin_mole_fraction (%) or filament_length (um); Fig. 1D maps the transition
+    from a dilute 3D isotropic gas (c_A = 2.6 uM, xi ~ 1 um >> L_f) to nematic liquid tactoids,
+    transient fluid bundles, and arrested networks at constant salt, whereas dutta2016 explicitly
+    excludes the isotropic-nematic transition (p. 3), assumes a dense pre-aligned melt, and lacks
+    measured (Gamma_R, Gamma_A(f_fil), epsilon).
+    (c) Macroscopic tactoid and bundle lengths and coarsening/coalescence trajectories (7 data:
+    bundle_initial_length "> 50" um, tactoid_length_growth_60min "~1 to 4" um,
+    tactoid_length_homogeneous_si "~5" um, Fig. 3A d_fig3a_length_data, and Fig. 3B
+    d_fig3b_pre_upper, d_fig3b_pre_lower, d_fig3b_coalesced_data): dutta2016 models neither
+    droplet/tactoid geometry, interfacial tension, nor coarsening/coalescence; its only [length]
+    outputs (in_plane_rg_def single-chain wandering R_g and screening_length_salt_scaling Debye
+    length lambda_R_phys ~ 1/sqrt(n)) are physically unrelated to macroscopic multi-filament
+    tactoid or bundle lengths.
+    (d) Tactoid aspect ratios (4 data: aspect_ratio_2p5_filamin "~3", aspect_ratio_15_filamin
+    "~2", Fig. 2A d_fig2a_aspect_ratio, Fig. 3A d_fig3a_aspect_ratio_data): dutta2016 has no
+    interfacial tension gamma_I, anisotropic anchoring gamma_A, anchoring strength omega, or
+    droplet aspect-ratio output L/r.
+    (e) Axial Rayleigh-Plateau capillary pearling wavelength and ratio (2 data:
+    capillary_lambda_observed "~10" um, capillary_lambda_to_R0_observed "~10 to 100"): axial
+    varicose instability along a fluid cylinder is orthogonal to dutta2016's transverse spinodal
+    density modulation (bundle_size_eq8's D* and D*/lambda_R are neither axial pearling wavelength
+    lambda nor lambda/R_0).
+    (f) Dynamical timescales and coalescence relaxation times (5 data:
+    bundle_shape_change_timescale "~10" min, Fig. 3C inset d_fig3c_inset_5pct, d_fig3c_inset_10pct,
+    and Fig. 3D d_fig3d_5pct_data, d_fig3d_10pct_data): dutta2016 is purely static equilibrium
+    thermodynamics with zero [time]-outputting models and no viscosity eta (reconstructed
+    rpa_spinodal_dispersion.lam_B is a dimensionless unit-mobility transverse growth rate, not a
+    physical droplet relaxation time in seconds).
+    (g) Bundle contractile strain and axial contraction curves (7 data:
+    bundle_contractile_strain_range "20 to 60" %, Fig. 4E d_fig4e_contractile_strain, Fig. 4C
+    d_fig4c_2p5pct_data, d_fig4c_10pct_data, and Fig. 4D d_fig4d_2p5pct, d_fig4d_5pct,
+    d_fig4d_10pct): dutta2016 fixes polymer contour length L between two parallel planes and
+    models no axial shortening or strain.
+    (h) FRAP fluorescence recovery curves (3 data: Fig. 1C d_fig1c_frap_data and Fig. S1
+    d_figS1_bleached, d_figS1_unbleached): dutta2016 has no diffusion, photobleaching, or
+    fluorescence intensity model.
+    (3) Non-measured entries in weirich2017 (81 entries with origin derived, fitted, estimated,
+    reported, or predicted — e.g., c_actin_tactoid_est = 250 uM, D_frap_est ~ 0.3 x 10^-2 um^2/s,
+    eta_frap_est ~ 3 Pa*s, gamma_I_est_main ~ 300 nN/m, coarsening_exponent_measured = 0.47 +/-
+    0.01, tau_R_frap_*, omega_*, Table S1 dynamic fits, and textbook filament_diameter_frap_si
+    "~7" nm): none is origin: measured, weirich2017 never measures or varies Debye screening
+    length (leaving screening_length_salt_scaling untested), and geometric F-actin diameter
+    ("~7" nm) is physically distinct from thermal transverse wandering R_g = sqrt(L*k_B T/epsilon)
+    (q_audit_actin_quantity_and_salr) with unmeasured aligning tension epsilon.
+    See also weirich2017/q_dutta2016_no_cross_validation for the reverse direction.
+
+- id: q_zwicker2015_no_cross_validation
+  kind: unstated_input
+  about:
+    - bundle_size_eq8
+    - bundle_size_eq8_mixed2pi
+    - finite_bundle_boundary_eq8
+    - finite_bundle_boundary_eq8_mixed2pi
+    - macrophase_boundary_k0
+    - stability_function_eq8
+    - rpa_spinodal_dispersion
+    - screening_length_actin
+    - filament_thickness_actin
+    - q_audit_actin_quantity_and_salr
+    - q_zwicker2015_salr_vs_active_emulsion_arrest
+    - rel_zwicker2015_rpa_modelB_derived_eqF1_corrected
+    - rel_zwicker2015_rpa_modelB_approx_eqF1_corrected
+    - rel_zwicker2015_rpa_modelB_vs_eqF1_printed
+    - rel_zwicker2015_static_lifshitz_derived_eqF1_corrected
+    - rel_zwicker2015_bundle_size_unscreened_scales_eq16
+    - rel_zwicker2015_bundle_size_unscreened_vs_eq19_Rstab
+    - zwicker2015/q_dutta2016_no_cross_validation
+    - zwicker2015/homogeneous_dispersion_eqF1_corrected
+    - zwicker2015/homogeneous_dispersion_eqF1
+    - zwicker2015/binary_single_radius_eq16
+    - zwicker2015/binary_stability_radius_eq19
+    - zwicker2015/reaction_diffusion_length_l
+    - zwicker2015/autocatalytic_emulsion_solver
+  citation:
+    page: 6
+    printed_page: "28001-p5"
+    quote: "In our theoretical model, the parallel alignment is con-"
+    where: "Conclusion and discussion, p. 28001-p5 (cross-validation assessment with zwicker2015)"
+  text: >
+    No cross-record validations are entered in validations.yaml for dutta2016 models against
+    zwicker2015 data (0 entries in both directions), because both dutta2016 and zwicker2015 are
+    purely theoretical papers containing zero origin: measured empirical data:
+    (1) Audit of zwicker2015/data.yaml (108 total entries): 0 origin: measured entries. Its 56
+    origin: predicted entries comprise 11 text/caption analytical fixed-point, droplet-count, and
+    homogeneous-cutoff results plus 45 digitized theoretical curves, nullclines, boundaries, and
+    fixed points from Figs. 3-10; its 30 origin: assumed entries are dimensionless active-emulsion
+    parameters (psi, k_f/k_0, k_b/k_0, k_b/k_f, k_f/k_b, k/k_0, phibar, phiB_bar, V_s/w^3,
+    Q/(w^3*k_0)); its 11 origin: run entries are digitized XMDS2 continuum PDE simulation curves
+    and markers (Figs. 5a-d and 9a; prose on pp. 6, 7, and 9 referring to "measuring" droplet
+    volumes or coarsening rates lambda describes numerical PDE outputs, not experiments); its 5
+    origin: derived entries are dimensionless fractions/ratios (phi0B_fig3a_target,
+    phi0B_Bdroplet_bound, phi0B_bicontinuous, phi0B_Adroplet_bound, Rbar_over_l_at_quarter); its 4
+    origin: reported entries are 2 dimensionless stability bounds (kb_over_kf_Bdroplet_bound = 3,
+    kf_over_kb_Adroplet_bound = 3) and 2 Appendix E PDE grid counts (128, 32); and its 2 origin:
+    fitted entries (fig5a_dV_fit_data, fig5c_dV_fit_data) are exponential fits to XMDS2 PDE volume
+    differences Delta V(t). All 22 quantitative panels (58 figure readings) are nondimensionalized
+    by w and k_0 = D_B/w^2 with zero printed dimensional material constants. Hence none of
+    dutta2016's 20 models (18 runnable, 2 non-runnable) has any empirical measurement in
+    zwicker2015 to validate against.
+    (2) Audit of dutta2016/data.yaml (23 total entries): 0 origin: measured entries. Its 11
+    origin: predicted entries are the 11 digitized dimensionless theoretical curves across Figs.
+    2-4 (Fig. 1 is a schematic); its 12 origin: reported entries are 10 dimensionless SALR plot
+    parameters (rho_star_1, Gamma_R_fig2_3, lambda_R_fig2_3a, lambda_A_fig2_3,
+    Gamma_A_fig2_no_bundle, Gamma_A_fig2_finite, Gamma_A_fig2_macro, Gamma_A_fig3b, Gamma_R_fig4,
+    lambda_A_fig4) plus 2 secondary order-of-magnitude F-actin values cited from Borukhov et al.
+    [ref-11] (screening_length_actin = "~1" nm, filament_thickness_actin = "~8" nm). Neither cited
+    F-actin value is origin: measured, neither has printed precision, and zwicker2015's
+    dimensionless active-emulsion models contain no Debye electrostatics, ionic screening length,
+    or polymer filament diameter (see also q_audit_actin_quantity_and_salr). Hence none of
+    zwicker2015's 81 runnable models (76 role: model including 8 variant_of and 2 reconstructed
+    PDEs, 5 role: processing) has any empirical measurement in dutta2016 to validate against.
+    (3) Neither paper cites the other (0 shared references across 45 and 46 bibliographic entries;
+    0 cited.yaml links). All genuine theoretical bridges are already captured by the 6 cross-record
+    ModelAtlas relations in dutta2016/relations.yaml (3 derived_from, 2 scales_as, 1
+    approximated_by: 4 verified plus 2 diagnostic not_verified confirming printed Eq. F1's
+    factor-of-2 error and the -1/2 vs. -1/3 scaling gap against Eq. 19; analyzed in
+    q_zwicker2015_salr_vs_active_emulsion_arrest). Zero direct or transitive same_as relations
+    connect dutta2016 and zwicker2015 anywhere in the corpus (dutta2016 has 0 same_as edges;
+    zwicker2015's cross-record same_as edges reach only hannezo2015 and frohoff2021), so 0
+    automatic Synthesis same_as cross-checks apply between dutta2016 and zwicker2015.
+    See also zwicker2015/q_dutta2016_no_cross_validation for the symmetric record.
 

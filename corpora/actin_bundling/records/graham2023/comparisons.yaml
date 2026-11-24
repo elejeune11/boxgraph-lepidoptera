@@ -1,0 +1,310 @@
+# ==========================================================================
+# 1. Reproduction of printed model predictions and derived values
+# ==========================================================================
+- id: cmp_ring_thickness_exponent_repro
+  purpose: reproduction
+  computed: ring_thickness_exponent_pred
+  printed: pred_ring_thickness_exponent
+  conditions_ok: "Pure theoretical scaling exponent from Eq. S24 with L = 2 pi R is independent of droplet diameter or experimental buffer conditions."
+  note: "Verifies that d(ln u_m)/d(ln D) of Eq. S24 with L = 2*pi*R and constant L_p equals the printed exponent 1.5 (p. 6, Eq. S25)."
+
+- id: cmp_ring_extension_length_ratio_repro
+  purpose: reproduction
+  computed: L_ratio_computed
+  printed: derived_final_ring_length_ratio
+  note: "Verifies 1 + 21 * 0.1 = 3.1 (L_final = 3.1 D in SI Section 2.6)."
+
+- id: cmp_ring_rod_transition_ar_repro
+  purpose: reproduction
+  computed: ar_crit_fig5c
+  printed: pred_ring_rod_transition_ar
+  note: "Solving P(a/b) = 2L = 4*pi*R numerically via ring_rod_critical_aspect_ratio tests consistency with the paper's stated transition '> 9' (Fig. 5d caption p. 8, SI Section 2.11 p. 44); printed inequality has no finite upper bound so BoxGraph reports no verdict."
+
+- id: cmp_monomer_rate_from_mean_repro
+  purpose: reproduction
+  computed: monomer_rate_from_mean_v
+  printed: monomer_addition_rate_text
+  note: "Checks conversion of measured average elongation rate 23 +/- 3 nm/s to 'about 8 to 9 monomers per second' (p. 9) using standard F-actin step 2.7 nm/monomer."
+
+- id: cmp_monomer_rate_from_fit_repro
+  purpose: reproduction
+  computed: monomer_rate_from_fit_v
+  printed: monomer_addition_rate_text
+  note: "Checks conversion of Fig. 5h linear fit slope 0.0227 um/s (22.7 nm/s) to 'about 8 to 9 monomers per second' (p. 9)."
+
+# ==========================================================================
+# 2. Validation of theoretical scaling exponent against experimental fits
+# ==========================================================================
+- id: cmp_exponent_pred_vs_fig3f_ar_lt11
+  purpose: validation
+  computed: ring_thickness_exponent_pred
+  printed: fit_fig3f_ar_lt11_b
+  conditions_ok: "Compares theoretical single-filament fluctuation scaling exponent (1.5) against experimental power-law fit for AR < 1.1 droplets (1.8037, Fig. 3f)."
+
+- id: cmp_exponent_pred_vs_fig4h_ar_lt11
+  purpose: validation
+  computed: ring_thickness_exponent_pred
+  printed: fit_fig4h_ar_lt11_b
+  conditions_ok: "Compares theoretical scaling exponent (1.5) against experimental AR < 1.1 overlay power-law fit in Fig. 4h (1.7195)."
+
+- id: cmp_exponent_pred_vs_fig3e_rings
+  purpose: validation
+  computed: ring_thickness_exponent_pred
+  printed: fit_fig3e_rings_b
+  conditions_ok: "Compares theoretical scaling exponent (1.5) against experimental power-law fit for 3D rings with AR < 1.1 in Fig. 3e (1.9682)."
+
+- id: cmp_exponent_pred_vs_lit_range
+  purpose: validation
+  computed: ring_thickness_exponent_pred
+  printed: lit_ring_thickness_exponent_range
+  conditions_ok: "Compares theoretical scaling exponent (1.5) against literature spherical-confinement exponent range 1.5 to 2 cited on p. 6."
+
+# ==========================================================================
+# 3. Internal consistency checks between printed values
+# ==========================================================================
+- id: cmp_frap_recovery_text_vs_fig1f
+  purpose: consistency
+  computed: frap_recovery_fig1f
+  printed: frap_recovery_text
+  note: "Checks consistency between Fig. 1f caption (93.9 +/- 4.89%) and main text p. 2 (94 +/- 5%)."
+
+- id: cmp_elongation_rate_fit_vs_mean
+  purpose: consistency
+  computed: elongation_rate_fit_fig5h
+  printed: elongation_rate_mean_text
+  note: "Checks consistency between Fig. 5h linear fit slope (0.0227 um/s = 22.7 nm/s) and main text p. 9 mean rate (23 +/- 3 nm/s)."
+
+- id: cmp_ar_lt11_exponent_fig3f_vs_text
+  purpose: consistency
+  computed: fit_fig3f_ar_lt11_b
+  printed: exp_ring_thickness_exponent_text
+  note: "Checks rounding of Fig. 3f AR < 1.1 fitted exponent (1.8037) to D^1.8 in main text p. 6."
+
+- id: cmp_ar_lt11_exponent_fig3f_vs_fig4h
+  purpose: consistency
+  computed: fit_fig3f_ar_lt11_b
+  printed: fit_fig4h_ar_lt11_b
+  note: "Tests consistency between the two reported power-law exponents for experimentally observed AR < 1.1 droplets (1.8037 in Fig. 3f vs. 1.7195 in Fig. 4h)."
+
+- id: cmp_ar_lt11_prefactor_fig3f_vs_fig4h
+  purpose: consistency
+  computed: fit_fig3f_ar_lt11_a
+  printed: fit_fig4h_ar_lt11_a
+  note: "Tests consistency between the two reported power-law prefactors for experimentally observed AR < 1.1 droplets (0.0629 in Fig. 3f vs. 0.0721 in Fig. 4h)."
+
+# ==========================================================================
+# 4. Printed vs. corrected wetting boundary behavior check
+# ==========================================================================
+- id: cmp_wetting_printed_inside_vs_gamma_avr
+  purpose: consistency
+  computed: gamma_wet_printed_inside
+  printed: gamma_avr_table1
+  note: "Tests whether printed Eqs. S4-S5 give gamma_AVR inside the droplet (e = 0.5); fails by 12 orders of magnitude because printed Eqs. S4-S5 invert inside and outside."
+
+- id: cmp_wetting_corrected_inside_vs_gamma_avr
+  purpose: consistency
+  computed: gamma_wet_corrected_inside
+  printed: gamma_avr_table1
+  note: "Tests that the corrected wetting profile matching Extended Data Fig. 5c gives gamma_AVR inside the droplet (e = 0.5)."
+
+- id: cmp_wetting_printed_outside_vs_gamma_avd
+  purpose: consistency
+  computed: gamma_wet_printed_outside
+  printed: gamma_avd_table1
+  note: "Tests whether printed Eqs. S4-S5 give gamma_AVD outside the droplet (e = 1.5); fails because printed Eqs. S4-S5 yield gamma_AVR outside."
+
+- id: cmp_wetting_corrected_outside_vs_gamma_avd
+  purpose: consistency
+  computed: gamma_wet_corrected_outside
+  printed: gamma_avd_table1
+  note: "Tests that the corrected wetting profile matching Extended Data Fig. 5c gives gamma_AVD outside the droplet (e = 1.5)."
+
+- id: cmp_actin_lp_table1_vs_text
+  purpose: consistency
+  computed: actin_lp_table1
+  printed: actin_lp_range_text
+  note: "Checks that the SI Table 1 single-filament persistence length (17.73 um, p. 39) lies within the main-text stated range (10 to 20 um, p. 3)."
+
+- id: cmp_droplet_diam_median_vs_range
+  purpose: consistency
+  computed: droplet_diam_median_20uM
+  printed: droplet_diam_range_obs
+  note: "Checks that the Extended Data Fig. 4e median 20 uM VASP droplet diameter (2.86 um, p. 19) lies within the main-text stated range (1 to 7 um, p. 3)."
+
+- id: cmp_droplet_diam_max_vs_range
+  purpose: consistency
+  computed: droplet_diam_max_20uM
+  printed: droplet_diam_range_obs
+  note: "Checks consistency between the Extended Data Fig. 4e maximum 20 uM VASP droplet diameter (7.22 um, p. 19) and the rounded main-text diameter range (1 to 7 um, p. 3)."
+
+# ==========================================================================
+# 5. Full-curve reproduction checks against digitized figures
+# ==========================================================================
+# --- Extended Data Fig. 5c: wetting surface tension profile gamma(e) ---
+- id: cmp_edfig5c_ke1_printed
+  purpose: reproduction
+  computed: gamma_wet_printed_ke1_curve
+  printed: edfig5c_ke1_fig
+  note: "Tests printed SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 1 (inverted transition)."
+- id: cmp_edfig5c_ke8_printed
+  purpose: reproduction
+  computed: gamma_wet_printed_ke8_curve
+  printed: edfig5c_ke8_fig
+  note: "Tests printed SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 8 (inverted transition)."
+- id: cmp_edfig5c_ke16_printed
+  purpose: reproduction
+  computed: gamma_wet_printed_ke16_curve
+  printed: edfig5c_ke16_fig
+  note: "Tests printed SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 16 (inverted transition)."
+- id: cmp_edfig5c_ke32_printed
+  purpose: reproduction
+  computed: gamma_wet_printed_ke32_curve
+  printed: edfig5c_ke32_fig
+  note: "Tests printed SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 32 (inverted transition)."
+- id: cmp_edfig5c_ke64_printed
+  purpose: reproduction
+  computed: gamma_wet_printed_ke64_curve
+  printed: edfig5c_ke64_fig
+  note: "Tests printed SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 64 (inverted transition)."
+
+- id: cmp_edfig5c_ke1_corrected
+  purpose: reproduction
+  computed: gamma_wet_corrected_ke1_curve
+  printed: edfig5c_ke1_fig
+  note: "Tests sign-corrected SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 1."
+- id: cmp_edfig5c_ke8_corrected
+  purpose: reproduction
+  computed: gamma_wet_corrected_ke8_curve
+  printed: edfig5c_ke8_fig
+  note: "Tests sign-corrected SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 8."
+- id: cmp_edfig5c_ke16_corrected
+  purpose: reproduction
+  computed: gamma_wet_corrected_ke16_curve
+  printed: edfig5c_ke16_fig
+  note: "Tests sign-corrected SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 16."
+- id: cmp_edfig5c_ke32_corrected
+  purpose: reproduction
+  computed: gamma_wet_corrected_ke32_curve
+  printed: edfig5c_ke32_fig
+  note: "Tests sign-corrected SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 32."
+- id: cmp_edfig5c_ke64_corrected
+  purpose: reproduction
+  computed: gamma_wet_corrected_ke64_curve
+  printed: edfig5c_ke64_fig
+  note: "Tests sign-corrected SI Eqs. S4-S5 against digitized Extended Data Fig. 5c curve for k_e = 64."
+
+# --- Fig. 5c: continuum ring-to-rod bending and surface energies ---
+- id: cmp_fig5c_bending_printed_units
+  purpose: reproduction
+  computed: E_bend_fig5c_printed_curve
+  printed: fig5c_bending_fig
+  note: "Tests literal printed inputs (R = 1 um, kb = 1 pN*nm^2, gamma_I = 1 pN) against digitized Fig. 5c bending energy curve (1000x too small due to nm vs um mismatch)."
+- id: cmp_fig5c_surface_printed_units
+  purpose: reproduction
+  computed: E_surf_fig5c_printed_curve
+  printed: fig5c_surface_fig
+  note: "Tests literal printed inputs (R = 1 um, kb = 1 pN*nm^2, gamma_I = 1 pN) against digitized Fig. 5c surface energy curve (1000x too large due to nm vs um mismatch)."
+- id: cmp_fig5c_bending_1nm_consistent
+  purpose: reproduction
+  computed: E_bend_fig5c_1nm_curve
+  printed: fig5c_bending_fig
+  note: "Tests consistent nm radius (R = 1 nm, kb = 1 pN*nm^2, gamma_I = 1 pN) against digitized Fig. 5c bending energy curve across AR = 1 to 9.85."
+- id: cmp_fig5c_surface_1nm_consistent
+  purpose: reproduction
+  computed: E_surf_fig5c_1nm_curve
+  printed: fig5c_surface_fig
+  note: "Tests consistent nm radius (R = 1 nm, kb = 1 pN*nm^2, gamma_I = 1 pN) against digitized Fig. 5c surface energy curve across AR = 1 to 9.8."
+
+# --- Figs. 3e, 3f, 4h, 5h: empirical fit curves vs caption formulas ---
+- id: cmp_fig3e_rings_fit_repro
+  purpose: reproduction
+  computed: T_ring_fig3e_rings_curve
+  printed: fig3e_rings_fit_fig
+  note: "Verifies Fig. 3e blue dashed trendline reproduces printed power-law fit y = 0.0476 x^1.9682."
+- id: cmp_fig3e_discs_fit_repro
+  purpose: reproduction
+  computed: T_ring_fig3e_discs_curve
+  printed: fig3e_discs_fit_fig
+  note: "Verifies Fig. 3e red dashed trendline reproduces printed power-law fit y = 0.0797 x^1.8456."
+- id: cmp_fig3f_ar_lt11_fit_repro
+  purpose: reproduction
+  computed: T_ring_fig3f_ar_lt11_curve
+  printed: fig3f_ar_lt11_fit_fig
+  note: "Verifies Fig. 3f blue dashed trendline reproduces printed power-law fit y = 0.0629 x^1.8037."
+- id: cmp_fig3f_ar_gt11_fit_repro
+  purpose: reproduction
+  computed: T_ring_fig3f_ar_gt11_curve
+  printed: fig3f_ar_gt11_fit_fig
+  note: "Verifies Fig. 3f red dashed trendline reproduces printed power-law fit y = 0.0917 x^1.7315."
+- id: cmp_fig4h_exp_fit_repro
+  purpose: reproduction
+  computed: T_ring_fig4h_exp_curve
+  printed: fig4h_exp_fit_fig
+  note: "Verifies Fig. 4h solid black trendline reproduces Fig. 4h caption fit y = 0.0721 x^1.7195."
+- id: cmp_fig4h_exp_fit_vs_fig3f_params
+  purpose: consistency
+  computed: T_ring_fig4h_using_fig3f_curve
+  printed: fig4h_exp_fit_fig
+  note: "Tests whether Fig. 4h solid black trendline matches Fig. 3f's AR < 1.1 fit (0.0629 x^1.8037) instead of Fig. 4h's own caption fit (0.0721 x^1.7195)."
+- id: cmp_fig5h_linear_fit_repro
+  purpose: reproduction
+  computed: bundle_growth_fig5h_curve
+  printed: fig5h_linear_fit_fig
+  note: "Verifies Fig. 5h dashed black line reproduces printed linear fit y = 0.0227 x."
+
+# --- Fig. 4f, Fig. 4g, Extended Data Fig. 7: 2D SLSQP aspect ratio sweeps ---
+- id: cmp_fig4f_droplet_ar_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_fig4f_curve
+  printed: fig4f_droplet_ar_fig
+  note: "Tests droplet_ring_minimization_corrected across all 22 rendered Fig. 4f droplets (D = 1 um, gamma_I = 5.0 pN, T_ring = 5 to 480 nm)."
+- id: cmp_fig4g_d1_gI5_printed
+  purpose: reproduction
+  computed: ar_slsqp_printed_fig4g_d1_gI5_curve
+  printed: fig4g_d1_gI5_fig
+  note: "Tests literal printed Eqs. S2 & S4-S5 (droplet_ring_minimization_printed) against Fig. 4g heatmap slice (D = 1.0 um, gamma_I = 5.0 pN)."
+- id: cmp_fig4g_d1_gI1_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_fig4g_d1_gI1_curve
+  printed: fig4g_d1_gI1_fig
+  note: "Tests droplet_ring_minimization_corrected against Fig. 4g heatmap slice (D = 1.0 um, gamma_I = 1.0 pN)."
+- id: cmp_fig4g_d1_gI5_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_fig4g_d1_gI5_curve
+  printed: fig4g_d1_gI5_fig
+  note: "Tests droplet_ring_minimization_corrected against Fig. 4g heatmap slice (D = 1.0 um, gamma_I = 5.0 pN)."
+- id: cmp_fig4g_d2_gI1_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_fig4g_d2_gI1_curve
+  printed: fig4g_d2_gI1_fig
+  note: "Tests droplet_ring_minimization_corrected against Fig. 4g heatmap slice (D = 2.0 um, gamma_I = 1.0 pN)."
+- id: cmp_fig4g_d2_gI5_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_fig4g_d2_gI5_curve
+  printed: fig4g_d2_gI5_fig
+  note: "Tests droplet_ring_minimization_corrected against Fig. 4g heatmap slice (D = 2.0 um, gamma_I = 5.0 pN)."
+- id: cmp_edfig7b_d1_gI2p5_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_edfig7b_curve
+  printed: edfig7b_d1_gI2p5_fig
+  note: "Tests droplet_ring_minimization_corrected against Extended Data Fig. 7b heatmap slice (D = 1.0 um, gamma_I = 2.5 pN)."
+- id: cmp_edfig7d_d1_gI7p5_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_edfig7d_curve
+  printed: edfig7d_d1_gI7p5_fig
+  note: "Tests droplet_ring_minimization_corrected against Extended Data Fig. 7d heatmap slice (D = 1.0 um, gamma_I = 7.5 pN)."
+- id: cmp_edfig7e_d1_gI10_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_edfig7e_curve
+  printed: edfig7e_d1_gI10_fig
+  note: "Tests droplet_ring_minimization_corrected against Extended Data Fig. 7e heatmap slice (D = 1.0 um, gamma_I = 10.0 pN)."
+- id: cmp_edfig7f_d1_gI12p5_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_edfig7f_curve
+  printed: edfig7f_d1_gI12p5_fig
+  note: "Tests droplet_ring_minimization_corrected against Extended Data Fig. 7f heatmap slice (D = 1.0 um, gamma_I = 12.5 pN)."
+- id: cmp_edfig7g_d1_gI15_corrected
+  purpose: reproduction
+  computed: ar_slsqp_corr_edfig7g_curve
+  printed: edfig7g_d1_gI15_fig
+  note: "Tests droplet_ring_minimization_corrected against Extended Data Fig. 7g heatmap slice (D = 1.0 um, gamma_I = 15.0 pN)."

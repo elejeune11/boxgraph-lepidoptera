@@ -1,0 +1,50 @@
+id: notebook_droplet_ring_slsqp_nfil_plus2
+name: diagnostic +2 filament-index offset variant of notebook_droplet_ring_slsqp (testing solnlistvec / Fig. 4f-g shift)
+role: model
+software: true
+variant_of: notebook_droplet_ring_slsqp
+corrections:
+  - equation: "simulate() Nfil indexing (lines 918-944)"
+    change: "Evaluate getkbend and rcyl at Nfil_eff = Nfil + 2 (i.e. T_ring = 5 nm -> Nfil = 3, T_ring = 60 nm -> Nfil = 6, ..., T_ring = 480 nm -> Nfil = 34) instead of literal Nfil = T_ring / 15"
+    evidence: "In simulate() lines 918-944 the Nfil loop starts at 2 and appends both noisy pre-minimization opt_var and minimized res.x into solnlistvec before saving solution_TV2_*.txt; in graham2023 Fig. 4f the T_ring = 5 nm droplet has AR = 1.101 (matching Nfil = 3 -> 1.1010 vs Nfil = 1 -> 1.0358), and across all 61 digitized points of Fig. 4g (D = 1, 2 um; gamma_I = 1, 5 pN) and Extended Data Fig. 7 (D = 1 um; gamma_I = 2.5-15 pN) shifting Nfil -> Nfil + 2 reduces mean absolute AR error from 0.021-0.037 down to 0.0012-0.0043."
+stated:
+  file: VASPDroplet_simulate.ipynb
+  lines: "918-944"
+  quote: "for Nfil in range(2,targetNfil[0]+1):"
+  where: "VASPDroplet_simulate.ipynb cell 17 (simulate Nfil loop & solnlistvec)"
+equation: "Same live gettotalenergy(opt_var, sp) as notebook_droplet_ring_slsqp with Nfil_eff = Nfil + 2"
+built_from:
+  - notebook_droplet_ring_slsqp
+inputs:
+  D_droplet: {quantity: droplet_diameter, unit: um}
+  T_ring: {quantity: ring_thickness, unit: nm}
+  R_fil: {quantity: filament_spacing, unit: nm}
+  rcyl_init: {quantity: ring_thickness, unit: nm}
+  L_p: {quantity: actin_persistence_length, unit: um}
+  kBT_ring: {quantity: thermal_energy, unit: pN*nm}
+  kflex_fil: {quantity: flexural_rigidity, unit: pN*nm^2}
+  lcyl_fixed: {quantity: segment_length, unit: nm}
+  lcyl_scale_frac: {quantity: ring_extension_step_fraction, unit: dimensionless}
+  kstr: {quantity: stretching_constant, unit: pN/nm}
+  gamma_I: {quantity: droplet_line_tension, unit: pN}
+  gamma_AVR: {quantity: wetting_surface_tension, unit: pN/nm}
+  gamma_AVD: {quantity: wetting_surface_tension, unit: pN/nm}
+  noisefactor: {quantity: noise_scale_divisor, unit: dimensionless}
+  ellipse_com: {quantity: droplet_center_offset, unit: nm}
+  alpha: {quantity: crosslinker_coupling, unit: dimensionless}
+outputs:
+  aspect_ratio: {quantity: droplet_aspect_ratio, unit: dimensionless}
+  total_energy: {quantity: total_free_energy, unit: pN*nm}
+  surface_energy: {quantity: surface_energy, unit: pN*nm}
+  filament_energy: {quantity: filament_free_energy, unit: pN*nm}
+  a: {quantity: ellipse_semi_major_axis, unit: um}
+  b: {quantity: ellipse_semi_minor_axis, unit: um}
+settings:
+  seed: 0
+  ftol: 1.0e-6
+  lcylscalewithD: true
+  nonlinearbool: false
+  init_mode: circle
+  use_warmstart: true
+  polish_maxiter: 12
+stochastic: true

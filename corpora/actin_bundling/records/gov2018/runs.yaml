@@ -1,0 +1,609 @@
+- id: run_free_energy_eq2_1
+  model: free_energy_density_eq2_1
+  inputs:
+    kappa: kappa_added
+    H: H_local_convex_added
+    n: n_local_added
+    H0: H0_convex_added
+    sigma: sigma_added
+    kBT: kBT_added
+    ns: ns_added
+    J: J_attr_added
+    grad_n: n_grad_added
+  outputs:
+    f: free_energy_eq2_1_val
+
+- id: run_bending_eq2_1
+  model: bending_energy_density_eq2_1
+  inputs:
+    kappa: kappa_added
+    H: H_local_convex_added
+    n: n_local_added
+    H0: H0_convex_added
+  outputs:
+    f_bend: bending_eq2_1_val
+
+- id: run_bending_eq2_2
+  model: bending_energy_density_eq2_2
+  inputs:
+    kappa: kappa_added
+    kappa_p: kappa_cmc_added
+    H: H_local_convex_added
+    n: n_local_added
+    H0: H0_convex_added
+  outputs:
+    f_bend: bending_eq2_2_val
+    kappa_eff: kappa_eff_eq2_2_val
+
+- id: run_height_dynamics_eq2_3
+  model: membrane_height_dynamics_eq2_3
+  inputs:
+    xi: xi_added
+    F_passive: F_passive_added
+    A: A_protrusive_added
+    n: n_local_added
+    n0: n0_added
+  outputs:
+    dh_dt: dh_dt_eq2_3_val
+
+- id: run_diffusion_einstein
+  model: cmc_diffusion_einstein
+  inputs:
+    Lambda: Lambda_added
+    kBT: kBT_added
+  outputs:
+    D: D_einstein_val
+
+- id: run_molecular_scales
+  model: cmc_molecular_scales
+  inputs:
+    H0: H0_convex_added
+    H: H_local_convex_added
+  outputs:
+    a: a_molecular_val
+    ns: ns_molecular_val
+    R: R_membrane_val
+    a_over_R: a_over_R_molecular_val
+
+- id: run_J_diff_eq2_5
+  model: cmc_diffusive_current_eq2_5
+  inputs:
+    D: D_einstein_val
+    grad_n: n_grad_added
+  outputs:
+    J_diff: J_diff_eq2_5_val
+
+- id: run_J_disp_eq2_6
+  model: cmc_dispersive_current_eq2_6
+  inputs:
+    kappa: kappa_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n: n_local_added
+    grad_n: n_grad_added
+  outputs:
+    J_disp: J_disp_eq2_6_val
+
+- id: run_J_agg_eq2_7
+  model: cmc_aggregation_current_eq2_7
+  inputs:
+    J: J_attr_added
+    Lambda: Lambda_added
+    ns: ns_added
+    n: n_local_added
+    grad_n: n_grad_added
+    grad3_n: n_grad3_added
+  outputs:
+    J_agg: J_agg_eq2_7_val
+
+- id: run_J_curv_eq2_8
+  model: cmc_curvature_current_eq2_8
+  inputs:
+    kappa: kappa_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n: n_local_added
+    grad_H: H_grad_added
+  outputs:
+    J_curv: J_curv_eq2_8_val
+
+- id: run_J_tot_eq2_4
+  model: cmc_total_current_eq2_4
+  inputs:
+    kappa: kappa_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    J: J_attr_added
+    n: n_local_added
+    grad_n: n_grad_added
+    grad3_n: n_grad3_added
+    grad_H: H_grad_added
+  outputs:
+    J_tot: J_tot_eq2_4_val
+
+- id: run_enrichment_eq2_9
+  model: cmc_steady_state_enrichment_eq2_9
+  inputs:
+    kappa: kappa_added
+    kBT: kBT_added
+    H: H_local_convex_added
+    H0: H0_convex_added
+    ns: ns_added
+  outputs:
+    enrichment: enrichment_eq2_9_val
+    chi: chi_eq2_9_val
+
+- id: run_sorting_exponent_paper_ranges
+  model: cmc_sorting_exponent_molecular
+  inputs:
+    kappa_over_kBT: bending_modulus_kBT_range
+    a_over_R: curvature_radius_ratio_range
+  outputs:
+    chi: chi_paper_midpoints_val
+    enrichment: enrichment_paper_midpoints_val
+
+- id: run_enrichment_with_dispersion
+  model: cmc_steady_state_with_dispersion
+  inputs:
+    kappa: kappa_added
+    kBT: kBT_added
+    H: H_local_convex_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+  outputs:
+    enrichment: enrichment_with_disp_val
+
+- id: run_wavelength_from_q_probe
+  model: wavelength_from_wavenumber
+  inputs:
+    q: q_unstable_probe_added
+  outputs:
+    lam: wavelength_probe_val
+
+- id: run_flat_disp_passive
+  model: flat_membrane_dispersion
+  inputs:
+    q: q_unstable_probe_added
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: passive_active_force_zero
+  outputs:
+    omega_real: flat_disp_passive_real
+    omega_imag: flat_disp_passive_imag
+
+- id: run_flat_disp_convex_unstable
+  model: flat_membrane_dispersion
+  inputs:
+    q: q_unstable_probe_added
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+  outputs:
+    omega_real: flat_disp_convex_unstable_real
+    omega_imag: flat_disp_convex_unstable_imag
+
+- id: run_flat_disp_convex_short
+  model: flat_membrane_dispersion
+  inputs:
+    q: q_short_probe_added
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+  outputs:
+    omega_real: flat_disp_convex_short_real
+    omega_imag: flat_disp_convex_short_imag
+
+- id: run_flat_disp_concave_contractile
+  model: flat_membrane_dispersion
+  inputs:
+    q: q_unstable_probe_added
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_concave_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_contractile_added
+  outputs:
+    omega_real: flat_disp_concave_contractile_real
+    omega_imag: flat_disp_concave_contractile_imag
+
+- id: run_flat_disp_concave_protrusive
+  model: flat_membrane_dispersion
+  inputs:
+    q: q_unstable_probe_added
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_concave_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+  outputs:
+    omega_real: flat_disp_concave_protrusive_real
+    omega_imag: flat_disp_concave_protrusive_imag
+
+- id: run_flat_disp_qs_convex
+  model: flat_membrane_dispersion_quasisteady
+  inputs:
+    q: q_unstable_probe_added
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    A: A_protrusive_added
+  outputs:
+    omega_real: flat_disp_qs_convex_real
+
+- id: run_flat_thresholds_convex
+  model: flat_membrane_instability_thresholds
+  inputs:
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    A: A_protrusive_added
+  outputs:
+    A_c: flat_Ac_convex
+    sigma_c: flat_sigmac_convex
+    q_c: flat_qc_convex
+    lambda_c: flat_lamc_convex
+
+- id: run_flat_fastest_mode_convex
+  model: flat_membrane_fastest_mode
+  inputs:
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+  outputs:
+    q_max: flat_qmax_convex
+    lambda_max: flat_lammax_convex
+    omega_max: flat_wmax_convex
+
+- id: run_flat_passive_spinodal
+  model: flat_membrane_passive_spinodal
+  inputs:
+    kappa: kappa_added
+    kBT: kBT_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+  outputs:
+    J_c_tensioned: flat_Jc_tensioned
+    J_c_tensionless: flat_Jc_tensionless
+
+- id: run_flat_protrusion_pde_1d
+  model: flat_membrane_protrusion_pde_1d
+  inputs:
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+    L: L_protrusion_pde_added
+    n_pert_amp: n_pert_amp_pde_added
+    t_end: t_end_protrusion_pde_added
+  settings:
+    nx: 64
+    dt: 0.05
+  outputs:
+    n_max: pde_protrusion_n_max
+    n_min: pde_protrusion_n_min
+    h_max: pde_protrusion_h_max
+    mode4_growth_rate: pde_protrusion_mode4_rate
+
+- id: run_tube_eq_radius
+  model: tube_equilibrium_radius
+  inputs:
+    kappa: kappa_added
+    sigma: sigma_cyl_added
+  outputs:
+    R_tube: tube_eq_radius_val
+
+- id: run_cyl_ring_disp_passive
+  model: cylindrical_ring_dispersion
+  inputs:
+    q: q_cyl_probe_added
+    R0: R_tube_cyl_added
+    kappa: kappa_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_concave_added
+    ns: ns_added
+    n0: n0_cyl_passive_added
+    xi: xi_added
+    A: passive_active_force_zero
+  outputs:
+    omega_real: cyl_ring_passive_real
+    R0_H0_ratio: cyl_ring_passive_ratio
+
+- id: run_cyl_ring_disp_active
+  model: cylindrical_ring_dispersion
+  inputs:
+    q: q_cyl_probe_added
+    R0: R_tube_cyl_added
+    kappa: kappa_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_concave_added
+    ns: ns_added
+    n0: n0_added
+    xi: xi_added
+    A: A_contractile_added
+  outputs:
+    omega_real: cyl_ring_active_real
+    R0_H0_ratio: cyl_ring_active_ratio
+
+- id: run_cyl_ring_crit_active
+  model: cylindrical_ring_critical_mode
+  inputs:
+    R0: R_tube_cyl_added
+    kappa: kappa_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_concave_added
+    ns: ns_added
+    n0: n0_added
+    xi: xi_added
+    A: A_contractile_added
+  outputs:
+    q_c: cyl_ring_qc_active
+    q_max: cyl_ring_qmax_active
+    lambda_max: cyl_ring_lammax_active
+    omega_max: cyl_ring_wmax_active
+
+- id: run_cyl_crit_tube_length
+  model: cylindrical_critical_tube_length
+  inputs:
+    q_c: cyl_ring_qc_active
+  outputs:
+    L_c: cyl_Lc_active
+    lambda_c: cyl_lamc_active
+    wavelength_to_length_ratio: cyl_lam_over_L_ratio
+
+- id: run_myosin_ss_eq5_2
+  model: myosin_steady_state_eq5_2
+  inputs:
+    k_off: k_off_added
+    k_on: k_on_added
+    n0: n0_added
+  outputs:
+    m0: m0_ss_eq5_2_val
+
+- id: run_height_myosin_eq5_1
+  model: membrane_height_myosin_eq5_1
+  inputs:
+    xi: xi_added
+    F_passive: F_passive_added
+    A: A_protrusive_added
+    n: n_local_added
+    n0: n0_added
+    A_star: A_star_wave_added
+    m: m_local_added
+    m0: m0_ss_eq5_2_val
+  outputs:
+    dh_dt: dh_dt_eq5_1_val
+
+- id: run_myosin_kinetics_eq5_2
+  model: myosin_kinetics_eq5_2
+  inputs:
+    k_off: k_off_added
+    k_on: k_on_added
+    m: m_local_added
+    n: n_local_added
+  outputs:
+    dm_dt: dm_dt_eq5_2_val
+
+- id: run_myosin_disp_zero_Astar
+  model: myosin_wave_dispersion
+  inputs:
+    q: q_unstable_probe_added
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+    A_star: myosin_strength_zero_fig4c
+    k_on: k_on_added
+    k_off: k_off_added
+  outputs:
+    omega_real: myosin_disp_zero_real
+    omega_imag: myosin_disp_zero_imag
+    phase_speed: myosin_disp_zero_speed
+
+- id: run_myosin_disp_wave
+  model: myosin_wave_dispersion
+  inputs:
+    q: q_unstable_probe_added
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+    A_star: A_star_wave_added
+    k_on: k_on_added
+    k_off: k_off_added
+  outputs:
+    omega_real: myosin_disp_wave_real
+    omega_imag: myosin_disp_wave_imag
+    phase_speed: myosin_disp_wave_speed
+
+- id: run_myosin_disp_qs_wave
+  model: myosin_wave_dispersion_quasisteady
+  inputs:
+    q: q_unstable_probe_added
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    A: A_protrusive_added
+    A_star: A_star_wave_added
+    k_on: k_on_added
+    k_off: k_off_added
+  outputs:
+    omega_real: myosin_disp_qs_wave_real
+    omega_imag: myosin_disp_qs_wave_imag
+    c_ana: myosin_c_ana_wave
+    q_omega_approx: myosin_q_omega_wave
+
+- id: run_myosin_acoustic
+  model: myosin_acoustic_dispersion
+  inputs:
+    q: q_unstable_probe_added
+    c: myosin_c_ana_wave
+  outputs:
+    omega_imag: myosin_acoustic_omega_imag
+
+- id: run_myosin_speed_scaling
+  model: myosin_wave_speed_scaling
+  inputs:
+    A_star: A_star_wave_added
+  outputs:
+    c: myosin_speed_scaling_val
+
+- id: run_myosin_wave_pde_1d
+  model: myosin_wave_pde_1d_linear
+  inputs:
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+    A_star: A_star_wave_added
+    k_on: k_on_added
+    k_off: k_off_added
+    L: L_wave_pde_added
+    h0_dip: h0_dip_wave_pde_added
+    w0_dip: w0_dip_wave_pde_added
+    t_end: t_wave_pde_added
+  settings:
+    nx: 256
+    dt: 0.05
+  outputs:
+    actin_myosin_lead: pde_wave_actin_lead
+    wave_packet_speed: pde_wave_packet_speed
+    h_min: pde_wave_h_min
+    dn_max: pde_wave_dn_max
+    dn_min: pde_wave_dn_min
+    dm_max: pde_wave_dm_max
+
+- id: run_flat_disp_at_qc
+  model: flat_membrane_dispersion
+  inputs:
+    q: flat_qc_convex
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+  outputs:
+    omega_real: flat_disp_at_qc_real
+    omega_imag: flat_disp_at_qc_imag
+
+- id: run_flat_disp_qs_at_qc
+  model: flat_membrane_dispersion_quasisteady
+  inputs:
+    q: flat_qc_convex
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    A: A_protrusive_added
+  outputs:
+    omega_real: flat_disp_qs_at_qc_real
+
+- id: run_fig4c_purple_acoustic
+  model: myosin_acoustic_dispersion
+  inputs:
+    c: myosin_c_ana_wave
+  sweep:
+    q: omega_imag_purple_fig4c
+  outputs:
+    omega_imag: fig4c_purple_acoustic_pred
+
+- id: run_fig4c_cyan_acoustic
+  model: myosin_acoustic_dispersion
+  inputs:
+    c: myosin_c_ana_wave
+  sweep:
+    q: omega_imag_cyan_fig4c
+  outputs:
+    omega_imag: fig4c_cyan_acoustic_pred
+

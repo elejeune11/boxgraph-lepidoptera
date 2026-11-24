@@ -1,0 +1,1304 @@
+# Open questions documenting every discrepancy, workbook formula/export error, omitted or
+# overwritten sheet, shifted header, and settled chandrasekaran2024 open question uncovered
+# by live Python inspection of all 37 sheets of 41467_2024_46726_MOESM9_ESM.xlsx.
+
+- id: q_fig4b_shifted_headers_and_missing_2pi
+  kind: possible_error
+  about:
+    - fig4b_end_distance_reader
+    - run_f4b_block1p333_peak
+  text: >
+    Sheet 'Figure4B' contains only 7 probability-density blocks (headers Lfilmax = {0.25, 0.3333,
+    0.5, 1.0, 1.3333, 1.6667, 2.0} * pi um, skipping 2*pi/3) for the 8 curves plotted in Fig. 4B.i-ii.
+    Cross-checking against chandrasekaran2024's 8 blindly digitized Fig. 4B curves proves that blocks
+    4-7 have off-by-one shifted headers and that L_fil^max = 2*pi (not 2*pi/3) is the missing curve:
+    block 4 (header '1.0*pi', peak 1.4435) matches Fig. 4B.i 2*pi/3 (MAE 0.0174 vs 0.1152 for pi);
+    block 5 (header '1.3333*pi', peak 2.1040) matches Fig. 4B.ii pi (MAE 0.0256 vs 0.1115 for 4*pi/3);
+    block 6 (header '1.6667*pi', peak 1.8671) matches Fig. 4B.ii 4*pi/3 (MAE 0.0253 vs 0.1291 for 5*pi/3);
+    block 7 (header '2.0*pi', peak 1.7763) matches Fig. 4B.ii 5*pi/3 (MAE 0.0417 vs 0.0740 for 2*pi).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheet 'Figure4B', cells A2:B708"
+
+- id: q_fig6d_buggy_sem_formula_and_omitted_wt
+  kind: possible_error
+  about:
+    - fig6d_gabmut_experiment_reader
+    - wb_f6d_1_7p5_ring_sem_stored_buggy
+    - cmp_wb_f6d_7p5_ring_sem_true_vs_stored
+    - paper_exp_gabmut_ring_1_7p5
+    - paper_exp_gabmut_shell_1_7p5
+  text: >
+    Sheet 'Figure6D' settles chandrasekaran2024's q_exp_sem_vs_sd_contradiction while exposing two
+    workbook defects: (1) rows 1-19 are blank, completely omitting the WT VASP data (replotted from
+    graham2023) shown in Fig. 6D; only the N = 3 VASP-GABmut replicates (655 total droplets: N = [42,
+    48, 48] at 1:20, [59, 115, 103] at 1:10, [91, 102, 47] at 1:7.5) are present; (2) recomputing from
+    raw counts reproduces stored AVERAGE (37.39% shell, 52.71% ring, 9.89% disc at 1:7.5) and sample
+    SD (ddof=1: 6.87%, 9.63%, 6.90% at 1:7.5, matching Fig. 6D error bars and caption 'mean and
+    standard deviation'), and true SEM = SD / sqrt(3) (3.97% -> 4%, 5.56% -> 6%, 3.98% at 1:7.5)
+    matches main text p. 7 ('53 ± 6%', '37 ± 4%', '< 10%'); HOWEVER, the workbook's stored 'SEM'
+    block (L36:N38) erroneously divides SD by N = 3 instead of sqrt(3) (storing 2.289%, 3.209%, 2.299%
+    at 1:7.5; max diff from SD/3 across all 9 cells is 0.0).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheet 'Figure6D', cells A20:N43"
+
+- id: q_fig3e_figs5_figs9_scrambled_cluster_legends_and_inverted_spans
+  kind: possible_error
+  about:
+    - kinetic_grid_reader
+    - ellipsoid_spans_reader
+    - run_spans_s5_ring
+    - run_spans_s10_ring
+  text: >
+    Row 2 cluster-ID legends in 'Figure3E', 'FigureS5', and 'FigureS9' do not match the integer
+    cluster labels stored in their own data rows, and span columns are inverted relative to the paper:
+    (1) 'Figure3E' and 'FigureS5' Row 2 state '0-Ring, 1-Shell with strong bundling, 2-Shell with Weak
+    bundling, 3- Shell', whereas the actual k-means codes are 0=Shell (n=285, medians 1.134/1.063/0.983
+    um), 1=Shell-SB (n=100, 1.194/1.121/0.735 um), 2=Ring (n=35, 1.332/1.314/0.073 um), and 3=Shell-WB
+    (n=120, 1.178/1.057/0.885 um); (2) 'FigureS9' (=Supp. Fig. 10) Row 2 states '0-Ring, 1-Shell-SB',
+    which is inverted relative to both Figure5C/5D and the span distributions (0=Shell-SB with n=599,
+    median c=0.736 um; 1=Ring with n=436, median c=0.144 um); (3) both 'FigureS5' and 'FigureS9' label
+    columns A, B, C as 'spanc', 'spanb', 'spana' in descending order (spanc >= spanb >= spana),
+    opposite to the paper's convention a >= b >= c in Supplementary Figs. 5 and 10.
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheets 'Figure3E' (A1:E5), 'FigureS5' (A1:D544), 'FigureS9' (A1:D1038)"
+
+- id: q_supptable3_1_10_typo_and_1_1_n3_vs_n5
+  kind: possible_error
+  about:
+    - kinetic_grid_reader
+    - fig6b_kunbind_sweep_reader
+    - cmp_f3e_vs_f6b_1_1_ring
+    - wb_f3d_1_10_frac0
+    - wb_s2c_1_10_mean
+  text: >
+    Decoding 'Figure3E' (540 rows = 36 kinetic pairs x 3 replicates x 5 snapshots) settles both
+    Supplementary Table 3 contradictions in chandrasekaran2024: (1) 35/36 cells of Supplementary Table
+    3 match Figure3E exactly, while the single discrepant cell (k_bind=1.0, k_unbind=10.0) is 15/15
+    Cluster 0 (Shell) in Figure3E (with AF = 0.5016 in FigureS2C and 95.62% unbound VASP in Figure3D),
+    proving Supplementary Table 3's 'Shell with strong bundling' entry is a table error; (2) at
+    (k_bind=1.0, k_unbind=1.0), Figure3E (N=3) and Figure5C both assign 15/15 (100%) to Shell-SB
+    (matching Supplementary Table 3), whereas the separate N=5 fine-sweep run in Figure6B gives 40%
+    Ring / 60% Shell-SB (explaining the discrepancy between Supplementary Table 3 and Fig. 6B).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheets 'Figure3E' (A6:E545), 'Figure3D' (A204:B210), 'Figure6B' (A1:E15)"
+
+- id: q_fig6b_row5_1p5625_typo_and_1p375_even_denominator
+  kind: possible_error
+  about:
+    - fig6b_kunbind_sweep_reader
+    - run_f6b_ku0p1
+    - run_f6b_ku1p375
+  text: >
+    Sheet 'Figure6B' cell E5 literally stores '1.5625' between 1.125 and 1.1875 (origin of the Fig. 6B
+    x-axis typo for 1.15625 shown in Fig. 6A). Furthermore, Fig. 6B caption states 'N = 10 for
+    k_unbind = {1.28125, 1.3125, 1.34375}, N = 5 otherwise', yet k_unbind = 0.1 stores 0.67/0.33
+    (2/3 and 1/3 from the N = 3 Fig. 3E sweep, not N = 5) and k_unbind = 1.375 stores 0.5/0.5 (an even
+    50/50 split impossible for whole-replicate classification with N = 5 unless snapshots within a
+    replicate split across clusters or N was actually 10).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheet 'Figure6B', cells B2:E15"
+
+- id: q_fig5_n6_replicates_and_figs6_placeholder_clusters
+  kind: possible_error
+  about:
+    - fig5cd_t2pir_reader
+    - cmp_wb_f5c_vs_f5d_0p8_450
+    - cmp_wb_f5c_vs_f5d_0p4_200
+    - cmp_wb_f5c_vs_f5d_1p0_600
+  text: >
+    Sheet 'Figure5C' contains 1,035 rows = 900 T_2piR snapshots (5 [VASP-tet] x 6 T_2piR x 6
+    replicates [0..5] x 5 final snapshots [595..599] = 30 snapshots/cell) + 135 kinetic-grid reference
+    snapshots. Computing P(Cluster == 1) across the 30 snapshots/cell in Figure5C reproduces all 30/30
+    entries of 'Figure5D' to machine precision (max diff = 0.0), decisively settling chandrasekaran2024's
+    q_replicate_count_discrepancies for Fig. 5: N = 6 replicates (refuting both '10 replicates' in
+    Fig. 5D caption / Methods p. 11 and '5 replicates' in Supp. Fig. 7). Separately, sheet 'FigureS6'
+    (= published Supp. Fig. 8, projecting the same 900 T_2piR snapshots into Fig. 3E's PCA basis) has
+    'Predicted Cluster = 0' on all 900/900 rows (unpopulated placeholder column).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheets 'Figure5C' (A1:F1036), 'Figure5D' (A1:G7), 'FigureS6' (A1:F901)"
+
+- id: q_fig7b_n5_replicates_ddof0_and_fig7c_match
+  kind: possible_error
+  about:
+    - fig7b_max_aspect_ratio_reader
+    - cmp_wb_f7b_means_table
+    - cmp_wb_f7b_pi_sd_pop
+  text: >
+    Sheet 'Figure7B' contains exactly 5 raw replicate columns (D..H) for every one of the 10 L_fil^max
+    conditions ({2/3, 5/6, 11/12, 1, 13/12, 7/6, 5/4, 4/3, 5/3, 2} * pi um), settling
+    q_replicate_count_discrepancies for Fig. 7 in favor of Methods p. 11 ('Five replicates') and
+    refuting Fig. 7B caption ('six replicates'). Stored STD (col C) is population SD (ddof = 0, exact
+    to 1e-16). Every one of Fig. 7C's 10 printed representative aspect ratios (1.75, 3.95, 4.34, 4.96,
+    3.40, 4.14, 1.97, 1.97, 2.16, 2.06) matches an exact individual replicate cell in Figure7B
+    (H2=1.7460, E3=3.9528, D4=4.3383, G5=4.9641, E6=3.3975, D7=4.1441, F8=1.9672, G9=1.9672,
+    D10=2.1581, E11=2.0619).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheet 'Figure7B', cells A1:H11"
+
+- id: q_93_raw_snapshots_3x31_vs_captions_5x30
+  kind: possible_error
+  about:
+    - fig3b_timecourse_reader
+    - kinetic_grid_reader
+    - nucleator_conc_sweep_reader
+  text: >
+    All four raw-snapshot kinetic and nucleator summary sheets ('FigureS2C', 'Figure3D', 'FigureS10D',
+    and 'FigureS10E') contain exactly 93 raw columns per condition (3 replicates x 31 timepoints
+    t = 570..600 s inclusive; FigureS2C's 93 raw values match Figure3B's 3 replicates across t = 570..600
+    with 0.00e+00 max difference), and all stored SDs in Figure3B, FigureS2C, Figure3D, FigureS10D,
+    and FigureS10E are population SD (ddof = 0, max error <= 2.8e-17). This contradicts BOTH Fig. 3B/D
+    caption ('five replicate trajectories (30 snapshots)') AND Supplementary Fig. 6 caption ('Last 30
+    snapshots from each of the 5 replicates per nucleator concentration', which would yield 150 raw
+    columns, not 93).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheets 'Figure3B', 'FigureS2C', 'Figure3D', 'FigureS10D', 'FigureS10E'"
+
+- id: q_pca_captions_and_s11bi_overwritten_duplicate
+  kind: possible_error
+  about:
+    - pca_variance_and_varimax_reader
+    - cmp_paper_pca_main_fig3_97p64
+    - cmp_paper_pca_s4_literal_2pc
+    - cmp_paper_pca_s4_actual_3pc
+    - cmp_paper_pca_s9_literal_2pc
+    - cmp_paper_pca_s9_actual_3pc
+    - cmp_paper_pca_s12_3pc
+  text: >
+    The PCA variance sheets settle chandrasekaran2024's q_pca_variance_pc_count_contradictions and
+    uncover a missing sheet: (1) FigureS4A gives PC1..PC5 = [50.04%, 36.12%, 9.67%, 2.73%, 1.45%] ->
+    PC1+PC2 = 86.16% and PC1+PC2+PC3 = 95.8294% (95.83%), proving Supp. Fig. 4A caption mislabeled 3
+    PCs as 'first two PCs' AND refuting main text p. 4's '97.64%' for the first 3 PCs of Fig. 3E;
+    (2) FigureS8A (=Supp. Fig. 9A) gives PC1+PC2 = 94.95% and PC1+PC2+PC3 = 99.0631% (99.06%), proving
+    Supp. Fig. 9A caption likewise mislabeled 3 PCs as 'first two PCs'; (3) FigureS12A gives
+    PC1+PC2+PC3 = 94.7176% (94.72%), matching Supp. Fig. 12A caption (though its Panel B caption still
+    says 'first two PCs' for a 3-PC heatmap); (4) Sheet 'FigureS11Bi' is an exact cell-for-cell
+    duplicate of Varimax loading sheet 'FigureS11Bii' (max diff = 0.0), so the actual Supp. Fig. 11B.i
+    PCA explained variance vector is completely missing from the workbook.
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheets 'FigureS4A', 'FigureS8A', 'FigureS11Bi', 'FigureS11Bii', 'FigureS12A'"
+
+- id: q_silhouette_s11biii_suboptimal_k3
+  kind: unexplained_difference
+  about:
+    - silhouette_cluster_reader
+    - cmp_wb_s11biii_k4_sil
+    - cmp_wb_s12c_k4_sil
+  text: >
+    Sheet 'FigureS11Biii' confirms chandrasekaran2024's digitization finding: the silhouette score at
+    k = 4 (0.578918) and k = 9 (0.575533) both exceed k = 3 (0.575439), yet Supplementary Fig. 11B.iii
+    highlights k = 3 as optimal and clusters into 3 groups. By contrast, 'FigureS12C' peaks at k = 4
+    (0.638390 vs k = 3 at 0.635203), matching the dark-red k = 4 bar highlight in Supp. Fig. 12C (p. 33).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheets 'FigureS11Biii' (A1:B10) and 'FigureS12C' (A1:B10)"
+
+- id: q_figs2b_equilateral_side_and_1281_truncation
+  kind: possible_error
+  about:
+    - figs2b_icosphere_reader
+    - run_s2b_n4
+    - run_s2b_n5
+  text: >
+    Sheet 'FigureS2B' header literally states 'Side of equilateral triangle (\mu m) RAW DATA',
+    confirming chandrasekaran2024's blind deduction (q_figs2b_area_equivalent_equilateral_side) that
+    Supp. Fig. 2B plots area-equivalent equilateral triangle side lengths rather than raw geodesic/chord
+    mesh edge lengths (exact medians 1.05146, 0.56719, 0.29010, 0.14661 um for n = 0..3 with 20, 80,
+    320, 1280 faces). However, rows n = 4 (expected 5,120 faces) and n = 5 (expected 20,480 faces) are
+    both truncated to 1,281 columns (B..AWH, with column AWH repeating the first cell B!), discarding
+    3,839 (75.0%) faces at n = 4 and 19,199 (93.75%) faces at n = 5.
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheet 'FigureS2B', cells A1:AWH7"
+
+- id: q_si_sheet_tab_numbering_drift
+  kind: reading
+  about:
+    - fig5cd_t2pir_reader
+    - pca_variance_and_varimax_reader
+    - silhouette_cluster_reader
+    - ellipsoid_spans_reader
+    - nucleator_conc_sweep_reader
+    - nucleator_timecourse_reader
+    - nucleator_radial_density_reader
+    - figs11_actin_vasp_reader
+    - figs14c_cap_conc_reader
+  text: >
+    Twelve Supplementary Information worksheet tabs retain pre-revision numbering relative to the
+    published SI PDF (2024_Chandrasekaran.pdf pp. 15-36): 'FigureS6' corresponds to published Supp.
+    Fig. 8; 'FigureS8A/B/C' to Supp. Fig. 9A/B/C; 'FigureS9' to Supp. Fig. 10; 'FigureS10B/C/D/E/F' to
+    Supp. Fig. 6B/C/D/E/F (nucleator study moved earlier during manuscript revision); 'FigureS11' to
+    Supp. Fig. 11D; and 'FigureS14C' to Supp. Fig. 13C.
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, xl/workbook.xml (37 sheet names)"
+
+- id: q_figs11c_five_replicates_at_vasp2p0_n165
+  kind: reading
+  about:
+    - figs11_actin_vasp_reader
+    - cmp_wb_s11c_vs_s11_2p0_165
+  text: >
+    In sheet 'FigureS11C', 11 of the 12 ([VASP-tet], N_fil) conditions have 30 snapshots (6 replicates
+    x 5 snapshots), whereas ([VASP-tet]=2.0 uM, N_fil=165) has only 25 snapshots (5 replicates x 5,
+    producing 5/25 = 0.2 Ring/Multi-ring and 20/25 = 0.8 Locally-bundled, matching 'FigureS11' cells
+    D19:E19 to 1e-10).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheets 'FigureS11C' (A7:D496) and 'FigureS11' (A1:E19)"
+
+- id: q_figs14c_clocal_clipped_and_schedule_confirmed
+  kind: reading
+  about:
+    - figs14c_cap_conc_reader
+    - figs14c_schedule_reader
+    - cmp_paper_fig7aii_schedule
+    - cmp_paper_ar_max_approx
+  text: >
+    Sheet 'FigureS14C' (=Supp. Fig. 13C, 213 snapshots from t = 604.502 to 1028.502 s in 2 s steps)
+    reproduces all 6 Fig. 7A.ii (time, aspect_ratio) labels verbatim (1.0302, 2.0049, 3.0215, 4.0004,
+    5.0154, 5.5641) and conserves spheroid volume b^2 * a = 1 to 2.5e-6. Its initial polar-cap local
+    actin concentration starts at Clocal = 90.9906 uM (AR = 1.0302), above the 80 uM y-axis ceiling of
+    Supp. Fig. 13C (~10 initial rows clipped off the plot), first crosses C_total/3 = 9.2252 uM at
+    AR = 2.0619 (8.69 uM), and drops permanently below threshold after AR = 2.1581 (8.71 uM).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheet 'FigureS14C', cells A1:G214"
+
+- id: q_settled_monomer_depletion_and_lammps_geometry
+  kind: reading
+  about:
+    - nucleator_conc_sweep_reader
+    - figs1b_lammps_density_reader
+    - figs1ef_lammps_shape_reader
+  text: >
+    Source Data directly confirms three quantitative deductions in chandrasekaran2024: (1) in
+    'FigureS10C' at [Nucleator] = 0 nM, filament length reaches CDF = 0.50 at 5.581 um, CDF = 0.96 at
+    5.659 um, and CDF = 1.0 at 5.712 um (< 2*pi = 6.283 um), confirming per-filament monomer depletion
+    (q_monomer_depletion_per_filament_vs_total); (2) in 'FigureS1B', VASP radial density crosses 0.1 at
+    r = 19.18 sigma (interior plateau 0.748, bulk crowder 0.208), confirming the ~18-19 sigma droplet
+    radius vs Supplementary Methods 1's '60 sigma' misprint; (3) 'FigureS1EF' (6 fil: A=1.0347,
+    c/a=1.0698 -> b/a=1.033; 20 fil: A=1.0714, c/a=1.185 -> b/a=1.142) confirms near-oblate triaxial
+    deformation (q_figs1ef_lammps_oblate_triaxiality).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheets 'FigureS10C', 'FigureS1B', 'FigureS1EF'"
+
+- id: q_blind_digitization_benchmark_accuracy
+  kind: reading
+  about:
+    - fig3b_timecourse_reader
+    - kinetic_grid_reader
+    - fig4b_end_distance_reader
+    - fig5cd_t2pir_reader
+    - fig6b_kunbind_sweep_reader
+    - fig6d_gabmut_experiment_reader
+    - fig7b_max_aspect_ratio_reader
+    - fig7f_continuum_energy_reader
+  text: >
+    Cross-validating all 99 workbook-backed blindly digitized figure curves in chandrasekaran2024
+    (out of 106 total; 7 are absent/overwritten in MOESM9_ESM.xlsx: 3 WT series in Figure6D, analytical
+    Fig. 7B curve, Supp. Fig. 13C reference lines, overwritten FigureS11Bi, and omitted 2*pi in Figure4B)
+    demonstrates sub-percent digitization accuracy across nearly every figure family: Fig. 5D max error
+    0.017% (one 0.49% clip at 100%), Fig. 6B max error 0.04% (42/42 bars in band), Fig. 6D GABmut max
+    error 0.095% (9/9 bars in band), Fig. 7B mean error 0.0032 (10/10 in band), Fig. 7F surface energy
+    mean error 0.0032 (10/10 in band), Supp. Fig. 2B mean error 0.00030 um (6/6 in band), Supp. Fig. 2C
+    mean error 0.0022 (36/36 in band), Supp. Figs. 5 & 10 ellipsoid spans mean error 0.0014 um (18/18 in
+    band), Supp. Fig. 6B filament counts mean error 0.04-2.3 out of 1500 (48/48 in band), Supp. Fig. 6C
+    length mean error 0.0048 um (8/8 in band), Supp. Fig. 6E mean error 0.0043 (8/8 in band), and Supp.
+    Fig. 13C mean error 0.26 uM (13/13 in band). Small narrow-band misses occur only on matplotlib bar
+    border edges in Fig. 3D (~0.01 fraction), rasterized Supp. Fig. 11B.iii (+0.0048 offset), and the
+    steep peripheral rise in Supp. Fig. 6F; most importantly, blind digitization independently exposed
+    the off-by-one header shift in Figure4B.
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx (all 37 sheets vs chandrasekaran2024/figures.yaml)"
+
+- id: q_cytosim_physics_cross_audit
+  kind: unexplained_difference
+  about:
+    - nucleator_timecourse_reader
+    - nucleator_conc_sweep_reader
+    - kinetic_grid_reader
+    - figs14c_schedule_reader
+    - figs2b_icosphere_reader
+    - chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+    - chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+    - chandrasekaran_cytosim/cytosim_confinement_sphere_ellipse
+    - chandrasekaran_cytosim/cytosim_fiber_bending_mechanics
+  text: >
+    Cross-attachment audit against CytoSim's ported C++ physics (chandrasekaran_cytosim) reveals
+    four direct links between 41467_2024_46726_MOESM9_ESM.xlsx and the underlying solver:
+    (1) FigureS10B's 8 x 601 raw filament-count trajectories confirm CytoSim's hold_end = MINUS_END
+    Nucleator cycle from the 1-s burst through t = 600 s (t = 600 s within -1.6%..+2.1%;
+    4,093/4,197 nonzero-SD points within 2 SD) and show an undiminished late-time nucleation slope
+    (179-193 filaments/100 s at 150 nM), confirming Nucleator::stepUnattached() does not gate on
+    free_polymer; (2) FigureS10C's full CDFs show 0.0 mass for L <= 0.1313 um across all 10..150 nM
+    curves before jumping in [0.1313, 0.1970) um (22.5% at 150 nM), and combining FigureS10B
+    N(585 s) with FigureS10C E[L] yields total F-actin length 1,010.5..1,246.6 um for 75..150 nM
+    (148..183 uM at 2.7 nm/monomer, up to +32% above [T-actin] = 138.38 uM = 942.5 um) alongside a
+    150 nM median (0.684 um) >2x the unfiltered 942.5 um CytoSim prediction (0.315-0.337 um) —
+    pointing to either post-processing exclusion of 2-vertex fibers (L < 4/3 * 0.1 = 0.1333 um from
+    Chain::bestNumberOfPoints()) or a larger total_polymer / nonzero L_nuc_init overshoot in the
+    unreleased .cym config; (3) Figure3D (frac_4 up to 0.6673 at (10, 1)) and FigureS10D (frac_4 =
+    0.7027 at 150 nM) empirically prove VASP used 4-hand Sphere/Solid + Wrist objects rather than
+    2-hand Couples, locking in CytoSim's 673x VASP Stokes-diffusion contradiction; and (4) FigureS14C
+    confirms SpaceEllipse Knud Thomsen area stays within 0.52% of exact prolate area up to AR =
+    5.5641 (17.6423 vs 17.7342 um^2), while FigureS2B n = 4 triangles (median 0.07341 um) are finer
+    than CytoSim's ~0.100 um fiber segments (s = 0.0982..0.1013 um).
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheets 'FigureS10B', 'FigureS10C', 'FigureS10D', 'Figure3D', 'FigureS14C', 'FigureS2B'"
+
+- id: q_chandrasekaran_cytosim_no_cross_validation
+  kind: unstated_model
+  about:
+    - paper_exp_gabmut_ring_1_7p5
+    - paper_exp_gabmut_shell_1_7p5
+    - paper_exp_gabmut_disk_1_7p5
+    - wb_f6d_1_7p5_shell_mean
+    - wb_f6d_1_7p5_ring_mean
+    - wb_f6d_1_7p5_disk_mean
+    - wb_f6d_1_7p5_shell_sd
+    - wb_f6d_1_7p5_ring_sd
+    - wb_f6d_1_7p5_ring_sem_stored_buggy
+    - fig6d_gabmut_experiment_reader
+    - nucleator_timecourse_reader
+    - nucleator_conc_sweep_reader
+    - figs2b_icosphere_reader
+    - figs14c_schedule_reader
+    - q_cytosim_physics_cross_audit
+    - chandrasekaran_cytosim/cytosim_confinement_sphere_ellipse
+    - chandrasekaran_cytosim/cytosim_fiber_bending_mechanics
+    - chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+    - chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+    - chandrasekaran_cytosim/cytosim_hand_gillespie_mc
+    - chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+    - chandrasekaran_cytosim/cytosim_polymerization_ratchet_depletion
+    - chandrasekaran_cytosim/cytosim_semi_implicit_langevin_1d
+    - chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+    - chandrasekaran_cytosim/cytosim_steric_repulsion
+    - chandrasekaran_cytosim/paper_figs6b_nuc50_curve
+    - chandrasekaran_cytosim/paper_figs6b_nuc150_curve
+    - chandrasekaran_cytosim/paper_figs6c_max_length_curve
+    - chandrasekaran_cytosim/q_chandrasekaran_source_data_no_cross_validation
+  text: >
+    No cross-record validations are entered in validations.yaml between chandrasekaran_source_data
+    and chandrasekaran_cytosim (0 entries in both directions; all 101 existing validations in
+    chandrasekaran_source_data/validations.yaml against chandrasekaran2024 remain preserved):
+    (1) chandrasekaran_source_data models (20 role: processing, software: true Excel workbook
+    readers over 41467_2024_46726_MOESM9_ESM.xlsx) vs chandrasekaran_cytosim/data.yaml (55 total
+    datums): chandrasekaran_cytosim contains 0 origin: measured datums. Its 55 datums consist of
+    50 origin: reported entries (23 CytoSim C++ built-in defaults/constants cyto_* and 27
+    simulation input parameters paper_* copied from chandrasekaran2024), 2 origin: derived entries
+    (paper_time_to_2R = 184.47 s, paper_viscosity_ratio_water = 50), and 3 origin: run digitized
+    CytoSim simulation curves copied from chandrasekaran2024 (paper_figs6c_max_length_curve,
+    paper_figs6b_nuc50_curve, paper_figs6b_nuc150_curve, linked via from_source: chandrasekaran2024).
+    Besides being data-extraction readers rather than predictive physical models, validating
+    nucleator_timecourse_reader or nucleator_conc_sweep_reader against those 3 origin: run copies in
+    chandrasekaran_cytosim would target non-empirical simulation outputs and duplicate existing
+    validations directly against chandrasekaran2024 (val_figs6b_nuc50, val_figs6b_nuc150,
+    val_figs6c_max_length).
+    (2) Reverse direction — chandrasekaran_cytosim models (10 single-mechanism C++ physics ports) vs
+    chandrasekaran_source_data/data.yaml (77 total datums): only 3 datums have origin: measured, all
+    from experimental VASP-GABmut droplet microscopy in sheet Figure6D at Actin:VASP = 1:7.5 (N = 3
+    replicates, 240 droplets at 1:7.5 out of 655 total) — paper_exp_gabmut_ring_1_7p5 (53 +/- 6%),
+    paper_exp_gabmut_shell_1_7p5 (37 +/- 4%), and paper_exp_gabmut_disk_1_7p5 (< 10%, an inequality
+    bound). None of chandrasekaran_cytosim's 10 ported single-mechanism C++ subroutines (bending,
+    steric overlap, single-hand Bell/Gillespie kinetics, fiber drag, sphere Stokes vs Couple
+    diffusion, 1D semi-implicit Langevin step, spherical/ellipsoidal confinement, single-step
+    Brownian ratchet, mean-field nucleation/monomer-depletion ODE) simulates full 3D many-body
+    crosslinked actin-VASP droplet self-organization or predicts experimental ring/shell/disk
+    morphology percentages (nor the 6 Figure6D origin: derived workbook summary statistics
+    wb_f6d_1_7p5_*). All other 68 datums in chandrasekaran_source_data/data.yaml (37 origin:
+    reported query coordinates/counts, 8 origin: run PCA/Supp. Table 3 simulation outputs, and 23
+    origin: derived CytoSim/LAMMPS/2D-continuum/silhouette simulation summaries) and raw simulation/
+    mesh sheets (FigureS10B, FigureS10C, FigureS10D, Figure3D, FigureS14C, FigureS2B) are
+    simulation/numerical outputs rather than empirical measurements; their solver-vs-workbook
+    comparison is already documented in q_cytosim_physics_cross_audit and in
+    chandrasekaran_cytosim/q_chandrasekaran_source_data_no_cross_validation.
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheet 'Figure6D' (cells A20:N43) and all 37 sheets"
+
+# ---------------------------------------------------------------------------
+# Cross-workbook audit with graham_source_data (MOESM12-22_ESM.xlsx, 2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_graham_source_data_fig6d_vs_fig3d_and_figs4c
+  kind: possible_error
+  about:
+    - fig6d_gabmut_experiment_reader
+    - wb_f6d_1_7p5_shell_mean
+    - wb_f6d_1_7p5_ring_mean
+    - wb_f6d_1_7p5_disk_mean
+    - wb_f6d_1_7p5_shell_sd
+    - wb_f6d_1_7p5_ring_sd
+    - wb_f6d_1_7p5_ring_sem_stored_buggy
+    - paper_exp_gabmut_ring_1_7p5
+    - paper_exp_gabmut_shell_1_7p5
+    - paper_exp_gabmut_disk_1_7p5
+    - q_fig6d_buggy_sem_formula_and_omitted_wt
+    - ref-graham2023
+    - graham_source_data/morphology_abundance_reader
+    - graham_source_data/f3d_1to20_shell_mean_stored
+    - graham_source_data/f3d_1to10_ring_mean_stored
+    - graham_source_data/f3d_1to7p5_disc_mean_stored
+    - graham_source_data/f3d_1to7p5_disc_sd_stored
+    - graham_source_data/s4c_1to7p5_total_stored
+    - graham_source_data/q_fig3d_and_edfig4e_count_errors
+    - graham_source_data/q_chandrasekaran_source_data_fig6d_vs_fig3d_and_figs4c
+    - chandrasekaran2024/q_graham2023_fig6d_fig7f_provenance_and_buffer_discrepancies
+  text: >
+    Direct cross-workbook audit of 41467_2024_46726_MOESM9_ESM.xlsx ('Figure6D') against
+    graham_source_data (MOESM14 'Fig 3d' and MOESM20 'Fig S4c') establishes exact WT provenance,
+    aggregation-method asymmetry, and how the EDTA/EGTA buffer choice alters the VASP-GABmut shift
+    (0 ModelAtlas relations across all 20 x 11 = 220 reader pairs; 0 direct cited.yaml links across
+    all 77 x 94 datums because the two workbooks are strictly complementary on both crossover panels):
+    (1) Exact WT provenance & aggregation asymmetry: MOESM9 'Figure6D' leaves WT rows 1-19 completely
+    blank and holds only N = 3 VASP-GABmut replicates in rows 20-43 (192 + 265 + 198 = 655 total
+    droplets: [42, 48, 48] = 138 at 1:20, [59, 115, 103] = 277 at 1:10, [91, 102, 47] = 240 at 1:7.5;
+    pooled per-replicate counts, EDTA/EGTA-free buffer). Conversely, graham_source_data MOESM14
+    'Fig 3d' holds the exact WT replicate counts (302 + 181 + 231 = 714 total droplets across 0.5 mM
+    EDTA + 0.5 mM EGTA buffer: [75, 51, 52] = 178 over [8, 6, 5] images at 1:20, [116, 57, 107] = 280
+    over [8, 5, 5] images at 1:10, [111, 73, 72] = 256 over [6, 5, 5] images at 1:7.5; refuting
+    Graham's caption '>= 600 droplets per replicate'). MOESM14's stored image-mean summary table
+    (AD7:AI9: 1:20 58.18 +/- 9.25% shell, 31.25 +/- 2.75% ring, 10.57 +/- 6.54% disc; 1:10 20.16 +/-
+    9.40%, 57.13 +/- 3.67%, 22.72 +/- 12.86%; 1:7.5 5.93 +/- 6.81%, 24.38 +/- 16.06%, 69.69 +/- 21.65%
+    [SEM = 12.50%, matching chandrasekaran2024 p. 7 '70 +/- 13%']) matches all 9 digitized WT bars and
+    9 SD error bars of chandrasekaran2024 Fig. 6D to <= 0.09 pp (mean) and <= 0.07 pp (SD), proving
+    Fig. 6D juxtaposes unweighted per-image-mean WT statistics from EDTA/EGTA buffer (MOESM14 'Fig 3d')
+    against pooled-replicate GABmut statistics from EDTA/EGTA-free buffer (MOESM9 'Figure6D'; note
+    MOESM14 pooled means differ by up to 2.0 pp at 1:20: 56.90 +/- 13.86% shell, 30.49 +/- 6.06% ring,
+    12.61 +/- 7.86% disc).
+    (2) Quantitative GABmut shift vs MOESM14 'Fig 3d' (EDTA/EGTA) AND buffer-matched MOESM20 'Fig S4c'
+    (EDTA/EGTA-free WT control: 170 + 110 + 137 = 417 total droplets across 3 images/replicate: [50,
+    43, 36] = 129 at 1:20, [54, 35, 51] = 140 at 1:10, [66, 32, 50] = 148 at 1:7.5):
+    - At Actin:VASP = 1:20, GABmut (75.10 +/- 9.25% shell, 21.33 +/- 8.74% ring, 3.57 +/- 2.32% disc)
+      looks shifted relative to EDTA-containing 'Fig 3d' (+16.92 pp shell p = 0.089, -9.92 pp ring
+      p = 0.134, -7.00 pp disc p = 0.156), YET is statistically indistinguishable from buffer-matched
+      EDTA-free 'Fig S4c' (image-mean: 72.32 +/- 14.88% shell, 25.46 +/- 14.56% ring, 2.22 +/- 2.22%
+      disc -> Delta = +2.78, -4.13, +1.35 pp, all two-tailed p >= 0.51; pooled: 72.03 / 25.76 / 2.22%
+      -> Delta = +3.07, -4.43, +1.35 pp, all p >= 0.52). Nearly the entire visual 1:20 WT-vs-GABmut
+      gap in Fig. 6D is therefore an EDTA/EGTA buffer effect rather than a GABmut phenotype.
+    - At 1:10, GABmut (39.23 +/- 4.66% shell, 55.17 +/- 3.75% ring, 5.60 +/- 2.02% disc) elevates
+      shells consistently against BOTH controls (+19.07 pp vs 'Fig 3d' Student p = 0.035 / Welch
+      p = 0.053; +18.60 pp vs 'Fig S4c' image-mean 20.63 +/- 8.11%, Student p = 0.026 / Welch
+      p = 0.037), leaves rings unchanged (-1.95 pp vs 3d, +2.52 pp vs S4c), and suppresses discs much
+      more decisively against buffer-matched 'Fig S4c' (-21.12 pp vs 26.71 +/- 5.20%, Student
+      p = 0.0028 / Welch p = 0.011; pooled -20.78 pp, p = 0.0021) than against noisy 'Fig 3d'
+      (-17.12 pp vs 22.72 +/- 12.86%, Student p = 0.085 / Welch p = 0.144).
+    - At 1:7.5, GABmut (37.39 +/- 6.87% shell, 52.71 +/- 9.63% ring, 9.89 +/- 6.90% disc) strongly
+      suppresses discs and accumulates rings/shells — and the shift is LARGER and more statistically
+      decisive against buffer-matched 'Fig S4c' (image-mean: 3.46 +/- 4.79% shell, 16.74 +/- 5.65%
+      ring, 79.80 +/- 0.98% disc -> Delta = +33.93 pp shell p = 0.0022, +35.97 pp ring p = 0.0050
+      [Welch 0.0093], -69.90 pp disc p = 6.4e-5 [Welch 0.0028]; pooled: 3.63 / 17.94 / 78.43% ->
+      Delta = +33.76 / +34.78 / -68.54 pp, all p <= 0.0037) than against EDTA-containing 'Fig 3d'
+      (Delta = +31.46 pp shell p = 0.0049, +28.33 pp ring p = 0.059 [borderline due to 16.06% SD],
+      -59.80 pp disc p = 0.0104 [Welch 0.031]).
+  citation:
+    none: "binary xlsx workbooks across companion Source Data archives"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx ('Figure6D' A20:N43) vs 41567_2022_1924_MOESM14_ESM.xlsx ('Fig 3d' B7:AI37) & MOESM20 ('Fig S4c' A6:Q28)"
+
+- id: q_graham_source_data_fig7f_supplies_missing_fig5c_and_ar_bounds
+  kind: possible_error
+  about:
+    - fig7f_continuum_energy_reader
+    - wb_f7f_ar1_bend
+    - wb_f7f_ar1_surf
+    - q_ar_1
+    - q_ar_9p5
+    - fig7b_max_aspect_ratio_reader
+    - figs14c_cap_conc_reader
+    - fig5cd_t2pir_reader
+    - ref-graham2023
+    - graham_source_data/q_simulation_and_theory_panels_omitted
+    - graham_source_data/fig5_aspect_ratio_reader
+    - graham_source_data/edfig9e_aspect_ratio_reader
+    - graham_source_data/elongation_reader
+    - graham_source_data/droplet_size_reader
+    - graham_source_data/q_chandrasekaran_source_data_fig7f_supplies_missing_fig5c
+    - graham2023/ring_rod_transition_energy
+    - graham2023/q_fig5c_unit_mismatch
+    - graham2023/q_audit_fig5d_ar_exceeds_pi_squared
+    - graham_code/notebook_surface_energy
+  text: >
+    Reverse complementarity on Fig. 7F vs Graham 2023 Fig. 5c plus cross-workbook physical-domain
+    comparisons between MOESM9_ESM.xlsx and MOESM12-22_ESM.xlsx:
+    (1) MOESM9 'Figure7F' supplies the missing numerical Source Data for Graham 2023 Fig. 5c: All 26
+    theoretical/simulation panels of graham2023 (including Fig. 5c) were omitted from
+    graham_source_data (MOESM12-22; graham_source_data/q_simulation_and_theory_panels_omitted),
+    whereas chandrasekaran_source_data MOESM9 'Figure7F' (19 rows: AR = 1..9 in steps of 1.0 and
+    9.1..10.0 in steps of 0.1; unitless headers 'Aspect Ratio', ' Bending Energy', ' Surface Energy ')
+    actually contains the exact numerical table plotted in both Graham Fig. 5c and Chandrasekaran
+    Fig. 7F. Linear interpolation of MOESM9 'Figure7F' matches 12/12 blindly digitized points of
+    graham2023/fig5c_bending_fig (MAE 0.0768, max 0.323 at the AR = 9.7 cliff) and 10/10 points of
+    graham2023/fig5c_surface_fig (MAE 0.0304, max 0.0669) inside their reading bands (and 12/12 +
+    10/10 of chandrasekaran2024 Fig. 7F).
+    (2) Machine-precision mathematical fingerprint (3.55e-15 match to Graham Eq. S11 / graham_code):
+    Across all 19 rows (AR = 1..10), column B ('Bending Energy') reproduces exact numerical quadrature
+    of Graham SI Section 2.11's minimum-bending-energy arc of length L = 2*pi on a constant-area
+    ellipse (a = sqrt(AR), b = 1/sqrt(AR)) to <= 2.84e-5 (<= 5.12e-7 for AR <= 9.5; grid peak
+    19.687006 at AR = 9.5 just below the exact continuous peak 19.798353 at P = 2*L critical AR_crit
+    = 9.536210, then plunging to 11.915142, 4.722508, 2.100398, 1.101010, and 0.655778 at AR = 9.6..
+    10.0 as the arc shifts onto one flatter flank without crossing either sharp pole). Crucially,
+    column C ('Surface Energy') differs systematically from the exact complete elliptic integral
+    4*sqrt(AR)*E(1 - AR^-2) by -3.9e-10 (AR = 2) growing monotonically to -3.164e-4 (AR = 10), and
+    instead matches Graham SI Eq. S11 / graham_code/notebook_surface_energy's 7-term truncated
+    Gauss-Kummer series pi*(a+b)*sum_{k=0..6} c_k*h^k (h = ((a-b)/(a+b))^2, c_6 = 441/1048576) to
+    machine precision (max |diff| = 3.55e-15 across all 19 rows) — forensically proving 'Figure7F'
+    comes directly from Graham et al.'s own continuum script.
+    (3) Direct workbook confirmation of BOTH Fig. 5c / Fig. 7F anomalies (10^6 unit scale & AR = 10 >
+    pi^2): At AR = 1.0, cells B2 = 3.1415926535897927 (= pi) and C2 = 6.283185307179586 (= 2*pi;
+    ratio E_surf/E_bend = 2.0) confirm dimensionless R = 1, L = 2*pi, k_b = 1, gamma_I = 1 (i.e.,
+    R = 1 nm for 'Energy (pN*nm)', or R = 1 um with k_b = 1 pN*um^2 yielding 'pN*um'), contrasting by
+    exactly 10^6 with Graham Fig. 5c's literal caption parameters R = 1 um = 1000 nm, k_b = 1 pN*nm^2,
+    gamma_I = 1 pN (which give E_bend(1) = pi/1000 = 0.003142 pN*nm and E_surf(1) = 2000*pi =
+    6283.185 pN*nm, ratio 2 x 10^6; graham2023/q_fig5c_unit_mismatch). Furthermore, rows 19-20
+    explicitly tabulate AR = 9.9 (2*a = 6.2929*R > 2*pi*R) and AR = 10.0 (2*a = 6.3246*R > 2*pi*R),
+    confirming graham2023/q_audit_fig5d_ar_exceeds_pi_squared (exceeding (a/b)_max = pi^2 = 9.8696)
+    while explaining why E_bend(10) = 0.6558 remains well-defined mathematically (half-perimeter
+    P/2 = 6.4255*R > L = 6.2832*R along the curved flank even though chord 2*a > L).
+    (4) Cross-workbook empirical AR, droplet-size, and elongation-timescale bounds: Against CytoSim's
+    deformed-droplet ceiling in MOESM9 ('Figure7B' peak mean 5.073 at L_fil^max = pi um, max replicate
+    5.458; 'FigureS14C' max 5.564 <= pi^(3/2) = 5.568 at fixed D = 2.0 um), raw experimental ARs in
+    graham_source_data MOESM16 'Fig S5a' at 1:7.5 (n = 589, max 12.86) have 63/589 (10.70%) > 5.073,
+    45/589 (7.64%) > pi^(3/2), and 3/589 (0.51%) > pi^2 (rising in MOESM22 'Fig S9e' 3% PEG, n = 877,
+    max 26.52, to 533/877 = 60.8% > pi^(3/2) and 260/877 = 29.6% > pi^2), while only 21.93% of
+    experimental 20 uM VASP droplets in MOESM20 'Fig S4e' (n = 1655, median 2.86 um, IQR 2.13-3.75 um)
+    have D <= 2.0 um. Meanwhile, MOESM16 'Fig 5h''s measured linear bundle elongation rate (0.022734
+    um/s) maps to T_{2piR} = (2*pi - 0.1)/0.022734 = 272.0 s at R = 1 um (395.2 s at median D = 2.86
+    um), placing experimental growth squarely between the 200 s and 450 s columns of MOESM9 'Figure5D'
+    (ring probability 36.7-86.7% at [VASP] = 0.8 uM and 83.3-100% at 0.4 uM).
+  citation:
+    none: "binary xlsx workbooks across companion Source Data archives"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx ('Figure7F' A1:C20, 'Figure7B', 'Figure5D', 'FigureS14C') vs 41567_2022_1924_MOESM12-22_ESM.xlsx ('Fig S5a', 'Fig 5h', 'Fig S4e', 'Fig S9e')"
+
+# ---------------------------------------------------------------------------
+# Cross-attachment audit with graham_code (VASPDroplet_simulate.ipynb, 2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_graham_code_fig7f_getsurfacef_and_3d_vs_2d_ar_ceiling
+  kind: reading
+  about:
+    - fig7f_continuum_energy_reader
+    - wb_f7f_ar1_surf
+    - wb_f7f_ar1_bend
+    - q_ar_1
+    - q_ar_9p5
+    - fig7b_max_aspect_ratio_reader
+    - wb_f7b_means_table
+    - wb_f7b_pi_sd_pop
+    - figs14c_schedule_reader
+    - figs14c_cap_conc_reader
+    - paper_aspect_ratio_max_approx
+    - rel_notebook_surface_approx_fig7f_table
+    - rel_notebook_surface_approx_fig7f_fine_grid
+    - ref-graham2023
+    - q_graham_source_data_fig7f_supplies_missing_fig5c_and_ar_bounds
+    - graham_code/notebook_surface_energy
+    - graham_code/notebook_droplet_ring_slsqp
+    - graham_code/perim_series_terms_code
+    - graham_code/target_fig5c_surface
+    - graham_code/q_chandrasekaran_source_data_fig7f_match_and_3d_ar_comparison
+    - graham2023/ring_rod_transition_energy
+    - graham2023/q_fig5c_unit_mismatch
+  text: >
+    Direct cross-attachment audit between 41467_2024_46726_MOESM9_ESM.xlsx (chandrasekaran_source_data,
+    37 sheets / 20 readers / 77 datums) and VASPDroplet_simulate.ipynb (graham_code, 8 adapters /
+    72 datums) yields 2 verified ModelAtlas `approximated_by` relations (out of 20 x 8 = 160 model
+    pairs) and 0 direct cited.yaml links (out of 77 x 72 = 5,544 datum pairs, avoiding scalar-vs-table
+    incompatibility and backwards provenance against graham_code/target_fig5c_surface), while
+    establishing two sharp quantitative cross-code/workbook findings:
+    (1) Bit-for-bit IEEE-754 forensic provenance of MOESM9 'Figure7F' Column C from
+    VASPDroplet_simulate.ipynb::getsurfaceF(): Executing live graham_code/notebook_surface_energy
+    (2D branch, R = 1 nm, gamma_I = 1 pN, h = (a-b)*(a-b)/((a+b)*(a+b)), pmeter = pi*(a+b)*(1 + h/4 +
+    h^2/64 + h^3/256 + 25*h^4/16384 + 49*h^5/65536 + 441*h^6/1048576)) reproduces all 19/19 stored
+    cells of MOESM9 sheet 'Figure7F' Column C (AR = 1..9 step 1.0, 9.1..10.0 step 0.1) to 0.000e+00
+    (0 ULPs, bit-for-bit IEEE-754 float64 identity; generic sum(c_k*h^k) or Horner reordering differs
+    by up to 3.55e-15 = 2 ULPs, confirming even the left-to-right Python expression order). Every
+    alternative perimeter formula diverges by 10^10-10^11x more: exact complete elliptic integral
+    4*sqrt(AR)*E(1 - AR^-2) differs monotonically from -3.905e-10 (AR = 2) to -3.164e-4 (2.46e-5 rel,
+    AR = 10); the commented-out Ramanujan formula on VASPDroplet_simulate.ipynb line 351 differs by
+    up to -1.678e-4 (1.31e-5 rel); 6-term truncation (to h^5) by +4.136e-4; and 8-term truncation
+    (to h^7) by -1.709e-4. Column A likewise stores exact Python decimal float literals [9.1..10.0]
+    (10/10 exact, vs np.arange failing 8/10 and np.linspace differing at 9.3). At AR = 1.0, cells
+    B2 = 3.1415926535897927 (= pi) and C2 = 6.2831853071795862 (= 2*pi) independently lock in the
+    consistent R = 1 nm, gamma_I = 1 pN unit normalization (confirming graham_code/cmp_fig5c_surface_1nm
+    vs cmp_fig5c_surface_1um's 1000x mismatch and graham2023/q_fig5c_unit_mismatch's 10^6x ratio error).
+    In ModelAtlas, rel_notebook_surface_approx_fig7f_table verifies fig7f_continuum_energy_reader
+    approximates notebook_surface_energy across AR in [1, 10] to max relative error 1.43e-2 (<= 0.02,
+    purely piecewise-linear chord error peaking at 1.438% at AR = 1.391 between integer nodes 1 and 2,
+    dropping to 9.34e-4 on [2, 9]), while rel_notebook_surface_approx_fig7f_fine_grid on the dAR = 0.1
+    cliff grid AR in [9, 10] verifies max relative error 2.80e-6 (true peak 3.04e-6 <= 1e-5) — nearly
+    10x tighter than exact complete elliptic integral graham2023/ring_rod_transition_energy (2.68e-5,
+    failing 1e-5) — executably fingerprinting Figure7F Column C as getsurfaceF()'s 7-term series.
+    (Column B's continuum bending quadrature is not present in VASPDroplet_simulate.ipynb.)
+    (2) CytoSim 3D aspect ratios ('Figure7B' & 'FigureS14C') vs graham_code's 2D open-ring AR plateau:
+    Because VASPDroplet_simulate.ipynb::generatering() constructs an indivisible open elastic ring of
+    fixed length 2.9*D (double off-by-one bug: 29 segments of 0.1*D, or 2.8*D at IEEE-754 truncated
+    diameters) with no filament sliding or ring rupture, live graham_code/notebook_droplet_ring_slsqp
+    saturates at AR = 1.56-1.75 at gamma_I = 5 pN (D = 1 um: 1.5618 at Fig. 4f max T_ring = 480 nm,
+    1.7545 at T_ring = 3000 nm / Nfil = 200; at CytoSim-matched D = 2 um: 1.3800 at 850 nm -> 1.6576
+    at 3000 nm) and AR = 1.70-1.80 at gamma_I = 1 pN (D = 1 um: 1.7489 -> 1.7989; D = 2 um: 1.7045 ->
+    1.7988 at Nfil = 200). By contrast, MOESM9 'Figure7B' (3D CytoSim, D = 2.0 um volume-conserving
+    prolate spheroid, 10 L_fil^max conditions x 5 replicates = 50 runs) peaks at mean AR = 5.07319 +/-
+    0.19684 (ddof = 0; replicates 4.9130-5.4581, 2a = 5.905-6.200 um) at L_fil^max = pi um because
+    compliant VASP-crosslinked filaments slide end-to-end past the single-filament 3D limit
+    (pi/2)^(3/2) = 1.969, and 'FigureS14C' reaches AR = 5.5641 (2a = 6.280 um, 99.92% of the 3D
+    full-circumference ceiling pi^(3/2) = 5.5683) — 2.8-3.1x above graham_code's 1.80 ceiling. Across
+    all 50 'Figure7B' replicates, 49/50 (98.0%) exceed 1.57 (only 1 replicate 1.4822 at L_fil^max =
+    2*pi/3 lies below), 44/50 (88.0%) exceed 1.80, and 38/50 (76.0%) exceed 2.00. Crucially, when
+    longer filaments at L_fil^max = 2*pi um remain kinetically trapped in bent rings in 'Figure7B',
+    their AR collapses to mean 1.9452 +/- 0.2211 (replicates 1.6565-2.2165) — converging quantitatively
+    onto the intact-ring deformation ceiling (1.57-1.80 for 2.9*D in graham_code; 1.93-2.19 for 3.1*D
+    in graham2023/droplet_ring_minimization_corrected), whereas MOESM9 'Figure7F' interprets this 3D
+    volume-conserving regime (AR <= pi^(3/2) = 5.568) using Graham's 2D area-conserving continuum
+    energies up to AR = 10.0 > pi^2 = 9.870.
+  citation:
+    none: "binary xlsx workbook vs released Python notebook"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx ('Figure7F' A1:C20, 'Figure7B' A1:H11, 'FigureS14C' F2:G214) vs VASPDroplet_simulate.ipynb (lines 343-356, 712-745, 918-944)"
+
+# ---------------------------------------------------------------------------
+# Cross-record ModelAtlas & provenance audit with graham2023 (2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_graham2023_modelatlas_fig7f_unit_scale_and_quadrature
+  kind: possible_error
+  about:
+    - fig7f_continuum_energy_reader
+    - fig6d_gabmut_experiment_reader
+    - silhouette_cluster_reader
+    - wb_f7f_ar1_bend
+    - wb_f7f_ar1_surf
+    - q_ar_1
+    - q_ar_9p5
+    - ref-graham2023
+    - rel_graham2023_ring_rod_surface_approx_fig7f_full
+    - rel_graham2023_ring_rod_surface_approx_fig7f_fine
+    - rel_graham2023_ring_rod_bending_approx_fig7f_precliff
+    - rel_graham2023_ring_rod_bending_approx_fig7f_full
+    - rel_graham2023_ring_rod_surface_printed_units_fig7f
+    - rel_graham2023_ring_rod_bending_printed_units_fig7f
+    - rel_fig7f_bending_reduces_to_circular_confinement
+    - rel_fig7f_surface_reduces_to_eqS12_circle
+    - rel_fig7f_surface_scales_as_eqS11_fine
+    - q_graham_source_data_fig7f_supplies_missing_fig5c_and_ar_bounds
+    - q_graham_code_fig7f_getsurfacef_and_3d_vs_2d_ar_ceiling
+    - graham2023/ring_rod_transition_energy
+    - graham2023/ring_confinement_bending_energy
+    - graham2023/ring_bending_energy_eq1
+    - graham2023/ring_bending_energy_eq1_corrected
+    - graham2023/droplet_surface_energy_eqS12
+    - graham2023/ellipse_perimeter_series_eqS11
+    - graham2023/wetting_tension_profile_eqS5
+    - graham2023/fig5c_bending_fig
+    - graham2023/fig5c_surface_fig
+    - graham2023/q_fig5c_unit_mismatch
+    - graham2023/q_audit_fig5d_ar_exceeds_pi_squared
+    - graham2023/q_chandrasekaran_source_data_modelatlas_fig7f_and_fig6d_audit
+  text: >
+    Complete ModelAtlas and provenance audit across all 20 chandrasekaran_source_data x 31
+    graham2023 = 620 model pairs (and all 77 x 133 = 10,241 datum pairs -> 0 direct cited.yaml
+    links) yields 9 proposed relations (7 verified, 2 not_verified), all anchored on MOESM9 sheet
+    'Figure7F' (`fig7f_continuum_energy_reader`):
+    (1) Exact forensic verification of BOTH Fig. 5c energy curves & separation of Eq. S10 vs S11:
+    At consistent nanometre normalization (R = 1 nm = 0.001 um, L = 2*pi nm, k_b = 1 pN*nm^2,
+    gamma_I = 1 pN), `graham2023/ring_rod_transition_energy` matches all 14 pre-cliff nodes of
+    MOESM9 'Figure7F' Column B (AR = 1..9, 9.1..9.5) to <= 2.10e-6 (and to 3.80e-13..3.02e-11
+    across AR = 9.0..9.5), verifying `rel_graham2023_ring_rod_bending_approx_fig7f_precliff`
+    (max error 1.15e-5 <= 2e-5) and `rel_graham2023_ring_rod_bending_approx_fig7f_full` across
+    [1, 10] (sampled max 6.70e-2 <= 0.15; true peak 1.429e-1 at AR = 9.535 across the unresolved
+    AR_crit = 9.5362 cusp where Figure7F linearly bridges 19.687 down to 11.915). On post-cliff
+    nodes AR = 9.6..10.0, Column B matches exact adaptive scipy quadrature to 1.39e-6..1.35e-5,
+    revealing that `graham2023/ring_rod_transition_energy`'s default n_arc = 4000 uniform-theta
+    grid introduces up to 0.98% discretization overshoot at AR = 9.6 (12.032 vs 11.915) and 0.94%
+    at AR = 9.8 (2.120 vs 2.100; falling to <= 5.4e-5 at n_arc = 40000). Meanwhile, Column C
+    matches `graham2023/ellipse_perimeter_series_eqS11` (7-term Gauss-Kummer) to 2.88e-16 across
+    all 19 nodes (`rel_fig7f_surface_scales_as_eqS11_fine`: verified, max log-slope diff 8.9e-4
+    on [9, 10]), while differing from exact Eq. S10 in `ring_rod_transition_energy` by up to
+    2.46e-5 at AR = 10 (`rel_graham2023_ring_rod_surface_approx_fig7f_fine`: 2.68e-5 <= 3e-5 vs
+    2.80e-6 against `graham_code/notebook_surface_energy`; full [1, 10] 1.44e-2 <= 0.02). Both
+    columns also verify their exact circular AR -> 1 limits against
+    `graham2023/ring_confinement_bending_energy` (1.9e-9, chaining to `ring_bending_energy_eq1`
+    and `_corrected` at u_m -> 0) and `graham2023/droplet_surface_energy_eqS12` (8.1e-9), and
+    match 12/12 digitized points of `graham2023/fig5c_bending_fig` (MAE 0.0768) and 10/10 of
+    `graham2023/fig5c_surface_fig` (MAE 0.0304) inside every reading band.
+    (2) Executable confirmation of the 10^6 unit mismatch & AR = 10 > pi^2: Evaluating
+    `graham2023/ring_rod_transition_energy` at Graham's literal printed Fig. 5c / SI Section 2.11
+    inputs (R = 1 um, L = 2*pi um, k_b = 1 pN*nm^2, gamma_I = 1 pN) fails both
+    `rel_graham2023_ring_rod_surface_printed_units_fig7f` (not_verified, 9.99e-1: E_surf = 1000x
+    Figure7F) and `rel_graham2023_ring_rod_bending_printed_units_fig7f` (not_verified, 9.99e-1:
+    E_bend = 0.001x Figure7F -> 10^6 E_surf/E_bend ratio error, `graham2023/q_fig5c_unit_mismatch`),
+    while rows 19-20 tabulate AR = 9.9 and 10.0 > pi^2 = 9.8696 (`q_audit_fig5d_ar_exceeds_pi_squared`).
+    (3) Disjoint models & sheet disambiguation: `graham2023/wetting_tension_profile_eqS5`
+    (_corrected) and discrete 2D SLSQP (`droplet_ring_minimization_*`) have 0 mathematical
+    relations with `Figure7F` (no wetting term in SI Section 2.11) or any other MOESM9 sheet.
+    Similarly, MOESM9 'Figure6D' omits Graham's WT rows 1-19 (containing only 2024 VASP-GABmut
+    counts vs Graham Fig. 3d / Extended Data Fig. 4c WT bar charts), and MOESM9 'FigureS4C' holds
+    CytoSim k-means silhouette scores (`silhouette_cluster_reader`), not Graham Extended Data Fig. 4c.
+  citation:
+    none: "binary xlsx workbook vs companion Nature Physics article"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx ('Figure7F' A1:C20, 'Figure6D' A20:N43, 'FigureS4C') vs graham2023 Fig. 3d, Fig. 5c-d, Extended Data Fig. 4c, SI Eqs. S10-S12 & Section 2.11"
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with graham_code (2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_graham_code_no_cross_validation
+  kind: unstated_model
+  about:
+    - paper_exp_gabmut_ring_1_7p5
+    - paper_exp_gabmut_shell_1_7p5
+    - paper_exp_gabmut_disk_1_7p5
+    - wb_f6d_1_7p5_shell_mean
+    - wb_f6d_1_7p5_ring_mean
+    - wb_f6d_1_7p5_disk_mean
+    - wb_f6d_1_7p5_shell_sd
+    - wb_f6d_1_7p5_ring_sd
+    - wb_f6d_1_7p5_ring_sem_stored_buggy
+    - wb_f7f_ar1_bend
+    - wb_f7f_ar1_surf
+    - wb_f7b_means_table
+    - wb_f7b_pi_sd_pop
+    - paper_fig7aii_schedule
+    - paper_aspect_ratio_max_approx
+    - wb_s1ef_20fil_ar
+    - wb_s1ef_20fil_asph
+    - fig6d_gabmut_experiment_reader
+    - fig7f_continuum_energy_reader
+    - fig7b_max_aspect_ratio_reader
+    - figs14c_schedule_reader
+    - figs1ef_lammps_shape_reader
+    - rel_notebook_surface_approx_fig7f_table
+    - rel_notebook_surface_approx_fig7f_fine_grid
+    - q_graham_code_fig7f_getsurfacef_and_3d_vs_2d_ar_ceiling
+    - graham_code/notebook_wetting_tension
+    - graham_code/notebook_bundle_kbend
+    - graham_code/notebook_surface_energy
+    - graham_code/notebook_ring_discretization
+    - graham_code/notebook_wetted_fraction_check
+    - graham_code/notebook_droplet_ring_slsqp
+    - graham_code/notebook_droplet_ring_slsqp_nfil_plus2
+    - graham_code/notebook_critical_ring_thickness
+    - graham_code/target_fig5c_surface
+    - graham_code/target_fig4f_droplet_ar
+    - graham_code/target_fig4h_gI5
+    - graham_code/target_fig4h_gI15
+    - graham_code/q_chandrasekaran_source_data_no_cross_validation
+  text: >
+    No cross-record validations are entered in validations.yaml between chandrasekaran_source_data
+    and graham_code (0 entries in both directions; all 101 existing validations in
+    chandrasekaran_source_data/validations.yaml against chandrasekaran2024 remain preserved):
+    (1) Forward direction — graham_code models (8 live software: true adapters of
+    VASPDroplet_simulate.ipynb) vs chandrasekaran_source_data/data.yaml (77 authored datums:
+    3 origin: measured, 29 origin: derived, 8 origin: run, 37 origin: reported) and all 37 sheets
+    of 41467_2024_46726_MOESM9_ESM.xlsx:
+    - The ONLY 3 origin: measured datums in chandrasekaran_source_data are experimental VASP-GABmut
+      droplet morphology percentages from sheet Figure6D at Actin:VASP = 1:7.5 (N = 3 replicates,
+      240 droplets out of 655 total; copied via from_source: chandrasekaran2024):
+      paper_exp_gabmut_ring_1_7p5 (53 +/- 6%), paper_exp_gabmut_shell_1_7p5 (37 +/- 4%), and
+      paper_exp_gabmut_disk_1_7p5 (< 10%, an inequality bound that gives no verdict). None of
+      graham_code's 8 models outputs droplet population morphology abundances (ring_abundance,
+      shell_abundance, disk_abundance) or takes VASP-to-actin molar ratio / VASP-GABmut kinetics as
+      inputs: VASPDroplet_simulate.ipynb performs deterministic static 2D free-energy minimization
+      of a single pre-formed indivisible elastic ring inside an area-conserving ellipse (never
+      simulating kinetic trapping or shell/ring/disk population partitioning). All 21 dimension-
+      matching output-datum pairs against these 3 datums are coincidental dimensionless mismatches
+      (bead_count, droplet_aspect_ratio, ring_extension_cycles, ring_length_to_diameter_ratio,
+      wetted_bundle_fraction vs morphology percentages). Across all 37 worksheets of MOESM9,
+      Figure6D (rows 20-43; WT rows 1-19 blank) is the sole experimental sheet and contains only
+      shell/ring/disc counts and percentages (0 droplet diameter D, ring thickness T_ring, aspect
+      ratio AR, or interfacial tension gamma_I columns).
+    - All remaining 74 authored datums in chandrasekaran_source_data/data.yaml are non-measured
+      (29 derived, 8 run, 37 reported) and none constitutes an empirical validation target for
+      graham_code:
+      (a) Figure7F continuum theory cells wb_f7f_ar1_surf (6.28319 pN*nm = 2*pi, origin: derived)
+      and wb_f7f_ar1_bend (3.14159 pN*nm = pi, origin: derived) are NOT empirical measurements;
+      wb_f7f_ar1_surf is literally Graham et al.'s own VASPDroplet_simulate.ipynb::getsurfaceF()
+      output at R = 1 nm, AR = 1.0, gamma_I = 1 pN (6.283185307179586 pN*nm, 0.00e+00 bit-for-bit
+      across all 19 rows of Figure7F Column C), whose exact model-to-table equivalence is already
+      verified in chandrasekaran_source_data/relations.yaml via rel_notebook_surface_approx_fig7f_table
+      and rel_notebook_surface_approx_fig7f_fine_grid. Likewise wb_f7f_ar1_bend is non-empirical 2D
+      continuum theory with no continuum bending-quadrature model in graham_code (and
+      notebook_bundle_kbend outputs a discrete hinge spring constant k_bend, not droplet energy).
+      (b) CytoSim 3D and LAMMPS 3D aspect-ratio datums (wb_f7b_means_table, wb_f7b_pi_sd_pop,
+      paper_fig7aii_schedule, paper_aspect_ratio_max_approx, wb_s1ef_20fil_ar, wb_s1ef_20fil_asph;
+      all origin: derived) are computer-simulation outputs rather than experimental measurements,
+      lack the required gamma_I and T_ring inputs (CytoSim deforms a 3D volume-conserving prolate
+      spheroid via filament sliding and a polar-cap concentration threshold; LAMMPS uses reduced LJ
+      units sigma/epsilon), and operate in a physically distinct elongation regime (CytoSim
+      Figure7B peak 5.073, FigureS14C max 5.564 vs graham_code's fixed 2.9*D open-ring ceiling
+      1.56-1.80; see q_graham_code_fig7f_getsurfacef_and_3d_vs_2d_ar_ceiling).
+      (c) The 6 Figure6D workbook summaries (wb_f6d_1_7p5_*) are derived morphology abundance
+      statistics outside graham_code's outputs; the remaining 15 derived / 8 run / 37 reported
+      entries are CytoSim surface-area fractions, VASP valency fractions, CytoSim k-means
+      morphology probabilities, PCA explained variances, silhouette scores, and query coordinates.
+    (2) Reverse direction — chandrasekaran_source_data models (20 role: processing, software: true
+    Excel workbook readers over MOESM9) vs graham_code/data.yaml (72 authored datums):
+    graham_code/data.yaml contains 0 origin: measured datums (57 origin: reported code/paper
+    parameters, 14 origin: predicted digitized theory/SLSQP simulation curves target_* copied from
+    graham2023, and 1 origin: derived ring length ratio 3.1). Besides being data-extraction
+    spreadsheet readers rather than predictive physical models, even on the sole non-empirical
+    content overlap (fig7f_continuum_energy_reader surface_energy vs graham_code/target_fig5c_surface,
+    where Figure7F falls inside 10/10 reading bands with MAE_mid = 0.03043 pN*nm),
+    target_fig5c_surface is an origin: predicted copy of a theoretical curve from graham2023
+    (already tested against live getsurfaceF() in graham_code/cmp_fig5c_surface_1nm and linked to
+    Figure7F via rel_notebook_surface_approx_fig7f_table/fine_grid and val_fig7f_surface against
+    chandrasekaran2024/fig7f_surface_energy_fig), not an empirical measurement. Similarly, all 11
+    aspect-ratio target_* curves in graham_code (target_fig4f_droplet_ar, target_fig4g_*,
+    target_edfig7*) are origin: predicted 2D SLSQP simulation curves indexed by ring_thickness (nm),
+    incompatible in both origin and index quantity with fig7b_max_aspect_ratio_reader
+    (filament_length), figs14c_schedule_reader (time), and figs1ef_lammps_shape_reader
+    (filament_count). See also graham_code/q_chandrasekaran_source_data_no_cross_validation.
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheet 'Figure6D' (cells A20:N43), sheet 'Figure7F' (cells A1:C20), and all 37 sheets"
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with graham2023 (2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_graham2023_no_cross_validation
+  kind: unstated_model
+  about:
+    - paper_exp_gabmut_ring_1_7p5
+    - paper_exp_gabmut_shell_1_7p5
+    - paper_exp_gabmut_disk_1_7p5
+    - wb_f6d_1_7p5_shell_mean
+    - wb_f6d_1_7p5_ring_mean
+    - wb_f6d_1_7p5_disk_mean
+    - wb_f6d_1_7p5_shell_sd
+    - wb_f6d_1_7p5_ring_sd
+    - wb_f6d_1_7p5_ring_sem_stored_buggy
+    - wb_f7f_ar1_bend
+    - wb_f7f_ar1_surf
+    - wb_f7b_means_table
+    - wb_f7b_pi_sd_pop
+    - paper_fig7aii_schedule
+    - paper_aspect_ratio_max_approx
+    - wb_s1ef_20fil_ar
+    - wb_s1ef_20fil_asph
+    - fig6d_gabmut_experiment_reader
+    - fig7f_continuum_energy_reader
+    - fig7b_max_aspect_ratio_reader
+    - figs14c_schedule_reader
+    - figs14c_cap_conc_reader
+    - figs1ef_lammps_shape_reader
+    - fig5cd_t2pir_reader
+    - fig6b_kunbind_sweep_reader
+    - kinetic_grid_reader
+    - figs11_actin_vasp_reader
+    - ref-graham2023
+    - rel_graham2023_ring_rod_surface_approx_fig7f_full
+    - rel_graham2023_ring_rod_bending_approx_fig7f_full
+    - q_graham2023_modelatlas_fig7f_unit_scale_and_quadrature
+    - graham2023/ring_rod_transition_energy
+    - graham2023/ring_confinement_bending_energy
+    - graham2023/droplet_surface_energy_eqS12
+    - graham2023/ellipse_perimeter_series_eqS11
+    - graham2023/droplet_ring_minimization_corrected
+    - graham2023/ring_rod_max_aspect_ratio
+    - graham2023/fig5c_bending_fig
+    - graham2023/fig5c_surface_fig
+    - graham2023/fig3d_1to20_fig
+    - graham2023/fig3d_1to10_fig
+    - graham2023/fig3d_1to7p5_fig
+    - graham2023/edfig4c_1to20_fig
+    - graham2023/edfig4c_1to10_fig
+    - graham2023/edfig4c_1to7p5_fig
+    - graham2023/fig3g_aspect_ratio_fig
+    - graham2023/fig5a_aspect_ratio_fig
+    - graham2023/edfig9e_aspect_ratio_fig
+    - graham2023/linear_droplet_ar_high
+    - graham2023/q_chandrasekaran_source_data_no_cross_validation
+  text: >
+    No cross-record validations are entered in validations.yaml between chandrasekaran_source_data
+    and graham2023 (0 entries in both directions; all 101 existing validations in
+    chandrasekaran_source_data/validations.yaml target chandrasekaran2024 and remain preserved):
+    (1) Forward direction — graham2023 models (31 runnable analytical/2D-SLSQP models, 40 output
+    ports) vs chandrasekaran_source_data/data.yaml (77 authored datums: exact origin counts =
+    3 measured, 29 derived, 8 run, 37 reported) and all 37 worksheets of
+    41467_2024_46726_MOESM9_ESM.xlsx:
+    - All 3 origin: measured datums come from experimental VASP-GABmut droplet microscopy in sheet
+      Figure6D at Actin:VASP = 1:7.5 (N = 3 replicates, 240 droplets at 1:7.5 out of 655 total;
+      WT rows 1-19 are blank; copied via from_source: chandrasekaran2024):
+      paper_exp_gabmut_ring_1_7p5 (53 +/- 6%), paper_exp_gabmut_shell_1_7p5 (37 +/- 4%), and
+      paper_exp_gabmut_disk_1_7p5 (< 10%, an inequality bound that gives no verdict). Across all
+      40 x 3 = 120 output-datum pairs, the 24 dimension-matching pairs are all coincidental
+      dimensionless quantity mismatches (aspect_ratio, ar_crit, ar_max, L_ratio, N_fil, P_over_2L,
+      b vs experimental morphology abundances): none of graham2023's 31 models predicts droplet
+      population morphology percentages (ring_abundance, shell_abundance, disk_abundance) or takes
+      VASP-to-actin stoichiometry / GABmut crosslinker kinetics as inputs (graham2023 models static
+      equilibrium mechanics of a single pre-formed 2D elastic ring inside an area-conserving
+      ellipse). Figure6D is the sole experimental worksheet across all 37 sheets of MOESM9 and
+      records no droplet diameters D, ring thicknesses T_ring, aspect ratios AR, elongation speeds,
+      or interfacial tensions gamma_I.
+    - All remaining 74 authored datums in chandrasekaran_source_data/data.yaml are non-measured
+      (29 derived, 8 run, 37 reported) and none is an empirical validation target for graham2023:
+      (a) Figure7F continuum cells wb_f7f_ar1_bend (3.14159 pN*nm = pi, origin: derived) and
+      wb_f7f_ar1_surf (6.28319 pN*nm = 2*pi, origin: derived; matching 20 [energy] output pairs)
+      are NOT empirical measurements — sheet Figure7F is Graham et al.'s own 2D continuum Fig. 5c
+      / SI Section 2.11 calculation (at R = 1 nm, L = 2*pi nm, k_b = 1 pN*nm^2, gamma_I = 1 pN),
+      already formally verified against graham2023/ring_rod_transition_energy,
+      ring_confinement_bending_energy, droplet_surface_energy_eqS12, and
+      ellipse_perimeter_series_eqS11 via 9 ModelAtlas relations in
+      chandrasekaran_source_data/relations.yaml (7 verified, 2 not_verified confirming the 10^6
+      printed-unit contradiction).
+      (b) CytoSim 3D and LAMMPS 3D aspect-ratio datums (wb_f7b_means_table, wb_f7b_pi_sd_pop,
+      paper_fig7aii_schedule, paper_aspect_ratio_max_approx, wb_s1ef_20fil_ar, wb_s1ef_20fil_asph;
+      all origin: derived) are simulation outputs rather than measurements, lack graham2023's
+      required T_ring and gamma_I inputs, and operate in a 3D volume-conserving prolate-spheroid
+      regime (ceiling pi^(3/2) = 5.568; Figure7B peak 5.073, FigureS14C max 5.564) rather than
+      graham2023's 2D area-conserving ellipse (ceiling pi^2 = 9.870; SLSQP ring ceiling 1.57-2.19).
+      (c) The 6 Figure6D workbook summaries (wb_f6d_1_7p5_*, origin: derived) are morphology
+      percentage/SD/SEM statistics outside graham2023's outputs, and all remaining derived/run/
+      reported entries are CytoSim surface-area fractions, VASP valencies, k-means probabilities,
+      PCA variances, silhouette scores, and query coordinates.
+    (2) Reverse direction — chandrasekaran_source_data models (20 role: processing, software: true
+    Excel workbook readers over MOESM9, 123 output ports) vs graham2023/data.yaml (133 authored
+    datums: exact origin counts = 38 measured [9 scalars + 29 digitized figure readings], 34
+    predicted, 20 fitted, 32 assumed, 6 reported, 2 derived, 1 estimated):
+    - Structurally, all 20 models in chandrasekaran_source_data are workbook data-extraction
+      readers over fixed Excel tables rather than predictive physical laws over free experimental
+      inputs. Across all 123 x 38 = 4,674 output-vs-measured pairs (30 [length] matches against
+      droplet_diam_{range_obs,median_20uM,max_20uM} — all spurious mismatches with CytoSim
+      gyration spans, icosphere triangle edges, filament lengths, or radial peak radius — plus
+      3,360 dimensionless matches), zero pairs honestly match in both quantity and experimental
+      conditions:
+      (a) Shell/ring/disc bar charts (fig3d_{1to20,1to10,1to7p5}_fig [WT + EDTA/EGTA] and
+      edfig4c_{1to20,1to10,1to7p5}_fig [WT no-EDTA]): fig6d_gabmut_experiment_reader reads ONLY
+      2024 VASP-GABmut mutant data (MOESM9 Figure6D left WT rows 1-19 blank), has incompatible
+      ports (vasp_to_actin_ratio -> separate scalar {shell,ring,disk}_mean vs 3-bar curves indexed
+      by morphology_category_index 1..3), and physically contrasts mutant vs WT rather than
+      predicting WT (live audit: at 1:7.5, GABmut 37.39/52.71/9.89% vs WT Fig. 3d 6.73/24.96/
+      70.32% [diff +30.66/+27.76/-60.43 pp] and buffer-matched WT ED Fig. 4c 3.28/16.40/79.40%
+      [diff +34.11/+36.31/-69.50 pp]; at 1:10, GABmut 39.23/55.17/5.60% vs Fig. 3d 20.81/57.64/
+      23.51% [+18.42/-2.46/-17.91 pp] and ED Fig. 4c 20.57/52.07/26.48% [+18.66/+3.11/-20.88 pp];
+      at 1:20, GABmut 75.10/21.33/3.57% vs Fig. 3d 59.07/32.15/11.24% [+16.03/-10.82/-7.67 pp]
+      and ED Fig. 4c 72.36/25.42/1.55% [+2.74/-4.09/+2.02 pp]). Likewise, CytoSim morphology
+      readers (fig5cd_t2pir_reader, fig6b_kunbind_sweep_reader, kinetic_grid_reader,
+      figs11_actin_vasp_reader) take unmeasured simulation coordinates (t_2pir, k_unbind, n_fil)
+      and output spherical-droplet cluster fractions with no Disc class.
+      (b) Measured droplet aspect ratios (linear_droplet_ar_high = "> 15", fig3g_aspect_ratio_fig
+      [vs morphology_category_index: 1.020, 1.020, 1.050], fig5a_aspect_ratio_fig [vs
+      actin_to_vasp_ratio: 1.044, 1.368, 2.394], edfig9e_aspect_ratio_fig [vs peg_concentration_wv:
+      11.517, 1.268, 1.151, 1.062]): MOESM9's simulation AR readers (fig7b_max_aspect_ratio_reader
+      [filament_length], figs14c_schedule_reader [time], figs14c_cap_conc_reader [aspect_ratio],
+      figs1ef_lammps_shape_reader [filament_count]) share zero sweep indices with Graham's
+      experiments, read fixed D = 2.0 um 3D simulation tables (CytoSim peak 5.073 / max 5.564,
+      LAMMPS 1.185), and cannot predict Graham's actin:VASP or PEG sweeps or > 15 rods.
+      (c) Remaining 28 origin: measured datums in graham2023 (2D confocal morphologies
+      fig2d_*_fig & fig6d_*_fig; FRAP & fusion kinetics frap_*, fig1f_frap_avg_fig,
+      fig6b_frap_*_fig, vasp_droplet_fusion_time; droplet diameters & size distributions
+      droplet_diam_*, edfig4e_size_hist_fig, edfig9c_*_fig; linear elongation speed
+      elongation_rate_mean_text = 23 +/- 3 nm/s; fluorescence intensities fig6f_*_fig &
+      fig6g_actin_avg_fig; protein partitioning edfig2d_partition_fig & edfig3e_actin_partition_fig)
+      have zero corresponding observables in MOESM9.
+    - Non-empirical fig7f_continuum_energy_reader vs graham2023/fig5c_bending_fig &
+      graham2023/fig5c_surface_fig (explicitly excluded from validations.yaml): live diagnostic
+      interpolation of MOESM9 sheet Figure7F falls inside 12/12 digitized reading bands of
+      graham2023/fig5c_bending_fig (MAE 0.0768 pN*nm, max diff -0.3232 at AR = 9.7) and 10/10
+      reading bands of graham2023/fig5c_surface_fig (MAE 0.0304 pN*nm, max diff -0.0669 at
+      AR = 6.0), confirming MOESM9 Figure7F is the exact underlying numerical table of Graham
+      Fig. 5c (replotted in Chandrasekaran Fig. 7F and already checked via val_fig7f_bending /
+      val_fig7f_surface against chandrasekaran2024). However, BOTH graham2023/fig5c_bending_fig
+      and graham2023/fig5c_surface_fig carry origin: predicted (non-empirical 2D continuum theory
+      curves, NOT origin: measured), fig7f_continuum_energy_reader is an Excel copy of Graham's
+      own calculation rather than an independent model of a measurement, BoxGraph CrossValidation
+      restricts purpose to validation/fit_quality against empirical measurements, and the exact
+      Figure7F <-> graham2023 theory correspondence is already tested via 9 ModelAtlas relations in
+      chandrasekaran_source_data/relations.yaml (and reproduced inside graham2023/comparisons.yaml).
+      All other 93 non-measured datums in graham2023 (32 other predicted, 20 fitted, 32 assumed,
+      6 reported, 2 derived, 1 estimated) are likewise non-empirical and structurally disjoint
+      from MOESM9. See also graham2023/q_chandrasekaran_source_data_no_cross_validation.
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx, sheet 'Figure6D' (cells A20:N43), sheet 'Figure7F' (cells A1:C20), and all 37 sheets"
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with graham_source_data (2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_graham_source_data_no_cross_validation
+  kind: unstated_model
+  about:
+    - paper_exp_gabmut_ring_1_7p5
+    - paper_exp_gabmut_shell_1_7p5
+    - paper_exp_gabmut_disk_1_7p5
+    - wb_f6d_1_7p5_shell_mean
+    - wb_f6d_1_7p5_ring_mean
+    - wb_f6d_1_7p5_disk_mean
+    - wb_f6d_1_7p5_shell_sd
+    - wb_f6d_1_7p5_ring_sd
+    - wb_f6d_1_7p5_ring_sem_stored_buggy
+    - wb_f7f_ar1_bend
+    - wb_f7f_ar1_surf
+    - wb_f7b_means_table
+    - paper_fig7aii_schedule
+    - paper_aspect_ratio_max_approx
+    - wb_s1ef_20fil_ar
+    - fig6d_gabmut_experiment_reader
+    - fig7f_continuum_energy_reader
+    - fig5cd_t2pir_reader
+    - fig6b_kunbind_sweep_reader
+    - kinetic_grid_reader
+    - figs11_actin_vasp_reader
+    - ellipsoid_spans_reader
+    - figs2b_icosphere_reader
+    - nucleator_conc_sweep_reader
+    - nucleator_radial_density_reader
+    - q_fig6d_buggy_sem_formula_and_omitted_wt
+    - q_graham_source_data_fig6d_vs_fig3d_and_figs4c
+    - q_graham_source_data_fig7f_supplies_missing_fig5c_and_ar_bounds
+    - ref-graham2023
+    - graham_source_data/morphology_abundance_reader
+    - graham_source_data/partition_reader
+    - graham_source_data/f1f_recovery_caption
+    - graham_source_data/f1f_recovery_text
+    - graham_source_data/f1f_t_half_text
+    - graham_source_data/f5h_rate_text
+    - graham_source_data/f6f_d1_actin_195s_stored
+    - graham_source_data/f6f_d2_actin_195s_stored
+    - graham_source_data/s4e_diam_median_caption
+    - graham_source_data/s4e_diam_max_caption
+    - graham_source_data/f3d_1to20_shell_mean_stored
+    - graham_source_data/f3d_1to10_ring_mean_stored
+    - graham_source_data/f3d_1to7p5_disc_mean_stored
+    - graham_source_data/f3d_1to7p5_disc_sd_stored
+    - graham_source_data/s4c_1to7p5_total_stored
+    - graham_source_data/q_chandrasekaran_source_data_fig6d_vs_fig3d_and_figs4c
+    - graham_source_data/q_chandrasekaran_source_data_no_cross_validation
+  text: >
+    No cross-record validations are entered in validations.yaml between chandrasekaran_source_data
+    and graham_source_data (0 entries in both directions; all 101 existing validations in
+    chandrasekaran_source_data/validations.yaml against chandrasekaran2024 and all 44 existing
+    validations in graham_source_data/validations.yaml against graham2023 and chandrasekaran2024
+    remain preserved):
+    (1) Structural complementarity: All 20 models in chandrasekaran_source_data (MOESM9, 37 sheets,
+    123 output ports) and all 11 models in graham_source_data (MOESM12-22, 22 sheets, 95 output
+    ports) are role: processing, software: true Excel workbook readers over fixed archived tables
+    rather than predictive physical laws over free conditions, and the two Source Data archives hold
+    strictly non-overlapping cohorts on both crossover panels (MOESM9 Figure6D left WT rows 1-19
+    completely blank and stores only 2024 VASP-GABmut mutant counts, whereas MOESM14 Fig 3d and
+    MOESM20 Fig S4c store 2023 WT VASP counts; MOESM9 Figure7F stores the 2D continuum Fig. 5c
+    energy table omitted from MOESM12-22).
+    (2) Direction A — graham_source_data models (11 readers, 95 output ports) vs
+    chandrasekaran_source_data/data.yaml (77 authored datums: exact origin counts = 3 measured,
+    29 derived, 8 run, 37 reported; 95 x 3 = 285 output-vs-measured pairs, 213 dimensionless
+    dimension-matching pairs = 71 dimensionless ports x 3):
+    - All 3 origin: measured datums in chandrasekaran_source_data are 2024 experimental VASP-GABmut
+      (RK236,237EE) droplet morphology percentages from MOESM9 sheet Figure6D at Actin:VASP = 1:7.5
+      in EDTA/EGTA-free buffer (N = 3 replicates, n = [91, 102, 47] = 240 droplets out of 655 total
+      across 1:20 / 1:10 / 1:7.5; copied via from_source: chandrasekaran2024):
+      paper_exp_gabmut_shell_1_7p5 ('37 ± 4'%, raw pooled 37.3926 +/- 6.8681% SD, true SEM 3.9653%,
+      buggy stored cell L38 = 2.2894% = SD/3), paper_exp_gabmut_ring_1_7p5 ('53 ± 6'%, raw pooled
+      52.7138 +/- 9.6272% SD, true SEM 5.5583%, buggy stored cell M38 = 3.2091% = SD/3), and
+      paper_exp_gabmut_disk_1_7p5 ('< 10'%, raw pooled 9.8936 +/- 6.8961% SD, true SEM 3.9815%; an
+      inequality bound that gives no verdict).
+    - Sole quantity-class overlap (3 pairs): graham_source_data/morphology_abundance_reader
+      (output abundance_mean) reads ONLY 2023 wild-type (WT) VASP count tables (MOESM13 Fig 2d 2D
+      confocal, MOESM14 Fig 3d 3D WT + 0.5 mM EDTA/EGTA, MOESM17 Fig 6d 2D PEG, MOESM20 Fig S4c 3D
+      WT EDTA/EGTA-free) — never VASP-GABmut (and MOESM19 Fig S3e in partition_reader holds only
+      mutFAB and mutGABmutFAB fluorescence partitioning, not GABmut morphology). Unlike
+      chandrasekaran2024/exp_wt_disk_pct_1_7p5 (WT, legitimately verified by
+      graham_source_data/val_chandrasekaran2024_exp_wt_disk_1to7p5_fig3d), chandrasekaran_source_data
+      declares 0 WT datums because MOESM9 Figure6D rows 1-19 are empty. Forcing WT reader outputs
+      against GABmut mutant datums would be an invalid cross-construct validation misrepresenting
+      the intended RK236,237EE loss-of-affinity phenotype as a model error.
+    - Live WT vs VASP-GABmut contrast across both EDTA/EGTA and buffer-matched EDTA/EGTA-free WT
+      controls (all N = 3 replicates):
+      (a) At 1:7.5 (the 3 origin: measured datums): EDTA-containing WT MOESM14 Fig 3d (n = 256,
+      image_mean [pooled]) gives shell 5.93 +/- 6.81% [6.13 +/- 7.09%] vs GABmut 37 +/- 4%
+      (-31.07 pp, -7.77 SEM; raw Delta_GAB-WT = +31.46 pp, Student p = 0.0049 / Welch 0.0049),
+      ring 24.38 +/- 16.06% [24.35 +/- 16.35%] vs 53 +/- 6% (-28.62 pp, -4.77 SEM; raw Delta =
+      +28.33 pp, p = 0.059 / 0.072), disk 69.69 +/- 21.65% [69.52 +/- 22.06%] vs < 10% (+59.69 pp;
+      raw Delta = -59.80 pp, p = 0.010 / 0.031). Against buffer-matched EDTA/EGTA-free WT MOESM20
+      Fig S4c (n = 148, image_mean [pooled]), the 1:7.5 GABmut shift is LARGER and statistically
+      decisive on all three classes: shell 3.46 +/- 4.79% [3.63 +/- 5.03%] (-33.54 pp, -8.39 SEM;
+      raw Delta = +33.93 pp, p = 0.0022 / 0.0033), ring 16.74 +/- 5.65% [17.94 +/- 2.20%]
+      (-36.26 pp, -6.04 SEM; raw Delta = +35.97 pp, p = 0.0050 / 0.0093; pooled +34.78 pp,
+      p = 0.0037 / 0.020), disk 79.80 +/- 0.98% [78.43 +/- 2.98%] (+69.80 pp; raw Delta = -69.90 pp,
+      p = 6.4e-5 / 0.0028; pooled -68.54 pp, p = 9.4e-5 / 0.00093).
+      (b) Across the lower ratios (MOESM9 Figure6D vs MOESM14 Fig 3d / MOESM20 Fig S4c): at 1:20
+      (GABmut n = 138: 75.10 / 21.33 / 3.57%), the apparent gap vs EDTA-containing Fig 3d (n = 178:
+      58.18 / 31.25 / 10.57%, Delta = +16.92 / -9.92 / -7.00 pp, p = 0.089-0.156) vanishes against
+      buffer-matched EDTA-free Fig S4c (n = 129: image_mean 72.32 / 25.46 / 2.22%, Delta = +2.78 /
+      -4.13 / +1.35 pp, all p >= 0.51; pooled 72.03 / 25.76 / 2.22%, all p >= 0.52), proving the
+      1:20 shift in Fig. 6D is primarily an EDTA/EGTA buffer artifact. At 1:10 (GABmut n = 277:
+      39.23 / 55.17 / 5.60%), GABmut elevates shells consistently against both controls (+19.07 pp
+      vs 3d p = 0.035; +18.60 pp vs S4c 20.63%, p = 0.026 / Welch 0.037), leaves rings unchanged
+      (-1.95 pp vs 3d, +2.52 pp vs S4c), and suppresses discs decisively against buffer-matched S4c
+      (-21.12 pp vs 26.71 +/- 5.20%, p = 0.0028 / Welch 0.011; vs 3d -17.12 pp, p = 0.085).
+    - Remaining 210 dimension-matching pairs (3 morphology_abundance_sd + 207 pairs across the
+      other 10 readers: sample_count, droplet_aspect_ratio*, p_value, frap_recovery_fraction*,
+      fit_r_squared, power_law_*, protein_partition_coefficient*, actin_fluorescence_intensity,
+      normalized_total_intensity, droplet_size_*): coincidental dimensionless quantity mismatches.
+    - Remaining 74 non-measured datums (29 derived, 8 run, 37 reported): the 6 wb_f6d_1_7p5_* are
+      derived GABmut summaries (same cross-construct mismatch); wb_f7f_ar1_{bend,surf} are
+      non-empirical [energy] continuum theory cells with 0 [energy] ports in graham_source_data;
+      the 6 CytoSim/LAMMPS aspect-ratio datums are simulation outputs with incompatible sweep
+      indices; the remaining 60 are CytoSim/PCA/silhouette targets and query coordinates.
+    (3) Direction B — chandrasekaran_source_data models (20 readers, 123 output ports) vs
+    graham_source_data/data.yaml (94 authored datums: exact origin counts = 8 measured, 27 derived,
+    18 fitted, 40 reported, 1 assumed; 0 tables; 123 x 8 = 984 output-vs-measured pairs, 440
+    dimension-matching = 420 dimensionless + 20 [length] + 0 [time] + 0 [length]/[time]):
+    - ZERO matching physical quantities across all 8 origin: measured scalar datums:
+      (a) f1f_recovery_caption ('93.9 ± 4.89'%) & f1f_recovery_text ('94 ± 5'%,
+      frap_recovery_fraction, 210 dimensionless matches): MOESM9 has no FRAP sheets or outputs.
+      (b) f1f_t_half_text ('18 ± 3' s, frap_half_time, [time]): 0 [time] output ports in MOESM9.
+      (c) f5h_rate_text ('23 ± 3' nm/s, bundle_elongation_rate, [length]/[time]): 0 [length]/[time]
+      output ports in MOESM9.
+      (d) f6f_d1_actin_195s_stored ('3.0117') & f6f_d2_actin_195s_stored ('3.3315',
+      normalized_total_intensity, 210 dimensionless matches): MOESM9 has no fluorescence intensity
+      trajectories.
+      (e) s4e_diam_median_caption ('2.86' um) & s4e_diam_max_caption ('7.22' um, droplet_diameter,
+      [length], 20 [length] matches): all 10 [length] output ports in MOESM9 measure unrelated
+      fixed-D = 2.0 um simulation/mesh quantities (ellipsoid_spans_reader.span_{a,b,c}_median,
+      figs2b_icosphere_reader.side_{median,min,max}, nucleator_conc_sweep_reader.length_*,
+      nucleator_radial_density_reader.peak_radius), not 20 uM VASP droplet diameters.
+    - All 86 remaining non-measured datums in graham_source_data (40 reported, 27 derived, 18
+      fitted, 1 assumed) are likewise non-validatable: the 6 stored MOESM14 Fig 3d WT morphology
+      summaries (f3d_1to20_shell_{mean,sd}_stored, f3d_1to10_ring_{mean,sd}_stored,
+      f3d_1to7p5_disc_{mean,sd}_stored) carry origin: derived and represent WT VASP (incompatible
+      in construct with fig6d_gabmut_experiment_reader and incompatible in inputs/geometry/classes
+      with rigid-sphere CytoSim readers kinetic_grid_reader, fig5cd_t2pir_reader,
+      fig6b_kunbind_sweep_reader, and figs11_actin_vasp_reader, none of which models Disc
+      deformation or takes bulk actin:VASP ratio); all remaining fitted power-law/elongation
+      parameters, partition coefficients, FRAP cells, counts, and query inputs have no counterpart
+      in MOESM9 (and runs.yaml outputs carry origin: run with printed = None -> no verdict).
+    See also graham_source_data/q_chandrasekaran_source_data_no_cross_validation.
+  citation:
+    none: "binary xlsx workbooks across companion Source Data archives"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx (all 37 sheets, especially 'Figure6D' A20:N43) vs 41567_2022_1924_MOESM12-22_ESM.xlsx (especially MOESM14 'Fig 3d', MOESM20 'Fig S4c'/'Fig S4e', MOESM12 'Fig 1f', MOESM16 'Fig 5h', MOESM17 'Fig 6f')"
+
+# ---------------------------------------------------------------------------
+# Bidirectional cross-record validation audit with chandrasekaran2024 (2026-11-24)
+# ---------------------------------------------------------------------------
+- id: q_chandrasekaran2024_cross_validation_summary
+  kind: unstated_model
+  about:
+    - fig6d_gabmut_experiment_reader
+    - fig3b_timecourse_reader
+    - kinetic_grid_reader
+    - fig4b_end_distance_reader
+    - fig5cd_t2pir_reader
+    - fig6b_kunbind_sweep_reader
+    - fig7b_max_aspect_ratio_reader
+    - fig7f_continuum_energy_reader
+    - figs14c_schedule_reader
+    - figs14c_cap_conc_reader
+    - figs1ef_lammps_shape_reader
+    - figs2b_icosphere_reader
+    - paper_exp_gabmut_shell_1_7p5
+    - paper_exp_gabmut_ring_1_7p5
+    - paper_exp_gabmut_disk_1_7p5
+    - wb_f6d_1_7p5_shell_mean
+    - wb_f6d_1_7p5_ring_mean
+    - wb_f6d_1_7p5_disk_mean
+    - wb_f7b_means_table
+    - paper_fig7aii_schedule
+    - paper_aspect_ratio_max_approx
+    - wb_s1ef_20fil_ar
+    - wb_s1ef_20fil_asph
+    - wb_f7f_ar1_bend
+    - wb_f7f_ar1_surf
+    - q_fig6d_buggy_sem_formula_and_omitted_wt
+    - q_blind_digitization_benchmark_accuracy
+    - chandrasekaran2024/exp_gabmut_shell_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_ring_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_disk_pct_1_7p5
+    - chandrasekaran2024/exp_wt_disk_pct_1_7p5
+    - chandrasekaran2024/fig6d_gabmut_shell_fig
+    - chandrasekaran2024/fig6d_gabmut_ring_fig
+    - chandrasekaran2024/fig6d_gabmut_disk_fig
+    - chandrasekaran2024/fig6d_wt_shell_fig
+    - chandrasekaran2024/fig6d_wt_ring_fig
+    - chandrasekaran2024/fig6d_wt_disk_fig
+    - chandrasekaran2024/morphology_fraction_complement
+    - chandrasekaran2024/filament_length_limited_aspect_ratio
+    - chandrasekaran2024/quasistatic_droplet_deformation_schedule
+    - chandrasekaran2024/cytosim_actin_vasp_droplet
+    - chandrasekaran2024/lammps_vasp_actin_droplet
+    - chandrasekaran2024/droplet_2d_energy_balance
+    - chandrasekaran2024/actin_nucleation_ode
+    - chandrasekaran2024/q_chandrasekaran_source_data_cross_validation_summary
+  text: >
+    Complete bidirectional cross-record validation audit between chandrasekaran_source_data (20 live
+    role: processing, software: true Excel readers over all 37 sheets of MOESM9_ESM.xlsx [123 output
+    ports]; 77 authored datums: 3 measured, 29 derived, 8 run, 37 reported) and chandrasekaran2024
+    (46 models: 42 runnable [56 output ports] + 4 non-runnable; 224 authored datums: 10 measured,
+    88 reported, 15 derived, 107 run, 3 predicted, 1 assumed) yields 103 checked cross-validations
+    in chandrasekaran_source_data/validations.yaml (101 preexisting preserved intact + 2 newly added
+    main-text Fig. 6D GABmut scalar validations: 57 reproduced, 40 close, 6 not reproduced, 0 cannot
+    be checked) and 0 entries in chandrasekaran2024/validations.yaml:
+    (1) Direction A — chandrasekaran_source_data's 20 Excel readers (123 ports) vs
+    chandrasekaran2024's 10 origin: measured Fig. 6D datums (1,230 pairs, 1,050 dimensionless
+    matches, 28 exact-quantity matches):
+    - VALIDATED (5 of 10, all verdict = reproduced): the 3 preexisting 3-bar digitized VASP-GABmut
+      curve sweeps (val_fig6d_gabmut_shell, val_fig6d_gabmut_ring, val_fig6d_gabmut_disk across
+      1:20 / 1:10 / 1:7.5; max |diff| = 0.095 pp across 9/9 bars) PLUS 2 newly added main-text p. 7
+      scalar validations filling the exact gap announced in Section 5's header:
+      val_fig6d_gabmut_shell_1_7p5_text (fig6d_gabmut_experiment_reader.shell_mean at q_ratio_7p5
+      vs exp_gabmut_shell_pct_1_7p5 = '37 ± 4'%: 37.3926%, diff +0.3926 pp, true SEM 3.9653% vs
+      buggy cell L38 = 2.2894% = SD/3, reproduced) and val_fig6d_gabmut_ring_1_7p5_text
+      (ring_mean at q_ratio_7p5 vs exp_gabmut_ring_pct_1_7p5 = '53 ± 6'%: 52.7138%, diff
+      -0.2862 pp, true SEM 5.5583% vs buggy cell M38 = 3.2091% = SD/3, reproduced).
+    - HONESTLY EXCLUDED — 1 inequality bound: exp_gabmut_disk_pct_1_7p5 ('< 10'%, GABmut 1:7.5)
+      parses with has_precision = False and returns 'no verdict' in BoxGraph (0/182 validations
+      corpus-wide target no-precision inequalities); its exact numerical workbook mean 9.8936%
+      (SD 6.8961%, true SEM 3.9815%) is already verified live against the Fig. 6D 1:7.5 bar
+      (9.938%) by val_fig6d_gabmut_disk and internally via cmp_wb_f6d_7p5_disk_mean,
+      cmp_paper_gabmut_disk_1_7p5, and cited.yaml.
+    - HONESTLY EXCLUDED — 4 wild-type (WT) datums (exp_wt_disk_pct_1_7p5 = '70 ± 13'%,
+      fig6d_wt_{shell,ring,disk}_fig; all from_source: ref-15): MOESM9 sheet 'Figure6D' left WT
+      rows 1-19 completely blank (storing only 2024 VASP-GABmut mutant counts); comparing GABmut
+      reader outputs against WT measurements would be an invalid cross-construct test
+      (exp_wt_disk_pct_1_7p5 is instead verified live from MOESM14 'Fig 3d' via
+      graham_source_data/val_chandrasekaran2024_exp_wt_disk_1to7p5_fig3d).
+    - The remaining 18 exact-quantity matches (rigid-sphere CytoSim cluster readers
+      fig5cd_t2pir_reader, fig6b_kunbind_sweep_reader, kinetic_grid_reader vs Fig. 6D) take
+      unmeasured simulation inputs (t_2pir, k_unbind), omit any Disk state, and only qualitatively
+      parallel Fig. 6D.
+    - Non-measured chandrasekaran2024 coverage (214 datums): all 96 workbook-backed non-measured
+      digitized figure curves (97 validations, including both literal-block-4 and shifted-block-5
+      checks on fig4bii_pi_fig) plus the printed 6-point Fig. 7A.ii deformation schedule
+      (val_fig7aii_schedule) remain preserved (98 validations: 52 reproduced, 40 close, 6 not
+      reproduced). The 4 excluded non-measured figure curves are absent/overwritten in MOESM9
+      (fig4bii_2pi_fig omitted by off-by-one shift; fig7b_length_limited_curve_fig analytical;
+      figs11bi_pca_cumvar_fig overwritten by FigureS11Bii Varimax matrix; figs13c_ref_thresholds_fig
+      reference lines). The remaining non-measured scalar targets (4 PCA variance captions, 4 Supp.
+      Table 3 cells, exp_replicates, n_seed_filaments, aspect_ratio_max_approx) are non-empirical
+      and already verified via comparisons.yaml (`from_source: chandrasekaran2024` + `from_datum`).
+    (2) Direction B — chandrasekaran2024's 46 models (42 runnable [56 output ports] + 4 non-runnable)
+    vs chandrasekaran_source_data/data.yaml (77 datums: 3 measured, 74 non-measured): 0 genuine
+    CrossValidation entries.
+    - All 3 origin: measured datums in chandrasekaran_source_data (paper_exp_gabmut_ring_1_7p5 =
+      '53 ± 6'%, paper_exp_gabmut_shell_1_7p5 = '37 ± 4'%, paper_exp_gabmut_disk_1_7p5 = '< 10'%)
+      are verbatim copies (`from_source: chandrasekaran2024`, `from_datum: exp_gabmut_*_pct_1_7p5`)
+      of chandrasekaran2024's own p. 7 text rather than independent measurements. Across all
+      56 x 3 = 168 output-vs-measured pairs (72 dimensionless matches), 0 runnable chandrasekaran2024
+      models predict ring_abundance or shell_abundance (all 4 many-body/continuum models —
+      cytosim_actin_vasp_droplet, lammps_vasp_actin_droplet, droplet_2d_energy_balance,
+      actin_nucleation_ode — are runnable: false). The sole exact-quantity match
+      (morphology_fraction_complement.P_disk = 100 - P_ring - P_shell vs paper_exp_gabmut_disk_1_7p5)
+      is a trivial role: processing algebraic closure identity (not a predictive physical model),
+      yields 'no verdict' against the '< 10' inequality bound, and is already checked internally
+      in chandrasekaran2024/cmp_gabmut_disk_complement.
+    - All 74 remaining datums are non-measured (29 derived, 8 run, 37 reported) and unsuitable for
+      validations.yaml: wb_f6d_1_7p5_disk_mean (9.8936%, derived) is tautological under
+      100 - 52.7138 - 37.3926 = 9.8936; wb_f7b_means_table (derived CytoSim means) is a simulation
+      output already compared as purpose: approximation in chandrasekaran2024/cmp_fig7b_bars_vs_length_limited
+      (and purpose: approximation is disallowed in validations.yaml); paper_fig7aii_schedule and
+      paper_aspect_ratio_max_approx are verbatim derived copies already reproduced internally in
+      chandrasekaran2024/comparisons.yaml; wb_s1ef_20fil_{ar,asph} (derived LAMMPS summaries) lack
+      raw (a, b, c) semi-axis inputs; wb_f7f_ar1_{bend,surf} (derived Graham Fig. 5c theory) target
+      non-runnable droplet_2d_energy_balance; and the remaining 61 entries are query coordinates,
+      counts, or CytoSim/PCA/silhouette summaries without runnable predictive models in
+      chandrasekaran2024. See also chandrasekaran2024/q_chandrasekaran_source_data_cross_validation_summary.
+  citation:
+    none: "binary xlsx workbook in Source Data archive"
+    where: "41467_2024_46726_MOESM9_ESM.xlsx (all 37 sheets, especially 'Figure6D' cells A20:N43) vs chandrasekaran2024 (Results p. 7, Fig. 6D, and all 106 digitized figure curves)"
+

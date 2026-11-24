@@ -1,0 +1,2530 @@
+# ==========================================================================
+# Group A: Nondimensionalization scales & algebraic helpers
+# ==========================================================================
+
+- id: run_nondim_scales_appA
+  model: nondim_scales_eqA3_A6
+  inputs:
+    L: L_dim_added
+    L0: L0_dim_added
+    Q1: Q1_dim_added
+    Q2: Q2_dim_added
+    kappa1: kappa1_dim_added
+    kappa2: kappa2_dim_added
+    zeta1: zeta_dim_added
+    zeta2: zeta_dim_added
+    a1: a1_dim_added
+    a2: a2_dim_added
+    b1: b_dim_added
+    b2: b_dim_added
+    gamma1: gamma1_dim_added
+    gamma2: gamma2_dim_added
+  outputs:
+    tau: tau_appA_pred
+    ell: ell_appA_pred
+    Q: Q_appA_pred
+    kappa: kappa_appA_pred
+    phi1_hat: phi1_hat_appA_pred
+    phi2_hat: phi2_hat_appA_pred
+    a: a_appA_pred
+    a_Delta: a_Delta_appA_pred
+    rho: rho_appA_pred
+    alpha: alpha_appA_pred
+
+- id: run_coupling_invariants_fig8d
+  model: coupling_invariants
+  inputs: {rho: rho_135, alpha: alpha_165}
+  outputs: {Delta: Delta_fig8d_pred, Sigma: Sigma_fig8d_pred}
+
+- id: run_curvature_fig2a
+  model: bulk_energy_curvature_eq3_4
+  inputs: {a: a_fig2a, a_Delta: a_Delta_m038, phi1_bar: phi_bar_zero, phi2_bar: phi_bar_zero}
+  outputs: {f1_pp: f1_pp_fig2a_pred, f2_pp: f2_pp_fig2a_pred}
+
+- id: run_wavenumber_n1_fig5a
+  model: discrete_wavenumber
+  inputs: {n: n_mode_1, ell: ell_10pi}
+  outputs: {k_n: k1_fig5a_pred, q_n: q1_fig5a_pred}
+
+- id: run_wavenumber_n1_fig11
+  model: discrete_wavenumber
+  inputs: {n: n_mode_1, ell: ell_4pi}
+  outputs: {k_n: k1_fig11_pred, q_n: q1_fig11_pred}
+
+# ==========================================================================
+# Group B: General linear stability (Sec. III A, Eqs. 10-22, Fig. 1)
+# ==========================================================================
+
+- id: run_disp_gen_fig2a
+  model: linear_dispersion_general_eq12
+  inputs:
+    q: q1_fig11_pred
+    f1_pp: f1_pp_fig2a_pred
+    f2_pp: f2_pp_fig2a_pred
+    Q: Q_one
+    kappa: kappa_382
+    rho: rho_05
+    alpha: alpha_zero
+  outputs:
+    re_lam_plus: lam_plus_gen_fig2a_pred
+    re_lam_minus: lam_minus_gen_fig2a_pred
+    im_lam_plus: im_lam_gen_fig2a_pred
+    re_lam_tilde_plus: lamt_gen_fig2a_pred
+    tr_B: trB_fig2a_pred
+    det_B: detB_fig2a_pred
+    discriminant: disc_gen_fig2a_pred
+
+- id: run_hopf_gen_fig1b
+  model: hopf_threshold_general_eq14_15
+  inputs: {f2_pp: f2_pp_fig1b_probe_added, Q: Q_one, rho: rho_zero, alpha: alpha_fig1ab_added}
+  outputs: {f1_pp_H: f1_H_fig1b_pred, omega_tilde_c: omegat_c_fig1b_pred, f2_pp_H_end: f2_Hend_fig1b_pred}
+
+- id: run_turing_gen_fig1a
+  model: turing_threshold_general_eq17_19
+  inputs: {f2_pp: f2_pp_fig1a_probe_added, Q: Q_one, kappa: kappa_014, rho: rho_zero, alpha: alpha_fig1ab_added}
+  outputs: {f1_pp_T: f1_T_fig1a_pred, qc_sq: qc_sq_fig1a_pred, qc: qc_fig1a_pred, f2_pp_T_end: f2_Tend_fig1a_pred}
+
+- id: run_ch_gen_fig1b
+  model: ch_threshold_general_eq20
+  inputs: {f2_pp: f2_pp_fig1b_probe_added, rho: rho_zero, alpha: alpha_fig1ab_added}
+  outputs: {f1_pp_CH: f1_CH_fig1b_pred}
+
+- id: run_cd2_fig1a
+  model: codimension2_hopf_turing_eq21
+  inputs: {Q: Q_one, kappa: kappa_014, rho: rho_zero, alpha: alpha_fig1ab_added}
+  outputs: {f2_pp_cd2: f2_cd2_fig1a_pred, f1_pp_cd2: f1_cd2_fig1a_pred}
+
+- id: run_cd2_fig1b
+  model: codimension2_hopf_turing_eq21
+  inputs: {Q: Q_one, kappa: kappa_382, rho: rho_zero, alpha: alpha_fig1ab_added}
+  outputs: {f2_pp_cd2: f2_cd2_fig1b_pred, f1_pp_cd2: f1_cd2_fig1b_pred}
+
+# ==========================================================================
+# Group C: Specific Q = 1 double-well linear stability (Appendix B)
+# ==========================================================================
+
+- id: run_disp_fig2a
+  model: linear_dispersion_specific_eqB1
+  inputs:
+    q: q1_fig11_pred
+    a: a_fig2a
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_05
+    alpha: alpha_zero
+  outputs:
+    re_lam_plus: lam_plus_fig2a_pred
+    re_lam_minus: lam_minus_fig2a_pred
+    im_lam_plus: im_lam_fig2a_pred
+    discriminant: disc_fig2a_pred
+
+- id: run_disp_var_fig2a
+  model: linear_dispersion_variational_limit
+  inputs:
+    q: q1_fig11_pred
+    a: a_fig2a
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_05
+  outputs:
+    lam_plus: lam_plus_var_fig2a_pred
+    lam_minus: lam_minus_var_fig2a_pred
+
+- id: run_disp_pure_nonvar_fig16
+  model: linear_dispersion_pure_nonvar_limit
+  inputs:
+    q: q1_fig11_pred
+    a: a_fig2a
+    a_Delta: a_Delta_m038
+    kappa: kappa_24
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    alpha: alpha_001
+  outputs:
+    re_lam_plus: lam_plus_fig16_pred
+    im_lam_plus: im_lam_fig16_pred
+
+- id: run_border_fig5a_n1
+  model: stability_borders_eqB3_B5
+  inputs:
+    q: q1_fig5a_pred
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_10
+    alpha: alpha_zero
+  outputs: {a_o: a_o_fig5a_n1_pred, a_plus: a_plus_fig5a_n1_pred, a_minus: a_minus_fig5a_n1_pred}
+
+- id: run_border_fig11e_n1
+  model: stability_borders_eqB3_B5
+  inputs:
+    q: q1_fig11_pred
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_13
+    alpha: alpha_1315
+  outputs: {a_o: a_o_fig11e_n1_pred, a_plus: a_plus_fig11e_n1_pred, a_minus: a_minus_fig11e_n1_pred}
+
+- id: run_onsets_fig3a
+  model: instability_onsets_eqB4_B6_B7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_16
+  outputs: {a_H: a_H_fig3a_pred, a_CH: a_CH_fig3a_pred, a_T: a_T_fig3a_pred}
+
+- id: run_onsets_fig4a
+  model: instability_onsets_eqB4_B6_B7
+  inputs:
+    a_Delta: a_Delta_1
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_15
+  outputs: {a_H: a_H_fig4a_pred, a_CH: a_CH_fig4a_pred, a_T: a_T_fig4a_pred}
+
+- id: run_onsets_fig4d_alpha14
+  model: instability_onsets_eqB4_B6_B7
+  inputs:
+    a_Delta: a_Delta_m1
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_14
+  outputs: {a_H: a_H_fig4d_pred, a_CH: a_CH_fig4d_alpha14_pred, a_T: a_T_fig4d_pred}
+
+- id: run_onsets_fig5a
+  model: instability_onsets_eqB4_B6_B7
+  inputs:
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_10
+    alpha: alpha_zero
+  outputs: {a_H: a_H_fig5a_pred, a_CH: a_CH_fig5a_pred, a_T: a_T_fig5a_pred}
+
+- id: run_crit_k_fig3a
+  model: critical_wavenumbers_eqB8_B9
+  inputs:
+    a: a_fig3a
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_16
+    ell: ell_4pi
+  outputs:
+    q_plus: qp_fig3a_pred
+    q_minus: qm_fig3a_pred
+    k_plus: kp_fig3a_pred
+    k_minus: km_fig3a_pred
+    q_o: qo_fig3a_pred
+    k_o: ko_fig3a_pred
+
+- id: run_crit_k_fig4a
+  model: critical_wavenumbers_eqB8_B9
+  inputs:
+    a: a_fig4a
+    a_Delta: a_Delta_1
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_8pi
+  outputs:
+    q_plus: qp_fig4a_pred
+    q_minus: qm_fig4a_pred
+    k_plus: kp_fig4a_pred
+    k_minus: km_fig4a_pred
+    q_o: qo_fig4a_pred
+    k_o: ko_fig4a_pred
+
+- id: run_cband_fig4d_onset
+  model: complex_eigenvalue_band_eqB10_B12
+  inputs:
+    a_Delta: a_Delta_m1
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_eq_rho_fig4d
+    ell: ell_4pi
+  outputs:
+    q_plus_o: qpo_fig4d_onset_pred
+    q_minus_o: qmo_fig4d_onset_pred
+    q_band_lo: qlo_fig4d_onset_pred
+    q_band_hi: qhi_fig4d_onset_pred
+    k_band_lo: klo_fig4d_onset_pred
+    k_band_hi: khi_fig4d_onset_pred
+    alpha_k0: alpha_k0_fig4d_pred
+
+- id: run_cband_fig4d_alpha14
+  model: complex_eigenvalue_band_eqB10_B12
+  inputs:
+    a_Delta: a_Delta_m1
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_14
+    ell: ell_4pi
+  outputs:
+    q_plus_o: qpo_fig4d_a14_pred
+    q_minus_o: qmo_fig4d_a14_pred
+    q_band_lo: qlo_fig4d_a14_pred
+    q_band_hi: qhi_fig4d_a14_pred
+    k_band_lo: klo_fig4d_a14_pred
+    k_band_hi: khi_fig4d_a14_pred
+    alpha_k0: alpha_k0_fig4d_a14_pred
+
+- id: run_cband_corr_fig4d_onset
+  model: complex_eigenvalue_band_eqB10_B12_corrected
+  inputs:
+    a_Delta: a_Delta_m1
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_eq_rho_fig4d
+    ell: ell_4pi
+  outputs:
+    q_plus_o: qpo_corr_fig4d_onset_pred
+    q_minus_o: qmo_corr_fig4d_onset_pred
+    q_band_lo: qlo_corr_fig4d_onset_pred
+    q_band_hi: qhi_corr_fig4d_onset_pred
+    k_band_lo: klo_corr_fig4d_onset_pred
+    k_band_hi: khi_corr_fig4d_onset_pred
+    alpha_k0: alpha_k0_corr_fig4d_pred
+
+- id: run_cband_corr_fig4d_alpha14
+  model: complex_eigenvalue_band_eqB10_B12_corrected
+  inputs:
+    a_Delta: a_Delta_m1
+    kappa: kappa_382
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_14
+    ell: ell_4pi
+  outputs:
+    q_plus_o: qpo_corr_fig4d_a14_pred
+    q_minus_o: qmo_corr_fig4d_a14_pred
+    q_band_lo: qlo_corr_fig4d_a14_pred
+    q_band_hi: qhi_corr_fig4d_a14_pred
+    k_band_lo: klo_corr_fig4d_a14_pred
+    k_band_hi: khi_corr_fig4d_a14_pred
+    alpha_k0: alpha_k0_corr_fig4d_a14_pred
+
+- id: run_fastest_fig5d
+  model: fastest_linear_mode_eqB1
+  inputs:
+    a: a_fig5d
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    phi1_bar: phi1_bar_1
+    phi2_bar: phi2_bar_m05
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+  outputs:
+    n_fastest: n_fastest_fig5d_pred
+    lam_fastest: lam_fastest_fig5d_pred
+    n_first_bif: n_first_fig5d_pred
+    a_first_bif: a_first_fig5d_pred
+    n_second_bif: n_second_fig5d_pred
+    a_second_bif: a_second_fig5d_pred
+
+- id: run_fastest_fig7b
+  model: fastest_linear_mode_eqB1
+  inputs:
+    a: a_fig7b
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+  outputs:
+    n_fastest: n_fastest_fig7b_pred
+    lam_fastest: lam_fastest_fig7b_pred
+    n_first_bif: n_first_fig7b_pred
+    a_first_bif: a_first_fig7b_pred
+    n_second_bif: n_second_fig7b_pred
+    a_second_bif: a_second_fig7b_pred
+
+- id: run_fastest_fig7c
+  model: fastest_linear_mode_eqB1
+  inputs:
+    a: a_fig7c
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+  outputs:
+    n_fastest: n_fastest_fig7c_pred
+    lam_fastest: lam_fastest_fig7c_pred
+    n_first_bif: n_first_fig7c_pred
+    a_first_bif: a_first_fig7c_pred
+    n_second_bif: n_second_fig7c_pred
+    a_second_bif: a_second_fig7c_pred
+
+- id: run_fastest_fig8c
+  model: fastest_linear_mode_eqB1
+  inputs:
+    a: a_fig7b
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    rho: rho_14
+    alpha: alpha_18
+    ell: ell_4pi
+  outputs:
+    n_fastest: n_fastest_fig8c_pred
+    lam_fastest: lam_fastest_fig8c_pred
+    n_first_bif: n_first_bif_fig8c_pred
+    a_first_bif: a_first_bif_fig8c_pred
+    n_second_bif: n_second_bif_fig8c_pred
+    a_second_bif: a_second_bif_fig8c_pred
+
+- id: run_fastest_fig10b
+  model: fastest_linear_mode_eqB1
+  inputs:
+    a: a_fig10b
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+  outputs:
+    n_fastest: n_fastest_fig10b_pred
+    lam_fastest: lam_fastest_fig10b_pred
+    n_first_bif: n_first_fig10b_pred
+    a_first_bif: a_first_fig10b_pred
+    n_second_bif: n_second_fig10b_pred
+    a_second_bif: a_second_fig10b_pred
+
+# ==========================================================================
+# Group D: Weakly nonlinear analysis & subcriticality (Appendix D)
+# ==========================================================================
+
+- id: run_onefield_subcrit_eqD11
+  model: one_field_subcritical_eqD11
+  inputs: {a: a_onefield_m1, kappa: kappa_1, q_n: q_n_one_fn8}
+  outputs:
+    phi2_bar_crit_q: phi2_crit_q_pred
+    B2_crit: B2_novick_cohen_pred
+    phi2_bar_crit_a: phi_onefield_subcrit_pred
+
+- id: run_subcrit_fig8d
+  model: subcriticality_zero_mean_eqD17_D19
+  inputs:
+    q_n: q1_fig11_pred
+    a_Delta: a_Delta_m19
+    kappa: kappa_1
+    rho: rho_135
+    alpha: alpha_165
+    eps: eps_subcrit_probe_added
+  outputs:
+    M_n: M_fig8d_pred
+    xi_plus: xi_plus_fig8d_pred
+    xi_minus: xi_minus_fig8d_pred
+    subcrit_ratio_plus: R_plus_fig8d_pred
+    subcrit_ratio_minus: R_minus_fig8d_pred
+    Delta_H_n: Delta_H_fig8d_pred
+    alpha_H_n: alpha_H_fig8d_pred
+    A0_plus: A0_fig8d_pred
+
+- id: run_subcrit_fig11_n1
+  model: subcriticality_zero_mean_eqD17_D19
+  inputs:
+    q_n: q1_fig11_pred
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    rho: rho_13
+    alpha: alpha_1301
+    eps: eps_subcrit_probe_added
+  outputs:
+    M_n: M1_fig11_pred
+    xi_plus: xi_plus_fig11_pred
+    xi_minus: xi_minus_fig11_pred
+    subcrit_ratio_plus: R_plus_fig11_pred
+    subcrit_ratio_minus: R_minus_fig11_pred
+    Delta_H_n: Delta_H_fig11_pred
+    alpha_H_n: alpha_H_fig11_pred
+    A0_plus: A0_fig11_pred
+
+# ==========================================================================
+# Group E: Variational thermodynamic coexistence (Appendix C)
+# ==========================================================================
+
+- id: run_decoupled_binodals_fig14a
+  model: decoupled_binodals_appC
+  inputs: {a: a_fig5c, a_Delta: a_Delta_0}
+  outputs: {phi1_bin: phi1_bin_fig14a_pred, phi2_bin: phi2_bin_fig14a_pred}
+
+- id: run_coex_fig14a_phi25
+  model: variational_coexistence_eqC1_C3
+  inputs: {a: a_fig5c, a_Delta: a_Delta_0, rho: rho_10, phi1_A: phi1_fig14a_25}
+  settings: {tol: 1.0e-8}
+  outputs:
+    phi2_A: phi2_coex_pos_fig14a_pred
+    phi1_B: phi1_B_fig14a_pred
+    phi2_B: phi2_coex_neg_fig14a_pred
+    mu1: mu1_fig14a_pred
+    mu2: mu2_fig14a_pred
+    omega: omega_fig14a_pred
+
+# ==========================================================================
+# Group F: Nonlinear 1D steady states, bifurcation loci, PDE, Appendix E
+# ==========================================================================
+
+- id: run_ss_fig7a_n1
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a: a_fig7a
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_16
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {n_modes: 16, n_cell: 48, tol: 1.0e-12, warm_start: false}
+  outputs:
+    norm_dphi: norm_ss_fig7a_n1_pred
+    lam_max: lam_max_ss_fig7a_n1_pred
+    n_unstable: n_unstable_fig7a_pred
+    dp_integral: dp_int_fig7a_n1_pred
+    phi1_min: phi1_min_ss_fig7a_n1_pred
+    phi1_max: phi1_max_ss_fig7a_n1_pred
+    phi2_min: phi2_min_ss_fig7a_n1_pred
+    phi2_max: phi2_max_ss_fig7a_n1_pred
+
+- id: run_ss_fig6a_n3_a112
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a: a_fig7b
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_3
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {n_modes: 16, n_cell: 48, tol: 1.0e-12, warm_start: false}
+  outputs:
+    norm_dphi: norm_ss_fig6a_n3_a112_pred
+    lam_max: lam_max_ss_fig6a_n3_a112_pred
+    n_unstable: n_unstable_fig6a_n3_a112_pred
+    dp_integral: dp_int_fig6a_n3_a112_pred
+    phi1_min: phi1_min_ss_fig6a_n3_a112_pred
+    phi1_max: phi1_max_ss_fig6a_n3_a112_pred
+    phi2_min: phi2_min_ss_fig6a_n3_a112_pred
+    phi2_max: phi2_max_ss_fig6a_n3_a112_pred
+
+- id: run_bif_fig6b_pf1
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_bracket_fig6b_lo_added
+    a_end: a_bracket_fig6b_hi_added
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_16
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {mode: "stability_2nd", n_modes: 16, n_cell: 48, tol: 1.0e-11, warm_start: false}
+  outputs: {a_crit: a_fig6b_sec_pf1_pred, a_crit_2: a_fig6b_pf1_aux, norm_at_crit: norm_fig6b_pf1_pred}
+
+- id: run_bif_fig6b_pf2
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_bracket_fig6b_lo_added
+    a_end: a_bracket_fig6b_hi_added
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_16
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {mode: "stability_1st", n_modes: 16, n_cell: 48, tol: 1.0e-11, warm_start: false}
+  outputs: {a_crit: a_fig6b_sec_pf2_pred, a_crit_2: a_fig6b_pf2_aux, norm_at_crit: norm_fig6b_pf2_pred}
+
+- id: run_bif_fig6a_n3_stab
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_bracket_fig6a_n3_lo_added
+    a_end: a_bracket_fig6a_n3_hi_added
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_3
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {mode: "stability_1st", n_modes: 16, n_cell: 48, tol: 1.0e-11, warm_start: true}
+  outputs: {a_crit: a_fig6a_n3_stab_pred, a_crit_2: a_fig6a_n3_aux, norm_at_crit: norm_fig6a_n3_pred}
+
+- id: run_bif_fig6a_n5_stab
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_bracket_fig6a_n5_lo_added
+    a_end: a_bracket_fig6a_n5_hi_added
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_5
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {mode: "stability_1st", n_modes: 16, n_cell: 48, tol: 1.0e-11, warm_start: true}
+  outputs: {a_crit: a_fig6a_n5_stab_pred, a_crit_2: a_fig6a_n5_aux, norm_at_crit: norm_fig6a_n5_pred}
+
+- id: run_bif_fig8a_sn
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_start_fig8a_sn_added
+    a_end: a_end_fig8a_sn_added
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_145
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    n_period: n_mode_1
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {mode: "fold", n_modes: 20, n_cell: 48, ds_max: 0.03, tol: 1.0e-11, warm_start: true}
+  outputs: {a_crit: a_sn_fig8a_pred, a_crit_2: a_sn_fig8a_aux, norm_at_crit: norm_sn_fig8a_pred}
+
+- id: run_bif_fig8a_n2_stab
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_bracket_fig8a_n2_lo_added
+    a_end: a_bracket_fig8a_n2_hi_added
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_145
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    n_period: n_mode_2
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {mode: "stability_1st", n_modes: 16, n_cell: 48, tol: 1.0e-11, warm_start: true}
+  outputs: {a_crit: a_n2_stab_fig8a_pred, a_crit_2: a_n2_fig8a_aux, norm_at_crit: norm_n2_fig8a_pred}
+
+- id: run_bif_fig5b_sn_up
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_fig5d
+    a_end: a_end_fig5b_up_added
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi1_bar_1
+    phi2_bar: phi2_bar_m05
+    n_period: n_mode_1
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {mode: "fold", n_modes: 28, n_cell: 64, ds_max: 0.03, tol: 1.0e-11, warm_start: true}
+  outputs: {a_crit: a_sn_fig5b_pred, a_crit_2: a_sn_fig5b_aux, norm_at_crit: norm_sn_fig5b_pred}
+
+- id: run_bif_fig5b_hyst_dn
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_fig5d
+    a_end: a_end_fig5b_dn_added
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi1_bar_1
+    phi2_bar: phi2_bar_m05
+    n_period: n_mode_1
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {mode: "fold", n_modes: 28, n_cell: 64, ds_max: 0.03, tol: 1.0e-11, warm_start: true}
+  outputs: {a_crit: a_hyst_lo_fig5b_pred, a_crit_2: a_hyst_hi_fig5b_pred, norm_at_crit: norm_hyst_fig5b_pred}
+
+- id: run_bif_fig11c_sn
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_start_fig11c_sn_added
+    a_end: a_end_fig11c_sn_added
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    alpha: alpha_1301
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {mode: "fold", n_modes: 16, n_cell: 48, ds_max: 0.01, tol: 1.0e-11, warm_start: true}
+  outputs: {a_crit: a_sn_fig11c_pred, a_crit_2: a_sn_fig11c_aux, norm_at_crit: norm_sn_fig11c_pred}
+
+- id: run_bif_fig16a_dp
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_start: a_bracket_fig16a_dp_lo_added
+    a_end: a_bracket_fig16a_dp_hi_added
+    a_Delta: a_Delta_m038
+    kappa: kappa_24
+    Q: Q_one
+    rho: rho_zero
+    alpha: alpha_001
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    init_amp_1: init_amp_antiphase_phi1_added
+    init_amp_2: init_amp_antiphase_phi2_added
+  settings: {mode: "drift_pitchfork", n_modes: 16, n_cell: 48, tol: 1.0e-11, warm_start: false}
+  outputs: {a_crit: a_dp_antiphase_fig16a_pred, a_crit_2: a_dp_fig16a_aux, norm_at_crit: norm_dp_fig16a_pred}
+
+- id: run_pde_fig5d
+  model: coupled_ch_pde_1d_eq4
+  inputs:
+    a: a_fig5d
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi1_bar_1
+    phi2_bar: phi2_bar_m05
+    noise_amp: noise_fig5d
+    t_end: t_end_fig5d_added
+  settings: {n_grid: 64, dt: 0.1, S_stab: 6.0, seed: 0, init_type: "homogeneous"}
+  replicates: 3
+  outputs:
+    n_dominant_final: n_final_fig5d_pred
+    norm_final: norm_final_fig5d_pred
+    norm_osc_std: norm_std_fig5d_pred
+    drift_speed_final: v_drift_fig5d_pred
+    phi1_min_final: phi1_min_fig5d_pred
+    phi1_max_final: phi1_max_fig5d_pred
+    phi1_mean_final: phi1_mean_fig5d_pred
+    phi2_mean_final: phi2_mean_fig5d_pred
+
+- id: run_pde_fig7a
+  model: coupled_ch_pde_1d_eq4
+  inputs:
+    a: a_fig7a
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_16
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    noise_amp: noise_fig7a_added
+    t_end: t_end_fig7a_added
+  settings: {n_grid: 64, dt: 0.5, S_stab: 2.0, seed: 0, init_type: "steady_n1"}
+  replicates: 3
+  outputs:
+    n_dominant_final: n_final_fig7a_pred
+    norm_final: norm_final_fig7a_pred
+    norm_osc_std: norm_std_fig7a_pred
+    drift_speed_final: v_drift_fig7a_pred
+    phi1_min_final: phi1_min_fig7a_pred
+    phi1_max_final: phi1_max_fig7a_pred
+    phi1_mean_final: phi1_mean_fig7a_pred
+    phi2_mean_final: phi2_mean_fig7a_pred
+
+- id: run_pde_fig12a
+  model: coupled_ch_pde_1d_eq4
+  inputs:
+    a: a_fig12a
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    alpha: alpha_1301
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    noise_amp: noise_fig12_added
+    t_end: t_end_fig12a_added
+  settings: {n_grid: 64, dt: 0.5, S_stab: 2.0, seed: 0, init_type: "homogeneous"}
+  replicates: 3
+  outputs:
+    n_dominant_final: n_tw_fig12a_pred
+    norm_final: norm_final_fig12a_pred
+    norm_osc_std: norm_std_fig12a_pred
+    drift_speed_final: v_drift_fig12a_pred
+    phi1_min_final: phi1_min_fig12a_pred
+    phi1_max_final: phi1_max_fig12a_pred
+    phi1_mean_final: phi1_mean_fig12a_pred
+    phi2_mean_final: phi2_mean_fig12a_pred
+
+- id: run_pseudovar_eqE
+  model: pseudovariational_equivalence_eqE1_E3
+  inputs:
+    a: a_fig2a
+    a_Delta: a_Delta_m038
+    kappa: kappa_24
+    Q: Q_one
+    alpha: alpha_001
+    ell: ell_4pi
+    amp1: amp1_eqE_test_added
+    amp2: amp2_eqE_test_added
+  settings: {n_grid: 64}
+  outputs:
+    rhs_max_diff: rhs_diff_eqE_pred
+    dF_tilde_dt: dF_tilde_dt_eqE_pred
+
+# ==========================================================================
+# Group G: Audit additions — Eq. (23) coupling path, Fig. 13 subplus,
+# Fig. 7(c) n=3 stability, Fig. 10(b) n=5 instability, Fig. 12(c) standing wave
+# ==========================================================================
+
+- id: run_coupling_invariants_fig1c
+  model: coupling_invariants
+  inputs: {rho: rho_05, alpha: alpha_zero}
+  outputs: {Delta: Delta_fig1c_inv_pred, Sigma: Sigma_fig1c_inv_pred}
+
+- id: run_coupling_path_fig1c
+  model: coupling_path_eq23
+  inputs: {rho: rho_05, alpha: alpha_zero, Sigma: Sigma_fig1c_inv_pred}
+  outputs: {Delta: Delta_path_fig1c_pred}
+
+- id: run_coupling_path_fig8d
+  model: coupling_path_eq23
+  inputs: {rho: rho_135, alpha: alpha_165, Sigma: Sigma_fig8d_pred}
+  outputs: {Delta: Delta_path_fig8d_pred}
+
+- id: run_coupling_invariants_fig13b
+  model: coupling_invariants
+  inputs: {rho: rho_13, alpha: alpha_m131}
+  outputs: {Delta: Delta_fig13b_inv_pred, Sigma: Sigma_fig13b_inv_pred}
+
+- id: run_coupling_path_fig13b
+  model: coupling_path_eq23
+  inputs: {rho: rho_13, alpha: alpha_m131, Sigma: Sigma_fig13b_inv_pred}
+  outputs: {Delta: Delta_path_fig13b_pred}
+
+- id: run_coupling_invariants_fig9_rho03
+  model: coupling_invariants
+  inputs: {rho: rho_03, alpha: alpha_m13}
+  outputs: {Delta: Delta_fig9_rho03_inv_pred, Sigma: Sigma_fig9_rho03_inv_pred}
+
+- id: run_coupling_path_fig9_rho03
+  model: coupling_path_eq23
+  inputs: {rho: rho_03, alpha: alpha_m13, Sigma: Sigma_fig9_rho03_inv_pred}
+  outputs: {Delta: Delta_path_fig9_rho03_pred}
+
+- id: run_subcrit_fig13b_n1
+  model: subcriticality_zero_mean_eqD17_D19
+  inputs:
+    q_n: q1_fig11_pred
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    rho: rho_13
+    alpha: alpha_m131
+    eps: eps_subcrit_probe_added
+  outputs:
+    M_n: M1_fig13b_pred
+    xi_plus: xi_plus_fig13b_pred
+    xi_minus: xi_minus_fig13b_pred
+    subcrit_ratio_plus: R_plus_fig13b_pred
+    subcrit_ratio_minus: R_minus_fig13b_pred
+    Delta_H_n: Delta_H_fig13b_pred
+    alpha_H_n: alpha_H_fig13b_pred
+    A0_plus: A0_fig13b_pred
+
+- id: run_subcrit_fig13c_n1
+  model: subcriticality_zero_mean_eqD17_D19
+  inputs:
+    q_n: q1_fig11_pred
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    rho: rho_13
+    alpha: alpha_m1315
+    eps: eps_subcrit_probe_added
+  outputs:
+    M_n: M1_fig13c_pred
+    xi_plus: xi_plus_fig13c_pred
+    xi_minus: xi_minus_fig13c_pred
+    subcrit_ratio_plus: R_plus_fig13c_pred
+    subcrit_ratio_minus: R_minus_fig13c_pred
+    Delta_H_n: Delta_H_fig13c_pred
+    alpha_H_n: alpha_H_fig13c_pred
+    A0_plus: A0_fig13c_pred
+
+- id: run_ss_fig6a_n3_a111
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a: a_fig7c
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_3
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {n_modes: 16, n_cell: 48, tol: 1.0e-12, warm_start: true}
+  outputs:
+    norm_dphi: norm_ss_fig6a_n3_a111_pred
+    lam_max: lam_max_ss_fig6a_n3_a111_pred
+    n_unstable: n_unstable_fig6a_n3_a111_pred
+    dp_integral: dp_int_fig6a_n3_a111_pred
+    phi1_min: phi1_min_ss_fig6a_n3_a111_pred
+    phi1_max: phi1_max_ss_fig6a_n3_a111_pred
+    phi2_min: phi2_min_ss_fig6a_n3_a111_pred
+    phi2_max: phi2_max_ss_fig6a_n3_a111_pred
+
+- id: run_ss_fig10b_n5
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a: a_fig10b
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_5
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  settings: {n_modes: 16, n_cell: 48, tol: 1.0e-12, warm_start: true}
+  outputs:
+    norm_dphi: norm_ss_fig10b_n5_pred
+    lam_max: lam_max_ss_fig10b_n5_pred
+    n_unstable: n_unstable_fig10b_n5_pred
+    dp_integral: dp_int_fig10b_n5_pred
+    phi1_min: phi1_min_ss_fig10b_n5_pred
+    phi1_max: phi1_max_ss_fig10b_n5_pred
+    phi2_min: phi2_min_ss_fig10b_n5_pred
+    phi2_max: phi2_max_ss_fig10b_n5_pred
+
+- id: run_pde_fig12c
+  model: coupled_ch_pde_1d_eq4
+  inputs:
+    a: a_fig12c
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    alpha: alpha_1301
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    noise_amp: noise_fig12_added
+    t_end: t_end_fig12c_added
+  settings: {n_grid: 64, dt: 0.5, S_stab: 2.0, seed: 0, init_type: "homogeneous"}
+  replicates: 3
+  outputs:
+    n_dominant_final: n_sw_fig12c_pred
+    norm_final: norm_final_fig12c_pred
+    norm_osc_std: norm_std_fig12c_pred
+    drift_speed_final: v_drift_fig12c_pred
+    phi1_min_final: phi1_min_fig12c_pred
+    phi1_max_final: phi1_max_fig12c_pred
+    phi1_mean_final: phi1_mean_fig12c_pred
+    phi2_mean_final: phi2_mean_fig12c_pred
+
+
+# ==========================================================================
+# Group H: Calibrated figure digitization sweeps (Figs. 1-16, 84 curves)
+# ==========================================================================
+
+- id: run_fig1a_hopf
+  model: general_stability_boundaries_delta
+  inputs:
+    Q: Q_one
+    kappa: kappa_014
+    Delta: Delta_fig1a
+  sweep:
+    f2_pp: fig1a_hopf_fig
+  outputs:
+    f1_pp_H: fig1a_hopf_pred
+- id: run_fig1a_turing
+  model: general_stability_boundaries_delta
+  inputs:
+    Q: Q_one
+    kappa: kappa_014
+    Delta: Delta_fig1a
+  sweep:
+    f2_pp: fig1a_turing_fig
+  outputs:
+    f1_pp_T: fig1a_turing_pred
+- id: run_fig1a_ch
+  model: general_stability_boundaries_delta
+  inputs:
+    Q: Q_one
+    kappa: kappa_014
+    Delta: Delta_fig1a
+  sweep:
+    f2_pp: fig1a_ch_fig
+  outputs:
+    f1_pp_CH: fig1a_ch_pred
+- id: run_fig1b_hopf
+  model: general_stability_boundaries_delta
+  inputs:
+    Q: Q_one
+    kappa: kappa_382
+    Delta: Delta_fig1a
+  sweep:
+    f2_pp: fig1b_hopf_fig
+  outputs:
+    f1_pp_H: fig1b_hopf_pred
+- id: run_fig1b_turing
+  model: general_stability_boundaries_delta
+  inputs:
+    Q: Q_one
+    kappa: kappa_382
+    Delta: Delta_fig1a
+  sweep:
+    f2_pp: fig1b_turing_fig
+  outputs:
+    f1_pp_T: fig1b_turing_pred
+- id: run_fig1b_ch
+  model: general_stability_boundaries_delta
+  inputs:
+    Q: Q_one
+    kappa: kappa_382
+    Delta: Delta_fig1a
+  sweep:
+    f2_pp: fig1b_ch_fig
+  outputs:
+    f1_pp_CH: fig1b_ch_pred
+- id: run_fig1c_ch
+  model: general_stability_boundaries_delta
+  inputs:
+    Q: Q_one
+    kappa: kappa_014
+    Delta: Delta_fig1c
+  sweep:
+    f2_pp: fig1c_ch_fig
+  outputs:
+    f1_pp_CH: fig1c_ch_pred
+- id: run_fig2a_lam_plus
+  model: linear_dispersion_k_eqB1
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a: a_fig2a
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    rho: rho_05
+    alpha: alpha_zero
+  sweep:
+    k: fig2a_lam_plus_fig
+  outputs:
+    re_lam_plus: fig2a_lam_plus_pred
+- id: run_fig2a_lam_minus
+  model: linear_dispersion_k_eqB1
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a: a_fig2a
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    rho: rho_05
+    alpha: alpha_zero
+  sweep:
+    k: fig2a_lam_minus_fig
+  outputs:
+    re_lam_minus: fig2a_lam_minus_pred
+- id: run_fig3a_lam_plus
+  model: linear_dispersion_k_eqB1
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a: a_fig3a
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    rho: rho_135
+    alpha: alpha_16
+  sweep:
+    k: fig3a_lam_plus_fig
+  outputs:
+    re_lam_plus: fig3a_lam_plus_pred
+- id: run_fig4a_re_lam_plus
+  model: linear_dispersion_k_eqB1
+  inputs:
+    ell: ell_8pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a: a_fig4a
+    a_Delta: a_Delta_1
+    kappa: kappa_382
+    rho: rho_135
+    alpha: alpha_15
+  sweep:
+    k: fig4a_re_lam_plus_fig
+  outputs:
+    re_lam_plus: fig4a_re_lam_plus_pred
+- id: run_fig4c_re_lam_plus
+  model: linear_dispersion_k_eqB1
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a: a_fig4c
+    a_Delta: a_Delta_m1
+    kappa: kappa_382
+    rho: rho_135
+    alpha: alpha_14
+  sweep:
+    k: fig4c_re_lam_plus_fig
+  outputs:
+    re_lam_plus: fig4c_re_lam_plus_pred
+- id: run_fig2b_rho10
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    rho: rho_10
+    alpha: alpha_zero
+  sweep:
+    k: fig2b_rho10_fig
+  outputs:
+    a_border: fig2b_rho10_pred
+- id: run_fig2b_rho05
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    rho: rho_05
+    alpha: alpha_zero
+  sweep:
+    k: fig2b_rho05_fig
+  outputs:
+    a_border: fig2b_rho05_pred
+- id: run_fig2b_rho00
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    rho: rho_zero
+    alpha: alpha_zero
+  sweep:
+    k: fig2b_rho00_fig
+  outputs:
+    a_border: fig2b_rho00_pred
+- id: run_fig3b_alpha14
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    rho: rho_135
+    alpha: alpha_14
+  sweep:
+    k: fig3b_alpha14_fig
+  outputs:
+    a_border: fig3b_alpha14_pred
+- id: run_fig3b_alpha15
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    rho: rho_135
+    alpha: alpha_15
+  sweep:
+    k: fig3b_alpha15_fig
+  outputs:
+    a_border: fig3b_alpha15_pred
+- id: run_fig3b_alpha16
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    rho: rho_135
+    alpha: alpha_16
+  sweep:
+    k: fig3b_alpha16_fig
+  outputs:
+    a_border: fig3b_alpha16_pred
+- id: run_fig4b_alpha13
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_8pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_1
+    kappa: kappa_382
+    rho: rho_135
+    alpha: alpha_13
+  sweep:
+    k: fig4b_alpha13_fig
+  outputs:
+    a_border: fig4b_alpha13_pred
+- id: run_fig4b_alpha1439
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_8pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_1
+    kappa: kappa_382
+    rho: rho_135
+    alpha: alpha_1439
+  sweep:
+    k: fig4b_alpha1439_fig
+  outputs:
+    a_border: fig4b_alpha1439_pred
+- id: run_fig4b_alpha15
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_8pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_1
+    kappa: kappa_382
+    rho: rho_135
+    alpha: alpha_15
+  sweep:
+    k: fig4b_alpha15_fig
+  outputs:
+    a_border: fig4b_alpha15_pred
+- id: run_fig4d_alpha135
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_m1
+    kappa: kappa_382
+    rho: rho_135
+    alpha: alpha_eq_rho_fig4d
+  sweep:
+    k: fig4d_alpha135_fig
+  outputs:
+    a_border: fig4d_alpha135_pred
+- id: run_fig4d_alpha14
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_m1
+    kappa: kappa_382
+    rho: rho_135
+    alpha: alpha_14
+  sweep:
+    k: fig4d_alpha14_fig
+  outputs:
+    a_border: fig4d_alpha14_pred
+- id: run_fig4d_alpha144
+  model: stability_borders_k_eqB3_B5
+  inputs:
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    a_Delta: a_Delta_m1
+    kappa: kappa_382
+    rho: rho_135
+    alpha: alpha_144
+  sweep:
+    k: fig4d_alpha144_fig
+  outputs:
+    a_border: fig4d_alpha144_pred
+- id: run_fig5a_n1
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_1
+  sweep:
+    a: fig5a_n1_fig
+  settings:
+    n_modes: 32
+    start_a: 1.0
+    step_size: 0.2
+  outputs:
+    norm_dphi: fig5a_n1_pred
+- id: run_fig5a_n2
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_2
+  sweep:
+    a: fig5a_n2_fig
+  settings:
+    n_modes: 28
+    start_a: 1.0
+    step_size: 0.2
+  outputs:
+    norm_dphi: fig5a_n2_pred
+- id: run_fig5a_n3
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_3
+  sweep:
+    a: fig5a_n3_fig
+  settings:
+    n_modes: 24
+    start_a: 0.9
+    step_size: 0.2
+  outputs:
+    norm_dphi: fig5a_n3_pred
+- id: run_fig5b_n1_upper
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi1_bar_1
+    phi2_bar: phi2_bar_m05
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_1
+  sweep:
+    a: fig5b_n1_upper_fig
+  settings:
+    n_modes: 32
+    start_a: -1.2
+    step_size: 0.15
+    warm_start_steps: 400
+    warm_start_dt: 0.05
+  outputs:
+    norm_dphi: fig5b_n1_upper_pred
+- id: run_fig5b_n1_mid
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi1_bar_1
+    phi2_bar: phi2_bar_m05
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_1
+  sweep:
+    a: fig5b_n1_mid_fig
+  settings:
+    n_modes: 28
+    n_cell: 60
+    tol: 1.0e-11
+    warm_start: true
+  outputs:
+    norm_dphi: fig5b_n1_mid_pred
+- id: run_fig5c_profile
+  model: steady_state_profile_eq7
+  inputs:
+    a_Delta: a_Delta_m05
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi1_bar_1
+    phi2_bar: phi2_bar_m05
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_1
+    a: a_fig5c
+  sweep:
+    x: fig5c_phi1_fig
+  settings:
+    n_modes: 36
+    tol: 1.0e-11
+    start_a: -1.2
+    step_size: 0.15
+    warm_start_steps: 400
+    warm_start_dt: 0.05
+    phase_x0: -0.3248
+  outputs:
+    phi1: fig5c_phi1_pred
+    phi2: fig5c_phi2_pred
+- id: run_fig6a_n1
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_1
+  sweep:
+    a: fig6a_n1_fig
+  settings:
+    n_modes: 24
+    start_a: 1.3
+    step_size: 0.2
+  outputs:
+    norm_dphi: fig6a_n1_pred
+- id: run_fig6a_n2
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_2
+  sweep:
+    a: fig6a_n2_fig
+  settings:
+    n_modes: 24
+    start_a: 1.3
+    step_size: 0.2
+  outputs:
+    norm_dphi: fig6a_n2_pred
+- id: run_fig6a_n3
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_3
+  sweep:
+    a: fig6a_n3_fig
+  settings:
+    n_modes: 24
+    start_a: 1.3
+    step_size: 0.2
+  outputs:
+    norm_dphi: fig6a_n3_pred
+- id: run_fig6a_n4
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_4
+  sweep:
+    a: fig6a_n4_fig
+  settings:
+    n_modes: 24
+    start_a: 0.8
+    step_size: 0.2
+  outputs:
+    norm_dphi: fig6a_n4_pred
+- id: run_fig6a_n5
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_5
+  sweep:
+    a: fig6a_n5_fig
+  settings:
+    n_modes: 24
+    start_a: 0.1
+    step_size: 0.2
+  outputs:
+    norm_dphi: fig6a_n5_pred
+- id: run_fig6b_n1
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_16
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_1
+  sweep:
+    a: fig6b_n1_fig
+  settings:
+    n_modes: 24
+    start_a: 1.35
+    step_size: 0.04
+  outputs:
+    norm_dphi: fig6b_n1_pred
+- id: run_fig6b_n2
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_16
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_2
+  sweep:
+    a: fig6b_n2_fig
+  settings:
+    n_modes: 24
+    start_a: 1.44
+    step_size: 0.04
+  outputs:
+    norm_dphi: fig6b_n2_pred
+- id: run_fig6c_profile
+  model: steady_state_profile_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    a: a_fig6c_cross_added
+    n_period: n_mode_2
+  sweep:
+    x: fig6c_phi1_fig
+  settings:
+    n_modes: 24
+    tol: 1.0e-11
+    start_a: 1.3
+    step_size: 0.2
+    phase_x0: -0.2281
+  outputs:
+    phi1: fig6c_phi1_pred
+    phi2: fig6c_phi2_pred
+- id: run_fig8a_n1
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_145
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_1
+  sweep:
+    a: fig8a_n1_fig
+  settings:
+    n_modes: 24
+    start_a: 0.8
+    step_size: 0.12
+  outputs:
+    norm_dphi: fig8a_n1_pred
+- id: run_fig8a_n2
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_145
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_2
+  sweep:
+    a: fig8a_n2_fig
+  settings:
+    n_modes: 24
+    start_a: 0.7
+    step_size: 0.12
+  outputs:
+    norm_dphi: fig8a_n2_pred
+- id: run_fig8b_n1s
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_1
+  sweep:
+    a: fig8b_n1s_fig
+  settings:
+    n_modes: 24
+    start_a: 0.6
+    step_size: 0.12
+    warm_start_steps: 200
+    warm_start_dt: 0.05
+  outputs:
+    norm_dphi: fig8b_n1s_pred
+- id: run_fig8b_n2
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_2
+  sweep:
+    a: fig8b_n2_fig
+  settings:
+    n_modes: 24
+    start_a: 0.8
+    step_size: 0.12
+  outputs:
+    norm_dphi: fig8b_n2_pred
+- id: run_fig8c_n1s
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_14
+    alpha: alpha_18
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_1
+  sweep:
+    a: fig8c_n1s_fig
+  settings:
+    n_modes: 24
+    start_a: 0.55
+    step_size: 0.12
+  outputs:
+    norm_dphi: fig8c_n1s_pred
+- id: run_fig8c_n2s
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_14
+    alpha: alpha_18
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_2
+  sweep:
+    a: fig8c_n2s_fig
+  settings:
+    n_modes: 24
+    start_a: 0.76
+    step_size: 0.12
+  outputs:
+    norm_dphi: fig8c_n2s_pred
+- id: run_fig8c_n3
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_14
+    alpha: alpha_18
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_3
+  sweep:
+    a: fig8c_n3_fig
+  settings:
+    n_modes: 24
+    start_a: 0.66
+    step_size: 0.12
+  outputs:
+    norm_dphi: fig8c_n3_pred
+- id: run_fig8c_n4
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_14
+    alpha: alpha_18
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi2_bar_04
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    n_period: n_mode_4
+  sweep:
+    a: fig8c_n4_fig
+  settings:
+    n_modes: 24
+    start_a: 0.5
+    step_size: 0.12
+  outputs:
+    norm_dphi: fig8c_n4_pred
+- id: run_fig8d_n1_minus
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_165
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_1
+  sweep:
+    a: fig8d_n1_minus_fig
+  settings:
+    n_modes: 24
+    start_a: 0.55
+    step_size: 0.12
+    linear_seed: minus
+  outputs:
+    norm_dphi: fig8d_n1_minus_pred
+- id: run_fig8d_n2_minus
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_165
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_2
+  sweep:
+    a: fig8d_n2_minus_fig
+  settings:
+    n_modes: 24
+    start_a: -0.2
+    step_size: 0.12
+    linear_seed: minus
+  outputs:
+    norm_dphi: fig8d_n2_minus_pred
+- id: run_fig8d_n3_minus
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_165
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_3
+  sweep:
+    a: fig8d_n3_minus_fig
+  settings:
+    n_modes: 24
+    start_a: -1.42
+    step_size: 0.12
+    linear_seed: minus
+  outputs:
+    norm_dphi: fig8d_n3_minus_pred
+- id: run_fig9_subcrit_plus
+  model: subcriticality_boundary_eqD19
+  inputs:
+    M: M_fig9_printed
+  sweep:
+    Sigma: fig9_subcrit_plus_fig
+  outputs:
+    Delta_sub_plus: fig9_subcrit_plus_pred
+- id: run_fig9_path_rho03_pos
+  model: coupling_path_eq23
+  inputs:
+    rho: rho_03
+    alpha: alpha_13
+  sweep:
+    Sigma: fig9_path_rho03_pos_fig
+  outputs:
+    Delta: fig9_path_rho03_pos_pred
+- id: run_fig9_path_rho03_neg
+  model: coupling_path_eq23
+  inputs:
+    rho: rho_03
+    alpha: alpha_m13
+  sweep:
+    Sigma: fig9_path_rho03_neg_fig
+  outputs:
+    Delta: fig9_path_rho03_neg_pred
+- id: run_fig10a_n1
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_1
+  sweep:
+    a: fig10a_n1_fig
+  settings:
+    n_modes: 64
+    start_a: 1.3
+    step_size: 0.25
+  outputs:
+    norm_dphi: fig10a_n1_pred
+- id: run_fig10a_n3
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_3
+  sweep:
+    a: fig10a_n3_fig
+  settings:
+    n_modes: 36
+    start_a: 1.0
+    step_size: 0.5
+  outputs:
+    norm_dphi: fig10a_n3_pred
+- id: run_fig10a_n5
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_5
+  sweep:
+    a: fig10a_n5_fig
+  settings:
+    n_modes: 28
+    start_a: 0.0
+    step_size: 0.5
+  outputs:
+    norm_dphi: fig10a_n5_pred
+- id: run_fig10a_n6
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m19
+    kappa: kappa_014
+    Q: Q_one
+    rho: rho_135
+    alpha: alpha_15
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+    n_period: n_mode_6
+  sweep:
+    a: fig10a_n6_fig
+  settings:
+    n_modes: 36
+    start_a: -3.0
+    step_size: 0.5
+    warm_start_steps: 300
+    warm_start_dt: 0.02
+  outputs:
+    norm_dphi: fig10a_n6_pred
+- id: run_fig11a_n1_plus
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_1295
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  sweep:
+    a: fig11a_n1_plus_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig11a_n1_plus_pred
+- id: run_fig11b_n1_plus
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_13
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_zero_added
+  sweep:
+    a: fig11b_n1_plus_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig11b_n1_plus_pred
+- id: run_fig11b_n1_upper
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_13
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    a: fig11b_n1_upper_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig11b_n1_upper_pred
+- id: run_fig11c_n1_right
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_1301
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_zero_added
+  sweep:
+    a: fig11c_n1_right_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig11c_n1_right_pred
+- id: run_fig11c_n1_left
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_1301
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    a: fig11c_n1_left_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig11c_n1_left_pred
+- id: run_fig11d_n1_left
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_131
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    a: fig11d_n1_left_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig11d_n1_left_pred
+- id: run_fig11e_n1_left
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_1315
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    a: fig11e_n1_left_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig11e_n1_left_pred
+- id: run_fig13a_n1_plus
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_m13
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    a: fig13a_n1_plus_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig13a_n1_plus_pred
+- id: run_fig13b_n1_plus
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_m131
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    a: fig13b_n1_plus_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig13b_n1_plus_pred
+- id: run_fig13c_n1_upper
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_m1315
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    a: fig13c_n1_upper_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig13c_n1_upper_pred
+- id: run_fig11a_n1_minus
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_1295
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  sweep:
+    a: fig11a_n1_minus_fig
+  settings:
+    n_modes: 24
+    start_a: -0.63
+    step_size: 0.05
+    linear_seed: minus
+  outputs:
+    norm_dphi: fig11a_n1_minus_pred
+- id: run_fig13a_n1_minus
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_m13
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  sweep:
+    a: fig13a_n1_minus_fig
+  settings:
+    n_modes: 24
+    start_a: -0.6
+    step_size: 0.05
+    linear_seed: minus
+  outputs:
+    norm_dphi: fig13a_n1_minus_pred
+- id: run_fig13b_n1_minus
+  model: steady_state_continuation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    alpha: alpha_m131
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  sweep:
+    a: fig13b_n1_minus_fig
+  settings:
+    n_modes: 24
+    start_a: -0.48
+    step_size: 0.05
+    linear_seed: minus
+  outputs:
+    norm_dphi: fig13b_n1_minus_pred
+- id: run_fig11f_sn_locus
+  model: bifurcation_threshold_finder_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    a_start: a_start_fig11f_sn_added
+    a_end: a_end_fig11f_sn_added
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    alpha: fig11f_sn_locus_fig
+  settings:
+    mode: fold
+    n_modes: 20
+    n_cell: 48
+    ds_max: 0.02
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    a_crit: fig11f_sn_locus_pred
+- id: run_fig11f_dp_left
+  model: bifurcation_locus_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    a_start: a_start_fig11f_sn_added
+    a_end: a_end_fig11f_sn_added
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    alpha: fig11f_dp_left_fig
+  settings:
+    n_modes: 20
+    ds_max: 0.02
+    tol: 1.0e-11
+    max_steps: 250
+  outputs:
+    a_crit: fig11f_dp_left_pred
+- id: run_fig11f_dp_right
+  model: bifurcation_locus_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_382
+    Q: Q_one
+    rho: rho_13
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    a_start: a_start_fig11f_dpr_added
+    a_end: a_end_fig11f_dpr_added
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_zero_added
+  sweep:
+    alpha: fig11f_dp_right_fig
+  settings:
+    n_modes: 20
+    ds_max: 0.02
+    tol: 1.0e-11
+    max_steps: 250
+  outputs:
+    a_crit: fig11f_dp_right_pred
+- id: run_fig14a_binodal_I_IV
+  model: variational_coexistence_eqC1_C3
+  inputs:
+    a: a_fig5c
+    a_Delta: a_Delta_0
+    rho: rho_10
+  sweep:
+    phi1_A: fig14a_binodal_I_IV_fig
+  settings:
+    tol: 1.0e-10
+  outputs:
+    phi2_A: fig14a_binodal_I_IV_pred
+- id: run_fig14b_boundary_I_IV
+  model: variational_coexistence_mu_eqC1_C3
+  inputs:
+    a: a_fig5c
+    a_Delta: a_Delta_0
+    rho: rho_10
+  sweep:
+    mu1: fig14b_boundary_I_IV_fig
+  settings:
+    branch: I-IV
+    tol: 1.0e-10
+  outputs:
+    mu2: fig14b_boundary_I_IV_pred
+- id: run_fig14c_binodal_I_IV
+  model: variational_coexistence_eqC1_C3
+  inputs:
+    a: a_fig5c
+    a_Delta: a_Delta_m05
+    rho: rho_10
+  sweep:
+    phi1_A: fig14c_binodal_I_IV_fig
+  settings:
+    tol: 1.0e-10
+  outputs:
+    phi2_A: fig14c_binodal_I_IV_pred
+- id: run_fig14d_boundary_I_IV
+  model: variational_coexistence_mu_eqC1_C3
+  inputs:
+    a: a_fig5c
+    a_Delta: a_Delta_m05
+    rho: rho_10
+  sweep:
+    mu1: fig14d_boundary_I_IV_fig
+  settings:
+    branch: I-IV
+    tol: 1.0e-10
+  outputs:
+    mu2: fig14d_boundary_I_IV_pred
+- id: run_fig15a_branch_left
+  model: steady_state_continuation_eq7
+  inputs: &id001
+    a: a_fig5c
+    a_Delta: a_Delta_0
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi_bar_zero
+    n_period: n_mode_1
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+  sweep:
+    phi2_bar: fig15a_branch_left_fig
+  settings:
+    n_modes: 32
+    start_phi2_bar: -1.5
+    step_size: 0.15
+    warm_start_steps: 400
+    warm_start_dt: 0.05
+  outputs:
+    norm_dphi: fig15a_branch_left_pred
+- id: run_fig15a_branch_right
+  model: steady_state_continuation_eq7
+  inputs: *id001
+  sweep:
+    phi2_bar: fig15a_branch_right_fig
+  settings:
+    n_modes: 32
+    start_phi2_bar: -0.8
+    step_size: 0.15
+    warm_start_steps: 400
+    warm_start_dt: 0.05
+  outputs:
+    norm_dphi: fig15a_branch_right_pred
+- id: run_fig15b_profile
+  model: steady_state_profile_eq7
+  inputs:
+    a: a_fig5c
+    a_Delta: a_Delta_0
+    kappa: kappa_1
+    Q: Q_one
+    rho: rho_10
+    alpha: alpha_zero
+    ell: ell_10pi
+    phi1_bar: phi_bar_zero
+    n_period: n_mode_1
+    init_amp_1: init_amp_large_added
+    init_amp_2: init_amp_large_added
+    phi2_bar: phi2_bar_fig15b_added
+  sweep:
+    x: fig15b_phi1_fig
+  settings:
+    n_modes: 36
+    tol: 1.0e-11
+    start_phi2_bar: -0.8
+    step_size: 0.15
+    warm_start_steps: 400
+    warm_start_dt: 0.05
+    phase_x0: 0.0294
+  outputs:
+    phi1: fig15b_phi1_pred
+    phi2: fig15b_phi2_pred
+- id: run_fig16a_inphase
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_24
+    Q: Q_one
+    rho: rho_zero
+    alpha: alpha_001
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    init_amp_1: init_amp_pos_added
+    init_amp_2: init_amp_pos_added
+  sweep:
+    a: fig16a_inphase_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig16a_inphase_pred
+- id: run_fig16a_antiphase
+  model: steady_state_bifurcation_eq7
+  inputs:
+    a_Delta: a_Delta_m038
+    kappa: kappa_24
+    Q: Q_one
+    rho: rho_zero
+    alpha: alpha_001
+    ell: ell_4pi
+    phi1_bar: phi_bar_zero
+    phi2_bar: phi_bar_zero
+    n_period: n_mode_1
+    init_amp_1: init_amp_antiphase_phi1_added
+    init_amp_2: init_amp_antiphase_phi2_added
+  sweep:
+    a: fig16a_antiphase_fig
+  settings:
+    n_modes: 24
+    n_cell: 56
+    tol: 1.0e-11
+    warm_start: false
+  outputs:
+    norm_dphi: fig16a_antiphase_pred

@@ -1,0 +1,29 @@
+- id: ref_gillespie_samples
+  run: run_hand_gillespie_mc_5pN
+  setting: n_samples
+  factors: [1, 2, 4, 8]
+  mode: multiply
+  output: tau_res_mc
+  tolerance: "1.5%"
+  tolerance_basis: "added: Monte Carlo convergence of mean bound lifetime to below 1.5% relative error across 20k..160k samples"
+  tolerance_added: true
+
+- id: ref_langevin_particles
+  run: run_semi_implicit_langevin_vasp
+  setting: n_particles
+  factors: [1, 2, 4]
+  mode: multiply
+  output: var_x_semi_implicit
+  tolerance: "0.5%"
+  tolerance_basis: "added: Monte Carlo particle-count convergence of stationary semi-implicit variance across 4k..16k trajectories"
+  tolerance_added: true
+
+- id: ref_nucleator_dt
+  run: run_nucleator_single_50nM_600s
+  setting: dt
+  factors: [1, 2, 5, 10]
+  mode: divide
+  output: L_seed_final
+  tolerance: "0.1%"
+  tolerance_basis: "added: step-size convergence from dt = 0.02 s down to CytoSim's exact dt = 0.002 s (factor 10) well below the ~1-2% digitization uncertainty of Supp. Fig. 6C"
+  tolerance_added: true

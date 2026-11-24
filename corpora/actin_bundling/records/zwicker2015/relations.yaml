@@ -1,0 +1,1750 @@
+# ==============================================================================
+# 1. Interface Scales, Coexistence, and Flux Limits (Sec. II, App. A & C)
+# ==============================================================================
+- id: rel_capillary_length_micro_to_gb
+  kind: same_as
+  a: zwicker2015/capillary_length_from_micro
+  b: zwicker2015/capillary_length_gb
+  mapping:
+    w: "2 * sqrt(kappa / b)"
+    psi: "psi"
+  regime:
+    b: [0.5, 10.0]
+    kappa: [1.0e-13, 1.0e-11]
+    psi: [0.1, 1.0]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "012317-3"
+    quote: "which is related to the interface width by"
+    where: Sec. II.C text, p. 3
+  assumptions:
+    - "Flat-interface width w = 2*(kappa/b)^(1/2), surface tension gamma = (1/6)*psi^2*(b*kappa)^(1/2), and beta = 2/(b*psi)"
+
+- id: rel_coexistence_eqA1_to_eq6_plus
+  kind: reduces_to
+  a: zwicker2015/coexistence_exact_eqA1
+  b: zwicker2015/gibbs_thomson_eq6
+  mapping:
+    psi: "psi"
+    gamma_beta: "2 * gamma / (b * psi)"
+    R: "R"
+  output_map:
+    phi_plus_B: phi_plus_B
+  regime:
+    b: [1.0, 10.0]
+    psi: [0.5, 1.0]
+    gamma: [1.0e-4, 1.0e-3]
+    R: [1.0, 10.0]
+  limit:
+    gamma: "0"
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "012317-11"
+    quote: "which result from Eqs. (A1), can be expanded to first order"
+    where: Appendix A, Eq. (A2)
+  assumptions:
+    - "Small surface tension limit gamma << psi*R/beta (vanishing Laplace pressure)"
+
+- id: rel_coexistence_eqA1_to_eqA2_minus
+  kind: reduces_to
+  a: zwicker2015/coexistence_exact_eqA1
+  b: zwicker2015/gibbs_thomson_eq6
+  mapping:
+    psi: "psi"
+    gamma_beta: "2 * gamma / (b * psi)"
+    R: "R"
+  output_map:
+    phi_minus_B: phi_minus_B
+  regime:
+    b: [1.0, 10.0]
+    psi: [0.5, 1.0]
+    gamma: [1.0e-4, 1.0e-3]
+    R: [1.0, 10.0]
+  limit:
+    gamma: "0"
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "012317-11"
+    quote: "which result from Eqs. (A1), can be expanded to first order"
+    where: Appendix A, Eq. (A2)
+  assumptions:
+    - "Small surface tension limit gamma << psi*R/beta"
+
+- id: rel_flux_eq8_to_small_R
+  kind: reduces_to
+  a: zwicker2015/surface_flux_eq8_11
+  b: zwicker2015/surface_flux_small_R
+  mapping:
+    R: "R"
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    phi_0_B: "phi_0_B"
+  regime:
+    R: [1.0e-6, 1.0e-5]
+    D_B: [1.0e-12, 1.0e-11]
+    l: [1.0e-5, 1.0e-4]
+    gamma_beta: [1.0e-7, 5.0e-7]
+    phi_0_B: [0.01, 0.1]
+  limit:
+    l: "oo"
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "012317-3"
+    quote: "for small droplets or small reaction rates"
+    where: Sec. II.C text, below Eq. 8
+  assumptions:
+    - "Small droplets or slow chemical reactions (R << l)"
+
+- id: rel_eq9_to_eq22
+  kind: same_as
+  a: zwicker2015/coarse_grained_droplet_eq9_12
+  b: zwicker2015/autocatalytic_growth_eq22
+  mapping:
+    R: "R"
+    D_B: "D_B"
+    psi: "psi"
+    phi_0_B: "phi_0_B"
+    phi_0_A: "phi_0_A"
+    gamma_beta: "gamma_beta"
+    k_s: "k_f + k * psi"
+    k_b: "k_b"
+    Q: "Q"
+  output_map:
+    dV_dt: dV_dt
+  regime:
+    R: [1.0e-5, 1.0e-4]
+    psi: [0.1, 0.5]
+    D_B: [1.0e-12, 1.0e-11]
+    gamma_beta: [1.0e-7, 5.0e-7]
+    k_f: [1.0e-4, 1.0e-2]
+    k_b: [1.0e-4, 1.0e-2]
+    k: [1.0e-2, 1.0]
+    Q: [1.0e-16, 1.0e-14]
+    phi_0_A: [0.005, 0.05]
+    phi_0_B: [0.001, 0.02]
+    phibar: [0.02, 0.1]
+    V_s: [1.0e-10, 1.0e-9]
+    N: [1.0, 2.0]
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "012317-8"
+    quote: "where ks = kf + kψ, see Eq. (9). This equation is accompanied"
+    where: Eq. 22
+  assumptions:
+    - "Small droplets R << l and effective rate definition k_s = k_f + k*psi"
+
+- id: rel_eq9_to_eq13_binary
+  kind: reduces_to
+  a: zwicker2015/coarse_grained_droplet_eq9_12
+  b: zwicker2015/binary_droplet_growth_eq13
+  mapping:
+    R: "R"
+    D_B: "D_B"
+    phi_0_B: "phi_0_B"
+    gamma_beta: "gamma_beta"
+    k_b: "k_b"
+  output_map:
+    dR_dt: dR_dt
+  regime:
+    R: [10.0, 50.0]
+    psi: [1.0, 1.0]
+    D_B: [1.0, 5.0]
+    gamma_beta: [0.1, 0.5]
+    k_f: [1.0e-4, 1.0e-3]
+    k_b: [1.0e-3, 5.0e-3]
+    k: [1.0e-4, 1.0e-3]
+    Q: [0.1, 1.0]
+    phi_0_A: [0.01, 0.1]
+    phi_0_B: [0.05, 0.15]
+    phibar: [0.1, 0.2]
+    V_s: [1.0e7, 1.0e8]
+    N: [1.0, 2.0]
+  limit:
+    phi_0_A: "0"
+    Q: "0"
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "012317-4"
+    quote: "growth rate given by Eq. (9) as"
+    where: Eq. 13
+  assumptions:
+    - "Binary fluid with strong phase separation (psi = 1, negligible A inside droplet so phi^A_in -> 0) and no catalytic cores (Q = 0)"
+
+# ==============================================================================
+# 2. Binary First-Order Emulsion Relations & Scaling Laws (Sec. III, App. D)
+# ==============================================================================
+- id: rel_binary_ss_to_Rcrit_approx
+  kind: reduces_to
+  a: zwicker2015/binary_single_droplet_ss_solver
+  b: zwicker2015/binary_critical_radius_approx
+  mapping:
+    gamma_beta: "gamma_beta"
+    phi_0_B: "k_f / (k_f + k_b)"
+  output_map:
+    R_crit: R_crit
+  regime:
+    D_B: [1.0, 5.0]
+    gamma_beta: [0.1, 0.3]
+    k_f: [0.05, 0.2]
+    k_b: [0.05, 0.2]
+  limit:
+    k_b: "0"
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "012317-4"
+    quote: "associated steady state of Eq. (13) at R = Rcrit is given by"
+    where: Sec. III.A.1 text, p. 4
+  assumptions:
+    - "Small reaction rates limit (k_b -> 0)"
+
+- id: rel_binary_ss_to_eq16_Rbar
+  kind: reduces_to
+  a: zwicker2015/binary_single_droplet_ss_solver
+  b: zwicker2015/binary_single_radius_eq16
+  mapping:
+    D_B: "D_B"
+    k_f: "k_f"
+    k_b: "k_b"
+  output_map:
+    R_bar: R_bar
+  regime:
+    D_B: [1.0, 5.0]
+    gamma_beta: [0.01, 0.05]
+    k_f: [1.0e-4, 5.0e-4]
+    k_b: [1.0e-3, 5.0e-3]
+  limit:
+    gamma_beta: "0"
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "012317-4"
+    quote: "which follows from Eq. (13) in steady state for small surface"
+    where: Eq. 16
+  assumptions:
+    - "Small surface tension limit gamma << R_bar*phi_0^B/beta"
+
+- id: rel_binary_ss_saddle_node_to_eq17
+  kind: same_as
+  a: zwicker2015/binary_single_droplet_ss_solver
+  b: zwicker2015/binary_critical_rate_eq17
+  mapping:
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    phi_0_B: "k_f / (k_f + k_b)"
+  output_map:
+    k_f_c: k_f_c
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    gamma_beta: [1.0e-7, 5.0e-7]
+    k_f: [1.0e-5, 1.0e-4]
+    k_b: [1.0e-4, 1.0e-3]
+  tolerance: 1.0e-4
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "012317-5"
+    quote: "which follows from considering Eq. (13) in steady state."
+    where: Eq. 17
+  assumptions:
+    - "Saddle-node bifurcation of Eq. (13) varying k_f at fixed phi_0^B = k_f/(k_f + k_b)"
+
+- id: rel_eq17_to_fig6b_kbc
+  kind: same_as
+  a: zwicker2015/binary_critical_rate_eq17
+  b: zwicker2015/binary_critical_kb_fig6b
+  mapping:
+    k_0: "D_B / (6 * gamma_beta)**2"
+    phi_0_B: "phi_0_B"
+  output_map:
+    k_b_c: k_b_c
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    gamma_beta: [1.0e-7, 5.0e-7]
+    phi_0_B: [0.05, 0.25]
+  provenance: stated
+  citation:
+    page: 7
+    printed_page: "012317-7"
+    quote: "is defined by 3kf < kb < 16k0 (φ0B )3"
+    where: Fig. 6(b) caption
+  assumptions:
+    - "Binary fluid with psi = 1, w = 6*gamma*beta, and k_0 = D_B / w^2"
+
+- id: rel_eq18_to_passive
+  kind: reduces_to
+  a: zwicker2015/binary_coarsening_rate_eq18
+  b: zwicker2015/passive_coarsening_rate_eq18
+  mapping:
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    R_bar: "R_bar"
+  regime:
+    D_B: [1.0, 5.0]
+    gamma_beta: [0.1, 0.5]
+    R_bar: [1.0, 3.0]
+    k_b: [0.01, 0.1]
+  limit:
+    k_b: "0"
+  provenance: stated
+  citation:
+    page: 6
+    printed_page: "012317-6"
+    quote: "In the passive case (kf = kb = 0), the characteristic rate"
+    where: Sec. III.B.2 text, below Eq. 18
+  assumptions:
+    - "Vanishing backward reaction rate k_b -> 0"
+
+- id: rel_eqD3d_to_eq18
+  kind: same_as
+  a: zwicker2015/binary_coarsening_rate_eq18
+  b: zwicker2015/binary_jacobian_eqD3_D4
+  mapping:
+    k_f: "k_b"
+    k_b: "k_b"
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    R_bar: "R_bar"
+    phi_0_B: "gamma_beta / R_bar + k_b * R_bar**2 / (3 * D_B)"
+    V_s: "1.0e6 * R_bar**3"
+    N: "2.0"
+  output_map:
+    e_tilde: lam
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    gamma_beta: [1.0e-7, 3.0e-7]
+    R_bar: [5.0e-6, 2.0e-5]
+    k_b: [1.0e-5, 1.0e-4]
+  provenance: stated
+  citation:
+    page: 12
+    printed_page: "012317-12"
+    quote: "This can be seen by rewriting Eq. (D3d) as"
+    where: Appendix D, p. 12
+  assumptions:
+    - "Steady-state background fraction phi_0^B_bar from Eq. (13) inserted into J_ii = e_tilde"
+
+- id: rel_eqD4a_printed_vs_corrected_N2
+  kind: same_as
+  a: zwicker2015/binary_jacobian_eqD3_D4
+  b: zwicker2015/binary_jacobian_eqD3_D4_corrected
+  mapping:
+    k_f: "k_f"
+    k_b: "k_b"
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    R_bar: "R_bar"
+    phi_0_B: "phi_0_B"
+    V_s: "V_s"
+    N: "N"
+  output_map:
+    e_plus: e_plus
+  regime:
+    k_f: [5.0e-4, 1.0e-3]
+    k_b: [5.0e-3, 1.0e-2]
+    D_B: [1.0e-12, 2.0e-12]
+    gamma_beta: [1.0e-7, 2.0e-7]
+    R_bar: [5.0e-6, 1.0e-5]
+    phi_0_B: [0.05, 0.1]
+    V_s: [5.0e-11, 2.0e-10]
+    N: [2.0, 5.0]
+  provenance: proposed
+  reason: "Tests whether printed Eq. (D3b) (containing an extra factor of N in J_0i) agrees with the exact Jacobian of Eq. (D2) for N >= 2 when inserted into Eq. (D4a); expected to fail because printed Eq. (D3b) double-counts N as N^2."
+
+- id: rel_eq19_eq20_eq21_boundary
+  kind: same_as
+  a: zwicker2015/binary_stability_radius_eq19
+  b: zwicker2015/binary_dense_volume_eq20
+  mapping:
+    k_f: "0.1 * k_b"
+    k_b: "k_b"
+    V_s: "1.0e-12"
+    N: "1.0e-12 * (0.1 * k_b) * k_b / (2 * pi * D_B * gamma_beta * (1.1 * k_b))"
+  output_map:
+    R_bar: R_stab
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    gamma_beta: [1.0e-7, 5.0e-7]
+    k_b: [1.0e-4, 1.0e-2]
+  provenance: stated
+  citation:
+    page: 7
+    printed_page: "012317-7"
+    quote: "which is defined such that χ > 1 corresponds to λ < 0 for"
+    where: Eq. 21
+  assumptions:
+    - "At the stability boundary chi = 1 (N = N_max from Eq. 21), the high-density droplet radius from Eq. (20) equals R_stab from Eq. (19) identically"
+
+- id: rel_eq19_scales_kb
+  kind: scales_as
+  a: zwicker2015/binary_stability_radius_eq19
+  b: zwicker2015/Rstab_kb_scaling
+  mapping:
+    k_b: "k_b"
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    gamma_beta: [1.0e-7, 5.0e-7]
+    k_b: [1.0e-5, 1.0e-2]
+  provenance: stated
+  citation:
+    page: 10
+    printed_page: "012317-10"
+    quote: "above which multiple droplets are stable is proportional"
+    where: Sec. V text, p. 10
+  assumptions:
+    - "Scaling of R_stab with backward rate k_b at fixed D_B and gamma*beta"
+
+- id: rel_eq16_scales_kb
+  kind: scales_as
+  a: zwicker2015/Rbar_kb_scaling
+  b: zwicker2015/binary_single_radius_eq16
+  mapping:
+    D_B: "1.0e-12"
+    k_f: "0.1 * k_b"
+    k_b: "k_b"
+  regime:
+    k_b: [1.0e-5, 1.0e-2]
+  provenance: stated
+  citation:
+    page: 10
+    printed_page: "012317-10"
+    quote: "case of small droplet densities, where the stable radius is"
+    where: Sec. V text, p. 10
+  assumptions:
+    - "Constant rate ratio k_f / k_b in the low-density regime Eq. (16)"
+
+- id: rel_LS_printed_vs_corrected_scales
+  kind: scales_as
+  a: zwicker2015/lifshitz_slyozov_scaling_corrected
+  b: zwicker2015/lifshitz_slyozov_scaling_printed
+  mapping:
+    t: "t"
+    D_B: "D_B"
+    w: "w"
+  regime:
+    t: [10.0, 1000.0]
+    D_B: [1.0e-12, 1.0e-11]
+    w: [1.0e-7, 1.0e-5]
+  provenance: proposed
+  reason: "Demonstrates that printed <R> ~ (t*D_B/w^2)^(1/3) (p. 7) has the wrong scaling exponent in w (-2/3 instead of +1/3) relative to dimensionally consistent Lifshitz-Slyozov scaling <R> ~ (t*D_B*w)^(1/3)."
+
+# ==============================================================================
+# 3. Appendix F Homogeneous Instability & Direct 1D Cahn-Hilliard PDE Verification
+# ==============================================================================
+- id: rel_pde_1d_vs_eqF1_printed
+  kind: same_as
+  a: zwicker2015/binary_cahn_hilliard_1d_pde
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "1.0"
+    w: "1.0"
+    k_f: "kf_norm"
+    k_b: "kb_norm"
+    q: "qw"
+  output_map:
+    lam_q_norm: lam_mode_norm
+  regime:
+    kf_norm: [0.05, 0.2]
+    kb_norm: [0.05, 0.2]
+    qw: [0.6, 1.2]
+    L_over_w: [20.0, 20.0]
+    eps: [1.0e-6, 1.0e-6]
+    T_k0: [2.0, 2.0]
+  tolerance: 1.0e-2
+  provenance: stated
+  citation:
+    page: 12
+    printed_page: "012317-12"
+    quote: "turbations of this state grow with a rate"
+    where: Appendix F, Eq. (F1)
+  assumptions:
+    - "Tests printed Eq. (F1) against direct 1D pseudospectral integration of Eq. (3b); expected to fail due to the spurious factor of 2 on the q^2 term in printed Eq. (F1)."
+
+- id: rel_pde_1d_vs_eqF1_corrected
+  kind: same_as
+  a: zwicker2015/binary_cahn_hilliard_1d_pde
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "1.0"
+    w: "1.0"
+    k_f: "kf_norm"
+    k_b: "kb_norm"
+    q: "qw"
+  output_map:
+    lam_q_norm: lam_mode_norm
+  regime:
+    kf_norm: [0.05, 0.2]
+    kb_norm: [0.05, 0.2]
+    qw: [0.6, 1.2]
+    L_over_w: [20.0, 20.0]
+    eps: [1.0e-6, 1.0e-6]
+    T_k0: [2.0, 2.0]
+  tolerance: 1.0e-2
+  provenance: proposed
+  reason: "Verifies that the exact linearization of Eq. (3b) (homogeneous_dispersion_eqF1_corrected) matches direct 1D pseudospectral integration of Eq. (3b) across unstable and stable reaction-rate regimes."
+
+# ==============================================================================
+# 4. Section IV Ternary Autocatalytic Droplets, App. B, and App. G Relations
+# ==============================================================================
+- id: rel_appB_quad_to_eq23
+  kind: reduces_to
+  a: zwicker2015/autocatalytic_volume_quad_appB
+  b: zwicker2015/autocatalytic_volume_eq23
+  mapping:
+    V_s: "V_s"
+    psi: "psi"
+    phibar: "phibar"
+    k_b: "k_b"
+    k: "k"
+  output_map:
+    V_bar: V_bar
+  regime:
+    V_s: [1.0e6, 1.0e7]
+    psi: [0.1, 0.2]
+    phibar: [0.02, 0.05]
+    k_b: [1.0e-4, 5.0e-4]
+    k: [0.02, 0.05]
+    Q: [0.1, 1.0]
+    D_B: [1.0, 2.0]
+    gamma_beta: [0.01, 0.1]
+  limit:
+    Q: "0"
+    gamma_beta: "0"
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "012317-8"
+    quote: "which is valid for small surface tension, see Appendix B."
+    where: Eq. 23 and Appendix B
+  assumptions:
+    - "Vanishing surface tension gamma -> 0 and no catalytic cores Q -> 0"
+
+- id: rel_appB_quad_to_eqB1_printed
+  kind: approximated_by
+  a: zwicker2015/autocatalytic_volume_quad_appB
+  b: zwicker2015/autocatalytic_volume_eqB1
+  mapping:
+    V_s: "V_s"
+    psi: "psi"
+    phibar: "phibar"
+    k_b: "k_b"
+    k: "k"
+    Q: "Q"
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+  output_map:
+    delta_V: delta_V
+  regime:
+    V_s: [5.0e-11, 1.0e-10]
+    psi: [0.1, 0.1]
+    phibar: [0.02, 0.04]
+    k_b: [2.0e-4, 2.0e-4]
+    k: [0.02, 0.02]
+    Q: [1.0e-18, 5.0e-18]
+    D_B: [1.0e-12, 1.0e-12]
+    gamma_beta: [1.0e-8, 5.0e-8]
+  tolerance: 0.01
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "012317-11"
+    quote: "keeping the linear contributions of the catalytic activity Q and"
+    where: Appendix B, Eq. (B1)
+  assumptions:
+    - "Tests the first-order (Q, gamma) correction delta_V = V_bar - V_0 of printed Eq. (B1) against the exact Appendix B quadratic root in the strictly linear regime; expected to fail due to the spurious factor k*phibar/k_b on the gamma*beta term."
+
+- id: rel_appB_quad_to_eqB1_corrected
+  kind: approximated_by
+  a: zwicker2015/autocatalytic_volume_quad_appB
+  b: zwicker2015/autocatalytic_volume_eqB1_corrected
+  mapping:
+    V_s: "V_s"
+    psi: "psi"
+    phibar: "phibar"
+    k_b: "k_b"
+    k: "k"
+    Q: "Q"
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+  output_map:
+    delta_V: delta_V
+  regime:
+    V_s: [5.0e-11, 1.0e-10]
+    psi: [0.1, 0.1]
+    phibar: [0.02, 0.04]
+    k_b: [2.0e-4, 2.0e-4]
+    k: [0.02, 0.02]
+    Q: [1.0e-18, 5.0e-18]
+    D_B: [1.0e-12, 1.0e-12]
+    gamma_beta: [1.0e-8, 5.0e-8]
+  tolerance: 0.01
+  provenance: proposed
+  reason: "Verifies that replacing 4*pi*D_B*k^2*phibar*gamma*beta with 4*pi*D_B*k*k_b*gamma*beta in Eq. (B1) accurately reproduces the linear (Q, gamma) volume shift delta_V of the exact Appendix B quadratic root."
+
+- id: rel_eqG1_to_eq24_printed
+  kind: same_as
+  a: zwicker2015/ternary_coarsening_rate_eqG1
+  b: zwicker2015/ternary_coarsening_rate_eq24
+  mapping:
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    psi: "psi"
+    V_bar: "V_bar"
+    J: "J"
+    Q: "Q"
+    k_b: "k_b"
+    k: "k_s / psi"
+  output_map:
+    lam: lam
+  regime:
+    D_B: [1.0e-12, 2.0e-12]
+    gamma_beta: [1.0e-7, 2.0e-7]
+    psi: [0.1, 0.2]
+    V_bar: [1.0e-12, 1.0e-11]
+    J: [1.0e-19, 1.0e-18]
+    Q: [1.0e-16, 1.0e-15]
+    k_b: [1.0e-4, 1.0e-3]
+    k_s: [1.0e-3, 1.0e-2]
+  provenance: stated
+  citation:
+    page: 13
+    printed_page: "012317-13"
+    quote: "Inserting these two expressions into Eq. (G1) results in"
+    where: Appendix G, Eqs. (G1)-(G3) -> Eq. (24)
+  assumptions:
+    - "Autocatalytic case k_f = 0 (so k = k_s / psi); expected to fail because printed Eq. (24) omits subscript s on k, introducing a factor of psi error on the Q term."
+
+- id: rel_eqG1_to_eq24_corrected
+  kind: same_as
+  a: zwicker2015/ternary_coarsening_rate_eqG1
+  b: zwicker2015/ternary_coarsening_rate_eq24_corrected
+  mapping:
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    psi: "psi"
+    V_bar: "V_bar"
+    J: "J"
+    Q: "Q"
+    k_b: "k_b"
+    k_s: "k_s"
+  output_map:
+    lam: lam
+  regime:
+    D_B: [1.0e-12, 2.0e-12]
+    gamma_beta: [1.0e-7, 2.0e-7]
+    psi: [0.1, 0.5]
+    V_bar: [1.0e-12, 1.0e-11]
+    J: [1.0e-19, 1.0e-18]
+    Q: [1.0e-16, 1.0e-15]
+    k_b: [1.0e-4, 1.0e-3]
+    k_s: [1.0e-3, 1.0e-2]
+  provenance: proposed
+  reason: "Verifies symbolically that inserting Appendix G Eqs. (G2)-(G3) into Eq. (G1) yields ternary_coarsening_rate_eq24_corrected (with k_s in the denominator of the Q term) identically."
+
+- id: rel_eq24_corrected_to_eq18
+  kind: same_as
+  a: zwicker2015/binary_coarsening_rate_eq18
+  b: zwicker2015/ternary_coarsening_rate_eq24_corrected
+  mapping:
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    psi: "1.0"
+    V_bar: "4 * pi * R_bar**3 / 3"
+    J: "-k_b * (4 * pi * R_bar**3 / 3)"
+    Q: "0.0"
+    k_b: "k_b"
+    k_s: "k_b"
+  output_map:
+    lam: lam
+  regime:
+    D_B: [1.0e-12, 5.0e-12]
+    gamma_beta: [1.0e-7, 5.0e-7]
+    R_bar: [5.0e-6, 5.0e-5]
+    k_b: [1.0e-5, 1.0e-3]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "012317-9"
+    quote: "In particular, we find Eq. (18)"
+    where: Sec. IV.B text, below Eq. 24
+  assumptions:
+    - "Binary first-order limit psi = 1, Q = 0, J = -k_b*psi*V_bar (with finite k_s = k_f > 0 avoiding the 0/0 singularity of printed Eq. 24 at k = 0)"
+
+- id: rel_eq25_inf_equals_Qc
+  kind: same_as
+  a: zwicker2015/autocatalytic_nucleation_Qc
+  b: zwicker2015/autocatalytic_stability_Qstab_eq25
+  mapping:
+    D_B: "D_B"
+    k_s: "k * 0.1"
+    R: "1.0e-5"
+    gamma_beta: "gamma_beta"
+    phi_0_B: "0.0"
+    psi: "0.1"
+    k_b: "k_b"
+  output_map:
+    Q_stab_inf: Q_c
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    gamma_beta: [1.0e-7, 5.0e-7]
+    k_b: [1.0e-4, 1.0e-3]
+    k: [1.0e-2, 1.0e-1]
+  provenance: proposed
+  reason: "Verifies that in the large-system autocatalytic limit (k_f = 0, k_s = k*psi, phi_0^B = 0), Q_stab from Eq. (25) equals Q_c = 4*pi*D_B*gamma*beta*k/k_b (p. 8 col 1, using phi_0^A = k_b/k) identically, highlighting the tension with p. 9 col 2's claim that Q_stab > Q_c for k > k_b/phibar."
+
+- id: rel_autocat_solver_unequal_to_ratio
+  kind: reduces_to
+  a: zwicker2015/autocatalytic_emulsion_solver
+  b: zwicker2015/unequal_cores_volume_ratio
+  mapping:
+    Q_1: "Q_1"
+    Q_2: "Q_2"
+  output_map:
+    V1_over_V2: V1_over_V2
+  regime:
+    D_B: [1.0, 1.0]
+    gamma_beta: [0.05, 0.2]
+    psi: [0.1, 0.1]
+    k_f: [0.0, 0.0]
+    k_b: [2.0e-4, 2.0e-4]
+    k: [0.02, 0.02]
+    phibar: [0.02, 0.02]
+    V_s: [5.0e7, 8.0e7]
+    Q_1: [500.0, 1500.0]
+    Q_2: [200.0, 400.0]
+  limit:
+    gamma_beta: "0"
+  tolerance: 1.0e-3
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "012317-9"
+    quote: "the ratio of the two droplet volumes is determined by the"
+    where: Sec. IV.B text, p. 9
+  assumptions:
+    - "Vanishing surface tension limit gamma -> 0 for two autocatalytic droplets with unequal active cores Q_1 != Q_2"
+
+# ==============================================================================
+# 5. Audit Additions: Free-Energy Consistency, Passive Limits & Corrected Jacobian
+# ==============================================================================
+- id: rel_binary_free_energy_sec3_eq1_psi1
+  kind: same_as
+  a: zwicker2015/binary_free_energy_sec3
+  b: zwicker2015/ternary_free_energy_eq1
+  mapping:
+    a: "1.0"
+    b: "b"
+    psi: "1.0"
+    phi_A: "0.0"
+    phi_B: "phi_B"
+  output_map:
+    f: f
+  regime:
+    b: [0.5, 5.0]
+    psi: [1.0, 1.0]
+    phi_B: [0.05, 0.95]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "012317-4"
+    quote: "associated free energy density is f (φ B )"
+    where: Sec. III text, p. 4
+  assumptions:
+    - "Strong segregation binary limit psi = 1 (with no independent A term)"
+
+- id: rel_binary_free_energy_sec3_vs_eq1_general_psi
+  kind: same_as
+  a: zwicker2015/binary_free_energy_sec3
+  b: zwicker2015/ternary_free_energy_eq1
+  mapping:
+    a: "1.0"
+    b: "b"
+    psi: "psi"
+    phi_A: "0.0"
+    phi_B: "phi_B"
+  output_map:
+    f: f
+  regime:
+    b: [0.5, 5.0]
+    psi: [0.1, 0.8]
+    phi_B: [0.02, 0.08]
+  provenance: proposed
+  reason: "Tests whether Sec. III's printed f(phi^B) = (b/2)*(phi^B)^2*(psi - phi^B)^2 matches Eq. (1)'s B-dependent term for general psi != 1; expected to be refuted by factor psi^2 due to the missing 1/psi^2 factor in Sec. III."
+
+- id: rel_eqD3d_corrected_to_eq18
+  kind: same_as
+  a: zwicker2015/binary_coarsening_rate_eq18
+  b: zwicker2015/binary_jacobian_eqD3_D4_corrected
+  mapping:
+    k_f: "k_b"
+    k_b: "k_b"
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    R_bar: "R_bar"
+    phi_0_B: "gamma_beta / R_bar + k_b * R_bar**2 / (3 * D_B)"
+    V_s: "1.0e6 * R_bar**3"
+    N: "2.0"
+  output_map:
+    e_tilde: lam
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    gamma_beta: [1.0e-7, 3.0e-7]
+    R_bar: [5.0e-6, 2.0e-5]
+    k_b: [1.0e-5, 1.0e-4]
+  provenance: stated
+  citation:
+    page: 12
+    printed_page: "012317-12"
+    quote: "This can be seen by rewriting Eq. (D3d) as"
+    where: Appendix D, p. 12
+  assumptions:
+    - "Verifies that removing the spurious N from Eq. (D3b) leaves the coarsening eigenvalue e_tilde = J_ii = Eq. (18) identically unchanged"
+
+- id: rel_eq24_small_sys_to_passive_eq18
+  kind: same_as
+  a: zwicker2015/passive_coarsening_rate_eq18
+  b: zwicker2015/ternary_coarsening_rate_eq24
+  mapping:
+    D_B: "D_B"
+    gamma_beta: "gamma_beta"
+    psi: "1.0"
+    V_bar: "4 * pi * R_bar**3 / 3"
+    J: "0.0"
+    Q: "0.0"
+    k_b: "1.0"
+    k: "1.0"
+  output_map:
+    lam: lam
+  regime:
+    D_B: [1.0e-12, 5.0e-12]
+    gamma_beta: [1.0e-7, 5.0e-7]
+    R_bar: [5.0e-6, 5.0e-5]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "012317-9"
+    quote: "than droplets in a passive system, compare Eqs. (24) and"
+    where: Sec. IV.B text, p. 9
+  assumptions:
+    - "Zero core activity Q = 0, zero efflux J = 0 (small-system limit phi_0^B = phi_+^B), and psi = 1 reduces Eq. (24) to passive Eq. (18)"
+
+# ==============================================================================
+# 6. Cross-record relations with hannezo2015 (Hannezo et al., PNAS 112:8620-8625, 2015)
+# Note: Both papers were published in July 2015 and neither cites the other;
+# all mathematical and diagnostic relations below carry provenance: proposed.
+# ==============================================================================
+
+# --- 6.1 Shared Turnover / Reaction-Diffusion Screening Length Scale ---
+
+- id: rel_hannezo2015_reaction_diffusion_length_same_as_lt
+  kind: same_as
+  a: zwicker2015/reaction_diffusion_length_l
+  b: hannezo2015/turnover_diffusion_length
+  mapping:
+    D: "D_B * 10**12"
+    tau: "1 / (k_f + k_b)"
+  output_map:
+    l_t: l
+  regime:
+    D_B: [1.0e-14, 1.0e-11]
+    k_f: [1.0e-3, 1.0]
+    k_b: [1.0e-3, 1.0]
+  provenance: proposed
+  reason: >
+    Both papers balance Fickian diffusion against first-order linear chemical turnover around a
+    uniform steady state (-rho/tau in Hannezo Main Eq. 1; -(k_f + k_b)*phi^B in Zwicker Eq. 3b /
+    App. C Eq. C1), producing the identical reaction-diffusion screening length l = sqrt(D_B/(k_f + k_b))
+    = sqrt(D*tau) = l_t above which concentration perturbations relax predominantly by turnover
+    rather than diffusion.
+  assumptions:
+    - "Identifies Fickian diffusivity D = D_B (converting m^2/s to um^2/s) and total first-order relaxation rate 1/tau = k_f + k_b."
+
+- id: rel_hannezo2015_lt_scales_as_binary_single_radius_eq16
+  kind: scales_as
+  a: hannezo2015/turnover_diffusion_length
+  b: zwicker2015/binary_single_radius_eq16
+  mapping:
+    D_B: "D / 10**12"
+    k_f: "1 / (11 * tau)"
+    k_b: "10 / (11 * tau)"
+  regime:
+    D: [0.005, 0.5]
+    tau: [1.0, 100.0]
+  provenance: proposed
+  reason: >
+    In Zwicker's dilute binary active emulsion (Eq. 16), the stationary single-droplet radius
+    R_bar = sqrt(3*D_B*k_f/((k_f + k_b)*k_b)) = sqrt(3*k_f/k_b)*l is proportional to the
+    reaction-diffusion length l = l_t = sqrt(D*tau) at fixed reaction ratio k_f/k_b (here
+    k_b = 10*k_f, phi_0^B = 1/11 as in Zwicker Figs. 3-6, with k_f + k_b = 1/tau), sharing exact
+    power-law exponents +1/2 in both diffusivity D and turnover time tau (k_b^(-1/2)).
+  assumptions:
+    - "Fixed rate ratio k_b/k_f = 10 (phi_0^B = 1/11) with total relaxation rate k_f + k_b = 1/tau and D_B = D."
+
+# --- 6.2 Linear Dispersion Relation: Active Gel SI Eq. (7) <-> Active Cahn-Hilliard App. F Eq. (F1) ---
+
+- id: rel_hannezo2015_eq7_series_derived_eqF1_corrected
+  kind: derived_from
+  a: hannezo2015/dispersion_relation_eq7
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "D / 10**12"
+    w: "2 * sqrt(sigma_a * eta * 10**12 / (D * xi**2))"
+    k_f: "(1 + sqrt(1 - 2 * sigma_a * 10**12 / (3 * xi * D))) / (2 * tau)"
+    k_b: "(1 - sqrt(1 - 2 * sigma_a * 10**12 / (3 * xi * D))) / (2 * tau)"
+    q: "q * 10**6"
+  output_map:
+    lam_q: lam
+  steps:
+    - "series: q -> 0, 5"
+    - simplify
+  regime:
+    tau: [20.0, 200.0]
+    D: [0.04, 0.05]
+    sigma_a: [4.2e-5, 5.8e-5]
+    xi: [1.0e9, 1.1e9]
+    eta: [1.0e-7, 1.0e-6]
+    q: [1.5, 5.0]
+  provenance: proposed
+  reason: >
+    Symbolically proves that expanding Hannezo SI Eq. (7)'s active-gel dispersion relation
+    lambda_H(q) = -1/tau - D*q^2 + (sigma_a/xi)*q^2/(1 + l_h^2*q^2) to fourth order in q (O(q^4))
+    yields Zwicker's exact active Cahn-Hilliard dispersion relation Appendix F Eq. (F1_corrected),
+    lambda_Z(q) = D_B*q^2*(c_spin - w^2*q^2/4) - (k_f + k_b), identically across all three terms:
+    q^0 turnover -(k_f + k_b) = -1/tau, q^2 spinodal/contractile driving D_B*c_spin = D*(chi - 1)
+    with chi = sigma_a/(xi*D), and q^4 short-wavelength stabilization D_B*w^2/4 = D*chi*l_h^2
+    (identifying effective interfacial width w = 2*l_h*sqrt(chi) and double-well curvature
+    c_spin = chi - 1 in (-1, 1/2) for 0 < chi < 3/2).
+  assumptions:
+    - "Long-wavelength O(q^4) expansion (l_h*q << 1) in the weakly-to-moderately active regime chi = sigma_a/(xi*D) in (0, 3/2), where c_spin = chi - 1 lies inside Zwicker's quartic double-well curvature range (-1, 1/2)."
+    - "Preserves physical diffusivity D_B = D, wavenumber q_Z = q_H, and turnover rate k_f + k_b = 1/tau."
+
+- id: rel_hannezo2015_eq7_series_vs_eqF1_printed
+  kind: derived_from
+  a: hannezo2015/dispersion_relation_eq7
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "D / 10**12"
+    w: "2 * sqrt(sigma_a * eta * 10**12 / (D * xi**2))"
+    k_f: "(1 + sqrt(1 - 2 * sigma_a * 10**12 / (3 * xi * D))) / (2 * tau)"
+    k_b: "(1 - sqrt(1 - 2 * sigma_a * 10**12 / (3 * xi * D))) / (2 * tau)"
+    q: "q * 10**6"
+  output_map:
+    lam_q: lam
+  steps:
+    - "series: q -> 0, 5"
+    - simplify
+  regime:
+    tau: [20.0, 200.0]
+    D: [0.04, 0.05]
+    sigma_a: [4.2e-5, 5.8e-5]
+    xi: [1.0e9, 1.1e9]
+    eta: [1.0e-7, 1.0e-6]
+    q: [1.5, 5.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing the exact O(q^4) long-wavelength expansion of Hannezo SI
+    Eq. (7) against Zwicker's printed Appendix F Eq. (F1) under the physical diffusivity-preserving
+    dictionary (D_B = D, k_f + k_b = 1/tau, c_spin = chi - 1, w = 2*l_h*sqrt(chi)). Expected to be
+    not_verified because printed Eq. (F1) doubles the q^2 coefficient (2*D_B*c_spin*q^2 instead of
+    D_B*c_spin*q^2), independently corroborating zwicker2015/q_appF_factor_of_2_error.
+  assumptions:
+    - "Same exact O(q^4) dictionary and regime as rel_hannezo2015_eq7_series_derived_eqF1_corrected."
+
+- id: rel_hannezo2015_eq7_lowvisc_reduces_eqF1_corrected
+  kind: reduces_to
+  a: hannezo2015/dispersion_relation_eq7
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "D / 10**12"
+    w: "2 * sqrt(sigma_a * eta * 10**12 / (D * xi**2))"
+    k_f: "(1 + sqrt(1 - 2 * sigma_a * 10**12 / (3 * xi * D))) / (2 * tau)"
+    k_b: "(1 - sqrt(1 - 2 * sigma_a * 10**12 / (3 * xi * D))) / (2 * tau)"
+    q: "q * 10**6"
+  output_map:
+    lam_q: lam
+  limit:
+    eta: "0"
+  regime:
+    tau: [10.0, 100.0]
+    D: [0.04, 0.05]
+    sigma_a: [3.5e-5, 5.8e-5]
+    xi: [1.0e9, 1.1e9]
+    eta: [1.0e-7, 1.0e-6]
+    q: [0.5, 2.5]
+  provenance: proposed
+  reason: >
+    In the friction-dominated vanishing-viscosity limit eta -> 0 (l_h -> 0, w -> 0) at finite
+    wavenumber q > 0, both the q^0 turnover term (-1/tau = -(k_f + k_b)) and the q^2
+    contractile/spinodal diffusion term (D*(chi - 1)*q^2 = D_B*c_spin*q^2) survive at O(1), and
+    Hannezo SI Eq. (7) reduces identically to Zwicker Appendix F Eq. (F1_corrected) with O(eta^2)
+    convergence across both stable (chi < 1) and unstable (1 < chi < 3/2) regimes.
+  assumptions:
+    - "Vanishing cortical viscosity eta -> 0 (l_h = sqrt(eta/xi) -> 0, w -> 0) at finite wavenumber q in [0.5, 2.5] um^-1."
+
+- id: rel_hannezo2015_eq7_lowvisc_vs_eqF1_printed
+  kind: reduces_to
+  a: hannezo2015/dispersion_relation_eq7
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "D / 10**12"
+    w: "2 * sqrt(sigma_a * eta * 10**12 / (D * xi**2))"
+    k_f: "(1 + sqrt(1 - 2 * sigma_a * 10**12 / (3 * xi * D))) / (2 * tau)"
+    k_b: "(1 - sqrt(1 - 2 * sigma_a * 10**12 / (3 * xi * D))) / (2 * tau)"
+    q: "q * 10**6"
+  output_map:
+    lam_q: lam
+  limit:
+    eta: "0"
+  regime:
+    tau: [10.0, 100.0]
+    D: [0.04, 0.05]
+    sigma_a: [3.5e-5, 5.8e-5]
+    xi: [1.0e9, 1.1e9]
+    eta: [1.0e-7, 1.0e-6]
+    q: [0.5, 2.5]
+  provenance: proposed
+  reason: >
+    Diagnostic check of the vanishing-viscosity limit eta -> 0 at finite q > 0 against Zwicker's
+    printed Appendix F Eq. (F1). Expected to be not_verified because the surviving finite-q term in
+    printed Eq. (F1) is 2*D*(chi - 1)*q^2 - 1/tau instead of D*(chi - 1)*q^2 - 1/tau
+    (zwicker2015/q_appF_factor_of_2_error).
+  assumptions:
+    - "Same vanishing-viscosity limit and dictionary as rel_hannezo2015_eq7_lowvisc_reduces_eqF1_corrected."
+
+- id: rel_hannezo2015_eq7_exactfactor_approx_eqF1_corrected
+  kind: approximated_by
+  a: hannezo2015/dispersion_relation_eq7
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "D / 10**12"
+    w: "2 * sqrt(eta / xi)"
+    k_f: "(1 + sqrt(1 - (2 / 3) * (sigma_a * 10**12 / (xi * D) - eta * 10**12 / (D * tau * xi)))) / (2 * tau)"
+    k_b: "(1 - sqrt(1 - (2 / 3) * (sigma_a * 10**12 / (xi * D) - eta * 10**12 / (D * tau * xi)))) / (2 * tau)"
+    q: "q * 10**6"
+  output_map:
+    lam_q: lam
+  regime:
+    tau: [20.0, 200.0]
+    D: [0.04, 0.05]
+    sigma_a: [4.2e-5, 5.8e-5]
+    xi: [1.0e9, 1.1e9]
+    eta: [1.0e-7, 1.0e-6]
+    q: [1.5, 6.0]
+  tolerance: 0.05
+  provenance: proposed
+  reason: >
+    Exact algebraic factorization of Hannezo SI Eq. (7) at finite turnover proves
+    lambda_H(q) = lambda_Z^corr(q) / (1 + l_h^2*q^2) identically for all wavenumbers q under the
+    turnover-shifted dictionary D_B = D, w = 2*l_h = 2*sqrt(eta/xi), k_f + k_b = 1/tau, and
+    c_spin = chi - 1 - phi (generalizing Bois-Frohoff's passive factorization to finite turnover
+    phi = l_h^2/(D*tau) > 0). Because 1 + l_h^2*q^2 > 0 everywhere, the two dispersion relations
+    share the EXACT same unstable wavenumber band [q_-, q_+], onset threshold chi_c = (1 + sqrt(phi))^2
+    (iff c_spin = w/l = 2*sqrt(phi)), and finite-domain mode thresholds chi_i^(0), with uniform
+    relative error (l_h*q)^2/(1 + (l_h*q)^2) across stable, unstable, and neutral-crossing points.
+    At Hannezo's Drosophila tracheal cortex scales (D ~ 0.04 um^2/s, tau ~ 15 s, l_h ~ 10-30 nm,
+    l_h*q <= 0.19), max relative error is <= 3.5%, well within tolerance 0.05.
+  assumptions:
+    - "Drosophila cortical parameter range with l_h*q <= 0.19 and 0 < chi - phi < 3/2 (putting c_spin = chi - 1 - phi inside Zwicker's double-well range (-1, 1/2))."
+
+- id: rel_hannezo2015_eq7_qmax_derived_eqF1_corrected_lammax
+  kind: derived_from
+  a: hannezo2015/dispersion_relation_eq7
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "D / 10**12"
+    w: "2 * sqrt(eta / xi)"
+    k_f: "(1 + sqrt((5 - 4 * sqrt(sigma_a * 10**12 / (xi * D))) / 3)) / (2 * tau)"
+    k_b: "(1 - sqrt((5 - 4 * sqrt(sigma_a * 10**12 / (xi * D))) / 3)) / (2 * tau)"
+    q: "q * 10**6"
+  output_map:
+    lam_max: lam
+  steps:
+    - "subs: q = sqrt((sqrt(sigma_a * 10**12 / (xi * D)) - 1) * xi / eta) / 10**6"
+    - simplify
+  regime:
+    tau: [5.0, 50.0]
+    D: [0.04, 0.045]
+    sigma_a: [5.2e-5, 5.8e-5]
+    xi: [1.0e9, 1.1e9]
+    eta: [1.0e-6, 1.0e-5]
+    q: [1.0, 10.0]
+  provenance: proposed
+  reason: >
+    Symbolically proves that evaluating Hannezo SI Eq. (7) at its exact fastest-growing wavenumber
+    q_max = sqrt((sqrt(chi) - 1)/l_h^2) gives lambda_max^H = (D/l_h^2)*(sqrt(chi) - 1)^2 - 1/tau,
+    which is IDENTICAL to Zwicker Eq. (F1_corrected)'s peak growth rate
+    lambda_max^Z = (D_B/w^2)*c_spin^2 - (k_f + k_b) under D_B = D, w = 2*l_h, k_f + k_b = 1/tau,
+    and c_spin = 2*(sqrt(chi) - 1) (valid for 1 < chi < 25/16 = 1.5625, where c_spin in (0, 1/2)).
+    Under this same dictionary, both models also share the exact fastest wavenumber q_max^H = q_max^Z
+    and the exact instability onset manifold chi_c = (1 + sqrt(phi))^2 <-> c_spin = w/l = 2*sqrt(phi),
+    terminating at Zwicker's double-well spinodal apex c_spin = 1/2 (phi = 1/16, (k_f + k_b)/k_0 = 1/4).
+  assumptions:
+    - "Supercritical active-contractility window 1 < chi = sigma_a/(xi*D) < 25/16 = 1.5625 so c_spin = 2*(sqrt(chi) - 1) lies strictly in (0, 1/2) (covering both sub-threshold lam_max < 0 and unstable lam_max > 0 states)."
+
+- id: rel_hannezo2015_eq7_qmax_vs_eqF1_printed_lammax
+  kind: derived_from
+  a: hannezo2015/dispersion_relation_eq7
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "D / 10**12"
+    w: "2 * sqrt(eta / xi)"
+    k_f: "(1 + sqrt((5 - 4 * sqrt(sigma_a * 10**12 / (xi * D))) / 3)) / (2 * tau)"
+    k_b: "(1 - sqrt((5 - 4 * sqrt(sigma_a * 10**12 / (xi * D))) / 3)) / (2 * tau)"
+    q: "q * 10**6"
+  output_map:
+    lam_max: lam
+  steps:
+    - "subs: q = sqrt((sqrt(sigma_a * 10**12 / (xi * D)) - 1) * xi / eta) / 10**6"
+    - simplify
+  regime:
+    tau: [5.0, 50.0]
+    D: [0.04, 0.045]
+    sigma_a: [5.2e-5, 5.8e-5]
+    xi: [1.0e9, 1.1e9]
+    eta: [1.0e-6, 1.0e-5]
+    q: [1.0, 10.0]
+  provenance: proposed
+  reason: >
+    Diagnostic check of the exact peak-growth-rate mapping against Zwicker's printed Appendix F
+    Eq. (F1). Expected to be not_verified because printed Eq. (F1)'s spurious factor of 2 on q^2
+    quadruples the active peak term from (D_B/w^2)*c_spin^2 to (4*D_B/w^2)*c_spin^2, producing the
+    4x overprediction of the upper reaction-rate cutoff in printed Eq. (F2) ((k_f + k_b)_max = k_0
+    instead of k_0/4; zwicker2015/q_appF_factor_of_2_error).
+  assumptions:
+    - "Same supercritical window and peak-growth-rate dictionary as rel_hannezo2015_eq7_qmax_derived_eqF1_corrected_lammax."
+
+# --- 6.3 Linear Onset Wavelength Family (tau^(1/4)) vs. Nonlinear Ostwald-Arrest Radius (k_b^(-1/3)) ---
+
+- id: rel_hannezo2015_lambda_c_eq3_same_as_eqF1_onset
+  kind: same_as
+  a: hannezo2015/critical_wavelength_eq3
+  b: zwicker2015/homogeneous_onset_wavelength_eqF1
+  mapping:
+    D_B: "D / 10**12"
+    w: "2 * sqrt(eta / xi)"
+    k_f: "1 / (2 * tau)"
+    k_b: "1 / (2 * tau)"
+  output_map:
+    lambda_c: lambda_c
+  regime:
+    D: [0.005, 0.5]
+    tau: [1.0, 100.0]
+    eta: [1.0e-7, 1.0e-3]
+    xi: [1.0e7, 1.0e11]
+  provenance: proposed
+  reason: >
+    Symbolically joins Hannezo Main Eq. (3)'s critical wavelength lambda_c = 2*pi*(D*tau*eta/xi)^(1/4)
+    = 2*pi*sqrt(l_h*l_t) and Zwicker Appendix F's marginal linear-onset wavelength
+    lambda_c = pi*sqrt(2)*(D_B*w^2/(k_f + k_b))^(1/4) = 2*pi*sqrt((w/2)*l) into a single turnover-
+    arrested finite-wavelength onset family under D_B = D, w = 2*l_h = 2*sqrt(eta/xi), and
+    k_f + k_b = 1/tau (invariant to how 1/tau is partitioned between k_f and k_b, and notably
+    invariant to printed Eq. F1's factor-of-2 q^2 error because marginal q_c = (gamma_0/B)^(1/4)
+    depends only on the q^0 sink and q^4 stiffness).
+  assumptions:
+    - "Short-range regularization length identification w/2 = sqrt(kappa/b) = l_h = sqrt(eta/xi), diffusivity D_B = D, and total first-order turnover rate k_f + k_b = 1/tau."
+
+- id: rel_hannezo2015_inv_qc_corrected_same_as_eqF1_onset
+  kind: same_as
+  a: zwicker2015/homogeneous_onset_wavelength_eqF1
+  b: hannezo2015/critical_inverse_wavenumber_si_corrected
+  mapping:
+    L: "(w / 2) * 10**6"
+    D: "D_B * 10**12"
+    tau: "1 / (k_f + k_b)"
+    eta: "(w / 2)**2"
+    xi: "1"
+  output_map:
+    inv_qc: inv_qc
+  regime:
+    D_B: [1.0e-14, 1.0e-11]
+    w: [1.0e-8, 1.0e-5]
+    k_f: [1.0e-3, 1.0]
+    k_b: [1.0e-3, 1.0]
+  provenance: proposed
+  reason: >
+    Symbolically verifies that Zwicker Appendix F's marginal inverse critical wavenumber
+    1/q_c = [D_B*w^2/(4*(k_f + k_b))]^(1/4) = sqrt((w/2)*l) is identical to Hannezo SI Section 2.2's
+    corrected inverse critical wavenumber 1/q_c = L*(D*tau*xi/eta)^(1/4) = sqrt(l_h*l_t) under
+    l_h = L = w/2 (with eta/xi = l_h^2), D = D_B, and tau = 1/(k_f + k_b).
+  assumptions:
+    - "Consistent hydrodynamic length L = sqrt(eta/xi) = w/2 (mapped at unit reference friction xi = 1 Pa*s/m so eta = (w/2)^2), D = D_B, and tau = 1/(k_f + k_b)."
+
+- id: rel_hannezo2015_inv_qc_printed_vs_eqF1_onset
+  kind: same_as
+  a: zwicker2015/homogeneous_onset_wavelength_eqF1
+  b: hannezo2015/critical_inverse_wavenumber_si_printed
+  mapping:
+    L: "(w / 2) * 10**6"
+    D: "D_B * 10**12"
+    tau: "1 / (k_f + k_b)"
+    eta: "(w / 2)**2"
+    xi: "1"
+  output_map:
+    inv_qc: inv_qc
+  regime:
+    D_B: [1.0e-14, 1.0e-11]
+    w: [1.0e-8, 1.0e-5]
+    k_f: [1.0e-3, 1.0]
+    k_b: [1.0e-3, 1.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check against Hannezo SI Section 2.2's printed inverse wavenumber
+    1/q_c = pi*L*(D*tau*xi/eta)^(1/4) (SI p. 5 / PDF p. 11). Expected to be not_verified by a
+    constant factor of 1/pi, independently corroborating hannezo2015/q_si_inv_qc_extra_pi from
+    Zwicker Appendix F's marginal onset wavenumber.
+  assumptions:
+    - "Same exact onset dictionary as rel_hannezo2015_inv_qc_corrected_same_as_eqF1_onset."
+
+- id: rel_hannezo2015_lambda_c_vs_Rstab_eq19_scaling
+  kind: scales_as
+  a: hannezo2015/critical_wavelength_eq3
+  b: zwicker2015/binary_stability_radius_eq19
+  mapping:
+    D_B: "D / 10**12"
+    gamma_beta: "sqrt(eta / xi) / 3"
+    k_b: "1 / (2 * tau)"
+  regime:
+    D: [0.005, 0.5]
+    tau: [1.0, 100.0]
+    eta: [1.0e-7, 1.0e-3]
+    xi: [1.0e7, 1.0e11]
+  provenance: proposed
+  reason: >
+    Diagnostic scaling test contrasting turnover-arrested linear-onset patterning in Hannezo Eq. (3)
+    (lambda_c ~ (l_h*l_t)^(1/2) ~ D^(1/4)*tau^(1/4)*(eta/xi)^(1/4), identically shared with Zwicker
+    Appendix F's linear onset (w*l)^(1/2) ~ (k_f + k_b)^(-1/4)) against Zwicker Eq. (19)'s strongly
+    nonlinear 3D sharp-interface arrested Ostwald-ripening radius R_stab = (3*D_B*gamma*beta/(2*k_b))^(1/3)
+    ~ (w*l^2)^(1/3) ~ D^(1/3)*tau^(1/3)*(eta/xi)^(1/6) (with gamma*beta = w/6 = l_h/3 at psi = 1
+    and k_b = 1/(2*tau)). Expected to be not_verified because all four scaling exponents differ by
+    1/12 = 0.0833 (1/4 vs 1/3 in D and tau; +/-1/4 vs +/-1/6 in eta and xi), proving that linear
+    spinodal/cortical onset and nonlinear Gibbs-Thomson Ostwald arrest are distinct scaling regimes.
+  assumptions:
+    - "Binary sharp-interface capillary length gamma*beta = w/6 = l_h/3 (psi = 1, w = 2*l_h) and symmetric backward rate k_b = 1/(2*tau)."
+
+# ==============================================================================
+# 7. Cross-record relations with bois2011 (Bois, Jülicher & Grill, PRL 106:028103, 2011)
+# Note: Neither paper cites the other (despite shared co-author F. Jülicher and shared
+# Turing 1952 citation); all mathematical and diagnostic relations below carry
+# provenance: proposed. Together with hannezo2015 and frohoff2021, these relations close
+# the 4-paper active-turnover and passive-conserved commutative squares.
+# ==============================================================================
+
+# --- 7.1 Characteristic Screening Lengths & Interface Diffusion Rate ---
+
+- id: rel_bois2011_interface_width_scales_as_ell
+  kind: scales_as
+  a: zwicker2015/interface_width_w
+  b: bois2011/hydrodynamic_length
+  mapping:
+    eta: "kappa"
+    gamma: "b"
+  regime:
+    kappa: [1.0e-13, 1.0e-11]
+    b: [0.5, 10.0]
+  provenance: proposed
+  reason: >
+    Both papers define their short-range spatial regularization length as the square-root ratio
+    of a gradient penalty/viscous modulus to a local restoring/friction modulus: Zwicker's
+    Cahn-Hilliard half-interface width w/2 = sqrt(kappa/b) (p. 2) and Bois's Brinkman
+    hydrodynamic screening length ell = sqrt(eta/gamma) (p. 2). Under the exact dispersion
+    factorization lambda_Bois15(k) = lambda_Z^corr(k)/(1 + ell^2*k^2), w/2 plays the exact
+    short-wavelength regularization role of ell (w = 2*ell), sharing identical (+1/2, -1/2)
+    log-slopes in (kappa <-> eta, b <-> gamma).
+  assumptions:
+    - "Gradient-to-bulk screening ratio correspondence kappa/b <-> eta/gamma (both dimension [length]^2), preserving the exact dispersion factor w = 2*ell."
+
+- id: rel_bois2011_reaction_length_scales_as_ell_helmholtz
+  kind: scales_as
+  a: zwicker2015/reaction_diffusion_length_l
+  b: bois2011/hydrodynamic_length
+  mapping:
+    eta: "D_B"
+    gamma: "k_f + k_b"
+  regime:
+    D_B: [1.0e-14, 1.0e-11]
+    k_f: [1.0e-3, 1.0]
+    k_b: [1.0e-3, 1.0]
+  provenance: proposed
+  reason: >
+    Both Zwicker's reaction-diffusion length l = sqrt(D_B/(k_f + k_b)) (Sec. II.C, App. C Eq. C1)
+    and Bois's hydrodynamic screening length ell = sqrt(eta/gamma) (Eq. 3, p. 2) arise as the
+    screening length L of a linear Helmholtz operator (1 - L^2*nabla^2), sharing identical
+    (+1/2, -1/2) scaling in transport coefficient over local damping rate. Recorded as scales_as
+    (not same_as) because they are physically distinct screening lengths whose ratio
+    phi = (ell/l)^2 = tau_D*(k_f + k_b) controls finite-turnover pattern arrest (whereas l joins
+    the chemical turnover family with hannezo2015/turnover_diffusion_length and ell joins the
+    hydrodynamic family with hannezo2015/hydrodynamic_length).
+  assumptions:
+    - "Formal Helmholtz screening-operator correspondence (D_B <-> eta, k_f + k_b <-> gamma); physically distinct length scales whose square ratio phi = (ell/l)^2 = tau_D*(k_f + k_b) sets the dimensionless turnover parameter."
+
+- id: rel_bois2011_k0_scales_as_eq12_passive_rate
+  kind: scales_as
+  a: zwicker2015/interface_diffusion_rate_k0
+  b: bois2011/single_species_dispersion_eq12
+  mapping:
+    k: "1 / w"
+    D: "D_B"
+    Pe: "0"
+    c0: "1"
+    df_dc: "1"
+    l: "w / 2"
+  output_map:
+    lam: k_0
+  regime:
+    D_B: [1.0e-14, 1.0e-11]
+    w: [1.0e-8, 1.0e-5]
+  provenance: proposed
+  reason: >
+    Zwicker nondimensionalizes rates by the interface diffusion rate k_0 = D_B/w^2 (p. 5),
+    while Bois nondimensionalizes time by the diffusive timescale across one hydrodynamic length
+    tau_D = ell^2/D (Fig. 3a, bois2011/diffusive_timescale), giving the exact reciprocal
+    conversion k_0 = 1/(4*tau_D) under D_B = D and w = 2*ell. Evaluating Bois Eq. (12) in the
+    passive diffusion limit (Pe = 0) at wavenumber k = 1/w gives lambda = -D_B/w^2 = -k_0
+    identically up to sign, matching log-slopes in both diffusivity D_B and length w.
+  assumptions:
+    - "Passive diffusion limit Pe = 0 evaluated at inverse interface width k = 1/w with D = D_B and ell = w/2 (giving lambda = -k_0 = -1/(4*tau_D))."
+
+# --- 7.2 Active Finite-Turnover Dispersion: Bois Eq. (15, N=1) <-> Zwicker App. F Eq. (F1) ---
+
+- id: rel_bois2011_eq15_series_derived_eqF1_corrected
+  kind: derived_from
+  a: bois2011/single_species_rda_dispersion_eq15
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "D"
+    w: "2 * l * sqrt(Pe * c0 * df_dc)"
+    k_f: "-(dR_dc / 2) * (1 + sqrt(1 - (2 / 3) * Pe * c0 * df_dc))"
+    k_b: "-(dR_dc / 2) * (1 - sqrt(1 - (2 / 3) * Pe * c0 * df_dc))"
+    q: "k"
+  output_map:
+    lam_q: lam
+  steps:
+    - "series: k -> 0, 5"
+    - simplify
+  regime:
+    k: [0.5, 2.0]
+    D: [0.5, 2.0]
+    dR_dc: [-0.5, -0.05]
+    Pe: [1.0, 2.0]
+    c0: [0.5, 1.0]
+    df_dc: [0.4, 0.7]
+    l: [0.05, 0.2]
+  provenance: proposed
+  reason: >
+    Symbolically proves that expanding Bois's single-species reacting active-fluid dispersion
+    relation Eq. (15) (lambda_Bois15 = -D*k^2 + dR_dc + D*k^2*P_eff/(1 + ell^2*k^2), with
+    P_eff = Pe*c0*df_dc) to fourth order in wavenumber k (O(k^4)) yields Zwicker's exact
+    active Cahn-Hilliard dispersion relation Appendix F Eq. (F1_corrected) identically across
+    all three terms: k^0 turnover -(k_f + k_b) = dR_dc < 0, k^2 spinodal/contractile driving
+    D_B*c_spin = D*(P_eff - 1), and k^4 short-wavelength stabilization D_B*w^2/4 = D*P_eff*ell^2
+    (identifying effective interface width w = 2*ell*sqrt(P_eff) and c_spin = P_eff - 1 in
+    (-1, 1/2) for 0 < P_eff < 3/2). Directly closes the bois2011-hannezo2015-zwicker2015
+    O(k^4) commutative triangle.
+  assumptions:
+    - "Long-wavelength O(k^4) expansion (k*ell << 1) with stabilizing first-order reaction dR_dc < 0 and weakly-to-moderately active driving 0 < Pe*c0*df_dc < 3/2 (putting c_spin = P_eff - 1 strictly inside Zwicker's quartic double-well range (-1, 1/2))."
+    - "Preserves physical diffusivity D_B = D, wavenumber q = k, and total turnover rate k_f + k_b = -dR_dc."
+
+- id: rel_bois2011_eq15_series_vs_eqF1_printed
+  kind: derived_from
+  a: bois2011/single_species_rda_dispersion_eq15
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "D"
+    w: "2 * l * sqrt(Pe * c0 * df_dc)"
+    k_f: "-(dR_dc / 2) * (1 + sqrt(1 - (2 / 3) * Pe * c0 * df_dc))"
+    k_b: "-(dR_dc / 2) * (1 - sqrt(1 - (2 / 3) * Pe * c0 * df_dc))"
+    q: "k"
+  output_map:
+    lam_q: lam
+  steps:
+    - "series: k -> 0, 5"
+    - simplify
+  regime:
+    k: [0.5, 2.0]
+    D: [0.5, 2.0]
+    dR_dc: [-0.5, -0.05]
+    Pe: [1.0, 2.0]
+    c0: [0.5, 1.0]
+    df_dc: [0.4, 0.7]
+    l: [0.05, 0.2]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing the exact O(k^4) small-wavenumber expansion of Bois
+    Eq. (15) against Zwicker's printed Appendix F Eq. (F1) under the exact diffusivity-preserving
+    dictionary (D_B = D, k_f + k_b = -dR_dc, c_spin = P_eff - 1, w = 2*ell*sqrt(P_eff)). Expected
+    to be not_verified because printed Eq. (F1) doubles the q^2 coefficient (2*D_B*c_spin*q^2
+    instead of D_B*c_spin*q^2), independently corroborating zwicker2015/q_appF_factor_of_2_error.
+  assumptions:
+    - "Same exact O(k^4) dictionary and regime as rel_bois2011_eq15_series_derived_eqF1_corrected."
+
+- id: rel_bois2011_eq15_lowell_reduces_eqF1_corrected
+  kind: reduces_to
+  a: bois2011/single_species_rda_dispersion_eq15
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "D"
+    w: "2 * l * sqrt(Pe * c0 * df_dc)"
+    k_f: "-(dR_dc / 2) * (1 + sqrt(1 - (2 / 3) * Pe * c0 * df_dc))"
+    k_b: "-(dR_dc / 2) * (1 - sqrt(1 - (2 / 3) * Pe * c0 * df_dc))"
+    q: "k"
+  output_map:
+    lam_q: lam
+  limit:
+    l: "0"
+  regime:
+    k: [0.5, 2.0]
+    D: [0.5, 2.0]
+    dR_dc: [-0.5, -0.05]
+    Pe: [1.0, 2.0]
+    c0: [0.5, 1.0]
+    df_dc: [0.4, 0.7]
+    l: [0.05, 0.2]
+  provenance: proposed
+  reason: >
+    In the friction-dominated vanishing hydrodynamic screening length limit ell -> 0 (w -> 0)
+    at finite wavenumber k > 0, both the k^0 turnover sink dR_dc = -(k_f + k_b) and the k^2
+    contractile/spinodal diffusion term D*(P_eff - 1)*k^2 = D_B*c_spin*k^2 survive at O(1),
+    and Bois Eq. (15) reduces identically to Zwicker Appendix F Eq. (F1_corrected) with quartic
+    O(ell^4*k^6) convergence across both subcritical (P_eff < 1) and supercritical (1 < P_eff < 3/2)
+    regimes.
+  assumptions:
+    - "Vanishing hydrodynamic screening length ell -> 0 (w -> 0) at finite wavenumber k in [0.5, 2.0] m^-1."
+
+- id: rel_bois2011_eq15_lowell_vs_eqF1_printed
+  kind: reduces_to
+  a: bois2011/single_species_rda_dispersion_eq15
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "D"
+    w: "2 * l * sqrt(Pe * c0 * df_dc)"
+    k_f: "-(dR_dc / 2) * (1 + sqrt(1 - (2 / 3) * Pe * c0 * df_dc))"
+    k_b: "-(dR_dc / 2) * (1 - sqrt(1 - (2 / 3) * Pe * c0 * df_dc))"
+    q: "k"
+  output_map:
+    lam_q: lam
+  limit:
+    l: "0"
+  regime:
+    k: [0.5, 2.0]
+    D: [0.5, 2.0]
+    dR_dc: [-0.5, -0.05]
+    Pe: [1.0, 2.0]
+    c0: [0.5, 1.0]
+    df_dc: [0.4, 0.7]
+    l: [0.05, 0.2]
+  provenance: proposed
+  reason: >
+    Diagnostic check of the vanishing hydrodynamic length limit ell -> 0 at finite k > 0 against
+    Zwicker's printed Appendix F Eq. (F1). Expected to be not_verified because printed Eq. (F1)
+    converges to 2*D*(P_eff - 1)*k^2 + dR_dc instead of D*(P_eff - 1)*k^2 + dR_dc
+    (zwicker2015/q_appF_factor_of_2_error).
+  assumptions:
+    - "Same vanishing hydrodynamic length limit and dictionary as rel_bois2011_eq15_lowell_reduces_eqF1_corrected."
+
+- id: rel_bois2011_eq15_exactfactor_approx_eqF1_corrected
+  kind: approximated_by
+  a: bois2011/single_species_rda_dispersion_eq15
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "D"
+    w: "2 * l"
+    k_f: "-(dR_dc / 2) * (1 + sqrt(1 - (2 / 3) * (Pe * c0 * df_dc + l**2 * dR_dc / D)))"
+    k_b: "-(dR_dc / 2) * (1 - sqrt(1 - (2 / 3) * (Pe * c0 * df_dc + l**2 * dR_dc / D)))"
+    q: "k"
+  output_map:
+    lam_q: lam
+  regime:
+    k: [1.5e6, 6.0e6]
+    D: [4.0e-14, 5.0e-14]
+    dR_dc: [-0.05, -0.005]
+    Pe: [1.05, 1.45]
+    c0: [0.95, 1.0]
+    df_dc: [0.95, 1.0]
+    l: [1.0e-8, 3.0e-8]
+  tolerance: 0.05
+  provenance: proposed
+  reason: >
+    Exact all-wavenumber algebraic factorization of Bois Eq. (15) at finite turnover proves
+    lambda_Bois15(k) = lambda_Z^corr(k) / (1 + ell^2*k^2) identically for all wavenumbers k under
+    the turnover-shifted dictionary D_B = D, w = 2*ell, k_f + k_b = -dR_dc, and
+    c_spin = P_eff - 1 - phi (where phi = -ell^2*dR_dc/D = (ell/l_RD)^2 = tau_D*(k_f + k_b) > 0),
+    directly closing the 4-paper commutative square with hannezo2015/dispersion_relation_eq7.
+    Because 1 + ell^2*k^2 > 0 everywhere, the two dispersion relations share the EXACT same
+    unstable wavenumber band [k_-, k_+], marginal onset wavenumber k_c = [(-dR_dc)/(D*ell^2)]^(1/4)
+    = [4*(k_f + k_b)/(D_B*w^2)]^(1/4) (zwicker2015/homogeneous_onset_wavelength_eqF1), and
+    instability threshold P_eff,c = (1 + sqrt(phi))^2 <-> c_spin = w/l_RD = 2*sqrt(phi), with
+    uniform relative difference (k*ell)^2/(1 + (k*ell)^2) across stable, unstable, and neutral-
+    crossing points (<= 3.1% for k*ell <= 0.18, measured max 1.92% within tolerance 0.05).
+  assumptions:
+    - "Cortical-scale long-to-intermediate wavelength window with k*ell <= 0.18, dR_dc < 0, and 0 < P_eff - phi < 3/2 (putting c_spin = P_eff - 1 - phi inside Zwicker's double-well range (-1, 1/2))."
+
+- id: rel_bois2011_eq15_kmax_derived_eqF1_corrected_lammax
+  kind: derived_from
+  a: bois2011/single_species_rda_dispersion_eq15
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "D"
+    w: "2 * l"
+    k_f: "-(dR_dc / 2) * (1 + sqrt((5 - 4 * sqrt(Pe * c0 * df_dc)) / 3))"
+    k_b: "-(dR_dc / 2) * (1 - sqrt((5 - 4 * sqrt(Pe * c0 * df_dc)) / 3))"
+    q: "k"
+  output_map:
+    lam_max: lam
+  steps:
+    - "subs: k = sqrt(sqrt(Pe * c0 * df_dc) - 1) / l"
+    - simplify
+  regime:
+    k: [1.0e6, 1.0e7]
+    D: [4.0e-14, 4.5e-14]
+    dR_dc: [-0.2, -0.02]
+    Pe: [1.2, 1.45]
+    c0: [0.95, 1.0]
+    df_dc: [0.95, 1.0]
+    l: [3.0e-8, 1.0e-7]
+  provenance: proposed
+  reason: >
+    Symbolically proves that evaluating Bois Eq. (15) at its exact fastest-growing wavenumber
+    k_max = sqrt(sqrt(P_eff) - 1)/ell yields lambda_max^Bois15 = (D/ell^2)*(sqrt(P_eff) - 1)^2 + dR_dc,
+    which is IDENTICAL to Zwicker Eq. (F1_corrected)'s peak growth rate
+    lambda_max^Z = (D_B/w^2)*c_spin^2 - (k_f + k_b) under D_B = D, w = 2*ell, k_f + k_b = -dR_dc,
+    and c_spin = 2*(sqrt(P_eff) - 1) (valid for 1 < P_eff < 25/16 = 1.5625, where c_spin in (0, 1/2)).
+    Under this dictionary, both models also share the exact fastest wavenumber k_max = q_max and
+    exact onset manifold P_eff,c = (1 + sqrt(phi))^2 <-> c_spin = 2*sqrt(phi), terminating at
+    Zwicker's spinodal apex c_spin = 1/2 ((k_f + k_b)/k_0 = 1/4, phi = 1/16).
+  assumptions:
+    - "Supercritical active-contractility window 1 < P_eff = Pe*c0*df_dc < 25/16 = 1.5625 so c_spin = 2*(sqrt(P_eff) - 1) lies strictly in (0, 1/2)."
+
+- id: rel_bois2011_eq15_kmax_vs_eqF1_printed_lammax
+  kind: derived_from
+  a: bois2011/single_species_rda_dispersion_eq15
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "D"
+    w: "2 * l"
+    k_f: "-(dR_dc / 2) * (1 + sqrt((5 - 4 * sqrt(Pe * c0 * df_dc)) / 3))"
+    k_b: "-(dR_dc / 2) * (1 - sqrt((5 - 4 * sqrt(Pe * c0 * df_dc)) / 3))"
+    q: "k"
+  output_map:
+    lam_max: lam
+  steps:
+    - "subs: k = sqrt(sqrt(Pe * c0 * df_dc) - 1) / l"
+    - simplify
+  regime:
+    k: [1.0e6, 1.0e7]
+    D: [4.0e-14, 4.5e-14]
+    dR_dc: [-0.2, -0.02]
+    Pe: [1.2, 1.45]
+    c0: [0.95, 1.0]
+    df_dc: [0.95, 1.0]
+    l: [3.0e-8, 1.0e-7]
+  provenance: proposed
+  reason: >
+    Diagnostic check of the exact peak-growth-rate derivation against Zwicker's printed Appendix F
+    Eq. (F1). Expected to be not_verified because printed Eq. (F1)'s spurious factor of 2 on q^2
+    quadruples the active peak term from (D_B/w^2)*c_spin^2 to (4*D_B/w^2)*c_spin^2, producing the
+    4x overprediction of the upper reaction-rate cutoff in printed Eq. (F2) ((k_f + k_b)_max = k_0
+    instead of k_0/4; zwicker2015/q_appF_factor_of_2_error).
+  assumptions:
+    - "Same supercritical window and peak-growth-rate dictionary as rel_bois2011_eq15_kmax_derived_eqF1_corrected_lammax."
+
+# --- 7.3 Passive Conserved Reductions & Exact Hill-to-Double-Well Equivalence (Eq. F1 -> Eq. 12 / Hill) ---
+
+- id: rel_bois2011_eqF1_corrected_passive_reduces_eq12
+  kind: reduces_to
+  a: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  b: bois2011/single_species_dispersion_eq12
+  mapping:
+    k: "q"
+    D: "D_B"
+    Pe: "6"
+    c0: "k_f / k_b"
+    df_dc: "1 / (1 + k_f / k_b)**2"
+    l: "w / 2"
+  output_map:
+    lam: lam_q
+  limit:
+    D_B: "oo"
+    w: "0"
+  regime:
+    D_B: [0.5, 2.0]
+    w: [0.05, 0.2]
+    k_f: [0.4, 1.0]
+    k_b: [0.4, 1.0]
+    q: [0.5, 2.0]
+  provenance: proposed
+  reason: >
+    Establishes a striking exact correspondence between Zwicker's quartic double-well spinodal
+    curvature and Bois's Hill active-stress function f(c) = c/(1 + c) (Fig. 3): identifying the
+    odds ratio c_0 = k_f/k_b = phi_0^B/(1 - phi_0^B) makes Bois's Hill function identically
+    f(c_0) = phi_0^B and gives Pe*c_0*df_dc - 1 = 6*phi_0^B*(1 - phi_0^B) - 1 = c_spin = -f''(phi_0^B)/b
+    at Pe = 6 across ALL compositions (sharing exact spinodal bounds 2 - sqrt(3) < c_0 = k_f/k_b
+    < 2 + sqrt(3) and matching Bois Eq. 10's potential curvature ell^2*V''(ln c_0) = c_spin).
+    Taking the passive slow-reaction and thin-interface limit (D_B -> oo, w -> 0, sending
+    (k_f + k_b)/k_0 -> 0 and q*w -> 0 at arbitrary composition k_f/k_b), Zwicker Eq. (F1_corrected)
+    reduces identically to Bois's conserved single-species dispersion Eq. (12) under D = D_B,
+    k = q, ell = w/2, Pe = 6, c_0 = k_f/k_b, and Hill slope df_dc = 1/(1 + c_0)^2.
+  assumptions:
+    - "Passive slow-reaction (D_B -> oo) and long-wavelength/thin-interface (w -> 0) limit across varying spinodal compositions k_f, k_b in [0.4, 1.0] s^-1 (c_spin in [0.22, 0.50])."
+    - "Hill active-stress constitutive correspondence Pe = 6, c_0 = k_f/k_b = phi_0^B/(1 - phi_0^B), df_dc = 1/(1 + c_0)^2."
+
+- id: rel_bois2011_eqF1_printed_passive_vs_eq12
+  kind: reduces_to
+  a: zwicker2015/homogeneous_dispersion_eqF1
+  b: bois2011/single_species_dispersion_eq12
+  mapping:
+    k: "q"
+    D: "D_B"
+    Pe: "6"
+    c0: "k_f / k_b"
+    df_dc: "1 / (1 + k_f / k_b)**2"
+    l: "w / 2"
+  output_map:
+    lam: lam_q
+  limit:
+    D_B: "oo"
+    w: "0"
+  regime:
+    D_B: [0.5, 2.0]
+    w: [0.05, 0.2]
+    k_f: [0.4, 1.0]
+    k_b: [0.4, 1.0]
+    q: [0.5, 2.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check of Zwicker's printed Appendix F Eq. (F1) in the passive conserved
+    limit (D_B -> oo, w -> 0) under the exact Hill-to-double-well dictionary (Pe = 6, c_0 = k_f/k_b).
+    Expected to be not_verified with persistent relative error 0.50 (factor of 2) because printed
+    Eq. (F1) doubles the q^2 spinodal driving term even in the conserved passive limit
+    (zwicker2015/q_appF_factor_of_2_error).
+  assumptions:
+    - "Same passive limit and exact Hill-to-double-well dictionary as rel_bois2011_eqF1_corrected_passive_reduces_eq12."
+
+- id: rel_bois2011_eqF1_corrected_kfkb0_reduces_eq12
+  kind: reduces_to
+  a: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  b: bois2011/single_species_dispersion_eq12
+  mapping:
+    k: "q"
+    D: "D_B"
+    Pe: "6"
+    c0: "k_f / k_b"
+    df_dc: "1 / (1 + k_f / k_b)**2"
+    l: "w / 2"
+  output_map:
+    lam: lam_q
+  limit:
+    k_f: "0"
+    k_b: "0"
+    w: "0"
+  regime:
+    D_B: [0.5, 2.0]
+    w: [0.05, 0.2]
+    k_f: [0.05, 0.2]
+    k_b: [0.05, 0.2]
+    q: [0.5, 2.0]
+  provenance: proposed
+  reason: >
+    Verifies the explicit vanishing-reaction conserved limit (k_f -> 0, k_b -> 0 at finite
+    diffusivity D_B and wavenumber q, together with w -> 0) of Zwicker Eq. (F1_corrected) onto
+    Bois Eq. (12) under the Hill-to-double-well map (Pe = 6, c_0 = k_f/k_b -> 1 at the symmetric
+    spinodal apex phi_0^B = 1/2, c_spin = 1/2).
+  assumptions:
+    - "Explicit conserved reactionless limit k_f -> 0, k_b -> 0 (approaching symmetric composition phi_0^B = 1/2, c_0 = 1) with thin interface w -> 0 at finite D_B and q."
+
+- id: rel_bois2011_eqF1_corrected_passive_reduces_hill
+  kind: reduces_to
+  a: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  b: bois2011/single_species_dispersion_hill
+  mapping:
+    k_l: "q * w / sqrt(2)"
+    c0: "1"
+    Pe: "4 * (10 * k_f * k_b - k_f**2 - k_b**2) / (k_f + k_b)**2"
+  output_map:
+    lam_dimless: lam_q_norm
+  limit:
+    D_B: "oo"
+    w: "0"
+  regime:
+    D_B: [0.5, 2.0]
+    w: [0.05, 0.2]
+    k_f: [0.4, 1.0]
+    k_b: [0.4, 1.0]
+    q: [0.5, 2.0]
+  provenance: proposed
+  reason: >
+    Closes the dimensionless passive commutative square with frohoff2021/linear_dispersion_variational_limit:
+    under Frohoff Appendix A's exact nondimensionalization (q_F = q*w/sqrt(2) = k*ell, tau = 1/k_0,
+    f_1'' = -2*c_spin = 1 - Pe*c_0/(1 + c_0)^2, giving Pe = 4*(1 + 2*c_spin) at c_0 = 1), taking the
+    passive long-wavelength limit (D_B -> oo, w -> 0) reduces Zwicker's dimensionless dispersion
+    lam_q_norm = lam_q/k_0 identically (with unit prefactor) to Bois's dimensionless Hill dispersion
+    lam_dimless = tau_D*lam (Fig. 3a).
+  assumptions:
+    - "Passive slow-reaction (D_B -> oo) and long-wavelength (w -> 0) limit in the spinodal regime c_spin > 0 (Pe in [5.8, 8.0] at c_0 = 1)."
+    - "Frohoff Appendix A wavenumber normalization k*ell = q*w/sqrt(2) reconciling k_0 = D_B/w^2 with 1/tau_D = D/ell^2 at unit prefactor."
+
+# --- 7.4 Two-Species Classic Turing ASDM Determinant <-> One-Species Reactive Cahn-Hilliard ---
+
+- id: rel_bois2011_asdm_pe0_det_scales_eqF1_corrected
+  kind: scales_as
+  a: bois2011/asdm_dispersion_pe0
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "1"
+    w: "1"
+    q: "(4 * Da_over_Ds)**(1/4) * k_l"
+    k_f: "(rho_a * rho_s / 2) * (1 + sqrt((1 - (rho_a - Da_over_Ds * rho_s) / sqrt(Da_over_Ds)) / 3))"
+    k_b: "(rho_a * rho_s / 2) * (1 - sqrt((1 - (rho_a - Da_over_Ds * rho_s) / sqrt(Da_over_Ds)) / 3))"
+  output_map:
+    lam_q_norm: det_dimless
+  regime:
+    k_l: [0.3, 2.0]
+    Da_over_Ds: [0.4, 1.0]
+    rho_a: [0.5, 0.8]
+    rho_s: [0.6, 1.2]
+  provenance: proposed
+  reason: >
+    Formalizes Zwicker Sec. V (p. 11)'s remark connecting active emulsions to Turing patterns and
+    closes the bois2011/asdm_dispersion_pe0-frohoff2021/eq12-zwicker2015/eqF1_corrected Turing
+    triangle: Bois's Pe = 0 2x2 activator-substrate depletion model stability determinant
+    det(tau_D*A) = d*(k*ell)^4 - (rho_a - d*rho_s)*(k*ell)^2 + rho_a*rho_s (with d = D_a/D_s)
+    has the exact biquadratic polynomial structure of -lambda_Z^corr(q)/k_0 = (q*w)^4/4 -
+    c_spin*(q*w)^2 + (k_f + k_b)/k_0. Under D_B = w = 1, q = (4*d)^(1/4)*k*ell, k_f + k_b = rho_a*rho_s,
+    and c_spin = (rho_a - d*rho_s)/(2*sqrt(d)), lam_q_norm = -det_dimless identically across all
+    four parameters (k_l, D_a/D_s, rho_a, rho_s), proving identical stationary neutral-stability
+    manifolds (det = 0 <-> lam_Z = 0), critical wavenumbers q_c = (rho_a*rho_s/d)^(1/4), and Turing
+    onset thresholds (c_spin = sqrt(k_f + k_b) <-> D_a/D_s = (3 - 2*sqrt(2))*rho_a/rho_s).
+  assumptions:
+    - "Classic reaction-diffusion ASDM (Pe = 0) in parameter window where -1 < c_spin = (rho_a - d*rho_s)/(2*sqrt(d)) < 1/2 (spanning both non-Turing and Turing-unstable regimes)."
+    - "Sign reversal lam_q_norm = -det_dimless reflects 2x2 Turing instability det(A) < 0 vs 1D growth rate lambda > 0."
+
+- id: rel_bois2011_asdm_pe0_det_vs_eqF1_printed
+  kind: scales_as
+  a: bois2011/asdm_dispersion_pe0
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "1"
+    w: "1"
+    q: "(4 * Da_over_Ds)**(1/4) * k_l"
+    k_f: "(rho_a * rho_s / 2) * (1 + sqrt((1 - (rho_a - Da_over_Ds * rho_s) / sqrt(Da_over_Ds)) / 3))"
+    k_b: "(rho_a * rho_s / 2) * (1 - sqrt((1 - (rho_a - Da_over_Ds * rho_s) / sqrt(Da_over_Ds)) / 3))"
+  output_map:
+    lam_q_norm: det_dimless
+  regime:
+    k_l: [0.3, 2.0]
+    Da_over_Ds: [0.4, 1.0]
+    rho_a: [0.5, 0.8]
+    rho_s: [0.6, 1.2]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check of the exact 2x2 ASDM Turing determinant isomorphism against
+    Zwicker's printed Appendix F Eq. (F1). Expected to be not_verified because printed Eq. (F1)
+    doubles the q^2 coefficient, breaking log-slope agreement across (k_l, D_a/D_s, rho_a, rho_s)
+    (zwicker2015/q_appF_factor_of_2_error).
+  assumptions:
+    - "Same Turing determinant dictionary and regime as rel_bois2011_asdm_pe0_det_scales_eqF1_corrected."

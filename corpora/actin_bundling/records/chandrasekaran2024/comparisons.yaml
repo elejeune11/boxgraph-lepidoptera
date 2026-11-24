@@ -1,0 +1,164 @@
+# ---------------------------------------------------------------------------
+# Reproduction checks of every analytically derived/predicted quantity
+# ---------------------------------------------------------------------------
+- id: cmp_elongation_rate_derived
+  purpose: reproduction
+  computed: k_grow_computed
+  printed: elongation_rate_baseline
+  note: "Checks k_grow = (2*pi*R_drop - L0) / 600 s against printed 10.3 nm/s (p. 3, Supp. Table 2)."
+
+- id: cmp_time_to_2R_printed_k
+  purpose: reproduction
+  computed: t_2R_computed_printed_k
+  printed: time_to_diameter_2R
+  note: "Checks t_2R = (2*R_drop - L0) / 10.3 nm/s = 184.466 s against printed 184.47 s (p. 3)."
+
+- id: cmp_time_to_2R_chained_k
+  purpose: consistency
+  computed: t_2R_computed_chained_k
+  printed: time_to_diameter_2R
+  note: "Chained test using unrounded k_grow = (2*pi*R_drop - L0)/600 s = 10.3053 nm/s, showing p. 3 used the rounded 10.3 nm/s to compute 184.47 s."
+
+- id: cmp_time_to_2piR_printed_k
+  purpose: consistency
+  computed: t_2piR_computed_printed_k
+  printed: t_sim_baseline
+  note: "Checks time to grow from 0.1 um to 2*pi um at printed 10.3 nm/s against 600 s."
+
+- id: cmp_final_actin_conc_exact_2pi
+  purpose: reproduction
+  computed: C_actin_final_exact_2pi
+  printed: final_actin_conc_baseline
+  note: "Checks 30 filaments of length 2*pi um in R=1 um sphere against printed 27.67 uM (p. 3), testing sensitivity to added monomer rise dl."
+
+- id: cmp_final_actin_conc_chained_L600
+  purpose: consistency
+  computed: C_actin_final_chained_L600
+  printed: final_actin_conc_baseline
+  note: "Chained check using L(600 s) = 0.1 + 0.0103*600 = 6.28 um instead of exact 2*pi um."
+
+- id: cmp_nucleator_molecule_counts
+  purpose: reproduction
+  computed: nucleator_molecules_computed
+  printed: nucleator_molecules_table
+  note: "Checks all 8 discrete molecule counts {0, 25, 63, 126, 189, 252, 315, 378} in Supplementary Table 4 (p. 20) from molar concentrations in an R=1 um sphere."
+
+- id: cmp_exp_vasp_tetramer_conc
+  purpose: reproduction
+  computed: exp_vasp_tet_computed
+  printed: exp_vasp_tetramer_conc
+  note: "Checks 20 uM VASP monomers / 4 = 5 uM VASP tetramers (Methods, p. 11)."
+
+- id: cmp_exp_actin_conc_table
+  purpose: reproduction
+  computed: exp_actin_conc_computed
+  printed: exp_actin_conc_table
+  note: "Checks experimental actin concentrations {1, 2, 2.67} uM from 20 uM VASP monomers and Actin:VASP ratios {1:20, 1:10, 1:7.5} (Methods, p. 11)."
+
+- id: cmp_lammps_k_bend_thermal
+  purpose: reproduction
+  computed: lammps_k_bend_thermal_computed
+  printed: lammps_k_bend_thermal_calc
+  note: "Checks 10394 pN*nm / (4.11 pN*nm/k_B T) against printed '~2529' k_B T (Supplementary Table 1, p. 16)."
+
+- id: cmp_lammps_sigma_actin_crowder
+  purpose: reproduction
+  computed: lammps_sigma_actin_crowder_computed
+  printed: lammps_sigma_actin_crowder
+  note: "Checks Lorentz-Berthelot arithmetic mean (1.0 + 0.1)/2 = 0.55 sigma (Supplementary Table 1, p. 16)."
+
+- id: cmp_lammps_crowder_vol_frac_printed
+  purpose: reproduction
+  computed: lammps_crowder_vol_frac_printed_model
+  printed: lammps_crowder_vol_frac
+  note: "Checks crowder volume fraction using literally stated sphere radius r = 1 sigma (41,250 spheres in 60^3 box -> 80.0% vs printed 10%)."
+
+- id: cmp_lammps_crowder_vol_frac_diameter
+  purpose: reproduction
+  computed: lammps_crowder_vol_frac_diameter_model
+  printed: lammps_crowder_vol_frac
+  note: "Corrected variant treating sigma = 1 as sphere diameter (radius 0.5 sigma), giving 9.999% vs printed 10% (p. 20)."
+
+- id: cmp_lammps_reduced_temp
+  purpose: consistency
+  computed: lammps_T_star_computed
+  printed: lammps_reduced_temp
+  note: "Checks T* = k_B T / eps_VV = 1.0 (Supplementary Methods 1, p. 21)."
+
+- id: cmp_aspect_ratio_max_length_limited
+  purpose: reproduction
+  computed: ar_max_length_limited_computed
+  printed: aspect_ratio_max_approx
+  note: "Checks constant-volume prolate spheroid aspect ratio pi^(3/2) = 5.5683 at 2a = 2*pi*R_drop against printed '~5.56' (p. 10)."
+
+- id: cmp_fig7aii_deformation_schedule
+  purpose: reproduction
+  computed: fig7aii_ar_computed
+  printed: fig7aii_aspect_ratio_vs_time
+  note: "Checks all 6 printed (time, aspect ratio) snapshots in Fig. 7Aii (p. 8) under the 10 nm/s Z-axis constant-volume elongation protocol (Methods, p. 10)."
+
+- id: cmp_cap_single_volume_fraction
+  purpose: reproduction
+  computed: cap_single_frac_computed
+  printed: cap_single_volume_fraction
+  note: "Checks 12.5% / 2 = 6.25% per polar cap (Supplementary Fig. 13B, p. 34)."
+
+- id: cmp_cap_conc_threshold_percent
+  purpose: reproduction
+  computed: cap_C_thresh_pct_computed
+  printed: cap_conc_threshold_percent
+  note: "Checks exact C_bulk/3 percentage (33.333...%) against printed 33.34% (Supplementary Fig. 13C, p. 34)."
+
+# ---------------------------------------------------------------------------
+# Internal physical consistency checks
+# ---------------------------------------------------------------------------
+- id: cmp_viscosity_ratio_water
+  purpose: consistency
+  computed: viscosity_ratio_computed
+  printed: viscosity_ratio_water_printed
+  note: "Checks whether 0.5 pN*s/um^2 (= 0.5 Pa*s) matches the printed '50x water' note in Supplementary Table 2 (p. 17); yields 500x water (10-fold discrepancy), whereas alternative 0.05 Pa*s reproduces 50x."
+
+- id: cmp_langevin_D_consistency
+  purpose: consistency
+  computed: vasp_D_eff_langevin
+  printed: vasp_diffusion_rate
+  note: "Checks that 1D overdamped Langevin Eq. (1) integration at dt = 0.002 s recovers the prescribed VASP diffusion rate 10 um^2/s."
+
+- id: cmp_stokes_einstein_vs_vasp_D
+  purpose: consistency
+  computed: vasp_D_stokes_einstein
+  printed: vasp_diffusion_rate
+  note: "Reconstructed Stokes-Einstein check comparing k_B T / (6 pi eta r) for a 30 nm sphere in the stated droplet viscosity (0.5 Pa*s -> 0.0145 um^2/s; 0.05 Pa*s -> 0.145 um^2/s) against the independently prescribed VASP diffusion rate 10 um^2/s (Supplementary Table 2, pp. 17-18)."
+
+- id: cmp_gabmut_disk_complement
+  purpose: consistency
+  computed: exp_gabmut_disk_complement
+  printed: exp_gabmut_disk_pct_1_7p5
+  note: "Checks closure of VASP-GABmut morphology percentages (100% - 53% Ring - 37% Shell = 10% Disk vs reported '< 10%') at Actin:VASP = 1:7.5 (p. 7)."
+
+- id: cmp_lammps_reduced_temp_vs_table1
+  purpose: consistency
+  computed: lammps_T_star_from_table1
+  printed: lammps_reduced_temp
+  note: "Non-circular audit check of printed T* = k_B T / eps_{V-V} = 1.0 (p. 21) directly against Supplementary Table 1 eps_{V-V} = 1.66 in k_B T units (p. 16): yields 1 / 1.66 = 0.6024 vs printed 1.0."
+
+# ---------------------------------------------------------------------------
+# Digitized figure comparisons (Fig. 7B & Supplementary Fig. 2B)
+# ---------------------------------------------------------------------------
+- id: cmp_fig7b_length_limited_curve
+  purpose: reproduction
+  computed: fig7b_length_limited_computed
+  printed: fig7b_length_limited_curve_fig
+  note: "Checks filament_length_limited_aspect_ratio = (L_max / (2 R_drop))^(3/2) across all 10 calibrated points (2.2..6.2 um) of the Fig. 7B black solid curve."
+
+- id: cmp_fig7b_bars_vs_length_limited
+  purpose: approximation
+  computed: fig7b_bars_length_limited_computed
+  printed: fig7b_aspect_ratio_bars_fig
+  note: "Quantifies how CytoSim simulated maximum aspect ratios (Fig. 7B bars, mean +/- SD) exceed the analytical length-limited bound at low L_fil^max (filament sliding in bundles) and fall below it at high L_fil^max (kinetically trapped rings)."
+
+- id: cmp_figs2b_icosphere_edge
+  purpose: reproduction
+  computed: figs2b_median_edge_computed
+  printed: figs2b_icosphere_edge_fig
+  note: "Compares icosphere_subdivision_geometry raw mesh median edge lengths against calibrated Supplementary Fig. 2B blue medians across subdivisions n = 0..5, revealing a systematic 2.7-3.2% excess for n >= 1 because Supp. Fig. 2B plots area-equivalent equilateral triangle side lengths sqrt(4 A_face / sqrt(3))."

@@ -1,0 +1,28 @@
+id: binary_cahn_hilliard_1d_pde
+name: 1D pseudospectral binary Cahn-Hilliard reaction-diffusion PDE solver (Eq. 3b, Appendix F)
+role: model
+stated:
+  page: 12
+  printed_page: "012317-12"
+  quote: "are given by Eq. (3b) together with the free energy"
+  where: Eq. (3b) and Appendix F
+equation: "d_t phi^B = d_xx [phi^B*(1-phi^B)*(1-2*phi^B) - (1/4)*d_xx phi^B] + (k_f/k_0)*(1 - phi^B) - (k_b/k_0)*phi^B (in units of w and k_0^-1)"
+reconstructed: "Appendix F linearizes Eq. (3b) analytically without reporting PDE verification code; this 1D periodic Fourier pseudospectral IMEX-RK2 solver directly integrates Eq. (3b) to test the linear dispersion relation Eq. (F1), the homogeneous instability cutoff Eq. (F2), and the flat-interface equilibrium profile w and gamma."
+inputs:
+  kf_norm: {quantity: normalized_forward_rate, unit: dimensionless}
+  kb_norm: {quantity: normalized_backward_rate, unit: dimensionless}
+  qw: {quantity: normalized_wavenumber, unit: dimensionless}
+  L_over_w: {quantity: normalized_domain_length, unit: dimensionless}
+  eps: {quantity: perturbation_amplitude, unit: dimensionless}
+  T_k0: {quantity: normalized_simulation_horizon, unit: dimensionless}
+outputs:
+  lam_mode_norm: {quantity: normalized_coarsening_rate, unit: dimensionless}
+  phi_min_mode: {quantity: min_volume_fraction_B, unit: dimensionless}
+  max_rate_sum_norm: {quantity: normalized_total_rate_cutoff, unit: dimensionless}
+  w_num_over_w: {quantity: normalized_interface_width, unit: dimensionless}
+  gamma_over_bw: {quantity: normalized_surface_tension, unit: dimensionless}
+  phi_min_interface: {quantity: min_volume_fraction_B, unit: dimensionless}
+settings:
+  nx: 128
+  dt: 0.02
+stochastic: false

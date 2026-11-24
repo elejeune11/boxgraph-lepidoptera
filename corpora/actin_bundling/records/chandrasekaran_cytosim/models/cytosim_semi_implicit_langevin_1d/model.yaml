@@ -1,0 +1,25 @@
+id: cytosim_semi_implicit_langevin_1d
+name: "CytoSim semi-implicit Meca::solve() Brownian integrator vs Couple::diffuse() (meca.cc:346,552; bead.cc:109-119; couple.cc:138)"
+role: model
+stated:
+  file: src/sim/meca.cc
+  lines: "550-556"
+  quote: "( I - time_step * mobP * M ) ( Xnew - Xold ) = time_step * mobP * ( F + Noise )"
+  where: "Meca::solve(), Bead::addBrownianForces(), Couple::diffuse()"
+equation: "Semi-implicit bead: (1 + dt*mu*k)*dx = dt*mu*(-k*x + sqrt(2*kT/(dt*mu))*N(0,1)); free couple: dx = sqrt(6*D*dt)*U[-1,1]"
+inputs:
+  mu: {quantity: mobility, unit: um/(pN*s), description: "Particle translational mobility 1/drag (um/(pN*s))"}
+  kT: {quantity: thermal_energy, unit: pN*um, description: "SimulProp::kT (pN*um)"}
+  k_trap: {quantity: spring_stiffness, unit: pN/um, description: "Harmonic confinement/link spring stiffness (pN/um)"}
+  D_couple: {quantity: diffusion_coefficient, unit: um^2/s, description: "CoupleProp::diffusion for uniform-step free Couple check (um^2/s)"}
+outputs:
+  D_eff_meca_free: {quantity: diffusion_coefficient, unit: um^2/s, description: "Measured free diffusivity <x^2>/(2*t_sim) from Meca::solve()"}
+  D_eff_couple_uniform: {quantity: diffusion_coefficient, unit: um^2/s, description: "Measured free diffusivity <x^2>/(2*t_sim) from Couple::diffuse() uniform steps"}
+  var_x_semi_implicit: {quantity: variance_position, unit: um^2, description: "Measured stationary variance <x^2> in harmonic trap under Meca::solve() semi-implicit step"}
+  var_x_boltzmann: {quantity: variance_position, unit: um^2, description: "Exact equilibrium Boltzmann variance kT / k_trap (um^2)"}
+settings:
+  dt: 0.002
+  t_sim: 1.0
+  n_particles: 4000
+  seed: 42
+stochastic: true

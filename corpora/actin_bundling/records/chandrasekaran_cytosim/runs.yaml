@@ -1,0 +1,363 @@
+# ---------------------------------------------------------------------------
+# 1. Fiber discrete bending rigidity & resegmentation
+# ---------------------------------------------------------------------------
+- id: run_bending_ring_cyto_kT
+  model: cytosim_fiber_bending_mechanics
+  inputs:
+    rigidity: paper_actin_flexural_rigidity
+    L: fiber_length_2pi_added
+    segmentation: paper_l_seg_actin
+    R_curve: paper_r_drop
+    kT: cyto_default_kT
+  outputs:
+    N_pts: ring_N_pts
+    N_seg: ring_N_seg
+    s_actual: ring_s_actual
+    iRigidity: ring_iRigidity
+    E_hamiltonian: ring_E_hamiltonian
+    E_cyto_reported: ring_E_cyto_reported
+    E_continuum: ring_E_continuum
+    max_node_force: ring_max_node_force
+    persistence_length: ring_lp_cyto_kT
+  note: "2*pi*R_drop circular actin filament under CytoSim default kT = 0.0042 pN*um."
+
+- id: run_bending_ring_paper_kT
+  model: cytosim_fiber_bending_mechanics
+  inputs:
+    rigidity: paper_actin_flexural_rigidity
+    L: fiber_length_2pi_added
+    segmentation: paper_l_seg_actin
+    R_curve: paper_r_drop
+    kT: paper_kbt_lammps
+  outputs:
+    persistence_length: ring_lp_paper_kT
+  note: "Same filament evaluated at chandrasekaran2024 LAMMPS thermal energy kT = 4.11 pN*nm."
+
+# ---------------------------------------------------------------------------
+# 2. Steric repulsion (actin-actin, VASP-VASP, and CytoSim cym example)
+# ---------------------------------------------------------------------------
+- id: run_steric_actin_actin
+  model: cytosim_steric_repulsion
+  inputs:
+    r1: paper_actin_steric_radius
+    r2: paper_actin_steric_radius
+    d: steric_sep_actin_half_added
+    k_push: paper_actin_steric_stiffness
+    kT: cyto_default_kT
+  outputs:
+    d0: steric_actin_d0
+    F_repulsive: steric_actin_F_half
+    E_steric: steric_actin_E_half
+    E_steric_kT: steric_actin_E_half_kT
+    F_max_overlap: steric_actin_F_max
+    E_max_kT: steric_actin_E_max_kT
+
+- id: run_steric_vasp_vasp
+  model: cytosim_steric_repulsion
+  inputs:
+    r1: paper_vasp_radius
+    r2: paper_vasp_radius
+    d: steric_sep_vasp_half_added
+    k_push: paper_actin_steric_stiffness
+    kT: cyto_default_kT
+  outputs:
+    d0: steric_vasp_d0
+    F_repulsive: steric_vasp_F_half
+    E_steric: steric_vasp_E_half
+    E_steric_kT: steric_vasp_E_half_kT
+    F_max_overlap: steric_vasp_F_max
+    E_max_kT: steric_vasp_E_max_kT
+
+- id: run_steric_actin_cyto_example
+  model: cytosim_steric_repulsion
+  inputs:
+    r1: paper_actin_steric_radius
+    r2: paper_actin_steric_radius
+    d: steric_sep_actin_half_added
+    k_push: cyto_cym_bundle_steric_push
+    kT: cyto_default_kT
+  outputs:
+    F_max_overlap: steric_actin_cym_F_max
+    E_max_kT: steric_actin_cym_E_max_kT
+  note: "Comparison at cym/bundle_steric.cym global steric_stiff_push = 10000 pN/um."
+
+# ---------------------------------------------------------------------------
+# 3. Hand binding, Bell/Kramers unbinding & Gillespie Monte Carlo
+# ---------------------------------------------------------------------------
+- id: run_hand_kinetics_5pN
+  model: cytosim_hand_binding_unbinding
+  inputs:
+    k_bind: paper_k_bind_ring
+    binding_range: paper_vasp_binding_distance
+    k_unbind0: paper_k_unbind_ring
+    unbinding_force: paper_vasp_unbinding_force
+    force: force_probe_bell_added
+    dt: paper_dt_langevin
+    stiffness: crosslinker_stiffness_probe_added
+    kT: cyto_default_kT
+  outputs:
+    binding_prob: hand_p_bind_10s
+    binding_prob_couple_first: hand_p_couple_first
+    binding_section_rate_3d: hand_section_rate_3d
+    k_unbind_loaded: hand_k_off_5pN
+    tau_res_continuum: hand_tau_cont_5pN
+    tau_res_discrete: hand_tau_disc_5pN
+    check_stiffness_kT: hand_check_kT
+    check_stiffness_unbind_factor: hand_check_unbind_fac
+
+- id: run_hand_kinetics_30pN
+  model: cytosim_hand_binding_unbinding
+  inputs:
+    k_bind: paper_k_bind_ring
+    binding_range: paper_vasp_binding_distance
+    k_unbind0: paper_k_unbind_ring
+    unbinding_force: paper_vasp_unbinding_force
+    force: high_force_probe_added
+    dt: paper_dt_langevin
+    stiffness: crosslinker_stiffness_probe_added
+    kT: cyto_default_kT
+  outputs:
+    k_unbind_loaded: hand_k_off_30pN
+    tau_res_continuum: hand_tau_cont_30pN
+    tau_res_discrete: hand_tau_disc_30pN
+
+- id: run_hand_gillespie_mc_5pN
+  model: cytosim_hand_gillespie_mc
+  inputs:
+    k_unbind0: paper_k_unbind_ring
+    unbinding_force: paper_vasp_unbinding_force
+    force: force_probe_bell_added
+    dt: paper_dt_langevin
+  settings:
+    n_samples: 20000
+    seed: 42
+  replicates: 5
+  outputs:
+    tau_res_mc: hand_tau_mc_5pN
+    k_unbind_mc: hand_k_off_mc_5pN
+
+# ---------------------------------------------------------------------------
+# 4. Fiber drag, Sphere/Solid/Couple diffusion & semi-implicit Langevin
+# ---------------------------------------------------------------------------
+- id: run_fiber_drag_default_radius
+  model: cytosim_fiber_drag_and_brownian
+  inputs:
+    L: fiber_length_2pi_added
+    segmentation: paper_l_seg_actin
+    viscosity: viscosity_droplet_corrected_added
+    viscosity_water: cyto_water_viscosity_doc
+    drag_radius: cyto_default_drag_radius
+    drag_length: cyto_default_drag_length
+    kT: cyto_default_kT
+    dt: paper_dt_langevin
+  outputs:
+    N_pts: fiber_drag_N_pts
+    drag_total: fiber_drag_default_r
+    point_mobility: fiber_point_mob_default_r
+    com_mobility: fiber_com_mob_default_r
+    D_com: fiber_D_com_default_r
+    brownian_disp_vertex: fiber_disp_vertex_default_r
+    brownian_disp_com: fiber_disp_com_default_r
+    viscosity_ratio_water: fiber_visc_ratio_water
+  note: "Uses CytoSim default FiberProp::drag_radius = 0.0125 um (microtubule radius)."
+
+- id: run_fiber_drag_actin_radius
+  model: cytosim_fiber_drag_and_brownian
+  inputs:
+    L: fiber_length_2pi_added
+    segmentation: paper_l_seg_actin
+    viscosity: viscosity_droplet_corrected_added
+    viscosity_water: cyto_water_viscosity_doc
+    drag_radius: paper_actin_steric_radius
+    drag_length: cyto_default_drag_length
+    kT: cyto_default_kT
+    dt: paper_dt_langevin
+  outputs:
+    drag_total: fiber_drag_actin_r
+    point_mobility: fiber_point_mob_actin_r
+    D_com: fiber_D_com_actin_r
+  note: "Overrides FiberProp::drag_radius to 3.5 nm (as in cym/arp23.cym:31)."
+
+- id: run_vasp_sphere_stokes_vs_couple
+  model: cytosim_sphere_solid_bead_diffusion
+  inputs:
+    radius: paper_vasp_radius
+    viscosity: viscosity_droplet_corrected_added
+    kT: cyto_default_kT
+    dt: paper_dt_langevin
+    D_prescribed: paper_vasp_diffusion_rate
+  outputs:
+    drag_trans: vasp_drag_trans_cyto
+    drag_rot: vasp_drag_rot_cyto
+    mobility_stokes: vasp_mob_stokes_cyto
+    D_stokes: vasp_D_stokes_cyto
+    sigma_gauss_stokes: vasp_sigma_stokes_cyto
+    halfwidth_uniform_couple: vasp_hw_couple_cyto
+    sigma_uniform_couple: vasp_sigma_couple_cyto
+    eta_required_for_D: vasp_eta_req_for_10
+
+- id: run_semi_implicit_langevin_vasp
+  model: cytosim_semi_implicit_langevin_1d
+  inputs:
+    mu: vasp_mob_stokes_cyto
+    kT: cyto_default_kT
+    k_trap: paper_boundary_stiffness_vasp
+    D_couple: paper_vasp_diffusion_rate
+  settings:
+    dt: 0.002
+    t_sim: 1.0
+    n_particles: 4000
+    seed: 42
+  replicates: 5
+  outputs:
+    D_eff_meca_free: vasp_D_meca_free_mc
+    D_eff_couple_uniform: vasp_D_couple_uniform_mc
+    var_x_semi_implicit: vasp_var_x_semi_impl_mc
+    var_x_boltzmann: vasp_var_x_boltzmann
+
+# ---------------------------------------------------------------------------
+# 5. Spherical & ellipsoidal confinement
+# ---------------------------------------------------------------------------
+- id: run_confinement_actin_ar2
+  model: cytosim_confinement_sphere_ellipse
+  inputs:
+    R_sphere: paper_r_drop
+    a_z: ellipsoid_a_ar2_added
+    b_xy: ellipsoid_b_ar2_added
+    excursion: boundary_excursion_probe_added
+    stiff: paper_boundary_stiffness_actin
+  outputs:
+    F_sphere: conf_F_sphere_actin
+    F_ellipse_pole: conf_F_ellipse_pole
+    F_ellipse_equator: conf_F_ellipse_equator
+    F_ellipse_offaxis: conf_F_ellipse_offaxis
+    volume_sphere: conf_vol_sphere
+    volume_ellipse: conf_vol_ellipse
+    surface_thomsen: conf_surf_thomsen_ar2
+    surface_exact: conf_surf_exact_ar2
+    aspect_ratio: conf_ar_check
+
+# ---------------------------------------------------------------------------
+# 6. Polymerization Brownian ratchet, monomer depletion & Nucleator cycle
+# ---------------------------------------------------------------------------
+- id: run_polymerization_zero_force
+  model: cytosim_polymerization_ratchet_depletion
+  inputs:
+    growing_speed: paper_elongation_rate
+    growing_force: paper_brownian_ratchet_force
+    projected_force: force_free_growth_added
+    used_polymer: zero_used_polymer_added
+    total_polymer: total_polymer_pool_138uM_added
+    n_filaments: paper_n_seed_filaments
+    L0: paper_l_seed_initial
+    R_drop: paper_r_drop
+  outputs:
+    free_polymer: poly_fp_zero
+    v_per_filament: poly_v_fil_zero
+    v_total_network: poly_v_net_zero
+    t_to_2R: poly_t_to_2R_zero
+
+- id: run_polymerization_compressive_5pN
+  model: cytosim_polymerization_ratchet_depletion
+  inputs:
+    growing_speed: paper_elongation_rate
+    growing_force: paper_brownian_ratchet_force
+    projected_force: compressive_force_probe_added
+    used_polymer: zero_used_polymer_added
+    total_polymer: total_polymer_pool_138uM_added
+    n_filaments: paper_n_seed_filaments
+    L0: paper_l_seed_initial
+    R_drop: paper_r_drop
+  outputs:
+    v_per_filament: poly_v_fil_comp5
+    v_total_network: poly_v_net_comp5
+
+- id: run_nucleator_sweep_figs6c
+  model: cytosim_nucleation_monomer_depletion_sim
+  inputs:
+    N_seed: paper_n_seed_filaments
+    L_seed_init: paper_l_seed_initial
+    L_max: fiber_length_2pi_added
+    L_nuc_init: nucleated_fiber_init_length_added
+    k_grow: paper_elongation_rate
+    k_nuc: paper_k_bind_nucleator
+    k_unbind_nuc: paper_k_unbind_nucleator
+    C_total_actin: paper_total_actin_conc_nucleator
+    R_drop: paper_r_drop
+    dl_monomer: actin_monomer_rise_added
+    t_eval: paper_t_sim
+  sweep:
+    C_nucleator: paper_figs6c_max_length_curve
+  settings:
+    dt: 0.02
+  outputs:
+    N_nuc_molecules: cyto_nuc_molecules_sweep
+    N_fil_final: cyto_nfil_600s_sweep
+    L_seed_final: cyto_figs6c_max_length_pred
+    free_polymer_final: cyto_fp_600s_sweep
+
+- id: run_nucleator_timeseries_50nM
+  model: cytosim_nucleation_monomer_depletion_sim
+  inputs:
+    N_seed: paper_n_seed_filaments
+    L_seed_init: paper_l_seed_initial
+    L_max: fiber_length_2pi_added
+    L_nuc_init: nucleated_fiber_init_length_added
+    k_grow: paper_elongation_rate
+    C_nucleator: paper_nuc_conc_50
+    k_nuc: paper_k_bind_nucleator
+    k_unbind_nuc: paper_k_unbind_nucleator
+    C_total_actin: paper_total_actin_conc_nucleator
+    R_drop: paper_r_drop
+    dl_monomer: actin_monomer_rise_added
+  sweep:
+    t_eval: paper_figs6b_nuc50_curve
+  settings:
+    dt: 0.02
+  outputs:
+    N_fil_final: cyto_figs6b_nuc50_pred
+
+- id: run_nucleator_timeseries_150nM
+  model: cytosim_nucleation_monomer_depletion_sim
+  inputs:
+    N_seed: paper_n_seed_filaments
+    L_seed_init: paper_l_seed_initial
+    L_max: fiber_length_2pi_added
+    L_nuc_init: nucleated_fiber_init_length_added
+    k_grow: paper_elongation_rate
+    C_nucleator: paper_nuc_conc_150
+    k_nuc: paper_k_bind_nucleator
+    k_unbind_nuc: paper_k_unbind_nucleator
+    C_total_actin: paper_total_actin_conc_nucleator
+    R_drop: paper_r_drop
+    dl_monomer: actin_monomer_rise_added
+  sweep:
+    t_eval: paper_figs6b_nuc150_curve
+  settings:
+    dt: 0.02
+  outputs:
+    N_fil_final: cyto_figs6b_nuc150_pred
+
+- id: run_nucleator_single_50nM_600s
+  model: cytosim_nucleation_monomer_depletion_sim
+  inputs:
+    N_seed: paper_n_seed_filaments
+    L_seed_init: paper_l_seed_initial
+    L_max: fiber_length_2pi_added
+    L_nuc_init: nucleated_fiber_init_length_added
+    k_grow: paper_elongation_rate
+    C_nucleator: paper_nuc_conc_50
+    k_nuc: paper_k_bind_nucleator
+    k_unbind_nuc: paper_k_unbind_nucleator
+    C_total_actin: paper_total_actin_conc_nucleator
+    R_drop: paper_r_drop
+    dl_monomer: actin_monomer_rise_added
+    t_eval: paper_t_sim
+  settings:
+    dt: 0.02
+  outputs:
+    total_polymer_length: cyto_total_polymer_138uM
+    N_fil_final: cyto_nfil_50nM_600s
+    L_seed_final: cyto_L_seed_50nM_600s
+    free_polymer_final: cyto_fp_50nM_600s
+  note: "Dedicated single-point run used for dt step-size refinement down to CytoSim's dt = 0.002 s."

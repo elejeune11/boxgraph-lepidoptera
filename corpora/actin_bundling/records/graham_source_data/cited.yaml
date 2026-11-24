@@ -1,0 +1,49 @@
+# Cross-record provenance links from stored workbook cells in graham_source_data/data.yaml
+# to their corresponding printed statistics in graham2023/data.yaml.
+#
+# Notes on scope:
+# 1. Twenty-four paper text/caption summary targets copied into graham_source_data/data.yaml
+#    (`f1f_recovery_caption`, `f1f_recovery_text`, `f1f_t_half_text`, the 16 Fig. 3e/3f/4h
+#    power-law fit parameters, the 3 Fig. 5h elongation parameters, and `s4e_diam_median_caption`
+#    / `s4e_diam_max_caption`) already declare both `from_source: graham2023` and `from_datum: <id>`
+#    inline (24/24 checked and reproduced in BoxGraph Synthesis).
+# 2. Twenty caption sample-count targets carrying `from_source: graham2023` without `from_datum`
+#    (`f1f_n_trials_caption`, `f3e_rings_n`, `f3e_discs_n`, `f3f_ar_lt11_n`, `f3f_ar_gt11_n`,
+#    `f3g_{shell,ring,disc}_n`, `f5a_{1to20,1to10,1to7p5}_n`, `f5b_total_n`, `s8a_rep{2,3}_total_n`,
+#    `f5h_n_droplets_caption`, `s4e_n_caption`, `s9e_{3,5,10,15}peg_n`) have no authored scalar
+#    `sample_count` datums in graham2023/data.yaml (those counts appear only in captions and notes).
+# 3. `f1f_recovery_stored_L106` (MOESM12 cell L106 = 93.9086%) is linked in this direction
+#    (matching the chandrasekaran_source_data convention) so the 6-sig-fig Excel formula cell is
+#    judged against graham2023's rounded caption value ('93.9 ± 4.89%') at the paper's stated
+#    precision rather than vice versa, keeping the cross-record dependency graph strictly acyclic.
+# 4. The remaining 29 stored workbook summary cells (Figs. 1f at 18 s, 2d, 3d, 4h count, 6d, 6f,
+#    6g count, ED Figs. 2d, 3e, 4c) and 20 query/index inputs have no matching scalar datums in
+#    graham2023/data.yaml; all 35 workbook-backed digitized figure curves in graham2023 are
+#    cross-validated live in graham_source_data/validations.yaml (43 validations total).
+# 5. Direct provenance links vs graham_code: 0 links added. Both attachments already link cleanly
+#    to disjoint target sets in parent record graham2023 (graham_code -> 39 unique graham2023
+#    datums; graham_source_data -> 24 unique graham2023 datums; intersection = 0), and no datum
+#    in either attachment originates from the other (keeping the corpus graph strictly acyclic).
+# 6. Direct provenance links vs chandrasekaran_source_data (all 94 x 77 datum pairs): 0 links added.
+#    No datum in graham_source_data originates from the later 2024 workbook, and the two records'
+#    data.yaml files are strictly complementary on both crossover panels: MOESM14 'Fig 3d' / MOESM20
+#    'Fig S4c' store WT VASP counts (`f3d_*`, `s4c_*`) that were left blank in MOESM9 'Figure6D'
+#    rows 1-19 (which stores only VASP-GABmut), while MOESM9 'Figure7F' stores the continuum Fig. 5c
+#    energy table omitted entirely from MOESM12-22 (0 matching datums in graham_source_data/data.yaml).
+#    Query ratio inputs `ratio_1to{20,10,7p5}` (0.05, 0.1, 0.1333 Actin:VASP) and `q_ratio_{20,10,7p5}`
+#    (20, 10, 7.5 VASP:Actin) use reciprocal conventions for distinct datasets.
+# 7. Direct provenance links vs chandrasekaran2024 (all 94 x 224 = 21,056 datum pairs): 0 links added.
+#    No datum in the 2023 graham_source_data archive originates from the 2024 follow-up paper
+#    chandrasekaran2024: linking `f3d_1to7p5_disc_mean_stored` (69.6919%, MOESM14 'Fig 3d' cell AF9)
+#    to `chandrasekaran2024/exp_wt_disk_pct_1_7p5` ('70 ± 13% mean ± SEM') would invert 2023 -> 2024
+#    provenance, while in the forward direction `exp_wt_disk_pct_1_7p5` and `fig6d_wt_{shell,ring,disk}_fig`
+#    already declare `from_source: ref-15` in `chandrasekaran2024/data.yaml` (cannot be overridden in
+#    `cited.yaml`), `graham_source_data/data.yaml` declares 0 table datums (so `_cited_table` rejects
+#    table-to-scalar links), and Fig. 7F (Graham Fig. 5c) is absent from MOESM12-22. Keeping 0 direct
+#    links preserves an acyclic, temporally truthful provenance DAG.
+
+- datum: f1f_recovery_stored_L106
+  from_source: graham2023
+  from_datum: frap_recovery_fig1f
+  evidence: "41567_2022_1924_MOESM12_ESM.xlsx sheet 'Fig 1f' cell L106 (shared formula AVERAGE(C106:K106) at t = 297 s) stores the exact average FRAP recovery 0.93908628571428565 (93.9086% over the n = 7 trials extending to 297 s), printed rounded as '93.9 ± 4.89%' in Fig. 1f caption (p. 2 / p. 575) of graham2023."
+

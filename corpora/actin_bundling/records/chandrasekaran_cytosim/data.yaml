@@ -1,0 +1,599 @@
+# ==========================================================================
+# 1. Built-in defaults, physical constants & formula parameters in CytoSim C++
+# ==========================================================================
+
+# --- Global simulation defaults (src/sim/simul_prop.h, src/sim/simul_prop.cc) ---
+- id: cyto_default_viscosity
+  quantity: dynamic_viscosity
+  unit: pN*s/um^2
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/sim/simul_prop.cc
+    lines: "24"
+    quote: "viscosity = 1;"
+  note: "CytoSim default ambient viscosity = 1 pN*s/um^2 (= 1 Pa*s; unit explicitly documented in src/sim/simul_prop.h:83 and doc/sim/units.md:7)."
+
+- id: cyto_water_viscosity_doc
+  quantity: dynamic_viscosity
+  unit: pN*s/um^2
+  origin: reported
+  printed: "0.001"
+  citation:
+    file: src/sim/simul_prop.h
+    lines: "88"
+    quote: "Water                 |  0.001    |"
+  note: "Reference water viscosity 0.001 pN*s/um^2 (= 1 mPa*s) tabulated in SimulProp::viscosity documentation; confirms chandrasekaran2024's 0.5 pN*s/um^2 is 500x water rather than '50x water'."
+
+- id: cyto_default_kT
+  quantity: thermal_energy
+  unit: pN*um
+  origin: reported
+  printed: "0.0042"
+  citation:
+    file: src/sim/simul_prop.cc
+    lines: "28"
+    quote: "kT = 0.0042;"
+  note: "CytoSim default thermal energy kT = 0.0042 pN*um = 4.2 pN*nm (~31 degC / 304 K), 2.19% higher than the 4.11 pN*nm LAMMPS value printed in chandrasekaran2024 Supplementary Table 1."
+
+- id: cyto_boltzmann_const
+  quantity: boltzmann_constant
+  unit: pN*um/K
+  origin: reported
+  printed: "1.38064852 x 10^-5"
+  citation:
+    file: src/sim/simul_prop.cc
+    lines: "84"
+    quote: "kT = 1.38064852e-5 * T;"
+  note: "Boltzmann constant used when simul:temperature is specified in Kelvin."
+
+- id: cyto_default_tolerance
+  quantity: solver_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "0.05"
+  citation:
+    file: src/sim/simul_prop.cc
+    lines: "29"
+    quote: "tolerance = 0.05;"
+  note: "Default Meca::solve() residual tolerance relative to minimum Brownian displacement."
+
+- id: cyto_default_acceptable_prob
+  quantity: probability
+  unit: dimensionless
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: src/sim/simul_prop.cc
+    lines: "31"
+    quote: "acceptable_prob = 0.5;"
+  note: "Default rate-overflow warning threshold in HandProp::complete()."
+
+# --- Fiber defaults & hydrodynamic drag constants (fiber_prop.cc, fiber.cc) ---
+- id: cyto_default_segmentation
+  quantity: filament_segment_length
+  unit: um
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/sim/fiber_prop.cc
+    lines: "300"
+    quote: "segmentation  = 1;"
+  note: "Default FiberProp::segmentation = 1 um."
+
+- id: cyto_default_min_length
+  quantity: filament_length
+  unit: um
+  origin: reported
+  printed: "0.008"
+  citation:
+    file: src/sim/fiber_prop.cc
+    lines: "301"
+    quote: "min_length    = 0.008;   // suitable for actin/microtubules"
+  note: "Default FiberProp::min_length = 8 nm."
+
+- id: cyto_default_drag_radius
+  quantity: particle_radius
+  unit: um
+  origin: reported
+  printed: "0.0125"
+  citation:
+    file: src/sim/fiber_prop.cc
+    lines: "307"
+    quote: "drag_radius = 0.0125;  // radius of a Microtubule"
+  note: "Default FiberProp::drag_radius = 12.5 nm (microtubule radius, NOT actin's 3.5 nm); chandrasekaran2024 never states whether drag_radius was overridden from this default."
+
+- id: cyto_default_drag_length
+  quantity: hydrodynamic_cutoff_length
+  unit: um
+  origin: reported
+  printed: "5"
+  citation:
+    file: src/sim/fiber_prop.cc
+    lines: "308"
+    quote: "drag_length = 5;"
+  note: "Default hydrodynamic cutoff length fiber:drag_length = 5 um in Fiber::dragCoefficientCylinder()."
+
+- id: cyto_fiber_drag_prefactor
+  quantity: dimensionless_factor
+  unit: dimensionless
+  origin: reported
+  printed: "3"
+  citation:
+    file: src/sim/fiber.cc
+    lines: "884"
+    quote: "constexpr real DRAG = 3;"
+  note: "Orientation-averaged cylindrical drag prefactor DRAG = 3 (yielding 3*pi*eta*L / (ln(L/(2r)) + 0.32))."
+
+- id: cyto_tirado_ct_code
+  quantity: dimensionless_factor
+  unit: dimensionless
+  origin: reported
+  printed: "0.32"
+  citation:
+    file: src/sim/fiber.cc
+    lines: "988"
+    quote: "const real drag_cylinder = DRAG * len / ( std::log(0.5*lenc/prop->drag_radius) + 0.32 );"
+  note: "Hardcoded Tirado-de la Torre end-correction constant 0.32 in Fiber::dragCoefficientCylinder() (differs slightly from 0.312 cited in the docstring on line 956)."
+
+- id: cyto_tirado_ct_doc
+  quantity: dimensionless_factor
+  unit: dimensionless
+  origin: reported
+  printed: "0.312"
+  citation:
+    file: src/sim/fiber.cc
+    lines: "956"
+    quote: "drag_cylinder = 3 * PI * viscosity * length / ( log(shape) + 0.312 );"
+  note: "Tirado & de la Torre (1979) infinite-aspect-ratio constant 0.312 printed in comment, vs 0.32 implemented on line 988."
+
+# --- Hand, Couple & Single kinetics / diffusion constants ---
+- id: cyto_pool_unattached
+  quantity: dimensionless_factor
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/sim/hand_prop.h
+    lines: "27"
+    quote: "#define POOL_UNATTACHED 1"
+  note: "Default compile-time pooling factor POOL_UNATTACHED = 1 (unpooled single-step attachment trials)."
+
+- id: cyto_check_stiffness_kT_limit
+  quantity: energy_in_kbt
+  unit: dimensionless
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: src/sim/hand_prop.cc
+    lines: "319"
+    quote: "if ( en > 10.0 && binding_rate > 0 )"
+  note: "Thermodynamic warning threshold stiffness * (binding_range - length)^2 / kT > 10 in HandProp::checkStiffness()."
+
+- id: cyto_check_stiffness_unbind_limit
+  quantity: dimensionless_factor
+  unit: dimensionless
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: src/sim/hand_prop.cc
+    lines: "327"
+    quote: "if ( ap > 10.0 )"
+  note: "Immediate-unbinding warning threshold exp(stiffness * (binding_range - length) / unbinding_force) > 10 in HandProp::checkStiffness()."
+
+- id: cyto_couple_min_loop_default
+  quantity: filament_length
+  unit: um
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/sim/couple_prop.cc
+    lines: "48"
+    quote: "min_loop       = 1;"
+  note: "Default CoupleProp::min_loop = 1 um preventing both hands of a Couple from binding within 1 um on the same fiber."
+
+- id: cyto_couple_diffusion_uniform_factor
+  quantity: dimensionless_factor
+  unit: dimensionless
+  origin: reported
+  printed: "6.0"
+  citation:
+    file: src/sim/couple_prop.cc
+    lines: "146"
+    quote: "diffusion_dt = std::sqrt(6.0 * diffusion * time_step(sim) * POOL_UNATTACHED);"
+  note: "Uniform-distribution diffusion step half-width sqrt(6*D*dt) for free Couples (and Singles, single_prop.cc:207), yielding Var(dx) = 2*D*dt via Uniform[-1, 1] rather than Gaussian noise."
+
+# --- SpaceEllipse & bundled .cym example constants ---
+- id: cyto_thomsen_exponent
+  quantity: dimensionless_factor
+  unit: dimensionless
+  origin: reported
+  printed: "1.6075"
+  citation:
+    file: src/sim/spaces/space_ellipse.cc
+    lines: "113"
+    quote: "constexpr real POW = 1.6075;"
+  note: "Knud Thomsen exponent p = 1.6075 used by SpaceEllipse::surface() in 3D."
+
+- id: cyto_cym_actin_rigidity
+  quantity: flexural_rigidity
+  unit: pN*um^2
+  origin: reported
+  printed: "0.05"
+  citation:
+    file: cym/actin.cym
+    lines: "23"
+    quote: "rigidity = 0.05"
+  note: "Bundled CytoSim actin.cym example flexural rigidity 0.05 pN*um^2 (vs 0.075 pN*um^2 in chandrasekaran2024)."
+
+- id: cyto_cym_actin_confine_stiff
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "200"
+  citation:
+    file: cym/actin.cym
+    lines: "25"
+    quote: "confine = inside, 200"
+  note: "Bundled CytoSim actin.cym spherical confinement stiffness 200 pN/um (identical to chandrasekaran2024's actin boundary stiffness)."
+
+- id: cyto_cym_arp23_drag_radius
+  quantity: particle_radius
+  unit: um
+  origin: reported
+  printed: "0.0035"
+  citation:
+    file: cym/arp23.cym
+    lines: "31"
+    quote: "drag_radius = 0.0035"
+  note: "Bundled CytoSim arp23.cym explicitly sets actin drag_radius = 3.5 nm (overriding FiberProp's 12.5 nm microtubule default)."
+
+- id: cyto_cym_bundle_steric_push
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "10000"
+  citation:
+    file: cym/bundle_steric.cym
+    lines: "10"
+    quote: "steric = 1, 10000"
+  note: "Bundled CytoSim actin bundle_steric.cym uses steric_stiff_push = 10000 pN/um (10,000x stiffer than chandrasekaran2024's 1.0 pN/um, where full actin-actin overlap costs only 0.0058 kT)."
+
+# ==========================================================================
+# 2. Parameters & targets copied from chandrasekaran2024 (for direct audit)
+# ==========================================================================
+- id: paper_r_drop
+  quantity: droplet_radius
+  unit: um
+  origin: reported
+  printed: "1"
+  citation:
+    none: "Copied baseline spherical droplet radius from chandrasekaran2024/r_drop_baseline (p. 3, Supp. Table 2)."
+  from_source: chandrasekaran2024
+  from_datum: r_drop_baseline
+
+- id: paper_n_seed_filaments
+  quantity: filament_count
+  unit: dimensionless
+  origin: reported
+  printed: "30"
+  citation:
+    none: "Copied baseline seed filament count from chandrasekaran2024/n_seed_filaments (p. 3, Supp. Table 2)."
+  from_source: chandrasekaran2024
+  from_datum: n_seed_filaments
+
+- id: paper_l_seed_initial
+  quantity: filament_length
+  unit: um
+  origin: reported
+  printed: "0.1"
+  citation:
+    none: "Copied initial seed filament length from chandrasekaran2024/l_seed_initial (p. 3)."
+  from_source: chandrasekaran2024
+  from_datum: l_seed_initial
+
+- id: paper_l_seg_actin
+  quantity: filament_segment_length
+  unit: nm
+  origin: reported
+  printed: "100"
+  citation:
+    none: "Copied actin segmentation length L_seg = 100 nm from chandrasekaran2024/l_seg_actin (Supp. Table 2, p. 17)."
+  from_source: chandrasekaran2024
+  from_datum: l_seg_actin
+
+- id: paper_elongation_rate
+  quantity: elongation_rate
+  unit: nm/s
+  origin: reported
+  printed: "10.3"
+  citation:
+    none: "Copied baseline filament elongation rate 10.3 nm/s from chandrasekaran2024/elongation_rate_baseline (p. 3, Supp. Table 2 & 4)."
+  from_source: chandrasekaran2024
+  from_datum: elongation_rate_baseline
+
+- id: paper_t_sim
+  quantity: time
+  unit: s
+  origin: reported
+  printed: "600"
+  citation:
+    none: "Copied baseline simulation duration 600 s from chandrasekaran2024/t_sim_baseline (p. 3, Supp. Table 2)."
+  from_source: chandrasekaran2024
+  from_datum: t_sim_baseline
+
+- id: paper_dt_langevin
+  quantity: time_step
+  unit: s
+  origin: reported
+  printed: "0.002"
+  citation:
+    none: "Copied CytoSim implicit evolution time step 0.002 s from chandrasekaran2024/dt_langevin (pp. 9-10, Supp. Table 2)."
+  from_source: chandrasekaran2024
+  from_datum: dt_langevin
+
+- id: paper_time_to_2R
+  quantity: time
+  unit: s
+  origin: derived
+  printed: "184.47"
+  citation:
+    none: "Copied derived time to reach diameter 2*R_drop from chandrasekaran2024/time_to_diameter_2R (p. 3)."
+  from_source: chandrasekaran2024
+  from_datum: time_to_diameter_2R
+
+- id: paper_viscosity_ratio_water
+  quantity: viscosity_ratio
+  unit: dimensionless
+  origin: derived
+  printed: "50"
+  citation:
+    none: "Copied '50x water' droplet viscosity note from chandrasekaran2024/viscosity_ratio_water_printed (Supp. Table 2, p. 17)."
+  from_source: chandrasekaran2024
+  from_datum: viscosity_ratio_water_printed
+
+- id: paper_boundary_stiffness_actin
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "200"
+  citation:
+    none: "Copied actin boundary confinement stiffness 200 pN/um from chandrasekaran2024/boundary_stiffness_actin (Supp. Table 2, p. 17)."
+  from_source: chandrasekaran2024
+  from_datum: boundary_stiffness_actin
+
+- id: paper_boundary_stiffness_vasp
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "100"
+  citation:
+    none: "Copied VASP boundary confinement stiffness 100 pN/um from chandrasekaran2024/boundary_stiffness_vasp (Supp. Table 2, p. 17)."
+  from_source: chandrasekaran2024
+  from_datum: boundary_stiffness_vasp
+
+- id: paper_brownian_ratchet_force
+  quantity: force
+  unit: pN
+  origin: reported
+  printed: "10"
+  citation:
+    none: "Copied Brownian ratchet characteristic force 10 pN from chandrasekaran2024/brownian_ratchet_force (Supp. Table 2, p. 18)."
+  from_source: chandrasekaran2024
+  from_datum: brownian_ratchet_force
+
+- id: paper_actin_flexural_rigidity
+  quantity: flexural_rigidity
+  unit: pN*um^2
+  origin: reported
+  printed: "0.075"
+  citation:
+    none: "Copied actin flexural rigidity 0.075 pN*um^2 from chandrasekaran2024/actin_flexural_rigidity (Supp. Table 2, p. 18)."
+  from_source: chandrasekaran2024
+  from_datum: actin_flexural_rigidity
+
+- id: paper_actin_steric_radius
+  quantity: particle_radius
+  unit: nm
+  origin: reported
+  printed: "3.5"
+  citation:
+    none: "Copied actin steric radius 3.5 nm from chandrasekaran2024/actin_steric_radius (Supp. Table 2, p. 18)."
+  from_source: chandrasekaran2024
+  from_datum: actin_steric_radius
+
+- id: paper_actin_steric_stiffness
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "1.0"
+  citation:
+    none: "Copied actin steric repulsion stiffness 1.0 pN/um from chandrasekaran2024/actin_steric_stiffness (Supp. Table 2, p. 18)."
+  from_source: chandrasekaran2024
+  from_datum: actin_steric_stiffness
+
+- id: paper_vasp_radius
+  quantity: particle_radius
+  unit: nm
+  origin: reported
+  printed: "30"
+  citation:
+    none: "Copied spherical VASP tetramer radius 30 nm from chandrasekaran2024/vasp_radius (Methods p. 10, Supp. Table 2 pp. 18-19)."
+  from_source: chandrasekaran2024
+  from_datum: vasp_radius
+
+- id: paper_vasp_diffusion_rate
+  quantity: diffusion_coefficient
+  unit: um^2/s
+  origin: reported
+  printed: "10"
+  citation:
+    none: "Copied prescribed VASP diffusion rate 10 um^2/s from chandrasekaran2024/vasp_diffusion_rate (Supp. Table 2, p. 18)."
+  from_source: chandrasekaran2024
+  from_datum: vasp_diffusion_rate
+
+- id: paper_vasp_binding_distance
+  quantity: binding_distance
+  unit: nm
+  origin: reported
+  printed: "30"
+  citation:
+    none: "Copied VASP binding distance 30 nm from chandrasekaran2024/vasp_binding_distance (Methods p. 10, Supp. Table 2 p. 18)."
+  from_source: chandrasekaran2024
+  from_datum: vasp_binding_distance
+
+- id: paper_vasp_valency
+  quantity: binding_valency
+  unit: dimensionless
+  origin: reported
+  printed: "4"
+  citation:
+    none: "Copied VASP tetramer valency 4 from chandrasekaran2024/vasp_valency (Methods p. 10, Supp. Table 2 p. 18)."
+  from_source: chandrasekaran2024
+  from_datum: vasp_valency
+
+- id: paper_vasp_unbinding_force
+  quantity: force
+  unit: pN
+  origin: reported
+  printed: "10"
+  citation:
+    none: "Copied VASP characteristic unbinding force 10 pN from chandrasekaran2024/vasp_characteristic_unbinding_force (Supp. Table 2, p. 19)."
+  from_source: chandrasekaran2024
+  from_datum: vasp_characteristic_unbinding_force
+
+- id: paper_k_bind_ring
+  quantity: binding_rate
+  unit: 1/s
+  origin: reported
+  printed: "10"
+  citation:
+    none: "Copied ring-forming binding rate 10 /s from chandrasekaran2024/k_bind_ring_fig4 (p. 5)."
+  from_source: chandrasekaran2024
+  from_datum: k_bind_ring_fig4
+
+- id: paper_k_unbind_ring
+  quantity: unbinding_rate
+  unit: 1/s
+  origin: reported
+  printed: "1"
+  citation:
+    none: "Copied ring-forming unbinding rate 1 /s from chandrasekaran2024/k_unbind_ring_fig4 (p. 5)."
+  from_source: chandrasekaran2024
+  from_datum: k_unbind_ring_fig4
+
+- id: paper_k_bind_nucleator
+  quantity: binding_rate
+  unit: 1/s
+  origin: reported
+  printed: "0.2"
+  citation:
+    none: "Copied linear nucleator nucleation rate 0.2 filaments/s from chandrasekaran2024/k_bind_nucleator (Supp. Table 4, p. 20)."
+  from_source: chandrasekaran2024
+  from_datum: k_bind_nucleator
+
+- id: paper_k_unbind_nucleator
+  quantity: unbinding_rate
+  unit: 1/s
+  origin: reported
+  printed: "0.005"
+  citation:
+    none: "Copied linear nucleator unbinding rate 0.005 /s from chandrasekaran2024/k_unbind_nucleator (Supp. Table 4, p. 20)."
+  from_source: chandrasekaran2024
+  from_datum: k_unbind_nucleator
+
+- id: paper_total_actin_conc_nucleator
+  quantity: actin_concentration
+  unit: uM
+  origin: reported
+  printed: "138.38"
+  citation:
+    none: "Copied total actin concentration [T-actin] = 138.38 uM from chandrasekaran2024/total_actin_conc_nucleator (Supp. Table 4, p. 20)."
+  from_source: chandrasekaran2024
+  from_datum: total_actin_conc_nucleator
+
+- id: paper_kbt_lammps
+  quantity: thermal_energy
+  unit: pN*nm
+  origin: reported
+  printed: "4.11"
+  citation:
+    none: "Copied LAMMPS thermal energy 4.11 pN*nm from chandrasekaran2024/kbt_printed (Supp. Table 1, p. 16) for comparison with CytoSim default kT = 4.2 pN*nm."
+  from_source: chandrasekaran2024
+  from_datum: kbt_printed
+
+- id: paper_nucleator_molecules_table
+  quantity: molecule_count
+  unit: dimensionless
+  origin: reported
+  citation:
+    none: "Copied linear nucleator molecule count table from chandrasekaran2024/nucleator_molecules_table (Supp. Table 4, p. 20)."
+  from_source: chandrasekaran2024
+  from_datum: nucleator_molecules_table
+  table:
+    index_quantity: nucleator_concentration
+    index_unit: nM
+    index: ["0", "10", "25", "50", "75", "100", "125", "150"]
+    values: ["0", "25", "63", "126", "189", "252", "315", "378"]
+
+- id: paper_nuc_conc_50
+  quantity: nucleator_concentration
+  unit: nM
+  origin: reported
+  printed: "50"
+  citation:
+    none: "Copied 50 nM nucleator concentration condition from chandrasekaran2024/nucleator_threshold_conc (p. 5, Supp. Table 4, Supp. Fig. 6B)."
+  from_source: chandrasekaran2024
+  from_datum: nucleator_threshold_conc
+
+- id: paper_nuc_conc_150
+  quantity: nucleator_concentration
+  unit: nM
+  origin: reported
+  printed: "150"
+  citation:
+    none: "Maximum 150 nM nucleator condition (378 molecules) from chandrasekaran2024 Supplementary Table 4 (p. 20) and Supplementary Fig. 6B."
+  from_source: chandrasekaran2024
+
+- id: paper_figs6c_max_length_curve
+  quantity: filament_length
+  unit: um
+  origin: run
+  citation:
+    none: "Copied 1200-dpi calibrated upper filament length curve (CDF = 0.96) across [Nucleator] = 0..150 nM from chandrasekaran2024/figs6c_max_length_fig (Supplementary Fig. 6C, p. 27) to test CytoSim's exact FiberSet::steps() free_polymer + Nucleator::stepUnattached() depletion kinetics."
+  from_source: chandrasekaran2024
+  from_datum: figs6c_max_length_fig
+  table:
+    index_quantity: nucleator_concentration
+    index_unit: nM
+    index: ["0", "10", "25", "50", "75", "100", "125", "150"]
+    values: ["5.65 ± 0.06", "4.91 ± 0.07", "4.12 ± 0.06", "3.21 ± 0.07", "2.57 ± 0.07", "2.21 ± 0.07", "1.88 ± 0.07", "1.69 ± 0.06"]
+  note: "Half-widths match chandrasekaran2024 1200-dpi digitization intervals."
+
+- id: paper_figs6b_nuc50_curve
+  quantity: filament_count
+  unit: dimensionless
+  origin: run
+  citation:
+    none: "Copied 1200-dpi calibrated mean filament count time series at [Nucleator] = 50 nM (126 molecules) from chandrasekaran2024/figs6b_nuc50_fig (Supplementary Fig. 6B, p. 27)."
+  from_source: chandrasekaran2024
+  from_datum: figs6b_nuc50_fig
+  table:
+    index_quantity: time
+    index_unit: s
+    index: ["100", "200", "300", "400", "500", "580"]
+    values: ["210 ± 13", "271 ± 13", "325 ± 16", "383 ± 13", "445 ± 13", "498 ± 16"]
+
+- id: paper_figs6b_nuc150_curve
+  quantity: filament_count
+  unit: dimensionless
+  origin: run
+  citation:
+    none: "Copied 1200-dpi calibrated mean filament count time series at [Nucleator] = 150 nM (378 molecules) from chandrasekaran2024/figs6b_nuc150_fig (Supplementary Fig. 6B, p. 27)."
+  from_source: chandrasekaran2024
+  from_datum: figs6b_nuc150_fig
+  table:
+    index_quantity: time
+    index_unit: s
+    index: ["100", "200", "300", "400", "500", "580"]
+    values: ["576 ± 17", "755 ± 16", "949 ± 19", "1130 ± 16", "1310 ± 16", "1455 ± 16"]

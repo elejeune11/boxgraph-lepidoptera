@@ -1,0 +1,135 @@
+- id: viscosity_droplet_corrected_added
+  quantity: dynamic_viscosity
+  unit: pN*s/um^2
+  printed: "0.5"
+  basis: "Dynamic-viscosity unit reading (0.5 pN*s/um^2 = 0.5 Pa*s) of chandrasekaran2024 Supplementary Table 2's dimensionally misprinted '0.5 pN/s um^2'; CytoSim simul_prop.h:83 explicitly specifies units of pN.s/um^2 = Pa.s. Alternative 0.05 Pa*s matches the accompanying '50x water' note."
+  alternatives: ["0.05"]
+  stands_for: "simul:viscosity passed to CytoSim in chandrasekaran2024"
+
+- id: force_probe_bell_added
+  quantity: force
+  unit: pN
+  printed: "5"
+  basis: "Representative tensile link load (0.5 * unbinding_force = 5 pN, matching chandrasekaran2024/force_probe_bell_added) for evaluating CytoSim Hand::checkKramersDetachment() and discrete Gillespie step bias; 0 pN (unloaded) and 10 pN (f_u) are tested as alternatives."
+  alternatives: ["0", "10"]
+  stands_for: "link force norm in Hand::checkKramersDetachment()"
+
+- id: high_force_probe_added
+  quantity: force
+  unit: pN
+  printed: "30"
+  basis: "High-load probe (3 * unbinding_force = 30 pN) demonstrating discrete-step Gillespie bias when k_off(F)*dt approaches O(1) in Hand::checkKramersDetachment() at dt = 0.002 s; 20 pN and 40 pN are alternatives."
+  alternatives: ["20", "40"]
+  stands_for: "high tensile load F in Hand::checkKramersDetachment()"
+
+- id: compressive_force_probe_added
+  quantity: force
+  unit: pN
+  printed: "-5"
+  basis: "Signed projected end force f_P = -5 pN (negative = antagonistic/compressive in CytoSim Chain::projectedForceEndP()) to test GrowingFiber::step() Brownian ratchet slowdown; +5 pN (assisting/tensile, clamped to 1.0 in CytoSim) and -10 pN are alternatives."
+  alternatives: ["0", "-10", "5"]
+  stands_for: "projectedForceEndP() in GrowingFiber::step() and ClassicFiber::stepPlusEnd()"
+
+- id: boundary_excursion_probe_added
+  quantity: displacement
+  unit: nm
+  printed: "10"
+  basis: "Representative 10 nm boundary excursion (matching chandrasekaran2024/displacement_probe_spring_added) for evaluating SpaceSphere::setConfinement() and SpaceEllipse / Space::setConfinement()."
+  alternatives: ["1", "30"]
+  stands_for: "outward normal excursion beyond boundary in SpaceSphere and SpaceEllipse"
+
+- id: steric_sep_actin_half_added
+  quantity: displacement
+  unit: nm
+  printed: "3.5"
+  basis: "Half-overlap centerline separation d = 3.5 nm (overlap delta = 2*3.5 - 3.5 = 3.5 nm) between two actin filaments of steric_radius = 3.5 nm; near-zero separation 0.01 nm (full overlap) and 8.0 nm (beyond cutoff 7.0 nm) are alternatives."
+  alternatives: ["0.01", "6.0", "8.0"]
+  stands_for: "inter-segment distance d in LocusGrid::checkLL / Meca::addLongLink1"
+
+- id: steric_sep_vasp_half_added
+  quantity: displacement
+  unit: nm
+  printed: "30"
+  basis: "Half-overlap center-to-center distance d = 30 nm (overlap delta = 60 - 30 = 30 nm) between two spherical VASP tetramers of radius 30 nm; near-zero 0.01 nm (full overlap) and 65 nm (beyond cutoff 60 nm) are alternatives."
+  alternatives: ["0.01", "50", "65"]
+  stands_for: "center-to-center distance d in LocusGrid::checkPP / Meca::addLongLink1"
+
+- id: actin_monomer_rise_added
+  quantity: actin_monomer_rise
+  unit: nm
+  printed: "2.7"
+  basis: "Standard axial rise per G-actin monomer (2.7 nm, matching chandrasekaran2024/actin_monomer_rise_added) needed to convert [T-actin] = 138.38 uM into CytoSim FiberProp::total_polymer length (942.49 um = 5 * 30 * 2*pi um)."
+  alternatives: ["2.7027", "2.75"]
+  stands_for: "contour length per actin monomer for computing FiberProp::total_polymer"
+
+- id: nucleated_fiber_init_length_added
+  quantity: filament_length
+  unit: um
+  printed: "0.01"
+  basis: "Initial contour length of newly nucleated filaments in Nucleator::createFiber() (unstated in chandrasekaran2024 Supplementary Table 4); alternatives span CytoSim default FiberProp::min_length (0.008 um), cym/arp23.cym (0.02 um), and seed length (0.1 um)."
+  alternatives: ["0.008", "0.02", "0.1"]
+  stands_for: "fiber_spec length passed to Nucleator::createFiber()"
+
+- id: crosslinker_stiffness_probe_added
+  quantity: spring_stiffness
+  unit: pN/um
+  printed: "100"
+  basis: "Representative CytoSim crosslinker spring stiffness (unstated in chandrasekaran2024, cf. single_prop.cc:40 example stiffness = 100 pN/um) for evaluating HandProp::checkStiffness() thermodynamic and immediate-unbinding thresholds; alternatives span 10, 46.7 (exact 10 kT boundary at 30 nm), and 200 pN/um."
+  alternatives: ["10", "46.7", "200"]
+  stands_for: "SingleProp::stiffness or CoupleProp::stiffness in HandProp::checkStiffness()"
+
+- id: zero_used_polymer_added
+  quantity: polymer_pool_length
+  unit: um
+  printed: "0"
+  basis: "Zero used polymer baseline to evaluate the undepleted Brownian ratchet speed (free_polymer = 1) in GrowingFiber::step()."
+  alternatives: ["188.496"]
+  stands_for: "used_polymer in FiberSet::steps() for undepleted vs 30*2*pi um depleted state"
+
+- id: total_polymer_pool_138uM_added
+  quantity: polymer_pool_length
+  unit: um
+  printed: "942.49"
+  basis: "Total available F-actin contour length corresponding to [T-actin] = 138.38 uM in an R = 1 um sphere at dl = 2.7 nm/monomer (= 5 * 30 * 2*pi um = 942.48 um), used as FiberProp::total_polymer in single-step depletion checks."
+  alternatives: ["943.44", "959.94"]
+  stands_for: "FiberProp::total_polymer corresponding to [T-actin] = 138.38 uM"
+
+- id: fiber_length_2pi_added
+  quantity: filament_length
+  unit: um
+  printed: "6.283185"
+  basis: "Exact full-circumference filament length L = 2*pi*R_drop for R_drop = 1 um (chandrasekaran2024 Supplementary Table 2: 'Maximum length 2piR um')."
+  alternatives: ["6.28"]
+  stands_for: "L_fil^max = 2*pi*R_drop in CytoSim fiber bending, drag, and monomer-depletion models"
+
+- id: ellipsoid_a_ar2_added
+  quantity: spheroid_axis
+  unit: um
+  printed: "1.587401"
+  basis: "Volume-conserving prolate spheroid major semi-axis a = R * (AR)^(2/3) = 2^(2/3) = 1.587401 um at aspect ratio a/b = 2 (chandrasekaran2024 Fig. 7Aii at t = 718.5 s)."
+  alternatives: ["3.14", "1.0"]
+  stands_for: "SpaceEllipse::radii_[2] at aspect ratio 2"
+
+- id: ellipsoid_b_ar2_added
+  quantity: spheroid_axis
+  unit: um
+  printed: "0.793701"
+  basis: "Volume-conserving prolate spheroid minor semi-axis b = R * (AR)^(-1/3) = 2^(-1/3) = 0.793701 um at aspect ratio a/b = 2 (matching a * b^2 = 1.0 um^3)."
+  alternatives: ["0.564333", "1.0"]
+  stands_for: "SpaceEllipse::radii_[0,1] at aspect ratio 2"
+
+- id: t_eval_figs6b_end_added
+  quantity: time
+  unit: s
+  printed: "580"
+  basis: "Final digitized timestamp t = 580 s of chandrasekaran2024 Supplementary Fig. 6B filament-count time series (figs6b_nuc*)."
+  alternatives: ["600"]
+  stands_for: "evaluation time t = 580 s for Supplementary Fig. 6B comparison"
+
+- id: force_free_growth_added
+  quantity: force
+  unit: pN
+  printed: "0"
+  basis: "Zero antagonistic tip load (f_P = 0) for bulk-unconstrained actin filament elongation before contacting the droplet wall (t <= 184.47 s); compressive loads -1 pN and -5 pN are tested as alternatives."
+  alternatives: ["-1", "-5"]
+  stands_for: "projectedForceEndP() during unconstrained seed elongation in GrowingFiber::step()"

@@ -1,0 +1,369 @@
+# Live runs of all 11 software: true Source Data Excel reader models reading directly
+# from $BOXGRAPH_SOURCE (corpus/actin_bundling/code/graham_source_data).
+
+# --- 1. MOESM12 Fig. 1f & MOESM17 Fig. 6b FRAP summaries + curve lookup ---
+- id: run_frap_fig1f_summary
+  model: frap_summary_reader
+  inputs: {}
+  settings: {dataset: "fig1f"}
+  outputs:
+    n_trials_total: comp_f1f_n_total
+    n_trials_final: comp_f1f_n_final
+    final_recovery_mean: comp_f1f_final_mean
+    final_recovery_sd: comp_f1f_final_sd
+    final_recovery_sem: comp_f1f_final_sem
+    all_trials_last_mean: comp_f1f_all9_mean
+    all_trials_last_sd: comp_f1f_all9_sd
+    recovery_120s_mean: comp_f1f_120s_mean
+    t_half_exp_mean: comp_f1f_thalf_exp_mean
+    t_half_exp_sd: comp_f1f_thalf_exp_sd
+    t_half_halfmax_mean: comp_f1f_thalf_50_mean
+    t_half_halfmax_sd: comp_f1f_thalf_50_sd
+
+- id: run_frap_fig1f_18s
+  model: frap_curve_reader
+  inputs: {t: query_frap_18s}
+  settings: {dataset: "fig1f"}
+  outputs:
+    recovery: comp_f1f_rec_18s
+
+- id: run_frap_fig6b_3peg
+  model: frap_summary_reader
+  inputs: {}
+  settings: {dataset: "fig6b_3peg"}
+  outputs:
+    n_trials_total: comp_f6b_3peg_n
+    final_recovery_mean: comp_f6b_3peg_final_mean
+    final_recovery_sd: comp_f6b_3peg_final_sd
+
+- id: run_frap_fig6b_10peg
+  model: frap_summary_reader
+  inputs: {}
+  settings: {dataset: "fig6b_10peg"}
+  outputs:
+    n_trials_total: comp_f6b_10peg_n
+    final_recovery_mean: comp_f6b_10peg_final_mean
+    final_recovery_sd: comp_f6b_10peg_final_sd
+
+# --- 2. MOESM13 Fig. 2d, MOESM14 Fig. 3d, MOESM17 Fig. 6d, MOESM20 Fig. S4c ---
+- id: run_f2d_1to20
+  model: morphology_abundance_reader
+  inputs: {category: idx_cat_1}
+  settings: {dataset: "fig2d_1to20", method: "pooled"}
+  outputs:
+    abundance_mean: comp_f2d_1to20_unif_mean
+    total_droplets: comp_f2d_1to20_total
+
+- id: run_f2d_1to10
+  model: morphology_abundance_reader
+  inputs: {category: idx_cat_3}
+  settings: {dataset: "fig2d_1to10", method: "pooled"}
+  outputs:
+    abundance_mean: comp_f2d_1to10_oval_mean
+    total_droplets: comp_f2d_1to10_total
+
+- id: run_f2d_1to7p5
+  model: morphology_abundance_reader
+  inputs: {category: idx_cat_4}
+  settings: {dataset: "fig2d_1to7p5", method: "pooled"}
+  outputs:
+    abundance_mean: comp_f2d_1to7p5_rod_mean
+    total_droplets: comp_f2d_1to7p5_total
+
+- id: run_f3d_1to20_shell
+  model: morphology_abundance_reader
+  inputs: {category: idx_cat_1}
+  settings: {dataset: "fig3d_1to20", method: "image_mean"}
+  outputs:
+    abundance_mean: comp_f3d_1to20_shell_mean
+    abundance_sd: comp_f3d_1to20_shell_sd
+    total_droplets: comp_f3d_1to20_total
+
+- id: run_f3d_1to10_ring
+  model: morphology_abundance_reader
+  inputs: {category: idx_cat_2}
+  settings: {dataset: "fig3d_1to10", method: "image_mean"}
+  outputs:
+    abundance_mean: comp_f3d_1to10_ring_mean
+    abundance_sd: comp_f3d_1to10_ring_sd
+    total_droplets: comp_f3d_1to10_total
+
+- id: run_f3d_1to7p5_disc
+  model: morphology_abundance_reader
+  inputs: {category: idx_cat_3}
+  settings: {dataset: "fig3d_1to7p5", method: "image_mean"}
+  outputs:
+    abundance_mean: comp_f3d_1to7p5_disc_mean
+    abundance_sd: comp_f3d_1to7p5_disc_sd
+    total_droplets: comp_f3d_1to7p5_total
+
+- id: run_f6d_3peg_rod
+  model: morphology_abundance_reader
+  inputs: {category: idx_cat_4}
+  settings: {dataset: "fig6d_3peg", method: "pooled"}
+  outputs:
+    abundance_mean: comp_f6d_3peg_rod_mean
+    total_droplets: comp_f6d_3peg_total
+
+- id: run_f6d_10peg_ring
+  model: morphology_abundance_reader
+  inputs: {category: idx_cat_2}
+  settings: {dataset: "fig6d_10peg", method: "pooled"}
+  outputs:
+    abundance_mean: comp_f6d_10peg_ring_mean
+    total_droplets: comp_f6d_10peg_total
+
+- id: run_s4c_1to7p5_disc
+  model: morphology_abundance_reader
+  inputs: {category: idx_cat_3}
+  settings: {dataset: "edfig4c_1to7p5", method: "image_mean"}
+  outputs:
+    abundance_mean: comp_s4c_1to7p5_disc_mean
+    total_droplets: comp_s4c_1to7p5_total
+
+# --- 3. MOESM14 Fig. 3e/3f, MOESM15 Fig. 4h, MOESM20 Fig. S4d power-law fits ---
+- id: run_f3e_rings_fit
+  model: ring_thickness_reader
+  inputs: {D: query_diam_1um}
+  settings: {dataset: "fig3e_rings"}
+  outputs:
+    a_nls: comp_f3e_rings_a
+    b_nls: comp_f3e_rings_b
+    r2_nls: comp_f3e_rings_r2
+    n_droplets: comp_f3e_rings_n
+
+- id: run_f3e_discs_fit
+  model: ring_thickness_reader
+  inputs: {D: query_diam_1um}
+  settings: {dataset: "fig3e_discs"}
+  outputs:
+    a_nls: comp_f3e_discs_a
+    b_nls: comp_f3e_discs_b
+    r2_nls: comp_f3e_discs_r2
+    n_droplets: comp_f3e_discs_n
+
+- id: run_f3f_lt11_fit
+  model: ring_thickness_reader
+  inputs: {D: query_diam_1um}
+  settings: {dataset: "fig3f_ar_lt11"}
+  outputs:
+    a_nls: comp_f3f_lt11_a
+    b_nls: comp_f3f_lt11_b
+    r2_nls: comp_f3f_lt11_r2
+    n_droplets: comp_f3f_lt11_n
+
+- id: run_f3f_gt11_fit
+  model: ring_thickness_reader
+  inputs: {D: query_diam_1um}
+  settings: {dataset: "fig3f_ar_gt11"}
+  outputs:
+    a_nls: comp_f3f_gt11_a
+    b_nls: comp_f3f_gt11_b
+    r2_nls: comp_f3f_gt11_r2
+    n_droplets: comp_f3f_gt11_n
+
+- id: run_f4h_lt11_fit
+  model: ring_thickness_reader
+  inputs: {D: query_diam_1um}
+  settings: {dataset: "fig4h_ar_lt11"}
+  outputs:
+    a_nls: comp_f4h_lt11_a
+    b_nls: comp_f4h_lt11_b
+    r2_nls: comp_f4h_lt11_r2
+    n_droplets: comp_f4h_lt11_n
+    n_shared_fig3e: comp_f4h_shared_3e
+
+- id: run_s4d_all
+  model: ring_thickness_reader
+  inputs: {D: query_diam_1um}
+  settings: {dataset: "edfig4d_all"}
+  outputs:
+    n_droplets: comp_s4d_n
+    n_shared_fig3f_lt11: comp_s4d_shared_3f
+
+# --- 4. MOESM14 Fig. 3g aspect ratios ---
+- id: run_f3g_shell
+  model: fig3g_aspect_ratio_reader
+  inputs: {category: idx_cat_1}
+  settings: {}
+  outputs:
+    n_droplets: comp_f3g_shell_n
+    ar_median: comp_f3g_shell_med
+    p_val_student_vs_next: comp_f3g_p_sh_ri
+
+- id: run_f3g_ring
+  model: fig3g_aspect_ratio_reader
+  inputs: {category: idx_cat_2}
+  settings: {}
+  outputs:
+    n_droplets: comp_f3g_ring_n
+    ar_median: comp_f3g_ring_med
+    p_val_student_vs_next: comp_f3g_p_ri_di
+
+- id: run_f3g_disc
+  model: fig3g_aspect_ratio_reader
+  inputs: {category: idx_cat_3}
+  settings: {}
+  outputs:
+    n_droplets: comp_f3g_disc_n
+    ar_median: comp_f3g_disc_med
+    p_val_student_vs_next: comp_f3g_p_di_sh
+
+# --- 5. MOESM16 Fig. S5a/S5b & MOESM21 Fig. S8a ---
+- id: run_f5_1to20
+  model: fig5_aspect_ratio_reader
+  inputs: {ratio: ratio_1to20}
+  settings: {}
+  outputs:
+    n_droplets_5a: comp_f5a_1to20_n
+    ar_mean: comp_f5a_1to20_mean
+    ar_median: comp_f5a_1to20_med
+    total_5b: comp_f5b_total_n
+    total_s8a_rep2: comp_s8a_rep2_total_n
+    total_s8a_rep3: comp_s8a_rep3_total_n
+
+- id: run_f5_1to10
+  model: fig5_aspect_ratio_reader
+  inputs: {ratio: ratio_1to10}
+  settings: {}
+  outputs:
+    n_droplets_5a: comp_f5a_1to10_n
+    ar_mean: comp_f5a_1to10_mean
+    ar_median: comp_f5a_1to10_med
+
+- id: run_f5_1to7p5
+  model: fig5_aspect_ratio_reader
+  inputs: {ratio: ratio_1to7p5}
+  settings: {}
+  outputs:
+    n_droplets_5a: comp_f5a_1to7p5_n
+    ar_mean: comp_f5a_1to7p5_mean
+    ar_median: comp_f5a_1to7p5_med
+
+# --- 6. MOESM16 Fig. 5h elongation & MOESM17 Fig. 6f/6g intensity ---
+- id: run_f5h_fit
+  model: elongation_reader
+  inputs: {t: query_time_190s}
+  settings: {}
+  outputs:
+    slope_avg_origin: comp_f5h_slope_orig
+    r2_avg_origin: comp_f5h_r2_orig
+    slope_avg_ols: comp_f5h_slope_ols
+    slope_ind_origin_mean: comp_f5h_ind_orig_mean
+    slope_ind_origin_sd: comp_f5h_ind_orig_sd
+    slope_ind_ols_mean: comp_f5h_ind_ols_mean
+    slope_ind_ols_sd: comp_f5h_ind_ols_sd
+    end_rate_mean: comp_f5h_end_rate_mean
+    n_droplets: comp_f5h_n_droplets
+    n_at_20s: comp_f5h_n_at_20s
+
+- id: run_f6f_d1_195s
+  model: bundle_intensity_reader
+  inputs: {t: query_int_195s}
+  settings: {series: "fig6f_d1_actin", add_one: false}
+  outputs:
+    normalized_intensity: comp_f6f_d1_actin_195s
+
+- id: run_f6f_d2_195s
+  model: bundle_intensity_reader
+  inputs: {t: query_int_195s}
+  settings: {series: "fig6f_d2_actin", add_one: false}
+  outputs:
+    normalized_intensity: comp_f6f_d2_actin_195s
+
+- id: run_f6g_190s
+  model: bundle_intensity_reader
+  inputs: {t: query_int_190s}
+  settings: {series: "fig6g_avg", add_one: true}
+  outputs:
+    normalized_intensity: comp_f6g_avg_190s
+    n_droplets: comp_f6g_n_droplets
+
+# --- 7. MOESM18 Fig. S2d & MOESM19 Fig. S3e partitioning ---
+- id: run_s2d_wt
+  model: partition_reader
+  inputs: {construct: idx_construct_1}
+  settings: {dataset: "edfig2d"}
+  outputs:
+    partition_mean: comp_s2d_wt_mean
+    partition_sem: comp_s2d_wt_sem
+
+- id: run_s2d_idr
+  model: partition_reader
+  inputs: {construct: idx_construct_2}
+  settings: {dataset: "edfig2d"}
+  outputs:
+    partition_mean: comp_s2d_idr_mean
+    partition_sem: comp_s2d_idr_sem
+
+- id: run_s2d_dtet
+  model: partition_reader
+  inputs: {construct: idx_construct_3}
+  settings: {dataset: "edfig2d"}
+  outputs:
+    partition_mean: comp_s2d_dtet_mean
+    partition_sem: comp_s2d_dtet_sem
+
+- id: run_s2d_devh1
+  model: partition_reader
+  inputs: {construct: idx_construct_4}
+  settings: {dataset: "edfig2d"}
+  outputs:
+    partition_mean: comp_s2d_devh1_mean
+    partition_sem: comp_s2d_devh1_sem
+
+- id: run_s3e_mutgabfab
+  model: partition_reader
+  inputs: {construct: idx_construct_1}
+  settings: {dataset: "edfig3e"}
+  outputs:
+    partition_mean: comp_s3e_mutgabfab_mean
+    partition_sd: comp_s3e_mutgabfab_sd
+
+- id: run_s3e_mutfab
+  model: partition_reader
+  inputs: {construct: idx_construct_2}
+  settings: {dataset: "edfig3e"}
+  outputs:
+    partition_mean: comp_s3e_mutfab_mean
+    partition_sd: comp_s3e_mutfab_sd
+
+# --- 8. MOESM20 Fig. S4e & MOESM22 Fig. S9c / S9e ---
+- id: run_s4e_stats
+  model: droplet_size_reader
+  inputs: {D: query_diam_1um}
+  settings: {dataset: "edfig4e"}
+  outputs:
+    n_droplets: comp_s4e_n
+    diam_median: comp_s4e_median
+    diam_max: comp_s4e_max
+
+- id: run_s9e_3peg
+  model: edfig9e_aspect_ratio_reader
+  inputs: {peg: peg_3pct}
+  settings: {}
+  outputs:
+    n_droplets: comp_s9e_3peg_n
+    ar_mean: comp_s9e_3peg_mean
+    ar_sd: comp_s9e_3peg_sd
+
+- id: run_s9e_5peg
+  model: edfig9e_aspect_ratio_reader
+  inputs: {peg: peg_5pct}
+  settings: {}
+  outputs:
+    n_droplets: comp_s9e_5peg_n
+
+- id: run_s9e_10peg
+  model: edfig9e_aspect_ratio_reader
+  inputs: {peg: peg_10pct}
+  settings: {}
+  outputs:
+    n_droplets: comp_s9e_10peg_n
+
+- id: run_s9e_15peg
+  model: edfig9e_aspect_ratio_reader
+  inputs: {peg: peg_15pct}
+  settings: {}
+  outputs:
+    n_droplets: comp_s9e_15peg_n

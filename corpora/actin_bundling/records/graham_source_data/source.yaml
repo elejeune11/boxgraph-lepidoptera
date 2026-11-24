@@ -1,0 +1,138 @@
+id: graham_source_data
+kind: software
+title: >
+  Source Data for "Liquid-like VASP condensates drive actin polymerization and dynamic bundling"
+  (41567_2022_1924_MOESM12-22_ESM.xlsx)
+authors:
+  - Kristin Graham
+  - Aravind Chandrasekaran
+  - Liping Wang
+  - Aly Ladak
+  - Eileen M. Lafer
+  - Padmini Rangamani
+  - Jeanne C. Stachowiak
+year: 2023
+venue: Nature Physics 19, 574-585 (Source Data, MOESM12-MOESM22)
+doi: 10.1038/s41567-022-01924-1
+url: https://www.nature.com/articles/s41567-022-01924-1
+file: corpus/actin_bundling/code/graham_source_data
+version: "sha256:7cf0a5be24e74dd8160f1aa22cf3143d55c654513de9678186989164bde3bedb"
+licence: none stated
+language: "Excel (.xlsx) workbooks read via Python stdlib zipfile+xml"
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1+source_data"
+  date: "2026-11-24"
+notes: >
+  Complete BoxGraph record of all 11 Source Data Excel (.xlsx) workbooks
+  (41567_2022_1924_MOESM12-22_ESM.xlsx; 22 visible sheets, 441,739 bytes total, 158 formulas across
+  4 sheets) released with Graham et al., Nature Physics 19, 574-585 (2023) (record `graham2023`).
+  No .xlsx files or raw tables are copied into this record; 11 zero-openpyxl Python `software: true`
+  reader models under models/ parse the workbooks live from $BOXGRAPH_SOURCE via stdlib zipfile +
+  xml.etree.ElementTree to recompute exact means, sample/population SDs, SEMs, medians, IQRs,
+  sample counts, nonlinear least-squares and log-log OLS power-law fits, through-origin and
+  free-intercept linear regressions, single-exponential FRAP half-times, unpaired Student/Welch
+  t-tests, and binned diameter histograms. Across 79 intra-record comparisons (73 reproduced, 3 close,
+  3 not reproduced diagnostic checks) and 43 cross-record validations against `graham2023` (2 scalars
+  + all 35 source-data-backed blindly digitized figure curves + 6 diagnostic swap/offset/mean checks:
+  29 reproduced, 8 close, 6 not reproduced), the record verifies both the paper's printed numbers
+  and the blind PDF digitization accuracy while uncovering multiple substantive discrepancies.
+
+  COMPLETE WORKBOOK-BY-WORKBOOK & SHEET-BY-SHEET INVENTORY (11 files, 22 sheets):
+  1. 41567_2022_1924_MOESM12_ESM.xlsx (19,372 B) - sheet 'Fig 1f' (103 formulas, B4:L106):
+     9 FRAP recovery traces (-9 to 297 s, 3 s steps) + col L AVERAGE(C:K). Reproduces all 13 blindly
+     digitized points of fig1f_frap_avg_fig (13/13 reproduced, MAE 0.26%) and t_1/2 = 17.96 +/- 2.70 s
+     (per-trial 1-exp fit, matching printed 18 +/- 3 s). SETTLES +/- ambiguity & FINDS COUNT ERROR:
+     cell L106 at t = 297 s gives 93.9086% +/- 4.8891% sample SD (ddof=1; SEM = 1.85%), matching the
+     caption's 93.9 +/- 4.89%, EXCEPT trials 8 and 9 (cols J-K) end early at t = 207 s, so the final
+     t = 297 s statistic averages only n = 7 droplets, NOT n = 9 as claimed (all-9 last-point mean is
+     94.68 +/- 4.53%; at t = 120 s mean recovery is only 86.25 +/- 5.49%, vs text "in less than 2 min").
+  2. 41567_2022_1924_MOESM13_ESM.xlsx (9,249 B) - sheet 'Fig 2d' (0 formulas, C6:P11):
+     2D confocal morphology counts across n = 3 replicates for 1:20 (n = 1523), 1:10 (n = 934), and
+     1:7.5 (n = 624; all >= 600 per condition as stated). Reproduces all 12 blindly digitized bars in
+     fig2d_1to20/1to10/1to7p5_fig (12/12 reproduced, MAE 0.1-0.3%; note prose-only transposition in
+     graham2023/figures.md line 23 while digitized numbers are exact).
+  3. 41567_2022_1924_MOESM14_ESM.xlsx (36,455 B) - FOUR sheets (0 formulas):
+     (a) 'Fig 3d' (B7:AI37): 3D shell/ring/disc counts across 3 replicates + per-image mean summary
+     table AD7:AI9 (reproduced to 5+ digits; stray 'SEM' header in empty AU3; Excel time serials
+     0.055556 / 0.048611 for '1:20' / '1:10'). Reproduces all 9 digitized bars in fig3d_*_fig (9/9).
+     COUNT ERROR: caption claims "at least 600 droplets analysed per replicate", whereas replicates
+     contain only 302, 181, and 231 droplets summed across all 3 ratios (714 droplets TOTAL).
+     (b) 'Fig 3e' (C3:H175): effective diameter vs ring thickness for discs (n = 131) and rings
+     (n = 173). Nonlinear LS reproduces all 6 caption fit params (rings: 0.0476, 1.9682, R^2 = 0.7278;
+     discs: 0.0797, 1.8456, R^2 = 0.842953 truncating to 0.8429) and both digitized curves (14/14).
+     (c) 'Fig 3f' (C3:G388): effective diameter vs ring thickness for AR < 1.1 (n = 386) and AR > 1.1
+     (n = 47). Nonlinear LS reproduces all 6 caption params (0.0629, 1.8037, 0.7111; 0.0917, 1.7315,
+     0.8979) and both digitized curves (18/18).
+     (d) 'Fig 3g' (C3:E275): droplet AR for shells (n = 167, med 1.02, mean 1.0225 +/- 0.0180), rings
+     (n = 273, med 1.02, mean 1.0363 +/- 0.0382), and discs (n = 227, med 1.05, mean 1.1019 +/- 0.1436).
+     Reproduces all 3 counts, all 3 *** (P < 1.6e-5) t-tests, and fig3g_aspect_ratio_fig medians (3/3).
+  4. 41567_2022_1924_MOESM15_ESM.xlsx (17,206 B) - sheet 'Fig 4h' (0 formulas, C3:D306):
+     Experimental AR < 1.1 scatter points ONLY (n = 304; NO simulation heatmaps or critical-thickness
+     curves). SETTLES graham2023/q_fig3f_vs_fig4h_ar_lt11_fits: proves an exact 304-point bijection
+     between 'Fig 4h' and the disjoint union of 'Fig 3e' rings (173) + discs (131), omitting the 82
+     actin shells included in 'Fig 3f' (n = 386)! Nonlinear LS reproduces a = 0.0721, b = 1.7195,
+     R^2 = 0.6990 to all 4 digits and reproduces fig4h_exp_fit_fig (5/5). Also includes 4 droplets with
+     D = 4.17-4.28 um beyond Fig. 4h's 4.0 um x-axis limit.
+  5. 41567_2022_1924_MOESM16_ESM.xlsx (40,152 B) - THREE sheets (0 formulas; note 'S5' misnaming):
+     (a) 'Fig S5a' (Main Fig. 5a, C4:E1288): AR for 1:20 (n = 496), 1:10 (n = 1285), 1:7.5 (n = 589),
+     all *** P < 1e-41. MAJOR CAPTION ERROR: medians are 1.02, 1.25, 1.52 while means +/- SD are
+     1.051 +/- 0.122, 1.569 +/- 0.769, 2.403 +/- 1.828; Fig. 5a visually and digitally plots the MEAN
+     (2.394 at 1:7.5) as the box bisecting line and mean +/- SD ([0.550, 4.257]) as whiskers despite
+     caption claiming "median as a bisecting line".
+     (b) 'Fig S5b' (Main Fig. 5b, C3:J386): replicate 1 actin intensity vs AR (125 + 384 + 117 = 626,
+     exact match to caption n = 626).
+     (c) 'Fig 5h' (A4:R23): 15 elongating droplets (3 trials x 5) over 0-190 s. Forced-zero-intercept
+     regression on the 15-droplet average reproduces y = 0.0227x (0.022734 um/s) and centered R^2 =
+     0.9965 (0.996533) exactly (free-intercept OLS gives 0.02193*t + 0.1047, R^2 = 0.9984). FINDINGS:
+     cell R6 (trial 3, droplet 5, t = 20 s) is blank (n = 14 at 20 s); per-droplet through-origin
+     slopes give 22.73 +/- 3.66 nm/s (SD rounds to 4, not 3; free-intercept OLS 21.93 +/- 3.05 nm/s;
+     only 3-trial population SD gives 22.73 +/- 3.08 -> 23 +/- 3 nm/s); digitized Fig. 5h dashed line
+     is close (5R/3C, ~1.8% low at 190 s: 4.241 vs 4.319 um).
+  6. 41567_2022_1924_MOESM17_ESM.xlsx (31,617 B) - FOUR sheets (48 formulas in Fig 6d):
+     (a) 'Fig 6b' (A5:M107): FRAP for 3% PEG (n = 5, 41.76% at 306 s; fig6b_frap_3peg_fig 8/8
+     reproduced) and 10% PEG (n = 5, 0.22-1.49% at 30-300 s; fig6b_frap_10peg_fig 7R/1C close with
+     +0.8% axis-overlap bias).
+     (b) 'Fig 6d' (B7:R24, 48 SUM formulas): morphology counts for 3% PEG (n = 501 >= 500) and 10% PEG
+     (n = 1751 >= 500); reproduces all 8 digitized bars in fig6d_3peg/10peg_fig (8/8).
+     (c) 'Fig 6f' (B3:G42): photobleached elongating Droplets 1 & 2 (0-195 s, 5 s steps). LABEL SWAP:
+     Excel 'droplet 1' (ends 3.012 Actin, 1.470 VASP) and 'droplet 2' (ends 3.331 Actin, 1.234 VASP)
+     are swapped relative to Fig. 6f's legend (literal labels fail 32/40 dots; swapped labels match
+     all 40/40 dots with 0 not reproduced: 21R/19C).
+     (d) 'Fig 6g' (A4:R23): 15 elongating droplets (0-190 s). OFFSET CONVENTION: stores fractional
+     increase (I(t) - I(0))/I(0) starting at 0.0 (mean 1.2642 at 190 s), offset by -1.0 from Fig. 6g's
+     plotted I(t)/I(0) (raw fails 0/9; 1 + raw reproduces 9/9 points to 0.007-0.018).
+  7. 41567_2022_1924_MOESM18_ESM.xlsx (88,863 B) - sheet 'Fig S2d' (0 formulas, B3:X668):
+     Partitioning of WT (n = 1547), IDR/PRR (n = 1403), delta-tet/mVASP (n = 1145), delta-EVH1
+     (n = 1415) across 3 trials + summary table S6:X9 (all 4 means & SEMs reproduced to 5+ digits;
+     edfig2d_partition_fig 4/4 reproduced).
+  8. 41567_2022_1924_MOESM19_ESM.xlsx (23,977 B) - sheet 'Fig S3e' (4 formulas, C3:N297):
+     Actin partitioning into mutGABmutFAB (n = 419; 5.2585 +/- 0.9301 SD) and mutFAB (n = 502;
+     12.6440 +/- 3.4409 SD); reproduces M12:N13 formulas and edfig3e_actin_partition_fig (2/2).
+  9. 41567_2022_1924_MOESM20_ESM.xlsx (33,865 B) - THREE sheets (3 formulas in Fig S4c):
+     (a) 'Fig S4c' (A6:Q28): no-EDTA/EGTA shell/ring/disc counts across 3 replicates (129, 140, 148
+     droplets); reproduces all 9 digitized bars in edfig4c_*_fig (9/9).
+     (b) 'Fig S4d' (C3:J168): AR < 1.1 thickness vs diameter by actin:VASP (69 + 166 + 151 = 386),
+     exact 386-point bijection with MOESM14 'Fig 3f' AR < 1.1.
+     (c) 'Fig S4e' (E2:E1656): 20 uM VASP droplet diameters. Reproduces median 2.86 um, max 7.22 um,
+     and 21-bin histogram edfig4e_size_hist_fig (19R/2C, 0N, bins 0.629 + k*0.3156). OFF-BY-ONE COUNT
+     ERROR: E2:E1656 holds 1655 droplets (sum of all 21 bins = 1655), NOT 1656 as printed in caption
+     (row 1 is the text header 'Droplet diameter').
+  10. 41567_2022_1924_MOESM21_ESM.xlsx (36,064 B) - sheet 'Fig S8a' (0 formulas, C5:O657):
+      Replicates 2 (308 + 185 + 101 = 594, Right panel of ED Fig. 8a) and 3 (653 + 461 + 82 = 1196,
+      Left panel of ED Fig. 8a) of Fig. 5b actin intensity vs AR (exact match to caption counts,
+      reversed panel order).
+  11. 41567_2022_1924_MOESM22_ESM.xlsx (104,919 B) - TWO sheets (0 formulas):
+      (a) 'Fig S9c' (C3:F2595): droplet diameters at 3% (n = 708), 5% (n = 1369), 10% (n = 2593), and
+      15% PEG (n = 2443). Matches all 4 digitized curves in edfig9c_*_fig via 0.2 um bins [x, x+0.2)
+      plotted at lower edge x (5% 10/10 R, 15% 9/9 R, 10% 7R/2C, 3% MAE 0.38% vs tight spline band).
+      (b) 'Fig S9e' (B3:E2900): PEG-dependent droplet ARs matching all 4 counts (877, 2888, 2802, 2527),
+      all 4 maxima (26.52, 21.45, 7.25, 2.66; 109/877 > 15 at 3% PEG), all 3 *** t-tests, and 5/10/15%
+      PEG bars (1.26, 1.18, 1.08 vs plotted 1.27, 1.15, 1.06). MAJOR PLOT DISCREPANCY: at 3% PEG, full
+      n = 877 Source Data mean +/- SD is 7.82 +/- 5.56 (mean + SD = 13.37), whereas published ED Fig. 9e
+      draws the grey bar at 11.52 +/- 3.97 (error cap at 15.53; +47% higher bar height, -28% narrower SD).
+
+  OMITTED THEORY/SIMULATION DATA: All 26 theoretical/simulation digitized curves in graham2023
+  (Fig. 4f, Fig. 4g, Fig. 4h model curves, Fig. 5c, ED Fig. 5c, ED Fig. 6A-B, ED Fig. 7b/d-g) are
+  absent from MOESM12-MOESM22 and belong to the separate simulation notebook record.

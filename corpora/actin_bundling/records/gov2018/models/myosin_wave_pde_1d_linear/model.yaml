@@ -1,0 +1,91 @@
+id: myosin_wave_pde_1d_linear
+name: 1D linearized actin-myosin membrane wave PDE solver (Eqs. 2.1, 2.4, 5.1, 5.2; Fig. 4d)
+role: model
+described_from: ref-116
+stated:
+  page: 8
+  printed_page: "8"
+  quote: "One-dimensional simulation using our linearized model"
+  where: "Section 5(a), Fig. 4(d)"
+equation: "Linearized Eqs. (2.1), (2.4), (5.1), (5.2) in 1D periodic domain from localized Gaussian height dip h(x, 0)"
+reconstructed: "Gov (2018) reprints 1D linearized wave simulations (Fig. 4d) from Shlomovitz & Gov [116] without printing parameter values or the initial perturbation profile; this Crank-Nicolson pseudospectral solver integrates the linearized printed Eqs. (2.1), (2.4), (5.1), (5.2) to verify outward wave propagation at speed ~c_ana and that actin/CMC leads trailing myosin."
+built_from:
+  - free_energy_density_eq2_1
+  - cmc_total_current_eq2_4
+  - membrane_height_myosin_eq5_1
+  - myosin_kinetics_eq5_2
+inputs:
+  kappa:
+    quantity: bending_modulus
+    unit: pN * um
+  sigma:
+    quantity: membrane_tension
+    unit: pN / um
+  kBT:
+    quantity: thermal_energy
+    unit: pN * um
+  Lambda:
+    quantity: cmc_mobility
+    unit: um / (pN * s)
+  H0:
+    quantity: spontaneous_curvature
+    unit: 1 / um
+  ns:
+    quantity: cmc_saturation_density
+    unit: 1 / um^2
+  n0:
+    quantity: cmc_coverage_fraction
+    unit: dimensionless
+  J:
+    quantity: cmc_interaction_energy_density
+    unit: pN / um
+  xi:
+    quantity: membrane_friction_coefficient
+    unit: pN * s / um^3
+  A:
+    quantity: active_force_density
+    unit: pN / um^2
+  A_star:
+    quantity: myosin_contractile_force_density
+    unit: pN / um^2
+  k_on:
+    quantity: myosin_adsorption_rate
+    unit: 1 / s
+  k_off:
+    quantity: myosin_detachment_rate
+    unit: 1 / s
+  L:
+    quantity: domain_length
+    unit: um
+  h0_dip:
+    quantity: membrane_height
+    unit: um
+  w0_dip:
+    quantity: perturbation_width
+    unit: um
+  t_end:
+    quantity: simulation_time
+    unit: s
+outputs:
+  actin_myosin_lead:
+    quantity: spatial_lead_distance
+    unit: um
+  wave_packet_speed:
+    quantity: wave_speed
+    unit: um / s
+  h_min:
+    quantity: membrane_height
+    unit: um
+  dn_max:
+    quantity: cmc_coverage_fraction
+    unit: dimensionless
+  dn_min:
+    quantity: cmc_coverage_fraction
+    unit: dimensionless
+  dm_max:
+    quantity: myosin_concentration
+    unit: dimensionless
+settings:
+  nx: 256
+  dt: 0.05
+stochastic: false

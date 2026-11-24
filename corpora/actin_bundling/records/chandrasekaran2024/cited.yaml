@@ -1,0 +1,159 @@
+# Cross-record links from chandrasekaran2024 values to CytoSim built-in defaults and
+# bundled example conventions recorded in chandrasekaran_cytosim.
+#
+# Notes on scope:
+# 1. Most cross-record value links run in the opposite direction (chandrasekaran_cytosim
+#    copying chandrasekaran2024's simulation inputs and digitized Supp. Fig. 6B-C targets):
+#    31 of 32 from_source: chandrasekaran2024 datums in chandrasekaran_cytosim/data.yaml
+#    already declare from_datum and check out as reproduced (the single unlinked datum,
+#    paper_nuc_conc_150 = 150 nM, has no scalar datum in chandrasekaran2024/data.yaml,
+#    where 150 nM appears only as a table index in nucleator_molecules_table and condition).
+# 2. CytoSim's built-in defaults that chandrasekaran2024 leaves unstated (default kT = 0.0042
+#    pN*um, default drag_radius = 0.0125 um, water viscosity = 0.001 pN*s/um^2) do not appear
+#    as authored datums in chandrasekaran2024/data.yaml (water viscosity is in added.yaml;
+#    kbt_printed = 4.11 pN*nm is LAMMPS's temperature, not CytoSim's default 4.2 pN*nm).
+# 3. actin_flexural_rigidity (0.075 pN*um^2) already declares from_source: ref-SI4 (Gittes 1993),
+#    and actin_steric_radius (3.5 nm) is the physical steric radius rather than CytoSim's
+#    drag_radius (cym/arp23.cym:31). Only boundary_stiffness_actin (200 pN/um) directly matches
+#    CytoSim's bundled actin confinement convention (cym/actin.cym:25).
+
+- datum: boundary_stiffness_actin
+  from_source: chandrasekaran_cytosim
+  from_datum: cyto_cym_actin_confine_stiff
+  evidence: "Supplementary Table 2 (p. 17) sets actin filament spherical boundary confinement stiffness to 200 pN/um in CytoSim, matching CytoSim's bundled cym/actin.cym example convention (line 25: 'confine = inside, 200')."
+
+# ---------------------------------------------------------------------------
+# Cross-record links from chandrasekaran2024 values to released Source Data
+# (chandrasekaran_source_data: 41467_2024_46726_MOESM9_ESM.xlsx, 37 sheets).
+#
+# Notes on scope:
+# 1. Fifteen paper text/table targets copied into chandrasekaran_source_data/data.yaml
+#    (`paper_*`) are already linked inline via `from_source: chandrasekaran2024` +
+#    `from_datum` (13 reproduced, 2 no verdict for '< 10' and '~5.56'); reverse links
+#    back to those `paper_*` copies are omitted to avoid circularity.
+# 2. Five additional workbook summary/coordinate cells in chandrasekaran_source_data
+#    (`wb_f6d_1_7p5_shell_mean`, `wb_f6d_1_7p5_ring_mean`, `wb_f6d_1_7p5_disk_mean`,
+#    `q_t_600s`, `q_nfil_30`) are linked in chandrasekaran_source_data/cited.yaml so
+#    that full-precision workbook means (37.3926%, 52.7138%, 9.8936%) are judged against
+#    chandrasekaran2024's printed precision ('37 ± 4%', '53 ± 6%', '< 10%') rather than
+#    vice versa, and `t_sim_baseline` preserves its inline `from_source: ref-15`.
+# 3. None of chandrasekaran2024's 106 digitized figure curves are linked as table-to-table
+#    cited links here: 99 workbook-backed curves (plus Fig. 7Aii) are cross-validated live
+#    against the raw .xlsx sheets in chandrasekaran_source_data/validations.yaml (101
+#    validations; 7 curves are absent/overwritten in the workbook). For the sole workbook
+#    mean table `wb_f7b_means_table` (Fig. 7B), its 6-decimal rounded `filament_length`
+#    indices (2.094395..6.283185 um) differ by ~5e-8 > 1e-9 from `fig7b_aspect_ratio_bars_fig`'s
+#    exact float64 `f * pi` indices, so BoxGraph Synthesis `_cited_table` cannot match x;
+#    all 10 Fig. 7B bars are verified live by `val_fig7b_bars` in validations.yaml instead.
+# 4. Below are the 4 scalar condition/parameter datums in chandrasekaran2024/data.yaml
+#    (not already carrying `from_source` or linked from chandrasekaran_source_data) that
+#    match exact workbook coordinate cells in chandrasekaran_source_data/data.yaml.
+# ---------------------------------------------------------------------------
+
+- datum: lammps_filament_count_low
+  from_source: chandrasekaran_source_data
+  from_datum: q_nfil_6
+  evidence: "Supplementary Methods 1 (p. 21) and Supplementary Fig. 1E-F report the low-filament LAMMPS MD condition N_fil = 6, matching 41467_2024_46726_MOESM9_ESM.xlsx sheet 'FigureS1EF' cell A2 ('Number of Filaments = 6')."
+
+- datum: lammps_filament_count_high
+  from_source: chandrasekaran_source_data
+  from_datum: q_nfil_20
+  evidence: "Supplementary Methods 1 (p. 21) and Supplementary Fig. 1E-F report the high-filament LAMMPS MD condition N_fil = 20, matching 41467_2024_46726_MOESM9_ESM.xlsx sheet 'FigureS1EF' cell A3 ('Number of Filaments = 20')."
+
+- datum: icosphere_subdivision_level
+  from_source: chandrasekaran_source_data
+  from_datum: q_sub_4
+  evidence: "Methods (p. 10) and Supplementary Fig. 2B use icosphere subdivision level 4 for spherical surface area fraction, matching 41467_2024_46726_MOESM9_ESM.xlsx sheet 'FigureS2B' cell A6 ('Subdivision = 4')."
+
+- datum: k_unbind_fig5
+  from_source: chandrasekaran_source_data
+  from_datum: q_ku_0p1
+  evidence: "Fig. 5A caption (p. 6) selects the probabilistic ring-forming unbinding rate k_unbind = 0.1/s (at k_bind = 1.0/s) from the Fig. 2/3 kinetic grid, matching 41467_2024_46726_MOESM9_ESM.xlsx sheet 'FigureS2C' cell B29 (kbind = 1, kunbind = 0.1)."
+
+# ---------------------------------------------------------------------------
+# Cross-record links from chandrasekaran2024 values to companion predecessor
+# paper graham2023 (Graham et al., Nature Physics 19, 574-585, 2023; ref-15).
+#
+# Notes on scope & audit of all 10 `from_source: ref-15` datums in data.yaml:
+# 1. `chandrasekaran2024/references.yaml` does not set `source: graham2023` on
+#    `ref-15` (and `references.yaml` / `data.yaml` are read-only during relate
+#    jobs), while `boxgraph/validate.py` forbids overriding an existing
+#    `from_source: ref-15` in `data.yaml` with `from_source: graham2023` in
+#    `cited.yaml`. Consequently, none of the 10 `from_source: ref-15` datums
+#    can currently resolve to `status=checked` via `cited.yaml` alone:
+#    - `vasp_disordered_pct` ('about 60%') directly matches
+#      `graham2023/vasp_disordered_frac` ('about 60%', p. 2), blocked solely by
+#      missing `source: graham2023` on `ref-15` in `references.yaml` (would give
+#      `status=checked, verdict=no verdict` once `ref-15` is bound).
+#    - `fig7f_bending_energy_fig` and `fig7f_surface_energy_fig` (indexed by
+#      `aspect_ratio`) directly replot `graham2023/fig5c_bending_fig` and
+#      `graham2023/fig5c_surface_fig` (indexed by `droplet_aspect_ratio`):
+#      independent point-by-point verification confirms 10/10 shared bending
+#      points and 9/9 shared surface points are reproduced (see
+#      `q_graham2023_fig6d_fig7f_provenance_and_buffer_discrepancies`), but
+#      `_cited_table` rejects mismatched index-quantity names
+#      (`'aspect_ratio' != 'droplet_aspect_ratio'`) in addition to unbound `ref-15`.
+#    - `fig6d_wt_shell_fig`, `fig6d_wt_ring_fig`, `fig6d_wt_disk_fig` (indexed
+#      by `vasp_to_actin_ratio = [20, 10, 7.5]`, 1 datum per morphology) directly
+#      replot `graham2023/fig3d_1to20_fig`, `fig3d_1to10_fig`, `fig3d_1to7p5_fig`
+#      (indexed by `morphology_category_index = [1, 2, 3]`, 1 datum per ratio):
+#      independent verification confirms 9/9 bars reproduced in both directions,
+#      but their transposed 3x3 layouts cannot be linked 1-to-1 in `_cited_table`.
+#    - `exp_wt_disk_pct_1_7p5` ('70 ± 13%', mean ± SEM), `t_sim_baseline`
+#      ('600 s'), `exp_fig7ai_actin_conc` ('2 uM'), and `exp_fig7ai_vasp_conc`
+#      ('10 uM') have no matching scalar datums in `graham2023/data.yaml`
+#      (Fig. 3d 1:7.5 disc is only a figure datum in `graham2023`; 2 uM and 10 uM
+#      appear only in `conditions:` metadata; and Graham Methods p. 14 endpoint
+#      assays polymerize for 15 min = 900 s rather than 600 s).
+# 2. Below are the 2 shared baseline computational parameters in
+#    `chandrasekaran2024/data.yaml` (not carrying an inline `from_source`) that
+#    match exact scalar datums in `graham2023/data.yaml` (`status=checked`,
+#    `verdict=reproduced`, 0 cycles across all 6 VASP records).
+# ---------------------------------------------------------------------------
+
+- datum: r_drop_baseline
+  from_source: graham2023
+  from_datum: fig5c_droplet_radius
+  evidence: "chandrasekaran2024 (Results p. 3, Supplementary Table 2 p. 17, and Fig. 7B-F p. 8) adopts the same baseline spherical droplet radius R_drop = 1 um (with L = 2*pi*R_drop = 2*pi um) as the continuum ring-to-rod droplet model of graham2023 (SI Section 2.11 p. 44 / Fig. 5c: R_droplet = 1 um), directly comparing its 3D droplet deformation against Graham's 2D R_droplet = 1 um continuum curves replotted in Fig. 7E-F."
+
+- datum: l_seg_actin
+  from_source: graham2023
+  from_datum: segment_length_lcyl
+  evidence: "chandrasekaran2024 (Methods p. 10 and Supplementary Table 2 p. 17) discretizes F-actin filaments into rigid cylindrical segments of length L_seg = 100 nm (overriding CytoSim's 1 um default), carrying over the identical L_cyl = 100 nm cylindrical segment discretization from graham2023 (SI Table 1 p. 39 and SI Section 2.2 p. 40)."
+
+# ---------------------------------------------------------------------------
+# Audit against graham_source_data (41567_2022_1924_MOESM12-22_ESM.xlsx;
+# all 224 x 94 = 21,056 datum pairs; 0 direct links added):
+# 1. All 10 datums in chandrasekaran2024/data.yaml citing Graham et al. (2023)
+#    already declare `from_source: ref-15` inline, and `boxgraph/validate.py`
+#    forbids overriding an existing `from_source: ref-15` with
+#    `from_source: graham_source_data` in `cited.yaml` (while `ref-15` names
+#    the 2023 article rather than the Excel archive, and `data.yaml` /
+#    `references.yaml` are read-only):
+#    - `exp_wt_disk_pct_1_7p5` ('70 ± 13%', mean ± SEM) is the sole `ref-15`
+#      scalar datum whose underlying value exists as a scalar in
+#      `graham_source_data/data.yaml` (`f3d_1to7p5_disc_mean_stored = 69.6919%`,
+#      MOESM14 'Fig 3d' cell AF9; SD `f3d_1to7p5_disc_sd_stored = 21.6496%` ->
+#      SEM = 12.4994%; reproduced). Reverse linking in `graham_source_data/
+#      cited.yaml` is rejected because it would invert 2023 -> 2024 provenance.
+#    - `fig6d_wt_shell_fig`, `fig6d_wt_ring_fig`, `fig6d_wt_disk_fig` are
+#      3-point digitized figure tables, whereas `graham_source_data/data.yaml`
+#      declares 0 table datums (storing only 3 of the 9 Fig. 3d bar means as
+#      scalars), so BoxGraph Synthesis `_cited_table` also rejects table-to-
+#      scalar links (live 9-bar verification against MOESM14 'Fig 3d' vs
+#      MOESM20 'Fig S4c' is documented in `questions.yaml`).
+#    - `fig7f_bending_energy_fig`, `fig7f_surface_energy_fig` have 0 matching
+#      datums in `graham_source_data` (all 26 theory/simulation panels including
+#      Fig. 5c were omitted from MOESM12-22).
+#    - `t_sim_baseline` ('600 s'), `vasp_disordered_pct` ('about 60%'),
+#      `exp_fig7ai_actin_conc` ('2 uM'), and `exp_fig7ai_vasp_conc` ('10 uM')
+#      have no matching datums in `graham_source_data/data.yaml`.
+# 2. Across the remaining 214 datums, all numerically close scalar pairs in the
+#    224 x 94 matrix are unrelated quantities or distinct experimental protocols
+#    (`exp_peg8k_wv = 3%` is Chandrasekaran's 2024 EDTA-free GABmut droplet
+#    buffer recipe, not derived from MOESM22 'Fig S9e' query key `peg_3pct = 3%`;
+#    `r_drop_baseline = 1 um` is droplet radius already linked to
+#    `graham2023/fig5c_droplet_radius`, not `query_diam_1um = 1.0 um` diameter).
+# ---------------------------------------------------------------------------
+
+

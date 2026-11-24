@@ -1,0 +1,485 @@
+# ---------------------------------------------------------------------------
+# 1. Droplet characteristic length scales & filament elongation kinetics
+# ---------------------------------------------------------------------------
+- id: run_droplet_lengths_baseline
+  model: droplet_characteristic_lengths
+  inputs:
+    R_drop: r_drop_baseline
+  outputs:
+    L_diam: droplet_diameter_1um
+    L_semi: droplet_semicirc_1um
+    L_circ: droplet_circ_1um
+
+- id: run_elongation_rate_derived
+  model: elongation_rate_from_growth_time
+  inputs:
+    L_target: droplet_circ_1um
+    L0: l_seed_initial
+    T_grow: t_sim_baseline
+  outputs:
+    k_grow: k_grow_computed
+
+- id: run_filament_length_600s_printed_k
+  model: filament_elongation_length
+  inputs:
+    L0: l_seed_initial
+    k_grow: elongation_rate_baseline
+    t: t_sim_baseline
+  outputs:
+    L_fil: L_fil_600s_printed_k
+
+- id: run_filament_length_600s_chained_k
+  model: filament_elongation_length
+  inputs:
+    L0: l_seed_initial
+    k_grow: k_grow_computed
+    t: t_sim_baseline
+  outputs:
+    L_fil: L_fil_600s_chained_k
+
+- id: run_time_to_2R_printed_k
+  model: filament_growth_time
+  inputs:
+    L_target: droplet_diameter_1um
+    L0: l_seed_initial
+    k_grow: elongation_rate_baseline
+  outputs:
+    t_grow: t_2R_computed_printed_k
+
+- id: run_time_to_2R_chained_k
+  model: filament_growth_time
+  inputs:
+    L_target: droplet_diameter_1um
+    L0: l_seed_initial
+    k_grow: k_grow_computed
+  outputs:
+    t_grow: t_2R_computed_chained_k
+
+- id: run_time_to_2piR_printed_k
+  model: filament_growth_time
+  inputs:
+    L_target: droplet_circ_1um
+    L0: l_seed_initial
+    k_grow: elongation_rate_baseline
+  outputs:
+    t_grow: t_2piR_computed_printed_k
+
+- id: run_total_actin_addition_baseline
+  model: total_actin_addition_rate
+  inputs:
+    k_grow: elongation_rate_baseline
+    N_fil: n_seed_filaments
+  outputs:
+    R_add: R_add_baseline
+
+- id: run_monomer_depletion_at_final_actin
+  model: monomer_depletion_elongation_rate
+  inputs:
+    k_grow: elongation_rate_baseline
+    N_fil: n_seed_filaments
+    F_actin: final_actin_conc_baseline
+    T_actin: total_actin_conc_nucleator
+  outputs:
+    v_elong: v_elong_depleted_27uM
+
+- id: run_brownian_ratchet_probe
+  model: brownian_ratchet_growth_rate
+  inputs:
+    k_grow: elongation_rate_baseline
+    f: force_probe_bell_added
+    f_grow: brownian_ratchet_force
+  outputs:
+    v: v_ratchet_probe
+
+# ---------------------------------------------------------------------------
+# 2. Actin, nucleator, and VASP concentrations & counts
+# ---------------------------------------------------------------------------
+- id: run_final_actin_conc_exact_2pi
+  model: final_actin_concentration
+  inputs:
+    N_fil: n_seed_filaments
+    L_fil: droplet_circ_1um
+    dl: actin_monomer_rise_added
+    R_drop: r_drop_baseline
+  outputs:
+    C_actin: C_actin_final_exact_2pi
+
+- id: run_final_actin_conc_chained_L600
+  model: final_actin_concentration
+  inputs:
+    N_fil: n_seed_filaments
+    L_fil: L_fil_600s_printed_k
+    dl: actin_monomer_rise_added
+    R_drop: r_drop_baseline
+  outputs:
+    C_actin: C_actin_final_chained_L600
+
+- id: run_nucleator_molecule_counts
+  model: molecule_count_from_concentration
+  inputs:
+    R_drop: r_drop_baseline
+  sweep:
+    C: nucleator_molecules_table
+  outputs:
+    N: nucleator_molecules_computed
+
+- id: run_exp_vasp_tetramer_conc
+  model: vasp_tetramer_concentration
+  inputs:
+    C_vasp_mon: exp_vasp_monomer_conc
+    valency: vasp_valency
+  outputs:
+    C_vasp_tet: exp_vasp_tet_computed
+
+- id: run_exp_actin_conc_table
+  model: actin_concentration_from_ratio
+  inputs:
+    C_vasp_mon: exp_vasp_monomer_conc
+  sweep:
+    r_vasp_to_actin: exp_actin_conc_table
+  outputs:
+    C_actin: exp_actin_conc_computed
+
+# ---------------------------------------------------------------------------
+# 3. Mechanics, crosslinking kinetics, Langevin dynamics & viscosity
+# ---------------------------------------------------------------------------
+- id: run_bell_unbinding_ring_fig4
+  model: bell_slip_bond_unbinding
+  inputs:
+    k_unbind0: k_unbind_ring_fig4
+    f: force_probe_bell_added
+    f_u: vasp_characteristic_unbinding_force
+  outputs:
+    k_unbind: k_unbind_bell_probe
+    tau_res: tau_res_bell_probe
+
+- id: run_persistence_length_actin
+  model: persistence_length_from_rigidity
+  inputs:
+    kappa: actin_flexural_rigidity
+    kBT: kbt_printed
+  outputs:
+    l_p: l_p_actin_computed
+
+- id: run_lammps_k_bend_thermal
+  model: bending_stiffness_thermal_units
+  inputs:
+    k_bend_phys: lammps_k_bend_phys
+    kBT: kbt_printed
+  outputs:
+    k_bend_thermal: lammps_k_bend_thermal_computed
+
+- id: run_harmonic_boundary_actin_probe
+  model: harmonic_repulsion_force
+  inputs:
+    k_spring: boundary_stiffness_actin
+    delta: displacement_probe_spring_added
+  outputs:
+    F: F_boundary_actin_probe
+
+- id: run_vasp_mobility_from_D
+  model: mobility_from_diffusion
+  inputs:
+    D: vasp_diffusion_rate
+    kBT: kbt_printed
+  outputs:
+    mu: vasp_mobility_computed
+
+- id: run_einstein_D_roundtrip
+  model: einstein_diffusion_relation
+  inputs:
+    mu: vasp_mobility_computed
+    kBT: kbt_printed
+  outputs:
+    D: vasp_D_einstein_check
+
+- id: run_brownian_noise_from_D
+  model: brownian_noise_stddev
+  inputs:
+    D: vasp_diffusion_rate
+    dt: dt_langevin
+  outputs:
+    sigma_B: vasp_sigma_B_from_D
+
+- id: run_brownian_noise_from_mu
+  model: brownian_noise_from_mobility
+  inputs:
+    mu: vasp_mobility_computed
+    kBT: kbt_printed
+    dt: dt_langevin
+  outputs:
+    sigma_B: vasp_sigma_B_from_mu
+
+- id: run_langevin_1d_vasp
+  model: langevin_overdamped_1d
+  inputs:
+    mu: vasp_mobility_computed
+    kBT: kbt_printed
+    f: force_probe_bell_added
+  settings:
+    dt: 0.002
+    t_sim: 1.0
+    n_particles: 4000
+    seed: 42
+  replicates: 5
+  outputs:
+    D_eff: vasp_D_eff_langevin
+    mean_dx: vasp_mean_dx_langevin
+
+- id: run_viscosity_ratio_water
+  model: droplet_viscosity_ratio_water
+  inputs:
+    eta_drop: viscosity_droplet_unit_corrected_added
+    eta_water: viscosity_water_added
+  outputs:
+    alpha_visc: viscosity_ratio_computed
+
+- id: run_stokes_einstein_vasp
+  model: stokes_einstein_diffusion
+  inputs:
+    kBT: kbt_printed
+    eta: viscosity_droplet_unit_corrected_added
+    r: vasp_radius
+  outputs:
+    D_SE: vasp_D_stokes_einstein
+
+# ---------------------------------------------------------------------------
+# 4. LAMMPS coarse-grained MD analytical checks & variants
+# ---------------------------------------------------------------------------
+- id: run_lammps_lj_vasp_vasp
+  model: lammps_lennard_jones_potential
+  inputs:
+    eps: lammps_eps_vasp_vasp
+    sigma: lammps_sigma_vasp_crowder
+    r: lammps_pair_distance_probe_added
+    r_cut: lammps_cutoff_attractive
+  outputs:
+    U: lammps_U_vv_probe
+    r_wca: lammps_r_wca_vasp
+
+- id: run_lammps_sigma_actin_crowder
+  model: lammps_lorentz_berthelot_sigma
+  inputs:
+    sigma_1: lammps_sigma_vasp_crowder
+    sigma_2: lammps_sigma_actin
+  outputs:
+    sigma_12: lammps_sigma_actin_crowder_computed
+
+- id: run_lammps_crowder_vol_frac_printed
+  model: lammps_crowder_volume_fraction
+  inputs:
+    N_crowder: lammps_crowder_count
+    r_crowder: lammps_sigma_vasp_crowder
+    L_box: lammps_box_length
+  outputs:
+    phi: lammps_crowder_vol_frac_printed_model
+
+- id: run_lammps_crowder_vol_frac_diameter
+  model: lammps_crowder_volume_fraction_diameter
+  inputs:
+    N_crowder: lammps_crowder_count
+    d_crowder: lammps_sigma_vasp_crowder
+    L_box: lammps_box_length
+  outputs:
+    phi: lammps_crowder_vol_frac_diameter_model
+
+- id: run_lammps_reduced_temp
+  model: lammps_reduced_temperature
+  inputs:
+    kBT: kbt_printed
+    eps_VV: lammps_eps_si_added
+  outputs:
+    T_star: lammps_T_star_computed
+
+- id: run_lammps_md_time_printed
+  model: lammps_md_time_unit
+  inputs:
+    sigma: lammps_sigma_si_added
+    m: lammps_particle_mass_si_added
+    eps_VV: lammps_eps_si_added
+  outputs:
+    tau_MD_printed: lammps_tau_MD_printed_dim
+
+- id: run_lammps_md_time_sqrt
+  model: lammps_md_time_unit_sqrt
+  inputs:
+    sigma: lammps_sigma_si_added
+    m: lammps_particle_mass_si_added
+    eps_VV: lammps_eps_si_added
+  outputs:
+    tau_MD: lammps_tau_MD_sqrt_computed
+
+- id: run_lammps_harmonic_bond_actin
+  model: lammps_harmonic_bond_potential
+  inputs:
+    K_bond: lammps_k_bond_actin
+    r: lammps_bond_stretch_probe_added
+    r0: lammps_r0_bond_actin
+  outputs:
+    U_bond: lammps_U_bond_actin_probe
+
+- id: run_lammps_harmonic_angle_actin
+  model: lammps_harmonic_angle_potential
+  inputs:
+    K_angle: lammps_k_angle_chosen
+    theta: lammps_angle_probe_added
+    theta0: lammps_theta0_angle
+  outputs:
+    U_angle: lammps_U_angle_actin_probe
+
+- id: run_lammps_asphericity_probe
+  model: lammps_droplet_asphericity
+  inputs:
+    a: lammps_ellipsoid_a_probe_added
+    b: lammps_ellipsoid_a_probe_added
+    c: lammps_ellipsoid_c_probe_added
+  outputs:
+    asphericity: lammps_asphericity_probe
+
+- id: run_lammps_aspect_ratio_probe
+  model: lammps_droplet_aspect_ratio
+  inputs:
+    a: lammps_ellipsoid_a_probe_added
+    c: lammps_ellipsoid_c_probe_added
+  outputs:
+    aspect_ratio: lammps_aspect_ratio_probe
+
+# ---------------------------------------------------------------------------
+# 5. Droplet deformation, cap geometry, icosphere & morphology closure
+# ---------------------------------------------------------------------------
+- id: run_aspect_ratio_max_length_limited
+  model: filament_length_limited_aspect_ratio
+  inputs:
+    L_max: droplet_circ_1um
+    R_drop: r_drop_baseline
+  outputs:
+    aspect_ratio: ar_max_length_limited_computed
+
+- id: run_fig7aii_deformation_schedule
+  model: quasistatic_droplet_deformation_schedule
+  inputs:
+    t0: t_sim_baseline
+    R_drop: r_drop_baseline
+    dz: deformation_z_step
+    dt_relax: deformation_relax_time
+  sweep:
+    t: fig7aii_aspect_ratio_vs_time
+  outputs:
+    a: fig7aii_a_computed
+    aspect_ratio: fig7aii_ar_computed
+
+- id: run_quasistatic_step428_single
+  model: quasistatic_droplet_deformation_schedule
+  inputs:
+    t: t_sim_baseline
+    t0: t_sim_baseline
+    R_drop: r_drop_baseline
+    dz: deformation_z_step
+    dt_relax: deformation_relax_time
+  outputs:
+    a: sphere_a_t600
+    aspect_ratio: sphere_ar_t600
+
+- id: run_prolate_spheroid_at_t600
+  model: prolate_spheroid_volume_conserving
+  inputs:
+    a: sphere_a_t600
+    R_drop: r_drop_baseline
+  outputs:
+    b: sphere_b_t600
+    aspect_ratio: sphere_ar_check
+    surface_area: sphere_surface_area_1um
+
+- id: run_ellipse_2d_max_ar
+  model: ellipse_2d_constant_area
+  inputs:
+    L_max: droplet_circ_1um
+    R_drop: r_drop_baseline
+  outputs:
+    b: ellipse_2d_b_max
+    aspect_ratio: ellipse_2d_ar_max
+
+- id: run_cap_geometry_baseline
+  model: prolate_spheroid_cap_geometry
+  inputs:
+    f_caps: cap_total_volume_fraction
+    C_bulk: final_actin_conc_baseline
+  settings:
+    tol: 1.0e-4
+  outputs:
+    f_single: cap_single_frac_computed
+    u_cap: cap_u_computed
+    C_thresh: cap_C_thresh_computed
+    C_thresh_pct: cap_C_thresh_pct_computed
+
+- id: run_icosphere_4x_1um
+  model: icosphere_subdivision_geometry
+  inputs:
+    R_drop: r_drop_baseline
+    n_subdiv: icosphere_subdivision_level
+  outputs:
+    n_faces: icosphere_4x_faces
+    median_edge: icosphere_4x_median_edge
+    mean_edge: icosphere_4x_mean_edge
+
+- id: run_gabmut_disk_complement
+  model: morphology_fraction_complement
+  inputs:
+    P_ring: exp_gabmut_ring_pct_1_7p5
+    P_shell: exp_gabmut_shell_pct_1_7p5
+  outputs:
+    P_disk: exp_gabmut_disk_complement
+
+# ---------------------------------------------------------------------------
+# 6. Additional audit runs
+# ---------------------------------------------------------------------------
+- id: run_lammps_reduced_temp_vs_table1
+  model: lammps_reduced_temp_from_lj_eps
+  inputs:
+    eps_VV_lj: lammps_eps_vasp_vasp
+  outputs:
+    T_star: lammps_T_star_from_table1
+
+- id: run_lammps_radial_density_probe
+  model: lammps_radial_number_density
+  inputs:
+    N: lammps_shell_count_probe_added
+    r: lammps_ellipsoid_a_probe_added
+    dr: lammps_sigma_vasp_crowder
+  outputs:
+    rho: lammps_radial_density_probe
+
+# ---------------------------------------------------------------------------
+# 7. Digitized-figure sweep runs (Fig. 7B & Supplementary Fig. 2B)
+# ---------------------------------------------------------------------------
+- id: run_fig7b_length_limited_sweep
+  model: filament_length_limited_aspect_ratio
+  inputs:
+    R_drop: r_drop_baseline
+  sweep:
+    L_max: fig7b_length_limited_curve_fig
+  outputs:
+    aspect_ratio: fig7b_length_limited_computed
+  note: "Sweeps (L_max / (2 R_drop))^(3/2) across all 10 calibrated x-positions of the Fig. 7B theoretical black solid curve."
+
+- id: run_fig7b_bars_vs_length_limited
+  model: filament_length_limited_aspect_ratio
+  inputs:
+    R_drop: r_drop_baseline
+  sweep:
+    L_max: fig7b_aspect_ratio_bars_fig
+  outputs:
+    aspect_ratio: fig7b_bars_length_limited_computed
+  note: "Evaluates the analytical filament-length-limited aspect ratio at all 10 L_fil^max values of the Fig. 7B CytoSim bars."
+
+- id: run_figs2b_icosphere_sweep
+  model: icosphere_subdivision_geometry
+  inputs:
+    R_drop: r_drop_baseline
+  sweep:
+    n_subdiv: figs2b_icosphere_edge_fig
+  outputs:
+    n_faces: figs2b_n_faces_computed
+    median_edge: figs2b_median_edge_computed
+    mean_edge: figs2b_mean_edge_computed
+  note: "Sweeps icosphere subdivision level n = 0..5 to compare mesh median edge length against calibrated Supplementary Fig. 2B medians."

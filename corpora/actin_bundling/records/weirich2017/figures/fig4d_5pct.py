@@ -1,0 +1,10 @@
+"""Calibrated reader for Fig. 4D 5.0% filamin rescaled contraction collapse."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _fig4d import read_series
+
+
+def read(image, at):
+    return read_series(image, at, "5pct")

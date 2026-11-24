@@ -1,0 +1,941 @@
+# Open questions documenting every code-vs-paper discrepancy, hidden parameter, bug, and settled graham2023 question.
+
+- id: q_generatering_double_off_by_one_and_ieee754_sawtooth
+  kind: possible_error
+  about:
+    - lcyl_scale_frac_code
+    - lcyl_fixed_code
+    - paper_final_ring_length_ratio
+    - notebook_ring_discretization
+    - notebook_droplet_ring_slsqp
+    - notebook_critical_ring_thickness
+    - cmp_lratio_d1_vs_paper
+    - cmp_lratio_d1p5_vs_paper
+    - cmp_nb_fig4h_gI5
+    - cmp_nb_fig4h_gI15
+  text: >
+    MAJOR DISCOVERY SETTLING graham2023 q_digitize_slsqp_systematic_ar_discrepancy AND q_extension_step_100nm_vs_01D:
+    graham2023 SI Section 2.6 states that an initial filament of length L = D is extended by 0.1*D for
+    21 cycles to L_final = 3.1*D (~ pi*D), and Table 1 lists a fixed L_cyl = 100 nm. In VASPDroplet_simulate.ipynb:
+    (1) When lcylscalewithD = True (as in sample call line 672), line 895 scales the segment length itself
+    as lcyl = D * 0.1 * 1e3 (so lcyl = 200 nm at D = 2 um, 400 nm at D = 4 um). Running with Table 1's
+    fixed lcyl = 100 nm at D = 2 um, gamma_I = 1 pN (cmp_nb_fig4g_d2_gI1_fixed_lcyl) overshoots to AR = 1.89
+    vs published 1.701, whereas lcyl = 200 nm matches the plateau 1.705.
+    (2) generatering() contains TWO off-by-one bugs: line 722 sets Nbeads = int(D*1e3/lcyl) = 10 beads
+    (= 9 segments = 0.9*D, not 1.0*D), and lines 725-744 loop range(0, 21) where trialidx == 0 initializes
+    and only trialidx = 1..20 (20 iterations, not 21) call extendstraight(). Thus the actual ring has
+    Nbeads = 30 (29 segments, L_final = 2.9*D) rather than 32 beads (31 segments, 3.1*D)! An open arc of
+    2.9*D leaves a ~0.24*D gap so its ends push outward smoothly and saturate at AR ~ 1.57 (gamma_I = 5 pN)
+    and ~ 1.74 (gamma_I = 1 pN), explaining why graham2023's literal 3.1*D model underpredicted deformation
+    by 2x at low T_ring and buckled discontinuously to AR = 1.93-2.19 at high T_ring.
+    (3) Worse, IEEE-754 floating-point division in int(D*1e3 / (D*0.1*1e3)) evaluates to 9.999999999999998
+    and truncates to Nbeads_init = 9 (Nbeads_final = 29, 28 segments, L_final = 2.8*D) specifically for
+    D = 0.75, 1.5, 1.75, 3.0, and 3.5 um! Because a shorter 2.8*D arc deforms the droplet at lower T_ring
+    than a 2.9*D arc, this IEEE-754 bug directly produces the non-monotonic sawtooth dips visible at
+    D = 3.0 and 3.5 um across every curve in published Fig. 4h!
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "712-745"
+    quote: "sparams.Nbeads = int(diameter*1e3/sparams.lcyl)"
+
+- id: q_residual_additive_nfil_plus2_offset
+  kind: unexplained_difference
+  about:
+    - nfil_loop_start_code
+    - rcyl_init_code
+    - notebook_droplet_ring_slsqp
+    - notebook_droplet_ring_slsqp_nfil_plus2
+    - cmp_nb_fig4f
+    - cmp_nb_fig4g_d1_gI1
+    - cmp_nb_fig4g_d1_gI5
+    - cmp_nb_fig4g_d2_gI1
+    - cmp_nb_fig4g_d2_gI5
+    - cmp_nb_edfig7b_d1_gI2p5
+    - cmp_nb_edfig7d_d1_gI7p5
+    - cmp_nb_edfig7e_d1_gI10
+    - cmp_nb_edfig7f_d1_gI12p5
+    - cmp_nb_edfig7g_d1_gI15
+    - cmp_plus2_fig4f
+    - cmp_plus2_fig4g_d1_gI5
+  text: >
+    Even after accounting for the exact 2.9*D (Nbeads = 30) ring length and lcyl = 0.1*D, the unmodified
+    notebook SLSQP model as written still systematically underpredicts published Fig. 4f, Fig. 4g, and
+    Extended Data Fig. 7 by an EXACT ADDITIVE offset of +2 filaments (+30 nm in T_ring), independent of
+    T_ring, gamma_I (1.0 to 15.0 pN), and D (1.0 and 2.0 um). Specifically: at D = 1 um, gamma_I = 5 pN,
+    Fig. 4f's T_ring = 5 nm (Nfil = 1) droplet has AR = 1.1012, whereas the notebook at Nfil = 1 gives
+    1.0358 and at Nfil = 3 gives 1.1010; at T_ring = 480 nm (Nfil = 32), Fig. 4f reads 1.5728 whereas
+    the notebook gives 1.5618 at Nfil = 32 and 1.5729 at Nfil = 34. Across all 61 digitized points of
+    Fig. 4g (D = 1, 2 um; gamma_I = 1, 5 pN) and Extended Data Fig. 7 (D = 1 um; gamma_I = 2.5-15 pN),
+    the diagnostic Nfil + 2 variant collapses MAE from 0.021-0.037 down to 0.0012-0.0043 (reproducing
+    every single heatmap curve within colorbar precision, whereas multiplicative kbend scaling cannot
+    match the shape). A likely origin is an off-by-two row-indexing bug in the unreleased plotting script
+    reading solution_TV2_*.txt, because simulate() starts at Nfil = 2 (line 918) and appends BOTH the
+    noisy pre-minimization opt_var (line 929) and the minimized res.x (line 943) into solnlistvec.
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "918-944"
+    quote: "for Nfil in range(2,targetNfil[0]+1):"
+
+- id: q_kstr_not_scaled_by_nfil
+  kind: possible_error
+  about:
+    - kstr_default_code
+    - notebook_droplet_ring_slsqp
+  text: >
+    graham2023 SI Table 1 (p. 39) states k_stretch = N_fil * 100 pN/nm (proportional to filament count).
+    In VASPDroplet_simulate.ipynb, kstr is set once to 100.0 (line 76) / 1e2 (line 892) and is NEVER
+    multiplied by Nfil in the thickness-ramping loop (lines 918-926 only update sparams.rcyl and
+    sparams.kbend). Numerical ablation at D = 1 um, gamma_I = 5 pN, Nfil = 20 shows this has negligible
+    effect on equilibrium AR (1.4620 at kstr = 100 vs 1.4624 at kstr = 2000 pN/nm) because segments remain
+    near rest length lcyl.
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "892"
+    quote: "sparams.kstr = 1e2;"
+
+- id: q_gamma_avd_half_of_table1
+  kind: possible_error
+  about:
+    - gamma_avd_code
+    - paper_gamma_avd
+    - notebook_wetting_tension
+    - cmp_edfig5c_ke64_code_gavd
+    - cmp_edfig5c_ke64_paper_gavd
+  text: >
+    VASPDroplet_simulate.ipynb line 877 sets sparams.surface_T = [gamma_VP, 1e-8, 0.5e4], i.e.,
+    gamma_AVD = 5000 pN/nm — HALF of the 1 x 10^4 pN/nm printed in graham2023 SI Table 1 (p. 39) and
+    plotted as the plateau of Extended Data Fig. 5c (p. 20). Calling live getsurfaceTension() with the
+    code's 0.5e4 fails Extended Data Fig. 5c (cmp_edfig5c_ke64_code_gavd: not reproduced), whereas passing
+    Table 1's 1e4 reproduces all 6 points (cmp_edfig5c_ke64_paper_gavd: reproduced) and settles graham2023
+    q_eqS4_S5_wetting_sign_inverted by proving the code implements Delta = (b - a)/2 = (gamma_AVD - gamma_AVR)/2
+    and Delta*tanh(64*(e-1)) + Delta + gamma_AVR (opposite to the misprinted SI Eqs. S4-S5).
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "877"
+    quote: "sparams.surface_T = [gamma_VP,1e-8,0.5e4]"
+
+- id: q_noise_amplitude_10x_larger_and_perturbs_a
+  kind: possible_error
+  about:
+    - noisefactor_code
+    - paper_noise_amp
+    - notebook_ring_discretization
+    - cmp_noise_amp_vs_paper
+  text: >
+    graham2023 SI Section 2.6 (p. 41) states that uniform random coordinate noise in [0, 0.1 nm] is added
+    between minimizations. In VASPDroplet_simulate.ipynb, sparams.noisefactor = 1 (lines 81, 870) and
+    addrandomnoise() (line 651) computes vec + np.random.random_sample(len(vec)) / noisefactor, which adds
+    uniform noise in [0, 1.0 nm] (10x larger than stated) AND perturbs opt_var[0] (the ellipse semi-axis a)
+    in addition to the actin bead coordinates.
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "650-652"
+    quote: "rnd = np.random.random_sample(len(vec))/noisefactor;"
+
+- id: q_notebook_unrunnable_scoping_and_runtime_bugs
+  kind: possible_error
+  about:
+    - sample_dimval_code
+    - bounds_lo_code
+    - bounds_hi_code
+    - notebook_droplet_ring_slsqp
+    - notebook_wetted_fraction_check
+  text: >
+    VASPDroplet_simulate.ipynb cannot execute simulate() or generatering() as shipped due to numerous
+    scoping, interface, and logic bugs (apparently left over from refactoring a main.py script into a notebook):
+    (1) Cell 13 line 672 calls main.simulate(...) before simulate() is defined, and main is never imported.
+    (2) generatering(sparams) (cell 15, line 689) reads 11 undefined globals (lcylvec, Nfilvec, Lp_fil,
+    fTolvec, diavec, dimval, bnds, failcounter, failtol, failEstrtol, counter) that are locals of simulate().
+    (3) generatering() returns the scipy OptimizeResult object res (line 835), whereas simulate() line 913
+    treats its return value opt_var as a coordinate array (len(opt_var), addrandomnoise(opt_var, ...)).
+    (4) simulate() appends to uninitialized solnlistvec (line 929), references undefined diameter/liter/ftolval
+    on line 986, compares scalar Nfil == array targetNfil on line 985, writes typo sys.sterr (line 905) then
+    closes sys.stderr (line 994), and leaves nonlinearbool/alphaval unbound when len(args) < 4.
+    (5) Reusing a single Bounds(1e-9, 1e10) object across growing opt_var lengths crashes modern SciPy
+    (which broadcasts bounds.lb in place).
+    (6) getlinefracinsidedroplet() lines 313-314 overwrite leninside/lenoutside using '=' instead of '+='
+    and swap the inside/outside fractions when a single segment intersects the droplet boundary twice
+    (verified in run_wetted_frac_two_intersect_bug: returns 0.1667 instead of 0.8333).
+    (7) getwettingF2() line 528 uses bitwise '~areEqual(sprev, 1.0)' on Python bool (always truthy: ~True = -2,
+    ~False = -1), appending an extra endpoint sample even when sprev == 1.0.
+    (8) getsurfaceF() 3D branch (lines 368-380) omits sysparams.surface_T[0]* on the sphere formula (line 370),
+    passes k instead of m = k^2 to scipy.special.ellipeinc/ellipkinc (line 380), and never imports scipy.special.
+    (9) Unused helpers initializezigzag() and initializestraight() (lines 577, 581, 595) reference global
+    sparams.Nbeads instead of their parameter sysparams.Nbeads.
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "672"
+    quote: "main.simulate(2,diavec,Nfil,gamma_VP,0,True,1e-06, False,10000.0)"
+
+- id: q_hidden_kbt_inconsistency_and_bathe_constants
+  kind: unstated_input
+  about:
+    - kflex_rigidity_f_code
+    - kbt_getkbend_code
+    - kbt_ring_code
+    - lp_fil_code
+    - bathe_df_code
+    - bathe_delta_crosslinker_code
+    - bathe_t_crosslinker_code
+    - bathe_kx_code
+    - bathe_ef_code
+    - bathe_nmodes_code
+    - notebook_bundle_kbend
+    - run_kbend_linear_n1
+    - run_kbend_nonlinear_n20
+  text: >
+    VASPDroplet_simulate.ipynb settles graham2023 q_unstated_kbt_and_temperature but exposes three slightly
+    different internal thermal-energy / flexural-rigidity values: (a) SystemParams line 86 hardcodes Gittes
+    et al. (1993) kflex_rigidity_f = 7.29e-26 N m^2 = 72900 pN nm^2 (used by getkbend for Nfil >= 2, implying
+    k_B T = 72900 / 17730 = 4.1117 pN nm); (b) getkbend line 196 writes unused kBT = 4.11 pN nm; and
+    (c) generatering line 697 computes kbendfil = Lp_fil * 4.1 / lcyl = 72693 / lcyl for Nfil = 1 (-0.28%
+    below getkbend). Furthermore, getkbend's nonlinear Bathe branch (lines 177-202, inactive when
+    nonlinearbool = False) contains six parameters never mentioned in graham2023 (df = 10 nm, delta = 50 nm,
+    t = 15 nm, unused kx = 2.5 with misprinted comment '#pN.nm' instead of pN/nm, Ef = 2.6e9 Pa = 2600 pN/nm^2,
+    and a 10-mode summation j = 1..10 absent from SI Eq. S1). Note that SI Eq. S2's two misprints
+    (q_eqS2_stretch_bend_misprint) are also definitively settled by getfilamentmechF (lines 417-433), which
+    uses (cyllen - lcyl)^2 and kbend*(1 - cos theta); and q_unstated_wetting_quadrature_N is settled by
+    getwettingF2 line 483 (discretize_len = lcyl / 4, i.e., N = 4 sub-segments).
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "177-202"
+    quote: "Ef = 2.6e9*1e12/(1e18);# Filament young's modulus pN/nm^2"
+
+- id: q_hidden_slsqp_fallback_and_edfig6_off_by_one
+  kind: choice
+  about:
+    - slsqp_maxiter_code
+    - failtol_code
+    - fail_estr_tol_code
+    - wetting_accept_min_code
+    - ring_ar_accept_max_code
+    - zero_prec_code
+    - wetting_subsegments_code
+    - notebook_wetted_fraction_check
+    - run_wetted_frac_edfig6_11seg
+  text: >
+    Several optimization-protocol choices in VASPDroplet_simulate.ipynb are undisclosed in graham2023:
+    (1) SLSQP sets finite-difference step eps = ftolval (1e-6) and maxiter = 1e4 (lines 752, 933) with
+    box bounds Bounds(1e-9, 1e10) and droplet center offset [8000, 8000] nm (lines 874, 884);
+    (2) after failtol = 3 failed SLSQP calls, lines 770 and 954 accept the non-converged iterate whenever
+    Fstr <= 0.1 * finalE and wettingfraction > 0.95;
+    (3) generatering() line 830 rejects and restarts any 1-filament ring whose aspect ratio exceeds 1.1;
+    (4) run_wetted_frac_edfig6_11seg shows that the same Nbeads = int(L/lcyl) off-by-one bug explains
+    graham2023 q_audit_unstated_diffraction_limit_and_wetting_sweep_params item (2): a '1.2 um' bundle
+    discretized with Nbeads = 12 beads has only 11 segments (1.1 um), so 10 segments (1.0 um) span the
+    1.0 um droplet diameter and 1 segment (100 nm) protrudes outside, giving wetted fraction 10/11 = 0.9091
+    — matching Extended Data Fig. 6A's digitized value 0.9092!
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "770-776"
+    quote: "if(Fstr>finalE*failEstrtol or wettingfraction<=0.95):"
+
+- id: q_tcrit_buckling_scaling_vs_eqS25_fluctuation
+  kind: unexplained_difference
+  about:
+    - notebook_critical_ring_thickness
+    - cmp_nb_fig4h_gI5
+    - cmp_nb_fig4h_gI15
+  text: >
+    Cross-record ModelAtlas scaling analysis between graham_code/notebook_critical_ring_thickness (Fig. 4h
+    simulated circle-to-ellipse transition T_crit at AR = 1.1) and graham2023/ring_thickness_scaling_eqS25
+    (continuum thermal-fluctuation law u_m ~ R^1.5 / sqrt(L_p)) shows that the two models obey different
+    power laws: on constant-Nbeads = 30 diameters (D = 1.0, 2.0, 2.5, 4.0 um), the 2D SLSQP buckling
+    threshold balances discrete ring bending energy E_bend ~ (T_crit / R_fil) * kflex_fil / D against
+    droplet line-tension energy E_surf ~ gamma_I * D, giving T_crit ~ D^2.03 * gamma_I^1.00 * kflex_fil^-1.01
+    (distinct from both Eq. S25's D^1.5 * L_p^-0.5 and Fig. 4h's overlaid empirical power-law fit D^1.7195).
+    Furthermore, across general floating-point diameters D, the IEEE-754 truncation bug
+    int(D*1e3 / (D*0.1*1e3)) flips Nbeads discontinuously between 29 and 30 on dense sets of floats,
+    making T_crit(D) piecewise discontinuous (~12% jumps) and nowhere smooth in D.
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "893-895"
+    quote: "lcylvec = [diavec[0]*0.1*1e3]#convert from microns to nanometer"
+
+- id: q_claessens2008_bathe2008_citation_and_model_contrast
+  kind: reading
+  about:
+    - ref-bathe2008
+    - notebook_bundle_kbend
+    - notebook_droplet_ring_slsqp
+    - notebook_critical_ring_thickness
+    - notebook_ring_discretization
+    - notebook_surface_energy
+    - kflex_rigidity_f_code
+    - r_fil_code
+    - rcyl_init_code
+    - bathe_df_code
+    - bathe_t_crosslinker_code
+    - bathe_delta_crosslinker_code
+    - bathe_ef_code
+    - bathe_nmodes_code
+    - claessens2008/ref-3
+    - claessens2008/twist_energy_per_monomer
+    - claessens2008/twist_energy_per_monomer_half
+    - claessens2008/diameter_filament_scaling
+    - claessens2008/hexagonal_shell_filaments
+    - claessens2008/bundle_geometry_saturation
+    - claessens2008/droplet_ring_filament_number
+    - claessens2008/droplet_critical_concentration
+    - claessens2008/q_graham_code_bathe2008_citation_and_physics_contrast
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "73"
+    quote: "# Bathe et al Nonlinear"
+  text: >
+    Cross-record ModelAtlas synthesis between graham_code (VASPDroplet_simulate.ipynb, accompanying
+    Graham et al. 2023) and claessens2008 (Claessens, Semmrich, Ramos & Bausch, PNAS 105:8819-8822,
+    2008) yields 0 cited.yaml links and 0 genuine mathematical relations across all 8 x 28 = 224
+    runnable model pairs, driven by a citation disambiguation and four structural physical contrasts:
+    (1) Citation clarification (Bathe et al. 2008 Biophys. J. vs Claessens et al. 2008 PNAS):
+    graham_code/ref-bathe2008 (cited at VASPDroplet_simulate.ipynb line 73 '# Bathe et al Nonlinear'
+    for getkbend's inactive nonlinearbool branch) refers to Bathe, Heussinger, Claessens, Bausch &
+    Frey (2008), Biophys. J. 94, 2955-2964 ("Cytoskeletal bundle mechanics"), NOT to claessens2008
+    ("Helical twist controls the thickness of F-actin bundles", PNAS 105, 8819-8822, 2008). Neither
+    graham_code nor graham2023 cites claessens2008; instead, claessens2008 (ref-3, p. 1) and
+    graham_code (ref-bathe2008) co-cite Bathe et al. (2008) (not yet in the corpus). Neither
+    record's data.yaml imports any value from the other (graham_code's only non-graham2023
+    from_source is ref-gittes1993 for kflex_rigidity_f_code = 7.29e-26 N*m^2; claessens2008 cites
+    Tsuda 1996 ref-35 and Ono 1997 ref-36).
+    (2) Rejection of coincidental dimensional shape match (notebook_bundle_kbend vs
+    claessens2008/twist_energy_per_monomer and twist_energy_per_monomer_half): these are the sole
+    models across both records sharing the non-dimensionless signature
+    ([mass]*[length]^3/[time]^2, [length]) -> [energy], yet they represent orthogonal elastic modes
+    and distinct algebraic roles. claessens2008/twist_energy_per_monomer evaluates actual torsional
+    strain energy per actin monomer, E_twist = tau*(Delta_theta)^2/d (or with 1/2 in _half), using
+    single-filament torsional rigidity tau = 8.0e-26 N*m^2 (Tsuda 1996), physical monomer rise
+    d = 2.9 nm, and helical overtwist Delta_theta = 0.989 deg = 0.01726 rad (giving 8.22 pN*nm =
+    2.03 k_B T printed, or 4.11 pN*nm = 1.02 k_B T with 1/2), quadratic in Delta_theta. By contrast,
+    notebook_bundle_kbend (at its declared default nonlinearbool = False) outputs a discrete hinge
+    bending spring constant k_bend = kflex_fil * Nfil / lcyl (using bending flexural rigidity
+    kflex_fil = 7.29e-26 N*m^2 from Gittes 1993 and numerical discretization length lcyl = 100-400 nm
+    = 0.1*D), linear in filament count Nfil with no angular deformation input (bending energy
+    kbend*(1 - cos theta) is evaluated separately in getfilamentmechF, giving 14.53 pN*nm per 100 nm
+    hinge or 0.103 k_B T per 2.9 nm monomer for Nfil = 1 in a 1 um ring). Forcing same_as or
+    scales_as would either equate filament count Nfil to squared twist angle (Delta_theta)^2
+    (unphysical) or fix Nfil = 1, Delta_theta = 1 rad to yield a too_plain bare ratio rigidity/length
+    (sp.count_ops = 1-2) conflating bending EI with torsion GJ.
+    (3) Bundle rigidity scaling (Nfil) vs 3D hexagonal packing (D ~ n_f^(1/2)) and internal notebook
+    geometry tension: under its active nonlinearbool = False setting (fluid, weakly coupled VASP),
+    notebook_bundle_kbend scales linearly as k_flex_bundle = kflex_fil * Nfil^1 (log-slope 1.000),
+    incompatible in both output quantity and exponent with claessens2008/diameter_filament_scaling
+    (D ~ n_f^(1/2), log-slope 0.5). Moreover, simulate() line 924 sets ring thickness linearly as
+    rcyl = R_fil * Nfil = 15 * Nfil nm (2D monolayer ribbon scaling T_ring ~ Nfil^1, except 5 nm at
+    Nfil = 1), giving T_ring = 285-300 nm at Nfil = 19-20 — 5.0-5.2x wider than claessens2008's 3D
+    2-shell hexagonal fascin bundle (hydrated SAXS area-equivalent 56.8-58.2 nm at a_H = 12.4 nm,
+    vertex-to-vertex 57.0 nm, TEM plateau 28.2 nm). Conversely, getkbend's inactive Bathe nonlinear
+    branch (nonlinearbool = True, lines 177-204) encodes 3D coherent-bundle bending whose denominator
+    Nfil + sqrt(Nfil) reflects 3D surface-to-bulk perimeter scaling (conceptually parallel to
+    claessens2008/bundle_geometry_saturation's 3 +/- 3.5*n_f^(-1/2)) and transitions in log-slope at
+    Nfil = 20 from 1.000 (alpha -> 0) through 1.17 (alpha = 1) and 1.59 (alpha = 100) to 1.99
+    (alpha = 10^4) and 2.05 (alpha -> oo, approaching I_bundle ~ D^4 ~ Nfil^2, inflated 10x by the
+    10-mode sum j = 1..10 with hidden constants df = 10 nm, t = 15 nm -> center-to-center 25 nm,
+    Ef = 2.6 GPa, chi^2 = 145.9) — internally contradicting simulate()'s active linear 2D rcyl = 15*Nfil.
+    (4) Confined droplet actin rings (rigid emulsion mass conservation vs soft VASP elastocapillary
+    buckling): both records study confined actin rings in droplets with quadratic D^2 scalings, yet
+    for physically opposite reasons. claessens2008 (droplet_ring_filament_number,
+    droplet_critical_concentration, Fig. 2E) confines actin inside rigid spherical water-in-oil
+    emulsion droplets (D_d ~ 6-30 um, closed equatorial ring L_ring = pi*D_d), where 3D mass
+    conservation sets n_f = (1/6)*D_d^2*(c_a/M_actin)*N_A*d ~ D_d^2 until helical-twist frustration
+    caps single rings at n_f ~= 20 and forces splitting into two bundles (c_a ~ D_d^-2). By contrast,
+    graham_code (notebook_droplet_ring_slsqp, notebook_critical_ring_thickness,
+    notebook_ring_discretization, Figs. 4f-h) models soft deformable 2D VASP droplets (D ~ 1-4 um,
+    gamma_I = 1-15 pN) containing an open 2.9*D (or IEEE-754 truncated 2.8*D) discrete arc with
+    exogenous twist-uncapped Nfil (up to 32 in Fig. 4f, ~112 in Fig. 4h, 200 in sample call), where
+    elastocapillary balance (Nfil*kflex_fil/D ~ gamma_I*D) yields T_crit ~ D^2.03 * gamma_I^1.00 *
+    kflex_fil^-1.01 on constant-Nbeads = 30 diameters (T_crit/D^2 = 0.0445-0.0467 um^-1 at
+    gamma_I = 5 pN) with piecewise ~12% discontinuities at Nbeads = 29 diameters (0.0404-0.0407 um^-1
+    at D = 1.5, 3.0 um). See also claessens2008/q_graham_code_bathe2008_citation_and_physics_contrast.
+
+- id: q_source_data_panel_partition_tcrit_and_ar_ceiling
+  kind: reading
+  about:
+    - notebook_critical_ring_thickness
+    - notebook_droplet_ring_slsqp
+    - notebook_ring_discretization
+    - ring_ar_accept_max_code
+    - target_fig4h_gI5
+    - target_fig4h_gI15
+    - graham_source_data/ring_thickness_reader
+    - graham_source_data/fig3g_aspect_ratio_reader
+    - graham_source_data/fig5_aspect_ratio_reader
+    - graham_source_data/edfig9e_aspect_ratio_reader
+    - graham_source_data/droplet_size_reader
+    - graham_source_data/q_simulation_and_theory_panels_omitted
+    - graham_source_data/q_code_panel_partition_tcrit_and_ar_ceiling
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "830"
+    quote: "if(aratio<=1.1):"
+  text: >
+    Cross-attachment audit between graham_code (VASPDroplet_simulate.ipynb) and graham_source_data
+    (41567_2022_1924_MOESM12-22_ESM.xlsx, 11 workbooks / 22 sheets) yields 0 ModelAtlas relations
+    across all 8 x 11 = 88 model pairs (all 11 workbook models are role: processing readers of fixed
+    experimental tables) and 0 direct cited.yaml links (both attachments link cleanly to disjoint
+    target sets in graham2023: 39 vs 24 unique datums, intersection = 0), while revealing four sharp
+    cross-attachment findings:
+    (1) Exact panel partition of graham2023 intersecting solely at Fig. 4h: graham_source_data backs
+    all 35 experimental digitized panels in graham2023, whereas all 26 theoretical/simulation panels
+    (Fig. 4f [1], Fig. 4g [4], Fig. 4h model curves [7], Fig. 5c [2], ED Fig. 5c [5], ED Fig. 6A-B [2],
+    ED Fig. 7b/d-g [5]; 14 tested live in graham_code) are completely absent from MOESM12-22. Fig. 4h
+    is the only shared panel: MOESM15 ('Fig 4h') stores ONLY the n = 304 experimental AR < 1.1 scatter
+    (exact union of MOESM14 'Fig 3e' 173 rings + 131 discs, excluding 82 shells in 'Fig 3f'; 11
+    droplets have D = 4.0003-4.2804 um > 4.0 um, including 4 at 4.17-4.28 um) against which
+    graham_code/notebook_critical_ring_thickness's 7 T_crit(D) curves (D^2.033 scaling + IEEE-754
+    -11.8% sawtooth dips at D = 1.5, 1.75, 3.0, 3.5 um) were plotted. Both attachments share the exact
+    AR = 1.1 deformation cutoff (generatering() line 830 'if(aratio<=1.1):' vs experimental AR < 1.1
+    / AR > 1.1 binning across MOESM13/14/15/17/20).
+    (2) IEEE-754 truncation rate on actual experimental diameters: feeding raw experimental diameter
+    floats directly into VASPDroplet_simulate.ipynb's int(D*1e3/(D*0.1*1e3)) expression silently
+    triggers the Nbeads = 29 (2.8*D, -11.8% T_crit dip) bug on 102/304 (33.6%) of MOESM15 'Fig 4h'
+    droplets and 554/1655 (33.5%) of MOESM20 'Fig S4e' droplets.
+    (3) T_crit(D, gamma_I) vs raw MOESM15 'Fig 4h' and omitted MOESM14 'Fig 3f' deformed droplets:
+    on clean Nbeads = 30 diameters, live notebook_critical_ring_thickness obeys
+    T_crit = 0.00890 * gamma_I * D^2.033 (um, pN). At gamma_I = 5 pN (0.0445 * D^2.033), T_crit
+    matches MOESM14 'Fig 3e' rings-only NLS (0.0476 * D^1.9682, n = 173) within <= 6.5% over
+    D in [1, 4] um (median implied gamma_I = 4.88 pN, IQR 3.93-6.21 pN), yet only 103/304 (33.9%)
+    of Fig. 4h's AR < 1.1 droplets (94/173 rings, only 9/131 = 6.9% of discs) lie below T_crit.
+    Critically, MOESM14 'Fig 3f' AR > 1.1 (n = 47 deformed droplets, omitted from Fig. 4h) has median
+    implied gamma_I = 7.54 pN (IQR 5.86-10.03 pN), virtually identical to undeformed Fig. 3e discs
+    (n = 131, median 7.55 pN, IQR 6.01-9.26 pN); thus no single gamma_I cleanly separates AR < 1.1
+    from AR > 1.1 (at 7.5 pN: 216/304 = 71.1% of Fig. 4h <= T_crit vs only 24/47 = 51.1% of AR > 1.1
+    > T_crit; at 10-15 pN: 89.8-98.0% of Fig. 4h <= T_crit but 74.5-95.7% of deformed AR > 1.1 also
+    fall below T_crit). Formal cross-validation belongs to validate:graham_code+graham_source_data.
+    (4) Simulated 2D ring AR ceiling vs experimental elongation regimes: due to generatering()'s 2.9*D
+    open-arc bug, live notebook_droplet_ring_slsqp saturates at AR ~ 1.56-1.75 (gamma_I = 5 pN,
+    Nfil = 32..200) and ~1.75-1.80 (gamma_I = 1 pN, Nfil = 32..200; Cell 13 sample call D = 1.5 um,
+    gamma_I = 10 pN, Nfil = 200 gives AR = 1.5345). While 100% of MOESM14 'Fig 3g' shells (max 1.10)
+    and rings (max 1.31) and 96.9% of discs (max 2.01) lie below 1.57, 27.9% of MOESM16 'Fig S5a'
+    1:10 (max 6.45), 48.6% of 1:7.5 (max 12.86, 3 > pi^2), and 85.9% of MOESM22 'Fig S9e' 3% PEG
+    (max 26.52, 260/877 > pi^2) exceed AR = 1.57 (22.9%, 41.9%, 83.1% > 1.75), empirically confirming
+    that high-AR rods lie beyond the fixed-length 2D ring code and require ring-to-rod rupture plus
+    active polymerization (Figs. 5h, 6f-g). See also graham_source_data/q_code_panel_partition_tcrit_and_ar_ceiling.
+
+- id: q_chandrasekaran_source_data_fig7f_match_and_3d_ar_comparison
+  kind: reading
+  about:
+    - notebook_surface_energy
+    - perim_series_terms_code
+    - target_fig5c_surface
+    - cmp_fig5c_surface_1nm
+    - cmp_fig5c_surface_1um
+    - notebook_droplet_ring_slsqp
+    - notebook_ring_discretization
+    - q_generatering_double_off_by_one_and_ieee754_sawtooth
+    - q_source_data_panel_partition_tcrit_and_ar_ceiling
+    - chandrasekaran_source_data/fig7f_continuum_energy_reader
+    - chandrasekaran_source_data/wb_f7f_ar1_surf
+    - chandrasekaran_source_data/wb_f7f_ar1_bend
+    - chandrasekaran_source_data/fig7b_max_aspect_ratio_reader
+    - chandrasekaran_source_data/figs14c_schedule_reader
+    - chandrasekaran_source_data/rel_notebook_surface_approx_fig7f_table
+    - chandrasekaran_source_data/rel_notebook_surface_approx_fig7f_fine_grid
+    - chandrasekaran_source_data/q_graham_code_fig7f_getsurfacef_and_3d_vs_2d_ar_ceiling
+    - graham2023/ring_rod_transition_energy
+    - graham2023/q_fig5c_unit_mismatch
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "353"
+    quote: "pmeter = np.pi*(a+b)*(1+h/4 + h*h/64 + h*h*h/256 + 25*h**4/16384 + 49*h**5/65536 + 441*h**6/1048576)"
+  text: >
+    Cross-attachment audit between graham_code (VASPDroplet_simulate.ipynb, 2023) and
+    chandrasekaran_source_data (41467_2024_46726_MOESM9_ESM.xlsx, 2024) yields 2 verified ModelAtlas
+    `approximated_by` relations (stored in chandrasekaran_source_data/relations.yaml; 0 relations on
+    the other 159 of 160 model pairs) and 0 direct cited.yaml links (across all 72 x 77 = 5,544 datum
+    pairs, as graham_code predates MOESM9 and target_fig5c_surface already cites graham2023 inline),
+    while establishing two sharp cross-study findings:
+    (1) MOESM9 'Figure7F' Column C is a bit-for-bit IEEE-754 export of getsurfaceF() (supplying the
+    numerical Source Data omitted from graham_source_data MOESM12-22): Calling live
+    notebook_surface_energy (VASPDroplet_simulate.ipynb cell 9, 2D 7-term Gauss-Kummer series with
+    c_6 = 441/1048576) at R = 1 nm, gamma_I = 1 pN reproduces all 19/19 cells of MOESM9 sheet
+    'Figure7F' Column C (AR = 1..9 step 1.0, 9.1..10.0 step 0.1) to 0.000e+00 (0 ULPs; generic sum()
+    or Horner evaluation of the same 7-term polynomial differs by up to 3.55e-15 = 2 ULPs, while exact
+    complete elliptic integral 4*sqrt(AR)*E(1 - AR^-2) differs by up to -3.164e-4 at AR = 10, the
+    commented Ramanujan formula on line 351 by -1.678e-4, 6-term truncation by +4.136e-4, and 8-term
+    truncation by -1.709e-4). Because fig7f_continuum_energy_reader linearly interpolates these 19
+    fixed rows, `same_as` is refuted across continuous AR (median 5.49e-4), while `approximated_by`
+    verifies max relative error 1.43e-2 on AR in [1, 10] (tolerance 0.02, coarse integer chord error
+    peaking at 1.438% at AR = 1.391) and 2.80e-6 on the fine dAR = 0.1 sub-grid AR in [9, 10]
+    (tolerance 1e-5, nearly 10x tighter than exact elliptic integral graham2023/ring_rod_transition_energy's
+    2.68e-5). Cells B2 = pi and C2 = 2*pi at AR = 1.0 also independently confirm cmp_fig5c_surface_1nm
+    (R = 1 nm, gamma_I = 1 pN) over literal Fig. 5c R = 1 um (cmp_fig5c_surface_1um, 1000x off).
+    (2) 2D open-ring SLSQP AR plateau (1.57-1.80) vs CytoSim 3D elongation ('Figure7B' peak 5.073,
+    3D ceiling pi^(3/2) = 5.568): Due to generatering()'s fixed 2.9*D indivisible open ring (no
+    filament sliding or ring rupture), live notebook_droplet_ring_slsqp saturates at AR = 1.56-1.75
+    (gamma_I = 5 pN: 1.5618 at D = 1 um, T_ring = 480 nm -> 1.7545 at 3000 nm; at CytoSim-matched
+    D = 2 um: 1.3800 at 850 nm -> 1.6576 at 3000 nm) and 1.70-1.80 (gamma_I = 1 pN: 1.7489 -> 1.7989
+    at D = 1 um; 1.7045 -> 1.7988 at D = 2 um, Nfil = 200). By contrast, CytoSim's 3D volume-conserving
+    prolate trajectories in MOESM9 'Figure7B' (D = 2 um, 50 replicates across 10 L_fil^max) exceed
+    1.57 on 49/50 (98.0%) runs, exceed 1.80 on 44/50 (88.0%), and peak at mean 5.07319 +/- 0.19684
+    (max replicate 5.45811) at L_fil^max = pi um via inter-filament sliding (with 'FigureS14C'
+    reaching 5.5641 = 99.92% of pi^(3/2) = 5.5683), while kinetically ring-trapped trajectories at
+    L_fil^max = 2*pi um drop back to mean 1.9452 +/- 0.2211 (1.6565-2.2165), converging closely onto
+    the intact-ring plateau of graham_code (1.57-1.80) and 3.1*D corrected SLSQP (1.93-2.19). See
+    also chandrasekaran_source_data/q_graham_code_fig7f_getsurfacef_and_3d_vs_2d_ar_ceiling.
+
+- id: q_graham_source_data_no_cross_validation
+  kind: unstated_model
+  about:
+    - notebook_wetting_tension
+    - notebook_bundle_kbend
+    - notebook_surface_energy
+    - notebook_ring_discretization
+    - notebook_wetted_fraction_check
+    - notebook_droplet_ring_slsqp
+    - notebook_droplet_ring_slsqp_nfil_plus2
+    - notebook_critical_ring_thickness
+    - target_fig4h_gI5
+    - target_fig4h_gI15
+    - target_fig4f_droplet_ar
+    - ring_ar_accept_max_code
+    - q_source_data_panel_partition_tcrit_and_ar_ceiling
+    - graham_source_data/f1f_recovery_caption
+    - graham_source_data/f1f_recovery_text
+    - graham_source_data/f1f_t_half_text
+    - graham_source_data/f5h_rate_text
+    - graham_source_data/f6f_d1_actin_195s_stored
+    - graham_source_data/f6f_d2_actin_195s_stored
+    - graham_source_data/s4e_diam_median_caption
+    - graham_source_data/s4e_diam_max_caption
+    - graham_source_data/f4h_ar_lt11_a
+    - graham_source_data/f4h_ar_lt11_b
+    - graham_source_data/ring_thickness_reader
+    - graham_source_data/fig3g_aspect_ratio_reader
+    - graham_source_data/fig5_aspect_ratio_reader
+    - graham_source_data/edfig9e_aspect_ratio_reader
+    - graham_source_data/q_graham_code_no_cross_validation
+  text: >
+    No cross-record validations are entered in validations.yaml between graham_code and
+    graham_source_data (0 entries in both directions; all 43 existing validations in
+    graham_source_data/validations.yaml target graham2023 and remain preserved):
+    (1) graham_code models (8 live software: true adapters of VASPDroplet_simulate.ipynb) vs
+    graham_source_data/data.yaml (94 authored datums, 0 table datums): only 8 datums carry
+    origin: measured, and none can be predicted by any graham_code model — f1f_recovery_caption
+    (93.9 +/- 4.89%), f1f_recovery_text (94 +/- 5%), and f1f_t_half_text (18 +/- 3 s) measure
+    actin-free VASP droplet FRAP kinetics; f5h_rate_text (23 +/- 3 nm/s) measures active bundle
+    elongation velocity (VASPDroplet_simulate.ipynb is static energy minimization);
+    f6f_d1_actin_195s_stored (3.0117) and f6f_d2_actin_195s_stored (3.3315) measure normalized
+    droplet fluorescence intensity; and s4e_diam_median_caption (2.86 um) and s4e_diam_max_caption
+    (7.22 um) measure VASP-only droplet diameters (D_droplet is an input, never an output, of
+    graham_code; neither float triggers IEEE-754 truncation, giving Nbeads = 30 and T_crit(5 pN) =
+    0.3768 / 2.4933 um). All remaining 86 authored datums in graham_source_data/data.yaml are
+    non-empirical or dimensionally incompatible: 18 origin: fitted empirical regression parameters
+    (including 16 Fig. 3e/3f/4h power-law coefficients with dimensionless quantities
+    power_law_prefactor_um, power_law_exponent, fit_r_squared that no graham_code model outputs and
+    that cannot unit-convert to [length] T_crit in um, plus 2 Fig. 5h fit scalars), 27 origin:
+    derived stored workbook summaries (FRAP, totals, morphology abundances, partitioning), 40
+    origin: reported query coordinates and sample counts, and 1 origin: assumed reference diameter
+    (query_diam_1um). Because graham_source_data keeps raw .xlsx scatter tables external under
+    $BOXGRAPH_SOURCE and its runs.yaml reader outputs carry origin: run with printed = None (which
+    produce verdict: no_verdict if targeted via against:), no authored measured datum in
+    graham_source_data matches a graham_code model output (whereas empirical curve validation
+    against graham2023/fig4h_exp_fit_fig belongs to validate:graham2023+graham_code).
+    (2) Reverse direction — graham_source_data models (11 role: processing, software: true Excel
+    workbook readers) vs graham_code/data.yaml (72 authored datums): graham_code contains 0
+    origin: measured datums (57 origin: reported code/paper parameters, 14 origin: predicted
+    digitized simulation/theory curves target_* copied from graham2023 — all belonging to the 26
+    non-experimental panels omitted from MOESM12-22 — and 1 origin: derived length ratio 3.1).
+    (3) Direct live numerical validation of VASPDroplet_simulate.ipynb adapters against the raw
+    MOESM14/MOESM15 Excel scatter tables (433 droplets in 'Fig 3f' = 82 shells + 173 'Fig 3e' rings
+    + 131 'Fig 3e' discs [= 304 'Fig 4h' AR < 1.1] + 47 deformed AR > 1.1; plus 'Fig 3g' empirical
+    ARs) yields four quantitative findings:
+    (a) Exact live T_crit(D, gamma_I) scaling (verified to <= 0.19% on all 22 cached Fig. 4h
+    points): clean Nbeads = 30 (2.9*D) obeys 0.008875 * gamma_I^1.0012 * D^2.0338 um, while
+    IEEE-754 truncated Nbeads = 29 (2.8*D) obeys 0.008060 * gamma_I^1.0004 * D^2.0084 um (-10.87%
+    drop at D = 2 um, gamma_I = 5 pN).
+    (b) Boundary classification (AR < 1.1 vs AR > 1.1): implied gamma_I* (clean Nbeads = 30) rises
+    from shells (n = 82, med 4.41 pN, IQR 3.14-5.40) and rings (n = 173, med 4.88 pN, IQR
+    3.94-6.22) to discs (n = 131, med 7.55 pN, IQR 6.01-9.26), which are statistically
+    indistinguishable from deformed AR > 1.1 droplets (n = 47, med 7.54 pN, IQR 5.86-10.03; ROC-AUC
+    = 0.5144, Mann-Whitney p = 0.7715!). Thus while T_crit separates AR > 1.1 well from shells
+    (AUC = 0.8721, p = 2.3e-12) and rings (AUC = 0.8271, p = 6.4e-12), separation from MOESM15
+    'Fig 4h' (n = 304) drops to AUC = 0.6923 (peak balanced accuracy 62.7% at gamma_I = 5 pN:
+    33.9% specificity vs 91.5% sensitivity; 61.1% at 7.5 pN: 71.1% vs 51.1%; full 'Fig 3f' n = 386:
+    AUC = 0.7305, peak balanced accuracy 65.8% at 5 pN).
+    (c) Neither IEEE-754 sawtooth dips nor the +2 filament offset matches the raw Excel data:
+    normalized Fig. 4h residuals T / (0.0721*D^1.7195) show zero dip on the 102/304 (33.6%) raw
+    droplets triggering Nbeads = 29 vs the 202 with Nbeads = 30 (mean 1.0217 vs 0.9923, +2.94%,
+    MW p = 0.7014, Welch p = 0.5731; Fig. 3f 128/386 = 33.2%: +5.59%, MW p = 0.3898), binned raw
+    Fig. 4h thicknesses rise smoothly across D = 1.0-3.5 um with no dips at D = 1.5, 1.75, 3.0, or
+    3.5 um, and enabling IEEE-754 truncation slightly degrades AUC on every cohort (Fig 4h: 0.6923
+    -> 0.6867). Likewise, applying notebook_droplet_ring_slsqp_nfil_plus2's Nfil + 2 shift
+    (T_crit - 30 nm) degrades agreement with published Fig. 4h (target_fig4h_gI5/gI15 drop from
+    6/11 to 3/11 in-band; MAE worsens 0.0426 -> 0.0649 um at 5 pN and 0.1226 -> 0.1466 um at 15 pN,
+    confirming the +2 indexing offset is confined to Fig. 4f/4g/ED Fig. 7 heatmaps) AND degrades
+    raw Excel classification (Fig 4h AUC 0.6923 -> 0.6679; balanced accuracy 62.7% -> 61.5% at 5 pN,
+    with 0/131 = 0.0% of undeformed discs below T_crit).
+    (d) Direct forward SLSQP AR predictions on all 433 raw (D, T) droplets (verified against 24
+    live SLSQP evaluations to MAE = 0.0006 unshifted / 0.0008 shifted): compared to empirical
+    MOESM14 'Fig 3g' ARs (shells med 1.020, 0.0% > 1.1; rings med 1.020, 3.7% > 1.1; discs med
+    1.050, 26.9% > 1.1), gamma_I = 5.0 pN overpredicts deformation on all undeformed cohorts
+    (unmodified: shells med 1.090 / 42.7% > 1.1, rings 1.100 / 50.3%, discs 1.150 / 94.7%, vs
+    AR > 1.1 1.155 / 95.7%; Nfil + 2 worsens to 52.4% / 62.4% / 100.0% / 100.0%), while
+    gamma_I = 10.0 pN (unmodified) roughly matches empirical 'Fig 3g' > 1.1 rates (shells 3.7%,
+    rings 4.6%, discs 22.1%) at the cost of missing 72.3% of deformed AR > 1.1 droplets (only
+    27.7% > 1.1, med 1.081). See also graham_source_data/q_graham_code_no_cross_validation.
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "893-895"
+    quote: "lcylvec = [diavec[0]*0.1*1e3]#convert from microns to nanometer"
+
+- id: q_chandrasekaran_source_data_no_cross_validation
+  kind: unstated_model
+  about:
+    - notebook_wetting_tension
+    - notebook_bundle_kbend
+    - notebook_surface_energy
+    - notebook_ring_discretization
+    - notebook_wetted_fraction_check
+    - notebook_droplet_ring_slsqp
+    - notebook_droplet_ring_slsqp_nfil_plus2
+    - notebook_critical_ring_thickness
+    - target_fig5c_surface
+    - target_edfig5c_ke64
+    - target_fig4f_droplet_ar
+    - target_fig4h_gI5
+    - target_fig4h_gI15
+    - cmp_fig5c_surface_1nm
+    - q_chandrasekaran_source_data_fig7f_match_and_3d_ar_comparison
+    - chandrasekaran_source_data/paper_exp_gabmut_ring_1_7p5
+    - chandrasekaran_source_data/paper_exp_gabmut_shell_1_7p5
+    - chandrasekaran_source_data/paper_exp_gabmut_disk_1_7p5
+    - chandrasekaran_source_data/wb_f6d_1_7p5_shell_mean
+    - chandrasekaran_source_data/wb_f6d_1_7p5_ring_mean
+    - chandrasekaran_source_data/wb_f6d_1_7p5_disk_mean
+    - chandrasekaran_source_data/wb_f7f_ar1_surf
+    - chandrasekaran_source_data/wb_f7f_ar1_bend
+    - chandrasekaran_source_data/wb_f7b_means_table
+    - chandrasekaran_source_data/paper_fig7aii_schedule
+    - chandrasekaran_source_data/wb_s1ef_20fil_ar
+    - chandrasekaran_source_data/fig6d_gabmut_experiment_reader
+    - chandrasekaran_source_data/fig7f_continuum_energy_reader
+    - chandrasekaran_source_data/fig7b_max_aspect_ratio_reader
+    - chandrasekaran_source_data/rel_notebook_surface_approx_fig7f_table
+    - chandrasekaran_source_data/rel_notebook_surface_approx_fig7f_fine_grid
+    - chandrasekaran_source_data/q_graham_code_no_cross_validation
+  text: >
+    No cross-record validations are entered in validations.yaml between graham_code and
+    chandrasekaran_source_data (0 entries in both directions; all 101 existing validations in
+    chandrasekaran_source_data/validations.yaml target chandrasekaran2024 and remain preserved):
+    (1) graham_code models (8 live software: true adapters of VASPDroplet_simulate.ipynb) vs
+    chandrasekaran_source_data/data.yaml (77 authored datums: 3 origin: measured, 29 origin:
+    derived, 8 origin: run, 37 origin: reported) and all 37 sheets of
+    41467_2024_46726_MOESM9_ESM.xlsx:
+    - All 3 origin: measured datums in chandrasekaran_source_data come from sheet Figure6D
+      experimental VASP-GABmut microscopy at Actin:VASP = 1:7.5 (N = 3 replicates, 240 droplets
+      at 1:7.5 out of 655 total across 1:20, 1:10, 1:7.5; copied from chandrasekaran2024):
+      paper_exp_gabmut_ring_1_7p5 (53 +/- 6%), paper_exp_gabmut_shell_1_7p5 (37 +/- 4%), and
+      paper_exp_gabmut_disk_1_7p5 (< 10%, inequality bound). None of graham_code's 8 adapters
+      predicts experimental droplet morphology percentages (ring_abundance, shell_abundance,
+      disk_abundance) or models VASP-to-actin stoichiometry / GABmut crosslinker kinetics —
+      VASPDroplet_simulate.ipynb minimizes static 2D elastic-plus-interfacial free energy of a
+      single pre-formed indivisible 2.9*D (or 2.8*D) ring inside an area-conserving ellipse. All
+      21 dimensionally matching pairs against these 3 datums are coincidental dimensionless
+      quantity mismatches. Moreover, Figure6D (rows 20-43; WT rows 1-19 blank) is the ONLY
+      experimental sheet among all 37 sheets of MOESM9 and records no droplet diameters D, ring
+      thicknesses T_ring, aspect ratios AR, or interfacial tensions gamma_I.
+    - All 74 remaining authored datums in chandrasekaran_source_data/data.yaml are non-empirical
+      or non-measured:
+      (a) Figure7F continuum theory cells wb_f7f_ar1_surf (6.28319 pN*nm, origin: derived) and
+      wb_f7f_ar1_bend (3.14159 pN*nm, origin: derived) are NOT empirical measurements;
+      wb_f7f_ar1_surf is literally getsurfaceF()'s own 2D theoretical value 2*pi at R = 1 nm,
+      AR = 1.0, gamma_I = 1 pN (reproducing all 19 rows of Figure7F Column C to 0.00e+00), whose
+      exact model-to-table equivalence is already verified in
+      chandrasekaran_source_data/relations.yaml via rel_notebook_surface_approx_fig7f_table and
+      rel_notebook_surface_approx_fig7f_fine_grid. Likewise wb_f7f_ar1_bend is non-empirical 2D
+      continuum bending theory absent from VASPDroplet_simulate.ipynb (and notebook_bundle_kbend's
+      k_bend is a discrete hinge spring constant, not droplet bending energy).
+      (b) CytoSim 3D and LAMMPS 3D aspect-ratio outputs (wb_f7b_means_table, wb_f7b_pi_sd_pop,
+      paper_fig7aii_schedule, paper_aspect_ratio_max_approx, wb_s1ef_20fil_ar, wb_s1ef_20fil_asph;
+      all origin: derived) are 3D simulation results rather than measurements, lack gamma_I and
+      T_ring inputs (CytoSim deforms a volume-conserving prolate spheroid via filament sliding
+      and a polar-cap concentration criterion; LAMMPS uses reduced LJ units), and lie in a
+      different physical regime (CytoSim Figure7B peak 5.073, FigureS14C max 5.564 vs graham_code's
+      intact 2.9*D ring ceiling 1.56-1.80; see
+      q_chandrasekaran_source_data_fig7f_match_and_3d_vs_2d_ar_comparison).
+      (c) The 6 Figure6D workbook summaries (wb_f6d_1_7p5_*) are derived morphology percentage
+      statistics outside graham_code's outputs, and all remaining derived/run/reported entries are
+      CytoSim surface-area fractions, VASP valencies, k-means morphology probabilities, PCA
+      variances, silhouette coefficients, and query coordinates.
+    (2) Reverse direction — chandrasekaran_source_data models (20 role: processing, software: true
+    Excel workbook readers) vs graham_code/data.yaml (72 authored datums): graham_code contains
+    0 origin: measured datums (57 origin: reported code/paper parameters, 14 origin: predicted
+    digitized theory/SLSQP simulation curves target_* copied from graham2023, and 1 origin:
+    derived length ratio 3.1). Even on the sole non-empirical content overlap
+    (fig7f_continuum_energy_reader surface_energy vs target_fig5c_surface, where Figure7F falls
+    inside all 10/10 reading bands with MAE_mid = 0.03043 pN*nm), target_fig5c_surface is an
+    origin: predicted copy of Graham's own theoretical surface-energy plot rather than an empirical
+    measurement, and fig7f_continuum_energy_reader is an Excel table reader of the exact same
+    getsurfaceF() calculation (already linked via rel_notebook_surface_approx_fig7f_table and
+    rel_notebook_surface_approx_fig7f_fine_grid). All other target_* curves in graham_code are
+    likewise origin: predicted 2D SLSQP/wetting theory curves incompatible in origin and sweep
+    index with chandrasekaran_source_data's Excel readers. See also
+    chandrasekaran_source_data/q_graham_code_no_cross_validation.
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "353"
+    quote: "pmeter = np.pi*(a+b)*(1+h/4 + h*h/64 + h*h*h/256 + 25*h**4/16384 + 49*h**5/65536 + 441*h**6/1048576)"
+
+- id: q_claessens2008_no_cross_validation
+  kind: unstated_model
+  about:
+    - notebook_wetting_tension
+    - notebook_bundle_kbend
+    - notebook_surface_energy
+    - notebook_ring_discretization
+    - notebook_wetted_fraction_check
+    - notebook_droplet_ring_slsqp
+    - notebook_droplet_ring_slsqp_nfil_plus2
+    - notebook_critical_ring_thickness
+    - kflex_rigidity_f_code
+    - r_fil_code
+    - rcyl_init_code
+    - ellipse_com_sim_code
+    - bounds_lo_code
+    - gamma_avr_code
+    - gamma_avd_code
+    - kbt_getkbend_code
+    - kbt_ring_code
+    - target_fig4h_gI5
+    - target_fig4h_gI15
+    - target_fig5c_surface
+    - q_claessens2008_bathe2008_citation_and_model_contrast
+    - claessens2008/nf_max_abstract
+    - claessens2008/nf_max_confinement
+    - claessens2008/D_fil_fig2d_caption
+    - claessens2008/D_fil_fig2d_text
+    - claessens2008/Rstar_plateau
+    - claessens2008/D_ratio_fig4d
+    - claessens2008/q10_saxs
+    - claessens2008/D_fig1c_measured
+    - claessens2008/ca_fig2e_single_ring_max
+    - claessens2008/ca_fig2e_two_bundle_min
+    - claessens2008/I_saxs_fig3a_R0p5
+    - claessens2008/I_saxs_fig3c_data_R0p5
+    - claessens2008/Delta_theta_fig3d_ca0p8
+    - claessens2008/Delta_theta_fig3d_ca2
+    - claessens2008/Delta_theta_fig3d_ca3
+    - claessens2008/Rstar_figS1_experiment
+    - claessens2008/tau_actin
+    - claessens2008/aH_hex_saxs
+    - claessens2008/E_twist_per_fascin_printed
+    - claessens2008/DeltaG_fascin_printed
+    - claessens2008/q_graham_code_no_cross_validation
+  text: >
+    No cross-record validations are entered in validations.yaml between graham_code and
+    claessens2008 (0 entries in both directions), following an exhaustive audit of all 8 live
+    software: true VASPDroplet_simulate.ipynb adapters (23 output ports) against claessens2008's
+    26 origin: measured datums (83 datums total) and all 30 claessens2008 models (28 runnable,
+    37 output ports) against graham_code's 72 datums:
+    (1) graham_code models -> claessens2008 measured data (26 origin: measured datums: 12 scalars,
+    14 digitized figure curves; 125 dimensionally matching output-datum pairs, 0 semantically valid
+    matches):
+    (a) Droplet-deformation SLSQP adapters (notebook_droplet_ring_slsqp,
+    notebook_droplet_ring_slsqp_nfil_plus2; outputs aspect_ratio, total_energy, surface_energy,
+    filament_energy, a, b) and notebook_surface_energy (E_surf): claessens2008 measures zero
+    droplet aspect ratios, ellipse semi-axes, or mesoscopic ring/droplet energies. Claessens et
+    al.'s Fig. 2A-E droplets are rigid spherical water-in-oil emulsion droplets (D_d = 3-100 um;
+    digitized Fig. 2E phase-boundary droplets ca_fig2e_single_ring_max D_d = 6.88-22.71 um and
+    ca_fig2e_two_bundle_min D_d = 9.60-26.96 um), where surfactant water-in-oil interfacial tension
+    (gamma_ow ~ 1-10 mN/m -> effective 2D line tension ~ 6.9e3-2.3e5 pN, 1.4e3-4.5e4x stiffer than
+    VASP condensate gamma_I = 1-15 pN) prevents elliptical deformation and instead forces excess
+    actin above n_f ~ 20 to split into 2+ bundles. Claessens et al. measure neither gamma_I nor
+    wetting tensions (gamma_AVR, gamma_AVD) nor ring thickness T_ring(D_d). Moreover,
+    VASPDroplet_simulate.ipynb's hardcoded ellipse_com = [8e3, 8e3] nm with Bounds(1e-9, 1e10)
+    breaks directly on 3/5 ca_fig2e_single_ring_max droplets (D_d = 16.08, 17.50, 22.71 um;
+    R >= 8.0 um) and 2/5 ca_fig2e_two_bundle_min droplets (25.96, 26.96 um), clipping negative
+    coordinates to 1e-9 nm (e.g., E_total = 3.57e5 pN*nm at D_d = 22.71 um). Even with ellipse_com
+    enlarged safely, live notebook_droplet_ring_slsqp at Nfil = 20 (T_ring = 300 nm) in its active
+    linear mode (nonlinearbool = False) predicts AR = 1.0010-1.0142 across D_d = 6.88-26.96 um even
+    at soft VASP gamma_I = 5 pN, whereas enabling the inactive nonlinearbool = True, alpha = 10000
+    Bathe branch spuriously inflates k_flex_bundle by 5.16e5x (3.76e10 pN*nm^2 via the hidden
+    10-mode sum and chi^2 = 145.9) and deforms the droplet to AR = 1.62-1.74 at 5 pN (and
+    1.016-1.179 even at 10^4 pN).
+    (b) Critical ring thickness adapter (notebook_critical_ring_thickness; outputs T_crit [um] and
+    n_beads_final): claessens2008's sole [length] origin: measured datum is D_fig1c_measured
+    (8 TEM bundle diameters D = 8.41-28.14 nm indexed by effective_bound_ratio R* = 0.0089-0.900 at
+    c_a = 0.1 mg/ml in unconfined bulk solution, no droplets). Bulk fascin bundle thickness D(R*)
+    set by helical twist frustration cannot be mapped to critical soft-droplet buckling thickness
+    T_crit(D_droplet, gamma_I). Diagnostically, on Claessens's Fig. 2E droplet diameters at VASP
+    gamma_I = 5 pN, live notebook_critical_ring_thickness predicts T_crit = 2.26-26.16 um (151-1744
+    filaments across ca_fig2e_single_ring_max, and > 2000 filaments exceeding the adapter's brentq
+    upper bracket at D_d = 26.96 um where AR(2000) = 1.0977 < 1.1) — 80-930x thicker than
+    Claessens's 28.1 nm TEM / 50-57 nm hydrated SAXS bundle — while triggering IEEE-754 Nbeads = 29
+    truncation on 3/5 ca_fig2e_two_bundle_min droplets (13.12, 25.96, 26.96 um; 0/5 on
+    ca_fig2e_single_ring_max).
+    (c) Bundle bending stiffness adapter (notebook_bundle_kbend; outputs k_bend [pN*nm] and
+    k_flex_bundle [pN*nm^2]): claessens2008 has zero origin: measured [energy] or flexural-rigidity
+    datums (tau_actin = 8 x 10^-26 N*m^2 is origin: reported torsional stiffness GJ from Tsuda 1996
+    ref-35, not flexural EI; E_twist_per_fascin_printed = "approx 10" and DeltaG_fascin_printed =
+    "approx 15" are dimensionless k_B T ratios with origin: predicted; xray_energy_saxs = 12.46 keV
+    is origin: reported beam energy).
+    (d) Wetting and discretization adapters (notebook_wetting_tension [force]/[length],
+    notebook_wetted_fraction_check, notebook_ring_discretization): claessens2008 has zero
+    [force]/[length] datums, zero wetting-fraction measurements (aqueous F-actin is fully enclosed
+    in oil), and zero numerical discretization outputs.
+    (e) All remaining 25 origin: measured datums in claessens2008 have no matching output port in
+    graham_code: filament counts and bundle-width-in-filaments (nf_max_abstract, nf_max_confinement,
+    D_fil_fig2d_caption, D_fil_fig2d_text), bound-ratio and multi-ABP ratio scalars (Rstar_plateau,
+    D_ratio_fig4d), 6 SAXS wavevector scalars (q10_saxs, q_layer6_unbundled, q_layer7_unbundled,
+    q_helical_a/b/c_bundled), 2 Fig. 2E critical actin-concentration curves
+    (ca_fig2e_single_ring_max, ca_fig2e_two_bundle_min; [mass]/[length]^3), 7 SAXS intensity curves
+    (I_saxs_fig3a_*, I_saxs_fig3c_data_*), 3 helical overtwist curves (Delta_theta_fig3d_*), and
+    Rstar_figS1_experiment. All 119 dimensionless and 6 [length] dimensional overlaps with
+    claessens2008 measured datums are coincidental dimensional collisions.
+    (2) Reverse direction — claessens2008 models (30 models: 28 runnable + 2 non-runnable) ->
+    graham_code/data.yaml (72 datums): graham_code contains 0 origin: measured datums (57 origin:
+    reported hardcoded notebook/paper constants, 14 origin: predicted digitized theory/SLSQP target
+    curves target_* copied from graham2023, and 1 origin: derived ring length ratio 3.1). Even among
+    non-measured entries, kbt_getkbend_code (4.11 pN*nm) and kbt_ring_code (4.1 pN*nm) are reported
+    code constants without a stated temperature (vs claessens2008/thermal_energy_scale = 4.0474
+    pN*nm at 20 degC), target_fig4h_gI5/gI15 are predicted SLSQP critical-thickness curves lacking
+    any matching claessens2008 output quantity, and target_fig5c_surface is predicted droplet
+    surface energy. See also claessens2008/q_graham_code_no_cross_validation.
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "874-884"
+    quote: "sparams.surface_T = [gamma_VP,1e-8,0.5e4]"
+
+- id: q_graham2023_no_cross_validation
+  kind: unstated_model
+  about:
+    - notebook_wetting_tension
+    - notebook_bundle_kbend
+    - notebook_surface_energy
+    - notebook_ring_discretization
+    - notebook_wetted_fraction_check
+    - notebook_droplet_ring_slsqp
+    - notebook_droplet_ring_slsqp_nfil_plus2
+    - notebook_critical_ring_thickness
+    - target_edfig5c_ke64
+    - target_fig5c_surface
+    - target_fig4f_droplet_ar
+    - target_fig4h_gI5
+    - target_fig4h_gI15
+    - ring_ar_accept_max_code
+    - rel_tcrit_scales_as_power_law_fig4h
+    - q_graham_source_data_no_cross_validation
+    - graham2023/linear_droplet_ar_high
+    - graham2023/fig3g_aspect_ratio_fig
+    - graham2023/fig5a_aspect_ratio_fig
+    - graham2023/edfig9e_aspect_ratio_fig
+    - graham2023/droplet_diam_range_obs
+    - graham2023/droplet_diam_median_20uM
+    - graham2023/droplet_diam_max_20uM
+    - graham2023/fig4h_exp_fit_fig
+    - graham2023/fig3e_rings_fit_fig
+    - graham2023/fig3e_discs_fit_fig
+    - graham2023/fig3f_ar_lt11_fit_fig
+    - graham2023/fig3f_ar_gt11_fit_fig
+    - graham2023/fit_fig4h_ar_lt11_a
+    - graham2023/fit_fig4h_ar_lt11_b
+    - graham2023/q_graham_code_no_cross_validation
+  text: >
+    No empirical cross-record validations are entered in validations.yaml between graham_code and
+    graham2023 (0 entries in both directions; no graham_code/validations.yaml or
+    graham2023/validations.yaml is created), while all existing 31 reproduction comparisons in
+    graham_code/comparisons.yaml (against the 14 copied target_* simulation/theory curves), all 41
+    from_source: graham2023 parameter/curve links (+ ring_thickness_step_val in
+    graham2023/cited.yaml), and all 15 cross-record ModelAtlas relations (13 in
+    graham_code/relations.yaml + 2 stated in graham2023/relations.yaml) remain preserved:
+    (1) Direction A — graham_code models (8 live software: true VASPDroplet_simulate.ipynb adapters,
+    23 output ports) vs graham2023/data.yaml (133 authored datums: 38 origin: measured [9 scalars +
+    29 digitized figures], 34 predicted, 20 fitted, 32 assumed, 6 reported, 2 derived, 1 estimated):
+    - Exhaustive audit of all 23 x 38 = 874 output-vs-measured pairs finds 242 dimension-matching
+      pairs (18 [length], 224 dimensionless), of which only 8 pairs share a physical quantity
+      (droplet_aspect_ratio) and 0 can be honestly validated on graham2023's stated experimental
+      conditions without fabricating unmeasured inputs or violating regime/precision rules:
+      (a) The 4 origin: measured droplet_aspect_ratio datums vs notebook_droplet_ring_slsqp and
+      notebook_droplet_ring_slsqp_nfil_plus2 (aspect_ratio):
+      (i) linear_droplet_ar_high (scalar "> 15", p. 6, 10 uM VASP + 2 uM actin = 1:5): open-ended
+      inequality carrying no precision (always yields verdict: no verdict in BoxGraph), lacks
+      measured (D_droplet, T_ring, gamma_I) inputs, and lies in the ruptured linear-rod active
+      elongation regime far above the intact 2.9*D open-ring SLSQP saturation ceiling (live
+      notebook at T_ring = 3000 nm / Nfil = 200 saturates at AR = 1.7989 / 1.7545 [D = 1 um],
+      1.7988 / 1.6576 [D = 2 um], and 1.7711 / 1.5312 [median D = 2.86 um] for gamma_I = 1.0 /
+      5.0 pN; +2 variant gives 1.7990 / 1.7549, 1.7992 / 1.6591, 1.7719 / 1.5336).
+      (ii) fig3g_aspect_ratio_fig (medians + s.d. whiskers: 1=Shell 1.020 [1.007-1.038], 2=Ring
+      1.020 [1.006-1.065], 3=Disc 1.050 [0.971-1.217]): indexed by categorical
+      morphology_category_index (not an input port of notebook_droplet_ring_slsqp, which models
+      only a single pre-formed 2D ring and cannot represent shells or discs) with no stated
+      (D_droplet, T_ring, gamma_I) per category.
+      (iii) fig5a_aspect_ratio_fig (bisecting lines + s.d. whiskers: 1:20 1.044 [0.858-1.240],
+      1:10 1.368 [0.803-2.333], 1:7.5 2.394 [0.577-4.230]): indexed by bulk actin_to_vasp_ratio
+      (not an input of notebook_droplet_ring_slsqp); Graham et al. p. 6 treat Fig. 4g vs Fig. 5a
+      purely as a qualitative trend ("predicts that the aspect ratio ... should continue to
+      increase with increasing actin content"), state no (D_droplet, T_ring, gamma_I) per ratio,
+      and 1:7.5's plotted 2.394 already exceeds the intact 2.9*D ring ceiling (<= 1.80).
+      (iv) edfig9e_aspect_ratio_fig (mean + s.d.: 3% PEG 11.52 [7.57-15.46], 5% 1.27 [0.38-2.15],
+      10% 1.15 [0.68-1.62], 15% 1.06 [0.89-1.24]): indexed by peg_concentration_wv (absent from
+      notebook_droplet_ring_slsqp), lacks (D_droplet, T_ring, gamma_I), 5-15% PEG arrests
+      droplets into gel/solid states (Fig. 6b FRAP ~1%) outside static equilibrium elasticity,
+      and 3% PEG (11.52) exceeds the intact-ring ceiling by > 6x.
+      (b) The 3 [length] origin: measured droplet_diameter datums (droplet_diam_range_obs "1 to 7"
+      um, droplet_diam_median_20uM "2.86" um, droplet_diam_max_20uM "7.22" um; 18 coincidental
+      [length] pairs vs T_crit, a, b, noise_amp): actin-free 20 uM VASP droplet diameters (p. 3,
+      ED Fig. 4e). In graham_code, D_droplet is strictly an input, never an output; mapping
+      droplet_diameter to ring_thickness_critical, ellipse_semi_{major,minor}_axis, or
+      coordinate_noise_amplitude would equate distinct quantities sharing only [length].
+      (c) The remaining 31 origin: measured datums (3 [time]/[length]/[time] + 28 dimensionless;
+      216 coincidental dimensionless matches): FRAP kinetics (frap_recovery_fig1f,
+      frap_recovery_text, frap_t_half, fig1f_frap_avg_fig, fig6b_frap_{3,10}peg_fig), droplet
+      fusion time (vasp_droplet_fusion_time), active bundle elongation velocity
+      (elongation_rate_mean_text), 2D/3D morphology percentages (fig2d_*, fig3d_*, fig6d_*,
+      edfig4c_*), normalized fluorescence intensities (fig6f_*, fig6g_*), protein partitioning
+      (edfig2d_partition_fig, edfig3e_actin_partition_fig), and droplet size histograms
+      (edfig4e_size_hist_fig, edfig9c_*; note IEEE-754 Nbeads = 29 truncation hits 7/21 edfig4e
+      bins and 4/8, 5/10, 4/9, 3/9 edfig9c points). None is predicted by any graham_code adapter.
+    - Explicit audit and exclusion of graham2023/fig4h_exp_fit_fig, fig3e_{rings,discs}_fit_fig,
+      and fig3f_ar_{lt,gt}11_fit_fig (clarifying the pointer in
+      q_graham_source_data_no_cross_validation): although all 5 curves share x = droplet_diameter
+      (um) and y [length] (um) with notebook_critical_ring_thickness.T_crit, they are excluded from
+      validations.yaml on four independent grounds:
+      (i) Origin is predicted, not measured: all 5 are digitized smooth power-law regression
+      trendlines y = a*D^b reproduced by graham2023/power_law_thickness_fit (the dense scatter
+      clouds in Figs. 3e/3f/4h were unresolvable in the PDF), carrying tight curve-line pixel
+      intervals (~+/-0.010-0.025 um) rather than empirical scatter (R^2 = 0.6990-0.8979).
+      (ii) Distinct quantities: notebook_critical_ring_thickness outputs ring_thickness_critical
+      (the phase-boundary threshold at AR = 1.1), whereas all 5 curves record ring_thickness
+      (fitted mean thickness of already-spherical AR < 1.1 or already-deformed AR > 1.1 droplets;
+      both records explicitly declare ring_thickness and ring_thickness_critical as separate
+      quantities, and spherical AR < 1.1 droplets are expected to lie below T_crit, not on it).
+      (iii) Unmeasured free parameter gamma_I: SI Table 1 declares gamma_I as "Free parameter",
+      never experimentally measured; Fig. 4h sweeps gamma_I = 1.0-15.0 pN (15-fold span in
+      T_crit proportional to gamma_I^1.00), so entering a validation would fabricate gamma_I.
+      (iv) Live numerical diagnostic on fig4h_exp_fit_fig (D = 3.2, 3.5, 3.7, 3.85, 3.95 um):
+      VASPDroplet_simulate.ipynb's IEEE-754 truncation int(D*1e3/(D*0.1*1e3)) = 9 drops Nbeads
+      from 30 to 29 on 3/5 points (3.2, 3.5, 3.7 um; plus 3/7 fig3e / 3/9 fig3f points 1.5, 3.0,
+      3.5 um), giving live T_crit(5.0 pN) = 0.4171, 0.4996, 0.5583, 0.6905, 0.7276 um (-22.5%,
+      -20.0%, -18.4%, -6.1%, -4.9% vs digitized 0.5380, 0.6247, 0.6843, 0.7352, 0.7648 um) and a
+      discontinuous step in implied gamma_I* (6.45, 6.25, 6.13 pN at Nbeads = 29 vs 5.32, 5.26 pN
+      at Nbeads = 30). Consequently, across ANY constant gamma_I in [1.0, 15.0] pN, live T_crit
+      falls inside at most 2/5 reading bands of fig4h_exp_fit_fig (0/5 at 5.0, 7.5, 10.0, 15.0 pN;
+      1/5 at 6.25 pN; max 2/5 near 5.25-5.35 pN). Across D = 1.0-4.0 um, implied gamma_I* spans
+      4.88-5.81 pN (fig3e_rings), 5.14-7.19 pN (fig3f_ar_lt11), 6.90-9.26 pN (fig3e_discs,
+      undeformed AR < 1.1), and 6.77-10.29 pN (fig3f_ar_gt11, deformed AR > 1.1), confirming both
+      the scaling discrepancy (D^2.03 vs D^1.72-1.97, already in rel_tcrit_scales_as_power_law_fig4h)
+      and the overlap of undeformed discs with deformed droplets (at median D = 2.86 um, Nbeads =
+      30, live notebook_droplet_ring_slsqp gives AR = 1.0999/1.0683/1.0519 for fig3e_rings T =
+      376.6 nm, 1.1102/1.0755/1.0575 for fig3f_lt11 T = 418.6 nm, 1.1152/1.0790/1.0602 for
+      fig4h_fit T = 439.2 nm, and 1.1452/1.1001/1.0765 for fig3f_gt11 T = 565.7 nm at gamma_I =
+      5.0/7.5/10.0 pN). The 16 scalar power-law parameters (fit_fig3e_*, fit_fig3f_*, fit_fig4h_*,
+      exp_ring_thickness_exponent_text) carry origin: fitted and dimensionless regression quantities
+      absent from graham_code outputs.
+    - Explicit exclusion of graham2023's 26 non-empirical simulation/theory curves (edfig5c_*,
+      fig5c_*, fig4f_*, fig4g_*, edfig6a/b_*, edfig7*, fig4h_gI*; all origin: predicted): 14 are
+      already tested live in graham_code/comparisons.yaml as purpose: reproduction against copied
+      target_* datums, and none is an empirical measurement (entering origin: predicted curves in
+      validations.yaml would falsely report simulation outputs as "measured in graham2023").
+    (2) Direction B — graham2023 models (31 runnable models, 40 output ports) vs
+    graham_code/data.yaml (72 datums): graham_code contains strictly 0 origin: measured datums
+    (57 origin: reported hardcoded notebook/paper constants, 14 origin: predicted target_*
+    simulation/theory curves copied from graham2023, and 1 origin: derived length ratio 3.1 copied
+    from graham2023). Code-vs-paper parameter checks and model equivalences/discrepancies already
+    live in graham_code/data.yaml (41 from_source: graham2023 links), graham2023/cited.yaml,
+    graham2023/relations.yaml, and graham_code/relations.yaml. See also
+    graham2023/q_graham_code_no_cross_validation.
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "877-895"
+    quote: "sparams.surface_T = [gamma_VP,1e-8,0.5e4]"
+

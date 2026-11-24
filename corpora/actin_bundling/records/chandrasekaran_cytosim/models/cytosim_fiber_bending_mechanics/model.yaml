@@ -1,0 +1,27 @@
+id: cytosim_fiber_bending_mechanics
+name: "CytoSim discrete fiber bending rigidity, resegmentation & curvature energy (chain.cc:36-40,1170-1193; fiber.cc:1097; mecafil.cc:276-313)"
+role: model
+stated:
+  file: src/sim/fiber.cc
+  lines: "1097"
+  quote: "iRigidity = prop->rigidity / cube(segmentation());"
+  where: "Fiber::prepareMecable(), Chain::bestNumberOfPoints(), Chain::bendingEnergy0(), Mecafil::add_rigidity3D()"
+equation: "N_pts = bestNumberOfPoints(L/L_seg); s = L/(N_pts-1); iRigidity = rigidity/s^3; F_p from add_rigidity3D; E_ham = (iRigidity/2)*sum||X_{p+2}-2X_{p+1}+X_p||^2; E_cyto = rigidity * ((N_seg)/(N_seg-1)) * sum(1-cos theta)/s; l_p = rigidity/kT"
+inputs:
+  rigidity: {quantity: flexural_rigidity, unit: pN*um^2, description: "FiberProp::rigidity (pN*um^2)"}
+  L: {quantity: filament_length, unit: um, description: "Fiber contour length L (um)"}
+  segmentation: {quantity: filament_segment_length, unit: um, description: "Target FiberProp::segmentation (um)"}
+  R_curve: {quantity: droplet_radius, unit: um, description: "Radius of circular arc/ring R_curve (um)"}
+  kT: {quantity: thermal_energy, unit: pN*um, description: "SimulProp::kT (pN*um)"}
+outputs:
+  N_pts: {quantity: point_count, unit: dimensionless, description: "Vertex count from Chain::bestNumberOfPoints(L/segmentation)"}
+  N_seg: {quantity: segment_count, unit: dimensionless, description: "Segment count N_pts - 1"}
+  s_actual: {quantity: filament_segment_length, unit: um, description: "Actual segment length s = L / N_seg"}
+  iRigidity: {quantity: discrete_rigidity_modulus, unit: pN/um, description: "Discrete bending spring constant rigidity / s^3 (fiber.cc:1097)"}
+  E_hamiltonian: {quantity: bending_energy, unit: pN*um, description: "Exact quadratic bending Hamiltonian differentiated by add_rigidity3D()"}
+  E_cyto_reported: {quantity: bending_energy, unit: pN*um, description: "Endpoint-corrected Fiber::bendingEnergy() = rigidity * Chain::bendingEnergy0() (chain.cc:1170-1193)"}
+  E_continuum: {quantity: bending_energy, unit: pN*um, description: "Continuum elastic ring/arc bending energy (1/2)*rigidity*L/R_curve^2"}
+  max_node_force: {quantity: force, unit: pN, description: "Maximum vertex bending force norm from Mecafil::add_rigidity3D()"}
+  persistence_length: {quantity: persistence_length, unit: um, description: "Thermal persistence length l_p = rigidity / kT (fiber_prop.h:59)"}
+settings: {}
+stochastic: false

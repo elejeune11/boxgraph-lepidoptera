@@ -1,0 +1,629 @@
+# Cross-record validations comparing live software: true Source Data Excel reader models
+# directly against graham2023's printed scalar measurements AND all 35 source-data-backed
+# blindly digitized figure curves (plus diagnostic variants for Fig. 5a, Fig. 6f, Fig. 6g).
+# Note: The remaining 26 digitized curves in graham2023 are theoretical/simulation outputs
+# (ED Fig. 5c, Fig. 5c, Fig. 4f-g, ED Fig. 6A-B, ED Fig. 7b/d-g, Fig. 4h model curves)
+# that are not included in the 11 released Excel Source Data workbooks.
+
+# ==============================================================================
+# 1. MOESM12 Fig. 1f & MOESM17 Fig. 6b — FRAP curves (3 digitized curves + 2 scalars)
+# ==============================================================================
+- id: val_fig1f_frap_recovery_scalar
+  model: frap_summary_reader
+  settings: {dataset: "fig1f"}
+  output: final_recovery_mean
+  against: graham2023/frap_recovery_fig1f
+  quantities: {"graham2023/frap_recovery_fraction": frap_recovery_fraction}
+  basis: "Final t = 297 s FRAP recovery mean (n = 7 remaining trials) in MOESM12 ('Fig 1f') vs Fig. 1f caption 93.9 +/- 4.89%."
+
+- id: val_fig1f_frap_thalf_scalar
+  model: frap_summary_reader
+  settings: {dataset: "fig1f"}
+  output: t_half_exp_mean
+  against: graham2023/frap_t_half
+  quantities: {"graham2023/frap_half_time": frap_half_time}
+  basis: "Mean per-trial single-exponential FRAP half-time in MOESM12 ('Fig 1f', 17.96 +/- 2.70 s) vs main text 18 +/- 3 s."
+
+- id: val_fig1f_frap_avg_curve
+  model: frap_curve_reader
+  sweep: {t: "graham2023/fig1f_frap_avg_fig"}
+  settings: {dataset: "fig1f"}
+  output: recovery
+  against: graham2023/fig1f_frap_avg_fig
+  quantities:
+    "graham2023/frap_post_bleach_time": frap_post_bleach_time
+    "graham2023/frap_recovery_fraction": frap_recovery_fraction
+  basis: "Live average FRAP recovery curve from MOESM12 ('Fig 1f') vs blindly digitized 13-point Fig. 1f red curve."
+
+- id: val_fig6b_frap_3peg_curve
+  model: frap_curve_reader
+  sweep: {t: "graham2023/fig6b_frap_3peg_fig"}
+  settings: {dataset: "fig6b_3peg"}
+  output: recovery
+  against: graham2023/fig6b_frap_3peg_fig
+  quantities:
+    "graham2023/frap_post_bleach_time": frap_post_bleach_time
+    "graham2023/frap_recovery_fraction": frap_recovery_fraction
+  basis: "Live average 3% PEG FRAP recovery curve (n = 5) from MOESM17 ('Fig 6b') vs blindly digitized 8-point Fig. 6b red curve."
+
+- id: val_fig6b_frap_10peg_curve
+  model: frap_curve_reader
+  sweep: {t: "graham2023/fig6b_frap_10peg_fig"}
+  settings: {dataset: "fig6b_10peg"}
+  output: recovery
+  against: graham2023/fig6b_frap_10peg_fig
+  quantities:
+    "graham2023/frap_post_bleach_time": frap_post_bleach_time
+    "graham2023/frap_recovery_fraction": frap_recovery_fraction
+  basis: "Live average 10% PEG FRAP recovery curve (n = 5) from MOESM17 ('Fig 6b') vs blindly digitized 8-point Fig. 6b blue curve."
+
+# ==============================================================================
+# 2. MOESM13 Fig. 2d, MOESM14 Fig. 3d, MOESM17 Fig. 6d, MOESM20 Fig. S4c (11 bar charts)
+# ==============================================================================
+- id: val_fig2d_1to20_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/fig2d_1to20_fig"}
+  settings: {dataset: "fig2d_1to20", method: "pooled"}
+  output: abundance_mean
+  against: graham2023/fig2d_1to20_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 1:20 actin:VASP morphology percentages from MOESM13 ('Fig 2d') vs blindly digitized Fig. 2d top bar chart."
+
+- id: val_fig2d_1to10_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/fig2d_1to10_fig"}
+  settings: {dataset: "fig2d_1to10", method: "pooled"}
+  output: abundance_mean
+  against: graham2023/fig2d_1to10_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 1:10 actin:VASP morphology percentages from MOESM13 ('Fig 2d') vs blindly digitized Fig. 2d middle bar chart."
+
+- id: val_fig2d_1to7p5_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/fig2d_1to7p5_fig"}
+  settings: {dataset: "fig2d_1to7p5", method: "pooled"}
+  output: abundance_mean
+  against: graham2023/fig2d_1to7p5_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 1:7.5 actin:VASP morphology percentages from MOESM13 ('Fig 2d') vs blindly digitized Fig. 2d bottom bar chart."
+
+- id: val_fig3d_1to20_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/fig3d_1to20_fig"}
+  settings: {dataset: "fig3d_1to20", method: "image_mean"}
+  output: abundance_mean
+  against: graham2023/fig3d_1to20_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 1:20 shell/ring/disc percentages from MOESM14 ('Fig 3d') vs blindly digitized Fig. 3d top bar chart."
+
+- id: val_fig3d_1to10_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/fig3d_1to10_fig"}
+  settings: {dataset: "fig3d_1to10", method: "image_mean"}
+  output: abundance_mean
+  against: graham2023/fig3d_1to10_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 1:10 shell/ring/disc percentages from MOESM14 ('Fig 3d') vs blindly digitized Fig. 3d middle bar chart."
+
+- id: val_fig3d_1to7p5_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/fig3d_1to7p5_fig"}
+  settings: {dataset: "fig3d_1to7p5", method: "image_mean"}
+  output: abundance_mean
+  against: graham2023/fig3d_1to7p5_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 1:7.5 shell/ring/disc percentages from MOESM14 ('Fig 3d') vs blindly digitized Fig. 3d bottom bar chart."
+
+- id: val_fig6d_3peg_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/fig6d_3peg_fig"}
+  settings: {dataset: "fig6d_3peg", method: "pooled"}
+  output: abundance_mean
+  against: graham2023/fig6d_3peg_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 3% PEG morphology percentages from MOESM17 ('Fig 6d') vs blindly digitized Fig. 6d top bar chart."
+
+- id: val_fig6d_10peg_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/fig6d_10peg_fig"}
+  settings: {dataset: "fig6d_10peg", method: "pooled"}
+  output: abundance_mean
+  against: graham2023/fig6d_10peg_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 10% PEG morphology percentages from MOESM17 ('Fig 6d') vs blindly digitized Fig. 6d bottom bar chart."
+
+- id: val_edfig4c_1to20_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/edfig4c_1to20_fig"}
+  settings: {dataset: "edfig4c_1to20", method: "image_mean"}
+  output: abundance_mean
+  against: graham2023/edfig4c_1to20_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 1:20 no-EDTA/EGTA shell/ring/disc percentages from MOESM20 ('Fig S4c') vs blindly digitized ED Fig. 4c top bar chart."
+
+- id: val_edfig4c_1to10_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/edfig4c_1to10_fig"}
+  settings: {dataset: "edfig4c_1to10", method: "image_mean"}
+  output: abundance_mean
+  against: graham2023/edfig4c_1to10_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 1:10 no-EDTA/EGTA shell/ring/disc percentages from MOESM20 ('Fig S4c') vs blindly digitized ED Fig. 4c middle bar chart."
+
+- id: val_edfig4c_1to7p5_bars
+  model: morphology_abundance_reader
+  sweep: {category: "graham2023/edfig4c_1to7p5_fig"}
+  settings: {dataset: "edfig4c_1to7p5", method: "image_mean"}
+  output: abundance_mean
+  against: graham2023/edfig4c_1to7p5_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/morphology_abundance": morphology_abundance
+  basis: "Live 1:7.5 no-EDTA/EGTA shell/ring/disc percentages from MOESM20 ('Fig S4c') vs blindly digitized ED Fig. 4c bottom bar chart."
+
+# ==============================================================================
+# 3. MOESM14 Fig. 3e/3f & MOESM15 Fig. 4h — Power-law fit curves (5 digitized curves)
+# ==============================================================================
+- id: val_fig3e_rings_curve
+  model: ring_thickness_reader
+  sweep: {D: "graham2023/fig3e_rings_fit_fig"}
+  settings: {dataset: "fig3e_rings"}
+  output: thickness_nls
+  against: graham2023/fig3e_rings_fit_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/ring_thickness": ring_thickness
+  basis: "Live NLS power-law fit from MOESM14 ('Fig 3e', n = 173 rings) vs blindly digitized Fig. 3e blue dashed curve."
+
+- id: val_fig3e_discs_curve
+  model: ring_thickness_reader
+  sweep: {D: "graham2023/fig3e_discs_fit_fig"}
+  settings: {dataset: "fig3e_discs"}
+  output: thickness_nls
+  against: graham2023/fig3e_discs_fit_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/ring_thickness": ring_thickness
+  basis: "Live NLS power-law fit from MOESM14 ('Fig 3e', n = 131 discs) vs blindly digitized Fig. 3e red dashed curve."
+
+- id: val_fig3f_ar_lt11_curve
+  model: ring_thickness_reader
+  sweep: {D: "graham2023/fig3f_ar_lt11_fit_fig"}
+  settings: {dataset: "fig3f_ar_lt11"}
+  output: thickness_nls
+  against: graham2023/fig3f_ar_lt11_fit_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/ring_thickness": ring_thickness
+  basis: "Live NLS power-law fit from MOESM14 ('Fig 3f', n = 386 AR < 1.1) vs blindly digitized Fig. 3f blue dashed curve."
+
+- id: val_fig3f_ar_gt11_curve
+  model: ring_thickness_reader
+  sweep: {D: "graham2023/fig3f_ar_gt11_fit_fig"}
+  settings: {dataset: "fig3f_ar_gt11"}
+  output: thickness_nls
+  against: graham2023/fig3f_ar_gt11_fit_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/ring_thickness": ring_thickness
+  basis: "Live NLS power-law fit from MOESM14 ('Fig 3f', n = 47 AR > 1.1) vs blindly digitized Fig. 3f red dashed curve."
+
+- id: val_fig4h_exp_curve
+  model: ring_thickness_reader
+  sweep: {D: "graham2023/fig4h_exp_fit_fig"}
+  settings: {dataset: "fig4h_ar_lt11"}
+  output: thickness_nls
+  against: graham2023/fig4h_exp_fit_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/ring_thickness": ring_thickness
+  basis: "Live NLS power-law fit from MOESM15 ('Fig 4h', n = 304 rings+discs) vs blindly digitized Fig. 4h solid black curve."
+
+# ==============================================================================
+# 4. MOESM14 Fig. 3g, MOESM16 Fig. S5a & Fig. 5h (3 digitized curves + Fig. 5a mean diagnostic)
+# ==============================================================================
+- id: val_fig3g_ar_median_curve
+  model: fig3g_aspect_ratio_reader
+  sweep: {category: "graham2023/fig3g_aspect_ratio_fig"}
+  settings: {}
+  output: ar_median
+  against: graham2023/fig3g_aspect_ratio_fig
+  quantities:
+    "graham2023/morphology_category_index": morphology_category_index
+    "graham2023/droplet_aspect_ratio": droplet_aspect_ratio
+  basis: "Live median aspect ratios (1.02, 1.02, 1.05) from MOESM14 ('Fig 3g') vs blindly digitized Fig. 3g box-plot medians."
+
+- id: val_fig5a_ar_median_curve
+  model: fig5_aspect_ratio_reader
+  sweep: {ratio: "graham2023/fig5a_aspect_ratio_fig"}
+  settings: {}
+  output: ar_median
+  against: graham2023/fig5a_aspect_ratio_fig
+  quantities:
+    "graham2023/actin_to_vasp_ratio": actin_to_vasp_ratio
+    "graham2023/droplet_aspect_ratio": droplet_aspect_ratio
+  basis: "Live median aspect ratios (1.02, 1.25, 1.52) from MOESM16 ('Fig S5a') vs Fig. 5a bisecting lines (caption claims median, but plot draws mean)."
+
+- id: val_fig5a_ar_mean_curve
+  model: fig5_aspect_ratio_reader
+  sweep: {ratio: "graham2023/fig5a_aspect_ratio_fig"}
+  settings: {}
+  output: ar_mean
+  against: graham2023/fig5a_aspect_ratio_fig
+  quantities:
+    "graham2023/actin_to_vasp_ratio": actin_to_vasp_ratio
+    "graham2023/droplet_aspect_ratio": droplet_aspect_ratio
+  basis: "Diagnostic: live mean aspect ratios (1.051, 1.569, 2.403) from MOESM16 ('Fig S5a') vs Fig. 5a bisecting lines (2.394 at 1:7.5 matches mean 2.403, not median 1.52)."
+
+- id: val_fig5h_linear_fit_curve
+  model: elongation_reader
+  sweep: {t: "graham2023/fig5h_linear_fit_fig"}
+  settings: {}
+  output: growth_origin_fit
+  against: graham2023/fig5h_linear_fit_fig
+  quantities:
+    "graham2023/elongation_time": elongation_time
+    "graham2023/bundle_growth_length": bundle_growth_length
+  basis: "Live through-origin linear fit (0.022734*t) from MOESM16 ('Fig 5h') vs blindly digitized Fig. 5h dashed fit line."
+
+# ==============================================================================
+# 5. MOESM17 Fig. 6f & Fig. 6g — Intensity trajectories (5 digitized curves + swap/offset diagnostics)
+# ==============================================================================
+- id: val_fig6f_d1_actin_literal
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6f_d1_actin_fig"}
+  settings: {series: "fig6f_d1_actin", add_one: false, snap_nearest: true}
+  output: normalized_intensity
+  against: graham2023/fig6f_d1_actin_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "Literal Excel 'droplet 1' Actin column in MOESM17 ('Fig 6f', ends at 3.01) vs Fig. 6f dark-green 'Droplet 1 Actin' (ends at 3.35) — exposes D1/D2 label swap."
+
+- id: val_fig6f_d1_actin_swapped_diag
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6f_d1_actin_fig"}
+  settings: {series: "fig6f_d2_actin", add_one: false, snap_nearest: true}
+  output: normalized_intensity
+  against: graham2023/fig6f_d1_actin_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "Swap diagnostic: Excel 'droplet 2' Actin column (ends at 3.33, snapped to nearest 5-s frame) matches Fig. 6f dark-green 'Droplet 1 Actin'."
+
+- id: val_fig6f_d1_vasp_literal
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6f_d1_vasp_fig"}
+  settings: {series: "fig6f_d1_vasp", add_one: false, snap_nearest: true}
+  output: normalized_intensity
+  against: graham2023/fig6f_d1_vasp_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "Literal Excel 'droplet 1' VASP column in MOESM17 ('Fig 6f', ends at 1.47) vs Fig. 6f dark-red 'Droplet 1 VASP' (ends at 1.25) — exposes D1/D2 label swap."
+
+- id: val_fig6f_d1_vasp_swapped_diag
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6f_d1_vasp_fig"}
+  settings: {series: "fig6f_d2_vasp", add_one: false, snap_nearest: true}
+  output: normalized_intensity
+  against: graham2023/fig6f_d1_vasp_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "Swap diagnostic: Excel 'droplet 2' VASP column (ends at 1.23, snapped to nearest 5-s frame) matches Fig. 6f dark-red 'Droplet 1 VASP'."
+
+- id: val_fig6f_d2_actin_literal
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6f_d2_actin_fig"}
+  settings: {series: "fig6f_d2_actin", add_one: false, snap_nearest: true}
+  output: normalized_intensity
+  against: graham2023/fig6f_d2_actin_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "Literal Excel 'droplet 2' Actin column in MOESM17 ('Fig 6f') vs Fig. 6f light-green 'Droplet 2 Actin' — exposes D1/D2 label swap."
+
+- id: val_fig6f_d2_actin_swapped_diag
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6f_d2_actin_fig"}
+  settings: {series: "fig6f_d1_actin", add_one: false, snap_nearest: true}
+  output: normalized_intensity
+  against: graham2023/fig6f_d2_actin_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "Swap diagnostic: Excel 'droplet 1' Actin column (ends at 3.01, snapped to nearest 5-s frame) matches Fig. 6f light-green 'Droplet 2 Actin'."
+
+- id: val_fig6f_d2_vasp_literal
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6f_d2_vasp_fig"}
+  settings: {series: "fig6f_d2_vasp", add_one: false, snap_nearest: true}
+  output: normalized_intensity
+  against: graham2023/fig6f_d2_vasp_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "Literal Excel 'droplet 2' VASP column in MOESM17 ('Fig 6f') vs Fig. 6f pink 'Droplet 2 VASP' — exposes D1/D2 label swap."
+
+- id: val_fig6f_d2_vasp_swapped_diag
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6f_d2_vasp_fig"}
+  settings: {series: "fig6f_d1_vasp", add_one: false, snap_nearest: true}
+  output: normalized_intensity
+  against: graham2023/fig6f_d2_vasp_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "Swap diagnostic: Excel 'droplet 1' VASP column (ends at 1.47, snapped to nearest 5-s frame) matches Fig. 6f pink 'Droplet 2 VASP'."
+
+- id: val_fig6g_actin_avg_raw
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6g_actin_avg_fig"}
+  settings: {series: "fig6g_avg", add_one: false}
+  output: normalized_intensity
+  against: graham2023/fig6g_actin_avg_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "Raw MOESM17 ('Fig 6g') average starts at 0.0 (storing fractional increase (I-I0)/I0, offset by -1.0 relative to plotted I/I0)."
+
+- id: val_fig6g_actin_avg_plus1
+  model: bundle_intensity_reader
+  sweep: {t: "graham2023/fig6g_actin_avg_fig"}
+  settings: {series: "fig6g_avg", add_one: true}
+  output: normalized_intensity
+  against: graham2023/fig6g_actin_avg_fig
+  quantities:
+    "graham2023/bundle_intensity_time": bundle_intensity_time
+    "graham2023/normalized_total_intensity": normalized_total_intensity
+  basis: "1 + MOESM17 ('Fig 6g') average reproduces all 9 blindly digitized Fig. 6g black curve points to within 0.01-0.02."
+
+# ==============================================================================
+# 6. MOESM18 Fig. S2d & MOESM19 Fig. S3e — Partitioning (2 digitized bar charts)
+# ==============================================================================
+- id: val_edfig2d_partition_bars
+  model: partition_reader
+  sweep: {construct: "graham2023/edfig2d_partition_fig"}
+  settings: {dataset: "edfig2d"}
+  output: partition_mean
+  against: graham2023/edfig2d_partition_fig
+  quantities:
+    "graham2023/vasp_construct_index": vasp_construct_index
+    "graham2023/protein_partition_coefficient": protein_partition_coefficient
+  basis: "Live n = 3 trial grand-mean partitioning from MOESM18 ('Fig S2d') vs blindly digitized ED Fig. 2d bar chart."
+
+- id: val_edfig3e_actin_partition_bars
+  model: partition_reader
+  sweep: {construct: "graham2023/edfig3e_actin_partition_fig"}
+  settings: {dataset: "edfig3e"}
+  output: partition_mean
+  against: graham2023/edfig3e_actin_partition_fig
+  quantities:
+    "graham2023/vasp_construct_index": vasp_construct_index
+    "graham2023/protein_partition_coefficient": protein_partition_coefficient
+  basis: "Live n = 3 trial grand-mean actin partitioning from MOESM19 ('Fig S3e') vs blindly digitized ED Fig. 3e bar chart."
+
+# ==============================================================================
+# 7. MOESM20 Fig. S4e & MOESM22 Fig. S9c / S9e (6 digitized curves)
+# ==============================================================================
+- id: val_edfig4e_size_hist_bars
+  model: droplet_size_reader
+  sweep: {D: "graham2023/edfig4e_size_hist_fig"}
+  settings: {dataset: "edfig4e", bin_start: 0.629, bin_width: 0.3156}
+  output: bin_count
+  against: graham2023/edfig4e_size_hist_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/droplet_size_count": droplet_size_count
+  basis: "Live 21-bin droplet diameter histogram (n = 1655 droplets) from MOESM20 ('Fig S4e') vs blindly digitized ED Fig. 4e histogram."
+
+- id: val_edfig9c_3peg_curve
+  model: droplet_size_reader
+  sweep: {D: "graham2023/edfig9c_3peg_fig"}
+  settings: {dataset: "edfig9c_3peg"}
+  output: bin_freq
+  against: graham2023/edfig9c_3peg_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/droplet_size_frequency": droplet_size_frequency
+  basis: "Live 0.2 um lower-edge diameter frequency curve (n = 708, 3% PEG) from MOESM22 ('Fig S9c') vs blindly digitized ED Fig. 9c red curve."
+
+- id: val_edfig9c_5peg_curve
+  model: droplet_size_reader
+  sweep: {D: "graham2023/edfig9c_5peg_fig"}
+  settings: {dataset: "edfig9c_5peg"}
+  output: bin_freq
+  against: graham2023/edfig9c_5peg_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/droplet_size_frequency": droplet_size_frequency
+  basis: "Live 0.2 um lower-edge diameter frequency curve (n = 1369, 5% PEG) from MOESM22 ('Fig S9c') vs blindly digitized ED Fig. 9c green curve."
+
+- id: val_edfig9c_10peg_curve
+  model: droplet_size_reader
+  sweep: {D: "graham2023/edfig9c_10peg_fig"}
+  settings: {dataset: "edfig9c_10peg"}
+  output: bin_freq
+  against: graham2023/edfig9c_10peg_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/droplet_size_frequency": droplet_size_frequency
+  basis: "Live 0.2 um lower-edge diameter frequency curve (n = 2593, 10% PEG) from MOESM22 ('Fig S9c') vs blindly digitized ED Fig. 9c blue curve."
+
+- id: val_edfig9c_15peg_curve
+  model: droplet_size_reader
+  sweep: {D: "graham2023/edfig9c_15peg_fig"}
+  settings: {dataset: "edfig9c_15peg"}
+  output: bin_freq
+  against: graham2023/edfig9c_15peg_fig
+  quantities:
+    "graham2023/droplet_diameter": droplet_diameter
+    "graham2023/droplet_size_frequency": droplet_size_frequency
+  basis: "Live 0.2 um lower-edge diameter frequency curve (n = 2443, 15% PEG) from MOESM22 ('Fig S9c') vs blindly digitized ED Fig. 9c yellow curve."
+
+- id: val_edfig9e_aspect_ratio_bars
+  model: edfig9e_aspect_ratio_reader
+  sweep: {peg: "graham2023/edfig9e_aspect_ratio_fig"}
+  settings: {}
+  output: ar_mean
+  against: graham2023/edfig9e_aspect_ratio_fig
+  quantities:
+    "graham2023/peg_concentration_wv": peg_concentration_wv
+    "graham2023/droplet_aspect_ratio": droplet_aspect_ratio
+  basis: "Live PEG-dependent mean aspect ratios from MOESM22 ('Fig S9e') vs blindly digitized ED Fig. 9e bars (exposes 3% PEG discrepancy: 7.82 +/- 5.56 vs plotted 11.52 +/- 3.97)."
+
+# ==============================================================================
+# 8. Cross-record Source Data verification for chandrasekaran2024 Fig. 6D WT scalar
+#    (MOESM14 'Fig 3d' supplies the WT counts left blank in MOESM9 'Figure6D' rows 1-19)
+# ==============================================================================
+- id: val_chandrasekaran2024_exp_wt_disk_1to7p5_fig3d
+  model: morphology_abundance_reader
+  inputs:
+    category: idx_cat_3
+  settings:
+    dataset: "fig3d_1to7p5"
+    method: "image_mean"
+  output: abundance_mean
+  against: chandrasekaran2024/exp_wt_disk_pct_1_7p5
+  purpose: validation
+  quantities:
+    "chandrasekaran2024/disk_abundance": morphology_abundance
+  conditions_ok: >
+    morphology_abundance_reader with settings {dataset: 'fig3d_1to7p5', method: 'image_mean'}
+    and category = idx_cat_3 (disc/disk) evaluates wild-type VASP droplets at Actin:VASP = 1:7.5
+    (20 uM VASP + 2.67 uM actin, N = 3 replicates, 256 total droplets across confocal images in
+    0.5 mM EDTA + 0.5 mM EGTA buffer), matching the experimental conditions tagged on
+    chandrasekaran2024/exp_wt_disk_pct_1_7p5 ({vasp_variant: 'WT', vasp_to_actin_ratio: '7.5'},
+    from_source: ref-15). Note that chandrasekaran2024 Methods (pp. 10-11) uses EDTA/EGTA-free
+    buffer for its newly measured VASP-GABmut cohort, whereas its replotted WT baseline originates
+    from MOESM14 'Fig 3d' (with EDTA/EGTA) rather than MOESM20 'Fig S4c' (EDTA/EGTA-free).
+  basis: >
+    Chandrasekaran et al. (2024, Results p. 7, Fig. 6D) state 'Specifically, at actin to VASP
+    ratio of 1:7.5, a majority of droplets composed of wild-type VASP had deformed into disks
+    (70 ± 13% mean ± SEM)' and '(data from ref. 15 replotted)'. Graham et al. (2023) never
+    printed this 70 ± 13% scalar in text or table, and chandrasekaran_source_data (MOESM9
+    'Figure6D') left WT rows 1-19 blank, making MOESM14 ('Fig 3d') in graham_source_data the
+    sole released Source Data workbook backing chandrasekaran2024/exp_wt_disk_pct_1_7p5.
+    Consistent with the 43 existing software: true Excel reader validations against graham2023
+    in this file, live execution of morphology_abundance_reader directly verifies this measured
+    scalar from the underlying raw droplet counts.
+  note: >
+    Computes 69.6919% (SD 21.6496%, SEM 12.4994%, n = 256 droplets across 3 replicates; exact
+    match to stored MOESM14 summary cell AF9) vs printed '70 ± 13%' (-0.3081 pp): reproduced.
+    Method 'pooled' yields 69.5199% (SD 22.0628%, SEM 12.7380%, -0.4801 pp, also reproduced).
+    By contrast, buffer-matched EDTA/EGTA-free MOESM20 'Fig S4c' (edfig4c_1to7p5, image_mean,
+    n = 148) gives 79.7977% +/- 0.9794% SD (SEM 0.5655%, +9.7977 pp; pooled 78.4343% +/- 2.9781%
+    SD) and misses 4/9 digitized Fig. 6D WT bars outside their SD bands (0/9 inside bar-height
+    bands), confirming Fig. 6D WT replots EDTA/EGTA-containing MOESM14 'Fig 3d' (inheriting
+    q_fig3d_and_edfig4e_count_errors: 714 droplets total across all 3 replicates, not >= 600 per
+    replicate). See q_chandrasekaran2024_cross_validation_summary for full bidirectional audit.
+
+# ==============================================================================
+# 9. Remaining origin: measured printed scalar measurements in graham2023
+#    (MOESM12 Fig. 1f text, MOESM16 Fig. 5h text, MOESM20 Fig. S4e median & max)
+# ==============================================================================
+- id: val_fig1f_frap_recovery_text_scalar
+  model: frap_summary_reader
+  settings: {dataset: "fig1f"}
+  output: final_recovery_mean
+  against: graham2023/frap_recovery_text
+  purpose: validation
+  quantities: {"graham2023/frap_recovery_fraction": frap_recovery_fraction}
+  basis: >
+    Graham et al. (2023, Results p. 2 / p. 575) report '(fractional recovery 94 ± 5%) in less than
+    2 min (t1/2 of 18 ± 3 s) (Fig. 1f and Supplementary Video S2)' as the rounded main-text
+    reporting of Fig. 1f's 93.9 ± 4.89% recovery. Live execution of frap_summary_reader on MOESM12
+    ('Fig 1f', row 106, t = 297 s) directly verifies this origin: measured scalar datum from the
+    underlying fluorescence recovery traces.
+  note: >
+    Computes 93.9086% (sample SD 4.8891%, n = 7 trials extending to t = 297 s; trials 8-9 stop at
+    t = 207 s, all-9 last-point mean 94.6812 +/- 4.5338%) vs printed '94 ± 5%' (-0.0914 pp):
+    reproduced. Note that at t = 120 s (2 min), MOESM12 gives recovery_120s_mean = 86.2497%
+    (SD 5.49%, -7.75 pp, outside [89, 99]% -> close), contradicting the text's 'in less than 2 min'
+    phrasing (see q_fig1f_n7_at_297s_and_sd_resolved).
+
+- id: val_fig5h_elongation_rate_text_scalar
+  model: elongation_reader
+  inputs:
+    t: query_time_190s
+  settings: {}
+  output: slope_ind_origin_mean
+  against: graham2023/elongation_rate_mean_text
+  purpose: validation
+  quantities: {"graham2023/bundle_elongation_rate": bundle_elongation_rate}
+  basis: >
+    Graham et al. (2023, Results p. 9 / p. 582) report 'with an average growth rate in the presence
+    of ATP of 23 ± 3 nm s−1, about 8 to 9 monomers per second (Fig. 5h)' across n = 15 elongating
+    VASP-actin droplet bundles (10 uM VASP, 2 uM actin, 3% PEG, 1 mM ATP). Live execution of
+    elongation_reader on MOESM16 ('Fig 5h', cells A4:R23) directly verifies this origin: measured
+    scalar from the 15 raw bundle-length trajectories.
+  note: >
+    Computes 22.7335 nm/s (mean of 15 per-droplet through-origin slopes; 15-droplet mean-curve
+    through-origin slope 0.022734 um/s = 22.7341 nm/s; invariant to query input t = 190 s) vs
+    printed '23 ± 3' nm/s (-0.2665 nm/s): reproduced. Per-droplet free-intercept OLS gives 21.9335
+    +/- 3.0452 nm/s and endpoint y(190)/190 gives 22.0354 +/- 3.1559 nm/s (both also reproduced);
+    note sample SD of per-droplet through-origin slopes is 3.6643 nm/s (rounds to 4, not 3; 3-trial
+    population SD ddof=0 is 3.0751 nm/s) and cell R6 (trial 3, droplet 5, t = 20 s) is blank
+    (n = 14 at 20 s; see q_fig5h_missing_cell_sd_and_line_offset).
+
+- id: val_edfig4e_diam_median_scalar
+  model: droplet_size_reader
+  inputs:
+    D: query_diam_1um
+  settings: {dataset: "edfig4e"}
+  output: diam_median
+  against: graham2023/droplet_diam_median_20uM
+  purpose: validation
+  quantities: {"graham2023/droplet_diameter": droplet_diameter}
+  basis: >
+    Graham et al. (2023, Extended Data Fig. 4e caption, p. 19) state 'for 20 μM VASP droplets.
+    Median droplet size is 2.86 μm.' Live execution of droplet_size_reader on MOESM20 ('Fig S4e',
+    cells E2:E1656) directly verifies this origin: measured scalar from the raw 20 uM VASP droplet
+    diameter column.
+  note: >
+    Computes exact median 2.8600 um (mean 3.0323 +/- 1.2189 um SD, min 0.75 um, max 7.22 um;
+    invariant to query input D = 1.0 um) vs printed '2.86' um (diff 0.0000 um): reproduced. Note
+    that E2:E1656 holds n = 1655 numeric diameters (sum of all 21 histogram bins = 1655), not
+    n = 1656 as printed in the caption because row 1 is the text header 'Droplet diameter'
+    (see q_fig3d_and_edfig4e_count_errors).
+
+- id: val_edfig4e_diam_max_scalar
+  model: droplet_size_reader
+  inputs:
+    D: query_diam_1um
+  settings: {dataset: "edfig4e"}
+  output: diam_max
+  against: graham2023/droplet_diam_max_20uM
+  purpose: validation
+  quantities: {"graham2023/droplet_diameter": droplet_diameter}
+  basis: >
+    Graham et al. (2023, Extended Data Fig. 4e caption, p. 19) state 'Maximum droplet size is
+    7.22 μm.' Live execution of droplet_size_reader on MOESM20 ('Fig S4e', cells E2:E1656, maximum
+    in cell E2) directly verifies this origin: measured scalar from the raw 20 uM VASP droplet
+    diameter column.
+  note: >
+    Computes exact maximum 7.2200 um (invariant to query input D = 1.0 um; n = 1655 numeric rows
+    in E2:E1656 vs caption n = 1656) vs printed '7.22' um (diff 0.0000 um): reproduced.
+
+

@@ -109,3 +109,212 @@
     printed_page: "28001-p3"
     quote: "deﬁned the dimensionless wave number k ∗ = k L/β and"
     where: "below Eq. 8"
+
+# ==============================================================================
+# Cross-record relations with zwicker2015 (Zwicker, Hyman & Jülicher, PRE 92:012317, 2015)
+# Neither paper cites the other; all cross-record relations below are provenance: proposed.
+# ==============================================================================
+
+- id: rel_zwicker2015_rpa_modelB_derived_eqF1_corrected
+  kind: derived_from
+  a: dutta2016/rpa_spinodal_dispersion
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "1"
+    w: "1"
+    q: "(pi * Gamma_A * lambda_A**4 + 2 / (3 * rho_star))**(1/4) * k"
+    k_f: "pi * Gamma_R * (1 + sqrt((1 - (pi * Gamma_A * lambda_A**2 - 1 / rho_star) / sqrt(pi * Gamma_A * lambda_A**4 / 4 + 1 / (6 * rho_star))) / 3))"
+    k_b: "pi * Gamma_R * (1 - sqrt((1 - (pi * Gamma_A * lambda_A**2 - 1 / rho_star) / sqrt(pi * Gamma_A * lambda_A**4 / 4 + 1 / (6 * rho_star))) / 3))"
+  output_map:
+    lam_q_norm: lam_B
+  regime:
+    k: [0.22, 0.34]
+    rho_star: [1.0, 1.0]
+    Gamma_R: [2.0e-5, 1.0e-4]
+    lambda_R: [200.0, 1000.0]
+    Gamma_A: [5.28, 5.42]
+    lambda_A: [0.25, 0.25]
+  steps:
+    - "limit: lambda_R -> oo"
+    - "series: k -> 0, 6"
+    - "simplify"
+  provenance: proposed
+  reason: >
+    Formalizes the Ohta-Kawasaki / Christensen-Elder-Fogedby equivalence noted qualitatively in
+    zwicker2015 (Sec. I, p. 1, ref-22): under conserved Model-B relaxational dynamics applied to
+    dutta2016's quadratic Landau-Wilson / RPA free-energy curvature (Eqs. 5 and 8), taking the
+    unscreened 2D Coulomb limit (lambda_R -> oo, zero salt) and long-wavelength gradient expansion
+    (to O(k^4)) yields lambda_B(k) = -2*pi*Gamma_R + (pi*Gamma_A*lambda_A^2 - 1/rho*)*k^2 -
+    (pi*Gamma_A*lambda_A^4/4 + 1/(6*rho*))*k^4. This matches zwicker2015's exact active Cahn-Hilliard
+    dispersion Eq. (F1_corrected) identically under the physical dictionary: unscreened Coulomb
+    repulsion 2*pi*Gamma_R <-> chemical turnover rate (k_f + k_b)/k_0 = (w/l)^2; net short-range
+    attraction minus polymer entropy pi*Gamma_A*lambda_A^2 - 1/rho* <-> spinodal curvature
+    c_spin*(q*w/k)^2; and Gaussian range plus Debye chain stiffness pi*Gamma_A*lambda_A^4/4 +
+    1/(6*rho*) <-> interfacial gradient penalty (1/4)*(q*w/k)^4.
+  assumptions:
+    - "Conserved Model-B dynamics applied to dutta2016's equilibrium quadratic RPA free-energy curvature chi^-1(k) = 1/(rho* b(k)) + beta V(k) in unit-mobility dimensionless form."
+    - "Unscreened 2D Coulomb limit (lambda_R -> oo), removing dutta2016's finite-lambda_R macrophase separation at k = 0."
+    - "Long-wavelength weak-supercriticality regime (0 < c_spin < 1/2, k << min(1, 1/lambda_A))."
+
+- id: rel_zwicker2015_rpa_modelB_approx_eqF1_corrected
+  kind: approximated_by
+  a: dutta2016/rpa_spinodal_dispersion
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "1"
+    w: "1"
+    q: "(pi * Gamma_A * lambda_A**4 + 2 / (3 * rho_star))**(1/4) * k"
+    k_f: "pi * Gamma_R * (1 + sqrt((1 - (pi * Gamma_A * lambda_A**2 - 1 / rho_star) / sqrt(pi * Gamma_A * lambda_A**4 / 4 + 1 / (6 * rho_star))) / 3))"
+    k_b: "pi * Gamma_R * (1 - sqrt((1 - (pi * Gamma_A * lambda_A**2 - 1 / rho_star) / sqrt(pi * Gamma_A * lambda_A**4 / 4 + 1 / (6 * rho_star))) / 3))"
+  output_map:
+    lam_q_norm: lam_B
+  regime:
+    k: [0.22, 0.34]
+    rho_star: [1.0, 1.0]
+    Gamma_R: [2.0e-5, 1.0e-4]
+    lambda_R: [200.0, 1000.0]
+    Gamma_A: [5.28, 5.42]
+    lambda_A: [0.25, 0.25]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    Quantifies how accurately zwicker2015's exact quartic active Cahn-Hilliard dispersion
+    Eq. (F1_corrected) approximates dutta2016's full non-polynomial conserved RPA dispersion
+    (retaining finite screening lambda_R in [200, 1000], the full Gaussian attractive potential, and
+    the full single-polymer Debye form factor b(k)) across the interior of the unstable Type-Is
+    microphase peak band (where all three terms k^0, k^2, and k^4 contribute at leading order).
+  assumptions:
+    - "Large finite screening length lambda_R in [200, 1000] (k*lambda_R >> 1) and weak supercriticality Gamma_A in [5.28, 5.42] at rho* = 1, lambda_A = 0.25."
+    - "Interior of the unstable finite-wavelength band k in [0.22, 0.34] bounded away from neutral-stability zero crossings."
+
+- id: rel_zwicker2015_rpa_modelB_vs_eqF1_printed
+  kind: derived_from
+  a: dutta2016/rpa_spinodal_dispersion
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "1"
+    w: "1"
+    q: "(pi * Gamma_A * lambda_A**4 + 2 / (3 * rho_star))**(1/4) * k"
+    k_f: "pi * Gamma_R * (1 + sqrt((1 - (pi * Gamma_A * lambda_A**2 - 1 / rho_star) / sqrt(pi * Gamma_A * lambda_A**4 / 4 + 1 / (6 * rho_star))) / 3))"
+    k_b: "pi * Gamma_R * (1 - sqrt((1 - (pi * Gamma_A * lambda_A**2 - 1 / rho_star) / sqrt(pi * Gamma_A * lambda_A**4 / 4 + 1 / (6 * rho_star))) / 3))"
+  output_map:
+    lam_q_norm: lam_B
+  regime:
+    k: [0.22, 0.34]
+    rho_star: [1.0, 1.0]
+    Gamma_R: [2.0e-5, 1.0e-4]
+    lambda_R: [200.0, 1000.0]
+    Gamma_A: [5.28, 5.42]
+    lambda_A: [0.25, 0.25]
+  steps:
+    - "limit: lambda_R -> oo"
+    - "series: k -> 0, 6"
+    - "simplify"
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing whether the same unscreened long-wavelength Ohta-Kawasaki
+    dictionary reaches zwicker2015's printed Appendix F Eq. (F1). Expected to be not_verified because
+    printed Eq. (F1) doubles the q^2 spinodal driving term relative to the exact linearization of
+    Eq. (3b), independently corroborating zwicker2015/q_appF_factor_of_2_error.
+  assumptions:
+    - "Same exact Ohta-Kawasaki dictionary and derivation steps as rel_zwicker2015_rpa_modelB_derived_eqF1_corrected."
+
+- id: rel_zwicker2015_static_lifshitz_derived_eqF1_corrected
+  kind: derived_from
+  a: dutta2016/rpa_spinodal_dispersion
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "1"
+    w: "1"
+    q: "(pi * rho_star * (192 * Gamma_R * lambda_R**6 + 32 * Gamma_R * lambda_R**4 + 4 * Gamma_R * lambda_R**2 - 3 * Gamma_A * lambda_A**6 - 4 * Gamma_A * lambda_A**4 - 2 * Gamma_A * lambda_A**2) / 24)**(1/4) * k"
+    k_f: "((1 + pi * rho_star * (2 * Gamma_R * lambda_R**2 - Gamma_A * lambda_A**2)) / 2) * (1 + sqrt((1 - (pi * rho_star * (24 * Gamma_R * lambda_R**4 + 4 * Gamma_R * lambda_R**2 - 3 * Gamma_A * lambda_A**4 - 2 * Gamma_A * lambda_A**2) / 12) / sqrt(pi * rho_star * (192 * Gamma_R * lambda_R**6 + 32 * Gamma_R * lambda_R**4 + 4 * Gamma_R * lambda_R**2 - 3 * Gamma_A * lambda_A**6 - 4 * Gamma_A * lambda_A**4 - 2 * Gamma_A * lambda_A**2) / 96)) / 3))"
+    k_b: "((1 + pi * rho_star * (2 * Gamma_R * lambda_R**2 - Gamma_A * lambda_A**2)) / 2) * (1 - sqrt((1 - (pi * rho_star * (24 * Gamma_R * lambda_R**4 + 4 * Gamma_R * lambda_R**2 - 3 * Gamma_A * lambda_A**4 - 2 * Gamma_A * lambda_A**2) / 12) / sqrt(pi * rho_star * (192 * Gamma_R * lambda_R**6 + 32 * Gamma_R * lambda_R**4 + 4 * Gamma_R * lambda_R**2 - 3 * Gamma_A * lambda_A**6 - 4 * Gamma_A * lambda_A**4 - 2 * Gamma_A * lambda_A**2) / 96)) / 3))"
+  output_map:
+    lam_q_norm: g_static
+  regime:
+    k: [0.1, 0.3]
+    rho_star: [1.0, 1.0]
+    Gamma_R: [10.0, 10.0]
+    lambda_R: [0.2325, 0.2335]
+    Gamma_A: [138.5, 139.2]
+    lambda_A: [0.1, 0.1]
+  steps:
+    - "series: k -> 0, 6"
+    - "simplify"
+  provenance: proposed
+  reason: >
+    Demonstrates that even at finite Debye screening length lambda_R (without taking lambda_R -> oo
+    or introducing Model-B dynamics), dutta2016's static Eq. (8) spinodal margin g_static(k) =
+    -rho* beta V(k) b(k) - 1 (= F(k) - 1 for beta V < 0) shares the exact local quartic Type-Is /
+    Brazovskii normal form c_0 + c_2*k^2 - |c_4|*k^4 of zwicker2015 Eq. (F1_corrected) near
+    dutta2016's Lifshitz point (F(0) < 1, F''(0) > 0, F''''(0) < 0; here near Fig. 4's consistent
+    Lifshitz point Gamma_A = 138.14, lambda_R = 0.2306). Simultaneously, the mapping exposes why the
+    two phase diagrams diverge globally: here the k = 0 damping |c_0| = 1 - F(0) vanishes and changes
+    sign at dutta2016's finite-lambda_R macrophase boundary (macrophase_boundary_k0), whereas in
+    zwicker2015 the q = 0 damping (k_f + k_b)/k_0 is strictly positive for every active emulsion.
+  assumptions:
+    - "Finite-lambda_R neighborhood of dutta2016's Lifshitz point where c_0 < 0 (no k = 0 macrophase instability), c_2 > 0 (finite-k instability tendency), c_4 < 0 (positive quartic stiffness), and 0 < c_2/(2*sqrt(|c_4|)) < 1/2."
+
+- id: rel_zwicker2015_bundle_size_unscreened_scales_eq16
+  kind: scales_as
+  a: dutta2016/bundle_size_eq8
+  b: zwicker2015/binary_single_radius_eq16
+  mapping:
+    D_B: "1.0e-12"
+    k_f: "0.1 * Gamma_R"
+    k_b: "Gamma_R"
+  output_map:
+    R_bar: bundle_size
+  regime:
+    rho_star: [0.8, 1.5]
+    Gamma_R: [1.0e-5, 5.0e-3]
+    lambda_R: [5000.0, 20000.0]
+    Gamma_A: [15.0, 30.0]
+    lambda_A: [0.25, 0.35]
+  provenance: proposed
+  reason: >
+    Direct scaling correspondence between the two papers' existing arrested-size models in the
+    unscreened 2D Coulomb (lambda_R -> oo), weak-repulsion limit of dutta2016. Balancing unscreened
+    repulsion 2*pi*rho* Gamma_R / k_min^2 against bulk attraction pi*rho* Gamma_A*lambda_A^2 - 1 at
+    Eq. (8)'s lower neutral-stability root F(k_min) = 1 yields D* = 2*pi/k_min ~
+    sqrt(2*pi*(pi*Gamma_A*lambda_A^2 - 1/rho*)/Gamma_R) proportional to Gamma_R^(-1/2). Under the
+    Ohta-Kawasaki / Christensen-Elder-Fogedby dictionary (repulsion strength Gamma_R <-> first-order
+    turnover rate k_b at fixed k_f/k_b = 0.1), this matches the exact -1/2 scaling exponent of
+    zwicker2015's dilute active droplet radius Eq. (16) (R_bar = sqrt(3*D_B*k_f/((k_f+k_b)*k_b)) ~
+    k_b^(-1/2) ~ l) as well as the linear dispersion upper cutoff wavelength 2*pi/q_min ~ l ~
+    (k_f + k_b)^(-1/2) of Appendix F. Note that in dutta2016's finite-lambda_R screened regime
+    (Figs. 2-4), this power law breaks down as D* diverges as (Gamma_R - Gamma_R_inf)^(-1/2) at the
+    k = 0 macrophase boundary.
+  assumptions:
+    - "Unscreened 2D Coulomb regime lambda_R in [5000, 20000] >> D* and weak repulsion Gamma_R in [1e-5, 5e-3] so k_min << min(1, 1/lambda_A)."
+    - "Fixed background composition ratio k_f / k_b = 0.1 (phi_0^B = 1/11, matching zwicker2015 Figs. 3-6) and fixed diffusivity D_B = 1e-12 m^2/s."
+
+- id: rel_zwicker2015_bundle_size_unscreened_vs_eq19_Rstab
+  kind: scales_as
+  a: dutta2016/bundle_size_eq8
+  b: zwicker2015/binary_stability_radius_eq19
+  mapping:
+    D_B: "1.0e-12"
+    gamma_beta: "1.0e-7"
+    k_b: "Gamma_R"
+  output_map:
+    R_stab: bundle_size
+  regime:
+    rho_star: [0.8, 1.5]
+    Gamma_R: [1.0e-5, 5.0e-3]
+    lambda_R: [5000.0, 20000.0]
+    Gamma_A: [15.0, 30.0]
+    lambda_A: [0.25, 0.35]
+  provenance: proposed
+  reason: >
+    Diagnostic scaling contrast between dutta2016's quadratic spinodal bundle size D* = 2*pi/k_min
+    and zwicker2015's multi-droplet Ostwald-ripening stability threshold radius Eq. (19)
+    (R_stab = [3*D_B*gamma*beta/(2*k_b)]^(1/3) ~ k_b^(-1/3), which zwicker2015 p. 10 links to
+    strong-segregation Ohta-Kawasaki scaling [22, 28]). Expected to be not_verified even in
+    dutta2016's unscreened Coulomb limit (exact exponent difference |-1/2 - (-1/3)| = 1/6 ~= 0.167),
+    demonstrating that quadratic spinodal theory Eq. (8) (yielding D* ~ Gamma_R^(-1/2) at k_min and
+    2*pi/k_peak ~ Gamma_R^(-1/4) at the peak) cannot reproduce nonlinear sharp-interface Gibbs-Thomson
+    Ostwald-ripening arrest without solving the nonlinear saddle-point Eq. (7).
+  assumptions:
+    - "Same unscreened weak-repulsion regime and Ohta-Kawasaki mapping k_b <-> Gamma_R as rel_zwicker2015_bundle_size_unscreened_scales_eq16."
+

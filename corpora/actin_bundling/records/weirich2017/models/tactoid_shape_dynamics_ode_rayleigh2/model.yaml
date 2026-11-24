@@ -1,0 +1,54 @@
+id: tactoid_shape_dynamics_ode_rayleigh2
+name: coupled nonlinear ODE for anisotropic tactoid shape relaxation (Rayleigh dissipation power P = 2*Phi)
+role: model
+variant_of: tactoid_shape_dynamics_ode
+built_from:
+  - tactoid_geometry_circular_arc
+  - tactoid_free_energy
+  - tactoid_dissipation_power
+  - tactoid_equilibrium_minimizer
+corrections:
+  - equation: "SI p. 9 col 1 (dF/dt + D = 0 with D = (1/2) V [eta_R (dR/dt / R)^2 + eta_alpha (dalpha/dt / alpha)^2])"
+    change: "Use dissipated power P = 2*Phi = V*eta*[(dR/dt / R)^2 + (dalpha/dt / alpha)^2] (equivalently Onsager variational principle d/d(alpha_dot)[dF/dt + Phi] = 0), removing the factor of 1/2 from the energy balance"
+    evidence: "In classical continuum mechanics, Phi = (1/2) V eta [(dR/dt/R)^2 + (dalpha/dt/alpha)^2] is the Rayleigh dissipation function whose dissipated power is 2*Phi; omitting the factor of 2 makes the literally printed ODE underpredict Fig. 3D's digitized theoretical dashed curves by 2.08x (omega=2.0: 614 vs 1278 nm) and 2.29x (omega=1.4: 1577 vs 3607 nm), as well as Figs. 3B and 4C."
+stated:
+  page: 9
+  printed_page: "SI-3"
+  quote: "NDSolve), subject to the initial conditions for the shape pa-"
+  where: "SI Text, Liquid Droplets with Isotropic and Anisotropic Interfacial Tension"
+equation: "dF/dt + 2*Phi = 0, dV/dt = 0 with Phi = (1/2)*V*eta*[(dR/dt/R)^2 + (dalpha/dt/alpha)^2]; exponential fit L(t) = L_eq + (L_i - L_eq)*exp(-t/tau)"
+inputs:
+  omega:
+    quantity: anchoring_strength
+    unit: dimensionless
+  v_cap:
+    quantity: capillary_velocity
+    unit: "um/s"
+  L_eq:
+    quantity: tactoid_major_axis
+    unit: um
+  L_i:
+    quantity: tactoid_major_axis
+    unit: um
+  t_max:
+    quantity: integration_time_horizon
+    unit: s
+outputs:
+  tau:
+    quantity: relaxation_time
+    unit: s
+  tau_linearized:
+    quantity: relaxation_time
+    unit: s
+  alpha_eq:
+    quantity: tactoid_central_angle
+    unit: dimensionless
+  alpha_min:
+    quantity: tactoid_central_angle
+    unit: dimensionless
+  L_final:
+    quantity: tactoid_major_axis
+    unit: um
+settings:
+  n_steps: 400
+stochastic: false

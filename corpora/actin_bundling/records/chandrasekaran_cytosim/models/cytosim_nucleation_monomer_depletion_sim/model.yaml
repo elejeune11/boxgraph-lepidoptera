@@ -1,0 +1,31 @@
+id: cytosim_nucleation_monomer_depletion_sim
+name: "CytoSim coupled Nucleator cycle & FiberSet monomer-depletion dynamics (nucleator.cc:140-201; single.cc:148-151; fiber_set.cc:215-249; growing_fiber.cc:66-79; fiber.cc:180-203)"
+role: model
+stated:
+  file: src/sim/fiber_set.cc
+  lines: "238-248"
+  quote: "fp->free_polymer = 1.0 - fp->used_polymer / fp->total_polymer;"
+  where: "FiberSet::steps(), GrowingFiber::step(), Fiber::updateLength(), Nucleator::stepUnattached(), Single::stepA()"
+equation: "N_nuc = round(C_nuc*N_A*V_drop); L_tot = C_T*N_A*V_drop*dl; each dt: fp = max(0, 1 - used/L_tot); dL = k_grow*fp*dt (clamped to L_max); dN_nuc = p_nuc*N_free; dN_off = p_off*(N_nuc - N_free); N_fil += dN_nuc"
+inputs:
+  N_seed: {quantity: filament_count, unit: dimensionless, description: "Initial seed filament count (30)"}
+  L_seed_init: {quantity: filament_length, unit: um, description: "Initial seed filament length (0.1 um)"}
+  L_max: {quantity: filament_length, unit: um, description: "FiberProp::max_length cap (2*pi*R_drop)"}
+  L_nuc_init: {quantity: filament_length, unit: um, description: "Initial length of newly nucleated filaments (um)"}
+  k_grow: {quantity: elongation_rate, unit: nm/s, description: "GrowingFiberProp::growing_speed[0] (nm/s)"}
+  C_nucleator: {quantity: nucleator_concentration, unit: nM, description: "Linear nucleator concentration [Nucleator] (nM)"}
+  k_nuc: {quantity: binding_rate, unit: 1/s, description: "NucleatorProp::nucleation_rate[0] (1/s)"}
+  k_unbind_nuc: {quantity: unbinding_rate, unit: 1/s, description: "Nucleator HandProp::unbinding_rate (1/s; default hold_end = MINUS_END)"}
+  C_total_actin: {quantity: actin_concentration, unit: uM, description: "Total actin pool [T-actin] (uM)"}
+  R_drop: {quantity: droplet_radius, unit: um, description: "Spherical droplet radius R_drop (um)"}
+  dl_monomer: {quantity: actin_monomer_rise, unit: nm, description: "Axial contour rise per G-actin monomer (nm)"}
+  t_eval: {quantity: time, unit: s, description: "Simulation evaluation time t_eval (s)"}
+outputs:
+  N_nuc_molecules: {quantity: molecule_count, unit: dimensionless, description: "Discrete nucleator molecule count round(C_nucleator * N_A * V_drop)"}
+  total_polymer_length: {quantity: polymer_pool_length, unit: um, description: "Equivalent CytoSim FiberProp::total_polymer contour length (um)"}
+  N_fil_final: {quantity: filament_count, unit: dimensionless, description: "Expected total filament count N_fil(t_eval) under CytoSim's 2-state hold_end=MINUS_END Nucleator cycle"}
+  L_seed_final: {quantity: filament_length, unit: um, description: "Final length of initial seed filaments (upper CDF length) at t_eval (um)"}
+  free_polymer_final: {quantity: free_polymer_fraction, unit: dimensionless, description: "Remaining free_polymer fraction at t_eval"}
+settings:
+  dt: 0.02
+stochastic: false

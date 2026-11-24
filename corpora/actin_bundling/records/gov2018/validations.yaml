@@ -1,0 +1,194 @@
+# Cross-record validations of gov2018 models against independent experimental measurements
+# in sekine2024 (wild-type embryonic early-stage-16 Drosophila tracheal dorsal-trunk
+# periodic circumferential actin cables).
+
+- id: val_cyl_ring_lambda_max_vs_sekine_cable_interval
+  model: cylindrical_ring_critical_mode
+  inputs:
+    R0: R0_trachea_sekine_0min_added
+    kappa: kappa_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_concave_added
+    ns: ns_added
+    n0: n0_added
+    xi: xi_added
+    A: A_contractile_added
+  output: lambda_max
+  against: sekine2024/cable_interval_in_vivo
+  purpose: validation
+  quantities:
+    "sekine2024/pattern_interval": wavelength
+  conditions_ok: >
+    Gov (2018) Section 4 (reconstructed axisymmetric cylindrical-tube curvature-ring instability,
+    cylindrical_ring_critical_mode, pp. 6-7, [87, 88]) models periodic circumferential contractile
+    actomyosin rings initiated on a cylindrical fluid membrane tube of unperturbed radius R_0; here
+    R_0 = 1.971 um is set to half the measured early-stage-16 wild-type Drosophila tracheal
+    dorsal-trunk mean diameter at t = 0* min (sekine2024/d_fig1j_diameter, D = 3.942 um) and
+    k_B*T = 0.004114 pN*um matches Sekine's 25 degC (298 K) imaging/rearing temperature
+    (sekine2024/temp_experiment), while the remaining 7 unmeasured membrane/CMC parameters use
+    gov2018/added.yaml's baseline eukaryotic plasma-membrane scales. Sekine (2024) measures
+    periodic circumferential actin cable spacing at early stage 16 in fixed btl>lifeact::GFP
+    (w[1118]) embryonic tracheal dorsal trunks by Zeiss LSM980 Airyscan microscopy (N = 8 embryos,
+    n = 294 cables, 450 +/- 13.2 nm).
+  basis: >
+    Gov (2018) Section 4 states that inner-surface circumferential curved membrane components
+    recruiting contractile actomyosin forces on a cylindrical membrane tube spontaneously initiate
+    periodic rings at equal axial separations given by the most unstable linear wavelength: "The
+    instability involves formation of condensed rings at equal separations along the length of the
+    cylindrical membrane [88] ... corresponding to the most unstable wavelength of the linear
+    stability analysis ... recruitment of contractile forces, for example due to acto-myosin
+    complexes (figure 3d) ... On a long tube, the instability described above initiates rings at
+    the most unstable wavelength [97]" (pp. 6-7). Furthermore, Hannezo et al. (2015) — studying
+    the exact same wild-type Drosophila embryonic tracheal circumferential actin rings (cited by
+    sekine2024 as ref-14/sref-21) — explicitly cites Gov's cylindrical curvature-ring instability
+    (ref-12 [Srivastava et al. 2013] and ref-44 [Shlomovitz & Gov 2009 = gov2018/ref-88]) as a
+    competing physical hypothesis for tracheal ring wavelength selection. Testing
+    cylindrical_ring_critical_mode.lambda_max at Sekine's measured tracheal radius directly
+    evaluates whether tube-radius-coupled curvature instability can account for the measured
+    450 +/- 13.2 nm circumferential cable spacing.
+  note: >
+    Computes lambda_max = 4.454 um (4454 nm) vs 450 +/- 13.2 nm (+4004 nm, +890%, 9.90x larger):
+    not reproduced. Although cylindrical_ring_critical_mode is a reconstructed model (flagged as
+    reader_model) and all 9 inputs are in added.yaml (R_0 = 1.971 um halved from Sekine Fig. 1j
+    and k_B*T = 0.004114 pN*um matching Sekine's 25 degC experiment, plus 7 unmeasured
+    membrane/CMC parameters), the not-reproduced verdict is strictly parameter-invariant: across
+    all 4,374 combinations of
+    gov2018/added.yaml alternatives at R_0 = 1.971 um, lambda_max lies in [2.591, 16.520] um
+    (5.76x-36.71x larger, 0 stable combos); across all Fig. 1j developmental radii (1.299-2.327 um)
+    it spans 3.578-4.870 um (7.95x-10.82x, and >= 2.127 um = 4.73x even over all 4,374 combos at
+    1.299 um); across Gov p. 3's entire kappa/(k_B*T) = 1-100 range it spans 4.325-5.139 um;
+    across 14 decades of xi (10^-6 to 10^8 pN*s/um^3) it stays in 4.258-5.886 um; and under exact
+    surface-of-revolution geometry (fixing q_audit_cylinder_ctheta_geometry) lambda_max is even
+    larger (5.399 um at xi = 100, approaching 2*pi*R_0 = 12.387 um = 27.5x as xi -> 0). Using
+    sekine2024/kBT_sim (300 K) shifts lambda_max by +0.08% to 4.458 um. See
+    q_sekine2024_cross_validation_summary for full sensitivity and exclusion audit.
+
+# Cross-record validations of gov2018/cylindrical_ring_critical_mode against Hannezo et al. (2015)
+# embryonic stage-16 Drosophila tracheal circumferential actin rings (wild-type and ECM-depleted kkv1).
+
+- id: val_cyl_ring_lambda_max_vs_hannezo_wt
+  model: cylindrical_ring_critical_mode
+  inputs:
+    R0: R0_trachea_hannezo_wt_added
+    kappa: kappa_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_concave_added
+    ns: ns_added
+    n0: n0_added
+    xi: xi_added
+    A: A_contractile_added
+  output: lambda_max
+  against: hannezo2015/ring_wavelength_embryo_wt
+  purpose: validation
+  quantities:
+    "hannezo2015/ring_wavelength": wavelength
+  conditions_ok: >
+    Gov (2018) Section 4 (reconstructed axisymmetric cylindrical-tube curvature-ring instability,
+    cylindrical_ring_critical_mode, pp. 6-7, [87, 88]) models periodic circumferential contractile
+    actomyosin rings initiated on a cylindrical fluid membrane tube of unperturbed radius R_0;
+    here R_0 = 2.388 um is set to half the wild-type embryonic Drosophila tracheal dorsal-trunk
+    mean diameter measured in Hannezo et al. (2015) Fig. 4F (hannezo2015/fig4f_cop_actin_vs_diameter_data,
+    D = 4.775 +/- 0.250 um), while the remaining 8 unmeasured membrane/CMC parameters use
+    gov2018/added.yaml's baseline eukaryotic plasma-membrane scales at 298 K (consistent with
+    val_cyl_ring_lambda_max_vs_sekine_cable_interval; matching Lambda = D/(k_B*T) = 9.723 um/(pN*s)
+    to Hannezo's stage-15 cortical actin FRAP diffusivity D = 0.04 +/- 0.03 um^2/s shifts lambda_max
+    further upward from 4.939 um to 5.429 um). Hannezo et al. (2015) measure stage-16 wild-type
+    embryonic tracheal circumferential actin ring spacing via confocal microscopy of Lifeact-mEGFP
+    (n > 150 rings, 0.5 +/- 0.1 um).
+  basis: >
+    Gov (2018) Section 4 states that inner-surface circumferential curved membrane components
+    recruiting contractile actomyosin forces on a cylindrical membrane tube spontaneously initiate
+    periodic rings at equal axial separations given by the most unstable linear wavelength: "The
+    instability involves formation of condensed rings at equal separations along the length of the
+    cylindrical membrane [88] ... corresponding to the most unstable wavelength of the linear
+    stability analysis ... recruitment of contractile forces, for example due to acto-myosin
+    complexes (figure 3d) ... On a long tube, the instability described above initiates rings at
+    the most unstable wavelength [97]" (pp. 6-7). Directly linking the two papers, Hannezo et al.
+    (2015) Main p. 5 (p. 8624) explicitly cite Gov's cylindrical-tube patterning mechanism (ref-12,
+    Srivastava, Shlomovitz, Gov & Rao 2013) right after Fig. 4F-G' to test and reject direct
+    tube-radius wavelength selection in wild-type Drosophila trachea ("even though the diameter of
+    the side branches is about three times lower. This argues against a direct influence of tube
+    radius itself on the pattern (12) in this system"). Evaluating cylindrical_ring_critical_mode.lambda_max
+    at Hannezo's own measured wild-type tracheal trunk radius directly tests this claim quantitatively.
+  note: >
+    Computes lambda_max = 4.939 um vs 0.5 +/- 0.1 um (+4.439 um, +888%, 9.88x larger; lambda_c =
+    2.911 um, L_c = 1.455 um, omega_max = 0.00868 s^-1): not reproduced. Although
+    cylindrical_ring_critical_mode is a reconstructed model (reader_model) and all 9 inputs are
+    in added.yaml (R_0 = 2.388 um halved from Hannezo Fig. 4F plus 8 baseline membrane/CMC
+    parameters), the not-reproduced verdict is strictly parameter-invariant: across all 4,374
+    combinations of gov2018/added.yaml alternatives at R_0 = 2.388 um, 4,374/4,374 are unstable
+    with lambda_max in [2.840, 17.243] um (5.68x-34.49x larger, 0/4,374 inside [0.4, 0.6] um);
+    across Fig. 4F's diameter error bar (R_0 in [2.263, 2.513] um) lambda_max spans 4.797-5.077 um;
+    even on ~3x narrower wild-type side branches (R_0 = 0.796 um) it gives 2.802 um (1.671-14.779 um
+    across all 4,374 combos, 0/4,374 in [0.4, 0.6] um, while erroneously predicting a 1.76x spacing
+    drop relative to the main trunk); matching Lambda = D/(k_B*T) to Hannezo's FRAP D = 0.04 +/- 0.03
+    um^2/s gives 5.429 um (4.938-5.644 um across +/-SD); across Gov p. 3's entire kappa/(k_B*T) =
+    1-100 range it spans 4.802-5.665 um; across 14 decades of xi (10^-6 to 10^8 pN*s/um^3) it spans
+    4.654-6.415 um; under exact surface-of-revolution geometry (fixing q_audit_cylinder_ctheta_geometry)
+    lambda_max is even larger (6.031 um = 12.1x at xi = 100, approaching 2*pi*R_0 = 15.004 um = 30.0x
+    as xi -> 0); and pushing even the short-wavelength cutoff lambda_c down to 0.5 um requires an
+    unphysical |A| = 2.31 MPa (2.34 MPa exact). See q_hannezo2015_cross_validation_summary.
+
+- id: val_cyl_ring_lambda_max_vs_hannezo_kkv1
+  model: cylindrical_ring_critical_mode
+  inputs:
+    R0: R0_trachea_hannezo_kkv1_added
+    kappa: kappa_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_concave_added
+    ns: ns_added
+    n0: n0_added
+    xi: xi_added
+    A: A_contractile_added
+  output: lambda_max
+  against: hannezo2015/ring_wavelength_kkv1
+  purpose: validation
+  quantities:
+    "hannezo2015/ring_wavelength": wavelength
+  conditions_ok: >
+    In chitin-synthase kkv1 mutant Drosophila embryos (stage 16), the rigid luminal chitin/Dumpy
+    ECM core is genetically absent ("there is no elastic chitin anymore in the center to resist the
+    constriction", Hannezo 2015 p. 4), so the tracheal epithelium genuinely deforms into an
+    aberrant cylindrical pearling phenotype of contractile actomyosin ring constrictions (Fig. 3C,
+    n > 40, spacing 4.5 +/- 2 um, ~1 ring/cell, non-periodic and non-stationary/coalescing in live
+    imaging Fig. 4A'-B). Here gov2018/cylindrical_ring_critical_mode is evaluated at R_0 = 1.539 um
+    (half the arithmetic mean diameter D = 3.078 +/- 1.242 um across the 31 stage-16 kkv1 local
+    diameter measurements in hannezo2015/fig3c_kkv_diameter_vs_actin_data) with the identical
+    unmodified baseline membrane/CMC parameters from gov2018/added.yaml used for wild-type trachea.
+    Caveat: Fig. 3C measures local diameters along an already constricted pearled tube rather than
+    pre-constriction unperturbed R_0 (all alternative radius definitions — RMS 1.660 um, WT Fig. 4F
+    pre-constriction 2.388 um, and Fig. 3C low-actin unconstricted 2.571 um — also fall inside
+    4.5 +/- 2 um), and linear-onset lambda_max is compared against late-stage non-periodic coalescing
+    constriction spacing.
+  basis: >
+    Hannezo et al. (2015) Main p. 6 (p. 8625, col. 1) explicitly cite Shlomovitz & Gov (2009)
+    (hannezo2015/ref-44 = gov2018/ref-88, the exact primary source of Gov 2018 Section 4 and
+    cylindrical_ring_critical_mode) as a potential contributing mechanism for the constricting,
+    coalescing actin rings in chitin-depleted kkv1 tubes: "other contributions could be in play, in
+    particular a coupling between the actin dynamics and the local axial curvature, which is high in
+    the constriction region, similar to the dynamics of FtsZ proteins on cylindrical membranes (43, 44)."
+    Meanwhile Gov (2018) Section 4 (pp. 6-7, [87, 88]) models contractile actomyosin rings on a
+    deformable cylindrical membrane tube that initiate at lambda_max and subsequently coarsen into
+    fewer, thicker constricting rings (Fig. 3c). Testing cylindrical_ring_critical_mode.lambda_max
+    against hannezo2015/ring_wavelength_kkv1 directly evaluates Gov's cylindrical curvature-ring
+    scale in the deformable, ECM-free tracheal regime where Hannezo et al. invoke it.
+  note: >
+    Computes lambda_max = 3.908 um vs 4.5 +/- 2 um (-0.592 um, -13.2%, 0.30 SD; lambda_c = 2.353 um,
+    L_c = 1.176 um, omega_max = 0.01896 s^-1): reproduced inside [2.5, 6.5] um. All 6 kkv1/WT radius
+    definitions in R0_trachea_hannezo_kkv1_added also reproduce [2.5, 6.5] um at baseline parameters
+    (min constricted 0.878 um -> 2.939 um; mean 1.539 um -> 3.908 um; volume-preserving RMS 1.660 um
+    -> 4.066 um; WT pre-constriction 2.388 um -> 4.939 um; low-actin unconstricted 2.571 um ->
+    5.141 um; max dilated 2.793 um -> 5.378 um), as do FRAP-matched Lambda = 9.723 um/(pN*s)
+    (4.273-5.654 um) and exact surface-of-revolution c_theta geometry at baseline xi = 100
+    (4.691-6.295 um). Important caveats (unlike WT's parameter-invariant falsification): (1) across
+    all 4,374 gov2018/added.yaml alternative combinations at R_0 = 1.539 um, 3,580/4,374 (81.8%)
+    fall in [2.5, 6.5] um while 450 (10.3%) exceed 6.5 um (up to 15.86 um) and 344 (7.9%) fall below
+    2.5 um (down to 2.305 um) (at R_0 = 2.388 um: 3,282/4,374 = 75.0% in [2.5, 6.5] um, 1,092 > 6.5 um);
+    (2) under exact c_theta geometry (q_audit_cylinder_ctheta_geometry) in the fast-membrane limit
+    xi -> 0, lambda_max approaches 2*pi*R_0 = 9.67-15.00 um (not reproduced); and (3) Hannezo p. 4
+    explains the same ~4.5 um (~1 ring/cell) spacing via finite-cell-size saturation (lambda > L)
+    of the active-gel model when ECM friction vanishes. See q_hannezo2015_cross_validation_summary.
+

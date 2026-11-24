@@ -1,0 +1,32 @@
+id: lammps_vasp_actin_droplet
+name: 3D coarse-grained LAMMPS molecular dynamics VASP-actin droplet simulation
+role: model
+stated:
+  page: 20
+  printed_page: "SI-6"
+  quote: "We perform molecular dynamics (MD) simulations of VASP droplets"
+  where: "Supplementary Methods 1 & Supplementary Table 1"
+equation: "U_{V-V}(r) = 4 eps_{V-V} [(sigma/r)^12 - (sigma/r)^6]; harmonic bonds, angles, permanent crosslinks"
+inputs:
+  L_box: {quantity: lj_length, unit: dimensionless}
+  N_vasp: {quantity: molecule_count, unit: dimensionless}
+  N_crowder: {quantity: molecule_count, unit: dimensionless}
+  eps_vv: {quantity: lj_energy, unit: dimensionless}
+  T_star: {quantity: lj_temperature, unit: dimensionless}
+  k_bond: {quantity: lj_spring_constant, unit: dimensionless}
+  k_angle: {quantity: bending_energy_thermal, unit: dimensionless}
+outputs:
+  asphericity: {quantity: asphericity_index, unit: dimensionless}
+  aspect_ratio: {quantity: aspect_ratio, unit: dimensionless}
+settings:
+  delta_t: 0.0005
+  n_steps: 140000000
+  seed: 0
+described_from: ref-SI1
+runnable: false
+not_runnable_reason: >
+  Full 3D 61,875-particle coarse-grained molecular dynamics simulation over 14 x 10^7 leapfrog
+  steps requires the C++ LAMMPS engine and omits NVT thermostat damping parameters, particle mass
+  m, and a self-consistent initial droplet radius (p. 20 misprints sphere radius 60 sigma inside
+  a 60 sigma box).
+stochastic: true

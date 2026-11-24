@@ -1,0 +1,27 @@
+id: cytosim_confinement_sphere_ellipse
+name: "CytoSim SpaceSphere & SpaceEllipse confinement, Newton ellipsoid projection & Knud Thomsen area (space_sphere.cc:43-112; space_ellipse.cc:89-191; project_ellipse.cc:154-254; space.cc:359-367)"
+role: model
+stated:
+  file: src/sim/spaces/space_sphere.cc
+  lines: "96-100"
+  quote: "meca.addSphereClamp(pos, mp, Vector(0,0,0), radius_, stiff);"
+  where: "SpaceSphere::setConfinement(), Space::setConfinement(), projectEllipsoid(), SpaceEllipse::surface(), Meca::addSphereClamp(), Meca::addPlaneClamp()"
+equation: "Sphere: F = k*(r - R) for r > R; Ellipse: project W -> P on ellipsoid via Newton root of 1 - sum(W_i^2 r_i^2/(r_i^2+h)^2) = 0, then tangent plane clamp F = k*(P - W); S_thomsen = 4*pi*(((ab)^p+(ac)^p+(bc)^p)/3)^(1/p), p = 1.6075"
+inputs:
+  R_sphere: {quantity: droplet_radius, unit: um, description: "SpaceSphere radius R (um)"}
+  a_z: {quantity: spheroid_axis, unit: um, description: "Prolate SpaceEllipse major semi-axis radii_[2] (um)"}
+  b_xy: {quantity: spheroid_axis, unit: um, description: "Prolate SpaceEllipse minor semi-axes radii_[0] = radii_[1] (um)"}
+  excursion: {quantity: displacement, unit: nm, description: "Outward normal boundary excursion delta (nm)"}
+  stiff: {quantity: spring_stiffness, unit: pN/um, description: "Confinement stiffness confine_stiff (pN/um)"}
+outputs:
+  F_sphere: {quantity: force, unit: pN, description: "Inward harmonic restoring force magnitude from SpaceSphere::setConfinement / addSphereClamp"}
+  F_ellipse_pole: {quantity: force, unit: pN, description: "Inward restoring force magnitude at Z pole (0, 0, a_z + excursion) via projectEllipsoid + addPlaneClamp"}
+  F_ellipse_equator: {quantity: force, unit: pN, description: "Inward restoring force magnitude at equator (b_xy + excursion, 0, 0) via projectEllipsoid + addPlaneClamp"}
+  F_ellipse_offaxis: {quantity: force, unit: pN, description: "Inward restoring force magnitude at off-axis exterior point (0.8*b_xy, 0, 0.8*a_z) via projectEllipsoid + addPlaneClamp"}
+  volume_sphere: {quantity: volume, unit: um^3, description: "SpaceSphere::volume() = 4/3 * pi * R^3"}
+  volume_ellipse: {quantity: volume, unit: um^3, description: "SpaceEllipse::volume() = 4/3 * pi * b_xy^2 * a_z"}
+  surface_thomsen: {quantity: surface_area, unit: um^2, description: "SpaceEllipse::surface() Knud Thomsen approximation (p = 1.6075, space_ellipse.cc:113-118)"}
+  surface_exact: {quantity: surface_area, unit: um^2, description: "Exact analytical prolate spheroid surface area 2*pi*b^2*(1 + (a/(b*e))*arcsin(e))"}
+  aspect_ratio: {quantity: aspect_ratio, unit: dimensionless, description: "Prolate spheroid aspect ratio a_z / b_xy"}
+settings: {}
+stochastic: false

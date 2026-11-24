@@ -145,3 +145,130 @@
     where: "SI Note S2, Eq. E44"
   assumptions:
     - "Supercritical regime g > g_c where the buckled cosine branch is active"
+
+# Cross-record relations with gov2018 (N. S. Gov, Phil. Trans. R. Soc. B 373:20170115, 2018; uncited in totz2024)
+
+- id: rel_gov2018_rr_width_scales_tube_radius
+  kind: scales_as
+  a: totz2024/rayleigh_ritz_width_eq3_corrected
+  b: gov2018/tube_equilibrium_radius
+  mapping:
+    kappa: "Y * h**3 / (12 * (1 - nu**2)) * 10**18"
+    sigma: "h * Y * g * 10**6"
+  regime:
+    g: [0.001, 0.01]
+    a: [1.0e-11, 5.0e-10]
+    p: [0.0, 0.0]
+    Y: [1.0e5, 1.0e8]
+    nu: [0.2, 0.5]
+    h: [1.5e-8, 2.5e-8]
+  provenance: proposed
+  reason: >
+    In the zero-pressure (p = 0), small-amplitude (a << h) Euler buckling onset limit, Totz et al.
+    (2024)'s dimensionally corrected Rayleigh-Ritz buckling width Eq. (3) / Eq. (E49) reduces to
+    L_Euler = pi*h / sqrt(3*(1 - nu^2)*g) = 2*pi*sqrt(D / (h*Y*g)) = 2*pi*ell_plate, governed by the
+    plate bending-to-compression crossover length ell_plate = sqrt(D / (h*Y*g)) built from Kirchhoff-Love
+    bending rigidity D = Y*h^3 / (12*(1 - nu^2)) (totz2024/bending_modulus) and growth-induced 2D
+    compressive stress resultant N_comp = h*sigma_A = h*Y*g (totz2024/prestress_growth * h). Under the
+    exact zero-free-parameter mechanical correspondence kappa = D and sigma = h*Y*g, L_Euler follows the
+    exact same square-root bending-over-stress scaling across all four elastic parameters (Y^0, h^+1,
+    g^-1/2, (1 - nu^2)^-1/2) as Gov (2018)'s Helfrich equilibrium cylindrical membrane tube radius
+    R_tube = sqrt(kappa / (2*sigma)) = ell_mem / sqrt(2), differing by the pure geometric factor
+    L_Euler / R_tube = 2*pi*sqrt(2). Recorded as scales_as rather than same_as because the two lengths
+    are distinct physical observables (clamped planar buckling period under compressive growth pre-stress
+    vs. cylindrical fluid-bilayer tube radius under positive tensile stress) and because finite turgor
+    pressure p > 0 and nonlinear FvK post-buckling stretching 3*a^2/(4*h^2) break the scaling at finite
+    protoridge amplitudes.
+  assumptions:
+    - "Zero-pressure (p = 0), linear Euler onset regime (a/h <= 0.033 so post-buckling stretching 3*a^2/(4*h^2) < 1e-3)."
+    - "Mechanical modulus correspondence kappa = D = Y*h^3/(12*(1 - nu^2)) and effective tension magnitude sigma = h*Y*g (opposite sign: compressive pre-stress resultant in totz2024 vs. positive membrane tension in gov2018)."
+    - "Unit conversions: kappa [pN*um] = 10^18 * D [N*m], sigma [pN/um] = 10^6 * h*Y*g [N/m]."
+
+- id: rel_gov2018_rr_width_approx_flat_lambda_c
+  kind: approximated_by
+  a: totz2024/rayleigh_ritz_width_eq3_corrected
+  b: gov2018/flat_membrane_instability_thresholds
+  mapping:
+    kappa: "Y * h**3 / (12 * (1 - nu**2)) * 10**18"
+    sigma: "0"
+    kBT: "0.004114"
+    H0: "-100"
+    ns: "10000"
+    n0: "0.05"
+    A: "(h * Y * g * 10**6) * (0.004114 * 10000) / ((Y * h**3 / (12 * (1 - nu**2)) * 10**18) * 100 * 0.05)"
+  output_map:
+    lambda_c: L
+  regime:
+    g: [0.004, 0.01]
+    a: [5.0e-9, 1.0e-8]
+    p: [1.0, 10.0]
+    Y: [3.5e6, 2.0e7]
+    nu: [0.3, 0.5]
+    h: [1.8e-8, 2.2e-8]
+  tolerance: 0.12
+  provenance: proposed
+  reason: >
+    Eliminating steady-state CMC coverage (J_tot = 0, J = 0) from Gov (2018)'s static flat-membrane
+    normal force balance (Eq. 2.3, dh/dt = 0) yields the exact 4th-order linear Euler buckling operator
+    kappa_eff_soft * h'''' + (sigma_c - sigma) * h'' = 0, where kappa_eff_soft = kappa*k_B*T*n_s /
+    (k_B*T*n_s + kappa*H_0^2*n_0) is the Leibler curvature-sorting-softened bending rigidity and
+    Sigma_comp = sigma_c - sigma is the active-CMC-induced compressive 2D stress resultant (negative
+    effective tension), giving marginal wavelength lambda_c = 2*pi*sqrt(kappa_eff_soft / Sigma_comp).
+    In the zero-pressure (p = 0), infinitesimal-amplitude (a -> 0, c -> 0) limit, Totz et al. (2024)'s
+    1D FvK normal force balance D*w'''' + h*(Y*g - c)*w'' = p (Eq. 1 / Eq. E42) obeys the identical
+    4th-order operator with D = Y*h^3/(12*(1 - nu^2)) and N_comp = h*Y*g, giving the exact same 2*pi
+    clamped wavelength L_Euler = 2*pi*sqrt(D / (h*Y*g)). Under the tensionless mapping sigma = 0,
+    kappa = D, and A = (h*Y*g)*(k_B*T*n_s)/(D*|H_0|*n_0) (where the softening factor 1 + alpha*n_0
+    cancels identically between kappa_eff_soft and sigma_c for any reference CMC gauge k_B*T, H_0, n_s,
+    n_0; evaluated at Gov's baseline parameters), Gov's lambda_c equals L_Euler identically and
+    approximates Totz's pressurized, nonlinear Rayleigh-Ritz buckling width L across Totz's biological
+    early-buckling onset regime (Fig. 4C 10 nm contour, a in [5, 10] nm, p in [1, 10] Pa, Y >= Y_min =
+    3.5 MPa, g in [0.4%, 1.0%]) to within 12% (worst-case 64-corner error 10.01%). At mature protoridge
+    amplitudes (a = 24-64 nm > h = 20 nm, Figs. 3A-E), nonlinear FvK stretching 3*a^2/(4*h^2) and
+    turgor pressure p = 10 Pa drive deviations up to 11-64%, marking the breakdown of the linear
+    fluid-membrane operator.
+  assumptions:
+    - "Biological early-buckling onset regime around Totz Fig. 4C's 10 nm contour (a in [5, 10] nm, p in [1, 10] Pa, Y >= Y_min = 3.5 MPa, g in [0.4%, 1.0%], h in [18, 22] nm)."
+    - "Zero bare membrane tension (sigma = 0) on the Gov side; reference CMC gauge (k_B*T = 0.004114 pN*um, H_0 = -100 um^-1, n_s = 10^4 um^-2, n_0 = 0.05) cancels identically in lambda_c."
+    - "Unit conversions: kappa [pN*um] = 10^18 * D [N*m], h*Y*g [pN/um] = 10^6 * h*Y*g [N/m], giving A in pN/um^2."
+
+- id: rel_gov2018_flat_lambda_c_scales_rr_width
+  kind: scales_as
+  a: gov2018/flat_membrane_instability_thresholds
+  b: totz2024/rayleigh_ritz_width_eq3_corrected
+  mapping:
+    h: "2e-8"
+    nu: "0.5"
+    p: "0"
+    a: "1e-11"
+    Y: "12 * (1 - 0.5**2) * (kappa * kBT * ns / (kBT * ns + kappa * H0**2 * n0)) * 10**(-18) / (2e-8)**3"
+    g: "((kappa * (-H0 * A) * n0 / (kBT * ns + kappa * H0**2 * n0) - sigma) * 10**(-6)) / (2e-8 * (12 * (1 - 0.5**2) * (kappa * kBT * ns / (kBT * ns + kappa * H0**2 * n0)) * 10**(-18) / (2e-8)**3))"
+  output_map:
+    L: lambda_c
+  regime:
+    kappa: [0.05, 0.15]
+    sigma: [1.5, 3.0]
+    kBT: [0.0038, 0.0044]
+    H0: [-120.0, -80.0]
+    ns: [8000.0, 12000.0]
+    n0: [0.04, 0.08]
+    A: [2000.0, 4000.0]
+  provenance: proposed
+  reason: >
+    Inverse-direction test of the exact linearized flat bending-compression operator isomorphism across
+    all seven biophysical parameters of Gov (2018)'s flat-membrane instability threshold (kappa, sigma,
+    k_B*T, H_0, n_s, n_0, A), including non-zero bare positive membrane tension sigma > 0, Leibler
+    curvature-sorting bending softening D = kappa_eff_soft = kappa*k_B*T*n_s/(k_B*T*n_s + kappa*H_0^2*n_0),
+    and active tension reversal h*Y*g = Sigma_comp = sigma_c - sigma > 0. At zero uniform transverse
+    pressure (p = 0, matching Gov Eq. 2.3's subtraction of the uniform mean load A*<n>) and reference
+    incompressible plate thickness h = 20 nm, nu = 0.5 (which cancel identically from D/(h*Y*g)) with
+    infinitesimal onset amplitude a = 10^-11 m (a/h = 5e-4, fixed), all seven partial log-slopes of
+    Gov's marginal wavelength lambda_c match Totz's zero-pressure Rayleigh-Ritz buckling width L to
+    machine precision. Recorded as scales_as rather than same_as because Totz's full model includes
+    finite-amplitude stretching sqrt(1 + 3*a^2/(4*h^2)) and uniform pressure p absent from Gov's
+    linear fluid-membrane theory.
+  assumptions:
+    - "Supercritical convex-protrusive regime (H_0 < 0, A > 0, sigma_c > sigma strictly across all 128 hypercube corners; min(sigma_c - sigma) = 1.88 pN/um). By Gov's sign-reversal symmetry (H_0, A) -> (-H_0, -A), -H_0*A = |H_0|*|A| > 0 holds identically for concave-contractile invaginations."
+    - "Zero uniform transverse pressure (p = 0) and fixed linear-onset amplitude a/h = 5e-4 on the Totz side; reference h = 20 nm and nu = 0.5 cancel identically from D/(h*Y*g)."
+    - "Unit conversions: Y [Pa] = 12*(1 - nu^2) * 10^-18 * kappa_eff_soft [pN*um] / h^3, g [dimensionless] = 10^-6 * Sigma_comp [pN/um] / (h * Y)."
+

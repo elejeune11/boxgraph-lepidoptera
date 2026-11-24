@@ -1,0 +1,26 @@
+id: cytosim_sphere_solid_bead_diffusion
+name: "CytoSim Stokes drag & Brownian diffusion for Sphere/Solid/Bead vs uniform Couple diffusion (sphere.cc:275-284; solid.cc:1289-1292; bead.cc:131; couple_prop.cc:146)"
+role: model
+stated:
+  file: src/sim/sphere.cc
+  lines: "280-284"
+  quote: "spDrag    = ( 6 * M_PI ) * vr;"
+  where: "Sphere::setDragCoefficient(), Solid::setDragCoefficient(), Bead::setDragCoefficient(), CoupleProp::complete()"
+equation: "drag_T = 6*pi*eta*R; drag_R = 8*pi*eta*R^3; D_stokes = kT/drag_T; sigma_stokes = sqrt(2*D_stokes*dt); hw_couple = sqrt(6*D_presc*dt); eta_req = kT/(6*pi*R*D_presc)"
+inputs:
+  radius: {quantity: particle_radius, unit: nm, description: "Sphere/Solid/Bead radius R (nm)"}
+  viscosity: {quantity: dynamic_viscosity, unit: pN*s/um^2, description: "Effective viscosity |prop->viscosity| (pN*s/um^2)"}
+  kT: {quantity: thermal_energy, unit: pN*um, description: "SimulProp::kT (pN*um)"}
+  dt: {quantity: time_step, unit: s, description: "SimulProp::time_step (s)"}
+  D_prescribed: {quantity: diffusion_coefficient, unit: um^2/s, description: "Prescribed diffusion coefficient (CoupleProp::diffusion or VASP table value, um^2/s)"}
+outputs:
+  drag_trans: {quantity: drag_coefficient, unit: pN*s/um, description: "Stokes translational drag 6*pi*eta*R (pN*s/um)"}
+  drag_rot: {quantity: rotational_drag_coefficient, unit: pN*um*s, description: "Stokes rotational drag 8*pi*eta*R^3 (pN*um*s)"}
+  mobility_stokes: {quantity: mobility, unit: um/(pN*s), description: "Stokes translational mobility 1 / drag_trans"}
+  D_stokes: {quantity: diffusion_coefficient, unit: um^2/s, description: "Actual translational diffusivity kT / (6*pi*eta*R) of a Sphere/Solid/Bead in CytoSim"}
+  sigma_gauss_stokes: {quantity: displacement, unit: um, description: "Per-axis Gaussian Brownian step std sqrt(2*D_stokes*dt) in Meca::solve()"}
+  halfwidth_uniform_couple: {quantity: displacement, unit: um, description: "Per-axis uniform step half-width sqrt(6*D_prescribed*dt) in CoupleProp::complete() (couple_prop.cc:146)"}
+  sigma_uniform_couple: {quantity: displacement, unit: um, description: "Per-axis std sqrt(2*D_prescribed*dt) of Couple::diffuse() uniform step"}
+  eta_required_for_D: {quantity: dynamic_viscosity, unit: pN*s/um^2, description: "Per-class Sphere/Solid viscosity required to achieve D_prescribed via Stokes law"}
+settings: {}
+stochastic: false

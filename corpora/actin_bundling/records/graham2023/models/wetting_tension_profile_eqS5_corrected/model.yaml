@@ -1,0 +1,22 @@
+id: wetting_tension_profile_eqS5_corrected
+name: corrected actin-VASP wetting surface tension profile matching Extended Data Fig. 5c
+role: model
+stated:
+  page: 20
+  quote: "at the interface is defined by a hyperbolic tangent function"
+  where: "Extended Data Fig. 5c (p. 20); SI Eqs. S4-S5 (p. 40)"
+variant_of: wetting_tension_profile_eqS5
+corrections:
+  - equation: "SI Eqs. S4-S5"
+    change: "Swap gamma_AVR and gamma_AVD so Delta = 0.5 * (gamma_AVD - gamma_AVR) and gamma(e) = Delta * tanh(k_e * (e - 1)) + Delta + gamma_AVR (equivalently negate Delta * tanh(f(e)) in Eq. S5)"
+    evidence: "Extended Data Fig. 5c (p. 20) explicitly plots gamma(e) rising from gamma_AVR at droplet center (e = 0) to gamma_AVD outside the interface (e > 1), matching gamma_AVR << gamma_AVD for confinement; the printed Eqs. S4-S5 instead evaluate to gamma(0) = gamma_AVD (high) inside and gamma(2) = gamma_AVR (low) outside."
+equation: "Delta = 0.5 * (gamma_AVD - gamma_AVR); gamma(e) = Delta * tanh(k_e * (e - 1)) + Delta + gamma_AVR"
+inputs:
+  gamma_AVR: {quantity: wetting_surface_tension, unit: pN/nm}
+  gamma_AVD: {quantity: wetting_surface_tension, unit: pN/nm}
+  e: {quantity: normalized_ellipse_coord, unit: dimensionless}
+  k_e: {quantity: interface_steepness, unit: dimensionless}
+outputs:
+  gamma: {quantity: wetting_surface_tension, unit: pN/nm}
+settings: {}
+stochastic: false

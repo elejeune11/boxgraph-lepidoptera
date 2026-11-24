@@ -1,0 +1,861 @@
+# ==========================================================================
+# 1. Parameters and structural constants written in VASPDroplet_simulate.ipynb
+# ==========================================================================
+
+# --- Cell 3: SystemParams defaults (lines 46-86) ---
+- id: kstr_default_code
+  quantity: stretching_constant
+  unit: pN/nm
+  origin: reported
+  printed: "100.0"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "76"
+    quote: "kstr = 100.0;"
+  from_source: graham2023
+  from_datum: single_filament_k_stretch
+  note: "Also set to 1e2 in simulate() line 892. Matches single-filament stretching constant 100 pN/nm in graham2023 Table 1, but NEVER scaled by Nfil during the Nfil loop (contradicting Table 1's k_stretch = N_fil * 100 pN/nm)."
+
+- id: ellipse_com_default_code
+  quantity: droplet_center_offset
+  unit: nm
+  origin: reported
+  printed: "200"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "77"
+    quote: "ellipse_com = [200,200,200]"
+  note: "Class default droplet center offset [200, 200, 200] nm; overridden to [8e3, 8e3] nm in simulate() line 884."
+
+- id: dimval_default_code
+  quantity: spatial_dimension
+  unit: dimensionless
+  origin: reported
+  printed: "3"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "80"
+    quote: "dimval = 3; #2D vs 3D"
+  note: "Default spatial dimensionality in SystemParams; sample call on line 672 passes dimval = 2."
+
+- id: noisefactor_code
+  quantity: noise_scale_divisor
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "870"
+    quote: "sparams.noisefactor = 1;"
+  note: "Also default 1 on line 81. Divided into np.random.random_sample() in addrandomnoise() (line 651), producing uniform noise in [0, 1.0] nm (10x larger than graham2023 SI Section 2.6's stated [0, 0.1] nm) and perturbing opt_var[0] (semi-axis a) as well as bead coordinates."
+
+- id: nfil_default_code
+  quantity: filament_count
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "82"
+    quote: "Nfil=1;"
+  note: "Single-filament initial count (also Nfilvec = np.array([1]) on line 889)."
+
+- id: alpha_default_code
+  quantity: crosslinker_coupling
+  unit: dimensionless
+  origin: reported
+  printed: "0.0"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "84"
+    quote: "alpha = 0.0"
+  note: "Default Bathe nonlinear inter-filament coupling parameter in SystemParams; sample call on line 672 passes 10000.0 (with nonlinearbool = False)."
+
+- id: kflex_rigidity_f_code
+  quantity: flexural_rigidity
+  unit: N*m^2
+  origin: reported
+  printed: "7.29 x 10^-26"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "86"
+    quote: "kflex_rigidity_f = 7.29*1e-26*1e12*1e18;# pN.nm^2, filament flexural rigidity"
+  from_source: ref-gittes1993
+  note: "Converted inline to 72900 pN*nm^2 (Gittes et al. JCB 1993, cited on line 85). Used by getkbend() for Nfil >= 2, slightly differing (+0.28%) from generatering() line 697's Lp_fil * 4.1 = 72693 pN*nm^2."
+
+# --- Cell 5: Numerical tolerance (line 103) ---
+- id: zero_prec_code
+  quantity: numerical_equality_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-3"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "103"
+    quote: "ZERO_PREC = 1e-3"
+  note: "Hidden equality tolerance in areEqual(a, b) used in 3D sphere branch of getsurfaceF, getellipseintersect_linefrac, getwettingF2, and generatering wettingfraction check."
+
+# --- Cell 7: getsurfaceTension & hidden Bathe nonlinear constants in getkbend (lines 162-200) ---
+- id: interface_steepness_code
+  quantity: interface_steepness
+  unit: dimensionless
+  origin: reported
+  printed: "64"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "162"
+    quote: "tanharg = 64*(e - 1)"
+  from_source: graham2023
+  from_datum: interface_steepness_ke
+  note: "Hardcoded interface steepness k_e = 64 in getsurfaceTension(); matches graham2023 SI Section 2.4."
+
+- id: bathe_df_code
+  quantity: filament_diameter
+  unit: nm
+  origin: reported
+  printed: "10"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "177"
+    quote: "df = 10;#filament cross-section diameter"
+  note: "Hidden constant in getkbend() nonlinear Bathe branch; absent from graham2023."
+
+- id: bathe_delta_crosslinker_code
+  quantity: crosslinker_spacing
+  unit: nm
+  origin: reported
+  printed: "50"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "178"
+    quote: "delta = 50;#spacing between crosslinker along the bundle, nm"
+  note: "Hidden constant in getkbend() nonlinear Bathe branch; absent from graham2023 (distinct from Table 1's inter-filament spacing delta = 15 nm)."
+
+- id: bathe_t_crosslinker_code
+  quantity: crosslinker_thickness
+  unit: nm
+  origin: reported
+  printed: "15"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "179"
+    quote: "t = 15;# thickness of single crosslinker, nm"
+  note: "Hidden constant in getkbend() nonlinear Bathe branch; absent from graham2023."
+
+- id: bathe_kx_code
+  quantity: crosslinker_stiffness
+  unit: pN/nm
+  origin: reported
+  printed: "2.5"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "181"
+    quote: "kx=2.5; #pN.nm #crosslinker stretching stiffness"
+  note: "Hidden unused constant in getkbend(); inline comment misprints '#pN.nm' for force/length stretching stiffness pN/nm (needed to make commented alpha = kx*L*L/(Ef*Af*delta) on line 194 dimensionless)."
+
+- id: bathe_ef_code
+  quantity: filament_youngs_modulus
+  unit: N/m^2
+  origin: reported
+  printed: "2.6 x 10^9"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "184"
+    quote: "Ef = 2.6e9*1e12/(1e18);# Filament young's modulus pN/nm^2"
+  note: "Hidden actin Young's modulus (converted inline to 2600 pN/nm^2) in getkbend() nonlinear Bathe branch; absent from graham2023."
+
+- id: kbt_getkbend_code
+  quantity: thermal_energy
+  unit: pN*nm
+  origin: reported
+  printed: "4.11"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "196"
+    quote: "kBT =4.11 #pN.nm"
+  note: "Written (unused) inside getkbend(); settles graham2023 q_unstated_kbt_and_temperature alongside generatering() line 697's 4.1 pN*nm and kflex_rigidity_f / Lp_fil = 4.1117 pN*nm."
+
+- id: bathe_nmodes_code
+  quantity: bathe_mode_count
+  unit: dimensionless
+  origin: reported
+  printed: "10"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "200"
+    quote: "for j in range(1,11):"
+  note: "Hidden 10-mode sum (j = 1..10, c_qj = j^2 * pi^2 / 12) in getkbend(); graham2023 SI Eq. S1 prints a single mode c(q_j) with no summation."
+
+# --- Cell 9: Energy functions (lines 353, 483) ---
+- id: perim_series_terms_code
+  quantity: perimeter_series_terms
+  unit: dimensionless
+  origin: reported
+  printed: "7"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "353"
+    quote: "pmeter = np.pi*(a+b)*(1+h/4 + h*h/64 + h*h*h/256 + 25*h**4/16384 + 49*h**5/65536 + 441*h**6/1048576)"
+  note: "Exact 7-term Gauss-Kummer expansion (h^0 through h^6), matching graham2023 SI Section 2.5 ('first seven terms')."
+
+- id: wetting_subsegments_code
+  quantity: wetting_subsegments
+  unit: dimensionless
+  origin: reported
+  printed: "4"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "483"
+    quote: "discretize_len = sysparams.lcyl/4"
+  note: "Settles graham2023 q_unstated_wetting_quadrature_N: each cylindrical segment is subdivided into N = 4 sub-segments (comment line 482: 'Accomodate 4 points per cylinder - can be tuned later')."
+
+# --- Cell 11: Unused zigzag initialization (line 578) ---
+- id: zigzag_theta_code
+  quantity: zigzag_init_angle
+  unit: deg
+  origin: reported
+  printed: "45"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "578"
+    quote: "theta = np.radians(45)"
+  note: "Angle in unused helper initializezigzag() (which also has a scoping bug referencing global sparams.Nbeads)."
+
+# --- Cell 13: Sample simulation call (lines 669-672) ---
+- id: sample_diam_code
+  quantity: droplet_diameter
+  unit: um
+  origin: reported
+  printed: "1.5"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "669"
+    quote: "diavec=np.asarray([1.5])"
+  note: "Sample droplet diameter in Cell 13 (also triggers IEEE-754 int(1.5*1e3/(1.5*0.1*1e3)) = 9 truncation -> Nbeads = 29)."
+
+- id: sample_nfil_code
+  quantity: filament_count
+  unit: dimensionless
+  origin: reported
+  printed: "200"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "670"
+    quote: "Nfil=np.asarray([200])"
+  note: "Sample targetNfil in Cell 13 (corresponds to T_ring = 3.0 um at R_fil = 15 nm)."
+
+- id: sample_gamma_vp_code
+  quantity: droplet_line_tension
+  unit: pN
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "671"
+    quote: "gamma_VP=10.0 #Surface tension of VASP and surrounding PEG medium"
+  from_source: graham2023
+  from_datum: edfig7_gamma_i_10
+  note: "Sample 2D droplet interfacial tension gamma_VP = 10.0 pN; matches Extended Data Fig. 7e."
+
+- id: sample_dimval_code
+  quantity: spatial_dimension
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "672"
+    quote: "main.simulate(2,diavec,Nfil,gamma_VP,0,True,1e-06, False,10000.0)"
+  note: "2D mode passed as first argument in sample call (note broken 'main.simulate' reference; main is never defined in notebook)."
+
+- id: sample_ftol_code
+  quantity: optimization_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-6"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "672"
+    quote: "main.simulate(2,diavec,Nfil,gamma_VP,0,True,1e-06, False,10000.0)"
+  from_source: graham2023
+  from_datum: slsqp_tol_val
+  note: "SLSQP ftol = 1e-6 (also passed as finite-difference step eps = ftolval on lines 752 and 933)."
+
+- id: sample_alpha_code
+  quantity: crosslinker_coupling
+  unit: dimensionless
+  origin: reported
+  printed: "10000.0"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "672"
+    quote: "main.simulate(2,diavec,Nfil,gamma_VP,0,True,1e-06, False,10000.0)"
+  note: "Sample Bathe coupling alpha = 10000.0 passed alongside nonlinearbool = False."
+
+# --- Cell 15: generatering() constants (lines 697, 752, 770, 830) ---
+- id: kbt_ring_code
+  quantity: thermal_energy
+  unit: pN*nm
+  origin: reported
+  printed: "4.1"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "697"
+    quote: "sparams.kbendfil = (Lp_fil*4.1/sparams.lcyl)"
+  note: "Thermal energy 4.1 pN*nm used for the Nfil = 1 ring generation step (giving k_b,fil = 17730 * 4.1 = 72693 pN*nm^2, vs 72900 pN*nm^2 in getkbend for Nfil >= 2 and 4.11 pN*nm on line 196)."
+
+- id: slsqp_maxiter_code
+  quantity: slsqp_max_iterations
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^4"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "752"
+    quote: "options={'ftol': ftolval, 'maxiter': 1e4, 'eps':ftolval,'disp': False})"
+  note: "Hidden SLSQP maxiter = 1e4 and eps = ftolval (also on line 933)."
+
+- id: wetting_accept_min_code
+  quantity: wetted_bundle_fraction
+  unit: dimensionless
+  origin: reported
+  printed: "0.95"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "770"
+    quote: "if(Fstr>finalE*failEstrtol or wettingfraction<=0.95):"
+  note: "Hidden fallback acceptance threshold requiring > 95% wetted bundle length after failtol = 3 failed SLSQP steps (also line 954)."
+
+- id: ring_ar_accept_max_code
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "1.1"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "830"
+    quote: "if(aratio<=1.1):"
+  from_source: graham2023
+  from_datum: deformed_ar_threshold
+  note: "Hidden ring-generation acceptance gate: generatering() rejects and retries any 1-filament ring with AR > 1.1; matches graham2023's AR = 1.1 deformation threshold."
+
+# --- Cell 17: simulate() constants (lines 861-918) ---
+- id: ftol_default_code
+  quantity: optimization_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-8"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "861"
+    quote: "fTolvec = [1e-8]"
+  note: "Fallback ftol when fewer than 2 optional args are passed to simulate() (overridden to 1e-6 in line 672)."
+
+- id: bounds_lo_code
+  quantity: coordinate_bound
+  unit: nm
+  origin: reported
+  printed: "1 x 10^-9"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "874"
+    quote: "bnds = Bounds(1e-9,1e10);"
+  note: "Hidden lower box bound on all optimization variables (a and bead coordinates) requiring ellipse_com = [8e3, 8e3] nm."
+
+- id: bounds_hi_code
+  quantity: coordinate_bound
+  unit: nm
+  origin: reported
+  printed: "1 x 10^10"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "874"
+    quote: "bnds = Bounds(1e-9,1e10);"
+  note: "Hidden upper box bound on all optimization variables."
+
+- id: gamma_avr_code
+  quantity: wetting_surface_tension
+  unit: pN/nm
+  origin: reported
+  printed: "1 x 10^-8"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "877"
+    quote: "sparams.surface_T = [gamma_VP,1e-8,0.5e4]"
+  from_source: graham2023
+  from_datum: gamma_avr_table1
+  note: "Actin-VASP-rich wetting tension surface_T[1] = 1e-8 pN/nm; matches graham2023 Table 1."
+
+- id: gamma_avd_code
+  quantity: wetting_surface_tension
+  unit: pN/nm
+  origin: reported
+  printed: "0.5 x 10^4"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "877"
+    quote: "sparams.surface_T = [gamma_VP,1e-8,0.5e4]"
+  from_source: graham2023
+  from_datum: gamma_avd_table1
+  note: "DISCREPANCY vs graham2023: code hardcodes gamma_AVD = 0.5e4 = 5000 pN/nm (half of Table 1's 1 x 10^4 pN/nm and Extended Data Fig. 5c's 10000 pN/nm plateau)."
+
+- id: rcyl_init_code
+  quantity: ring_thickness
+  unit: nm
+  origin: reported
+  printed: "5"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "879"
+    quote: "sparams.rcyl = 5"
+  from_source: graham2023
+  from_datum: fig4f_tring_min
+  note: "Single-filament initial thickness rcyl = 5 nm (Nfil = 1); explains why graham2023 Fig. 4f starts at T_ring = 5 nm before stepping in 15 nm multiples (30, 45, 75, ... nm for Nfil >= 2)."
+
+- id: ellipse_com_sim_code
+  quantity: droplet_center_offset
+  unit: nm
+  origin: reported
+  printed: "8 x 10^3"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "884"
+    quote: "sparams.ellipse_com=[8e3,8e3]"
+  note: "Droplet center placed at (8000, 8000) nm in 2D (and [8e3, 8e3, 8e3] in 3D, line 886) so bead coordinates stay inside Bounds(1e-9, 1e10)."
+
+- id: lp_fil_code
+  quantity: actin_persistence_length
+  unit: nm
+  origin: reported
+  printed: "17.73 x 10^3"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "887"
+    quote: "Lp_fil = 17.73*1e3;#persistence length in nm"
+  from_source: graham2023
+  from_datum: actin_lp_table1
+  note: "Single-filament persistence length 17.73 um = 17730 nm; matches graham2023 Table 1."
+
+- id: r_fil_code
+  quantity: filament_spacing
+  unit: nm
+  origin: reported
+  printed: "15"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "888"
+    quote: "R_fil = 15;"
+  from_source: graham2023
+  from_datum: filament_spacing_vasp_delta
+  note: "Thickness per filament R_fil = 15 nm (sparams.rcyl = R_fil * Nfil on line 924); matches delta = 15 nm in graham2023 Table 1."
+
+- id: lcyl_fixed_code
+  quantity: segment_length
+  unit: nm
+  origin: reported
+  printed: "100"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "891"
+    quote: "lcylvec = [100]"
+  from_source: graham2023
+  from_datum: segment_length_lcyl
+  note: "Default segment length 100 nm when lcylscalewithD is False (matches Table 1); overridden by 0.1 * D on line 895 when lcylscalewithD is True (as in sample call line 672)."
+
+- id: lcyl_scale_frac_code
+  quantity: ring_extension_step_fraction
+  unit: dimensionless
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "895"
+    quote: "lcylvec = [diavec[0]*0.1*1e3]#convert from microns to nanometer"
+  from_source: graham2023
+  from_datum: ring_extension_step_frac
+  note: "Settles graham2023 q_extension_step_100nm_vs_01D: when lcylscalewithD=True, lcyl itself scales as 0.1 * D (100 nm at D = 1 um, 200 nm at D = 2 um, 400 nm at D = 4 um)."
+
+- id: failtol_code
+  quantity: slsqp_fail_limit
+  unit: dimensionless
+  origin: reported
+  printed: "3"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "897"
+    quote: "failtol = 3;"
+  note: "Hidden maximum consecutive SLSQP failures before fallback check."
+
+- id: fail_estr_tol_code
+  quantity: stretching_energy_fraction_limit
+  unit: dimensionless
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "898"
+    quote: "failEstrtol = 0.1;"
+  note: "Hidden fallback criterion accepting a failed SLSQP iterate if Fstr <= 0.1 * finalE and wettingfraction > 0.95."
+
+- id: nfil_loop_start_code
+  quantity: filament_count
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    file: VASPDroplet_simulate.ipynb
+    lines: "918"
+    quote: "for Nfil in range(2,targetNfil[0]+1):"
+  note: "Thickness-ramping loop begins at Nfil = 2 (rcyl = 30 nm), skipping 15 nm and appending both noisy pre-minimization opt_var (line 929) and minimized res.x (line 943) to solnlistvec."
+
+# ==========================================================================
+# 2. Target parameters & derived values copied from graham2023 (for live checks)
+# ==========================================================================
+- id: paper_gamma_avd
+  quantity: wetting_surface_tension
+  unit: pN/nm
+  origin: reported
+  printed: "1 x 10^4"
+  citation:
+    none: "Copied parameter from graham2023/gamma_avd_table1 (SI Table 1, p. 39) to test getsurfaceTension() against Extended Data Fig. 5c."
+  from_source: graham2023
+  from_datum: gamma_avd_table1
+
+- id: paper_noise_amp
+  quantity: coordinate_noise_amplitude
+  unit: nm
+  origin: reported
+  printed: "0.1"
+  citation:
+    none: "Copied protocol parameter from graham2023/noise_amp_val (SI Section 2.6, p. 41) for comparison against addrandomnoise()."
+  from_source: graham2023
+  from_datum: noise_amp_val
+
+- id: paper_ring_extension_cycles
+  quantity: ring_extension_cycles
+  unit: dimensionless
+  origin: reported
+  printed: "21"
+  citation:
+    none: "Copied protocol parameter from graham2023/ring_extension_cycles_val (SI Section 2.6, p. 41) for comparison against generatering() Nreps."
+  from_source: graham2023
+  from_datum: ring_extension_cycles_val
+
+- id: paper_final_ring_length_ratio
+  quantity: ring_length_to_diameter_ratio
+  unit: dimensionless
+  origin: derived
+  printed: "3.1"
+  citation:
+    none: "Copied derived ring length ratio from graham2023/derived_final_ring_length_ratio (SI Section 2.6, p. 41: L_final = 3.1 D) for direct comparison against generatering() actual L_final / D."
+  from_source: graham2023
+  from_datum: derived_final_ring_length_ratio
+
+- id: paper_diam_1um
+  quantity: droplet_diameter
+  unit: um
+  origin: reported
+  printed: "1"
+  citation:
+    none: "Copied sweep diameter D = 1 um from graham2023/fig4f_droplet_diam (Fig. 4f-g, Extended Data Fig. 7)."
+  from_source: graham2023
+  from_datum: fig4f_droplet_diam
+
+- id: paper_diam_2um
+  quantity: droplet_diameter
+  unit: um
+  origin: reported
+  printed: "2.0"
+  citation:
+    none: "Copied sweep diameter D = 2.0 um from graham2023/fig4g_droplet_diam_2um (Fig. 4g)."
+  from_source: graham2023
+  from_datum: fig4g_droplet_diam_2um
+
+- id: paper_gamma_i_1
+  quantity: droplet_line_tension
+  unit: pN
+  origin: reported
+  printed: "1.0"
+  citation:
+    none: "Copied sweep line tension gamma_I = 1.0 pN from graham2023/fig4g_gamma_i_low (Fig. 4g)."
+  from_source: graham2023
+  from_datum: fig4g_gamma_i_low
+
+- id: paper_gamma_i_2p5
+  quantity: droplet_line_tension
+  unit: pN
+  origin: reported
+  printed: "2.5"
+  citation:
+    none: "Copied sweep line tension gamma_I = 2.5 pN from graham2023/edfig7_gamma_i_2p5 (Extended Data Fig. 7b)."
+  from_source: graham2023
+  from_datum: edfig7_gamma_i_2p5
+
+- id: paper_gamma_i_5
+  quantity: droplet_line_tension
+  unit: pN
+  origin: reported
+  printed: "5.0"
+  citation:
+    none: "Copied sweep line tension gamma_I = 5.0 pN from graham2023/fig4f_gamma_i (Fig. 4f-h)."
+  from_source: graham2023
+  from_datum: fig4f_gamma_i
+
+- id: paper_gamma_i_7p5
+  quantity: droplet_line_tension
+  unit: pN
+  origin: reported
+  printed: "7.5"
+  citation:
+    none: "Copied sweep line tension gamma_I = 7.5 pN from graham2023/edfig7_gamma_i_7p5 (Extended Data Fig. 7d)."
+  from_source: graham2023
+  from_datum: edfig7_gamma_i_7p5
+
+- id: paper_gamma_i_10
+  quantity: droplet_line_tension
+  unit: pN
+  origin: reported
+  printed: "10.0"
+  citation:
+    none: "Copied sweep line tension gamma_I = 10.0 pN from graham2023/edfig7_gamma_i_10 (Extended Data Fig. 7e)."
+  from_source: graham2023
+  from_datum: edfig7_gamma_i_10
+
+- id: paper_gamma_i_12p5
+  quantity: droplet_line_tension
+  unit: pN
+  origin: reported
+  printed: "12.5"
+  citation:
+    none: "Copied sweep line tension gamma_I = 12.5 pN from graham2023/edfig7_gamma_i_12p5 (Extended Data Fig. 7f)."
+  from_source: graham2023
+  from_datum: edfig7_gamma_i_12p5
+
+- id: paper_gamma_i_15
+  quantity: droplet_line_tension
+  unit: pN
+  origin: reported
+  printed: "15.0"
+  citation:
+    none: "Copied sweep line tension gamma_I = 15.0 pN from graham2023/fig4h_gamma_i_max (Extended Data Fig. 7g, Fig. 4h)."
+  from_source: graham2023
+  from_datum: fig4h_gamma_i_max
+
+- id: paper_fig5c_gamma_i
+  quantity: droplet_line_tension
+  unit: pN
+  origin: reported
+  printed: "1"
+  citation:
+    none: "Copied Fig. 5c line tension gamma_I = 1 pN from graham2023/fig5c_gamma_i_printed."
+  from_source: graham2023
+  from_datum: fig5c_gamma_i_printed
+
+- id: paper_fig5c_radius_1um
+  quantity: droplet_radius
+  unit: um
+  origin: reported
+  printed: "1"
+  citation:
+    none: "Copied SI Section 2.11 radius R = 1 um from graham2023/fig5c_droplet_radius."
+  from_source: graham2023
+  from_datum: fig5c_droplet_radius
+
+# ==========================================================================
+# 3. Digitized target curves copied from graham2023 (14 curves, 121 points)
+# ==========================================================================
+- id: target_edfig5c_ke64
+  quantity: wetting_surface_tension
+  unit: pN/nm
+  origin: predicted
+  citation:
+    none: "Copied digitized Extended Data Fig. 5c (k_e = 64) curve [lo, hi] intervals from graham2023/edfig5c_ke64_fig."
+  from_source: graham2023
+  from_datum: edfig5c_ke64_fig
+  table:
+    index_quantity: normalized_ellipse_coord
+    index_unit: dimensionless
+    index: ["0.25", "0.5", "0.98", "1.02", "1.5", "1.75"]
+    values: ["-57.2177 to 28.9312", "-54.0123 to 54.0123", "83.6105 to 1920.74", "7862.93 to 9719.87", "10011.6 to 10050.2", "10011.6 to 10050.2"]
+
+- id: target_fig5c_surface
+  quantity: surface_energy
+  unit: pN*nm
+  origin: predicted
+  citation:
+    none: "Copied digitized Fig. 5c surface energy curve [lo, hi] intervals from graham2023/fig5c_surface_fig."
+  from_source: graham2023
+  from_datum: fig5c_surface_fig
+  table:
+    index_quantity: droplet_aspect_ratio
+    index_unit: dimensionless
+    index: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "9.8"]
+    values: ["6.13811 to 6.44688", "6.69011 to 7.07789", "7.52237 to 7.91787", "8.36268 to 8.75355", "9.20767 to 9.58619", "10.0345 to 10.43", "10.7406 to 11.1222", "11.4401 to 11.8186", "12.068 to 12.4465", "12.6229 to 12.9317"]
+
+- id: target_fig4f_droplet_ar
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Fig. 4f (D = 1 um, gamma_I = 5.0 pN, 22 rendered droplets) [lo, hi] intervals from graham2023/fig4f_droplet_ar_fig."
+  from_source: graham2023
+  from_datum: fig4f_droplet_ar_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["5", "30", "45", "75", "90", "120", "135", "165", "180", "210", "225", "255", "270", "300", "315", "345", "360", "390", "405", "435", "450", "480"]
+    values: ["1.07229 to 1.11837", "1.12245 to 1.17012", "1.15289 to 1.20168", "1.15353 to 1.20253", "1.23707 to 1.28947", "1.27391 to 1.32743", "1.29825 to 1.35268", "1.35747 to 1.41475", "1.36652 to 1.42396", "1.37557 to 1.43318", "1.41475 to 1.47418", "1.44186 to 1.50237", "1.42857 to 1.48826", "1.46479 to 1.52632", "1.45116 to 1.51185", "1.47887 to 1.54067", "1.49057 to 1.55288", "1.50472 to 1.56731", "1.50711 to 1.57005", "1.52381 to 1.58738", "1.53589 to 1.6", "1.53365 to 1.59804"]
+
+- id: target_fig4g_d1_gI1
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Fig. 4g heatmap slice (D = 1.0 um, gamma_I = 1.0 pN) [lo, hi] intervals from graham2023/fig4g_d1_gI1_fig."
+  from_source: graham2023
+  from_datum: fig4g_d1_gI1_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["60", "120", "180", "240", "300", "360", "420"]
+    values: ["1.546 to 1.574", "1.6145 to 1.6515", "1.667 to 1.693", "1.6795 to 1.7225", "1.706 to 1.748", "1.719 to 1.753", "1.7285 to 1.7655"]
+
+- id: target_fig4g_d1_gI5
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Fig. 4g heatmap slice (D = 1.0 um, gamma_I = 5.0 pN) [lo, hi] intervals from graham2023/fig4g_d1_gI5_fig."
+  from_source: graham2023
+  from_datum: fig4g_d1_gI5_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["60", "120", "180", "240", "300", "360", "420"]
+    values: ["1.178 to 1.212", "1.28 to 1.304", "1.362 to 1.386", "1.429 to 1.453", "1.476 to 1.504", "1.5065 to 1.5375", "1.5415 to 1.5785"]
+
+- id: target_fig4g_d2_gI1
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Fig. 4g heatmap slice (D = 2.0 um, gamma_I = 1.0 pN) [lo, hi] intervals from graham2023/fig4g_d2_gI1_fig."
+  from_source: graham2023
+  from_datum: fig4g_d2_gI1_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["100", "250", "400", "550", "700", "850"]
+    values: ["1.303 to 1.327", "1.499 to 1.523", "1.581 to 1.621", "1.6365 to 1.6655", "1.663 to 1.691", "1.678 to 1.724"]
+
+- id: target_fig4g_d2_gI5
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Fig. 4g heatmap slice (D = 2.0 um, gamma_I = 5.0 pN) [lo, hi] intervals from graham2023/fig4g_d2_gI5_fig."
+  from_source: graham2023
+  from_datum: fig4g_d2_gI5_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["100", "250", "400", "550", "700", "850"]
+    values: ["1.0575 to 1.0945", "1.1345 to 1.1635", "1.1925 to 1.2275", "1.268 to 1.292", "1.324 to 1.348", "1.37 to 1.394"]
+
+- id: target_edfig7b_d1_gI2p5
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Extended Data Fig. 7b heatmap slice (D = 1.0 um, gamma_I = 2.5 pN) [lo, hi] intervals from graham2023/edfig7b_d1_gI2p5_fig."
+  from_source: graham2023
+  from_datum: edfig7b_d1_gI2p5_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["60", "120", "180", "240", "300", "360", "420"]
+    values: ["1.322 to 1.352", "1.45 to 1.48", "1.525 to 1.555", "1.5685 to 1.5995", "1.602 to 1.632", "1.626 to 1.656", "1.647 to 1.677"]
+
+- id: target_edfig7d_d1_gI7p5
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Extended Data Fig. 7d heatmap slice (D = 1.0 um, gamma_I = 7.5 pN) [lo, hi] intervals from graham2023/edfig7d_d1_gI7p5_fig."
+  from_source: graham2023
+  from_datum: edfig7d_d1_gI7p5_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["60", "120", "180", "240", "300", "360", "420"]
+    values: ["1.1145 to 1.1495", "1.194 to 1.224", "1.263 to 1.293", "1.322 to 1.352", "1.373 to 1.403", "1.415 to 1.445", "1.447 to 1.477"]
+
+- id: target_edfig7e_d1_gI10
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Extended Data Fig. 7e heatmap slice (D = 1.0 um, gamma_I = 10.0 pN) [lo, hi] intervals from graham2023/edfig7e_d1_gI10_fig."
+  from_source: graham2023
+  from_datum: edfig7e_d1_gI10_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["60", "120", "180", "240", "300", "360", "420"]
+    values: ["1.087 to 1.117", "1.146 to 1.176", "1.202 to 1.234", "1.254 to 1.284", "1.301 to 1.331", "1.34 to 1.37", "1.376 to 1.406"]
+
+- id: target_edfig7f_d1_gI12p5
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Extended Data Fig. 7f heatmap slice (D = 1.0 um, gamma_I = 12.5 pN) [lo, hi] intervals from graham2023/edfig7f_d1_gI12p5_fig."
+  from_source: graham2023
+  from_datum: edfig7f_d1_gI12p5_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["60", "120", "180", "240", "300", "360", "420"]
+    values: ["1.066 to 1.096", "1.1135 to 1.1565", "1.164 to 1.194", "1.2065 to 1.2415", "1.248 to 1.278", "1.286 to 1.316", "1.322 to 1.352"]
+
+- id: target_edfig7g_d1_gI15
+  quantity: droplet_aspect_ratio
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied digitized Extended Data Fig. 7g heatmap slice (D = 1.0 um, gamma_I = 15.0 pN) [lo, hi] intervals from graham2023/edfig7g_d1_gI15_fig."
+  from_source: graham2023
+  from_datum: edfig7g_d1_gI15_fig
+  table:
+    index_quantity: ring_thickness
+    index_unit: nm
+    index: ["60", "120", "180", "240", "300", "360", "420"]
+    values: ["1.054 to 1.084", "1.102 to 1.132", "1.138 to 1.168", "1.176 to 1.206", "1.215 to 1.245", "1.245 to 1.275", "1.278 to 1.308"]
+
+- id: target_fig4h_gI5
+  quantity: ring_thickness_critical
+  unit: um
+  origin: predicted
+  citation:
+    none: "Copied digitized Fig. 4h critical ring thickness curve (gamma_I = 5.0 pN, mean +/- s.d. of 3 trials) from graham2023/fig4h_gI5_fig."
+  from_source: graham2023
+  from_datum: fig4h_gI5_fig
+  table:
+    index_quantity: droplet_diameter
+    index_unit: um
+    index: ["1.5", "1.75", "2", "2.25", "2.5", "2.75", "3", "3.25", "3.5", "3.75", "4"]
+    values: ["0.0555596 to 0.100771", "0.0868245 to 0.132036", "0.145747 to 0.192161", "0.205872 to 0.252285", "0.279224 to 0.329245", "0.367007 to 0.412218", "0.362197 to 0.424243", "0.511306 to 0.574555", "0.506496 to 0.554112", "0.726553 to 0.77898", "0.825158 to 0.980999"]
+
+- id: target_fig4h_gI15
+  quantity: ring_thickness_critical
+  unit: um
+  origin: predicted
+  citation:
+    none: "Copied digitized Fig. 4h critical ring thickness curve (gamma_I = 15.0 pN, mean +/- s.d. of 3 trials) from graham2023/fig4h_gI15_fig."
+  from_source: graham2023
+  from_datum: fig4h_gI15_fig
+  table:
+    index_quantity: droplet_diameter
+    index_unit: um
+    index: ["1", "1.25", "1.5", "1.75", "2", "2.25", "2.5", "2.75", "3", "3.25", "3.5"]
+    values: ["0.106064 to 0.151276", "0.180619 to 0.22583", "0.233529 to 0.285955", "0.336944 to 0.390573", "0.514914 to 0.609427", "0.832373 to 1.1241", "0.858828 to 0.952139", "1.29052 to 1.41751", "1.34223 to 1.63396", "1.52381 to 1.57624", "1.59235 to 1.77345"]

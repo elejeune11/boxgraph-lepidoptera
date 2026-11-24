@@ -1,0 +1,997 @@
+# ==============================================================================
+# 1. Dimensional Scales, Continuum Free Energy & Interface Coexistence (Sec. II, App. A, C)
+# ==============================================================================
+- id: run_ternary_free_energy
+  model: ternary_free_energy_eq1
+  inputs: {a: a_ref, b: b_ref, psi: psi_autocat, phi_A: phiA_probe, phi_B: phiB_probe}
+  outputs: {f: f_ternary_probe, mu_A: muA_probe, mu_B: muB_probe}
+
+- id: run_binary_free_energy
+  model: binary_free_energy_sec3
+  inputs: {b: b_ref, psi: psi_binary, phi_B: phiB_probe}
+  outputs: {f: f_binary_probe, mu_B: muB_binary_probe}
+
+- id: run_interface_width
+  model: interface_width_w
+  inputs: {kappa: kappa_ref, b: b_ref}
+  outputs: {w: w_from_micro}
+
+- id: run_surface_tension
+  model: surface_tension_gamma
+  inputs: {psi: psi_binary, b: b_ref, kappa: kappa_ref}
+  outputs: {gamma: gamma_from_micro}
+
+- id: run_flat_interface_profile
+  model: flat_interface_profile
+  inputs: {psi: psi_binary, x: x_probe_interface, w: w_from_micro}
+  outputs: {phi_B: phiB_flat_probe}
+
+- id: run_laplace_beta
+  model: laplace_coeff_beta
+  inputs: {b: b_ref, psi: psi_binary}
+  outputs: {beta: beta_from_micro}
+
+- id: run_capillary_length_gb
+  model: capillary_length_gb
+  inputs: {w: w_from_micro, psi: psi_binary}
+  outputs: {gamma_beta: gb_from_w}
+
+- id: run_capillary_length_micro
+  model: capillary_length_from_micro
+  inputs: {b: b_ref, kappa: kappa_ref, psi: psi_binary}
+  outputs: {gamma_beta: gb_from_micro}
+
+- id: run_diffusivity
+  model: diffusivity_from_mobility
+  inputs: {m_B: mB_ref, b: b_ref}
+  outputs: {D_B: DB_from_mobility}
+
+- id: run_k0_ref
+  model: interface_diffusion_rate_k0
+  inputs: {D_B: DB_ref, w: w_ref}
+  outputs: {k_0: k0_ref}
+
+- id: run_gibbs_thomson_eq6
+  model: gibbs_thomson_eq6
+  inputs: {psi: psi_binary, gamma_beta: gb_from_w, R: R_probe_small}
+  outputs: {phi_plus_B: phi_plus_B_eq6, phi_minus_B: phi_minus_B_eq6}
+
+- id: run_coexistence_eqA1
+  model: coexistence_exact_eqA1
+  inputs: {b: b_ref, psi: psi_binary, gamma: gamma_from_micro, R: R_probe_small}
+  outputs: {phi_plus_B: phi_plus_B_eqA1, phi_minus_B: phi_minus_B_eqA1}
+
+# ==============================================================================
+# 2. Binary First-Order Emulsions: Parameter Unnormalization & Analytical Models (Sec. III)
+# ==============================================================================
+- id: run_params_fig3a
+  model: unnormalize_binary_params
+  inputs: {kf_norm: kf_over_k0_fig3a, kb_norm: kb_over_k0_fig3a, Vs_norm: Vs_over_w3_fig3cd, w: w_ref, D_B: DB_ref}
+  outputs: {k_0: k0_fig3a, k_f: kf_fig3a, k_b: kb_fig3a, V_s: Vs_fig3cd, gamma_beta: gb_fig3}
+
+- id: run_system_radius_fig3cd
+  model: system_radius_Rs
+  inputs: {V_s: Vs_fig3cd}
+  outputs: {R_s: Rs_fig3cd}
+
+- id: run_reaction_length_fig3a
+  model: reaction_diffusion_length_l
+  inputs: {D_B: DB_ref, k_f: kf_fig3a, k_b: kb_fig3a}
+  outputs: {l: l_fig3a}
+
+- id: run_phi0B_fig3a
+  model: binary_background_ss_eq15
+  inputs: {k_f: kf_fig3a, k_b: kb_fig3a}
+  outputs: {phi_0_B: phi0B_fig3a_pred}
+
+# Boundary checks on p. 5: 3 k_f = k_b -> phi_0^B = 1/4, R_bar / l = 1; k_f = k_b -> phi_0^B = 1/2; k_f = 3 k_b -> phi_0^B = 3/4
+- id: run_kb_at_Bdroplet_bound
+  model: rate_from_ratio
+  inputs: {k_f_in: kf_fig3a, kb_over_kf: kb_over_kf_Bdroplet_bound}
+  outputs: {k_b: kb_at_Bdroplet_bound}
+
+- id: run_phi0B_Bdroplet_bound
+  model: binary_background_ss_eq15
+  inputs: {k_f: kf_fig3a, k_b: kb_at_Bdroplet_bound}
+  outputs: {phi_0_B: phi0B_Bdroplet_bound_pred}
+
+- id: run_Rbar_at_Bdroplet_bound
+  model: binary_single_radius_eq16
+  inputs: {D_B: DB_ref, k_f: kf_fig3a, k_b: kb_at_Bdroplet_bound}
+  outputs: {R_bar: Rbar_at_Bdroplet_bound}
+
+- id: run_l_at_Bdroplet_bound
+  model: reaction_diffusion_length_l
+  inputs: {D_B: DB_ref, k_f: kf_fig3a, k_b: kb_at_Bdroplet_bound}
+  outputs: {l: l_at_Bdroplet_bound}
+
+- id: run_Rbar_over_l_at_quarter
+  model: ratio_Rbar_over_l
+  inputs: {R_bar: Rbar_at_Bdroplet_bound, l: l_at_Bdroplet_bound}
+  outputs: {Rbar_over_l: Rbar_over_l_at_quarter_pred}
+
+- id: run_kb_at_symmetric
+  model: rate_from_ratio
+  inputs: {k_f_in: kf_fig3a, kb_over_kf: kb_over_kf_symmetric}
+  outputs: {k_b: kb_at_symmetric}
+
+- id: run_phi0B_bicontinuous
+  model: binary_background_ss_eq15
+  inputs: {k_f: kf_fig3a, k_b: kb_at_symmetric}
+  outputs: {phi_0_B: phi0B_bicontinuous_pred}
+
+- id: run_kf_at_Adroplet_bound
+  model: forward_rate_from_ratio
+  inputs: {k_b_in: kb_fig3a, kf_over_kb: kf_over_kb_Adroplet_bound}
+  outputs: {k_f: kf_at_Adroplet_bound}
+
+- id: run_phi0B_Adroplet_bound
+  model: binary_background_ss_eq15
+  inputs: {k_f: kf_at_Adroplet_bound, k_b: kb_fig3a}
+  outputs: {phi_0_B: phi0B_Adroplet_bound_pred}
+
+# Single-droplet & flux models evaluated at Fig. 3(a)
+- id: run_outer_profile_eqC1
+  model: outer_profile_eqC1
+  inputs: {phi_0_B: phi0B_fig3a_pred, phi_plus_B: phi_plus_B_eq6, R: R_probe_small, r: r_probe_outer, l: l_fig3a}
+  outputs: {phi_B: phiB_outer_probe}
+
+- id: run_surface_flux_eq8
+  model: surface_flux_eq8_11
+  inputs: {R: R_probe_small, D_B: DB_ref, l: l_fig3a, gamma_beta: gb_fig3, phi_0_B: phi0B_fig3a_pred}
+  outputs: {J: J_eq8_fig3a}
+
+- id: run_surface_flux_small_R
+  model: surface_flux_small_R
+  inputs: {R: R_probe_small, D_B: DB_ref, gamma_beta: gb_fig3, phi_0_B: phi0B_fig3a_pred}
+  outputs: {J: J_smallR_fig3a}
+
+- id: run_binary_growth_eq13
+  model: binary_droplet_growth_eq13
+  inputs: {R: R_probe_small, D_B: DB_ref, phi_0_B: phi0B_fig3a_pred, gamma_beta: gb_fig3, k_b: kb_fig3a}
+  outputs: {dR_dt: dRdt_fig3a}
+
+- id: run_binary_Rbar_eq16_fig3a
+  model: binary_single_radius_eq16
+  inputs: {D_B: DB_ref, k_f: kf_fig3a, k_b: kb_fig3a}
+  outputs: {R_bar: Rbar_eq16_fig3a}
+
+- id: run_binary_Rcrit_fig3a
+  model: binary_critical_radius_approx
+  inputs: {gamma_beta: gb_fig3, phi_0_B: phi0B_fig3a_pred}
+  outputs: {R_crit: Rcrit_approx_fig3a}
+
+- id: run_binary_kfc_eq17_fig3b
+  model: binary_critical_rate_eq17
+  inputs: {D_B: DB_ref, gamma_beta: gb_fig3, phi_0_B: phi0B_fig3a_pred}
+  outputs: {k_f_c: kfc_eq17_fig3b, k_b_c: kbc_eq17_fig3b}
+
+- id: run_binary_kbc_fig6b
+  model: binary_critical_kb_fig6b
+  inputs: {k_0: k0_fig3a, phi_0_B: phi0B_fig3a_pred}
+  outputs: {k_b_c: kbc_fig6b_pred}
+
+- id: run_binary_single_ss_fig3a
+  model: binary_single_droplet_ss_solver
+  inputs: {D_B: DB_ref, gamma_beta: gb_fig3, k_f: kf_fig3a, k_b: kb_fig3a}
+  outputs: {R_crit: Rcrit_exact_fig3a, R_bar: Rbar_exact_fig3a, k_f_c: kfc_exact_fig3b}
+
+# Multi-droplet binary stability: Fig. 4(a), Fig. 4(b), Fig. 6(a), Appendix D
+- id: run_params_fig4a_passive
+  model: unnormalize_binary_params
+  inputs: {kf_norm: kf_zero_passive, kb_norm: kb_zero_passive, Vs_norm: Vs_over_w3_fig4, w: w_ref, D_B: DB_ref}
+  outputs: {k_f: kf_fig4a, k_b: kb_fig4a, V_s: Vs_fig4, gamma_beta: gb_fig4}
+
+- id: run_params_fig4b_step1
+  model: unnormalize_binary_params
+  inputs: {kf_norm: kf_over_k0_fig4b, kb_norm: kb_zero_passive, Vs_norm: Vs_over_w3_fig4, w: w_ref, D_B: DB_ref}
+  outputs: {k_f: kf_fig4b}
+
+- id: run_kb_fig4b
+  model: rate_from_ratio
+  inputs: {k_f_in: kf_fig4b, kb_over_kf: kb_over_kf_fig3b}
+  outputs: {k_b: kb_fig4b}
+
+- id: run_fig4a_multidroplet
+  model: binary_multidroplet_stability_solver
+  inputs: {D_B: DB_ref, gamma_beta: gb_fig4, k_f: kf_fig4a, k_b: kb_fig4a, V_s: Vs_fig4, phi_B_bar: phiB_bar_fig3a, N: N_pair}
+  outputs:
+    R_sym: R_sym_fig4a
+    phi_0_B_sym: phi0B_sym_fig4a
+    lam_sym: lam_sym_fig4a
+    n_stable_pair: fig4a_n_stable_pred
+    n_small_unstable_pair: fig4a_n_small_unstable_pred
+    n_large_sym_unstable_pair: fig4a_n_large_sym_unstable_pred
+    N_max: fig4a_max_stable_pred
+
+- id: run_fig4b_multidroplet
+  model: binary_multidroplet_stability_solver
+  inputs: {D_B: DB_ref, gamma_beta: gb_fig4, k_f: kf_fig4b, k_b: kb_fig4b, V_s: Vs_fig4, phi_B_bar: phiB_bar_fig3a, N: N_pair}
+  outputs:
+    R_sym: R_sym_fig4b
+    phi_0_B_sym: phi0B_sym_fig4b
+    lam_sym: lam_sym_fig4b
+    e_plus_exact: e_plus_exact_fig4b
+    n_stable_pair: fig4b_n_stable_pred
+    N_max: N_max_fig4b
+
+- id: run_binary_coarsening_eq18_fig4b
+  model: binary_coarsening_rate_eq18
+  inputs: {D_B: DB_ref, gamma_beta: gb_fig4, R_bar: R_sym_fig4b, k_b: kb_fig4b}
+  outputs: {lam: lam_eq18_fig4b}
+
+- id: run_passive_coarsening_eq18_fig4a
+  model: passive_coarsening_rate_eq18
+  inputs: {D_B: DB_ref, gamma_beta: gb_fig4, R_bar: R_sym_fig4a}
+  outputs: {lam: lam_passive_fig4a}
+
+- id: run_Rstab_eq19_fig4b
+  model: binary_stability_radius_eq19
+  inputs: {D_B: DB_ref, gamma_beta: gb_fig4, k_b: kb_fig4b}
+  outputs: {R_stab: Rstab_fig4b}
+
+- id: run_dense_volume_eq20_fig4b
+  model: binary_dense_volume_eq20
+  inputs: {k_f: kf_fig4b, k_b: kb_fig4b, V_s: Vs_fig4, N: N_pair}
+  outputs: {V_bar: Vbar_eq20_fig4b, R_bar: Rbar_eq20_fig4b}
+
+- id: run_stability_chi_eq21_fig4b
+  model: binary_stability_number_eq21
+  inputs: {V_s: Vs_fig4, D_B: DB_ref, gamma_beta: gb_fig4, N: N_pair, k_f: kf_fig4b, k_b: kb_fig4b}
+  outputs: {chi: chi_fig4b, N_max: Nmax_eq21_fig4b, n_c: nc_eq21_fig4b}
+
+- id: run_jacobian_eqD3_D4_printed_fig4b
+  model: binary_jacobian_eqD3_D4
+  inputs: {k_f: kf_fig4b, k_b: kb_fig4b, D_B: DB_ref, gamma_beta: gb_fig4, R_bar: R_sym_fig4b, phi_0_B: phi0B_sym_fig4b, V_s: Vs_fig4, N: N_pair}
+  outputs: {e_plus: e_plus_D4_printed_fig4b, e_minus: e_minus_D4_printed_fig4b, e_tilde: e_tilde_D4_printed_fig4b}
+
+- id: run_jacobian_eqD3_D4_corrected_fig4b
+  model: binary_jacobian_eqD3_D4_corrected
+  inputs: {k_f: kf_fig4b, k_b: kb_fig4b, D_B: DB_ref, gamma_beta: gb_fig4, R_bar: R_sym_fig4b, phi_0_B: phi0B_sym_fig4b, V_s: Vs_fig4, N: N_pair}
+  outputs: {e_plus: e_plus_D4_corr_fig4b, e_minus: e_minus_D4_corr_fig4b, e_tilde: e_tilde_D4_corr_fig4b}
+
+# Scaling laws (prefactor: unknown)
+- id: run_LS_scaling_printed
+  model: lifshitz_slyozov_scaling_printed
+  inputs: {t: t_probe_LS, D_B: DB_ref, w: w_ref}
+  outputs: {R_mean: R_mean_LS_printed}
+
+- id: run_LS_scaling_corrected
+  model: lifshitz_slyozov_scaling_corrected
+  inputs: {t: t_probe_LS, D_B: DB_ref, w: w_ref}
+  outputs: {R_mean: R_mean_LS_corrected}
+
+- id: run_Rstab_kb_scaling
+  model: Rstab_kb_scaling
+  inputs: {k_b: kb_fig4b}
+  outputs: {R_stab: Rstab_scaling_fig4b}
+
+- id: run_Rbar_kb_scaling
+  model: Rbar_kb_scaling
+  inputs: {k_b: kb_fig3a}
+  outputs: {R_bar: Rbar_scaling_fig3a}
+
+# ==============================================================================
+# 3. Appendix F Homogeneous Stability & 1D / 3D Axisymmetric Cahn-Hilliard PDEs
+# ==============================================================================
+- id: run_params_appF_unstable
+  model: unnormalize_binary_params
+  inputs: {kf_norm: pde_1d_kf_test_unstable, kb_norm: pde_1d_kb_test_unstable, Vs_norm: Vs_over_w3_fig5b_small, w: w_ref, D_B: DB_ref}
+  outputs: {k_f: kf_appF_unstable, k_b: kb_appF_unstable}
+
+- id: run_disp_eqF1_printed
+  model: homogeneous_dispersion_eqF1
+  inputs: {D_B: DB_ref, w: w_ref, k_f: kf_appF_unstable, k_b: kb_appF_unstable, q: q_probe_disp}
+  outputs: {lam_q: lam_F1_printed, lam_q_norm: lam_F1_printed_norm, lam_max: lam_max_F1_printed}
+
+- id: run_disp_eqF1_corrected
+  model: homogeneous_dispersion_eqF1_corrected
+  inputs: {D_B: DB_ref, w: w_ref, k_f: kf_appF_unstable, k_b: kb_appF_unstable, q: q_probe_disp}
+  outputs: {lam_q: lam_F1_corr, lam_q_norm: lam_F1_corr_norm, lam_max: lam_max_F1_corr}
+
+- id: run_instab_eqF2_printed
+  model: homogeneous_instability_eqF2
+  inputs: {D_B: DB_ref, w: w_ref, k_f: kf_appF_unstable, k_b: kb_appF_unstable}
+  outputs: {margin: margin_F2_printed, max_rate_sum_norm: max_rate_sum_F2_printed}
+
+- id: run_instab_eqF2_corrected
+  model: homogeneous_instability_eqF2_corrected
+  inputs: {D_B: DB_ref, w: w_ref, k_f: kf_appF_unstable, k_b: kb_appF_unstable}
+  outputs: {margin: margin_F2_corr, max_rate_sum_norm: max_rate_sum_F2_corr}
+
+- id: run_pde_1d_unstable
+  model: binary_cahn_hilliard_1d_pde
+  inputs:
+    kf_norm: pde_1d_kf_test_unstable
+    kb_norm: pde_1d_kb_test_unstable
+    qw: pde_1d_qw_probe
+    L_over_w: pde_1d_L_over_w
+    eps: pde_1d_eps
+    T_k0: pde_1d_T_k0
+  outputs:
+    lam_mode_norm: lam_pde_1d_unstable
+    phi_min_mode: phi_min_pde_1d_mode
+    max_rate_sum_norm: max_rate_sum_pde_1d
+    w_num_over_w: w_num_pde_1d
+    gamma_over_bw: gamma_norm_pde_1d
+    phi_min_interface: phi_min_pde_1d_if
+
+- id: run_pde_1d_discrepancy
+  model: binary_cahn_hilliard_1d_pde
+  inputs:
+    kf_norm: pde_1d_kf_test_discrepancy
+    kb_norm: pde_1d_kb_test_discrepancy
+    qw: pde_1d_qw_probe
+    L_over_w: pde_1d_L_over_w
+    eps: pde_1d_eps
+    T_k0: pde_1d_T_k0
+  outputs:
+    lam_mode_norm: lam_pde_1d_discrepancy
+
+- id: run_pde_axi_fig5a_passive
+  model: binary_axisymmetric_pde_eq3b
+  inputs:
+    kf_norm: kf_zero_passive
+    kb_norm: kb_zero_passive
+    Vs_over_w3: Vs_over_w3_fig5b_small
+    phi_B_bar: phiB_bar_fig3a
+    aspect: axi_aspect_ratio
+    sep_frac: axi_sep_frac
+    dr_frac: axi_dr_frac
+    T_k0: axi_T_k0
+  outputs:
+    lam_norm: lam_axi_passive
+    V_bar_over_w3: Vbar_axi_passive
+    phi_min: phi_min_axi_passive
+
+- id: run_pde_axi_fig5c_active
+  model: binary_axisymmetric_pde_eq3b
+  inputs:
+    kf_norm: kf_over_k0_fig5c
+    kb_norm: kb_over_k0_fig5c
+    Vs_over_w3: Vs_over_w3_fig5b_small
+    phi_B_bar: phiB_bar_fig3a
+    aspect: axi_aspect_ratio
+    sep_frac: axi_sep_frac
+    dr_frac: axi_dr_frac
+    T_k0: axi_T_k0
+  outputs:
+    lam_norm: lam_axi_active
+    V_bar_over_w3: Vbar_axi_active
+    phi_min: phi_min_axi_active
+
+# ==============================================================================
+# 4. Section IV: Ternary Autocatalytic Droplets & Active Cores (Eqs. 22-25, App. B, G)
+# ==============================================================================
+- id: run_params_fig7_nocore
+  model: unnormalize_ternary_params
+  inputs:
+    kf_norm: kf_zero_autocat
+    kb_norm: kb_over_k0_fig7
+    k_norm: k_over_k0_fig7
+    Vs_norm: Vs_over_w3_fig7
+    Q_norm: Q_zero_nocore
+    psi: psi_autocat
+    w: w_ref
+    D_B: DB_ref
+  outputs:
+    k_f: kf_fig7
+    k_b: kb_fig7
+    k: k_fig7
+    k_s: ks_fig7
+    V_s: Vs_fig7
+    Q: Q_zero_fig7
+    gamma_beta_continuum: gb_cont_fig7
+    gamma_beta_capillary: gb_cap_fig7
+
+- id: run_params_fig8b_core300
+  model: unnormalize_ternary_params
+  inputs:
+    kf_norm: kf_zero_autocat
+    kb_norm: kb_over_k0_fig7
+    k_norm: k_over_k0_fig7
+    Vs_norm: Vs_over_w3_fig7
+    Q_norm: Q_over_w3k0_fig7
+    psi: psi_autocat
+    w: w_ref
+    D_B: DB_ref
+  outputs:
+    Q: Q_300_fig7
+
+- id: run_params_fig10a_core1000
+  model: unnormalize_ternary_params
+  inputs:
+    kf_norm: kf_zero_autocat
+    kb_norm: kb_over_k0_fig7
+    k_norm: k_over_k0_fig7
+    Vs_norm: Vs_over_w3_fig7
+    Q_norm: Q1_over_w3k0_fig10a
+    psi: psi_autocat
+    w: w_ref
+    D_B: DB_ref
+  outputs:
+    Q: Q_1000_fig10a
+
+- id: run_effective_ks_fig7
+  model: effective_rate_ks
+  inputs: {k_f: kf_fig7, k: k_fig7, psi: psi_autocat}
+  outputs: {k_s: ks_fig7_direct}
+
+- id: run_reaction_flux_eq4
+  model: reaction_flux_eq4
+  inputs: {k_f: kf_fig7, k_b: kb_fig7, k: k_fig7, phi_A: phiA_probe, phi_B: phiB_probe}
+  outputs: {s: s_eq4_probe}
+
+- id: run_autocat_volume_eq23_fig7
+  model: autocatalytic_volume_eq23
+  inputs: {V_s: Vs_fig7, psi: psi_autocat, phibar: phibar_fig7a, k_b: kb_fig7, k: k_fig7}
+  outputs: {V_bar: Vbar_eq23_fig7, R_bar: Rbar_eq23_fig7}
+
+- id: run_autocat_volume_quad_appB
+  model: autocatalytic_volume_quad_appB
+  inputs: {V_s: Vs_fig7, psi: psi_autocat, phibar: phibar_fig7a, k_b: kb_fig7, k: k_fig7, Q: Q_300_fig7, D_B: DB_ref, gamma_beta: gb_cap_fig7}
+  outputs: {V_bar: Vbar_quad_fig7, delta_V: dV_quad_fig7}
+
+- id: run_autocat_volume_eqB1_printed
+  model: autocatalytic_volume_eqB1
+  inputs: {V_s: Vs_fig7, psi: psi_autocat, phibar: phibar_fig7a, k_b: kb_fig7, k: k_fig7, Q: Q_300_fig7, D_B: DB_ref, gamma_beta: gb_cap_fig7}
+  outputs: {V_bar: Vbar_B1_printed_fig7, delta_V: dV_B1_printed_fig7}
+
+- id: run_autocat_volume_eqB1_corrected
+  model: autocatalytic_volume_eqB1_corrected
+  inputs: {V_s: Vs_fig7, psi: psi_autocat, phibar: phibar_fig7a, k_b: kb_fig7, k: k_fig7, Q: Q_300_fig7, D_B: DB_ref, gamma_beta: gb_cap_fig7}
+  outputs: {V_bar: Vbar_B1_corr_fig7, delta_V: dV_B1_corr_fig7}
+
+- id: run_autocat_Rcrit_fig7
+  model: autocatalytic_critical_radius
+  inputs: {gamma_beta: gb_cap_fig7, phibar: phibar_fig7a, k_b: kb_fig7, k: k_fig7}
+  outputs: {R_crit: Rcrit_autocat_fig7}
+
+- id: run_autocat_Qc_fig7
+  model: autocatalytic_nucleation_Qc
+  inputs: {D_B: DB_ref, gamma_beta: gb_cap_fig7, k_b: kb_fig7, k: k_fig7}
+  outputs: {Q_c: Qc_autocat_fig7}
+
+# Full numerical autocatalytic solvers for Figs. 8(a), 8(b), 10(a), and 10(b)
+- id: run_fig8a_autocat
+  model: autocatalytic_emulsion_solver
+  inputs:
+    D_B: DB_ref
+    gamma_beta: gb_cap_fig7
+    psi: psi_autocat
+    k_f: kf_fig7
+    k_b: kb_fig7
+    k: k_fig7
+    phibar: phibar_fig7a
+    V_s: Vs_fig7
+    Q_1: Q_zero_fig7
+    Q_2: Q_zero_fig7
+  outputs:
+    R_single_bar: R_single_fig8a
+    R1_pair: R1_pair_fig8a
+    lam_pair: lam_pair_fig8a
+    max_stable_droplets: fig8a_max_stable_pred
+
+- id: run_fig8b_autocat
+  model: autocatalytic_emulsion_solver
+  inputs:
+    D_B: DB_ref
+    gamma_beta: gb_cap_fig7
+    psi: psi_autocat
+    k_f: kf_fig7
+    k_b: kb_fig7
+    k: k_fig7
+    phibar: phibar_fig7a
+    V_s: Vs_fig7
+    Q_1: Q_300_fig7
+    Q_2: Q_300_fig7
+  outputs:
+    R1_pair: R1_pair_fig8b
+    lam_pair: lam_pair_fig8b
+    n_stable_states: fig8b_n_stable_pred
+    n_crit_radii: fig8b_n_crit_pred
+
+- id: run_fig10a_autocat
+  model: autocatalytic_emulsion_solver
+  inputs:
+    D_B: DB_ref
+    gamma_beta: gb_cap_fig7
+    psi: psi_autocat
+    k_f: kf_fig7
+    k_b: kb_fig7
+    k: k_fig7
+    phibar: phibar_fig7a
+    V_s: Vs_fig7
+    Q_1: Q_1000_fig10a
+    Q_2: Q_300_fig7
+  outputs:
+    R1_pair: R1_pair_fig10a
+    R2_pair: R2_pair_fig10a
+    V1_over_V2: V1_over_V2_fig10a
+    lam_pair: lam_pair_fig10a
+    n_total_fixed_points: fig10a_n_fp_pred
+
+- id: run_params_fig10b_core100
+  model: unnormalize_ternary_params
+  inputs:
+    kf_norm: kf_zero_autocat
+    kb_norm: kb_over_k0_fig7
+    k_norm: k_over_k0_fig7
+    Vs_norm: Vs_over_w3_fig7
+    Q_norm: Q1_below_Qstab_fig10b
+    psi: psi_autocat
+    w: w_ref
+    D_B: DB_ref
+  outputs:
+    Q: Q_100_fig10b
+
+- id: run_fig10b_one_below_Qstab
+  model: autocatalytic_emulsion_solver
+  inputs:
+    D_B: DB_ref
+    gamma_beta: gb_cap_fig7
+    psi: psi_autocat
+    k_f: kf_fig7
+    k_b: kb_fig7
+    k: k_fig7
+    phibar: phibar_fig7a
+    V_s: Vs_fig7
+    Q_1: Q_100_fig10b
+    Q_2: Q_300_fig7
+  outputs:
+    max_stable_droplets: fig10b_max_stable_pred
+
+# Sec. IV analytical flux, growth, coarsening rate, and stability threshold evaluations
+- id: run_surface_flux_autocat_fig7
+  model: surface_flux_small_R
+  inputs: {R: Rbar_eq23_fig7, D_B: DB_ref, gamma_beta: gb_cap_fig7, phi_0_B: phi0B_probe_autocat}
+  outputs: {J: J_smallR_autocat_fig7}
+
+- id: run_coarse_grained_eq9_12_fig7
+  model: coarse_grained_droplet_eq9_12
+  inputs:
+    R: R1_pair_fig8b
+    psi: psi_autocat
+    D_B: DB_ref
+    gamma_beta: gb_cap_fig7
+    k_f: kf_fig7
+    k_b: kb_fig7
+    k: k_fig7
+    Q: Q_300_fig7
+    phi_0_A: phi0A_probe
+    phi_0_B: phi0B_probe_autocat
+    phibar: phibar_fig7a
+    V_s: Vs_fig7
+    N: N_pair
+  outputs: {dV_dt: dVdt_eq9_fig7, phi_0_A_cons: phi0A_eq12_fig7}
+
+- id: run_autocat_growth_eq22_fig7
+  model: autocatalytic_growth_eq22
+  inputs:
+    R: R1_pair_fig8b
+    D_B: DB_ref
+    psi: psi_autocat
+    phi_0_B: phi0B_probe_autocat
+    phi_0_A: phi0A_eq12_fig7
+    gamma_beta: gb_cap_fig7
+    k_s: ks_fig7
+    k_b: kb_fig7
+    Q: Q_300_fig7
+  outputs: {dV_dt: dVdt_eq22_fig7, dR_dt: dRdt_eq22_fig7}
+
+- id: run_ternary_rate_eqG1_fig7
+  model: ternary_coarsening_rate_eqG1
+  inputs: {D_B: DB_ref, gamma_beta: gb_cap_fig7, psi: psi_autocat, V_bar: Vbar_eq23_fig7, J: J_smallR_autocat_fig7, Q: Q_300_fig7, k_b: kb_fig7, k_s: ks_fig7}
+  outputs: {lam: lam_G1_fig7}
+
+- id: run_ternary_rate_eq24_printed_fig7
+  model: ternary_coarsening_rate_eq24
+  inputs: {D_B: DB_ref, gamma_beta: gb_cap_fig7, psi: psi_autocat, V_bar: Vbar_eq23_fig7, J: J_smallR_autocat_fig7, Q: Q_300_fig7, k_b: kb_fig7, k: k_fig7}
+  outputs: {lam: lam_24_printed_fig7}
+
+- id: run_ternary_rate_eq24_corrected_fig7
+  model: ternary_coarsening_rate_eq24_corrected
+  inputs: {D_B: DB_ref, gamma_beta: gb_cap_fig7, psi: psi_autocat, V_bar: Vbar_eq23_fig7, J: J_smallR_autocat_fig7, Q: Q_300_fig7, k_b: kb_fig7, k_s: ks_fig7}
+  outputs: {lam: lam_24_corr_fig7}
+
+- id: run_Qstab_eq25_fig9b
+  model: autocatalytic_stability_Qstab_eq25
+  inputs: {D_B: DB_ref, k_s: ks_fig7, R: Rbar_eq23_fig7, gamma_beta: gb_cap_fig7, phi_0_B: phi0B_probe_autocat, psi: psi_autocat, k_b: kb_fig7}
+  outputs: {Q_stab: Qstab_eq25_fig9b, Q_stab_inf: Qstab_inf_eq25_fig9b}
+
+- id: run_unequal_cores_ratio_fig10a
+  model: unequal_cores_volume_ratio
+  inputs: {Q_1: Q_1000_fig10a, Q_2: Q_300_fig7}
+  outputs: {V1_over_V2: V1_over_V2_zero_gamma_fig10a}
+
+# ==============================================================================
+# 5. Digitized Figure Curve & Marker Sweeps (Figs. 3-10)
+# ==============================================================================
+
+# --- Fig. 3 (p. 5) ---
+- id: run_fig3a_passive_sweep
+  model: binary_growth_inf_norm
+  inputs: {k_f_norm: kf_zero_passive, k_b_norm: kb_zero_passive, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {R_norm: fig3a_passive_data}
+  outputs: {dR_dt_norm: fig3a_passive_pred}
+
+- id: run_fig3a_active_sweep
+  model: binary_growth_inf_norm
+  inputs: {k_f_norm: kf_over_k0_fig3a, k_b_norm: kb_over_k0_fig3a, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {R_norm: fig3a_active_data}
+  outputs: {dR_dt_norm: fig3a_active_pred}
+
+- id: run_fig3b_Rbar_sweep
+  model: binary_ss_inf_norm
+  inputs: {kb_over_kf: kb_over_kf_fig3b, w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig3b_Rbar_data}
+  outputs:
+    R_bar_norm: fig3b_Rbar_exact_pred
+    R_bar_eq16_norm: fig3b_Rbar_eq16_pred
+
+- id: run_fig3b_Rcrit_sweep
+  model: binary_ss_inf_norm
+  inputs: {kb_over_kf: kb_over_kf_fig3b, w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig3b_Rcrit_data}
+  outputs:
+    R_crit_norm: fig3b_Rcrit_exact_pred
+    R_crit_approx_norm: fig3b_Rcrit_approx_pred
+
+- id: run_fig3b_bifurcation_sweep
+  model: binary_ss_inf_norm
+  inputs: {kb_over_kf: kb_over_kf_fig3b, w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig3b_bifurcation_data}
+  outputs:
+    R_star_norm: fig3b_Rstar_pred
+
+- id: run_fig3c_passive_sweep
+  model: binary_growth_fin_norm
+  inputs: {k_f_norm: kf_zero_passive, k_b_norm: kb_zero_passive, phi_B_bar: phiB_bar_fig3a, Vs_norm: Vs_over_w3_fig3cd, w: w_ref, D_B: DB_ref}
+  sweep: {R_norm: fig3c_passive_data}
+  outputs: {dR_dt_norm: fig3c_passive_pred}
+
+- id: run_fig3c_active_sweep
+  model: binary_growth_fin_norm
+  inputs: {k_f_norm: kf_over_k0_fig3a, k_b_norm: kb_over_k0_fig3a, phi_B_bar: phiB_bar_fig3a, Vs_norm: Vs_over_w3_fig3cd, w: w_ref, D_B: DB_ref}
+  sweep: {R_norm: fig3c_active_data}
+  outputs: {dR_dt_norm: fig3c_active_pred}
+
+- id: run_fig3d_Rbar_sweep
+  model: binary_ss_fin_norm
+  inputs: {kb_over_kf: kb_over_kf_fig3b, Vs_norm: Vs_over_w3_fig3cd, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig3d_Rbar_data}
+  outputs: {R_bar_norm: fig3d_Rbar_pred}
+
+- id: run_fig3d_Rcrit_sweep
+  model: binary_ss_fin_norm
+  inputs: {kb_over_kf: kb_over_kf_fig3b, Vs_norm: Vs_over_w3_fig3cd, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig3d_Rcrit_data}
+  outputs: {R_crit_norm: fig3d_Rcrit_pred}
+
+# --- Fig. 4 (p. 6) ---
+- id: run_fig4a_nullcline_sweep
+  model: binary_nullcline_norm
+  inputs: {k_f_norm: kf_zero_passive, kb_over_kf: kb_over_kf_fig3b, Vs_norm: Vs_over_w3_fig4, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig4a_nullcline_R1_data}
+  outputs:
+    R2_nullcline_norm: fig4a_nullcline_R1_pred
+    R2_nullcline_smallV_norm: fig4a_nullcline_R1_smallV_pred
+
+- id: run_fig4a_sym_fp_sweep
+  model: binary_nullcline_norm
+  inputs: {k_f_norm: kf_zero_passive, kb_over_kf: kb_over_kf_fig3b, Vs_norm: Vs_over_w3_fig4, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig4a_sym_fp_data}
+  outputs:
+    R_sym_norm: fig4a_sym_fp_pred
+    R_sym_smallV_norm: fig4a_sym_fp_smallV_pred
+
+- id: run_fig4b_nullcline_sweep
+  model: binary_nullcline_norm
+  inputs: {k_f_norm: kf_over_k0_fig4b, kb_over_kf: kb_over_kf_fig3b, Vs_norm: Vs_over_w3_fig4, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig4b_nullcline_R1_data}
+  outputs: {R2_nullcline_norm: fig4b_nullcline_R1_pred}
+
+- id: run_fig4b_sym_fp_sweep
+  model: binary_nullcline_norm
+  inputs: {k_f_norm: kf_over_k0_fig4b, kb_over_kf: kb_over_kf_fig3b, Vs_norm: Vs_over_w3_fig4, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig4b_sym_fp_data}
+  outputs: {R_sym_norm: fig4b_sym_fp_pred}
+
+# --- Fig. 5 (p. 7) ---
+- id: run_fig5b_eq18_line_sweep
+  model: passive_coarsening_vs_V_norm
+  inputs: {w: w_ref, D_B: DB_ref}
+  sweep: {V_bar_norm: fig5b_eq18_line_data}
+  outputs: {lam_norm: fig5b_eq18_line_pred}
+
+- id: run_fig5b_pde_small_sweep
+  model: passive_coarsening_vs_V_norm
+  inputs: {w: w_ref, D_B: DB_ref}
+  sweep: {V_bar_norm: fig5b_pde_small_data}
+  outputs: {lam_norm: fig5b_eq18_at_pde_small}
+
+- id: run_fig5b_pde_large_sweep
+  model: passive_coarsening_vs_V_norm
+  inputs: {w: w_ref, D_B: DB_ref}
+  sweep: {V_bar_norm: fig5b_pde_large_data}
+  outputs: {lam_norm: fig5b_eq18_at_pde_large}
+
+- id: run_fig5d_eq18_20_line_sweep
+  model: active_coarsening_vs_kb_norm
+  inputs: {kf_over_kb: kf_over_kb_fig5d, Vs_norm: Vs_over_w3_fig5b_small, N: N_pair, w: w_ref, D_B: DB_ref}
+  sweep: {k_b_norm: fig5d_eq18_20_line_data}
+  outputs: {lam_norm: fig5d_eq18_20_line_pred}
+
+- id: run_fig5d_pde_markers_sweep
+  model: active_coarsening_vs_kb_norm
+  inputs: {kf_over_kb: kf_over_kb_fig5d, Vs_norm: Vs_over_w3_fig5b_small, N: N_pair, w: w_ref, D_B: DB_ref}
+  sweep: {k_b_norm: fig5d_pde_markers_data}
+  outputs: {lam_norm: fig5d_eq18_20_at_pde}
+
+# --- Fig. 6 (p. 7) ---
+- id: run_fig6a_Nmax_sweep
+  model: binary_ss_fin_norm
+  inputs: {kb_over_kf: kb_over_kf_fig3b, Vs_norm: Vs_over_w3_fig6a, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig6a_Nmax_data}
+  outputs:
+    N_max: fig6a_Nmax_pred
+    N_max_chi1: fig6a_Nmax_eq21_pred
+
+- id: run_fig6a_chi1_sweep
+  model: binary_ss_fin_norm
+  inputs: {kb_over_kf: kb_over_kf_fig3b, Vs_norm: Vs_over_w3_fig6a, phi_B_bar: phiB_bar_fig3a, w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig6a_chi1_data}
+  outputs: {N_max_chi1: fig6a_chi1_pred}
+
+- id: run_fig6a_kfc_sweep
+  model: binary_kfc_vs_N_norm
+  inputs: {kb_over_kf: kb_over_kf_fig3b, w: w_ref, D_B: DB_ref}
+  sweep: {N: fig6a_kfc_data}
+  outputs: {k_f_c_norm: fig6a_kfc_pred}
+
+- id: run_fig6b_Bdroplet_upper_sweep
+  model: fig6b_boundaries_norm
+  inputs: {w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig6b_Bdroplet_upper_data}
+  outputs: {kb_Bdroplet_upper_norm: fig6b_Bdroplet_upper_pred}
+
+- id: run_fig6b_Bdroplet_lower_sweep
+  model: fig6b_boundaries_norm
+  inputs: {w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig6b_Bdroplet_lower_data}
+  outputs: {kb_Bdroplet_lower_norm: fig6b_Bdroplet_lower_pred}
+
+- id: run_fig6b_spinodal_upper_printed_sweep
+  model: fig6b_boundaries_norm
+  inputs: {w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig6b_spinodal_upper_data}
+  outputs: {kb_spinodal_upper_norm: fig6b_spinodal_upper_printed_pred}
+
+- id: run_fig6b_spinodal_upper_corrected_sweep
+  model: fig6b_boundaries_corrected_norm
+  inputs: {w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig6b_spinodal_upper_data}
+  outputs: {kb_spinodal_upper_norm: fig6b_spinodal_upper_corrected_pred}
+
+- id: run_fig6b_spinodal_lower_printed_sweep
+  model: fig6b_boundaries_norm
+  inputs: {w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig6b_spinodal_lower_data}
+  outputs: {kb_spinodal_lower_norm: fig6b_spinodal_lower_printed_pred}
+
+- id: run_fig6b_spinodal_lower_corrected_sweep
+  model: fig6b_boundaries_corrected_norm
+  inputs: {w: w_ref, D_B: DB_ref}
+  sweep: {k_f_norm: fig6b_spinodal_lower_data}
+  outputs: {kb_spinodal_lower_norm: fig6b_spinodal_lower_corrected_pred}
+
+# --- Fig. 7 (p. 8) ---
+- id: run_fig7a_inf_sweep
+  model: autocat_growth_norm_fig7a
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {R_norm: fig7a_inf_data}
+  outputs: {dR_dt_inf_norm: fig7a_inf_pred}
+
+- id: run_fig7a_fin_sweep
+  model: autocat_growth_norm_fig7a
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {R_norm: fig7a_fin_data}
+  outputs:
+    dR_dt_full_norm: fig7a_fin_full_pred
+    dR_dt_noJ_norm: fig7a_fin_noJ_pred
+
+- id: run_fig7a_core_sweep
+  model: autocat_growth_norm_fig7a
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q_norm: Q_over_w3k0_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {R_norm: fig7a_core_data}
+  outputs:
+    dR_dt_full_norm: fig7a_core_full_pred
+    dR_dt_noJ_norm: fig7a_core_noJ_pred
+
+- id: run_fig7b_inf_Rcrit_sweep
+  model: autocat_bifurc_norm_fig7b
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, Vs_norm: Vs_over_w3_fig7, Q_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {phibar: fig7b_inf_Rcrit_data}
+  outputs: {R_crit_inf_norm: fig7b_inf_Rcrit_pred}
+
+- id: run_fig7b_fin_Rbar_sweep
+  model: autocat_bifurc_norm_fig7b
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, Vs_norm: Vs_over_w3_fig7, Q_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {phibar: fig7b_fin_Rbar_data}
+  outputs:
+    R_bar_noJ_norm: fig7b_fin_Rbar_noJ_pred
+    R_bar_full_norm: fig7b_fin_Rbar_full_pred
+    R_bar_eq23_norm: fig7b_fin_Rbar_eq23_pred
+
+- id: run_fig7b_fin_Rcrit_sweep
+  model: autocat_bifurc_norm_fig7b
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, Vs_norm: Vs_over_w3_fig7, Q_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {phibar: fig7b_fin_Rcrit_data}
+  outputs:
+    R_crit_fin_norm: fig7b_fin_Rcrit_pred
+    R_crit_inf_norm: fig7b_fin_Rcrit_inf_pred
+
+- id: run_fig7b_core_Rbar_sweep
+  model: autocat_bifurc_norm_fig7b
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, Vs_norm: Vs_over_w3_fig7, Q_norm: Q_over_w3k0_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {phibar: fig7b_core_Rbar_data}
+  outputs:
+    R_bar_quad_appB_norm: fig7b_core_Rbar_quad_pred
+    R_bar_eqB1_norm: fig7b_core_Rbar_eqB1_printed_pred
+    R_bar_full_norm: fig7b_core_Rbar_full_pred
+    R_bar_eq23_norm: fig7b_core_Rbar_eq23_pred
+
+- id: run_fig7b_core_Rbar_eqB1_corr_sweep
+  model: autocat_bifurc_eqB1_corrected_norm
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, Vs_norm: Vs_over_w3_fig7, Q_norm: Q_over_w3k0_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {phibar: fig7b_core_Rbar_data}
+  outputs:
+    R_bar_eqB1_norm: fig7b_core_Rbar_eqB1_corr_pred
+
+# --- Fig. 8 (p. 8) ---
+- id: run_fig8a_nullcline_sweep
+  model: autocat_nullcline_norm
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q1_norm: Q_zero_nocore, Q2_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig8a_nullcline_R1_data}
+  outputs:
+    R2_null1_noJ_norm: fig8a_nullcline_R1_noJ_pred
+    R2_null1_full_norm: fig8a_nullcline_R1_full_pred
+
+- id: run_fig8a_sym_fp_sweep
+  model: autocat_nullcline_norm
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q1_norm: Q_zero_nocore, Q2_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig8a_sym_fp_data}
+  outputs:
+    R2_fp_noJ_norm: fig8a_sym_fp_noJ_pred
+    R2_fp_full_norm: fig8a_sym_fp_full_pred
+
+- id: run_fig8b_nullcline_R1_sweep
+  model: autocat_nullcline_norm
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q1_norm: Q_over_w3k0_fig7, Q2_norm: Q_over_w3k0_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig8b_nullcline_R1_data}
+  outputs:
+    R2_null1_noJ_norm: fig8b_nullcline_R1_noJ_pred
+    R2_null1_full_norm: fig8b_nullcline_R1_full_pred
+
+- id: run_fig8b_nullcline_R2_sweep
+  model: autocat_nullcline_norm
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q1_norm: Q_over_w3k0_fig7, Q2_norm: Q_over_w3k0_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig8b_nullcline_R2_data}
+  outputs:
+    R2_null2_noJ_norm: fig8b_nullcline_R2_noJ_pred
+    R2_null2_full_norm: fig8b_nullcline_R2_full_pred
+
+- id: run_fig8b_sym_fp_sweep
+  model: autocat_nullcline_norm
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q1_norm: Q_over_w3k0_fig7, Q2_norm: Q_over_w3k0_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig8b_sym_fp_data}
+  outputs:
+    R2_fp_noJ_norm: fig8b_sym_fp_noJ_pred
+    R2_fp_full_norm: fig8b_sym_fp_full_pred
+
+# --- Fig. 9 (p. 9) ---
+- id: run_fig9a_eq24_small_sweep
+  model: ternary_coarsening_norm_fig9a
+  inputs: {k_norm: k_over_k0_fig9a, k_b_norm: kb_over_k0_fig9a, psi: psi_autocat, Q_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {V_bar_norm: fig9a_eq24_small_data}
+  outputs:
+    lam_small_cont_norm: fig9a_eq24_small_cont_pred
+    lam_small_cap_norm: fig9a_eq24_small_cap_pred
+
+- id: run_fig9a_eq24_large_sweep
+  model: ternary_coarsening_norm_fig9a
+  inputs: {k_norm: k_over_k0_fig9a, k_b_norm: kb_over_k0_fig9a, psi: psi_autocat, Q_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {V_bar_norm: fig9a_eq24_large_data}
+  outputs:
+    lam_large_cont_norm: fig9a_eq24_large_cont_pred
+    lam_large_cap_norm: fig9a_eq24_large_cap_pred
+
+- id: run_fig9a_pde_small_sweep
+  model: ternary_coarsening_norm_fig9a
+  inputs: {k_norm: k_over_k0_fig9a, k_b_norm: kb_over_k0_fig9a, psi: psi_autocat, Q_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {V_bar_norm: fig9a_pde_small_data}
+  outputs: {lam_small_cont_norm: fig9a_eq24_at_pde_small}
+
+- id: run_fig9a_pde_large_sweep
+  model: ternary_coarsening_norm_fig9a
+  inputs: {k_norm: k_over_k0_fig9a, k_b_norm: kb_over_k0_fig9a, psi: psi_autocat, Q_norm: Q_zero_nocore, w: w_ref, D_B: DB_ref}
+  sweep: {V_bar_norm: fig9a_pde_large_data}
+  outputs: {lam_large_cont_norm: fig9a_eq24_at_pde_large}
+
+- id: run_fig9b_Qstab_sweep
+  model: autocat_stability_norm_fig9b
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, Vs_norm: Vs_over_w3_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {phibar: fig9b_Qstab_line_data}
+  outputs:
+    Qstab_cap_norm: fig9b_Qstab_cap_pred
+    Qstab_cont_norm: fig9b_Qstab_cont_pred
+    Qstab_eq24_printed_norm: fig9b_Qstab_eq24_printed_pred
+
+- id: run_fig9b_multi_boundary_sweep
+  model: autocat_stability_norm_fig9b
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, Vs_norm: Vs_over_w3_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {phibar: fig9b_multi_boundary_data}
+  outputs:
+    Qstab_cap_norm: fig9b_multi_eq25_pred
+    Q_multi_full_norm: fig9b_multi_full_pred
+    Q_multi_no_kAB_norm: fig9b_multi_no_kAB_pred
+
+- id: run_fig9b_droplet_boundary_sweep
+  model: autocat_stability_norm_fig9b
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, Vs_norm: Vs_over_w3_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {phibar: fig9b_droplet_boundary_data}
+  outputs:
+    Q_droplet_full_norm: fig9b_droplet_full_pred
+    Q_droplet_noJ_norm: fig9b_droplet_noJ_pred
+
+# --- Fig. 10 (p. 10) ---
+- id: run_fig10a_nullcline_R1_sweep
+  model: autocat_nullcline_norm
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q1_norm: Q1_over_w3k0_fig10a, Q2_norm: Q_over_w3k0_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig10a_nullcline_R1_data}
+  outputs:
+    R2_null1_noJ_norm: fig10a_nullcline_R1_noJ_pred
+    R2_null1_full_norm: fig10a_nullcline_R1_full_pred
+
+- id: run_fig10a_nullcline_R2_sweep
+  model: autocat_nullcline_norm
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q1_norm: Q1_over_w3k0_fig10a, Q2_norm: Q_over_w3k0_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig10a_nullcline_R2_data}
+  outputs:
+    R2_null2_noJ_norm: fig10a_nullcline_R2_noJ_pred
+    R2_null2_full_norm: fig10a_nullcline_R2_full_pred
+
+- id: run_fig10a_fixed_point_sweep
+  model: autocat_nullcline_norm
+  inputs: {k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, Q1_norm: Q1_over_w3k0_fig10a, Q2_norm: Q_over_w3k0_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {R1_norm: fig10a_fixed_point_data}
+  outputs:
+    R2_fp_noJ_norm: fig10a_fp_noJ_pred
+    R2_fp_full_norm: fig10a_fp_full_pred
+
+- id: run_fig10b_V1_sweep
+  model: unequal_cores_norm_fig10b
+  inputs: {Q2_norm: Q_over_w3k0_fig7, k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {Q1_norm: fig10b_V1_data}
+  outputs:
+    V1_noJ_norm: fig10b_V1_noJ_pred
+    V1_full_norm: fig10b_V1_full_pred
+    V1_zerogamma_norm: fig10b_V1_zerogamma_pred
+
+- id: run_fig10b_V2_sweep
+  model: unequal_cores_norm_fig10b
+  inputs: {Q2_norm: Q_over_w3k0_fig7, k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {Q1_norm: fig10b_V2_data}
+  outputs:
+    V2_noJ_norm: fig10b_V2_noJ_pred
+    V2_full_norm: fig10b_V2_full_pred
+    V2_zerogamma_norm: fig10b_V2_zerogamma_pred
+
+- id: run_fig10b_Vtot_sweep
+  model: unequal_cores_norm_fig10b
+  inputs: {Q2_norm: Q_over_w3k0_fig7, k_norm: k_over_k0_fig7, k_b_norm: kb_over_k0_fig7, psi: psi_autocat, phibar: phibar_fig7a, Vs_norm: Vs_over_w3_fig7, w: w_ref, D_B: DB_ref}
+  sweep: {Q1_norm: fig10b_Vtot_data}
+  outputs:
+    Vtot_noJ_norm: fig10b_Vtot_noJ_pred
+    Vtot_full_norm: fig10b_Vtot_full_pred
+    Vtot_eq23_norm: fig10b_Vtot_eq23_pred

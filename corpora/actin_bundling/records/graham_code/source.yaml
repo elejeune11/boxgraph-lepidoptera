@@ -1,0 +1,91 @@
+id: graham_code
+kind: software
+title: "VASPDroplet: Python notebook for 2D/3D VASP droplet-actin ring free-energy minimization (Graham et al., 2023)"
+authors:
+  - Aravind Chandrasekaran
+year: 2023
+file: corpus/actin_bundling/code/graham_code
+url: https://github.com/achansek/VASPDroplet
+version: "sha256:76ddfc66d1703d2d385ae8a785e26981ffe89925453e43b59c0d5a644d906a5f"
+licence: none stated
+language: Python
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "careful_v3"
+  date: "2026-11-24"
+notes: >
+  Full code audit and live BoxGraph adapter verification of `corpus/actin_bundling/code/graham_code`
+  (`VASPDroplet_simulate.ipynb`, 1026 lines JSON, 14 cells, Python 3.9.13 kernelspec; `Readme.md`,
+  1 line; GitHub https://github.com/achansek/VASPDroplet, no licence stated), the released simulation
+  code accompanying Graham et al., Nature Physics 19, 574-585 (2023) (`graham2023`). Entry points in
+  the notebook are `SystemParams` (cell 3), geometry/stiffness/wetting helpers `areEqual`, `getveccoord`,
+  `getbundleprops`, `getsurfaceTension`, `getkbend`, `getlinefracinsidedroplet` (cells 5-7), energy
+  functions `getsurfaceF`, `getfilamentF`, `getfilamentmechF`, `getwettingF2`, `gettotalenergy` (cell 9),
+  initialization helpers `initializestraight2`, `extendstraight`, `addrandomnoise` (cell 11), and
+  top-level drivers `generatering()` (cell 15) and `simulate()` (cell 17, invoked via broken sample call
+  `main.simulate(...)` in cell 13).
+
+  Parameters and cross-links: recorded 35 parameters and structural constants written in
+  `VASPDroplet_simulate.ipynb` plus 15 scalar parameters and 14 digitized figure curves (121 points:
+  Extended Data Fig. 5c, Fig. 5c surface energy, Fig. 4f, Fig. 4g x4, Extended Data Fig. 7 x5, Fig. 4h x2)
+  copied from `graham2023` via `from_source: graham2023` / `from_datum` (41 cross-links verified via
+  BoxGraph synthesis `_cited_values`). Built 8 live `software: true` adapter models dynamically loading
+  `VASPDroplet_simulate.ipynb` via stdlib `json` and executing the notebook's unmodified physics functions
+  (`notebook_wetting_tension`, `notebook_bundle_kbend`, `notebook_surface_energy`,
+  `notebook_ring_discretization`, `notebook_wetted_fraction_check`, `notebook_droplet_ring_slsqp`,
+  diagnostic variant `notebook_droplet_ring_slsqp_nfil_plus2`, and `notebook_critical_ring_thickness`),
+  with 40 runs, 31 comparisons, and 4 converged numerical refinements (`settles: True`).
+
+  What the code reproduces and settles from `graham2023`:
+  (1) Settles `q_eqS2_stretch_bend_misprint`: `getfilamentmechF()` (lines 417-433) implements
+  `kstr * (cyllen - lcyl)^2` and `kbend * (1 - cos theta)`, confirming SI Eq. S2 omitted `- L_cyl` and
+  printed `+cos theta` by mistake.
+  (2) Settles `q_eqS4_S5_wetting_sign_inverted`: `getsurfaceTension()` (lines 161-168) implements
+  `Delta = (gamma_AVD - gamma_AVR)/2` and `Delta * tanh(64*(e - 1)) + Delta + gamma_AVR`, confirming
+  SI Eqs. S4-S5 swapped `gamma_AVR` and `gamma_AVD`; with Table 1's `gamma_AVD = 1e4 pN/nm`, live
+  `getsurfaceTension()` reproduces Extended Data Fig. 5c (6/6 points, `cmp_edfig5c_ke64_paper_gavd`).
+  (3) Confirms `q_fig5c_unit_mismatch`: live `getsurfaceF()` fails Fig. 5c surface energy by 1000x at
+  literal SI Section 2.11 `R = 1 um` (0/10) and reproduces all 10/10 points at consistent `R = 1 nm`.
+  (4) Settles `q_unstated_kbt_and_temperature` (`kflex_rigidity_f = 7.29e-26 N m^2 = 72900 pN nm^2` from
+  Gittes 1993 on line 86, unused `kBT = 4.11 pN nm` on line 196, and `4.1 pN nm` on line 697),
+  `q_unstated_wetting_quadrature_N` (`discretize_len = lcyl / 4`, N = 4 sub-segments on line 483),
+  `q_extension_step_100nm_vs_01D` (`lcyl = 0.1 * D` when `lcylscalewithD = True` on line 895; `rcyl = 5 nm`
+  at `Nfil = 1` on line 879 then `15 * Nfil` on line 924), and `q_audit_unstated_diffraction_limit_and_wetting_sweep_params`
+  item (2) (off-by-one `Nbeads = 12` gives 11 segments = 1.1 um with 10/11 = 0.9091 wetted fraction,
+  matching Extended Data Fig. 6A's 0.9092).
+  (5) Major breakthrough settling `q_digitize_slsqp_systematic_ar_discrepancy`: `generatering()` has TWO
+  off-by-one bugs (`Nbeads = int(D*1e3/lcyl) = 10` beads = 9 segments = 0.9*D on line 722, plus only 20
+  extensions over `range(0, 21)` on lines 725-744), producing an open arc of 29 segments (`L_final = 2.9*D`,
+  not `3.1*D`) with `lcyl = 0.1*D` (not fixed `100 nm`). Running the live notebook with `2.9*D` and
+  `lcyl = 0.1*D` immediately removes both the 2x underprediction and the discontinuous AR = 1.93-2.19
+  buckling overshoot of `graham2023`'s literal `3.1*D` model, matching the high-T_ring plateaus across
+  Fig. 4f (`T = 315-480 nm`), Fig. 4g (`D = 1, 2 um`), and Extended Data Fig. 7 (whereas fixed `lcyl = 100 nm`
+  at `D = 2 um, gamma_I = 1 pN` severely overshoots to AR = 1.89 vs 1.701).
+  (6) Furthermore, IEEE-754 floating-point truncation in `int(D*1e3 / (D*0.1*1e3)) = int(9.999999999999998) = 9`
+  produces `Nbeads = 29` (`L_final = 2.8*D`) specifically at `D = 0.75, 1.5, 1.75, 3.0, 3.5 um`, which
+  directly reproduces the non-monotonic sawtooth dips at `D = 3.0` and `3.5 um` across published Fig. 4h.
+
+  What the code does NOT reproduce and every remaining code-vs-paper difference (8 open questions):
+  (1) Residual exact additive `+2` filament (`+30 nm`) shift: unmodified `notebook_droplet_ring_slsqp`
+  still underpredicts low-T_ring AR across Fig. 4f (10/22 reproduced, 10 close, 2 not reproduced) and
+  Fig. 4g / Extended Data Fig. 7 (14/61 reproduced, 39 close, 8 not reproduced; e.g., at `T_ring = 5 nm`,
+  code gives `AR = 1.0358` vs Fig. 4f's `1.1012`). Shifting `Nfil -> Nfil + 2` in diagnostic variant
+  `notebook_droplet_ring_slsqp_nfil_plus2` reproduces ALL 9/9 heatmap curves (61/61 points, MAE 0.0012-0.0043)
+  and 20/22 Fig. 4f droplets (2 close, 0 not reproduced), pointing to an off-by-two row-indexing bug when
+  plotting `solution_TV2_*.txt` (where `simulate()` starts at `Nfil = 2` and appends both noisy pre-minimization
+  `opt_var` and minimized `res.x` into `solnlistvec`).
+  (2) `gamma_AVD = 0.5e4 = 5000 pN/nm` (line 877) is half of Table 1 / Extended Data Fig. 5c's `1e4 pN/nm`
+  (failing `cmp_edfig5c_ke64_code_gavd`, 3/6 reproduced).
+  (3) `kstr = 100 pN/nm` (lines 76, 892) is never scaled by `Nfil` (contradicting Table 1's `N_fil * 100 pN/nm`).
+  (4) `noisefactor = 1` (lines 81, 870) gives uniform `[0, 1.0] nm` noise (10x larger than SI Section 2.6's
+  `[0, 0.1] nm`, failing `cmp_noise_amp_vs_paper`) and also perturbs semi-axis `opt_var[0]`.
+  (5) Hidden Bathe nonlinear constants in `getkbend()` (`df=10`, `delta=50`, `t=15`, `kx=2.5` with misprinted
+  comment `#pN.nm`, `Ef=2.6e9 Pa`, and 10-mode sum `j=1..10` absent from SI Eq. S1) plus hidden SLSQP
+  controls (`eps=ftol`, `maxiter=1e4`, `Bounds(1e-9, 1e10)`, `ellipse_com=[8e3, 8e3]`, `failtol=3`,
+  `failEstrtol=0.1`, `wettingfraction > 0.95`, `aratio <= 1.1` ring retry gate).
+  (6) Notebook is unrunnable as shipped due to broken `main.simulate` call, 11 undefined globals in
+  `generatering()`, returning `OptimizeResult` instead of `res.x`, uninitialized `solnlistvec`, `sys.sterr`
+  typo, `Bounds` mutation across growing `opt_var`, `getlinefracinsidedroplet()` lines 313-314 `=` overwrite
+  & inside/outside swap bug (returning `0.1667` vs true `0.8333`), `~areEqual(...)` bitwise-NOT bug on
+  line 528, and 3D `getsurfaceF()` missing `surface_T[0]*` / `k` vs `k^2` / missing `scipy.special` import.

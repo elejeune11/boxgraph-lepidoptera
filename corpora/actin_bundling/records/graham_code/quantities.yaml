@@ -1,0 +1,191 @@
+# Shared biophysical and model quantities (matching graham2023 quantity ids for cross-record checks)
+- id: droplet_diameter
+  name: effective droplet diameter
+  dimension: "[length]"
+  description: Initial circular/spherical VASP droplet diameter D (diavec in VASPDroplet_simulate.ipynb).
+- id: droplet_radius
+  name: droplet radius
+  dimension: "[length]"
+  description: Initial droplet radius R = D / 2 (radiusnm in VASPDroplet_simulate.ipynb).
+- id: droplet_aspect_ratio
+  name: droplet aspect ratio
+  dimension: dimensionless
+  description: Aspect ratio max(a, b) / min(a, b) of the deformed 2D elliptical VASP droplet.
+- id: ellipse_semi_major_axis
+  name: 2D ellipse semi-major axis
+  dimension: "[length]"
+  description: Major semi-axis max(a, b) of the area-conserving 2D elliptical droplet.
+- id: ellipse_semi_minor_axis
+  name: 2D ellipse semi-minor axis
+  dimension: "[length]"
+  description: Minor semi-axis min(a, b) of the area-conserving 2D elliptical droplet.
+- id: ring_thickness
+  name: bundled-actin ring thickness
+  dimension: "[length]"
+  description: "Thickness T_ring (stored in sparams.rcyl: 5 nm for Nfil = 1, R_fil * Nfil = 15 * Nfil nm for Nfil >= 2)."
+- id: ring_thickness_critical
+  name: critical ring thickness for droplet deformation
+  dimension: "[length]"
+  description: Threshold ring thickness above which the simulated droplet aspect ratio exceeds 1.1 (Fig. 4h).
+- id: actin_persistence_length
+  name: single actin filament persistence length
+  dimension: "[length]"
+  description: Persistence length Lp_fil = 17.73e3 nm of a single F-actin filament (line 887).
+- id: filament_spacing
+  name: inter-filament spacing in VASP bundle
+  dimension: "[length]"
+  description: Lateral filament spacing R_fil = 15 nm per filament (delta in graham2023 Table 1; line 888).
+- id: filament_count
+  name: number of filaments in bundled-actin ring
+  dimension: dimensionless
+  description: Number of actin filaments Nfil composing the bundled-actin ring.
+- id: segment_length
+  name: discretized cylindrical segment length
+  dimension: "[length]"
+  description: Rest length lcyl of each cylindrical bundle segment (100 nm default, or 0.1 * D when lcylscalewithD is True).
+- id: thermal_energy
+  name: thermal energy k_B T
+  dimension: "[energy]"
+  description: Thermal energy kBT written in VASPDroplet_simulate.ipynb (4.11 pN nm in getkbend line 196; 4.1 pN nm in generatering line 697).
+- id: flexural_rigidity
+  name: flexural (bending) rigidity
+  dimension: "[force] * [length] ** 2"
+  description: Continuum flexural rigidity of a single actin filament (kflex_rigidity_f = 7.29e-26 N m^2 = 72900 pN nm^2, line 86) or a bundle (kflex_bundle).
+- id: stretching_constant
+  name: filament or bundle stretching constant
+  dimension: "[force] / [length]"
+  description: Harmonic segment stretching stiffness kstr = 100.0 pN/nm (fixed in code, never scaled by Nfil; lines 76, 892).
+- id: discrete_bending_constant
+  name: discrete hinge bending constant
+  dimension: "[energy]"
+  description: Hinge bending constant kbend = kflex_bundle / lcyl (pN nm) in getkbend and getfilamentmechF.
+- id: wetting_surface_tension
+  name: actin-VASP wetting surface tension
+  dimension: "[force] / [length]"
+  description: Interfacial wetting parameter surface_T[1] (gamma_AVR = 1e-8 pN/nm), surface_T[2] (gamma_AVD = 0.5e4 pN/nm in code), or getsurfaceTension(e).
+- id: droplet_line_tension
+  name: 2D droplet interfacial surface energy parameter
+  dimension: "[force]"
+  description: 2D VASP-PEG interfacial line tension gamma_VP (surface_T[0], pN) multiplying droplet perimeter in getsurfaceF.
+- id: surface_energy
+  name: droplet interfacial surface free energy
+  dimension: "[energy]"
+  description: 2D droplet surface free energy returned by getsurfaceF (pN nm).
+- id: total_free_energy
+  name: total droplet-ring free energy
+  dimension: "[energy]"
+  description: Total free energy returned by gettotalenergy = getfilamentF + getsurfaceF (pN nm).
+- id: normalized_ellipse_coord
+  name: normalized quadratic ellipse coordinate
+  dimension: dimensionless
+  description: Normalized ellipse coordinate e = x^2/a^2 + y^2/b^2 passed to getsurfaceTension(e, sparam).
+- id: interface_steepness
+  name: tanh interface transition steepness parameter
+  dimension: dimensionless
+  description: Steepness constant 64 in tanharg = 64*(e - 1) in getsurfaceTension (line 162).
+- id: crosslinker_coupling
+  name: Bathe inter-filament coupling parameter
+  dimension: dimensionless
+  description: Dimensionless shear coupling parameter alpha in getkbend (SystemParams default 0.0; sample call 10000.0).
+- id: optimization_tolerance
+  name: SLSQP optimization convergence tolerance
+  dimension: dimensionless
+  description: SLSQP function tolerance ftol (also passed as finite-difference step eps in lines 752, 933).
+- id: coordinate_noise_amplitude
+  name: uniform random coordinate perturbation amplitude
+  dimension: "[length]"
+  description: Upper bound of uniform random coordinate noise [0, 1/noisefactor] added by addrandomnoise (1.0 nm in code vs 0.1 nm in paper).
+- id: ring_extension_cycles
+  name: iterative filament extension cycle count
+  dimension: dimensionless
+  description: Loop count Nreps = int((pi - 1) * D / (lcyl * 1e-3)) in generatering (line 712).
+- id: ring_length_to_diameter_ratio
+  name: final ring contour length to droplet diameter ratio
+  dimension: dimensionless
+  description: Ratio L_final / D = (Nbeads_final - 1) * lcyl / D produced by generatering (2.9 or 2.8 in code vs 3.1 in paper).
+- id: ring_extension_step_fraction
+  name: filament extension fraction per cycle
+  dimension: dimensionless
+  description: Fractional diameter scale factor 0.1 setting lcyl = D * 0.1 * 1e3 when lcylscalewithD is True (line 895).
+- id: wetted_bundle_fraction
+  name: actin bundle fraction wetted by VASP-rich phase
+  dimension: dimensionless
+  description: Fraction of bundle length inside the droplet computed by getlinefracinsidedroplet (lines 285-326).
+
+# Code-specific structural, numerical, and hidden Bathe parameters
+- id: spatial_dimension
+  name: simulation spatial dimensionality
+  dimension: dimensionless
+  description: Spatial dimension dimval (3 in SystemParams default line 80; 2 in sample call line 672).
+- id: droplet_center_offset
+  name: droplet center offset coordinate
+  dimension: "[length]"
+  description: Center-of-mass coordinate ellipse_com used to keep coordinates strictly positive inside Bounds(1e-9, 1e10).
+- id: coordinate_bound
+  name: SLSQP optimization variable bound
+  dimension: "[length]"
+  description: Lower or upper coordinate box bound in Bounds(1e-9, 1e10) (line 874).
+- id: noise_scale_divisor
+  name: random perturbation divisor noisefactor
+  dimension: dimensionless
+  description: Divisor noisefactor = 1 in addrandomnoise(vec, noisefactor) giving uniform noise in [0, 1/noisefactor] nm.
+- id: numerical_equality_tolerance
+  name: floating-point equality tolerance ZERO_PREC
+  dimension: dimensionless
+  description: Absolute tolerance ZERO_PREC = 1e-3 in areEqual(a, b) (line 103).
+- id: filament_diameter
+  name: single actin filament diameter
+  dimension: "[length]"
+  description: Actin filament cross-section diameter df = 10 nm in getkbend (line 177).
+- id: crosslinker_spacing
+  name: axial spacing between crosslinkers
+  dimension: "[length]"
+  description: Crosslinker axial spacing delta = 50 nm along the bundle in getkbend (line 178).
+- id: crosslinker_thickness
+  name: single crosslinker thickness
+  dimension: "[length]"
+  description: Crosslinker thickness t = 15 nm in getkbend (line 179).
+- id: crosslinker_stiffness
+  name: crosslinker stretching stiffness
+  dimension: "[force] / [length]"
+  description: Crosslinker stretching stiffness kx = 2.5 pN/nm in getkbend (line 181; comment misprints pN.nm).
+- id: filament_youngs_modulus
+  name: actin filament Young's modulus
+  dimension: "[force] / [length] ** 2"
+  description: Young's modulus Ef = 2.6e9 Pa = 2600 pN/nm^2 of an actin filament in getkbend (line 184).
+- id: bathe_mode_count
+  name: number of summed Bathe bending modes
+  dimension: dimensionless
+  description: Number of modes j = 1..10 summed in getkbend when nonlinearbool is True and alpha > 0 (line 200).
+- id: perimeter_series_terms
+  name: number of Gauss-Kummer perimeter series terms
+  dimension: dimensionless
+  description: Number of terms (7, h^0 through h^6) in getsurfaceF's 2D ellipse perimeter series (line 353).
+- id: wetting_subsegments
+  name: quadrature sub-segments per bundle cylinder
+  dimension: dimensionless
+  description: Number of wetting quadrature sub-segments per cylinder (4 via discretize_len = lcyl / 4, line 483).
+- id: slsqp_max_iterations
+  name: SLSQP maximum iteration count
+  dimension: dimensionless
+  description: Maximum SLSQP iterations maxiter = 1e4 (lines 752, 933).
+- id: slsqp_fail_limit
+  name: SLSQP retry failure limit
+  dimension: dimensionless
+  description: Number of consecutive unsuccessful SLSQP calls (failtol = 3) before applying fallback acceptance check (line 897).
+- id: stretching_energy_fraction_limit
+  name: fallback stretching energy fraction threshold
+  dimension: dimensionless
+  description: Maximum Fstr / finalE ratio (failEstrtol = 0.1) for accepting a non-converged SLSQP solution (lines 770, 898, 954).
+- id: bead_count
+  name: number of beads in discretized bundle
+  dimension: dimensionless
+  description: Total bead count Nbeads (number of segments = Nbeads - 1) in generatering and simulate.
+- id: filament_free_energy
+  name: total bundle mechanical plus wetting free energy
+  dimension: "[energy]"
+  description: Sum of bundle stretching, bending, and wetting energies returned by getfilamentF (pN nm).
+- id: zigzag_init_angle
+  name: zigzag initialization angle
+  dimension: dimensionless
+  description: Angle 45 deg used in unused helper initializezigzag (line 578).

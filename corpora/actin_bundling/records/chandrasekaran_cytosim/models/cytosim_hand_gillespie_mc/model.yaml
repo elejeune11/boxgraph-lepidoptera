@@ -1,0 +1,21 @@
+id: cytosim_hand_gillespie_mc
+name: "CytoSim discrete-step Gillespie Kramers unbinding Monte Carlo (hand.cc:238; hand.h:75,286-302)"
+role: model
+stated:
+  file: src/sim/hand.h
+  lines: "286-302"
+  quote: "nextDetach -= (float)std::exp(x);"
+  where: "Hand::do_attach() and Hand::checkKramersDetachment()"
+equation: "nextDetach ~ Exp(1); each step dt: nextDetach -= float32(exp(force/unbinding_force + log(k_unbind0*dt))); detach when nextDetach < 0"
+inputs:
+  k_unbind0: {quantity: unbinding_rate, unit: 1/s, description: "HandProp::unbinding_rate (1/s)"}
+  unbinding_force: {quantity: force, unit: pN, description: "HandProp::unbinding_force (pN)"}
+  force: {quantity: force, unit: pN, description: "Constant link tension norm ||f|| (pN)"}
+  dt: {quantity: time_step, unit: s, description: "SimulProp::time_step (s)"}
+outputs:
+  tau_res_mc: {quantity: residence_time, unit: s, description: "Monte Carlo mean bound lifetime (s)"}
+  k_unbind_mc: {quantity: unbinding_rate, unit: 1/s, description: "Effective detachment rate 1 / tau_res_mc (1/s)"}
+settings:
+  n_samples: 20000
+  seed: 42
+stochastic: true

@@ -1,0 +1,81 @@
+# Quadrature and series truncation refinements for continuum geometry & ring-rod models
+- id: ref_ellipse_perim_integral_nquad
+  run: run_ellipse_perim_integral_ar15
+  setting: n_quad
+  factors: [1, 2, 4, 8]
+  mode: multiply
+  output: L
+  tolerance: "0.01%"
+  tolerance_basis: "added: numerical quadrature error for ellipse perimeter Eq. S10 should be well below 0.01%"
+  tolerance_added: true
+
+- id: ref_ellipse_perim_series_nterms
+  run: run_ellipse_perim_series_ar15
+  setting: n_terms
+  factors: [1, 2, 4]
+  mode: multiply
+  output: L
+  tolerance: "0.01%"
+  tolerance_basis: "added: checks sufficiency of the paper's 7-term Gauss-Kummer truncation in Eq. S11"
+  tolerance_added: true
+
+- id: ref_ring_rod_ar_crit_nquad
+  run: run_ring_rod_ar_crit
+  setting: n_quad
+  factors: [1, 2, 4]
+  mode: multiply
+  output: ar_crit
+  tolerance: "0.01%"
+  tolerance_basis: "added: verifies root P(a/b) = 2L converges to at least 4 significant figures"
+  tolerance_added: true
+
+- id: ref_ring_rod_energy_narc_ebend
+  run: run_ring_rod_energy_um_consistent
+  setting: n_arc
+  factors: [1, 2, 4]
+  mode: multiply
+  output: E_bend
+  tolerance: "0.5%"
+  tolerance_basis: "added: verifies minimum-placement continuum bending integral converges within 0.5% near the sharp peak at AR = 9.5"
+  tolerance_added: true
+
+# Numerical refinements for 2D discrete SLSQP droplet-ring minimization (printed and corrected variants)
+- id: ref_slsqp_printed_ftol
+  run: run_slsqp_printed_fig4f_300nm
+  setting: ftol
+  factors: [1, 2, 4]
+  mode: divide
+  output: aspect_ratio
+  tolerance: "1%"
+  tolerance_basis: "added: checks SLSQP function tolerance sensitivity (starting from the paper's 10^-6) for the printed equations"
+  tolerance_added: true
+
+- id: ref_slsqp_corrected_ftol
+  run: run_slsqp_corrected_fig4f_300nm
+  setting: ftol
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: aspect_ratio
+  tolerance: "0.5%"
+  tolerance_basis: "added: checks whether the paper's SLSQP tolerance 10^-6 is converged for droplet aspect ratio"
+  tolerance_added: true
+
+- id: ref_slsqp_corrected_nwet
+  run: run_slsqp_corrected_fig4f_300nm
+  setting: n_wet_subseg
+  factors: [1, 2, 4]
+  mode: multiply
+  output: aspect_ratio
+  tolerance: "1%"
+  tolerance_basis: "added: checks convergence of the unstated rod sub-segment count N in SI Section 2.4.1 for wetting energy quadrature"
+  tolerance_added: true
+
+- id: ref_slsqp_corrected_nperim
+  run: run_slsqp_corrected_fig4f_300nm
+  setting: n_perim_terms
+  factors: [1, 2, 4]
+  mode: multiply
+  output: aspect_ratio
+  tolerance: "0.1%"
+  tolerance_basis: "added: checks sufficiency of the paper's 7-term perimeter series Eq. S11 inside the full SLSQP energy minimizer"
+  tolerance_added: true

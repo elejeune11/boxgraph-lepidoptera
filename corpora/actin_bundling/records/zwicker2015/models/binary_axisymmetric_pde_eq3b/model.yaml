@@ -1,0 +1,28 @@
+id: binary_axisymmetric_pde_eq3b
+name: 3D axisymmetric cylindrical binary Cahn-Hilliard reaction-diffusion PDE solver (Eq. 3b, Appendix E)
+role: model
+stated:
+  page: 12
+  printed_page: "012317-12"
+  quote: "numerically solving Eq. (3) in a three-dimensional, cylindrical"
+  where: Appendix E and Fig. 5
+equation: "d_t phi^B = Laplacian[phi^B*(1-phi^B)*(1-2*phi^B) - (1/4)*Laplacian(phi^B)] + (k_f/k_0)*(1 - phi^B) - (k_b/k_0)*phi^B in 3D cylindrical (r, z)"
+reconstructed: "Appendix E solves Eq. (3) in 3D cylindrical geometry via XMDS2 (128 axial x 32 radial spectral points) without publishing simulation code, cylinder aspect ratio, droplet separation, initial volume asymmetry, or fitting window; this reconstructed conservative axisymmetric eigenfunction-DCT solver exposes those unstated parameters in added.yaml."
+inputs:
+  kf_norm: {quantity: normalized_forward_rate, unit: dimensionless}
+  kb_norm: {quantity: normalized_backward_rate, unit: dimensionless}
+  Vs_over_w3: {quantity: normalized_system_volume, unit: dimensionless}
+  phi_B_bar: {quantity: mean_volume_fraction_B, unit: dimensionless}
+  aspect: {quantity: cylinder_aspect_ratio, unit: dimensionless}
+  sep_frac: {quantity: droplet_separation_fraction, unit: dimensionless}
+  dr_frac: {quantity: initial_radius_asymmetry, unit: dimensionless}
+  T_k0: {quantity: normalized_simulation_horizon, unit: dimensionless}
+outputs:
+  lam_norm: {quantity: normalized_coarsening_rate, unit: dimensionless}
+  V_bar_over_w3: {quantity: normalized_system_volume, unit: dimensionless}
+  phi_min: {quantity: min_volume_fraction_B, unit: dimensionless}
+settings:
+  nr: 32
+  nz: 128
+  dt: 1.0
+stochastic: false

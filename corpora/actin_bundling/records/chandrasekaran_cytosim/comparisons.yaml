@@ -1,0 +1,86 @@
+# ---------------------------------------------------------------------------
+# 1. Reproduction & consistency checks against chandrasekaran2024 targets
+# ---------------------------------------------------------------------------
+- id: cmp_viscosity_ratio_vs_paper_50x
+  purpose: reproduction
+  computed: fiber_visc_ratio_water
+  printed: paper_viscosity_ratio_water
+  note: "CytoSim simul_prop.h:83,88 defines viscosity in pN*s/um^2 = Pa*s with Water = 0.001; therefore chandrasekaran2024's 0.5 yields 500x water, contradicting the printed '50x water' note by 10x (0.05 Pa*s alternative reproduces 50x)."
+
+- id: cmp_vasp_stokes_D_vs_paper
+  purpose: reproduction
+  computed: vasp_D_stokes_cyto
+  printed: paper_vasp_diffusion_rate
+  note: "In CytoSim, a 30 nm Sphere or Solid (required for 4 surface Wrist binding sites, boundary stiffness 100 pN/um, and sterics) uses Stokes drag 6*pi*eta*R, giving D = 0.01485 um^2/s at eta = 0.5 Pa*s (673x slower than paper's prescribed 10 um^2/s; still 67x slower at 0.05 Pa*s)."
+
+- id: cmp_vasp_meca_free_D_vs_paper
+  purpose: reproduction
+  computed: vasp_D_meca_free_mc
+  printed: paper_vasp_diffusion_rate
+  note: "Direct 1D stochastic Meca::solve() Bead/Sphere simulation under Stokes mobility (0.5 Pa*s, 30 nm) yields D ~ 0.0149 um^2/s vs prescribed 10 um^2/s."
+
+- id: cmp_vasp_couple_uniform_D_vs_paper
+  purpose: reproduction
+  computed: vasp_D_couple_uniform_mc
+  printed: paper_vasp_diffusion_rate
+  note: "CytoSim's Couple::diffuse() / Single::stepF() uniform step dx = sqrt(6*D*dt)*U[-1,1] reproduces D = 10 um^2/s independently of viscosity, but Couple has only valency 2, no sterics, and rejects confine[1] stiffness (and Wrist::stepF ignores SingleProp::diffusion)."
+
+- id: cmp_time_to_2R_undepleted
+  purpose: reproduction
+  computed: poly_t_to_2R_zero
+  printed: paper_time_to_2R
+  note: "CytoSim GrowingFiber::step() at zero tip load and free_polymer = 1 reproduces chandrasekaran2024's t_2R = 184.47 s (184.466 s) for growing from 0.1 um to 2 um at 10.3 nm/s."
+
+- id: cmp_nucleator_molecule_counts
+  purpose: reproduction
+  computed: cyto_nuc_molecules_sweep
+  printed: paper_nucleator_molecules_table
+  note: "Checks all 8 discrete nucleator counts {0, 25, 63, 126, 189, 252, 315, 378} across [Nucleator] = 0..150 nM in an R = 1 um sphere."
+
+# ---------------------------------------------------------------------------
+# 2. Quantitative tests of ported CytoSim C++ kinetics against Supp. Fig. 6B-C
+# ---------------------------------------------------------------------------
+- id: cmp_figs6c_max_length_depletion
+  purpose: approximation
+  computed: cyto_figs6c_max_length_pred
+  printed: paper_figs6c_max_length_curve
+  note: "Tests CytoSim's exact FiberSet::steps() per-filament free_polymer = max(0, 1 - used/total) + hold_end=MINUS_END Nucleator cycle (force-free limit) against 1200-dpi digitized Supp. Fig. 6C upper filament length across 0..150 nM; directly settles chandrasekaran2024 q_monomer_depletion_per_filament_vs_total."
+
+- id: cmp_figs6b_nuc50_timeseries
+  purpose: approximation
+  computed: cyto_figs6b_nuc50_pred
+  printed: paper_figs6b_nuc50_curve
+  note: "Tests CytoSim's exact 2-state Nucleator::stepUnattached() (k_nuc = 0.2/s, hold_end = MINUS_END) + Single::stepA() (k_off = 0.005/s) filament count curve against digitized Supp. Fig. 6B at [Nucleator] = 50 nM (t = 100..580 s)."
+
+- id: cmp_figs6b_nuc150_timeseries
+  purpose: approximation
+  computed: cyto_figs6b_nuc150_pred
+  printed: paper_figs6b_nuc150_curve
+  note: "Tests CytoSim's exact 2-state Nucleator cycle against digitized Supp. Fig. 6B at [Nucleator] = 150 nM (378 nucleators, t = 100..580 s), reproducing both the ~360-filament initial burst and steady detachment-limited slope."
+
+# ---------------------------------------------------------------------------
+# 3. Internal CytoSim C++ vs analytical/continuum approximation checks
+# ---------------------------------------------------------------------------
+- id: cmp_bending_cyto_vs_continuum
+  purpose: approximation
+  computed: ring_E_cyto_reported
+  printed: ring_E_continuum
+  note: "For exact inextensible chord-length segments on a circle (N_seg = 63), endpoint-corrected Fiber::bendingEnergy() (chain.cc:1190) reproduces continuum bending energy 0.5*kappa*L/R^2 = 0.23562 pN*um identically, whereas the actual force Hamiltonian ring_E_hamiltonian = 0.23188 pN*um is 1.59% (1/63) lower due to N_seg - 1 interior hinges."
+
+- id: cmp_hand_gillespie_mc_vs_discrete
+  purpose: consistency
+  computed: hand_tau_mc_5pN
+  printed: hand_tau_disc_5pN
+  note: "Verifies stochastic float32 Gillespie countdown MC (Hand::checkKramersDetachment) against exact discrete-step expectation dt/(1 - exp(-k_off*dt)) at F = 5 pN."
+
+- id: cmp_ellipse_thomsen_vs_exact_surface
+  purpose: approximation
+  computed: conf_surf_thomsen_ar2
+  printed: conf_surf_exact_ar2
+  note: "Quantifies accuracy of CytoSim SpaceEllipse::surface() Knud Thomsen formula (p = 1.6075, space_ellipse.cc:113-118) vs exact analytical prolate spheroid surface area at AR = 2 (13.5225 vs 13.5306 um^2, -0.060%)."
+
+- id: cmp_semi_implicit_var_vs_boltzmann
+  purpose: approximation
+  computed: vasp_var_x_semi_impl_mc
+  printed: vasp_var_x_boltzmann
+  note: "Checks stationary variance of CytoSim semi-implicit Meca::solve() in a k = 100 pN/um trap against equilibrium Boltzmann kT/k = 4.20e-5 um^2 (exact theoretical ratio 1/(1 + 0.5*mu*k*dt) = 0.7387 -> 3.103e-5 um^2 at mu = 3.54 um/(pN*s), dt = 0.002 s — a 26.1% semi-implicit variance damping!)."

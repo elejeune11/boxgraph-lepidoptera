@@ -1,0 +1,288 @@
+# ==========================================================================
+# 2D bundle filament-count and effective interfilament spacing runs (p. 11)
+# ==========================================================================
+
+- id: run_nf_2d_max_spacing
+  model: bundle_filament_count_2d_spacing
+  inputs:
+    W: bundle_width_ref_1um
+    d_spacing: vasp_diameter_max
+  outputs:
+    n_f: nf_2d_min_computed
+  note: Expected lower bound of filament count in a 1-um 2D bundle at 70 nm VASP spacing.
+
+- id: run_nf_2d_min_spacing
+  model: bundle_filament_count_2d_spacing
+  inputs:
+    W: bundle_width_ref_1um
+    d_spacing: vasp_diameter_min
+  outputs:
+    n_f: nf_2d_max_computed
+  note: Expected upper bound of filament count in a 1-um 2D bundle at 28 nm VASP spacing.
+
+- id: run_nf_2d_vasp_025_median
+  model: bundle_filament_count_2d_spacing
+  inputs:
+    W: bundle_width_median_vasp_025
+    d_spacing: vasp_diameter_min
+  outputs:
+    n_f: nf_2d_vasp_025_median_compact
+  note: Compact-limit (28 nm spacing) 2D filament count implied for the median 0.942 um tetrameric VASP bundle at 0.25 uM VASP.
+
+- id: run_nf_2d_vasp_dtetra_025_median
+  model: bundle_filament_count_2d_spacing
+  inputs:
+    W: bundle_width_median_vasp_dtetra_025
+    d_spacing: vasp_diameter_min
+  outputs:
+    n_f: nf_2d_vasp_dtetra_025_median_compact
+  note: Compact-limit (28 nm spacing) 2D filament count implied for the median 0.584 um monomeric VASP_DeltaTetra bundle at 0.25 uM VASP.
+
+- id: run_spacing_from_intensity
+  model: bundle_effective_spacing
+  inputs:
+    W: bundle_width_ref_1um
+    n_f: filament_count_1um_intensity_measured
+  outputs:
+    d_spacing: d_spacing_from_intensity
+  note: Effective 2D single-layer interfilament spacing implied by the intensity-extrapolated count of 45 +/- 12 filaments per 1-um bundle.
+
+- id: run_spacing_from_expected_40
+  model: bundle_effective_spacing
+  inputs:
+    W: bundle_width_ref_1um
+    n_f: filament_count_1um_expected_max
+  outputs:
+    d_spacing: d_spacing_from_expected_40
+  note: Interfilament spacing (25 nm) that would be required to yield the printed upper bound of 40 filaments in a 1-um 2D bundle.
+
+# ==========================================================================
+# Bundle width vs VASP concentration scaling (p. 2)
+# ==========================================================================
+
+- id: run_width_scaling_025
+  model: bundle_width_vasp_scaling
+  inputs:
+    c_vasp: vasp_conc_025
+  outputs:
+    W: bundle_width_scaling_025
+  note: "Linear scaling law W ~ c_VASP (prefactor: unknown) evaluated at 0.25 uM VASP to determine implied proportionality constant against 0.942 um median width."
+
+# ==========================================================================
+# FRAP mobility ratio, time constants, and recovery curves (p. 6, 8, 11)
+# ==========================================================================
+
+- id: run_frap_mobility_ratio
+  model: frap_mobility_ratio
+  inputs:
+    t_half_ml: frap_t_half_vasp_ml
+    t_half_slb: frap_t_half_vasp_slb
+  outputs:
+    R_mob: frap_mobility_ratio_computed
+  note: Monolayer-to-bilayer FRAP recovery half-time ratio (0.399 min / 0.102 min) testing the printed mobility reduction factor of 4.
+
+- id: run_frap_tau_slb
+  model: frap_tau_from_half_time
+  inputs:
+    t_half: frap_t_half_vasp_slb
+  outputs:
+    tau: frap_tau_slb_derived
+  note: Exponential FRAP time constant tau = t_1/2 / ln(2) recovered from SLB t_1/2 = 0.102 min.
+
+- id: run_frap_tau_ml
+  model: frap_tau_from_half_time
+  inputs:
+    t_half: frap_t_half_vasp_ml
+  outputs:
+    tau: frap_tau_ml_derived
+  note: Exponential FRAP time constant tau = t_1/2 / ln(2) recovered from monolayer t_1/2 = 0.399 min.
+
+- id: run_frap_half_time_slb_eval
+  model: frap_half_time
+  inputs:
+    tau: frap_tau_slb_derived
+  outputs:
+    t_half: frap_t_half_slb_eval
+  note: Evaluates the printed t_1/2 = tau*ln(2) relation on the derived SLB time constant (not used as a reproduction check to avoid circularity).
+
+- id: run_frap_fit_slb_end
+  model: frap_recovery_fit
+  inputs:
+    a: frap_mobile_fraction_slb_prepol
+    tau: frap_tau_slb_derived
+    c: frap_baseline_offset_added
+    t: frap_observation_end_added
+  outputs:
+    y: frap_y_slb_prepol_end
+  note: Evaluates single-exponential FRAP recovery on SLB (prePol) at end of Fig. 4C recording window (1.3 min), confirming >99.9% approach to asymptote.
+
+- id: run_frap_fit_ml_end
+  model: frap_recovery_fit
+  inputs:
+    a: frap_mobile_fraction_ml_prepol
+    tau: frap_tau_ml_derived
+    c: frap_baseline_offset_added
+    t: frap_observation_end_added
+  outputs:
+    y: frap_y_ml_prepol_end
+  note: Evaluates single-exponential FRAP recovery on ML (prePol) at end of Fig. 4C recording window (1.3 min), showing only ~89.5% approach to asymptote.
+
+- id: run_frap_by_thalf_slb_end
+  model: frap_recovery_by_half_time
+  inputs:
+    a: frap_mobile_fraction_slb_prepol
+    t_half: frap_t_half_vasp_slb
+    c: frap_baseline_offset_added
+    t: frap_observation_end_added
+  outputs:
+    y: frap_y_by_thalf_slb_end
+  note: Evaluates half-time-parameterized FRAP recovery at end of Fig. 4C window (1.3 min) on SLB (prePol).
+
+- id: run_frap_by_thalf_ml_end
+  model: frap_recovery_by_half_time
+  inputs:
+    a: frap_mobile_fraction_ml_prepol
+    t_half: frap_t_half_vasp_ml
+    c: frap_baseline_offset_added
+    t: frap_observation_end_added
+  outputs:
+    y: frap_y_by_thalf_ml_end
+  note: Evaluates half-time-parameterized FRAP recovery at end of Fig. 4C window (1.3 min) on ML (prePol).
+
+- id: run_frap_plateau_slb_prepol
+  model: frap_mobile_fraction_plateau
+  inputs:
+    a: frap_mobile_fraction_slb_prepol
+    c: frap_baseline_offset_added
+  outputs:
+    y: frap_plateau_slb_prepol
+  note: Long-time plateau y(t -> oo) = a + c on SLB (prePol).
+
+- id: run_frap_plateau_ml_prepol
+  model: frap_mobile_fraction_plateau
+  inputs:
+    a: frap_mobile_fraction_ml_prepol
+    c: frap_baseline_offset_added
+  outputs:
+    y: frap_plateau_ml_prepol
+  note: Long-time plateau y(t -> oo) = a + c on ML (prePol).
+
+# ==========================================================================
+# CP-to-actin molar ratio across Supplemental Fig. 3 actin series (p. 2, 11)
+# ==========================================================================
+
+- id: run_cp_actin_ratio_05
+  model: cp_to_actin_ratio
+  inputs:
+    c_cp: cp_conc_standard
+    c_actin: actin_conc_low_05
+  outputs:
+    R_cp: cp_actin_ratio_05
+  note: CP-to-actin molar ratio at 50 nM CP and 0.5 uM actin (Fig. S3A).
+
+- id: run_cp_actin_ratio_1
+  model: cp_to_actin_ratio
+  inputs:
+    c_cp: cp_conc_standard
+    c_actin: actin_conc_mid_1
+  outputs:
+    R_cp: cp_actin_ratio_1
+  note: CP-to-actin molar ratio at 50 nM CP and 1 uM actin (Fig. S3B).
+
+- id: run_cp_actin_ratio_2
+  model: cp_to_actin_ratio
+  inputs:
+    c_cp: cp_conc_standard
+    c_actin: actin_conc_standard
+  outputs:
+    R_cp: cp_actin_ratio_2
+  note: Standard assay CP-to-actin molar ratio at 50 nM CP and 2 uM actin (Fig. S3C).
+
+- id: run_cp_actin_ratio_4
+  model: cp_to_actin_ratio
+  inputs:
+    c_cp: cp_conc_standard
+    c_actin: actin_conc_high_4
+  outputs:
+    R_cp: cp_actin_ratio_4
+  note: High-actin CP-to-actin molar ratio at 50 nM CP and 4 uM actin (Fig. S3D; halved relative to standard 2 uM actin).
+
+- id: run_actin_conc_fold_change
+  model: actin_concentration_fold_change
+  inputs:
+    c_actin_high: actin_conc_high_4
+    c_actin_std: actin_conc_standard
+  outputs:
+    R_actin: actin_conc_fold_change_computed
+  note: Evaluates the fold change of elevated 4 uM actin relative to standard 2 uM actin (checking the p. 2 statement 'double the amount compared with the general conditions').
+
+# ==========================================================================
+# Curve sweeps against digitized Fig. 2E and Fig. 4C datasets
+# ==========================================================================
+
+- id: run_width_scaling_fig2e_median
+  model: bundle_width_vasp_scaling
+  inputs: {}
+  sweep:
+    c_vasp: bundle_width_median_vs_vasp_fig2e
+  outputs:
+    W: bundle_width_scaling_fig2e_median_pred
+  note: "Sweeps the prefactor-unknown linear scaling law W ~ c_VASP across all five VASP concentrations (0.05-1.00 uM) in Fig. 2E against tight median reading intervals."
+
+- id: run_width_scaling_fig2e_range
+  model: bundle_width_vasp_scaling
+  inputs: {}
+  sweep:
+    c_vasp: bundle_width_vs_vasp_fig2e
+  outputs:
+    W: bundle_width_scaling_fig2e_range_pred
+  note: "Sweeps the prefactor-unknown linear scaling law W ~ c_VASP across all five VASP concentrations (0.05-1.00 uM) in Fig. 2E against full 1-99th percentile boxplot ranges."
+
+- id: run_frap_fit_slb_prepol_curve
+  model: frap_recovery_fit
+  inputs:
+    a: frap_mobile_fraction_slb_prepol
+    tau: frap_tau_slb_derived
+    c: frap_baseline_offset_added
+  sweep:
+    t: frap_curve_slb_prepol_fig4c
+  outputs:
+    y: frap_fit_slb_prepol_curve_pred
+  note: "Sweeps single-exponential FRAP recovery fit y = a*(1 - exp(-t/tau)) + c across the digitized Fig. 4C SLB prePol curve (0.05-1.3 min) using printed a = 0.97, tau = 0.102/ln(2) min, c = 0."
+
+- id: run_frap_fit_ml_prepol_curve
+  model: frap_recovery_fit
+  inputs:
+    a: frap_mobile_fraction_ml_prepol
+    tau: frap_tau_ml_derived
+    c: frap_baseline_offset_added
+  sweep:
+    t: frap_curve_ml_prepol_fig4c
+  outputs:
+    y: frap_fit_ml_prepol_curve_pred
+  note: "Sweeps single-exponential FRAP recovery fit y = a*(1 - exp(-t/tau)) + c across the digitized Fig. 4C ML prePol curve (0.05-1.3 min) using printed a = 0.61, tau = 0.399/ln(2) min, c = 0."
+
+- id: run_frap_by_thalf_slb_prepol_curve
+  model: frap_recovery_by_half_time
+  inputs:
+    a: frap_mobile_fraction_slb_prepol
+    t_half: frap_t_half_vasp_slb
+    c: frap_baseline_offset_added
+  sweep:
+    t: frap_curve_slb_prepol_fig4c
+  outputs:
+    y: frap_by_thalf_slb_prepol_curve_pred
+  note: "Sweeps half-time-parameterized FRAP recovery model across the digitized Fig. 4C SLB prePol curve using printed a = 0.97 and t_1/2 = 0.102 min."
+
+- id: run_frap_by_thalf_ml_prepol_curve
+  model: frap_recovery_by_half_time
+  inputs:
+    a: frap_mobile_fraction_ml_prepol
+    t_half: frap_t_half_vasp_ml
+    c: frap_baseline_offset_added
+  sweep:
+    t: frap_curve_ml_prepol_fig4c
+  outputs:
+    y: frap_by_thalf_ml_prepol_curve_pred
+  note: "Sweeps half-time-parameterized FRAP recovery model across the digitized Fig. 4C ML prePol curve using printed a = 0.61 and t_1/2 = 0.399 min."
+

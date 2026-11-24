@@ -420,7 +420,9 @@ def _cross_checks(records, sound, rel_results, rels, evaluated, cache_dir=None) 
                 continue
             try:
                 y = execute(la.model_code[ma_id], [{"inputs": vals, "settings": dict(ma.settings)}],
-                            cache_dir=cache_dir)[0][ao]
+                            cache_dir=cache_dir,
+                            source=la.source_file() if ma.software else None,
+                            source_version=la.record.source.version)[0][ao]
             except (BuildError, KeyError) as e:
                 out.append({**base, "status": f"not checked: {e}"})
                 continue
@@ -457,7 +459,9 @@ def _cross_checks(records, sound, rel_results, rels, evaluated, cache_dir=None) 
                 continue
             try:
                 y = execute(lb.model_code[mb_id], [{"inputs": b_in, "settings": dict(mb.settings)}],
-                            cache_dir=cache_dir)[0][bo]
+                            cache_dir=cache_dir,
+                            source=lb.source_file() if mb.software else None,
+                            source_version=lb.record.source.version)[0][bo]
             except (BuildError, KeyError) as e:
                 out.append({**base, "status": f"not checked: {e}"})
                 continue

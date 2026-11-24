@@ -1,0 +1,78 @@
+# Reproduction & consistency comparisons: live `software: true` Excel readers against
+# (1) chandrasekaran2024 printed text/table targets (`from_source: chandrasekaran2024`, `from_datum: <id>`)
+# and (2) workbook-stored summary cells across 41467_2024_46726_MOESM9_ESM.xlsx.
+
+# ==============================================================================
+# 1. PAPER TARGETS FROM chandrasekaran2024 (`from_source: chandrasekaran2024`)
+# ==============================================================================
+
+# --- PCA cumulative variance captions (proving 2-PC vs 3-PC mislabels & 97.64% error) ---
+- {id: cmp_paper_pca_main_fig3_97p64, purpose: reproduction, computed: comp_pca_s4_pc3_pct, printed: paper_pca_var_3pc_main_fig3,
+   note: "FigureS4A PC1+PC2+PC3 = 95.8294%, refuting main text p. 4's printed 97.64%."}
+- {id: cmp_paper_pca_s4_literal_2pc, purpose: reproduction, computed: comp_pca_s4_pc2_pct, printed: paper_pca_var_suppfig4_caption,
+   note: "Literal test of Supp. Fig. 4A caption ('first two PCs explain 95.83%'): PC1+PC2 is only 86.1615%."}
+- {id: cmp_paper_pca_s4_actual_3pc, purpose: consistency, computed: comp_pca_s4_pc3_pct, printed: paper_pca_var_suppfig4_caption,
+   note: "Diagnostic: FigureS4A PC1+PC2+PC3 = 95.8294% -> 95.83% exactly, proving the caption mislabeled 3 PCs as 'two PCs'."}
+- {id: cmp_paper_pca_s9_literal_2pc, purpose: reproduction, computed: comp_pca_s9_pc2_pct, printed: paper_pca_var_suppfig9_caption,
+   note: "Literal test of Supp. Fig. 9A caption ('first two PCs explain 99.06%'): FigureS8A PC1+PC2 is only 94.9452%."}
+- {id: cmp_paper_pca_s9_actual_3pc, purpose: consistency, computed: comp_pca_s9_pc3_pct, printed: paper_pca_var_suppfig9_caption,
+   note: "Diagnostic: FigureS8A PC1+PC2+PC3 = 99.0631% -> 99.06% exactly, proving Supp. Fig. 9A caption mislabeled 3 PCs as 'two PCs'."}
+- {id: cmp_paper_pca_s12_3pc, purpose: reproduction, computed: comp_pca_s12_pc3_pct, printed: paper_pca_var_suppfig12_caption,
+   note: "FigureS12A PC1+PC2+PC3 = 94.7176% -> 94.72% exact match."}
+
+# --- Supplementary Table 3 probabilistic cells vs Figure3E & Figure6B ---
+- {id: cmp_paper_st3_ring_10_0p1, purpose: reproduction, computed: comp_grid_10_0p1_ring, printed: paper_supptable3_ring_10_0p1}
+- {id: cmp_paper_st3_shells_sb_10_0p1, purpose: reproduction, computed: comp_grid_10_0p1_shell_sb, printed: paper_supptable3_shells_sb_10_0p1}
+- {id: cmp_paper_st3_ring_1_0p1, purpose: reproduction, computed: comp_grid_1_0p1_ring, printed: paper_supptable3_ring_1_0p1}
+- {id: cmp_paper_st3_shell_sb_1_0p1, purpose: reproduction, computed: comp_grid_1_0p1_shell_sb, printed: paper_supptable3_shell_sb_1_0p1}
+- {id: cmp_f6b_vs_st3_ring_1_0p1, purpose: consistency, computed: comp_f6b_0p1_ring, printed: paper_supptable3_ring_1_0p1,
+   note: "Figure6B stores rounded 0.67 (67%) vs 66.67% (10/15) in Figure3E / Supp. Table 3."}
+- {id: cmp_f3e_vs_f6b_1_1_ring, purpose: consistency, computed: comp_grid_1_1_ring, printed: wb_f6b_ku1p0_ring,
+   note: "At (k_bind=1.0, k_unbind=1.0), Figure3E (N=3) gives 0% Ring (100% Shell-SB, matching Supp. Table 3), whereas Figure6B (N=5) gives 40% Ring / 60% Shell-SB."}
+
+# --- Experimental VASP-GABmut at 1:7.5 (Figure6D vs main text p. 7) ---
+- {id: cmp_paper_exp_replicates, purpose: reproduction, computed: comp_f6d_nrep, printed: paper_exp_replicates}
+- {id: cmp_paper_gabmut_ring_1_7p5, purpose: reproduction, computed: comp_f6d_7p5_ring, printed: paper_exp_gabmut_ring_1_7p5}
+- {id: cmp_paper_gabmut_shell_1_7p5, purpose: reproduction, computed: comp_f6d_7p5_shell, printed: paper_exp_gabmut_shell_1_7p5}
+- {id: cmp_paper_gabmut_disk_1_7p5, purpose: reproduction, computed: comp_f6d_7p5_disk, printed: paper_exp_gabmut_disk_1_7p5}
+
+# --- Seed filament count & Fig. 7Aii deformation schedule ---
+- {id: cmp_paper_n_seed_filaments, purpose: reproduction, computed: comp_nuc0_t600_nfil, printed: paper_n_seed_filaments}
+- {id: cmp_paper_fig7aii_schedule, purpose: reproduction, computed: comp_s14c_fig7aii_ar, printed: paper_fig7aii_schedule,
+   note: "FigureS14C reproduces all 6 (time, aspect_ratio) snapshots in Fig. 7Aii to the last printed digit."}
+- {id: cmp_paper_ar_max_approx, purpose: reproduction, computed: comp_s14c_ar_max, printed: paper_aspect_ratio_max_approx}
+
+# ==============================================================================
+# 2. INTRA-WORKBOOK REPRODUCTION CHECKS (RAW ROWS VS STORED SUMMARY CELLS)
+# ==============================================================================
+- {id: cmp_wb_f3b_10_1_t600_mean, purpose: reproduction, computed: comp_f3b_10_1_t600_mean, printed: wb_f3b_10_1_t600_mean}
+- {id: cmp_wb_s2c_1_10_mean, purpose: reproduction, computed: comp_grid_1_10_af, printed: wb_s2c_1_10_mean}
+- {id: cmp_wb_s2c_1_10_sd, purpose: reproduction, computed: comp_grid_1_10_af_sd, printed: wb_s2c_1_10_sd}
+- {id: cmp_wb_f3d_1_10_frac0, purpose: reproduction, computed: comp_grid_1_10_f0, printed: wb_f3d_1_10_frac0}
+- {id: cmp_wb_f3d_10_1_frac4, purpose: reproduction, computed: comp_grid_10_1_f4, printed: wb_f3d_10_1_frac4}
+
+- {id: cmp_wb_f5c_vs_f5d_0p8_450, purpose: reproduction, computed: comp_f5c_0p8_450, printed: wb_f5d_vasp0p8_t450}
+- {id: cmp_wb_f5c_vs_f5d_0p4_200, purpose: reproduction, computed: comp_f5c_0p4_200, printed: wb_f5d_vasp0p4_t200}
+- {id: cmp_wb_f5c_vs_f5d_1p0_600, purpose: reproduction, computed: comp_f5c_1p0_600, printed: wb_f5d_vasp1p0_t600}
+- {id: cmp_wb_f6b_1p0_shell_sb, purpose: reproduction, computed: comp_f6b_1p0_shell_sb, printed: wb_f6b_ku1p0_shell_sb}
+
+- {id: cmp_wb_f6d_7p5_shell_mean, purpose: reproduction, computed: comp_f6d_7p5_shell, printed: wb_f6d_1_7p5_shell_mean}
+- {id: cmp_wb_f6d_7p5_ring_mean, purpose: reproduction, computed: comp_f6d_7p5_ring, printed: wb_f6d_1_7p5_ring_mean}
+- {id: cmp_wb_f6d_7p5_disk_mean, purpose: reproduction, computed: comp_f6d_7p5_disk, printed: wb_f6d_1_7p5_disk_mean}
+- {id: cmp_wb_f6d_7p5_shell_sd, purpose: reproduction, computed: comp_f6d_7p5_shell_sd, printed: wb_f6d_1_7p5_shell_sd}
+- {id: cmp_wb_f6d_7p5_ring_sd, purpose: reproduction, computed: comp_f6d_7p5_ring_sd, printed: wb_f6d_1_7p5_ring_sd}
+- {id: cmp_wb_f6d_7p5_ring_sem_true_vs_stored, purpose: consistency, computed: comp_f6d_7p5_ring_sem_true, printed: wb_f6d_1_7p5_ring_sem_stored_buggy,
+   note: "True SEM = SD / sqrt(3) = 5.5583% (matching main text p. 7's ± 6%), whereas Figure6D cell M38 erroneously stores SD / 3 = 3.2091%."}
+
+- {id: cmp_wb_f7b_means_table, purpose: reproduction, computed: comp_f7b_means_curve, printed: wb_f7b_means_table}
+- {id: cmp_wb_f7b_pi_sd_pop, purpose: reproduction, computed: comp_f7b_pi_sd_pop, printed: wb_f7b_pi_sd_pop}
+- {id: cmp_wb_f7f_ar1_bend, purpose: reproduction, computed: comp_f7f_ar1_bend, printed: wb_f7f_ar1_bend}
+- {id: cmp_wb_f7f_ar1_surf, purpose: reproduction, computed: comp_f7f_ar1_surf, printed: wb_f7f_ar1_surf}
+
+- {id: cmp_wb_s1ef_20fil_asph, purpose: reproduction, computed: comp_s1ef_20_asph, printed: wb_s1ef_20fil_asph}
+- {id: cmp_wb_s1ef_20fil_ar, purpose: reproduction, computed: comp_s1ef_20_ar, printed: wb_s1ef_20fil_ar}
+- {id: cmp_wb_s10e_nuc25_mean, purpose: reproduction, computed: comp_nuc25_af, printed: wb_s10e_nuc25_mean}
+- {id: cmp_wb_s10e_nuc25_sd, purpose: reproduction, computed: comp_nuc25_af_sd, printed: wb_s10e_nuc25_sd}
+- {id: cmp_wb_s11c_vs_s11_2p0_165, purpose: reproduction, computed: comp_s11_2p0_165_cl2, printed: wb_s11_vasp2p0_n165_locally_bundled}
+- {id: cmp_wb_s11biii_k4_sil, purpose: reproduction, computed: comp_sil_s11_k4, printed: wb_s11biii_k4_sil}
+- {id: cmp_wb_s12c_k4_sil, purpose: reproduction, computed: comp_sil_s12_k4, printed: wb_s12c_k4_sil}

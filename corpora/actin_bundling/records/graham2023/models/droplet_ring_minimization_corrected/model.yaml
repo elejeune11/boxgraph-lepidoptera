@@ -1,0 +1,51 @@
+id: droplet_ring_minimization_corrected
+name: corrected 2D discrete droplet-actin ring SLSQP energy minimization (fixing Eqs. S2 and S4-S5)
+role: model
+stated:
+  page: 41
+  printed_page: "SI-14"
+  quote: "minimized using a nonlinear optimization algorithm called Sequential Least Squares"
+  where: "SI Sections 2.2-2.6, Fig. 4e-h, Extended Data Figs. 5-7"
+variant_of: droplet_ring_minimization_printed
+corrections:
+  - equation: "SI Eq. S2"
+    change: "Use rest-length harmonic stretching k_stretch * (||r_i - r_{i+1}|| - L_cyl)^2 instead of k_stretch * ||r_i - r_{i+1}||^2, and positive-definite bending energy k_bend * (1 - u_i . u_{i+1}) instead of +k_bend * (u_i . u_{i+1})"
+    evidence: "SI Table 1 defines segment length L_cyl = 100 nm and Fig. 4b depicts springs of rest length L_cyl and hinges with minimum energy for straight segments (theta = pi), matching the continuum bending energy (1/2) k_b int kappa^2 ds; the printed Eq. S2 collapses segments to zero length and favors hairpin folds."
+  - equation: "SI Eqs. S4-S5"
+    change: "Use Delta = 0.5 * (gamma_AVD - gamma_AVR) and gamma(e) = Delta * tanh(k_e * (e - 1)) + Delta + gamma_AVR so gamma(e < 1) = gamma_AVR and gamma(e > 1) = gamma_AVD"
+    evidence: "Extended Data Fig. 5c (p. 20) explicitly plots gamma(e) rising from gamma_AVR inside the droplet (e < 1) to gamma_AVD outside (e > 1) to confine actin inside the VASP-rich phase, whereas printed Eqs. S4-S5 evaluate to gamma_AVD inside and gamma_AVR outside."
+built_from:
+  - ring_filament_count
+  - discrete_stretching_constant
+  - discrete_bending_constant
+  - wetting_tension_profile_eqS5_corrected
+  - ellipse_perimeter_series_eqS11
+  - droplet_surface_energy_eqS12
+equation: "min_{a, r} [sum k_stretch (||r_i - r_{i+1}|| - L_cyl)^2 + sum k_bend (1 - u_i . u_{i+1}) + E_wet_corr + gamma_I P]"
+inputs:
+  D_droplet: {quantity: droplet_diameter, unit: um}
+  T_ring: {quantity: ring_thickness, unit: nm}
+  delta: {quantity: filament_spacing, unit: nm}
+  L_p: {quantity: actin_persistence_length, unit: um}
+  kBT: {quantity: thermal_energy, unit: pN*nm}
+  L_cyl: {quantity: segment_length, unit: nm}
+  k_stretch_fil: {quantity: stretching_constant, unit: pN/nm}
+  gamma_AVR: {quantity: wetting_surface_tension, unit: pN/nm}
+  gamma_AVD: {quantity: wetting_surface_tension, unit: pN/nm}
+  k_e: {quantity: interface_steepness, unit: dimensionless}
+  gamma_I: {quantity: droplet_line_tension, unit: pN}
+  L_ratio: {quantity: ring_length_to_diameter_ratio, unit: dimensionless}
+  noise_amp: {quantity: coordinate_noise_amplitude, unit: nm}
+outputs:
+  aspect_ratio: {quantity: droplet_aspect_ratio, unit: dimensionless}
+  total_energy: {quantity: total_free_energy, unit: pN*nm}
+  a: {quantity: ellipse_semi_major_axis, unit: um}
+  b: {quantity: ellipse_semi_minor_axis, unit: um}
+settings:
+  seed: 42
+  ftol: 1.0e-6
+  n_wet_subseg: 10
+  n_perim_terms: 7
+  r_init_frac: 0.96
+  maxiter: 500
+stochastic: true

@@ -1,0 +1,973 @@
+# ==========================================================================
+# Group A: Sample preparation, filament length, mesh size, concentrations
+# ==========================================================================
+
+- id: run_filament_len_1p5
+  model: actin_filament_length_cp
+  inputs:
+    a_m: actin_monomer_spacing_si
+    r_CP: cp_frac_1p5
+  outputs:
+    N_m: N_m_1p5_cp
+    L_f: L_f_1p5_cp
+
+- id: run_filament_len_1p0
+  model: actin_filament_length_cp
+  inputs:
+    a_m: actin_monomer_spacing_si
+    r_CP: cp_frac_1p0
+  outputs:
+    N_m: N_m_1p0_cp
+    L_f: L_f_1p0_cp
+
+- id: run_filament_len_0p5
+  model: actin_filament_length_cp
+  inputs:
+    a_m: actin_monomer_spacing_si
+    r_CP: cp_frac_0p5
+  outputs:
+    N_m: N_m_0p5_cp
+    L_f: L_f_0p5_cp
+
+- id: run_filament_len_0p25
+  model: actin_filament_length_cp
+  inputs:
+    a_m: actin_monomer_spacing_si
+    r_CP: cp_frac_0p25
+  outputs:
+    N_m: N_m_0p25_cp
+    L_f: L_f_0p25_cp
+
+- id: run_actin_mass_conc_si
+  model: actin_mass_concentration
+  inputs:
+    c_A: c_actin_monomeric_si
+    M_w: actin_mw_added
+  outputs:
+    c: c_actin_mg_ml_si
+
+- id: run_actin_mass_conc_main
+  model: actin_mass_concentration
+  inputs:
+    c_A: c_actin_dilute_main
+    M_w: actin_mw_added
+  outputs:
+    c: c_actin_mg_ml_main
+
+- id: run_mesh_size_si
+  model: actin_mesh_size
+  inputs:
+    c: c_actin_mg_ml_si
+  outputs:
+    xi: xi_mesh_pred_si
+
+- id: run_mesh_size_main
+  model: actin_mesh_size
+  inputs:
+    c: c_actin_mg_ml_main
+  outputs:
+    xi: xi_mesh_pred_main
+
+- id: run_filamin_conc_main
+  model: filamin_concentration_from_fraction
+  inputs:
+    c_A: c_actin_dilute_main
+    f_fil: filamin_frac_fig1a
+  outputs:
+    c_fil: c_filamin_pred_main
+
+- id: run_filamin_conc_si
+  model: filamin_concentration_from_fraction
+  inputs:
+    c_A: c_actin_monomeric_si
+    f_fil: filamin_frac_fig1a
+  outputs:
+    c_fil: c_filamin_pred_si
+
+- id: run_enrichment_ratio_main
+  model: concentration_enrichment_ratio
+  inputs:
+    c_dense: c_actin_tactoid_est
+    c_dilute: c_actin_dilute_main
+  outputs:
+    ratio: enrichment_ratio_pred_main
+
+- id: run_enrichment_ratio_fig1b
+  model: concentration_enrichment_ratio
+  inputs:
+    c_dense: c_actin_tactoid_est
+    c_dilute: c_actin_dilute_fig1b
+  outputs:
+    ratio: enrichment_ratio_pred_fig1b
+
+# ==========================================================================
+# Group B: FRAP diffusion, Stokes-Einstein viscosity, interfacial tension
+# ==========================================================================
+
+- id: run_frap_diff_scaling
+  model: frap_diffusion_scaling
+  inputs:
+    L_b: frap_bleached_size_added
+    tau_R: tau_R_frap_text
+  outputs:
+    D: D_frap_scaling_pred
+
+- id: run_filament_radius_frap
+  model: filament_radius_from_diameter
+  inputs:
+    d: filament_diameter_frap_si
+  outputs:
+    r: r_filament_frap_derived
+
+- id: run_filament_half_len_frap
+  model: filament_half_length_from_length
+  inputs:
+    L_f: L_f_1p5_cp
+  outputs:
+    L: L_half_1p5_cp_derived
+
+- id: run_se_viscosity_frap
+  model: stokes_einstein_ellipsoid_viscosity
+  inputs:
+    T: ambient_temperature_si
+    L: filament_half_length_frap_si
+    r: r_filament_frap_derived
+    D: D_frap_est
+  outputs:
+    eta: eta_frap_pred
+
+- id: run_se_diffusion_check
+  model: stokes_einstein_ellipsoid_diffusion
+  inputs:
+    T: ambient_temperature_si
+    L: filament_half_length_frap_si
+    r: r_filament_frap_derived
+    eta: eta_frap_est
+  outputs:
+    D: D_se_from_printed_eta
+
+- id: run_gamma_I_coal_5_printed_eta
+  model: interfacial_tension_from_capillary_velocity
+  inputs:
+    eta: eta_frap_est
+    v_cap: tableS1_coal_5_gamma_eta
+  outputs:
+    gamma_I: gamma_I_pred_coal_5_printed_eta
+
+- id: run_gamma_I_coal_5_chained_eta
+  model: interfacial_tension_from_capillary_velocity
+  inputs:
+    eta: eta_frap_pred
+    v_cap: tableS1_coal_5_gamma_eta
+  outputs:
+    gamma_I: gamma_I_pred_coal_5_chained_eta
+
+# ==========================================================================
+# Group C: Tactoid geometry, free energy, equilibrium minimization, L/r
+# ==========================================================================
+
+- id: run_omega_def_probe
+  model: anchoring_strength_definition
+  inputs:
+    gamma_A: gamma_A_probe_added
+    gamma_I: gamma_I_est_main
+  outputs:
+    omega: omega_def_probe_out
+
+- id: run_tactoid_geom_probe
+  model: tactoid_geometry_circular_arc
+  inputs:
+    R: tactoid_arc_radius_probe_added
+    alpha: tactoid_angle_probe_added
+  outputs:
+    L: tactoid_L_probe
+    r: tactoid_r_probe
+    aspect_ratio: tactoid_ar_probe
+    A: tactoid_A_probe
+    A_omega: tactoid_Aomega_probe
+    V: tactoid_V_probe
+
+- id: run_director_crossover_probe
+  model: director_crossover_parameter
+  inputs:
+    gamma_A: gamma_A_probe_added
+    V: tactoid_V_probe
+    K: frank_elastic_K_added
+  outputs:
+    chi: director_crossover_probe_out
+
+- id: run_tactoid_free_energy_probe
+  model: tactoid_free_energy
+  inputs:
+    R: tactoid_arc_radius_probe_added
+    alpha: tactoid_angle_probe_added
+    gamma_I: gamma_I_est_main
+    gamma_A: gamma_A_probe_added
+  outputs:
+    F: tactoid_F_probe
+
+- id: run_tactoid_rescaled_fe_probe
+  model: tactoid_rescaled_free_energy
+  inputs:
+    alpha: tactoid_angle_probe_added
+    omega: omega_fig2a_5_filamin
+  outputs:
+    F_hat: tactoid_Fhat_probe
+
+- id: run_tactoid_min_w2
+  model: tactoid_equilibrium_minimizer
+  inputs:
+    omega: omega_fig2a_5_filamin
+  outputs:
+    alpha_eq: alpha_eq_w2
+    aspect_ratio: ar_min_w2
+    F_hat_min: F_hat_min_w2
+
+- id: run_tactoid_min_w1p4
+  model: tactoid_equilibrium_minimizer
+  inputs:
+    omega: omega_fig2a_10_filamin
+  outputs:
+    alpha_eq: alpha_eq_w1p4
+    aspect_ratio: ar_min_w1p4
+    F_hat_min: F_hat_min_w1p4
+
+- id: run_tactoid_min_w_contr2p5
+  model: tactoid_equilibrium_minimizer
+  inputs:
+    omega: tableS1_contr_2p5_omega
+  outputs:
+    alpha_eq: alpha_eq_contr2p5
+    aspect_ratio: ar_min_contr2p5
+    F_hat_min: F_hat_min_contr2p5
+
+- id: run_tactoid_min_w_contr10
+  model: tactoid_equilibrium_minimizer
+  inputs:
+    omega: tableS1_contr_10_omega
+  outputs:
+    alpha_eq: alpha_eq_contr10
+    aspect_ratio: ar_min_contr10
+    F_hat_min: F_hat_min_contr10
+
+- id: run_tactoid_ar_scaling_w2
+  model: tactoid_aspect_ratio_scaling
+  inputs:
+    omega: omega_fig2a_5_filamin
+  outputs:
+    aspect_ratio: ar_scaling_w2
+
+- id: run_tactoid_ar_scaling_w1p4
+  model: tactoid_aspect_ratio_scaling
+  inputs:
+    omega: omega_fig2a_10_filamin
+  outputs:
+    aspect_ratio: ar_scaling_w1p4
+
+- id: run_tactoid_ar_scaling_w_contr2p5
+  model: tactoid_aspect_ratio_scaling
+  inputs:
+    omega: tableS1_contr_2p5_omega
+  outputs:
+    aspect_ratio: ar_scaling_contr2p5
+
+- id: run_tactoid_ar_scaling_w_contr10
+  model: tactoid_aspect_ratio_scaling
+  inputs:
+    omega: tableS1_contr_10_omega
+  outputs:
+    aspect_ratio: ar_scaling_contr10
+
+- id: run_tactoid_ar_large_w2
+  model: tactoid_aspect_ratio_large_omega
+  inputs:
+    omega: omega_fig2a_5_filamin
+  outputs:
+    aspect_ratio: ar_large_w2
+
+- id: run_tactoid_ar_large_w1p4
+  model: tactoid_aspect_ratio_large_omega
+  inputs:
+    omega: omega_fig2a_10_filamin
+  outputs:
+    aspect_ratio: ar_large_w1p4
+
+- id: run_omega_from_ar_2p5
+  model: anchoring_strength_from_aspect_ratio
+  inputs:
+    aspect_ratio: aspect_ratio_2p5_filamin
+  outputs:
+    omega: omega_from_ar_2p5
+
+- id: run_omega_from_ar_15
+  model: anchoring_strength_from_aspect_ratio
+  inputs:
+    aspect_ratio: aspect_ratio_15_filamin
+  outputs:
+    omega: omega_from_ar_15
+
+# ==========================================================================
+# Group D: Coarsening, exponential relaxation, strain, isotropic & ODE dynamics
+# ==========================================================================
+
+- id: run_coarsening_measured_alpha
+  model: tactoid_coarsening_power_law
+  inputs:
+    t: coarsening_time_probe_added
+    alpha: coarsening_exponent_measured
+  outputs:
+    L: L_coarsening_measured_probe
+
+- id: run_coarsening_theory_alpha
+  model: tactoid_coarsening_power_law
+  inputs:
+    t: coarsening_time_probe_added
+    alpha: coarsening_exponent_theory
+  outputs:
+    L: L_coarsening_theory_probe
+
+- id: run_exp_relax_probe
+  model: tactoid_exponential_relaxation
+  inputs:
+    t: exp_relax_time_probe_added
+    L_i: coal_10_Li_added
+    L_f: tableS1_coal_10_Leq
+    tau: exp_relax_tau_probe_added
+  outputs:
+    L: L_exp_relax_probe
+
+- id: run_strain_contr_2p5
+  model: bundle_contractile_strain
+  inputs:
+    L_i: contr_2p5_Li_added
+    L_f: tableS1_contr_2p5_Leq
+  outputs:
+    strain: strain_contr_2p5_pred
+
+- id: run_strain_contr_5
+  model: bundle_contractile_strain
+  inputs:
+    L_i: contr_5_Li_added
+    L_f: tableS1_contr_5_Leq
+  outputs:
+    strain: strain_contr_5_pred
+
+- id: run_strain_contr_10
+  model: bundle_contractile_strain
+  inputs:
+    L_i: contr_10_Li_added
+    L_f: tableS1_contr_10_Leq
+  outputs:
+    strain: strain_contr_10_pred
+
+- id: run_iso_rate_printed
+  model: isotropic_relaxation_rate_printed
+  inputs:
+    L: tableS1_coal_5_Leq
+    r: isotropic_r_probe_added
+    eta: eta_frap_est
+    gamma_I: gamma_I_est_main
+  outputs:
+    dL_dt: iso_dL_dt_printed
+    tau: iso_tau_printed
+
+- id: run_iso_rate_corrected
+  model: isotropic_relaxation_rate_corrected
+  inputs:
+    L: tableS1_coal_5_Leq
+    r: isotropic_r_probe_added
+    eta: eta_frap_est
+    gamma_I: gamma_I_est_main
+  outputs:
+    dL_dt: iso_dL_dt_corrected
+    tau: iso_tau_corrected
+
+- id: run_iso_coal_tau_eb
+  model: isotropic_coalescence_tau_energy_balance
+  inputs:
+    eta: eta_frap_est
+    gamma_I: gamma_I_est_main
+    V: tactoid_V_probe
+    r: tactoid_r_probe
+    L_i: coal_10_Li_added
+    delta_L: deformation_length_probe_added
+  outputs:
+    tau: iso_coal_tau_eb_out
+
+- id: run_coal_tau_linear
+  model: coalescence_tau_linear_scaling
+  inputs:
+    eta: eta_frap_est
+    gamma_eff: gamma_eff_probe_added
+    delta_L: deformation_length_probe_added
+  outputs:
+    slope: coal_slope_linear
+    tau: coal_tau_linear_out
+
+- id: run_tactoid_dissipation_probe
+  model: tactoid_dissipation_power
+  inputs:
+    V: tactoid_V_probe
+    eta_R: eta_frap_est
+    eta_alpha: eta_frap_est
+    R: tactoid_arc_radius_probe_added
+    dR_dt: dissipation_dR_dt_probe_added
+    alpha: tactoid_angle_probe_added
+    dalpha_dt: dissipation_dalpha_dt_probe_added
+  outputs:
+    D: tactoid_dissipation_probe_out
+
+- id: run_ode_coal_5
+  model: tactoid_shape_dynamics_ode
+  inputs:
+    omega: tableS1_coal_5_omega
+    v_cap: tableS1_coal_5_gamma_eta
+    L_eq: tableS1_coal_5_Leq
+    L_i: coal_5_Li_added
+    t_max: ode_t_max_coal_added
+  outputs:
+    tau: ode_tau_coal_5
+    tau_linearized: ode_taulin_coal_5
+    alpha_eq: ode_aeq_coal_5
+    alpha_min: ode_amin_coal_5
+    L_final: ode_Lfin_coal_5
+
+- id: run_ode_coal_10
+  model: tactoid_shape_dynamics_ode
+  inputs:
+    omega: tableS1_coal_10_omega
+    v_cap: tableS1_coal_10_gamma_eta
+    L_eq: tableS1_coal_10_Leq
+    L_i: coal_10_Li_added
+    t_max: ode_t_max_coal_added
+  outputs:
+    tau: ode_tau_coal_10
+    tau_linearized: ode_taulin_coal_10
+    alpha_eq: ode_aeq_coal_10
+    alpha_min: ode_amin_coal_10
+    L_final: ode_Lfin_coal_10
+
+- id: run_ode_contr_2p5
+  model: tactoid_shape_dynamics_ode
+  inputs:
+    omega: tableS1_contr_2p5_omega
+    v_cap: tableS1_contr_2p5_gamma_eta
+    L_eq: tableS1_contr_2p5_Leq
+    L_i: contr_2p5_Li_added
+    t_max: ode_t_max_contr_added
+  outputs:
+    tau: ode_tau_contr_2p5
+    tau_linearized: ode_taulin_contr_2p5
+    alpha_eq: ode_aeq_contr_2p5
+    alpha_min: ode_amin_contr_2p5
+    L_final: ode_Lfin_contr_2p5
+
+- id: run_ode_contr_5
+  model: tactoid_shape_dynamics_ode
+  inputs:
+    omega: tableS1_contr_5_omega
+    v_cap: tableS1_contr_5_gamma_eta
+    L_eq: tableS1_contr_5_Leq
+    L_i: contr_5_Li_added
+    t_max: ode_t_max_contr_added
+  outputs:
+    tau: ode_tau_contr_5
+    tau_linearized: ode_taulin_contr_5
+    alpha_eq: ode_aeq_contr_5
+    alpha_min: ode_amin_contr_5
+    L_final: ode_Lfin_contr_5
+
+- id: run_ode_contr_10
+  model: tactoid_shape_dynamics_ode
+  inputs:
+    omega: tableS1_contr_10_omega
+    v_cap: tableS1_contr_10_gamma_eta
+    L_eq: tableS1_contr_10_Leq
+    L_i: contr_10_Li_added
+    t_max: ode_t_max_contr_added
+  outputs:
+    tau: ode_tau_contr_10
+    tau_linearized: ode_taulin_contr_10
+    alpha_eq: ode_aeq_contr_10
+    alpha_min: ode_amin_contr_10
+    L_final: ode_Lfin_contr_10
+
+# ==========================================================================
+# Group E: Rayleigh-Plateau capillary instability (printed & corrected)
+# ==========================================================================
+
+- id: run_cap_wavenumber_probe
+  model: capillary_wavenumber_definition
+  inputs:
+    R_0: bundle_initial_radius_si
+    lam: capillary_lambda_max_predicted
+  outputs:
+    k: cap_k_at_printed_lam_max
+
+- id: run_cap_rate_scale_probe
+  model: capillary_rate_scale
+  inputs:
+    gamma_I: gamma_I_est_main
+    eta: eta_frap_est
+    R_0: bundle_initial_radius_si
+  outputs:
+    rate_0: cap_rate_scale_out
+
+- id: run_cap_axial_velocity_probe
+  model: capillary_axial_velocity
+  inputs:
+    du_dt: capillary_du_dt_probe_added
+    k: cap_k_at_printed_lam_max
+  outputs:
+    v: cap_axial_vel_out
+
+- id: run_cap_vol_printed
+  model: capillary_volume_conservation_printed
+  inputs:
+    R_0: bundle_initial_radius_si
+    u: capillary_u_probe_added
+    lam: capillary_lambda_max_predicted
+  outputs:
+    V: cap_vol_printed_out
+
+- id: run_cap_vol_corrected
+  model: capillary_volume_conservation_corrected
+  inputs:
+    R_0: bundle_initial_radius_si
+    u: capillary_u_probe_added
+    lam: capillary_lambda_max_predicted
+  outputs:
+    V: cap_vol_corrected_out
+
+- id: run_cap_integral_probe
+  model: capillary_free_energy_integral
+  inputs:
+    R_0: bundle_initial_radius_si
+    u: capillary_u_probe_added
+    lam: capillary_lambda_max_predicted
+    gamma_I: gamma_I_est_main
+    omega: bundle_omega_capillary_si
+  outputs:
+    A: cap_A_integral_probe
+    A_omega: cap_Ao_integral_probe
+    F: cap_F_integral_probe
+    delta_F: cap_dF_integral_probe
+
+- id: run_cap_energy_printed_probe
+  model: capillary_energy_cost_printed
+  inputs:
+    R_0: bundle_initial_radius_si
+    u: capillary_u_probe_added
+    lam: capillary_lambda_max_predicted
+    gamma_I: gamma_I_est_main
+    omega: bundle_omega_capillary_si
+  outputs:
+    delta_F: cap_dF_printed_probe
+
+- id: run_cap_energy_corrected_probe
+  model: capillary_energy_cost_corrected
+  inputs:
+    R_0: bundle_initial_radius_si
+    u: capillary_u_probe_added
+    lam: capillary_lambda_max_predicted
+    gamma_I: gamma_I_est_main
+    omega: bundle_omega_capillary_si
+  outputs:
+    delta_F: cap_dF_corrected_probe
+
+- id: run_cap_thresh_printed
+  model: capillary_instability_threshold_printed
+  inputs:
+    R_0: bundle_initial_radius_si
+    omega: bundle_omega_capillary_si
+  outputs:
+    lambda_c: cap_lam_c_printed
+    enhancement: cap_enh_printed
+
+- id: run_cap_thresh_corrected
+  model: capillary_instability_threshold_corrected
+  inputs:
+    R_0: bundle_initial_radius_si
+    omega: bundle_omega_capillary_si
+  outputs:
+    lambda_c: cap_lam_c_corrected
+    enhancement: cap_enh_corrected
+
+- id: run_cap_fastest_printed
+  model: capillary_fastest_mode_printed
+  inputs:
+    R_0: bundle_initial_radius_si
+    omega: bundle_omega_capillary_si
+  outputs:
+    k_max: cap_kmax_printed
+    lambda_max: cap_lam_max_printed
+    lambda_to_R0: cap_lam_to_R0_printed
+
+- id: run_cap_fastest_corrected
+  model: capillary_fastest_mode_corrected
+  inputs:
+    R_0: bundle_initial_radius_si
+    omega: bundle_omega_capillary_si
+  outputs:
+    k_max: cap_kmax_corrected
+    lambda_max: cap_lam_max_corrected
+    lambda_to_R0: cap_lam_to_R0_corrected
+
+- id: run_cap_wavelength_from_kmax_printed
+  model: capillary_wavelength_from_wavenumber
+  inputs:
+    R_0: bundle_initial_radius_si
+    k: cap_kmax_printed
+  outputs:
+    lam: cap_lam_from_kmax_printed
+
+- id: run_cap_wavelength_from_kmax_corrected
+  model: capillary_wavelength_from_wavenumber
+  inputs:
+    R_0: bundle_initial_radius_si
+    k: cap_kmax_corrected
+  outputs:
+    lam: cap_lam_from_kmax_corrected
+
+- id: run_cap_dyn_factor_probe
+  model: capillary_dynamic_factor_scaling
+  inputs:
+    gamma_I: gamma_I_est_main
+    eta: eta_frap_est
+    R_0: bundle_initial_radius_si
+    k: cap_kmax_printed
+  outputs:
+    Lambda: cap_Lambda_at_kmax
+
+- id: run_cap_disp_printed_probe
+  model: capillary_dispersion_printed
+  inputs:
+    gamma_I: gamma_I_est_main
+    eta: eta_frap_est
+    R_0: bundle_initial_radius_si
+    omega: bundle_omega_capillary_si
+    k: cap_kmax_printed
+  outputs:
+    Omega: cap_Omega_printed_at_kmax
+
+- id: run_cap_disp_corrected_probe
+  model: capillary_dispersion_corrected
+  inputs:
+    gamma_I: gamma_I_est_main
+    eta: eta_frap_est
+    R_0: bundle_initial_radius_si
+    omega: bundle_omega_capillary_si
+    k: cap_kmax_corrected
+  outputs:
+    Omega: cap_Omega_corrected_at_kmax
+
+# ==========================================================================
+# Audit additions: additional printed-result checks and capillary dissipation
+# ==========================================================================
+
+- id: run_enrichment_ratio_entropic
+  model: concentration_enrichment_ratio
+  inputs:
+    c_dense: c_actin_entropic_nematic_main
+    c_dilute: c_actin_dilute_main
+  outputs:
+    ratio: enrichment_ratio_pred_entropic
+
+- id: run_frap_diff_scaling_fig1c
+  model: frap_diffusion_scaling
+  inputs:
+    L_b: frap_bleached_size_added
+    tau_R: tau_R_frap_fig1c
+  outputs:
+    D: D_frap_scaling_fig1c_pred
+
+- id: run_gamma_I_coal_10_printed_eta
+  model: interfacial_tension_from_capillary_velocity
+  inputs:
+    eta: eta_frap_est
+    v_cap: tableS1_coal_10_gamma_eta
+  outputs:
+    gamma_I: gamma_I_pred_coal_10_printed_eta
+  note: "Intentionally pairs the paper's sole FRAP viscosity estimate (5 mol % filamin, ~3 Pa*s) with Table S1's 10 mol % coalescence capillary velocity (0.11 +/- 0.03 um/s), reproducing 330 nN/m vs p. 4 '~300 nN/m' (see q_gamma_I_filamin_condition_choice)."
+
+- id: run_gamma_I_coal_10_chained_eta
+  model: interfacial_tension_from_capillary_velocity
+  inputs:
+    eta: eta_frap_pred
+    v_cap: tableS1_coal_10_gamma_eta
+  outputs:
+    gamma_I: gamma_I_pred_coal_10_chained_eta
+  note: "Intentionally pairs the chained Stokes-Einstein FRAP viscosity (5 mol % filamin, 3.13 Pa*s) with Table S1's 10 mol % coalescence capillary velocity (0.11 +/- 0.03 um/s), reproducing 345 nN/m vs p. 4 '~300 nN/m' (see q_gamma_I_filamin_condition_choice)."
+
+- id: run_ode_coal_10_fig2a_omega
+  model: tactoid_shape_dynamics_ode
+  inputs:
+    omega: omega_fig2a_10_filamin
+    v_cap: tableS1_coal_10_gamma_eta
+    L_eq: tableS1_coal_10_Leq
+    L_i: coal_10_Li_added
+    t_max: ode_t_max_coal_added
+  outputs:
+    tau: ode_tau_coal_10_fig2a
+    tau_linearized: ode_taulin_coal_10_fig2a
+    alpha_eq: ode_aeq_coal_10_fig2a
+    alpha_min: ode_amin_coal_10_fig2a
+    L_final: ode_Lfin_coal_10_fig2a
+
+- id: run_cap_dissipation_probe
+  model: capillary_dissipation_power
+  inputs:
+    eta: eta_frap_est
+    R_0: bundle_initial_radius_si
+    lam: capillary_lambda_max_predicted
+    v: cap_axial_vel_out
+  outputs:
+    D: cap_dissipation_probe_out
+
+# ==========================================================================
+# Digitized figure verification sweeps (Figs. 2A, 3A, 3C inset, 3D, S2C, S2D)
+# ==========================================================================
+
+- id: run_fig2a_omega_from_ar
+  model: anchoring_strength_from_aspect_ratio_curve
+  inputs:
+    aspect_ratio_curve: d_fig2a_aspect_ratio
+    omega_target_curve: d_fig2a_omega
+  outputs:
+    omega_curve: fig2a_omega_from_ar_pred
+
+- id: run_fig3a_coarsening_fit_measured_alpha
+  model: tactoid_coarsening_power_law
+  inputs:
+    alpha: coarsening_exponent_measured
+  sweep:
+    t: d_fig3a_length_fit
+  outputs:
+    L: fig3a_L_fit_measured_alpha_pred
+
+- id: run_fig3a_coarsening_fit_theory_alpha
+  model: tactoid_coarsening_power_law
+  inputs:
+    alpha: coarsening_exponent_theory
+  sweep:
+    t: d_fig3a_length_fit
+  outputs:
+    L: fig3a_L_fit_theory_alpha_pred
+
+- id: run_fig3a_coarsening_data_measured_alpha
+  model: tactoid_coarsening_power_law
+  inputs:
+    alpha: coarsening_exponent_measured
+  sweep:
+    t: d_fig3a_length_data
+  outputs:
+    L: fig3a_L_data_measured_alpha_pred
+
+- id: run_fig3a_coarsening_data_theory_alpha
+  model: tactoid_coarsening_power_law
+  inputs:
+    alpha: coarsening_exponent_theory
+  sweep:
+    t: d_fig3a_length_data
+  outputs:
+    L: fig3a_L_data_theory_alpha_pred
+
+- id: run_fig3c_inset_linear_fit
+  model: coalescence_tau_linear_scaling
+  inputs:
+    eta: eta_frap_est
+    gamma_eff: gamma_eff_probe_added
+  sweep:
+    delta_L: d_fig3c_inset_linear_fit
+  outputs:
+    tau: fig3c_inset_tau_linear_pred
+
+- id: run_fig3d_ode_w2p0_printed
+  model: tactoid_shape_dynamics_ode
+  inputs:
+    omega: omega_fig2a_5_filamin
+    L_eq: tableS1_coal_5_Leq
+    L_i: coal_5_Li_added
+    t_max: ode_t_max_coal_added
+  sweep:
+    v_cap: d_fig3d_theory_w2p0
+  outputs:
+    tau: fig3d_tau_w2p0_printed_pred
+
+- id: run_fig3d_ode_w2p0_rayleigh2
+  model: tactoid_shape_dynamics_ode_rayleigh2
+  inputs:
+    omega: omega_fig2a_5_filamin
+    L_eq: tableS1_coal_5_Leq
+    L_i: coal_5_Li_added
+    t_max: ode_t_max_coal_added
+  sweep:
+    v_cap: d_fig3d_theory_w2p0
+  outputs:
+    tau: fig3d_tau_w2p0_rayleigh2_pred
+
+- id: run_fig3d_ode_w1p4_printed
+  model: tactoid_shape_dynamics_ode
+  inputs:
+    omega: omega_fig2a_10_filamin
+    L_eq: tableS1_coal_10_Leq
+    L_i: coal_10_Li_added
+    t_max: ode_t_max_coal_added
+  sweep:
+    v_cap: d_fig3d_theory_w1p4
+  outputs:
+    tau: fig3d_tau_w1p4_printed_pred
+
+- id: run_fig3d_ode_w1p4_rayleigh2
+  model: tactoid_shape_dynamics_ode_rayleigh2
+  inputs:
+    omega: omega_fig2a_10_filamin
+    L_eq: tableS1_coal_10_Leq
+    L_i: coal_10_Li_added
+    t_max: ode_t_max_coal_added
+  sweep:
+    v_cap: d_fig3d_theory_w1p4
+  outputs:
+    tau: fig3d_tau_w1p4_rayleigh2_pred
+
+- id: run_fig3d_ode_w1p4_fixedV_rayleigh2
+  model: tactoid_shape_dynamics_ode_rayleigh2
+  inputs:
+    omega: omega_fig2a_10_filamin
+    L_eq: coal_10_Leq_fixedV_added
+    L_i: coal_10_Li_fixedV_added
+    t_max: ode_t_max_coal_added
+  sweep:
+    v_cap: d_fig3d_theory_w1p4
+  outputs:
+    tau: fig3d_tau_w1p4_fixedV_rayleigh2_pred
+
+- id: run_ode_rayleigh2_coal_10_scalar
+  model: tactoid_shape_dynamics_ode_rayleigh2
+  inputs:
+    omega: tableS1_coal_10_omega
+    v_cap: tableS1_coal_10_gamma_eta
+    L_eq: tableS1_coal_10_Leq
+    L_i: coal_10_Li_added
+    t_max: ode_t_max_coal_added
+  outputs:
+    tau: ode_rayleigh2_tau_coal_10
+    L_final: ode_rayleigh2_Lfin_coal_10
+
+- id: run_figS2c_Fhat_w0
+  model: tactoid_rescaled_free_energy
+  inputs:
+    omega: omega_figS2c_0
+  sweep:
+    alpha: d_figS2c_Fhat_w0
+  outputs:
+    F_hat: figS2c_Fhat_w0_pred
+
+- id: run_figS2c_Fhat_w0p5
+  model: tactoid_rescaled_free_energy
+  inputs:
+    omega: omega_figS2c_0p5
+  sweep:
+    alpha: d_figS2c_Fhat_w0p5
+  outputs:
+    F_hat: figS2c_Fhat_w0p5_pred
+
+- id: run_figS2c_Fhat_w2
+  model: tactoid_rescaled_free_energy
+  inputs:
+    omega: omega_figS2c_2
+  sweep:
+    alpha: d_figS2c_Fhat_w2
+  outputs:
+    F_hat: figS2c_Fhat_w2_pred
+
+- id: run_figS2d_minimizer
+  model: tactoid_equilibrium_minimizer
+  inputs: {}
+  sweep:
+    omega: d_figS2d_numerical_min
+  outputs:
+    aspect_ratio: figS2d_ar_min_pred
+
+- id: run_figS2d_scaling_small
+  model: tactoid_aspect_ratio_scaling
+  inputs: {}
+  sweep:
+    omega: d_figS2d_scaling_small_w
+  outputs:
+    aspect_ratio: figS2d_ar_small_w_pred
+
+- id: run_figS2d_scaling_large
+  model: tactoid_aspect_ratio_scaling
+  inputs: {}
+  sweep:
+    omega: d_figS2d_scaling_large_w
+  outputs:
+    aspect_ratio: figS2d_ar_large_w_pred
+
+- id: run_figS2d_large_omega_eq
+  model: tactoid_aspect_ratio_large_omega
+  inputs: {}
+  sweep:
+    omega: d_figS2d_scaling_large_w
+  outputs:
+    aspect_ratio: figS2d_ar_large_omega_eq_pred
+
+- id: run_fig3c_master_curve
+  model: tactoid_exponential_master_curve
+  inputs: {}
+  sweep:
+    t_scaled: d_fig3c_master_curve
+  outputs:
+    L_scaled: fig3c_master_curve_pred
+
+- id: run_fig4d_master_2p5
+  model: tactoid_exponential_master_curve
+  inputs: {}
+  sweep:
+    t_scaled: d_fig4d_2p5pct
+  outputs:
+    L_scaled: fig4d_master_2p5_pred
+
+- id: run_fig4d_master_5
+  model: tactoid_exponential_master_curve
+  inputs: {}
+  sweep:
+    t_scaled: d_fig4d_5pct
+  outputs:
+    L_scaled: fig4d_master_5_pred
+
+- id: run_fig4d_master_10
+  model: tactoid_exponential_master_curve
+  inputs: {}
+  sweep:
+    t_scaled: d_fig4d_10pct
+  outputs:
+    L_scaled: fig4d_master_10_pred
+
+- id: run_figS2c_Fhat_norm_w0
+  model: tactoid_rescaled_free_energy_figS2c_norm
+  inputs:
+    omega: omega_figS2c_0
+  sweep:
+    alpha: d_figS2c_Fhat_w0
+  outputs:
+    F_hat: figS2c_Fhat_norm_w0_pred
+
+- id: run_figS2c_Fhat_norm_w0p5
+  model: tactoid_rescaled_free_energy_figS2c_norm
+  inputs:
+    omega: omega_figS2c_0p5
+  sweep:
+    alpha: d_figS2c_Fhat_w0p5
+  outputs:
+    F_hat: figS2c_Fhat_norm_w0p5_pred
+
+- id: run_figS2c_Fhat_norm_w2
+  model: tactoid_rescaled_free_energy_figS2c_norm
+  inputs:
+    omega: omega_figS2c_2
+  sweep:
+    alpha: d_figS2c_Fhat_w2
+  outputs:
+    F_hat: figS2c_Fhat_norm_w2_pred

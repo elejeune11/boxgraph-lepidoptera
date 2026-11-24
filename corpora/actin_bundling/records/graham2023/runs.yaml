@@ -1,0 +1,755 @@
+# ==========================================================================
+# 1. Dimensional scale definitions & bundle stiffness parameters (Table 1)
+# ==========================================================================
+- id: run_filament_flexural_rigidity
+  model: filament_flexural_rigidity
+  inputs: {L_p: actin_lp_table1, kBT: kbt_room_temp_added}
+  outputs: {k_b_fil: k_b_fil_computed}
+
+- id: run_ring_filament_count_300nm
+  model: ring_filament_count
+  inputs: {T_ring: test_ring_thickness_300nm_added, delta: filament_spacing_vasp_delta}
+  outputs: {N_fil: n_fil_300nm}
+
+- id: run_bundle_rigidity_linear_300nm
+  model: bundle_bending_rigidity_linear
+  inputs: {K_b_fil: k_b_fil_computed, N_fil: n_fil_300nm}
+  outputs: {K_b_ring: k_b_ring_linear_300nm}
+
+- id: run_bundle_rigidity_bathe_300nm
+  model: bundle_bending_rigidity_bathe_eqS1
+  inputs:
+    k_b_fil: k_b_fil_computed
+    N: n_fil_300nm
+    chi: test_bathe_chi_added
+    c_qj: test_bathe_cqj_added
+    alpha: test_bathe_alpha_weak_added
+  outputs: {k_b: k_b_ring_bathe_300nm}
+
+- id: run_discrete_k_stretch_300nm
+  model: discrete_stretching_constant
+  inputs: {N_fil: n_fil_300nm, k_stretch_fil: single_filament_k_stretch}
+  outputs: {k_stretch: k_stretch_300nm}
+
+- id: run_discrete_k_bend_300nm
+  model: discrete_bending_constant
+  inputs:
+    N_fil: n_fil_300nm
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+  outputs: {k_bend: k_bend_300nm}
+
+# ==========================================================================
+# 2. Continuum bending-fluctuation & ring-thickness scaling (Eq. 1, Eqs. S21-S25)
+# ==========================================================================
+- id: run_ring_circumference_median
+  model: circular_ring_contour_length
+  inputs: {R: test_droplet_radius_added}
+  outputs: {L: L_ring_median}
+
+- id: run_eq1_printed_median
+  model: ring_bending_energy_eq1
+  inputs:
+    k_b: k_b_ring_linear_300nm
+    L: L_ring_median
+    R: test_droplet_radius_added
+    m: test_fourier_mode_added
+    u_m: test_fluctuation_amp_added
+  outputs: {E_bend: E_bend_eq1_printed_median}
+
+- id: run_eq1_corrected_median
+  model: ring_bending_energy_eq1_corrected
+  inputs:
+    k_b: k_b_ring_linear_300nm
+    L: L_ring_median
+    R: test_droplet_radius_added
+    m: test_fourier_mode_added
+    u_m: test_fluctuation_amp_added
+  outputs: {E_bend: E_bend_eq1_corrected_median}
+
+- id: run_confinement_energy_median
+  model: ring_confinement_bending_energy
+  inputs:
+    k_b: k_b_ring_linear_300nm
+    L: L_ring_median
+    R: test_droplet_radius_added
+  outputs: {E_bend_0: E_bend_confinement_median}
+
+- id: run_excess_bending_eqS22_median
+  model: ring_excess_bending_energy_eqS22
+  inputs:
+    k_b: k_b_ring_linear_300nm
+    L: L_ring_median
+    R: test_droplet_radius_added
+    m: test_fourier_mode_added
+    u_m: test_fluctuation_amp_added
+  outputs: {Delta_E_bend: Delta_E_bend_eqS22_median}
+
+- id: run_equipartition_amp_eqS23_median
+  model: ring_equipartition_amplitude_eqS23
+  inputs:
+    R: test_droplet_radius_added
+    L: L_ring_median
+    L_p: actin_lp_table1
+    m: test_fourier_mode_added
+  outputs: {u_m: u_m_eqS23_median}
+
+- id: run_amplitude_scaling_eqS24_median
+  model: ring_amplitude_scaling_eqS24
+  inputs:
+    R: test_droplet_radius_added
+    L: L_ring_median
+    L_p: actin_lp_table1
+  outputs: {u_m: u_m_eqS24_median}
+
+- id: run_thickness_scaling_eqS25_median
+  model: ring_thickness_scaling_eqS25
+  inputs:
+    R: test_droplet_radius_added
+    L_p: actin_lp_table1
+  outputs: {u_m: u_m_eqS25_median}
+
+- id: run_ring_thickness_exponent
+  model: ring_thickness_scaling_exponent
+  inputs: {D: droplet_diam_median_20uM, L_p: actin_lp_table1}
+  outputs: {b: ring_thickness_exponent_pred}
+
+- id: run_power_law_fit_fig3f_median
+  model: power_law_thickness_fit
+  inputs:
+    D: droplet_diam_median_20uM
+    a: fit_fig3f_ar_lt11_a
+    b: fit_fig3f_ar_lt11_b
+  outputs: {T_ring: T_ring_fit_fig3f_median}
+
+- id: run_power_law_fit_fig4h_median
+  model: power_law_thickness_fit
+  inputs:
+    D: droplet_diam_median_20uM
+    a: fit_fig4h_ar_lt11_a
+    b: fit_fig4h_ar_lt11_b
+  outputs: {T_ring: T_ring_fit_fig4h_median}
+
+# ==========================================================================
+# 3. Droplet geometry, ellipse perimeter, surface energy, wetting profile
+# ==========================================================================
+- id: run_effective_spherical_diameter
+  model: effective_spherical_diameter
+  inputs: {a: test_major_axis_methods_added, b: test_minor_axis_methods_added}
+  outputs: {D: D_eff_methods_test}
+
+- id: run_ellipse_axes_ar15
+  model: ellipse_axes_constant_area
+  inputs: {D_droplet: fig4f_droplet_diam, AR: test_aspect_ratio_ellipse_added}
+  outputs: {a: a_ellipse_ar15, b: b_ellipse_ar15}
+
+- id: run_ellipse_perim_integral_ar15
+  model: ellipse_perimeter_integral_eqS10
+  inputs: {a: a_ellipse_ar15, b: b_ellipse_ar15}
+  outputs: {L: P_integral_ar15}
+
+- id: run_ellipse_perim_series_ar15
+  model: ellipse_perimeter_series_eqS11
+  inputs: {a: a_ellipse_ar15, b: b_ellipse_ar15}
+  outputs: {L: P_series_ar15}
+
+- id: run_droplet_surface_energy_ar15
+  model: droplet_surface_energy_eqS12
+  inputs: {gamma_I: fig4f_gamma_i, L: P_series_ar15}
+  outputs: {Delta_E_surface: E_surf_ar15}
+
+- id: run_wetting_printed_inside
+  model: wetting_tension_profile_eqS5
+  inputs:
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    e: test_ellipse_coord_inside_added
+    k_e: interface_steepness_ke
+  outputs: {gamma: gamma_wet_printed_inside}
+
+- id: run_wetting_printed_outside
+  model: wetting_tension_profile_eqS5
+  inputs:
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    e: test_ellipse_coord_outside_added
+    k_e: interface_steepness_ke
+  outputs: {gamma: gamma_wet_printed_outside}
+
+- id: run_wetting_corrected_inside
+  model: wetting_tension_profile_eqS5_corrected
+  inputs:
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    e: test_ellipse_coord_inside_added
+    k_e: interface_steepness_ke
+  outputs: {gamma: gamma_wet_corrected_inside}
+
+- id: run_wetting_corrected_outside
+  model: wetting_tension_profile_eqS5_corrected
+  inputs:
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    e: test_ellipse_coord_outside_added
+    k_e: interface_steepness_ke
+  outputs: {gamma: gamma_wet_corrected_outside}
+
+# ==========================================================================
+# 4. 2D Discrete SLSQP droplet-ring energy minimization (SI Section 2.6, Fig. 4)
+# ==========================================================================
+- id: run_ring_extension_length_ratio
+  model: ring_extension_length_ratio
+  inputs: {n_cycles: ring_extension_cycles_val, step_frac: ring_extension_step_frac}
+  outputs: {L_ratio: L_ratio_computed}
+
+- id: run_slsqp_printed_fig4f_300nm
+  model: droplet_ring_minimization_printed
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    T_ring: test_ring_thickness_300nm_added
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: fig4f_gamma_i
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  replicates: 3
+  outputs:
+    aspect_ratio: ar_slsqp_printed_300nm
+    total_energy: E_slsqp_printed_300nm
+    a: a_slsqp_printed_300nm
+    b: b_slsqp_printed_300nm
+  note: "3 replicates following Fig. 4h caption ('three trials') and Reporting Summary ('three independent initial conditions')."
+
+- id: run_slsqp_corrected_fig4f_300nm
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    T_ring: test_ring_thickness_300nm_added
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: fig4f_gamma_i
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  replicates: 3
+  outputs:
+    aspect_ratio: ar_slsqp_corrected_300nm
+    total_energy: E_slsqp_corrected_300nm
+    a: a_slsqp_corrected_300nm
+    b: b_slsqp_corrected_300nm
+  note: "3 replicates following Fig. 4h caption and Reporting Summary."
+
+# ==========================================================================
+# 5. Continuum ring-to-rod transition energy landscape (Fig. 5c, SI Section 2.11)
+# ==========================================================================
+- id: run_fig5c_ring_circumference
+  model: circular_ring_contour_length
+  inputs: {R: fig5c_droplet_radius}
+  outputs: {L: L_fig5c}
+
+- id: run_ring_rod_ar_max
+  model: ring_rod_max_aspect_ratio
+  inputs: {L: L_fig5c, R: fig5c_droplet_radius}
+  outputs: {ar_max: ar_max_fig5c}
+
+- id: run_ring_rod_ar_crit
+  model: ring_rod_critical_aspect_ratio
+  inputs: {R: fig5c_droplet_radius, L: L_fig5c}
+  outputs: {ar_crit: ar_crit_fig5c}
+
+- id: run_ring_rod_energy_printed_units
+  model: ring_rod_transition_energy
+  inputs:
+    R: fig5c_droplet_radius
+    L: L_fig5c
+    k_b: fig5c_kb_printed
+    gamma_I: fig5c_gamma_i_printed
+    AR: test_aspect_ratio_high_added
+  outputs:
+    E_bend: E_bend_fig5c_printed_units
+    E_surf: E_surf_fig5c_printed_units
+    P_over_2L: P_over_2L_fig5c_ar95
+  note: "Evaluated with literal printed Fig. 5c caption units (kb = 1 pN*nm^2, gamma_I = 1 pN, R = 1 um), illustrating the 10^6 bend/surface scale mismatch."
+
+- id: run_ring_rod_energy_um_consistent
+  model: ring_rod_transition_energy
+  inputs:
+    R: fig5c_droplet_radius
+    L: L_fig5c
+    k_b: fig5c_kb_um_consistent_added
+    gamma_I: fig5c_gamma_i_printed
+    AR: test_aspect_ratio_high_added
+  outputs:
+    E_bend: E_bend_fig5c_um_consistent
+    E_surf: E_surf_fig5c_um_consistent
+    P_over_2L: P_over_2L_fig5c_um_consistent
+  note: "Evaluated with consistent micrometre units (kb = 1 pN*um^2, gamma_I = 1 pN, R = 1 um) matching the plotted energy values of Fig. 5c (in pN*um)."
+
+# ==========================================================================
+# 6. Experimental linear bundle elongation and monomer rate (Fig. 5h, p. 8-9)
+# ==========================================================================
+- id: run_linear_elongation_100s
+  model: linear_bundle_elongation
+  inputs: {v: elongation_rate_fit_fig5h, t: test_elongation_time_added}
+  outputs: {y: bundle_growth_100s}
+
+- id: run_monomer_rate_from_mean_v
+  model: elongation_monomer_rate
+  inputs: {v: elongation_rate_mean_text, delta_l: actin_monomer_step_added}
+  outputs: {r_mon: monomer_rate_from_mean_v}
+
+- id: run_monomer_rate_from_fit_v
+  model: elongation_monomer_rate
+  inputs: {v: elongation_rate_fit_fig5h, delta_l: actin_monomer_step_added}
+  outputs: {r_mon: monomer_rate_from_fit_v}
+
+# ==========================================================================
+# 7. Digitized figure curve sweeps: Extended Data Fig. 5c (wetting profile)
+# ==========================================================================
+- id: run_wetting_printed_edfig5c_ke1
+  model: wetting_tension_profile_eqS5
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: edfig5c_ke_1}
+  sweep: {e: edfig5c_ke1_fig}
+  outputs: {gamma: gamma_wet_printed_ke1_curve}
+
+- id: run_wetting_printed_edfig5c_ke8
+  model: wetting_tension_profile_eqS5
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: edfig5c_ke_8}
+  sweep: {e: edfig5c_ke8_fig}
+  outputs: {gamma: gamma_wet_printed_ke8_curve}
+
+- id: run_wetting_printed_edfig5c_ke16
+  model: wetting_tension_profile_eqS5
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: edfig5c_ke_16}
+  sweep: {e: edfig5c_ke16_fig}
+  outputs: {gamma: gamma_wet_printed_ke16_curve}
+
+- id: run_wetting_printed_edfig5c_ke32
+  model: wetting_tension_profile_eqS5
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: edfig5c_ke_32}
+  sweep: {e: edfig5c_ke32_fig}
+  outputs: {gamma: gamma_wet_printed_ke32_curve}
+
+- id: run_wetting_printed_edfig5c_ke64
+  model: wetting_tension_profile_eqS5
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: interface_steepness_ke}
+  sweep: {e: edfig5c_ke64_fig}
+  outputs: {gamma: gamma_wet_printed_ke64_curve}
+
+- id: run_wetting_corrected_edfig5c_ke1
+  model: wetting_tension_profile_eqS5_corrected
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: edfig5c_ke_1}
+  sweep: {e: edfig5c_ke1_fig}
+  outputs: {gamma: gamma_wet_corrected_ke1_curve}
+
+- id: run_wetting_corrected_edfig5c_ke8
+  model: wetting_tension_profile_eqS5_corrected
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: edfig5c_ke_8}
+  sweep: {e: edfig5c_ke8_fig}
+  outputs: {gamma: gamma_wet_corrected_ke8_curve}
+
+- id: run_wetting_corrected_edfig5c_ke16
+  model: wetting_tension_profile_eqS5_corrected
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: edfig5c_ke_16}
+  sweep: {e: edfig5c_ke16_fig}
+  outputs: {gamma: gamma_wet_corrected_ke16_curve}
+
+- id: run_wetting_corrected_edfig5c_ke32
+  model: wetting_tension_profile_eqS5_corrected
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: edfig5c_ke_32}
+  sweep: {e: edfig5c_ke32_fig}
+  outputs: {gamma: gamma_wet_corrected_ke32_curve}
+
+- id: run_wetting_corrected_edfig5c_ke64
+  model: wetting_tension_profile_eqS5_corrected
+  inputs: {gamma_AVR: gamma_avr_table1, gamma_AVD: gamma_avd_table1, k_e: interface_steepness_ke}
+  sweep: {e: edfig5c_ke64_fig}
+  outputs: {gamma: gamma_wet_corrected_ke64_curve}
+
+# ==========================================================================
+# 8. Digitized figure curve sweeps: Fig. 5c (ring-to-rod continuum energies)
+# ==========================================================================
+- id: run_fig5c_ring_circumference_1nm
+  model: circular_ring_contour_length
+  inputs: {R: fig5c_radius_1nm_added}
+  outputs: {L: L_fig5c_1nm}
+
+- id: run_fig5c_bending_printed_curve
+  model: ring_rod_transition_energy
+  inputs:
+    R: fig5c_droplet_radius
+    L: L_fig5c
+    k_b: fig5c_kb_printed
+    gamma_I: fig5c_gamma_i_printed
+  sweep: {AR: fig5c_bending_fig}
+  outputs:
+    E_bend: E_bend_fig5c_printed_curve
+    E_surf: E_surf_fig5c_printed_bendgrid
+    P_over_2L: P_over_2L_fig5c_printed_bendgrid
+  note: "Swept with literal printed inputs (R = 1 um, kb = 1 pN*nm^2, gamma_I = 1 pN)."
+
+- id: run_fig5c_surface_printed_curve
+  model: ring_rod_transition_energy
+  inputs:
+    R: fig5c_droplet_radius
+    L: L_fig5c
+    k_b: fig5c_kb_printed
+    gamma_I: fig5c_gamma_i_printed
+  sweep: {AR: fig5c_surface_fig}
+  outputs:
+    E_bend: E_bend_fig5c_printed_surfgrid
+    E_surf: E_surf_fig5c_printed_curve
+    P_over_2L: P_over_2L_fig5c_printed_surfgrid
+  note: "Swept with literal printed inputs (R = 1 um, kb = 1 pN*nm^2, gamma_I = 1 pN)."
+
+- id: run_fig5c_bending_1nm_curve
+  model: ring_rod_transition_energy
+  inputs:
+    R: fig5c_radius_1nm_added
+    L: L_fig5c_1nm
+    k_b: fig5c_kb_printed
+    gamma_I: fig5c_gamma_i_printed
+  sweep: {AR: fig5c_bending_fig}
+  outputs:
+    E_bend: E_bend_fig5c_1nm_curve
+    E_surf: E_surf_fig5c_1nm_bendgrid
+    P_over_2L: P_over_2L_fig5c_1nm_bendgrid
+  note: "Swept with consistent nm radius (R = 1 nm, kb = 1 pN*nm^2, gamma_I = 1 pN) matching Fig. 5c y-axis in pN*nm."
+
+- id: run_fig5c_surface_1nm_curve
+  model: ring_rod_transition_energy
+  inputs:
+    R: fig5c_radius_1nm_added
+    L: L_fig5c_1nm
+    k_b: fig5c_kb_printed
+    gamma_I: fig5c_gamma_i_printed
+  sweep: {AR: fig5c_surface_fig}
+  outputs:
+    E_bend: E_bend_fig5c_1nm_surfgrid
+    E_surf: E_surf_fig5c_1nm_curve
+    P_over_2L: P_over_2L_fig5c_1nm_surfgrid
+  note: "Swept with consistent nm radius (R = 1 nm, kb = 1 pN*nm^2, gamma_I = 1 pN) matching Fig. 5c y-axis in pN*nm."
+
+# ==========================================================================
+# 9. Digitized figure curve sweeps: Figs. 3e, 3f, 4h, 5h (empirical fits)
+# ==========================================================================
+- id: run_fig3e_rings_fit_curve
+  model: power_law_thickness_fit
+  inputs: {a: fit_fig3e_rings_a, b: fit_fig3e_rings_b}
+  sweep: {D: fig3e_rings_fit_fig}
+  outputs: {T_ring: T_ring_fig3e_rings_curve}
+
+- id: run_fig3e_discs_fit_curve
+  model: power_law_thickness_fit
+  inputs: {a: fit_fig3e_discs_a, b: fit_fig3e_discs_b}
+  sweep: {D: fig3e_discs_fit_fig}
+  outputs: {T_ring: T_ring_fig3e_discs_curve}
+
+- id: run_fig3f_ar_lt11_fit_curve
+  model: power_law_thickness_fit
+  inputs: {a: fit_fig3f_ar_lt11_a, b: fit_fig3f_ar_lt11_b}
+  sweep: {D: fig3f_ar_lt11_fit_fig}
+  outputs: {T_ring: T_ring_fig3f_ar_lt11_curve}
+
+- id: run_fig3f_ar_gt11_fit_curve
+  model: power_law_thickness_fit
+  inputs: {a: fit_fig3f_ar_gt11_a, b: fit_fig3f_ar_gt11_b}
+  sweep: {D: fig3f_ar_gt11_fit_fig}
+  outputs: {T_ring: T_ring_fig3f_ar_gt11_curve}
+
+- id: run_fig4h_exp_fit_curve
+  model: power_law_thickness_fit
+  inputs: {a: fit_fig4h_ar_lt11_a, b: fit_fig4h_ar_lt11_b}
+  sweep: {D: fig4h_exp_fit_fig}
+  outputs: {T_ring: T_ring_fig4h_exp_curve}
+
+- id: run_fig4h_exp_fit_using_fig3f_params
+  model: power_law_thickness_fit
+  inputs: {a: fit_fig3f_ar_lt11_a, b: fit_fig3f_ar_lt11_b}
+  sweep: {D: fig4h_exp_fit_fig}
+  outputs: {T_ring: T_ring_fig4h_using_fig3f_curve}
+
+- id: run_fig5h_linear_fit_curve
+  model: linear_bundle_elongation
+  inputs: {v: elongation_rate_fit_fig5h}
+  sweep: {t: fig5h_linear_fit_fig}
+  outputs: {y: bundle_growth_fig5h_curve}
+
+# ==========================================================================
+# 10. Digitized figure curve sweeps: Fig. 4f, Fig. 4g, ED Fig. 7 (SLSQP model)
+# ==========================================================================
+- id: run_slsqp_corrected_fig4f_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: fig4f_gamma_i
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: fig4f_droplet_ar_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_fig4f_curve
+    total_energy: E_slsqp_corr_fig4f_curve
+    a: a_slsqp_corr_fig4f_curve
+    b: b_slsqp_corr_fig4f_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise as verified by 3-replicate run_slsqp_corrected_fig4f_300nm."
+
+- id: run_slsqp_printed_fig4g_d1_gI5_sweep
+  model: droplet_ring_minimization_printed
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: fig4f_gamma_i
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: fig4g_d1_gI5_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_printed_fig4g_d1_gI5_curve
+    total_energy: E_slsqp_printed_fig4g_d1_gI5_curve
+    a: a_slsqp_printed_fig4g_d1_gI5_curve
+    b: b_slsqp_printed_fig4g_d1_gI5_curve
+  note: "Single seed (replicates: 1) testing the literal printed Eqs. S2 & S4-S5 against the digitized Fig. 4g (D = 1 um, gamma_I = 5 pN) slice."
+
+- id: run_slsqp_corrected_fig4g_d1_gI1_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: fig4g_gamma_i_low
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: fig4g_d1_gI1_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_fig4g_d1_gI1_curve
+    total_energy: E_slsqp_corr_fig4g_d1_gI1_curve
+    a: a_slsqp_corr_fig4g_d1_gI1_curve
+    b: b_slsqp_corr_fig4g_d1_gI1_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise."
+
+- id: run_slsqp_corrected_fig4g_d1_gI5_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: fig4f_gamma_i
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: fig4g_d1_gI5_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_fig4g_d1_gI5_curve
+    total_energy: E_slsqp_corr_fig4g_d1_gI5_curve
+    a: a_slsqp_corr_fig4g_d1_gI5_curve
+    b: b_slsqp_corr_fig4g_d1_gI5_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise."
+
+- id: run_slsqp_corrected_fig4g_d2_gI1_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4g_droplet_diam_2um
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: fig4g_gamma_i_low
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: fig4g_d2_gI1_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_fig4g_d2_gI1_curve
+    total_energy: E_slsqp_corr_fig4g_d2_gI1_curve
+    a: a_slsqp_corr_fig4g_d2_gI1_curve
+    b: b_slsqp_corr_fig4g_d2_gI1_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise."
+
+- id: run_slsqp_corrected_fig4g_d2_gI5_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4g_droplet_diam_2um
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: fig4f_gamma_i
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: fig4g_d2_gI5_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_fig4g_d2_gI5_curve
+    total_energy: E_slsqp_corr_fig4g_d2_gI5_curve
+    a: a_slsqp_corr_fig4g_d2_gI5_curve
+    b: b_slsqp_corr_fig4g_d2_gI5_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise."
+
+- id: run_slsqp_corrected_edfig7b_d1_gI2p5_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: edfig7_gamma_i_2p5
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: edfig7b_d1_gI2p5_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_edfig7b_curve
+    total_energy: E_slsqp_corr_edfig7b_curve
+    a: a_slsqp_corr_edfig7b_curve
+    b: b_slsqp_corr_edfig7b_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise."
+
+- id: run_slsqp_corrected_edfig7d_d1_gI7p5_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: edfig7_gamma_i_7p5
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: edfig7d_d1_gI7p5_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_edfig7d_curve
+    total_energy: E_slsqp_corr_edfig7d_curve
+    a: a_slsqp_corr_edfig7d_curve
+    b: b_slsqp_corr_edfig7d_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise."
+
+- id: run_slsqp_corrected_edfig7e_d1_gI10_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: edfig7_gamma_i_10
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: edfig7e_d1_gI10_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_edfig7e_curve
+    total_energy: E_slsqp_corr_edfig7e_curve
+    a: a_slsqp_corr_edfig7e_curve
+    b: b_slsqp_corr_edfig7e_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise."
+
+- id: run_slsqp_corrected_edfig7f_d1_gI12p5_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: edfig7_gamma_i_12p5
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: edfig7f_d1_gI12p5_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_edfig7f_curve
+    total_energy: E_slsqp_corr_edfig7f_curve
+    a: a_slsqp_corr_edfig7f_curve
+    b: b_slsqp_corr_edfig7f_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise."
+
+- id: run_slsqp_corrected_edfig7g_d1_gI15_sweep
+  model: droplet_ring_minimization_corrected
+  inputs:
+    D_droplet: fig4f_droplet_diam
+    delta: filament_spacing_vasp_delta
+    L_p: actin_lp_table1
+    kBT: kbt_room_temp_added
+    L_cyl: segment_length_lcyl
+    k_stretch_fil: single_filament_k_stretch
+    gamma_AVR: gamma_avr_table1
+    gamma_AVD: gamma_avd_table1
+    k_e: interface_steepness_ke
+    gamma_I: fig4h_gamma_i_max
+    L_ratio: L_ratio_computed
+    noise_amp: noise_amp_val
+  sweep: {T_ring: edfig7g_d1_gI15_fig}
+  replicates: 1
+  outputs:
+    aspect_ratio: ar_slsqp_corr_edfig7g_curve
+    total_energy: E_slsqp_corr_edfig7g_curve
+    a: a_slsqp_corr_edfig7g_curve
+    b: b_slsqp_corr_edfig7g_curve
+  note: "Single seed (replicates: 1); droplet_ring_minimization_corrected at r_init_frac=0.96 is seed-invariant for 0.1 nm noise."

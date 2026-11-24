@@ -1,0 +1,1476 @@
+- id: q_filament_count_upper_bound_40_vs_36
+  kind: possible_error
+  about:
+    - bundle_filament_count_2d_spacing
+    - filament_count_1um_expected_max
+    - vasp_diameter_min
+    - cmp_nf_2d_max_repro
+  text: >
+    On p. 11, the authors state that a VASP diameter range of 28 to 70 nm yields an expected
+    14-40 filaments in a 1-um-thick 2D bundle. While W / d_max = 1000 nm / 70 nm = 14.29
+    reproduces the printed lower bound 14, W / d_min = 1000 nm / 28 nm = 35.71 falls 10.7%
+    short of the printed upper bound 40 (which corresponds to 25.0 nm spacing, not 28 nm;
+    fencepost counting W/d + 1 yields 15.3-36.7, matching neither endpoint). The printed 40
+    likely reflects loose rounding of ~36 up to 1 significant digit or using ~25 nm mentally.
+    Additionally, no reference is cited in that sentence for the 28-70 nm VASP diameter range.
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "eter range from 28 to 70 nm of VASP, we expected a quantity of"
+    where: "Data analysis"
+
+- id: q_intensity_count_implies_sub_vasp_spacing_or_multilayer
+  kind: unexplained_difference
+  about:
+    - bundle_effective_spacing
+    - filament_count_1um_intensity_measured
+    - vasp_diameter_range
+    - cmp_spacing_intensity_vs_vasp_range
+  text: >
+    Extrapolating integrated transverse fluorescence intensity gives 45 +/- 12 filaments in a
+    1-um-thick bundle (p. 11), which under a strictly 2D single-filament layer implies an
+    effective lateral spacing of 1000 nm / 45 = 22.2 nm (range 17.5-30.3 nm for 33-57
+    filaments). While 35.7 filaments (at 28 nm) sits inside [33, 57], 14.3 filaments (at 70 nm)
+    is excluded, and the mean 22.2 nm lies below the stated 28-70 nm VASP diameter range. This
+    suggests either tighter lateral filament compaction (closer to fascin's 12.4 nm in
+    Claessens et al. 2008) or >1 stacked filament layer in Z within the TIRF evanescent field
+    (consistent with finite axial thickness in confocal XZ Fig. S1F). The paper also omits
+    which VASP concentration was sampled and whether +/-12 is SD or SEM.
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "1-µm-thick bundles of 45 ± 12, which was in the same order of"
+    where: "Data analysis"
+
+- id: q_lipid_relaxation_half_intensity_vs_fig5c
+  kind: possible_error
+  about:
+    - lipid_relaxation_fraction_60min
+    - bundle_intensity_ratio
+  text: >
+    On p. 8, the text states that after initial lipid displacement underneath actin bundles,
+    'the lipid intensity relaxes to around half of initial intensity after 60 min' (Fig. 5C).
+    However, the blue Lipids curve in Fig. 5C (plotted on the outer right y-axis, Intensity
+    Ratio [under-bundles/no-bundles], range 0.90-1.25) drops only ~8% from 1.00 to ~0.92 at
+    ~5 min and relaxes to ~0.95-0.96 by 60 min. Thus the intensity never approaches 50% of
+    initial intensity (0.50); rather, the lipid *displacement* (deficit below 1.00) relaxes by
+    roughly half (from ~8% depletion to ~4-5% depletion). Digitization of Fig. 5C will
+    quantify the exact depletion and relaxation ratios.
+  citation:
+    page: 8
+    printed_page: "8"
+    quote: "lipid intensity relaxes to around half of initial intensity after 60 min,"
+    where: text
+
+- id: q_bundle_width_proportionality_claim
+  kind: overstated_claim
+  about:
+    - bundle_width_vasp_scaling
+    - bundle_width_median_vasp_025
+    - cmp_width_scaling_025
+  text: >
+    On p. 2, the authors claim 'A drastic increase in actin bundle diameter in two dimensions
+    (2D) proportional to the VASP concentration was observed', yet print neither a fitted slope
+    nor a power-law test across concentrations. In Fig. 2E, bundle widths at 0.05 and 0.125 uM
+    VASP are nearly flat at the optical/segmentation floor (~0.55 um median), while 1 uM VASP
+    causes ~95% bilayer decoration (Fig. S2G) that the authors acknowledge 'prohibited reliable
+    determination of individual bundle widths' (p. 2), leaving only 0.25 and 0.5 uM cleanly
+    resolved. Digitization of Fig. 2E is needed to test true linearity vs sub/superlinear scaling.
+  citation:
+    page: 2
+    printed_page: "2"
+    quote: "proportional to the VASP concentration was observed when incu-"
+    where: text
+
+- id: q_frap_unstated_fit_params_and_diffusivity
+  kind: unstated_input
+  about:
+    - frap_recovery_fit
+    - frap_half_time
+    - frap_t_half_vasp_slb
+    - frap_t_half_vasp_ml
+    - frap_mobile_fraction_slb_prepol
+    - frap_mobile_fraction_ml_prepol
+    - frap_bleach_circle_diameter
+    - frap_baseline_offset_added
+    - frap_observation_end_added
+  text: >
+    Although p. 11 specifies the FRAP fit formula y = a*(1 - exp(-t/tau)) + c, t_1/2 = tau*ln(2),
+    and the bleached circle diameter (4.96 um), the paper omits: (1) the fitted parameters a, c,
+    and tau; (2) explicit confirmation that t_1/2 = 0.102 min (SLB) and 0.399 min (ML) refer to
+    the prePol state (and omits the 30 min Pol half-times); (3) conversion to 2D diffusion
+    coefficients D (for a uniform disk of radius r_b = 2.48 um, Soumpasis D = 0.224*r_b^2/t_1/2
+    implies ~0.225 um^2/s on SLB and ~0.058 um^2/s on ML); and (4) whether reported mobile
+    fractions (0.97, 0.65, 0.61, 0.57) are fitted asymptotes a + c or final-frame intensities at
+    t ~ 1.3 min (where the ML exponential with t_1/2 = 0.399 min reaches only 89.5% of its
+    asymptote: 0.546 for a = 0.61, c = 0, vs ~0.61 visible in Fig. 4C).
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "fitted using with the formula y = a∗(1 – e(-t/τ)) + c"
+    where: "Data analysis"
+
+- id: q_unstated_vasp_surface_density
+  kind: unstated_input
+  about:
+    - vasp_conc_025
+    - lipid_frac_dogs_ni_nta
+    - bundle_width_vasp_scaling
+  text: >
+    After incubating VASP for 10 min on the 10% DOGS-Ni-NTA bilayer, unbound protein is washed
+    out with 20 chamber volumes of PBS before adding actin (p. 11). Thus all reported VASP
+    concentrations (0.05-2 uM) are incubation concentrations rather than bulk equilibrium
+    concentrations. The paper does not calibrate absolute membrane-bound VASP surface density
+    (molecules/um^2)—Fig. S2H reports only arbitrary fluorescence units, still rising at 2 uM—so
+    the true bound VASP-to-actin stoichiometry cannot be computed directly for quantitative
+    comparison with bulk cross-linker ratios R* in Claessens et al. (2008).
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "protein was then removed by washing with 20 times the chamber"
+    where: "Polymerization assay"
+
+- id: q_vasp_phase_separation_threshold_tension
+  kind: reading
+  about:
+    - vasp_llps_threshold_main
+    - vasp_llps_range_si
+  text: >
+    Main text (p. 6) reports pre-actin VASP liquid-liquid phase separation on SLBs at 'high VASP
+    concentrations (>=0.5 uM)', whereas Supplemental Fig. 4G caption (p. 14) states an enriched
+    phase is observed 'from 0.25-2 uM of VASP incubated', and Fig. S4H plots nonzero cluster
+    area fractions down to 0.05-0.25 uM (~0.18 at 0.25 uM). In addition, Fig. 4D does not state
+    which VASP concentration was imaged, and Fig. S4H (and Fig. S2H) omit whether error bars
+    represent SD or SEM.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "trations (≥0.5 µM) even before the addition of actin."
+    where: text
+
+- id: q_no_elongation_velocity_quantified
+  kind: unstated_model
+  about:
+    - actin_conc_standard
+    - actin_conc_exchange_atto647
+  text: >
+    Despite proposing a polymerization-driven bundling mechanism and attributing the absence of
+    bundling on monolayers to VASP-mediated polymerization slowing below free-polymerization
+    speed (p. 6), the paper never quantifies single-filament elongation speeds (um/s or
+    subunits/s) from the Fig. 1C kymograph or kinetic curves (Fig. 3E, S2F, S3E). It also omits
+    the numeric 'room temperature' (in degC) for polymerization assays and the fluorescent
+    labeling percentage of the 0.5 uM actin-Atto647N exchange mix (Fig. 2F).
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "This leads to a slowdown of VASP-mediated polymerization to"
+    where: text
+
+- id: q_supplemental_fig2d_typo_05M
+  kind: possible_error
+  about:
+    - vasp_conc_050
+  text: >
+    The caption of Supplemental Figure 2 (p. 14) prints '0.5 M (D)' instead of '0.5 uM (D)', a
+    10^6-fold unit misprint. The panel label on p. 16 ('0.5 uM VASP') and main text (p. 2)
+    confirm the actual incubation concentration is 0.5 uM.
+  citation:
+    page: 14
+    printed_page: "SI 2"
+    quote: "(C), 0.5 M (D), 1 µM (E) VASP incubated on a supported lipid bilayer."
+    where: "Supplemental Fig. 2 caption"
+
+- id: q_figure_panel_misreferences
+  kind: possible_error
+  about:
+    - mdia1_tirf_decline_onset_time
+    - vasp_conc_100
+  text: >
+    Several figure-panel misreferences and minor errata appear in the main text: (1) p. 6 cites
+    'Figure 3D' for the mDia1 TIRF actin intensity decrease after 6 min, which is actually
+    plotted in Figure 3E (and begins declining after ~8-9 min rather than 6 min; Fig. 3D is a
+    micrograph of mDia1 + alpha-actinin1b); (2) p. 8 cites 'Figure 4, A and D' for loss of VASP-
+    actin colocalization on monolayers, whereas colocalization scores are in Figure 4B (4D shows
+    pre-actin VASP phase separation on SLBs); (3) p. 2 cites 'Figure 2, A and D' for pore size
+    changes and 1 uM VASP bilayer decoration, whereas pore size and 1 uM VASP are plotted in
+    Figure 2E (and Supplemental Fig. S2E, S2G, S2I); (4) Fig. 3B caption prints 'emitted'
+    instead of 'omitted'.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "TIRF after 6 min (Figure 3D; Supplemental Video S4)."
+    where: text
+
+- id: q_cp_to_actin_ratio_halved
+  kind: overstated_claim
+  about:
+    - cp_to_actin_ratio
+    - actin_conc_standard
+    - actin_conc_high_4
+    - cp_conc_standard
+  text: >
+    On p. 2, doubling actin from 2 uM to 4 uM at constant 50 nM CP and 10 uM profilin is
+    described as yielding a 'slightly lower CP to actin ratio'. Quantitative evaluation via
+    cp_to_actin_ratio shows R_CP actually halves from 0.025 (1:40) to 0.0125 (1:80), a 50%
+    reduction (while the profilin-to-actin molar ratio simultaneously halves from 5:1 to 2.5:1).
+  citation:
+    page: 2
+    printed_page: "2"
+    quote: "the faster polymerization and slightly lower CP to actin ratio leads"
+    where: text
+
+- id: q_diffraction_limit_vs_segmented_width
+  kind: unexplained_difference
+  about:
+    - tirf_objective_na
+    - vasp_conc_005
+    - vasp_conc_0125
+  text: >
+    On p. 2, the minimal observed width difference between 0.05 and 0.125 uM VASP (Fig. 2D peak
+    ~0.4 um, Fig. 2E median ~0.55 um) is attributed to the optical diffraction limit. With NA =
+    1.47 (p. 11) and Atto488 emission ~520 nm, the theoretical Rayleigh diffraction limit is
+    0.61*lambda/NA ~ 0.216 um (Abbe ~0.177 um), more than 2x narrower than the segmented ~0.4-
+    0.55 um widths, indicating substantial broadening by the PSF tail and ilastik binary
+    segmentation thresholding (pixel size and segmentation threshold are unstated).
+  citation:
+    page: 2
+    printed_page: "2"
+    quote: "ing observable between 0.05 and 0.125 µM VASP, whereas changes"
+    where: text
+
+- id: q_nonrunnable_lognormal_fit
+  kind: unstated_model
+  about:
+    - bundle_width_lognormal_fit
+  text: >
+    Fig. 2D, Fig. S2I, and Fig. S4C plot log-normal fits to actin bundle width histograms, but
+    the paper prints neither the log-normal equation/normalization, histogram bin width
+    (visually 0.2 um in Fig. 2D), nor any fitted location/scale parameters (mu, sigma). Thus
+    bundle_width_lognormal_fit cannot be executed directly from printed values.
+  citation:
+    page: 4
+    printed_page: "4"
+    quote: "with a log-normal fit of the distribution."
+    where: "Fig. 2D caption"
+
+- id: q_nonrunnable_intensity_extrapolation
+  kind: unstated_input
+  about:
+    - bundle_filament_intensity_extrapolation
+    - filament_count_1um_intensity_measured
+  text: >
+    On p. 11, the filament count of 45 +/- 12 per 1-um bundle is derived by integrating actin
+    fluorescence intensity across bundle diameters and extrapolating to large bundles, but the
+    single-filament reference integrated intensity, sampled bundle intensities, and regression
+    curve are omitted, rendering bundle_filament_intensity_extrapolation non-runnable.
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "grating the intensity over the diameter of filament bundles and"
+    where: "Data analysis"
+
+- id: q_nonrunnable_image_processing_models
+  kind: unstated_input
+  about:
+    - bundle_intensity_ratio
+    - bilayer_actin_decoration
+    - vasp_actin_spearman_colocalization
+    - frap_bleach_normalization
+  text: >
+    Four stated image-processing pipelines on p. 11—under/next-to-bundle intensity ratios
+    (Fig. 5C), ilastik-segmented bilayer actin decoration fractions (Fig. S2G), FIJI Coloc 2
+    Spearman rank colocalization scores (Fig. 4B), and Siggia et al. (2000) reference-corrected
+    FRAP normalization (Fig. 4C)—cannot be re-executed because raw image stacks, field-of-view
+    dimensions, trained ilastik classifiers, and unnormalized ROI/reference fluorescence traces
+    are not published (data available upon request only).
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "The data supporting the findings of this study are available from"
+    where: "Data availability"
+
+- id: q_chimeric_vasp_construct_and_ml_substrate
+  kind: reading
+  about:
+    - vasp_conc_025
+    - bundle_width_median_vasp_025
+    - frap_t_half_vasp_slb
+    - frap_t_half_vasp_ml
+  text: >
+    Audit reading note on two experimental-condition details omitted from the first reading's
+    conditions and notes: (1) on p. 10, the protein termed 'VASP' throughout the paper is not
+    wild-type human VASP but chimeric 'Human VASP containing the high affinity GAB of
+    Dictyostelium discoideum VASP' (Breitsprecher et al., 2011), which exhibits markedly
+    enhanced G-actin affinity and elongation kinetics relative to wild-type human VASP and is
+    critical context for cross-paper comparisons; (2) on p. 10, SLBs were assembled on
+    piranha-etched glass coverslips (50 uL parafilm chambers) whereas lipid monolayers (ML) were
+    assembled on uncoated polymer ibidi u-slide I luer channels from 30% isopropanol, so SLB vs
+    ML comparisons simultaneously vary lipid architecture and solid-support material/chamber
+    geometry.
+  citation:
+    page: 10
+    printed_page: "10"
+    quote: "Human VASP containing the high affinity GAB of Dictyostelium"
+    where: "Protein purification"
+
+- id: q_frap_amplitude_vs_mobile_fraction_reading
+  kind: reading
+  about:
+    - frap_recovery_fit
+    - frap_recovery_by_half_time
+    - frap_mobile_fraction_plateau
+    - frap_mobile_fraction_ml_prepol
+    - frap_t_half_vasp_slb
+    - frap_t_half_vasp_ml
+    - run_frap_fit_ml_end
+    - frap_baseline_offset_added
+  text: >
+    Audit reading disagreement on the FRAP parameterization and datum metadata: (1) the first
+    reading binds port a of frap_recovery_fit and frap_recovery_by_half_time to quantity
+    vasp_mobile_fraction and evaluates run_frap_fit_ml_end with a = 0.61 (yielding y(1.3 min) =
+    0.546), whereas p. 11 never defines the printed mobile fractions (0.97, 0.65, 0.61, 0.57) as
+    the exponential amplitude a, and Fig. 4C (p. 7) visually shows the VASP ML prePol trace
+    reaching ~0.61-0.62 at t = 1.3 min (matching a ~ 0.69 with t_1/2 = 0.399 min, since
+    0.69*(1 - 2^(-1.3/0.399)) = 0.618, and suggesting the printed 0.61 may be the finite-window
+    endpoint intensity rather than a); (2) frap_t_half_vasp_slb (0.102 min) and
+    frap_t_half_vasp_ml (0.399 min) are recorded with origin 'measured' and condition
+    polymerization_state = 'prePol', whereas p. 11 states t_1/2 = tau*ln(2) is calculated from
+    the exponential fit (making 'fitted' or 'derived' a plausible alternative origin) and p. 6
+    does not explicitly state the prePol state; (3) fitting a single exponential to a 2D
+    diffusive FRAP trace (faster early recovery than single exponential) can produce a positive
+    baseline offset c exceeding the +/-0.02 alternatives in frap_baseline_offset_added.
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "fitted using with the formula y = a∗(1 – e(-t/τ)) + c"
+    where: "Data analysis"
+
+- id: q_max_bundle_width_3um_vs_fig3f_whisker
+  kind: unexplained_difference
+  about:
+    - bundle_width_max_vasp_025
+    - bundle_width_max_vasp_dtetra_025
+  text: >
+    On p. 6, the text states that monomeric VASP_DeltaTetra produces bundles 'exhibiting a large
+    bundle thickness of up to 3.2 um compared with 3 um for tetrameric VASP (Figure 3F)'.
+    However, in Fig. 3F (p. 5), whose caption defines whiskers as the 1-99th percentile range,
+    the upper whisker for tetrameric VASP lies at ~2.5 um (matching Fig. 2E at 0.25 uM VASP),
+    whereas VASP_DeltaTetra's 99th-percentile upper whisker reaches ~3.2 um. Only the Fig. 2D
+    histogram tail for 0.25 uM tetrameric VASP extends out to 3.0 um (matching p. 2 'up to 3 um
+    within minutes'), suggesting p. 6 either compares VASP_DeltaTetra's 99th-percentile whisker
+    against tetrameric VASP's absolute histogram tail or misreads the ~2.5 um whisker in Fig. 3F.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "compared with 3 µm for tetrameric VASP (Figure 3F)."
+    where: text
+
+- id: q_intensity_extrapolation_equation_reading
+  kind: reading
+  about:
+    - bundle_filament_intensity_extrapolation
+    - filament_count_1um_intensity_measured
+  text: >
+    Audit reading note: bundle_filament_intensity_extrapolation records equation
+    'N_f = I_bundle / I_single', whereas p. 11 states only in words 'integrating the intensity
+    over the diameter of filament bundles and used the result to extrapolate the number of
+    filaments for large bundles' without printing an equation or stating whether extrapolation
+    used a direct single-filament intensity ratio or linear regression over thin multi-filament
+    bundles.
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "grating the intensity over the diameter of filament bundles and"
+    where: "Data analysis"
+
+- id: q_claessens2008_2d_vs_3d_packing_and_spacing_contrast
+  kind: unexplained_difference
+  about:
+    - bundle_filament_count_2d_spacing
+    - bundle_effective_spacing
+    - rel_claessens2008_hex_shells_scales_2d_spacing
+    - rel_claessens2008_hex_width_reduces_to_2d_count
+    - filament_count_1um_intensity_measured
+    - vasp_diameter_range
+    - vasp_diameter_min
+    - ref-claessens2008
+    - claessens2008/hexagonal_shell_filaments
+    - claessens2008/hexagonal_lattice_spacing
+    - claessens2008/diameter_filament_scaling
+    - claessens2008/filament_number_from_diameter_ratio
+    - claessens2008/aH_hex_saxs
+    - claessens2008/interfilament_sep_fascin
+    - claessens2008/nf_max_confinement
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "eter range from 28 to 70 nm of VASP, we expected a quantity of"
+    where: "Data analysis"
+  text: >
+    Comparing lateral filament packing and interfilament spacing between claessens2008 (3D
+    fascin-crosslinked bundles) and nastkolb2022 (2D VASP-mediated bundles on fluid supported
+    lipid bilayers) exposes a fundamental dimensionality and lattice-spacing contrast:
+    (1) 3D cross-sectional area vs. 2D single-layer ribbon scaling: claessens2008's packing
+    models follow 3D cross-sectional area scaling n_f ~ D^2 (filament_number_from_diameter_ratio
+    n_f = n_f_0 * D_ratio^2, diameter_filament_scaling D ~ n_f^(1/2), and hexagonal_shell_filaments
+    n_f = 1 + 3*k*(k + 1)), whereas nastkolb2022's bundle_filament_count_2d_spacing assumes a
+    single-layer 2D ribbon with linear scaling N_f = W / d_spacing ~ W^1 (log-slope 1 vs. 2 in
+    bundle width). Consequently, nastkolb2022's 2D filament count corresponds geometrically only
+    to the 1D transverse diameter in filaments D_fil = 2*k + 1 of a 3D hexagonal bundle
+    (rel_claessens2008_hex_shells_scales_2d_spacing and
+    rel_claessens2008_hex_width_reduces_to_2d_count), not to the 3D total filament count n_f.
+    (2) Interfilament spacing (~12.4 nm vs. ~22-70 nm) and quantitative 1-um bundle check:
+    claessens2008 measures a tight, rigid hexagonal center-to-center spacing a_H = 12.4 nm by SAXS
+    (q_10 = 0.585 nm^-1, surface separation ~5 nm, areal density rho_0 = 2/(sqrt(3)*a_H^2) =
+    7510 filaments/um^2), saturating at k = 2 shells (n_f = 19 ~= 20 filaments, D_fil = 5,
+    hydrated vertex width 57.0 nm, flat-to-flat 50.4 nm, TEM plateau 28.2 nm). In contrast,
+    nastkolb2022 assumes flexible tetrameric VASP (with intrinsically disordered regions) sets a
+    2.3-5.6x wider spacing of 28-70 nm (14.3-35.7 filaments in a 1-um 2D bundle), and measures
+    45 +/- 12 filaments per 1-um bundle by integrated fluorescence (effective 2D spacing
+    22.2 nm, range 17.5-30.3 nm). A 3D hexagonal cylinder of diameter W = 1 um would hold
+    ~5898 filaments at fascin's a_H = 12.4 nm (131x Nast-Kolb's 45), ~1157 filaments at VASP's
+    28 nm (26x), or ~185 filaments even at 70 nm (4.1x), confirming that Nast-Kolb's bundles are
+    genuinely quasi-2D (~1.26 stacked layers [0.92, 1.60] at 28 nm spacing, or a single slightly
+    compacted layer at 22.2 nm; even a single 2D layer at fascin's 12.4 nm holds 80.6 filaments).
+    Conversely, applying nastkolb2022's 2D bundle_effective_spacing (W / n_f) to claessens2008's
+    saturated 3D 2-shell bundle (57.0 nm / 19) yields 3.00 nm (4.1x below a_H = 12.4 nm and
+    narrower than a single actin filament), illustrating how multi-layer stacking depresses W/n_f.
+    (3) Short-range electrostatics in both buffers: Claessens's F-buffer (100 mM KCl, 2 mM MgCl2,
+    I ~= 111 mM, Debye length lambda_D ~= 0.91 nm) and Nast-Kolb's KMEI buffer (50 mM KCl,
+    1 mM MgCl2, I ~= 72 mM, lambda_D ~= 1.13 nm) both screen electrostatics well below the
+    interfilament surface separations (~5 nm for fascin, >= 20 nm for VASP).
+
+- id: q_claessens2008_twist_saturation_vs_vasp_feedback_scaling
+  kind: unexplained_difference
+  about:
+    - bundle_width_vasp_scaling
+    - bundle_width_median_vasp_025
+    - bundle_width_median_vs_vasp_fig2e
+    - bilayer_vasp_fluor_vs_vasp_figs2h
+    - bilayer_decoration_vs_vasp_figs2g
+    - bundle_width_vs_actin_figs3f
+    - cp_to_actin_ratio
+    - actin_concentration_fold_change
+    - frap_recovery_fit
+    - ref-claessens2008
+    - claessens2008/diameter_scaling_Rstar
+    - claessens2008/Rstar_filament_scaling
+    - claessens2008/effective_bound_ratio
+    - claessens2008/bundle_geometry_saturation
+    - claessens2008/molar_ratio_fascin_actin
+    - claessens2008/twist_energy_per_fascin
+    - claessens2008/binding_energy_fascin_sign_corrected
+    - claessens2008/helical_overtwist_from_symmetry
+    - claessens2008/droplet_ring_filament_number
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "In contrast with conventional cross-linkers like fascin and α-actinin"
+    where: "Discussion"
+  text: >
+    No exact equivalence (same_as), cross-linker concentration scaling (scales_as), or cited.yaml
+    datum link holds between the thickness-control models of claessens2008 and nastkolb2022, and
+    the two papers exhibit opposing scaling, saturation, and concentration dependencies:
+    (1) Cross-linker concentration scaling and absence of saturation: claessens2008 models bundle
+    diameter as a sublinear power law in equilibrium bound fascin-to-actin ratio, D ~ (R*)^0.3
+    (diameter_scaling_Rstar; Fig. 1C fit slope 0.327, implying n_f ~ (R*)^0.6 and R* ~ n_f^(5/3)),
+    followed by a sharp equilibrium plateau at R* ~= 0.25 (n_f ~= 20, TEM D ~= 28.2 nm) enforced
+    by helical-to-hexagonal angular mismatch (-13/6 -> -28/13, Delta_theta ~= 1 deg/monomer,
+    E_twist ~= 10 k_B T vs. Delta G ~= 15 k_B T) and stoichiometric site saturation (1 fascin per
+    ~4.5 actin monomers, u ~= 13-14, surface-to-bulk ratio scaling as n_f^(-1/2) in
+    bundle_geometry_saturation). In contrast, nastkolb2022 states linear scaling W ~ c_VASP^1
+    (bundle_width_vasp_scaling) with no finite thickness plateau: digitized Fig. 2E medians rise
+    from 0.547 and 0.581 um (0.05-0.125 uM, diffraction/segmentation floor) to 0.945, 1.589, and
+    4.357 um (0.25, 0.50, 1.00 uM; local log-slopes 0.70, 0.75, 1.46; OLS 0.685) up to 95%
+    bilayer decoration (Fig. S2G), and grow even more steeply against sublinearly rising membrane
+    VASP fluorescence (Fig. S2H, log-slope 0.45 over 0.25-2.0 uM -> W vs. VASP fluorescence slopes
+    1.58-2.37). Moreover, c_VASP is a pre-wash incubation concentration (20x PBS wash before actin
+    addition) rather than an equilibrium bound ratio R*, and in a 2D bilayer ribbon every filament
+    contacts the membrane (contact area ~ N_f^1 rather than perimeter ~ n_f^(1/2)), feeding
+    positive VASP recruitment and barbed-end elongation at the two lateral bundle borders (Fig. 2F).
+    (2) Bundling potency at comparable actin concentration: at c_a = 0.1 mg/ml = 2.38 uM
+    (claessens2008 Fig. 1C, close to nastkolb2022's standard 2 uM actin), reaching Claessens's
+    R* = 0.25 plateau requires bulk c_fascin = 0.70 uM (R = 0.292 via effective_bound_ratio with
+    K_d = 0.3 uM) and still caps thickness at ~20 filaments (~57 nm hydrated). In nastkolb2022,
+    incubating 0.25 uM VASP (washed prior to actin addition) already yields median 0.942 um
+    (~45 filaments, max 3 um), quantitatively corroborating Nast-Kolb's p. 9 claim of forming
+    large bundles at comparatively low bundling-protein concentrations.
+    (3) Actin-concentration dependence: claessens2008 finds bundle diameter independent of c_a at
+    fixed R* (Fig. 1A-B, and decreasing with c_a at fixed c_f since R = c_f/c_a), whereas
+    nastkolb2022 (Fig. S3F at 0.25 uM VASP) finds non-monotonic median widths (0.574, 0.770,
+    0.942, 0.812 um at 0.5, 1, 2, 4 uM actin) controlled by G-actin supply up to 2 uM and
+    declining at 4 uM as R_CP halves from 0.025 to 0.0125.
+    (4) Disjoint sub-models and rejected too_plain coincidences: nastkolb2022's six FRAP kinetics
+    models, actin_concentration_fold_change, and cp_to_actin_ratio have no counterparts in
+    claessens2008, while claessens2008's SAXS Bragg/helical-mismatch, twist/binding-energy,
+    mass-action R*, and droplet-confinement models have no counterparts in nastkolb2022. In
+    particular, cp_to_actin_ratio (R_CP = c_CP/c_actin) and claessens2008/molar_ratio_fascin_actin
+    (R = c_f/c_a) are excluded from relations.yaml as a too_plain ratio coincidence between
+    functionally opposite proteins (barbed-end capper vs. filament cross-linker). Neither record
+    imports any numerical datum from the other (no cited.yaml links apply).
+
+- id: q_claessens2008_brownian_arrest_misattribution
+  kind: overstated_claim
+  about:
+    - ref-claessens2008
+    - claessens2008/twist_energy_per_fascin
+    - claessens2008/binding_energy_fascin_sign_corrected
+    - claessens2008/bundle_geometry_saturation
+    - claessens2008/helical_overtwist_from_symmetry
+    - claessens2008/nf_max_confinement
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "limited by the reduced Brownian motion of large bundles. In con-"
+    where: "Discussion"
+  text: >
+    In the Discussion (p. 9), nastkolb2022 groups Claessens et al. (2008) [ref-claessens2008]
+    with alpha-actinin (Falzone et al., 2012) and talin/vinculin (Kelley et al., 2020), writing
+    that 'These mechanisms ... rely on filament zippering through filament fluctuations to create
+    bundles. Therefore the enlargement of bundles is limited by the reduced Brownian motion of
+    large bundles.' While kinetic Brownian arrest limits alpha-actinin bundle growth (Falzone et
+    al., 2012), claessens2008 (p. 1) explicitly tested preparation-history independence (comparing
+    long vs. shortened pre-formed filaments and fascin present before vs. after polymerization)
+    and rejected kinetic arrest for F-actin/fascin bundles, concluding instead that finite
+    thickness (n_f ~= 20, two hexagonal shells) is an equilibrium thermodynamic limit set by
+    helical-twist frustration (-13/6 -> -28/13 overtwist, E_twist ~= 10 k_B T vs. Delta G ~= 15 k_B T)
+    and stoichiometric saturation of fascin binding sites (1:4.5).
+
+- id: q_claessens2008_no_cross_validation
+  kind: unstated_model
+  about:
+    - bundle_filament_count_2d_spacing
+    - bundle_effective_spacing
+    - bundle_width_vasp_scaling
+    - cp_to_actin_ratio
+    - actin_concentration_fold_change
+    - frap_recovery_fit
+    - frap_recovery_by_half_time
+    - frap_half_time
+    - frap_tau_from_half_time
+    - frap_mobile_fraction_plateau
+    - frap_mobility_ratio
+    - ref-claessens2008
+    - q_claessens2008_2d_vs_3d_packing_and_spacing_contrast
+    - q_claessens2008_twist_saturation_vs_vasp_feedback_scaling
+    - claessens2008/D_fig1c_measured
+    - claessens2008/nf_max_abstract
+    - claessens2008/nf_max_confinement
+    - claessens2008/D_fil_fig2d_caption
+    - claessens2008/D_fil_fig2d_text
+    - claessens2008/Rstar_plateau
+    - claessens2008/Rstar_figS1_experiment
+    - claessens2008/D_ratio_fig4d
+    - claessens2008/q10_saxs
+    - claessens2008/aH_hex_saxs
+    - claessens2008/ca_fig2e_single_ring_max
+    - claessens2008/ca_fig2e_two_bundle_min
+    - claessens2008/Delta_theta_fig3d_ca0p8
+    - claessens2008/Delta_theta_fig3d_ca2
+    - claessens2008/Delta_theta_fig3d_ca3
+    - claessens2008/I_saxs_fig3a_R0p5
+    - claessens2008/I_saxs_fig3c_data_R0p5
+    - claessens2008/q_nastkolb2022_no_cross_validation
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "(Claessens et al., 2008; Falzone et al., 2012) or the recently observed"
+    where: "Discussion"
+  text: >
+    No cross-record validations are entered in validations.yaml for nastkolb2022 models (11
+    runnable, 6 non-runnable) against claessens2008's 26 origin: measured data (12 scalars, 14
+    digitized figure curves), because none of nastkolb2022's 2D bilayer VASP bundling or FRAP
+    models validly predicts any 3D fascin-bundle measurement of claessens2008 on Claessens et al.'s
+    own conditions:
+    (1) Filament count measurements (claessens2008/nf_max_abstract = "≈ 20", nf_max_confinement =
+    "≈ 20") and bundle diameter in filaments (claessens2008/D_fil_fig2d_caption = "≈ 5",
+    D_fil_fig2d_text = "5 to 6"):
+    bundle_filament_count_2d_spacing (N_f = W / d_spacing, 2D single-layer ribbon packing) requires
+    scalar bundle width W and center-to-center interfilament spacing d_spacing. Although
+    claessens2008/aH_hex_saxs = 12.4 nm (origin: derived from q10_saxs = 0.585 nm^-1) supplies the
+    hexagonal center-to-center spacing, claessens2008 prints no scalar bundle_diameter datum: its
+    only measured bundle_diameter datum is the 8-point TEM curve D_fig1c_measured(R*), which is
+    indexed by effective_bound_ratio R* (not sweepable into N_f(W), and Rstar_figS1_experiment is
+    transposed as R*(n) rather than n(D)). Manually copying a scalar plateau width from
+    D_fig1c_measured into added.yaml would violate CrossValidation provenance and immediately hit
+    claessens2008's unresolved ~2x internal TEM-vs-SAXS width discrepancy
+    (claessens2008/q_tem_vs_saxs_bundle_diameter: TEM plateau mean 28.09 nm [28.14 nm at R* = 0.70,
+    28.04 nm at R* = 0.90] vs hydrated 2-shell SAXS width 50.35 nm flat-to-flat / 57.00 nm
+    vertex-to-vertex). Moreover: (a) both measured total filament-count scalars (nf_max_abstract,
+    nf_max_confinement) are printed with approximate "≈ 20" (no precision -> no verdict), and
+    diagnostically W / a_H gives only 2.27 filaments (TEM 28.09 nm) or 4.06-4.60 filaments (hydrated
+    50.35-57.00 nm), 4.3x-8.8x below 20 because 3D hexagonal bundles pack as n_f ~ (W / a_H)^2
+    rather than 2D W / a_H; (b) D_fil_fig2d_text ("5 to 6") measures bundle_diameter_in_filaments
+    (1D transverse filament span across a 3D bundle) rather than total filaments_per_bundle, and
+    28.09 / 12.4 = 2.27 merely mixes dehydrated TEM width with hydrated SAXS spacing while
+    57.00 / 12.4 = 4.60 is circular (57.00 nm = 4*12.4 + 7.4 assumes k = 2, D_fil = 5).
+    (2) Derived SAXS spacing claessens2008/aH_hex_saxs (12.4 nm, origin: derived from q10_saxs, not
+    origin: measured): bundle_effective_spacing (d_spacing = W / N_f, role: processing) faces the
+    same missing-scalar-W block and 2D single-layer breakdown, yielding unphysical spacings narrower
+    than a single F-actin filament on Claessens's 3D 2-shell bundles (28.09 / 20 = 1.41 nm TEM, or
+    50.35 / 19 = 2.65 nm and 57.00 / 19 = 3.00 nm hydrated, vs 12.4 nm).
+    (3) Measured TEM bundle diameter curve claessens2008/D_fig1c_measured (8 points over R* in
+    [0.0089, 0.90], D rising from 8.41 nm to plateau 28.14 and 28.04 nm at c_a = 0.1 mg/ml):
+    bundle_width_vasp_scaling (W ~ c_VASP, prefactor: unknown) expects vasp_incubation_concentration
+    in uM ([substance]/[length]**3), which is dimensionally incompatible (uM vs dimensionless) with
+    D_fig1c_measured's effective_bound_ratio R* index and physically distinct (washed 2D membrane
+    VASP incubation vs equilibrium 3D bulk fascin ratio). Even as a hypothetical linear shape test
+    D = C * R* at constant c_a = 0.1 mg/ml (log-LS prefactor C = 155.3 nm), linear scaling fails
+    every point of D_fig1c_measured by 0.16x to 4.99x (1.38 vs 8.41 nm at R* = 0.0089; 139.8 vs
+    28.04 nm at R* = 0.90) because fascin bundles grow sublinearly (slope ~0.3) and plateau sharply
+    for R* >= 0.25.
+    (4) All remaining 21 measured data in claessens2008 have no matching model output in
+    nastkolb2022: bound fascin ratios (2: Rstar_plateau, Rstar_figS1_experiment), composite
+    fascin+espin diameter ratio (1: D_ratio_fig4d), confined droplet phase-boundary concentrations
+    (2: ca_fig2e_single_ring_max, ca_fig2e_two_bundle_min), SAXS Bragg and helical peak wavevectors
+    (6: q10_saxs, q_layer6_unbundled, q_layer7_unbundled, q_helical_a/b/c_bundled), circularly and
+    axially averaged SAXS intensity profiles (7: I_saxs_fig3a_R0p5/R0p05/R0p005/inset_R0p5,
+    I_saxs_fig3c_data_R0p05/R0p1/R0p5), and helical overtwist curves (3: Delta_theta_fig3d_ca0p8,
+    ca2, ca3). Conversely, nastkolb2022's remaining runnable models (6 FRAP kinetics/mobility-ratio
+    models, cp_to_actin_ratio, actin_concentration_fold_change) and 6 non-runnable models have no
+    experimental counterparts in claessens2008 (which performs no FRAP and uses no capping protein).
+    See also claessens2008/q_nastkolb2022_no_cross_validation for the reverse direction.
+
+- id: q_chandrasekaran2024_3d_droplet_vs_2d_bilayer_vasp_contrast
+  kind: reading
+  about:
+    - bundle_filament_count_2d_spacing
+    - bundle_effective_spacing
+    - bundle_width_vasp_scaling
+    - bilayer_actin_decoration
+    - cp_to_actin_ratio
+    - actin_concentration_fold_change
+    - frap_recovery_fit
+    - frap_recovery_by_half_time
+    - frap_half_time
+    - frap_tau_from_half_time
+    - frap_mobile_fraction_plateau
+    - frap_mobility_ratio
+    - vasp_diameter_range
+    - frap_t_half_vasp_slb
+    - frap_t_half_vasp_ml
+    - frap_bleach_circle_diameter
+    - vasp_llps_threshold_main
+    - vasp_llps_range_si
+    - bundle_width_median_vasp_025
+    - bundle_width_median_vasp_dtetra_025
+    - bilayer_decoration_vs_vasp_figs2g
+    - vasp_cluster_area_vs_vasp_figs4h
+    - q_chimeric_vasp_construct_and_ml_substrate
+    - q_frap_unstated_fit_params_and_diffusivity
+    - q_unstated_vasp_surface_density
+    - chandrasekaran2024/cytosim_actin_vasp_droplet
+    - chandrasekaran2024/lammps_vasp_actin_droplet
+    - chandrasekaran2024/stokes_einstein_diffusion
+    - chandrasekaran2024/bell_slip_bond_unbinding
+    - chandrasekaran2024/vasp_tetramer_concentration
+    - chandrasekaran2024/vasp_radius
+    - chandrasekaran2024/vasp_diffusion_rate
+    - chandrasekaran2024/exp_vasp_monomer_conc
+    - chandrasekaran2024/exp_peg8k_wv
+    - chandrasekaran2024/q_nastkolb2022_disjoint_models_and_phase_separation_contrast
+    - chandrasekaran2024/q_nastkolb2022_polymerization_bundling_and_domain_roles_contrast
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "forms liquid–liquid phase separation into a protein-enriched phase"
+    where: "Results, VASP bundling depends on fluidity-mediated colocalization"
+  text: >
+    Cross-record ModelAtlas synthesis with chandrasekaran2024 (3D PEG8k-crowded VASP droplets with
+    CytoSim/LAMMPS simulations and WT/GABmut droplet experiments; neither paper cites the other and
+    neither data.yaml imports values from the other, yielding 0 cited.yaml links and 0 verified or
+    proposed relations in relations.yaml). Across all 17 nastkolb2022 and 46 chandrasekaran2024
+    models, the quantitative equations are structurally disjoint: nastkolb2022's 2D bilayer FRAP
+    exponential fits (no D or viscosity parameters), 2D ribbon packing (W/d_spacing), and W ~ c_VASP
+    scaling have no analytical counterparts in chandrasekaran2024's 3D droplet geometry, Langevin/
+    Stokes-Einstein, Bell slip-bond, Brownian-ratchet, and LAMMPS LJ models (trivial 1-2 op ratio
+    matches such as frap_mobility_ratio vs droplet_viscosity_ratio_water or cp_to_actin_ratio vs
+    vasp_tetramer_concentration are excluded as too_plain across incompatible physical quantities).
+    Key biophysical contrasts documented in full in
+    chandrasekaran2024/q_nastkolb2022_disjoint_models_and_phase_separation_contrast and
+    chandrasekaran2024/q_nastkolb2022_polymerization_bundling_and_domain_roles_contrast:
+    (1) Crowder-free 2D Ni-NTA SLB phase separation (0.05-2 uM washed incubation, pre-actin cluster
+    area 0.176-0.60 in Fig. S4H) vs 3D 3% PEG8k bulk droplets (20 uM VASP monomer / 5 uM tetramer;
+    CytoSim subset 0.2-2.0 uM tetramer); (2) matching VASP size scale (28-70 nm range vs 60 nm
+    sphere diameter) but sharply different transport regimes (2D Soumpasis D_SLB = 0.225 um^2/s and
+    D_ML = 0.058 um^2/s where a 4x mobility drop abolishes bundling vs CytoSim D_VASP = 10 um^2/s,
+    44x faster than D_SLB, and 3D Stokes-Einstein 0.0145 or 0.145 um^2/s); (3) opposite area-fraction
+    response to VASP bundling (planar bilayer decoration rises 0.376 -> 0.950 vs 3D spherical droplet
+    surface occupancy falls ~0.50 -> ~0.18 from shell to ring); and (4) active polymerization-driven
+    2D bundling using chimeric high-affinity Dictyostelium-GAB VASP (and still working with monomeric
+    VASP_DeltaTetra via 2D surface up-concentration, in 10 uM profilin + 50 nM CP) vs 3D kinetic
+    trapping driven by tetrameric (valency = 4) crosslinking residence time (where human VASP-GABmut
+    shifts disks to rings/shells and slower elongation favors rings, without CP or profilin).
+
+- id: q_weirich2017_modelatlas_disjoint_and_frap_audit
+  kind: reading
+  about:
+    - frap_recovery_fit
+    - frap_recovery_by_half_time
+    - frap_half_time
+    - frap_tau_from_half_time
+    - frap_mobile_fraction_plateau
+    - frap_mobility_ratio
+    - frap_bleach_normalization
+    - bundle_filament_count_2d_spacing
+    - bundle_effective_spacing
+    - bundle_filament_intensity_extrapolation
+    - bundle_width_vasp_scaling
+    - cp_to_actin_ratio
+    - actin_concentration_fold_change
+    - bilayer_actin_decoration
+    - bundle_intensity_ratio
+    - bundle_width_lognormal_fit
+    - vasp_actin_spearman_colocalization
+    - ref-blanchoin2014
+    - ref-falzone2012
+    - ref-spudich1971
+    - q_frap_unstated_fit_params_and_diffusivity
+    - weirich2017/tactoid_exponential_relaxation
+    - weirich2017/tactoid_exponential_master_curve
+    - weirich2017/frap_diffusion_scaling
+    - weirich2017/stokes_einstein_ellipsoid_diffusion
+    - weirich2017/stokes_einstein_ellipsoid_viscosity
+    - weirich2017/actin_filament_length_cp
+    - weirich2017/actin_mesh_size
+    - weirich2017/concentration_enrichment_ratio
+    - weirich2017/filamin_concentration_from_fraction
+    - weirich2017/d_fig1c_frap_fit
+    - weirich2017/q_digitized_fig3a_slope_and_fig1c_fit_tau
+    - weirich2017/q_nastkolb2022_2d_vasp_bilayer_vs_3d_tactoids
+    - weirich2017/ref-4
+    - weirich2017/ref-11
+    - weirich2017/ref-39
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "fitted using with the formula y = a∗(1 – e(-t/τ)) + c"
+    where: "Data analysis vs weirich2017 Main Text pp. 2132-2134 & SI pp. SI-1 to SI-3"
+  text: >
+    Cross-record ModelAtlas audit across all 17 nastkolb2022 models (11 runnable, 6 non-runnable)
+    and all 52 weirich2017 models (51 scalar runnable, 1 curve model):
+    (1) Citations and data provenance (0 cited.yaml links, 0 stated relations): nastkolb2022 does
+    not cite weirich2017 anywhere in its text or 66 references (and weirich2017 predates
+    nastkolb2022 by 5 years). Their bibliographies share exactly 3 references — Blanchoin et al.
+    (2014) [ref-blanchoin2014 = weirich2017/ref-4], Falzone et al. (2012) [ref-falzone2012 =
+    weirich2017/ref-11], and Spudich & Watt (1971) [ref-spudich1971 = weirich2017/ref-39]. Neither
+    data.yaml borrows any numerical datum from the other (0 cited.yaml links).
+    (2) Audit of FRAP and exponential relaxation models (0 proposed relations): the only two
+    non-too_plain runnable models in nastkolb2022 are frap_recovery_fit (y = a*(1 - exp(-t/tau)) + c,
+    6 ops, role: fit) and frap_recovery_by_half_time (y = a*(1 - exp(-t*ln(2)/t_half)) + c, 8 ops,
+    role: fit). Neither forms a valid mathematical or physical ModelAtlas relation with weirich2017's
+    exponential models:
+    (a) vs. weirich2017/tactoid_exponential_relaxation (L(t) = L_f + (L_i - L_f)*exp(-t/tau), 5 ops,
+    role: fit): output dimensions are incompatible (dimensionless fluorescence intensity vs. um
+    tactoid major-axis length), ruling out same_as, reduces_to, derived_from, and approximated_by.
+    Even a formal scales_as mapping (t -> 60*t, tau -> 60*tau, L_i -> c, L_f -> a + c) is physically
+    spurious: it equates dimensionless normalized fluorescence to micrometers, evaluates Weirich's
+    droplet-shortening fit in its unphysical elongating branch (L_f > L_i, reversing the sign of
+    L_i - L_f; the converse forces a negative mobile fraction a = L_f - L_i < 0), and merely pairs
+    two generic 3-parameter single-exponential empirical fits across unrelated mechanisms (2D
+    membrane-bound VASP photobleach recovery vs. 3D nematic tactoid capillary-viscous shape
+    shortening).
+    (b) vs. weirich2017/tactoid_exponential_master_curve (L_scaled = exp(-t_scaled), 2 ops): flagged
+    too_plain, decays monotonically from 1 to 0 rather than rising from c to a + c (matching would
+    require unphysical a = -1, c = 1), and describes rescaled droplet shortening rather than FRAP.
+    (c) vs. weirich2017's actual FRAP assay (Fig. 1C, p. 2132 & SI p. SI-1): Weirich et al. fit
+    bleached-to-unbleached TMR-actin intensity ratio to a rising single exponential in words
+    (tau_R = 880 s caption, ~900 s text) — conceptually matching nastkolb2022/frap_recovery_fit —
+    but print no formula and no baseline/plateau parameters (and weirich2017/q_digitized_fig3a_slope_and_fig1c_fit_tau
+    shows the digitized Fig. 1C dashed curve yields I_0 = 0.224, I_inf = 0.947, tau = 712 s when
+    unconstrained vs. tau = 815 s at I_inf = 1.00 and tau_R = 880 s requiring I_inf ~ 1.03-1.05).
+    Thus weirich2017 has no FRAP curve-fit model, and inventing one as a helper would fabricate an
+    unstated parameterization. Conversely, weirich2017's FRAP transport models (frap_diffusion_scaling
+    D ~ L_b^2/tau_R [2 ops, too_plain], stokes_einstein_ellipsoid_diffusion, and
+    stokes_einstein_ellipsoid_viscosity) have no counterpart in nastkolb2022, which omits diffusivity
+    D and viscosity eta entirely (q_frap_unstated_fit_params_and_diffusivity).
+    (3) Explicitly rejected too_plain and structurally disjoint pairings across all remaining 9
+    runnable nastkolb2022 models (all <= 2 ops):
+    (a) frap_mobility_ratio (t_half_ml/t_half_slb, 1 op), frap_half_time (tau*ln(2), 2 ops),
+    frap_tau_from_half_time (t_half/ln(2), 2 ops), and frap_mobile_fraction_plateau (a + c, 1 op) vs.
+    weirich2017/frap_diffusion_scaling (L_b^2/tau_R, 2 ops): trivial 1-2 op algebra; mapping R_mob to
+    D at fixed L_b only tests 1/t_half_slb scaling while dropping both L_b and t_half_ml.
+    (b) actin_concentration_fold_change (c_high/c_std = 4 uM / 2 uM = 2, 1 op) vs.
+    weirich2017/concentration_enrichment_ratio (c_dense/c_dilute = 250 uM / 2.6 uM ~ 100, 1 op):
+    too_plain ratio coincidence on unrelated concepts (bulk recipe titration vs. 3D phase-coexistence
+    partitioning).
+    (c) cp_to_actin_ratio (R_cp = 1e-3*c_cp/c_actin, 2 ops) vs. weirich2017/actin_filament_length_cp
+    (N_m = 1/r_CP, L_f = a_m/r_CP, 1 op) and filamin_concentration_from_fraction (c_A*f_fil, 1 op):
+    too_plain, reciprocal/incompatible outputs, and physically Weirich's equilibrium capping length
+    law breaks down by >100x in Nast-Kolb's profilin + anti-capping VASP assay.
+    (d) bundle_filament_count_2d_spacing (1000*W/d_spacing, 2 ops), bundle_effective_spacing
+    (1000*W/n_f, 2 ops), and bundle_width_vasp_scaling (W ~ c_vasp, 0 ops, prefactor: unknown):
+    weirich2017 has no runnable model for bundle filament count, intra-bundle spacing, or bundle
+    width vs. cross-linker concentration (R_0 ~ 200 nm is an unmodeled input, while tactoid aspect
+    ratio L/r decreases with filamin concentration). Two non-runnable nastkolb2022 processing models
+    have qualitative methodological parallels in weirich2017 SI p. SI-1:
+    bundle_filament_intensity_extrapolation parallels Weirich's unformalized confocal cross-section
+    intensity-ratio spacing estimate (2D linear d = W/N_f vs. 3D area d = sqrt(A_cross/N_f)), and
+    frap_bleach_normalization (Siggia et al. 2000 reference ROI) parallels Weirich's bleached/unbleached
+    half-tactoid intensity ratio (Fig. 1C, Fig. S1).
+    (4) Symbol collisions across the two records: tau (2D VASP FRAP time constant [min] in
+    nastkolb2022 vs. 3D tactoid shape-relaxation or F-actin FRAP time constant [s] in weirich2017),
+    c (dimensionless FRAP baseline offset vs. actin mass concentration [mg/mL]), a (FRAP recovery
+    amplitude vs. a_m monomer spacing [nm]), R (ratios R_CP, R_mob, R_actin, R_I vs. tactoid
+    circular-arc radius R [um] and bundle radius R_0 [nm/um]), and D (absent as a model port in
+    nastkolb2022 vs. diffusion coefficient [um^2/s] or dissipated power [W] in weirich2017).
+
+- id: q_weirich2017_3d_tactoid_vs_2d_bilayer_vasp_contrast
+  kind: reading
+  about:
+    - frap_recovery_fit
+    - frap_mobility_ratio
+    - bundle_filament_count_2d_spacing
+    - bundle_effective_spacing
+    - bundle_width_vasp_scaling
+    - cp_to_actin_ratio
+    - frap_t_half_vasp_slb
+    - frap_t_half_vasp_ml
+    - frap_mobile_fraction_slb_prepol
+    - frap_mobile_fraction_slb_pol30
+    - frap_mobile_fraction_ml_prepol
+    - frap_mobile_fraction_ml_pol30
+    - frap_bleach_circle_diameter
+    - vasp_mobility_reduction_ml_vs_slb
+    - vasp_llps_threshold_main
+    - vasp_llps_range_si
+    - vasp_diameter_range
+    - filament_count_1um_intensity_measured
+    - bundle_width_median_vasp_025
+    - bundle_width_median_vasp_dtetra_025
+    - actin_conc_standard
+    - actin_conc_high_4
+    - cp_conc_standard
+    - profilin_conc_standard
+    - lipid_frac_dogs_ni_nta
+    - lipid_depletion_kinetics_fig5c
+    - bilayer_decoration_vs_vasp_figs2g
+    - vasp_cluster_area_vs_vasp_figs4h
+    - bundle_width_median_vs_vasp_fig2e
+    - bundle_width_vs_actin_figs3f
+    - q_cp_to_actin_ratio_halved
+    - q_chimeric_vasp_construct_and_ml_substrate
+    - weirich2017/c_actin_dilute_main
+    - weirich2017/c_actin_tactoid_est
+    - weirich2017/filamin_length_main
+    - weirich2017/filament_length_avg_main
+    - weirich2017/filament_length_tactoid_range
+    - weirich2017/cp_frac_1p5
+    - weirich2017/cp_frac_0p25
+    - weirich2017/tau_R_frap_fig1c
+    - weirich2017/D_frap_est
+    - weirich2017/eta_frap_est
+    - weirich2017/gamma_I_est_main
+    - weirich2017/omega_range_fig2a_si
+    - weirich2017/aspect_ratio_2p5_filamin
+    - weirich2017/aspect_ratio_15_filamin
+    - weirich2017/coarsening_exponent_measured
+    - weirich2017/bundle_initial_radius_main
+    - weirich2017/capillary_lambda_max_predicted
+    - weirich2017/capillary_lambda_observed
+    - weirich2017/bundle_contractile_strain_range
+    - weirich2017/actin_filament_length_cp
+    - weirich2017/actin_mesh_size
+    - weirich2017/frap_diffusion_scaling
+    - weirich2017/stokes_einstein_ellipsoid_viscosity
+    - weirich2017/q_nastkolb2022_2d_vasp_bilayer_vs_3d_tactoids
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "forms liquid–liquid phase separation into a protein-enriched phase"
+    where: "Results pp. 2, 6, 8, 11 vs weirich2017 Main Text pp. 2131-2135 & SI pp. SI-1 to SI-3"
+  text: >
+    Quantitative biophysical regime contrast between weirich2017 (3D passive filamin/F-actin liquid-
+    crystalline tactoids and fluid threads) and nastkolb2022 (2D fluid supported lipid bilayer VASP
+    phase separation and active polymerization-driven actin bundling):
+    (1) Passive 3D nematic LLPS vs. 2D bilayer VASP LLPS + active polymerization feedback (and opposite
+    roles of SLBs): both papers start from nearly identical dilute bulk actin (weirich2017: 2.6-2.64 uM
+    = 0.11 mg/mL, pre-crosslink mesh size xi = 0.90 um; nastkolb2022: 2 uM = 0.084 mg/mL, hypothetical
+    uncapped xi = 1.04 um) and comparable low-salt imidazole buffers (50 mM KCl, 1 mM MgCl2; Debye
+    length lambda_D ~ 1.1-1.3 nm), and both form supported lipid bilayers on glass — yet for opposite
+    purposes. weirich2017 uses an inert DOPC SLB solely to passivate glass against protein adsorption
+    so pre-polymerized short F-actin stays suspended in 3D bulk (with 0.3 wt% methylcellulose
+    crowding long filaments), where adding filamin triggers passive 100-fold actin co-condensation into
+    ~250 uM 3D nematic tactoids (gamma_I ~ 300 nN/m, omega = 1.1-2.2, aspect ratio L/r ~ 3 -> 2
+    decreasing with 2.5-15 mol% filamin, unbounded t^(0.47 +/- 0.01) coalescence coarsening, and near
+    the liquid-solid boundary motor-free Rayleigh-Plateau pearling at lambda ~ 4-10 um plus 20-60%
+    capillary bundle contraction over ~10 min). In nastkolb2022, a functionalized 10% DOGS-Ni-NTA SLB
+    actively tethers His-tagged chimeric VASP (human VASP with high-affinity Dictyostelium GAB), which
+    undergoes 2D LLPS by itself prior to actin addition (>=0.25-0.5 uM, cluster area 0.176-0.596 in
+    Fig. S4H); upon adding G-actin + profilin + CP, VASP droplets coalesce onto nucleating filaments
+    (Video S7), actively elongate and align barbed ends at bundle edges (Fig. 2F), locally exclude
+    unbound Texas Red-DHPE lipids (~9% depletion relaxing to ~5% at 60 min, Fig. 5C), and grow wide 2D
+    bundles (median 0.55 -> 4.36 um over 0.05-1 uM VASP up to 95% bilayer decoration) via positive
+    VASP-recruitment feedback without pearling or contraction. Pre-polymerized F-actin added to the
+    VASP bilayer is pulled down without bundling (Fig. S4D-E), proving active elongation — not passive
+    cross-linking — drives bundling in nastkolb2022.
+    (2) FRAP species, timescales (~700-880 s vs. ~6-24 s), and transport regimes: weirich2017 Fig. 1C
+    bleaches TMR-labeled F-actin filaments (180 nm) inside a dense 3D tactoid (1.5 mol% CP, 5 mol%
+    filamin), measuring slow internal filament diffusion with tau_R = 880 s (caption; ~900 s text;
+    712 s unconstrained digitized fit -> t_1/2 = 610 s [494 s digitized]), D ~ 0.003 um^2/s, and
+    Stokes-Einstein viscosity eta ~ 3 Pa*s. nastkolb2022 Fig. 4C instead bleaches Alexa532-labeled VASP
+    tethered to the 2D membrane (circular spot d_b = 4.96 um, r_b = 2.48 um), measuring rapid 2D
+    cross-linker/polymerase mobility prior to polymerization: t_1/2 = 0.102 min = 6.12 s (tau = 8.83 s,
+    mobile fraction 0.97) on SLB and t_1/2 = 0.399 min = 23.94 s (tau = 34.54 s, mobile fraction 0.61)
+    on ML — 25-100x faster than Weirich's 880 s (21-81x vs. 712 s). Applying 2D uniform-disk Soumpasis
+    recovery (D = 0.224*r_b^2/t_1/2 = 0.155*r_b^2/tau) yields D_SLB = 0.225 um^2/s (75x Weirich's D)
+    and D_ML = 0.058 um^2/s (19x Weirich's D; Weirich's unprefactored scaling r_b^2/tau gives 0.697
+    and 0.178 um^2/s, 6.44x higher due to geometry prefactor). Post-polymerization (30 min Pol) drops
+    SLB VASP mobile fraction from 0.97 to 0.65 (half-time unstated), and even a 4x drop in 2D VASP
+    mobility on monolayers (still 19x more diffusive than Weirich's tactoid actin) completely abolishes
+    active bundling because VASP elongation slows below CP-susceptible free polymerization.
+    (3) Filament length and opposite functional roles of capping protein (0.18-1 um capped rods vs.
+    long growing filaments in profilin + CP): weirich2017 uses 0.25-1.5 mol% CP (without profilin or
+    elongators) under equilibrium stoichiometric capping L_f = 2.7 nm / r_CP to restrict F-actin to
+    short rigid rods of 180-1080 nm (<= xi ~ 1 um, << l_p ~ 10 um), keeping assemblies inside the
+    liquid droplet (0.1-0.55 um) and fluid bundle (0.36-1.08 um) windows of Fig. 1D before kinetically
+    arrested viscoelastic networks form above 1-2 um. Paradoxically, nastkolb2022 uses HIGHER CP-to-actin
+    stoichiometry (50 nM CP across 0.5-4 uM actin -> R_CP = 1.25-10 mol%, standard 2.5 mol% at 2 uM),
+    where Weirich's actin_filament_length_cp would cap bulk filaments to just 108 nm (40 monomers;
+    27-216 nm across 0.5-4 uM). Yet 10 uM profilin suppresses spontaneous bulk nucleation while
+    bilayer-clustered VASP actively protects growing barbed ends from CP, producing >10-50 um filaments
+    (>100x breakdown of L_f = 2.7 nm / r_CP); halving R_CP from 2.5% to 1.25% at 4 uM actin actually
+    reduces median bundle width (0.942 -> 0.812 um, Fig. S3F) due to faster unaligned bulk/surface growth.
+    (4) Cross-linker reach, dimensionality, and interfilament spacing (~50 nm vs. ~22-28 nm):
+    weirich2017 uses long (~150 nm), flexible, transient homodimeric filamin (1-15 mol%, 0.26 uM at
+    10%), yielding a ~250 uM 3D nematic phase with aligned filament areal density rho = c_A*N_A*a_m =
+    4.06 x 10^-4 nm^-2 and mean center-to-center spacing d = rho^(-1/2) = 49.6 nm (53.3 nm hexagonal),
+    equivalent to ~51 filaments across an R_0 = 200 nm fluid bundle (or ~319 filaments across a 1 um
+    3D cylinder and ~20.2 filaments across a 1D 1 um cross-section). nastkolb2022 uses flexible
+    IDR-bearing VASP tetramers (28-70 nm diameter, washed 0.05-1 uM incubation; monomeric
+    VASP_DeltaTetra still bundles at median 0.584 um via 2D surface up-concentration), expecting
+    14.3-35.7 filaments per 1 um 2D single-layer ribbon and measuring 45 +/- 12 filaments/um by
+    integrated fluorescence -> effective 2D spacing 22.2 nm (range 17.5-30.3 nm), ~2.2x tighter
+    laterally than Weirich's ~50 nm 3D spacing (consistent with tighter compaction or ~1.26 stacked
+    layers at 28 nm), yet ~7.1x fewer filaments in cross-section than a 1 um 3D cylinder at Weirich's
+    250 uM density.
+
+- id: q_graham2023_modelatlas_and_3d_vs_2d_vasp_contrast
+  kind: reading
+  about:
+    - bundle_filament_count_2d_spacing
+    - bundle_effective_spacing
+    - bundle_width_vasp_scaling
+    - frap_recovery_fit
+    - frap_recovery_by_half_time
+    - frap_half_time
+    - frap_tau_from_half_time
+    - frap_mobile_fraction_plateau
+    - frap_mobility_ratio
+    - frap_bleach_normalization
+    - cp_to_actin_ratio
+    - actin_concentration_fold_change
+    - vasp_diameter_range
+    - vasp_diameter_min
+    - filament_count_1um_intensity_measured
+    - frap_t_half_vasp_slb
+    - frap_t_half_vasp_ml
+    - frap_mobile_fraction_slb_prepol
+    - frap_mobile_fraction_slb_pol30
+    - frap_mobile_fraction_ml_prepol
+    - frap_mobile_fraction_ml_pol30
+    - frap_bleach_circle_diameter
+    - bundle_width_median_vasp_025
+    - bundle_width_median_vasp_dtetra_025
+    - bundle_width_max_vasp_025
+    - bundle_width_max_vasp_dtetra_025
+    - vasp_llps_threshold_main
+    - vasp_llps_range_si
+    - ref-krause2003
+    - ref-hansen2010
+    - ref-disanza2013
+    - ref-hansen2015
+    - ref-bruhmann2017
+    - ref-breitsprecher2008
+    - ref-vaggi2011
+    - ref-blanchoin2014
+    - ref-legerstee2019
+    - ref-harker2019
+    - ref-winkelman2014
+    - rel_claessens2008_hex_shells_scales_2d_spacing
+    - rel_claessens2008_hex_width_reduces_to_2d_count
+    - q_chimeric_vasp_construct_and_ml_substrate
+    - q_frap_unstated_fit_params_and_diffusivity
+    - q_no_elongation_velocity_quantified
+    - q_intensity_count_implies_sub_vasp_spacing_or_multilayer
+    - graham2023/ring_filament_count
+    - graham2023/bundle_bending_rigidity_linear
+    - graham2023/power_law_thickness_fit
+    - graham2023/ring_thickness_scaling_eqS25
+    - graham2023/linear_bundle_elongation
+    - graham2023/elongation_monomer_rate
+    - graham2023/droplet_ring_minimization_corrected
+    - graham2023/ring_rod_transition_energy
+    - graham2023/filament_spacing_vasp_delta
+    - graham2023/frap_t_half
+    - graham2023/frap_recovery_fig1f
+    - graham2023/fig1f_frap_avg_fig
+    - graham2023/fig6b_frap_3peg_fig
+    - graham2023/fig6b_frap_10peg_fig
+    - graham2023/elongation_rate_mean_text
+    - graham2023/q_nastkolb2022_modelatlas_and_2d_vs_3d_vasp_contrast
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "forms liquid–liquid phase separation into a protein-enriched phase"
+    where: "Results pp. 5-6, Discussion p. 9, Data analysis p. 11 vs graham2023 pp. 2, 5-10, 13-15, 39-41"
+  text: >
+    Reciprocal cross-record ModelAtlas & biophysical contrast with graham2023 (Graham et al., Nat.
+    Phys. 19:574-585, 2023; 3D PEG8k-crowded human VASP condensates driving peripheral actin rings
+    and elastocapillary rod deformation). Neither paper cites the other (0 stated relations, 0
+    cited.yaml links; 11 co-cited references, including Harker 2019 and Winkelman 2014), and across
+    all 17 nastkolb2022 (11 runnable, 6 non-runnable) x 31 runnable graham2023 models there are 0
+    non-trivial (!too_plain) proposed relations:
+    (1) Excluded too_plain identity & disjoint model families: bundle_filament_count_2d_spacing
+    (n_f = 1000*W/d_spacing, 2 ops; inverse bundle_effective_spacing, 2 ops) and
+    graham2023/ring_filament_count (N_fil = T_ring/delta, 1 op) share the exact same 2D flat-sheet
+    linear filament-counting formula and verify symbolically under same_as, but are excluded as
+    too_plain (<= 2 ops; flagged and excluded from ModelAtlas families; both already bridge in 2 hops
+    through claessens2008/hexagonal_shell_filaments). nastkolb2022's only two non-too_plain models
+    (frap_recovery_fit, 6 ops; frap_recovery_by_half_time, 8 ops) have 0 FRAP model counterparts in
+    graham2023 (which delegates to ImageJ FRAP_Profiler_v2.java without printing an equation;
+    applying frap_recovery_by_half_time to graham2023 Fig. 1f at printed a = 0.939, t_1/2 = 18 s,
+    c = 0 gives RMSE = 6.50%, vs. 2.78% free 3-parameter fit). Conversely, graham2023's elongation
+    fits (linear_bundle_elongation, 23 +/- 3 nm/s; elongation_monomer_rate, ~8-9/s) have no velocity
+    model in nastkolb2022, and graham2023's droplet-diameter thickness scaling (D^1.5-D^1.97) has a
+    distinct control variable from bundle_width_vasp_scaling (W ~ c_vasp, 0 ops). Symbol collisions:
+    a (FRAP amplitude vs. ellipse semi-major axis / power-law prefactor), t (FRAP time [min] vs.
+    elongation time [s]), and y (normalized FRAP intensity vs. bundle growth length [um]).
+    (2) Key biophysical contrasts (full details in
+    graham2023/q_nastkolb2022_modelatlas_and_2d_vs_3d_vasp_contrast):
+    (a) 2D PEG-free Ni-NTA SLB LLPS of chimeric Dicty-GAB His6-VASP (0.05-2 uM washed incubation,
+    KMEI buffer I ~ 72 mM, + 10 uM profilin + 50 nM CP) vs. 3D 3% PEG8k-crowded LLPS of cysteine-
+    light human VASP (2-20 uM monomer = 0.5-5 uM tetramer, 150 mM NaCl / 50 mM Tris I ~ 195 mM,
+    0 uM profilin, 0 nM CP, PLL-PEG-passivated glass where bare SLBs cause droplet wetting, Fig. 1e).
+    (b) FRAP diffusivity reversal after bleach-area normalization: raw t_1/2 = 6.12 s (SLB) <
+    18 +/- 3 s (3D VASP droplet) < 23.94 s (ML), but nastkolb2022's 4.96 um bleach spot has 7.59x
+    the area of graham2023 Fig. 1f's 1.8 um spot, so effective diffusivity in graham2023's 3D
+    droplet (D ~ 0.0075-0.0113 um^2/s) is ~20-30x slower than nastkolb2022's SLB (0.225 um^2/s) and
+    ~5-8x slower even than nastkolb2022's bundling-incompetent ML (0.0575 um^2/s) — yet graham2023
+    still bundles because 0 nM CP removes rapid diffusive-recapture competition while droplet
+    confinement + ~12.6x G-actin partitioning drives mechanical ring-to-rod buckling (arrested only
+    at 10% PEG where whole-droplet FRAP recovery falls to ~2.3%).
+    (c) Monomeric VASP_Delta_Tetra (stop at aa 270) still forms 2D bundles on fluid SLBs (median
+    0.584 um, max 3.2 um) via 2D membrane up-concentration, whereas graham2023's monomeric
+    VASP_Delta_tet (stop after aa 339, deleting coiled-coil aa 340-380) fails to form 3D droplets up
+    to 56 uM and 5% PEG8k (while VASP_Delta_EVH1 impairment and salt dissolution directly test
+    nastkolb2022's p. 9 EVH1-PRR/IDR LLPS hypothesis).
+    (d) Interfilament spacing: nastkolb2022's 28-70 nm VASP-diameter expectation (14.3-35.7
+    filaments/um, printed 14-40) and fluorescence-extrapolated 45 +/- 12 filaments/um (effective
+    22.2 nm, range 17.5-30.3 nm) are 1.48x-4.67x wider than graham2023's assumed delta = 15 nm
+    (66.7 filaments/um, which would scale graham2023's linear ring bending stiffness k_b down by
+    1.48x at 22.2 nm or 1.87x at 28 nm).
+
+- id: q_weirich2017_no_cross_validation
+  kind: unstated_model
+  about:
+    - frap_recovery_fit
+    - frap_recovery_by_half_time
+    - frap_mobile_fraction_plateau
+    - frap_half_time
+    - frap_tau_from_half_time
+    - frap_mobility_ratio
+    - bundle_filament_count_2d_spacing
+    - bundle_effective_spacing
+    - bundle_width_vasp_scaling
+    - cp_to_actin_ratio
+    - actin_concentration_fold_change
+    - bilayer_actin_decoration
+    - bundle_filament_intensity_extrapolation
+    - bundle_intensity_ratio
+    - bundle_width_lognormal_fit
+    - frap_bleach_normalization
+    - vasp_actin_spearman_colocalization
+    - q_weirich2017_modelatlas_disjoint_and_frap_audit
+    - q_weirich2017_3d_tactoid_vs_2d_bilayer_vasp_contrast
+    - weirich2017/d_fig1c_frap_data
+    - weirich2017/d_fig1c_frap_fit
+    - weirich2017/d_figS1_bleached
+    - weirich2017/d_figS1_unbleached
+    - weirich2017/tau_R_frap_fig1c
+    - weirich2017/tau_R_frap_text
+    - weirich2017/bundle_initial_radius_main
+    - weirich2017/bundle_initial_length
+    - weirich2017/capillary_lambda_observed
+    - weirich2017/capillary_lambda_to_R0_observed
+    - weirich2017/filamin_frac_tactoid_range
+    - weirich2017/filament_length_tactoid_range
+    - weirich2017/d_fig1d_gas
+    - weirich2017/d_fig1d_liquid_droplets
+    - weirich2017/d_fig1d_fluid_bundles
+    - weirich2017/d_fig1d_viscoelastic_networks
+    - weirich2017/aspect_ratio_2p5_filamin
+    - weirich2017/aspect_ratio_15_filamin
+    - weirich2017/d_fig2a_aspect_ratio
+    - weirich2017/d_fig3a_aspect_ratio_data
+    - weirich2017/tactoid_length_growth_60min
+    - weirich2017/tactoid_length_homogeneous_si
+    - weirich2017/d_fig3a_length_data
+    - weirich2017/d_fig3b_pre_upper
+    - weirich2017/d_fig3b_pre_lower
+    - weirich2017/d_fig3b_coalesced_data
+    - weirich2017/bundle_shape_change_timescale
+    - weirich2017/d_fig3c_inset_5pct
+    - weirich2017/d_fig3c_inset_10pct
+    - weirich2017/d_fig3d_5pct_data
+    - weirich2017/d_fig3d_10pct_data
+    - weirich2017/d_fig4c_2p5pct_data
+    - weirich2017/d_fig4c_10pct_data
+    - weirich2017/d_fig4d_2p5pct
+    - weirich2017/d_fig4d_5pct
+    - weirich2017/d_fig4d_10pct
+    - weirich2017/bundle_contractile_strain_range
+    - weirich2017/d_fig4e_contractile_strain
+    - weirich2017/q_digitized_fig3a_slope_and_fig1c_fit_tau
+    - weirich2017/q_nastkolb2022_no_cross_validation
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "fitted using with the formula y = a∗(1 – e(-t/τ)) + c"
+    where: "Data analysis (p. 11) vs weirich2017 Main Text pp. 2132-2135 & SI pp. SI-1 to SI-3"
+  text: >
+    No cross-record validations are entered in validations.yaml for nastkolb2022's 17 models
+    (11 runnable, 6 non-runnable) against weirich2017's 35 origin: measured data (12 scalars,
+    23 digitized curves across 15 quantities). Neither paper cites the other or claims its models
+    predict the other's measurements, and no nastkolb2022 model validly predicts (or honestly
+    evaluates fit_quality on) any weirich2017 measurement without circularity, mismatched
+    normalization/quantities, or fabricating unprinted parameters:
+    (1) FRAP models (frap_recovery_fit, frap_recovery_by_half_time, frap_mobile_fraction_plateau,
+    frap_half_time, frap_tau_from_half_time, frap_mobility_ratio) vs. weirich2017 FRAP curves
+    (d_fig1c_frap_data, d_figS1_bleached, d_figS1_unbleached; 3 measured data):
+    (a) Against weirich2017/d_fig1c_frap_data (14 points, t = -0.2007..16.48 min, y =
+    0.2232..0.9323): weirich2017 prints no recovery amplitude a, no plateau / mobile fraction
+    (I_inf), no post-bleach baseline offset c, and no recovery half-time t_1/2 anywhere in Main
+    Text or SI — its only printed FRAP time constants (tau_R_frap_fig1c = 880 s, tau_R_frap_text
+    = ~900 s) are origin: fitted directly to d_fig1c_frap_data itself (and d_fig1c_frap_fit is
+    origin: fitted, not origin: measured). Consequently, frap_recovery_fit (role: fit,
+    y = a*(1 - exp(-t/tau)) + c) is barred as purpose: validation (circularity with fitted tau_R
+    and completely different species/physics: 2D membrane-tethered Alexa532-VASP with tau = 8.83 s
+    SLB / 34.54 s ML is 99.7x / 25.5x faster than 3D intra-tactoid TMR-F-actin at 880 s) and is
+    also unsuitable as purpose: fit_quality for three structural reasons: (i) Normalization &
+    quantity mismatch — nastkolb2022/frap_normalized_intensity is Siggia-normalized
+    (I(t) - I(0+))/(I_pre - I(0+)) pinned to c = 0 at t = 0+ so port a (vasp_mobile_fraction)
+    equals the mobile fraction, whereas weirich2017/normalized_fluorescence_intensity is the
+    unsubtracted bleached/unbleached half-tactoid ratio I_b(t)/I_u(t) starting at 0.2232
+    (incomplete bleaching, finite-reservoir mixing approaching I_inf -> 1 at 100% mobility so
+    a = I_inf - c mixes bleach depth with mobile fraction); (ii) Fabricating 2 of 3 fit
+    parameters — because weirich2017 prints neither a nor c, supplying them via added.yaml would
+    read or fit 2 of 3 parameters from the target curve itself (while taking tau_R = 880 s from
+    origin: fitted on that same curve), whereas using nastkolb2022's Siggia baseline c = 0,
+    a = 0.97 with tau = 880 s fails due to the unsubtracted baseline (post-bleach RMSE = 0.1803;
+    0.0031 vs 0.2232 at t = 0.047 min; 0.6547 vs 0.7973 at t = 16.48 min); and (iii) Pre-bleach
+    domain artifact — d_fig1c_frap_data includes the pre-bleach frame (t = -0.2007 min, y =
+    0.9323), whereas sweeping the post-bleach (t >= 0) recovery formula evaluates y(-0.2007) =
+    0.2125 (-0.7198 artifact). Diagnostically across the 13 post-bleach points (0.047..16.48
+    min): an unconstrained 3-parameter fit gives a = 0.7189, tau = 698.5 s (11.64 min), c =
+    0.2200, a + c = 0.9389, RMSE = 0.0237 (1/13 inside the +/-0.0019 digitization-only band,
+    matching digitized d_fig1c_frap_fit's 711.7 s in q_digitized_fig3a_slope_and_fig1c_fit_tau);
+    fixing tau = 880 s gives a = 0.8058, c = 0.2309, a + c = 1.0368, RMSE = 0.0244; and fixing
+    tau = 880 s, c = 0.2232, a = 1 - c = 0.7768 gives RMSE = 0.0308, max error 0.0558, 1/13 in
+    band (single-tactoid frame scatter exceeds digitization width by >12x).
+    (b) Against d_figS1_bleached (230.5..646.4 AU; free fit a = 555.7, tau = 543.7 s, c = 216.9)
+    and d_figS1_unbleached (1042.6..864.4..940.2 AU, decreasing/drifting): both measure raw
+    unnormalized camera counts (fluorescence_intensity), not normalized [0, 1]
+    frap_normalized_intensity, with no printed amplitude/baseline.
+    (c) frap_recovery_by_half_time lacks any printed t_1/2 in weirich2017 (880*ln(2) = 610.0 s
+    is unprinted); frap_mobile_fraction_plateau has no measured scalar plateau datum in
+    weirich2017 (d_fig1c_frap_data ends at t = 16.48 min = 1.12*tau_R, y = 0.797); frap_half_time
+    and frap_tau_from_half_time have zero origin: measured FRAP timescale targets; and
+    frap_mobility_ratio has no SLB-vs-ML substrate pair.
+    (2) 2D bundle packing & width-scaling models (bundle_filament_count_2d_spacing,
+    bundle_effective_spacing, bundle_width_vasp_scaling) vs. weirich2017 fluid bundle geometry
+    (bundle_initial_radius_main = "~200" nm, bundle_initial_length = "> 50" um,
+    capillary_lambda_observed = "~10" um, capillary_lambda_to_R0_observed = "~10 to 100"; 4
+    measured data): weirich2017 contains zero origin: measured (or derived) filaments_per_bundle
+    or interfilament_spacing data, so neither bundle_filament_count_2d_spacing (N_f = W/d_spacing)
+    nor bundle_effective_spacing (d_spacing = W/N_f) has a target measurement. Moreover,
+    bundle_initial_radius_main ("~200" nm, approximate radius -> diameter W = 2*R_0 ~ 400 nm)
+    describes a 3D cylindrical fluid bundle rather than a 2D single-layer ribbon: diagnostically,
+    2D linear packing at W = 400 nm yields 5.71-14.29 filaments at Nast-Kolb's 28-70 nm VASP
+    diameter (or 8.06 at Weirich's 49.60 nm square spacing implied by c_actin_tactoid_est =
+    250 uM, rho = 4.065e-4 nm^-2), vs. pi*R_0^2*rho = 51.1 filaments in a 3D cylinder.
+    bundle_width_vasp_scaling (W ~ c_VASP, prefactor: unknown) requires vasp_incubation_concentration
+    [uM], whereas weirich2017 uses filamin (0 VASP), has no bundle-width-vs-crosslinker curve
+    (its only filamin titration d_fig2a_aspect_ratio measures dimensionless L/r, which decreases
+    from 2.94 to 2.04 over 2.5-15 mol% filamin), and cannot test shape against one approximate
+    scalar radius ("~200" nm).
+    (3) Stoichiometry & concentration-ratio models (cp_to_actin_ratio,
+    actin_concentration_fold_change) and 6 non-runnable models (bilayer_actin_decoration,
+    bundle_filament_intensity_extrapolation, bundle_intensity_ratio, bundle_width_lognormal_fit,
+    frap_bleach_normalization, vasp_actin_spearman_colocalization): weirich2017's cp_frac_*
+    (0.25-1.5 percent) are origin: reported recipe ratios without separate c_CP [nM] inputs or
+    measured CP-ratio targets; c_actin_enrichment_factor (100) is origin: derived (3D phase
+    partitioning, not a measured bulk recipe fold-change); and non-runnable models cannot execute
+    in validations.yaml.
+    (4) Remaining 28 of 35 origin: measured data in weirich2017 have no matching model outputs in
+    nastkolb2022: phase-diagram and tactoid existence windows (6: filamin_frac_tactoid_range,
+    filament_length_tactoid_range, d_fig1d_gas, d_fig1d_liquid_droplets, d_fig1d_fluid_bundles,
+    d_fig1d_viscoelastic_networks), tactoid aspect ratios (4: aspect_ratio_2p5_filamin,
+    aspect_ratio_15_filamin, d_fig2a_aspect_ratio, d_fig3a_aspect_ratio_data), tactoid major-axis
+    lengths during coarsening/coalescence (6: tactoid_length_growth_60min,
+    tactoid_length_homogeneous_si, d_fig3a_length_data, d_fig3b_pre_upper, d_fig3b_pre_lower,
+    d_fig3b_coalesced_data), capillary-viscous shape-relaxation and shape-change timescales (5:
+    bundle_shape_change_timescale, d_fig3c_inset_5pct, d_fig3c_inset_10pct, d_fig3d_5pct_data,
+    d_fig3d_10pct_data — distinct physically from FRAP recovery time constants), and fluid-bundle
+    contraction kinematics and contractile strain (7: d_fig4c_2p5pct_data, d_fig4c_10pct_data,
+    d_fig4d_2p5pct, d_fig4d_5pct, d_fig4d_10pct, bundle_contractile_strain_range,
+    d_fig4e_contractile_strain). See weirich2017/q_nastkolb2022_no_cross_validation for the
+    exhaustive reverse-direction audit of all 52 weirich2017 models against all 66 origin:
+    measured data in nastkolb2022.
+
+- id: q_chandrasekaran2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - frap_recovery_fit
+    - frap_recovery_by_half_time
+    - frap_half_time
+    - frap_tau_from_half_time
+    - frap_mobile_fraction_plateau
+    - frap_mobility_ratio
+    - bundle_filament_count_2d_spacing
+    - bundle_effective_spacing
+    - bundle_width_vasp_scaling
+    - cp_to_actin_ratio
+    - actin_concentration_fold_change
+    - bilayer_actin_decoration
+    - bundle_filament_intensity_extrapolation
+    - bundle_intensity_ratio
+    - bundle_width_lognormal_fit
+    - frap_bleach_normalization
+    - vasp_actin_spearman_colocalization
+    - frap_t_half_vasp_slb
+    - frap_t_half_vasp_ml
+    - frap_bleach_circle_diameter
+    - frap_mobile_fraction_slb_prepol
+    - frap_mobile_fraction_slb_pol30
+    - frap_mobile_fraction_ml_prepol
+    - frap_mobile_fraction_ml_pol30
+    - frap_curve_slb_prepol_fig4c
+    - frap_curve_slb_pol30_fig4c
+    - frap_curve_ml_prepol_fig4c
+    - frap_curve_ml_pol30_fig4c
+    - bundle_width_median_vasp_025
+    - bundle_width_median_vasp_dtetra_025
+    - bundle_width_max_vasp_025
+    - bundle_width_max_vasp_dtetra_025
+    - bundle_width_vs_vasp_fig2e
+    - bundle_width_median_vs_vasp_fig2e
+    - bundle_width_by_elongator_fig3f
+    - bundle_width_vs_actin_figs3f
+    - bundle_width_cp_substrate_figs4f
+    - filament_count_1um_intensity_measured
+    - vasp_llps_threshold_main
+    - vasp_llps_range_si
+    - bundle_diffraction_limited_window
+    - mdia1_tirf_decline_onset_time
+    - bilayer_decoration_vs_vasp_figs2g
+    - vasp_cluster_area_vs_vasp_figs4h
+    - q_frap_unstated_fit_params_and_diffusivity
+    - q_no_elongation_velocity_quantified
+    - q_chandrasekaran2024_3d_droplet_vs_2d_bilayer_vasp_contrast
+    - chandrasekaran2024/exp_wt_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_ring_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_shell_pct_1_7p5
+    - chandrasekaran2024/fig6d_wt_shell_fig
+    - chandrasekaran2024/fig6d_wt_ring_fig
+    - chandrasekaran2024/fig6d_wt_disk_fig
+    - chandrasekaran2024/fig6d_gabmut_shell_fig
+    - chandrasekaran2024/fig6d_gabmut_ring_fig
+    - chandrasekaran2024/fig6d_gabmut_disk_fig
+    - chandrasekaran2024/stokes_einstein_diffusion
+    - chandrasekaran2024/einstein_diffusion_relation
+    - chandrasekaran2024/langevin_overdamped_1d
+    - chandrasekaran2024/filament_elongation_length
+    - chandrasekaran2024/filament_growth_time
+    - chandrasekaran2024/brownian_ratchet_growth_rate
+    - chandrasekaran2024/final_actin_concentration
+    - chandrasekaran2024/vasp_tetramer_concentration
+    - chandrasekaran2024/bell_slip_bond_unbinding
+    - chandrasekaran2024/cytosim_actin_vasp_droplet
+    - chandrasekaran2024/lammps_vasp_actin_droplet
+    - chandrasekaran2024/vasp_radius
+    - chandrasekaran2024/vasp_diffusion_rate
+    - chandrasekaran2024/q_nastkolb2022_cross_validation_summary
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "fitted using with the formula y = a∗(1 – e(-t/τ)) + c"
+    where: "Data analysis (p. 11) vs chandrasekaran2024 Results (Fig. 6D, p. 7) & Supp. Table 2 (pp. 17-18)"
+  text: >
+    No cross-record validations are entered in validations.yaml in either direction between
+    nastkolb2022 (17 models: 11 runnable [11 output ports] + 6 non-runnable; 66 origin: measured
+    datums) and chandrasekaran2024 (46 models: 42 runnable [56 output ports] + 4 non-runnable; 10
+    origin: measured datums). Neither paper cites the other, neither imports values from the other
+    (0 cited.yaml links), and their quantitative models are structurally disjoint (0 cross-record
+    relations in relations.yaml).
+    (1) Forward direction — all 17 nastkolb2022 models vs all 10 origin: measured Fig. 6D 3D
+    VASP-droplet morphology datums in chandrasekaran2024 (110 runnable output-datum pairs; 70
+    dimensionless matches across 7 dimensionless ports, 0 matches in [length] and [time]):
+    - All 10 origin: measured datums in chandrasekaran2024 quantify 3D PEG8k-crowded VASP droplet
+      Shell, Ring, and Disk percentage abundances across Actin:VASP = 1:20, 1:10, and 1:7.5 for
+      WT VASP (replotted from graham2023) and VASP-GABmut (4 scalars: exp_wt_disk_pct_1_7p5 =
+      '70 ± 13'%, exp_gabmut_disk_pct_1_7p5 = '< 10'% [inequality -> no verdict],
+      exp_gabmut_ring_pct_1_7p5 = '53 ± 6'%, exp_gabmut_shell_pct_1_7p5 = '37 ± 4'%; plus 6
+      digitized 3-bar Fig. 6D curves: fig6d_{wt,gabmut}_{shell,ring,disk}_fig).
+    - None of nastkolb2022's 11 runnable models predicts 3D droplet morphology abundances:
+      (a) the 6 FRAP models (frap_recovery_fit, frap_recovery_by_half_time, frap_half_time,
+      frap_tau_from_half_time, frap_mobile_fraction_plateau, frap_mobility_ratio) have zero FRAP
+      targets in chandrasekaran2024 (which performs no FRAP experiments at all);
+      (b) the 3 2D bundle geometry/scaling models (bundle_filament_count_2d_spacing,
+      bundle_effective_spacing, bundle_width_vasp_scaling) have zero measured bundle-width,
+      filament-count, or interfilament-spacing targets in chandrasekaran2024 (diagnostically,
+      CytoSim's reported spherical VASP diameter 2*vasp_radius = 60 nm evaluated in
+      bundle_filament_count_2d_spacing on a 1-um 2D ribbon gives 16.67 filaments/um, or 8.33 at
+      the 120 nm max crosslink reach, far below nastkolb2022's 45 +/- 12 measured filaments/um);
+      (c) cp_to_actin_ratio and actin_concentration_fold_change have no targets because
+      chandrasekaran2024 uses zero capping protein and zero profilin and records no measured
+      actin fold-change; and
+      (d) all 6 non-runnable image-processing/fit models (bilayer_actin_decoration,
+      bundle_filament_intensity_extrapolation, bundle_intensity_ratio, bundle_width_lognormal_fit,
+      frap_bleach_normalization, vasp_actin_spearman_colocalization) cannot execute and measure
+      2D TIRF observables unrelated to 3D droplet morphology percentages. All remaining 214
+      chandrasekaran2024 datums are non-measured (107 run, 88 reported, 15 derived, 3 predicted,
+      1 assumed).
+    (2) Reverse direction — all 46 chandrasekaran2024 models (42 runnable [56 output ports] + 4
+    non-runnable) vs all 66 origin: measured datums in nastkolb2022 (3,696 total pairs; 1,269
+    dimension-matching pairs): 0 genuine validations, because:
+    - Diffusion/transport models (stokes_einstein_diffusion, einstein_diffusion_relation,
+      langevin_overdamped_1d.D_eff) have 0 [length]^2/[time] measured targets in nastkolb2022
+      (which prints FRAP t_1/2 = 0.102 min SLB and 0.399 min ML over a 4.96 um bleach disk
+      without computing D, while chandrasekaran2024 lacks a 2D FRAP t_1/2 model; diagnostically
+      2D Soumpasis D_SLB = 0.2251 um^2/s and D_ML = 0.0575 um^2/s vs 3D Stokes-Einstein
+      D_SE = 0.01454 um^2/s at 0.5 Pa*s, 0.1454 um^2/s at 0.05 Pa*s, and CytoSim D_VASP =
+      10 um^2/s [44.4x D_SLB, 173.8x D_ML]).
+    - Elongation-rate models (brownian_ratchet_growth_rate, elongation_rate_from_growth_time,
+      total_actin_addition_rate, monomer_depletion_elongation_rate) have 0 [length]/[time]
+      measured targets in nastkolb2022 (q_no_elongation_velocity_quantified).
+    - Length (117 pairs), area (4 pairs), concentration (8 pairs), time (12 pairs), and
+      dimensionless (1,128 pairs) dimension matches all cross physically incompatible quantities:
+      transverse 2D bundle widths (9 datums) vs single-filament contour length / Brownian step /
+      3D droplet axes / persistence length; 2D network pore areas (4 curves) vs 3D spheroid
+      surface area; 2D VASP LLPS incubation onset ('>= 0.5' uM, '0.25 to 2' uM) vs stoichiometry
+      and 3D-droplet actin concentration conversions (final_actin_concentration,
+      vasp_tetramer_concentration, etc.); pre-actin 2D lipid-tethered FRAP t_1/2, 0-80 s
+      diffraction-limited width window, and 6 min mDia1 detachment onset vs VASP-actin bond
+      lifetime tau_res, droplet filament growth time, and ns MD tau_MD; and 47 dimensionless 2D
+      SLB observables (filament count 45 +/- 12, FRAP mobile fractions & Fig. 4C traces, rising
+      bilayer actin decoration Fig. S2G [opposite to non-runnable cytosim_actin_vasp_droplet's
+      falling 3D droplet surface occupancy], pre-actin 2D VASP cluster area Fig. S4H, intensity
+      profiles/kinetics/histograms/colocalization/lipid relaxation) vs 3D droplet aspect ratio,
+      LAMMPS LJ/crowder quantities, icosphere facets, and 3-class morphology closure.
+    See chandrasekaran2024/q_nastkolb2022_cross_validation_summary for the complete port-by-port
+    and datum-by-datum accounting.
+
+- id: q_graham2023_cross_validation_summary
+  kind: choice
+  about:
+    - frap_recovery_by_half_time
+    - frap_recovery_fit
+    - frap_mobile_fraction_plateau
+    - frap_half_time
+    - frap_tau_from_half_time
+    - frap_mobility_ratio
+    - frap_amp_graham_fig1f_added
+    - frap_baseline_offset_added
+    - bundle_filament_count_2d_spacing
+    - bundle_effective_spacing
+    - bundle_width_vasp_scaling
+    - cp_to_actin_ratio
+    - actin_concentration_fold_change
+    - bilayer_actin_decoration
+    - bundle_filament_intensity_extrapolation
+    - bundle_intensity_ratio
+    - bundle_width_lognormal_fit
+    - frap_bleach_normalization
+    - vasp_actin_spearman_colocalization
+    - filament_count_1um_intensity_measured
+    - bundle_width_ref_1um
+    - vasp_diameter_min
+    - vasp_diameter_max
+    - cmp_frap_by_thalf_slb_prepol_fig4c
+    - cmp_nf_2d_max_vs_intensity
+    - cmp_nf_2d_min_vs_intensity
+    - q_graham2023_modelatlas_and_3d_vs_2d_vasp_contrast
+    - graham2023/ring_filament_count
+    - graham2023/filament_spacing_vasp_delta
+    - graham2023/filament_spacing_ena
+    - graham2023/frap_recovery_fig1f
+    - graham2023/frap_recovery_text
+    - graham2023/frap_t_half
+    - graham2023/fig1f_frap_avg_fig
+    - graham2023/fig6b_frap_3peg_fig
+    - graham2023/fig6b_frap_10peg_fig
+    - graham2023/q_nastkolb2022_cross_validation_summary
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "fitted using with the formula y = a∗(1 – e(-t/τ)) + c"
+    where: "Data analysis (p. 11) vs graham2023 Fig. 1f (p. 2), Methods (p. 15) & SI Table 1 / Sec. 2.6 (pp. 39, 41)"
+  text: >
+    Reciprocal bidirectional cross-validation audit between nastkolb2022 (17 models: 11 runnable
+    [11 output ports] + 6 non-runnable; 66 origin: measured datums) and graham2023 (31 runnable
+    models [40 output ports]; 38 origin: measured datums) yields 2 checked CrossValidation entries
+    (1 in each direction):
+    (1) Forward direction — all 17 nastkolb2022 models vs all 38 origin: measured datums in
+    graham2023 (418 runnable port-datum pairs; 234 dimension-matching: 224 dimensionless, 6
+    [length], 4 [time]):
+    - INCLUDED (1 entry in nastkolb2022/validations.yaml): val_frap_by_thalf_vs_graham_fig1f
+      (purpose: fit_quality). Both papers normalize circular-ROI VASP FRAP with the exact same
+      bleach-corrected 0%-100% double normalization (Siggia 2000 in nastkolb2022 p. 11; max
+      pre-bleach and min post-bleach via ImageJ FRAP_Profiler_v2.java in graham2023 Methods
+      p. 15), and graham2023 prints both t_1/2 = 18 +/- 3 s (graham2023/frap_t_half) and final
+      recovery 93.9 +/- 4.89% (graham2023/frap_recovery_fig1f, entered as
+      frap_amp_graham_fig1f_added = 0.939 because graham2023 does not explicitly print fit
+      asymptote a and assigns shared quantity frap_recovery_fraction to both scalar recovery and
+      curve) without printing any FRAP equation. Evaluating frap_recovery_by_half_time (c = 0)
+      across graham2023/fig1f_frap_avg_fig yields verdict: not reproduced (3/13 reproduced, 4/13
+      close, 6/13 not reproduced). Critically, while the single pre-bleach point t = -10 s
+      (100.4% vs model -44.11%) lies outside the t >= 0 post-bleach domain, the 12 post-bleach
+      points (t = 5-290 s) independently yield not reproduced (3/12 reproduced at 30, 240, 290 s;
+      4/12 close at 5, 10, 18, 190 s; 5/12 not reproduced at 40, 60, 90, 120, 150 s; RMSE =
+      6.50%, max |err| = 10.44% at 10 s), invariant across all 45 combinations of a in [87.91,
+      89.01, 93.9, 94.0, 98.79]%, t_1/2 in [15, 18, 21] s, and c in [-2, 0, +2]% (RMSE >= 5.11%).
+      This S-shaped early-underprediction / mid-overshoot residual mirrors nastkolb2022's own
+      cmp_frap_by_thalf_slb_prepol_fig4c (3/15 reproduced), whereas 2D Soumpasis diffusive FRAP
+      (c = 0) reproduces 11/12 post-bleach points (RMSE = 1.12%) and biexponential (c = 0)
+      reproduces 12/12 (RMSE = 0.60%).
+    - EXCLUDED (all remaining 417 runnable pairs + 6 non-runnable models):
+      (a) frap_recovery_fit vs fig1f_frap_avg_fig: graham2023 prints t_1/2 (18 +/- 3 s), not tau
+      (25.97 s unprinted), and would duplicate val_frap_by_thalf_vs_graham_fig1f identically.
+      (b) frap_recovery_by_half_time / frap_recovery_fit vs fig6b_frap_3peg_fig (41.2% at 300 s,
+      rising) and fig6b_frap_10peg_fig (pre-bleach t = 0 at 100.1%, flat 1.0-2.3% post-bleach):
+      larger whole-droplet bleach area (caption p. 9 explicitly notes slower recovery than Fig.
+      1f) with neither t_1/2 nor plateau printed anywhere in graham2023.
+      (c) frap_mobile_fraction_plateau (y_inf = a + c) vs frap_recovery_fig1f / frap_recovery_text
+      (tautological a + 0 = a on Graham's own a, and Nast-Kolb's 2D SLB/ML values do not model
+      3D PEG condensates); frap_half_time, frap_tau_from_half_time, frap_mobility_ratio (only
+      one t_1/2 printed, no tau, no SLB/ML pair; vasp_droplet_fusion_time ~1 s is droplet
+      coalescence, not FRAP).
+      (d) bundle_filament_count_2d_spacing, bundle_effective_spacing, bundle_width_vasp_scaling:
+      graham2023 contains 0 origin: measured filament-count, interfilament-spacing (delta = 15 nm
+      is assumed; Ena 12 nm is reported), or bundle-width-vs-c_VASP datums (its 3 [length]
+      measured datums are actin-free droplet diameters at fixed 20 uM VASP, while Figs. 3e/3f/4h
+      ring-thickness curves are origin: predicted power-law fits vs droplet diameter D).
+      (e) cp_to_actin_ratio and actin_concentration_fold_change (graham2023 uses 0 nM CP and
+      has no measured actin concentration fold-change); all 6 non-runnable models; and all 28
+      remaining non-FRAP measured datums in graham2023 (morphology abundances, droplet aspect
+      ratios, elongation intensity traces, partition coefficients, droplet size histograms,
+      elongation velocity).
+    (2) Reverse direction — all 31 runnable graham2023 models (40 ports) vs all 66 origin:
+    measured datums in nastkolb2022 (2,640 port-datum pairs; 511 dimension-matching):
+    - INCLUDED (1 entry in graham2023/validations.yaml):
+      val_ring_filament_count_vs_nastkolb_1um (purpose: validation; zero added inputs). Evaluates
+      graham2023/ring_filament_count (N_fil = T_ring/delta) with Graham's assumed delta = 15 nm
+      at nastkolb2022/bundle_width_ref_1um (1 um) against filament_count_1um_intensity_measured
+      (45 +/- 12), predicting 66.67 (+21.67, +48.1%, +1.81 uncertainty units -> verdict: close,
+      outside [33, 57]).
+    - EXCLUDED: all other 2,639 pairs (16 ports in unmatched stiffness/energy/tension/rate
+      dimensions; 15 [length] droplet-geometry, longitudinal-elongation, and spherical-confinement
+      ring-thickness ports vs 9 open-2D-SLB bundle-width datums; 7 dimensionless droplet/ring
+      aspect/ratio/exponent ports vs 46 non-filament-count dimensionless datums; plus 10
+      pore-area, LLPS-concentration, and time datums in nastkolb2022 with no matching graham2023
+      output ports). See graham2023/q_nastkolb2022_cross_validation_summary for full details.
+
+
+

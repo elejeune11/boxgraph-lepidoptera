@@ -152,14 +152,20 @@ def _samples(rel: Relation, a: _Side, n: int = N_SAMPLES) -> list[dict[str, floa
     return out
 
 
+def _exec_side(side: _Side, points: list[dict[str, float]]):
+    source = side.lr.source_file() if side.model.software else None
+    return execute(side.path, [{"inputs": p, "settings": dict(side.model.settings)} for p in points],
+                   cache_dir=side.cache_dir, source=source, source_version=side.lr.record.source.version)
+
+
 def _eval(rel, a: _Side, b: _Side, points: list[dict[str, float]], convert: bool = True) -> tuple[list[float], list[float]]:
     ao, bo = _output_pair(rel, a, b)
     _, funcs = _mapping(rel, a, b)
     order = list(a.model.inputs)
     b_points = [{bs: f(*[p[n] for n in order]) for bs, f in funcs.items()} for p in points]
     try:
-        ra = execute(a.path, [{"inputs": p, "settings": dict(a.model.settings)} for p in points], cache_dir=a.cache_dir)
-        rb = execute(b.path, [{"inputs": p, "settings": dict(b.model.settings)} for p in b_points], cache_dir=b.cache_dir)
+        ra = _exec_side(a, points)
+        rb = _exec_side(b, b_points)
     except BuildError as e:
         raise _Unverifiable(f"a model failed to run: {e}") from None
     ua, ub = a.model.outputs[ao], b.model.outputs[bo]
@@ -272,8 +278,7 @@ def _symbolic_disagrees(rel, a: _Side, b: _Side, ao: str, bo: str) -> str | None
         names = list(side.model.inputs)
         syms = _symbols(names)
         try:
-            ran = execute(side.path, [{"inputs": q, "settings": dict(side.model.settings)} for q in points],
-                          cache_dir=side.cache_dir)
+            ran = _exec_side(side, points)
         except BuildError as e:
             raise _Unverifiable(f"a model failed to run: {e}") from None
         for q, r in zip(points, ran):

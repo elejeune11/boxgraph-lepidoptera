@@ -1,0 +1,89 @@
+# Cross-record cited links from graham2023 values to released simulation code (graham_code).
+#
+# Notes on scope:
+# 1. All 41 shared parameters and 14 digitized figure curves (Extended Data Fig. 5c, Fig. 5c surface energy,
+#    Fig. 4f, Fig. 4g x4, Extended Data Fig. 7 x5, Fig. 4h x2) between graham_code and graham2023 are
+#    already linked in graham_code/data.yaml via `from_source: graham2023` + `from_datum` (41/41 checked
+#    in BoxGraph Synthesis). Those 14 `target_*` tables in graham_code/data.yaml are copies of graham2023's
+#    digitized PDF curves (not raw software outputs), so reverse links back from graham2023 to `target_*`
+#    are intentionally omitted to avoid circularity; live code-vs-figure verification lives in
+#    graham_code/runs.yaml and graham_code/comparisons.yaml.
+# 2. The 6 `from_source` entries already in graham2023/data.yaml (`vasp_disordered_frac`,
+#    `lit_ring_thickness_exponent_range`, `actin_lp_table1`, `filament_spacing_vasp_delta`,
+#    `filament_spacing_ena`, `single_filament_k_stretch`) cite external literature (`ref-15`, `ref-27`,
+#    `ref-si-8`, `ref-si-9`, `ref-si-10`), not graham_code.
+
+- datum: ring_thickness_step_val
+  from_source: graham_code
+  from_datum: r_fil_code
+  evidence: "Fig. 4e caption (p. 7) states the simulation protocol increases ring thickness in steps of 15 nm, which in VASPDroplet_simulate.ipynb (lines 888, 918, 924) is implemented by incrementing Nfil by 1 with R_fil = 15 nm (sparams.rcyl = R_fil * Nfil)."
+
+# ---------------------------------------------------------------------------
+# Cross-record provenance scope between graham2023 and released Source Data
+# (graham_source_data: 41567_2022_1924_MOESM12-22_ESM.xlsx, 11 workbooks, 22 sheets).
+#
+# Notes on scope:
+# 1. All 24 experimental scalar summary/fit targets in graham2023/data.yaml that correspond to
+#    printed paper values in graham_source_data/data.yaml (`frap_recovery_fig1f`,
+#    `frap_recovery_text`, `frap_t_half`, `droplet_diam_median_20uM`, `droplet_diam_max_20uM`,
+#    the 16 Fig. 3e/3f/4h power-law fit parameters, and the 3 Fig. 5h elongation parameters) are
+#    already linked inline in graham_source_data/data.yaml via `from_source: graham2023` +
+#    `from_datum` (24/24 checked and reproduced); reverse links back to those copies are omitted
+#    to keep the dependency graph strictly acyclic.
+# 2. The stored Excel formula cell `f1f_recovery_stored_L106` (MOESM12 'Fig 1f' L106 = 93.9086%)
+#    is linked to `frap_recovery_fig1f` ('93.9 ± 4.89%') in graham_source_data/cited.yaml so the
+#    full-precision workbook cell is checked at graham2023's printed precision rather than vice
+#    versa (preventing both rounding mismatch and graph cycles).
+# 3. None of graham2023's 35 workbook-backed digitized figure curves can be linked here as
+#    table-to-table cited links because graham_source_data/data.yaml declares 0 table datums;
+#    all 35 curves (plus 2 scalars and 6 diagnostic variants = 43 live validations) are checked
+#    directly against the 11 .xlsx workbooks in graham_source_data/validations.yaml.
+# 4. The remaining 48 scalar datums in graham2023/data.yaml are simulation/theory parameters or
+#    predictions absent from MOESM12-22, external literature citations (`ref-*`), or qualitative /
+#    derived experimental values without a scalar counterpart in graham_source_data/data.yaml.
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+# Cross-record provenance scope between graham2023 and chandrasekaran_source_data
+# (41467_2024_46726_MOESM9_ESM.xlsx, 37 sheets; 0 direct links added across all 133 x 77 pairs):
+# 1. Although MOESM9 sheet 'Figure7F' supplies the missing numerical Source Data for graham2023
+#    Fig. 5c (matching 12/12 digitized points of `fig5c_bending_fig` [MAE 0.0768] and 10/10 of
+#    `fig5c_surface_fig` [MAE 0.0304] inside their reading bands), chandrasekaran_source_data/
+#    data.yaml declares 0 table datums for Figure7F (accessing the 19 rows live via software model
+#    `fig7f_continuum_energy_reader` and storing only AR = 1 scalars `wb_f7f_ar1_{bend,surf}`),
+#    while graham2023/data.yaml stores Fig. 5c solely as digitized figure curves (`_cited_table`
+#    cannot link a figure curve to a scalar datum).
+# 2. MOESM9 sheet 'Figure6D' leaves WT rows 1-19 blank (recording only 2024 VASP-GABmut data, not
+#    graham2023 Fig. 3d / Extended Data Fig. 4c WT counts), and MOESM9 sheet 'FigureS4C' holds
+#    CytoSim k-means silhouette scores rather than Graham Extended Data Fig. 4c.
+# 3. None of graham2023's 6 `from_source` entries cites chandrasekaran_source_data (2024), and
+#    all 111 numerically overlapping scalar pairs across 133 x 77 are coincidental unrelated quantities.
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+# Cross-record provenance scope between graham2023 and zwicker2015
+# (Zwicker, Hyman & Jülicher, Phys. Rev. E 92:012317, 2015; 0 cited.yaml links):
+# 1. Neither paper cites the other (graham2023 cites 0 Zwicker papers across all 52 main + 14 SI
+#    references; zwicker2015 precedes graham2023 by 8 years), and the two reference lists share
+#    0 exact bibliographic entries across all 66 x 46 pairs.
+# 2. All 6 `from_source` entries in graham2023/data.yaml cite external literature (`ref-15`,
+#    `ref-27`, `ref-si-8`, `ref-si-9`, `ref-si-10`), while zwicker2015/data.yaml declares 0
+#    `from_source` entries and 0 dimensional experimental measurements.
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+# Cross-record provenance scope between graham2023 and weirich2017
+# (Weirich, Banerjee, Dasbiswas, Witten, Vaikuntanathan & Gardel, PNAS 114:2131-2136, 2017;
+#  0 cited.yaml links):
+# 1. Neither paper cites the other: graham2023 cites 0 Weirich papers across all 52 main + 14 SI
+#    references (Discussion p. 10 / printed p. 583 cites only the Gardel-lab follow-up Scheff et
+#    al. Soft Matter 16:5659-5668, 2020 as `ref-40` for tactoid-like morphologies from short
+#    pre-polymerized filaments), and weirich2017 precedes graham2023 by 6 years. Across all
+#    66 x 49 reference pairs, the two bibliographies share exactly 1 review entry: Blanchoin et al.,
+#    Physiol. Rev. 94:235-263, 2014 (`graham2023/ref-43` [misprinted year 2022] <-> `weirich2017/ref-4`).
+# 2. All 6 `from_source` entries in graham2023/data.yaml cite external literature (`ref-15`,
+#    `ref-27`, `ref-si-8` x2, `ref-si-9`, `ref-si-10`), and all 7 `from_source` entries in
+#    weirich2017/data.yaml cite external literature (`ref-18`, `ref-19`, `ref-23` x3, `ref-24`,
+#    `ref-28`), so 0 cross-record data links exist in either direction.
+# ---------------------------------------------------------------------------
+

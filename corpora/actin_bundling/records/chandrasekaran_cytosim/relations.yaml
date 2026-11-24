@@ -1,0 +1,557 @@
+# ModelAtlas relations between CytoSim C++ source ports (chandrasekaran_cytosim)
+# and printed/from-words models in chandrasekaran2024 (Nat. Commun. 15, 3139, 2024).
+#
+# Structure:
+# - Section 1: Relations explicitly stated in CytoSim C++ source comments/code (provenance: stated).
+# - Section 2: Mathematically/physically justified relations across all six CytoSim physics domains
+#   (sterics, confinement, Bell/Gillespie hand kinetics, drag & Langevin diffusion, Brownian ratchet
+#   & monomer depletion, and coupled nucleation/depletion dynamics; provenance: proposed).
+#
+# Note on chandrasekaran_source_data:
+# - 0 mathematical ModelAtlas relations between chandrasekaran_cytosim (10 ported C++ physics models)
+#   and chandrasekaran_source_data (20 `role: processing`, `software: true` Excel workbook readers
+#   performing fixed-sheet lookups/interpolations on 41467_2024_46726_MOESM9_ESM.xlsx). Empirical
+#   validation of CytoSim physics predictions against raw Source Data measurements is handled
+#   separately via cross-record validations, with cross-attachment findings recorded in questions.yaml.
+
+# ---------------------------------------------------------------------------
+# 1. Stated in CytoSim C++ source
+# ---------------------------------------------------------------------------
+- id: rel_cyto_fiber_drag_sphere_limit
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+  b: chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+  mapping:
+    radius: "1000 * drag_radius"
+    viscosity: "viscosity"
+    kT: "kT"
+    dt: "dt"
+    D_prescribed: "10"
+  output_map:
+    drag_trans: drag_total
+  limit:
+    L: "0"
+  regime:
+    L: [0.05, 5.0]
+    segmentation: [0.05, 0.2]
+    viscosity: [0.001, 2.0]
+    viscosity_water: [0.001, 0.001]
+    drag_radius: [0.003, 0.015]
+    drag_length: [2.0, 10.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.005]
+  provenance: stated
+  citation:
+    file: src/sim/fiber.cc
+    lines: "958-964"
+    quote: "Hence we also calculate the drag of a sphere with"
+    where: "Fiber::dragCoefficientCylinder()"
+  assumptions:
+    - "Below min_len = 2 * drag_radius * exp(0.68), Fiber::dragCoefficientCylinder() clamps cylindrical drag to spherical Stokes drag 6*pi*viscosity*drag_radius."
+
+- id: rel_cyto_couple_halfwidth_scales_brownian
+  kind: scales_as
+  a: chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+  b: chandrasekaran2024/brownian_noise_stddev
+  mapping:
+    D: "D_prescribed"
+    dt: "dt"
+  output_map:
+    sigma_B: halfwidth_uniform_couple
+  regime:
+    radius: [5.0, 100.0]
+    viscosity: [0.001, 2.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+    D_prescribed: [0.01, 20.0]
+  provenance: stated
+  citation:
+    file: src/sim/couple_prop.cc
+    lines: "140-146"
+    quote: "and we need `diffusion_dt^2 = 6 D time_step`"
+    where: "CoupleProp::complete()"
+  assumptions:
+    - "CytoSim Couple::diffuse() uniform step half-width sqrt(6*D*dt) scales identically as sqrt(D*dt) with Gaussian Brownian std dev sqrt(2*D*dt), differing by the constant factor sqrt(3) because Var(U[-1,1]) = 1/3."
+
+# ---------------------------------------------------------------------------
+# 2. Steric repulsion & spherical/ellipsoidal confinement
+# ---------------------------------------------------------------------------
+- id: rel_cyto_steric_harmonic_force
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_steric_repulsion
+  b: chandrasekaran2024/harmonic_repulsion_force
+  mapping:
+    k_spring: "k_push"
+    delta: "r1 + r2 - d"
+  output_map:
+    F: F_repulsive
+  regime:
+    r1: [3.5, 30.0]
+    r2: [3.5, 30.0]
+    d: [0.5, 6.5]
+    k_push: [1.0, 10000.0]
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: "In the overlapping regime 0 < d < r1 + r2 (above CytoSim's REAL_EPSILON^0.5 = 1e-3 nm singularity guard in locus_grid.cc:82), CytoSim's repulsive steric force k_push*(r1 + r2 - d) equals chandrasekaran2024/harmonic_repulsion_force with overlap delta = r1 + r2 - d."
+
+- id: rel_cyto_ellipse_pole_confinement_force
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_confinement_sphere_ellipse
+  b: chandrasekaran2024/harmonic_repulsion_force
+  mapping:
+    k_spring: "stiff"
+    delta: "excursion"
+  output_map:
+    F: F_ellipse_pole
+  regime:
+    R_sphere: [0.5, 3.0]
+    a_z: [1.1, 4.0]
+    b_xy: [0.3, 1.0]
+    excursion: [1.0, 100.0]
+    stiff: [10.0, 500.0]
+  provenance: proposed
+  reason: "At the Z pole (0, 0, a_z + excursion) of a prolate SpaceEllipse, CytoSim's Newton ellipsoid projection (project_ellipse.cc:154-254) plus tangent-plane clamp (space.cc:359-367) recovers the exact normal Hookean restoring force stiff * excursion."
+
+- id: rel_cyto_ellipse_surface_exact
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_confinement_sphere_ellipse
+  b: chandrasekaran2024/prolate_spheroid_volume_conserving
+  mapping:
+    a: "a_z"
+    R_drop: "(a_z * b_xy**2)**(1/3)"
+  output_map:
+    surface_area: surface_exact
+  regime:
+    R_sphere: [0.5, 2.0]
+    a_z: [1.1, 3.5]
+    b_xy: [0.3, 1.0]
+    excursion: [1.0, 50.0]
+    stiff: [50.0, 300.0]
+  provenance: proposed
+  reason: "Under the equal-volume sphere radius R_drop = (a_z * b_xy^2)^(1/3), the exact analytical prolate spheroid surface area in cytosim_confinement_sphere_ellipse matches chandrasekaran2024/prolate_spheroid_volume_conserving identically."
+
+- id: rel_cyto_ellipse_thomsen_approx
+  kind: approximated_by
+  a: chandrasekaran2024/prolate_spheroid_volume_conserving
+  b: chandrasekaran_cytosim/cytosim_confinement_sphere_ellipse
+  mapping:
+    R_sphere: "R_drop"
+    a_z: "a"
+    b_xy: "sqrt(R_drop**3 / a)"
+    excursion: "10"
+    stiff: "200"
+  output_map:
+    surface_thomsen: surface_area
+  regime:
+    a: [1.1, 3.14]
+    R_drop: [0.8, 1.0]
+  tolerance: 0.01
+  provenance: proposed
+  reason: "CytoSim SpaceEllipse::surface() (space_ellipse.cc:112-118) approximates exact prolate spheroid surface area using Knud Thomsen's formula (p = 1.6075), which holds within 1% across the constant-volume droplet deformation regime (aspect ratios up to ~7.8)."
+
+# ---------------------------------------------------------------------------
+# 3. Hand binding/unbinding, Bell's law & discrete Gillespie stepping
+# ---------------------------------------------------------------------------
+- id: rel_cyto_bell_residence_time
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k_unbind0"
+    f: "force"
+    f_u: "unbinding_force"
+  output_map:
+    tau_res: tau_res_continuum
+  regime:
+    k_bind: [0.001, 10.0]
+    binding_range: [5.0, 50.0]
+    k_unbind0: [0.001, 10.0]
+    unbinding_force: [2.0, 20.0]
+    force: [0.1, 20.0]
+    dt: [0.0005, 0.005]
+    stiffness: [10.0, 200.0]
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: "Continuum mean bound residence time 1 / k_unbind_loaded in cytosim_hand_binding_unbinding is symbolically identical to chandrasekaran2024/bell_slip_bond_unbinding/tau_res."
+
+- id: rel_cyto_hand_discrete_to_bell_continuum
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k_unbind0"
+    f: "force"
+    f_u: "unbinding_force"
+  output_map:
+    tau_res: tau_res_discrete
+  limit:
+    dt: "0"
+  regime:
+    k_bind: [0.001, 10.0]
+    binding_range: [5.0, 50.0]
+    k_unbind0: [0.01, 10.0]
+    unbinding_force: [5.0, 20.0]
+    force: [0.1, 20.0]
+    dt: [0.001, 0.01]
+    stiffness: [10.0, 200.0]
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: "CytoSim's exact discrete-step Gillespie expectation E[tau_disc] = dt / (1 - exp(-k_off * dt)) reduces to continuum Bell lifetime 1 / k_off in the vanishing time-step limit dt -> 0."
+
+- id: rel_cyto_hand_discrete_vs_bell_highload
+  kind: approximated_by
+  a: chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k_unbind0"
+    f: "force"
+    f_u: "unbinding_force"
+  output_map:
+    tau_res: tau_res_discrete
+  regime:
+    k_bind: [1.0, 10.0]
+    binding_range: [30.0, 30.0]
+    k_unbind0: [1.0, 10.0]
+    unbinding_force: [10.0, 10.0]
+    force: [10.0, 30.0]
+    dt: [0.002, 0.002]
+    stiffness: [100.0, 100.0]
+    kT: [0.0042, 0.0042]
+  tolerance: 0.05
+  provenance: proposed
+  reason: "Tests whether continuum Bell lifetime 1/k_off approximates CytoSim's discrete dt = 0.002 s Gillespie lifetime within 5% across high link tensions (10-30 pN, k_unbind0 = 1-10/s); honest not_verified quantifies the O(k_off*dt/2) upward discretization bias (up to ~12-21% at high load)."
+
+- id: rel_cyto_hand_gillespie_mc_vs_bell_moderate
+  kind: approximated_by
+  a: chandrasekaran_cytosim/cytosim_hand_gillespie_mc
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k_unbind0"
+    f: "force"
+    f_u: "unbinding_force"
+  output_map:
+    tau_res: tau_res_mc
+  regime:
+    k_unbind0: [0.01, 1.0]
+    unbinding_force: [5.0, 20.0]
+    force: [0.1, 10.0]
+    dt: [0.0005, 0.002]
+  tolerance: 0.02
+  provenance: proposed
+  reason: "At moderate loads and dt <= 0.002 s (where k_off*dt << 1), CytoSim's float32 Gillespie countdown MC (hand.h:286-302, n_samples = 20000) reproduces continuum Bell lifetime within 2% (~3 sigma of 0.71% MC SE)."
+
+- id: rel_cyto_hand_gillespie_mc_vs_discrete_highload
+  kind: approximated_by
+  a: chandrasekaran_cytosim/cytosim_hand_gillespie_mc
+  b: chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+  mapping:
+    k_bind: "10"
+    binding_range: "30"
+    k_unbind0: "k_unbind0"
+    unbinding_force: "unbinding_force"
+    force: "force"
+    dt: "dt"
+    stiffness: "100"
+    kT: "0.0042"
+  output_map:
+    tau_res_discrete: tau_res_mc
+  regime:
+    k_unbind0: [0.1, 10.0]
+    unbinding_force: [8.0, 12.0]
+    force: [5.0, 35.0]
+    dt: [0.001, 0.005]
+  tolerance: 0.02
+  provenance: proposed
+  reason: "Across moderate-to-high loads (up to 35 pN, dt = 5 ms) where continuum Bell fails by >20%, CytoSim's float32 Gillespie MC matches exact discrete expectation dt / (1 - exp(-k_off*dt)) within 2% MC sampling precision."
+
+# ---------------------------------------------------------------------------
+# 4. Brownian drag, Stokes-Einstein diffusion & Langevin mobility
+# ---------------------------------------------------------------------------
+- id: rel_cyto_sphere_stokes_einstein
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+  b: chandrasekaran2024/stokes_einstein_diffusion
+  mapping:
+    kBT: "1000 * kT"
+    eta: "viscosity"
+    r: "radius"
+  output_map:
+    D_SE: D_stokes
+  regime:
+    radius: [5.0, 100.0]
+    viscosity: [0.001, 2.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+    D_prescribed: [0.01, 20.0]
+  provenance: proposed
+  reason: "CytoSim Sphere::setDragCoefficient() (sphere.cc:280-284) and Solid::setDragCoefficient() (solid.cc:1289) hardcode Stokes drag 6*pi*eta*R, making D_stokes = kT/(6*pi*eta*R) symbolically identical to chandrasekaran2024/stokes_einstein_diffusion (confirming the 673x VASP diffusion discrepancy)."
+
+- id: rel_cyto_couple_uniform_brownian_stddev
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+  b: chandrasekaran2024/brownian_noise_stddev
+  mapping:
+    D: "D_prescribed"
+    dt: "dt"
+  output_map:
+    sigma_B: sigma_uniform_couple
+  regime:
+    radius: [5.0, 100.0]
+    viscosity: [0.001, 2.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+    D_prescribed: [0.01, 20.0]
+  provenance: proposed
+  reason: "CytoSim CoupleProp::complete() (couple_prop.cc:146) chooses uniform step half-width sqrt(6*D*dt) so that the per-axis step standard deviation sqrt(6*D*dt)/sqrt(3) = sqrt(2*D*dt) is symbolically identical to chandrasekaran2024/brownian_noise_stddev."
+
+- id: rel_cyto_viscosity_ratio_water
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+  b: chandrasekaran2024/droplet_viscosity_ratio_water
+  mapping:
+    eta_drop: "viscosity"
+    eta_water: "viscosity_water"
+  output_map:
+    alpha_visc: viscosity_ratio_water
+  regime:
+    L: [0.5, 10.0]
+    segmentation: [0.05, 0.2]
+    viscosity: [0.001, 2.0]
+    viscosity_water: [0.0008, 0.0012]
+    drag_radius: [0.003, 0.015]
+    drag_length: [2.0, 10.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: "Droplet-to-water viscosity ratio viscosity / viscosity_water in cytosim_fiber_drag_and_brownian matches chandrasekaran2024/droplet_viscosity_ratio_water (both confirming 0.5 pN*s/um^2 = 500x water, not 50x)."
+
+- id: rel_cyto_fiber_com_stokes_limit
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+  b: chandrasekaran2024/stokes_einstein_diffusion
+  mapping:
+    kBT: "1000 * kT"
+    eta: "viscosity"
+    r: "1000 * drag_radius"
+  output_map:
+    D_SE: D_com
+  limit:
+    L: "0"
+  regime:
+    L: [0.05, 5.0]
+    segmentation: [0.05, 0.2]
+    viscosity: [0.001, 2.0]
+    viscosity_water: [0.001, 0.001]
+    drag_radius: [0.003, 0.015]
+    drag_length: [2.0, 10.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: "In the short-fiber limit L -> 0 (L <= 2*drag_radius*exp(0.68)), CytoSim Fiber::dragCoefficientCylinder() clamps cylindrical drag to spherical Stokes drag 6*pi*eta*drag_radius, reducing fiber center-of-mass diffusivity D_com to chandrasekaran2024/stokes_einstein_diffusion."
+
+- id: rel_cyto_fiber_com_einstein_diffusion
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+  b: chandrasekaran2024/einstein_diffusion_relation
+  mapping:
+    mu: "(log(0.5 * Min(L, drag_length) / drag_radius) + 0.32) / (3 * pi * viscosity * L)"
+    kBT: "1000 * kT"
+  output_map:
+    D: D_com
+  regime:
+    L: [0.5, 10.0]
+    segmentation: [0.05, 0.2]
+    viscosity: [0.001, 2.0]
+    viscosity_water: [0.001, 0.001]
+    drag_radius: [0.003, 0.015]
+    drag_length: [2.0, 10.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: "In the slender-rod regime (L > 2*drag_radius*exp(0.68)), CytoSim fiber center-of-mass diffusivity D_com = kT / drag_total matches chandrasekaran2024/einstein_diffusion_relation with Tirado-de la Torre cutoff mobility mu = (ln(0.5*min(L, drag_length)/drag_radius) + 0.32) / (3*pi*viscosity*L)."
+
+- id: rel_cyto_fiber_com_brownian_scaling
+  kind: scales_as
+  a: chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+  b: chandrasekaran2024/brownian_noise_from_mobility
+  mapping:
+    mu: "1 / (viscosity * L)"
+    kBT: "1000 * kT"
+    dt: "dt"
+  output_map:
+    sigma_B: brownian_disp_com
+  regime:
+    L: [5.5, 15.0]
+    segmentation: [0.05, 0.2]
+    viscosity: [0.001, 2.0]
+    viscosity_water: [0.001, 0.001]
+    drag_radius: [0.003, 0.015]
+    drag_length: [2.0, 5.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: "Above CytoSim's hydrodynamic cutoff length (L >= drag_length, which includes a full 2*pi-um ring at default drag_length = 5 um), cylindrical drag scales purely linearly with viscosity * L, so fiber CoM Brownian displacement std dev scales identically as sqrt(kT * dt / (viscosity * L)) with chandrasekaran2024/brownian_noise_from_mobility."
+
+- id: rel_cyto_meca_free_einstein_mc
+  kind: approximated_by
+  a: chandrasekaran_cytosim/cytosim_semi_implicit_langevin_1d
+  b: chandrasekaran2024/einstein_diffusion_relation
+  mapping:
+    mu: "mu"
+    kBT: "1000 * kT"
+  output_map:
+    D: D_eff_meca_free
+  regime:
+    mu: [0.1, 20.0]
+    kT: [0.0035, 0.005]
+    k_trap: [10.0, 200.0]
+    D_couple: [0.1, 20.0]
+  tolerance: 0.05
+  provenance: proposed
+  reason: "Free-particle diffusivity <x^2>/(2*t) measured from CytoSim Meca::solve() Brownian dynamics (n_particles = 4000) approximates Einstein diffusivity mu*kT within a 5% finite-sample MC tolerance (~2.2 sigma of 2.24% SE)."
+
+- id: rel_cyto_couple_uniform_einstein_mc
+  kind: approximated_by
+  a: chandrasekaran_cytosim/cytosim_semi_implicit_langevin_1d
+  b: chandrasekaran2024/einstein_diffusion_relation
+  mapping:
+    mu: "D_couple / kT"
+    kBT: "1000 * kT"
+  output_map:
+    D: D_eff_couple_uniform
+  regime:
+    mu: [0.1, 20.0]
+    kT: [0.0035, 0.005]
+    k_trap: [10.0, 200.0]
+    D_couple: [0.1, 20.0]
+  tolerance: 0.05
+  provenance: proposed
+  reason: "Free-Couple uniform-step diffusivity (dx = sqrt(6*D_couple*dt)*U[-1,1], couple.cc:138) approximates prescribed Einstein diffusivity D_couple = mu*kT within a 5% finite-sample MC tolerance."
+
+# ---------------------------------------------------------------------------
+# 5. Polymerization ratchet, monomer depletion & coupled Nucleator dynamics
+# ---------------------------------------------------------------------------
+- id: rel_cyto_brownian_ratchet_assisting_discrepancy
+  kind: same_as
+  a: chandrasekaran2024/brownian_ratchet_growth_rate
+  b: chandrasekaran_cytosim/cytosim_polymerization_ratchet_depletion
+  mapping:
+    growing_speed: "k_grow"
+    growing_force: "f_grow"
+    projected_force: "-f"
+    used_polymer: "0"
+    total_polymer: "1000"
+    n_filaments: "30"
+    L0: "0.1"
+    R_drop: "1"
+  output_map:
+    v_per_filament: v
+  regime:
+    k_grow: [5.0, 20.0]
+    f: [-10.0, -0.5]
+    f_grow: [5.0, 15.0]
+  provenance: proposed
+  reason: "Tests assisting/tensile tip forces (f < 0, projected_force = -f > 0) in the undepleted limit: unclipped k_grow*exp(-f/f_grow) accelerates exponentially under tension, whereas CytoSim GrowingFiber::step() (growing_fiber.cc:75: 'if ((forceP < 0) & (addP > 0))') applies a one-sided clamp (no acceleration for tensile loads), yielding an honest refutation."
+
+- id: rel_cyto_monomer_depletion_total_network
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_polymerization_ratchet_depletion
+  b: chandrasekaran2024/monomer_depletion_elongation_rate
+  mapping:
+    k_grow: "growing_speed / 1000"
+    N_fil: "n_filaments"
+    F_actin: "used_polymer"
+    T_actin: "total_polymer"
+  output_map:
+    v_elong: v_total_network
+  limit:
+    projected_force: "0"
+  regime:
+    growing_speed: [5.0, 20.0]
+    growing_force: [5.0, 15.0]
+    projected_force: [-10.0, -0.1]
+    used_polymer: [10.0, 400.0]
+    total_polymer: [500.0, 2000.0]
+    n_filaments: [10.0, 100.0]
+    L0: [0.05, 0.2]
+    R_drop: [0.5, 2.0]
+  provenance: proposed
+  reason: "In the force-free limit (projected_force -> 0), CytoSim's total network contour-length addition rate v_total_network = N_fil * growing_speed * (1 - used_polymer/total_polymer) reduces to chandrasekaran2024/monomer_depletion_elongation_rate (confirming Supplementary Table 4's k_grow*N_fil*(1-[F]/[T]) is the network sum, not per-filament speed)."
+
+- id: rel_cyto_polymerization_to_total_addition
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_polymerization_ratchet_depletion
+  b: chandrasekaran2024/total_actin_addition_rate
+  mapping:
+    k_grow: "growing_speed / 1000"
+    N_fil: "n_filaments"
+  output_map:
+    R_add: v_total_network
+  limit:
+    used_polymer: "0"
+    projected_force: "0"
+  regime:
+    growing_speed: [5.0, 20.0]
+    growing_force: [5.0, 15.0]
+    projected_force: [-10.0, -0.1]
+    used_polymer: [1.0, 400.0]
+    total_polymer: [500.0, 2000.0]
+    n_filaments: [10.0, 100.0]
+    L0: [0.05, 0.2]
+    R_drop: [0.5, 2.0]
+  provenance: proposed
+  reason: "In the undepleted (used_polymer -> 0), force-free (projected_force -> 0) limit, CytoSim's total network polymerization rate v_total_network reduces to chandrasekaran2024/total_actin_addition_rate = k_grow * N_fil."
+
+- id: rel_cyto_nucleation_to_linear_elongation
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+  b: chandrasekaran2024/filament_elongation_length
+  mapping:
+    L0: "L_seed_init"
+    k_grow: "k_grow"
+    t: "t_eval"
+  output_map:
+    L_fil: L_seed_final
+  limit:
+    C_total_actin: "oo"
+  regime:
+    N_seed: [10.0, 50.0]
+    L_seed_init: [0.05, 0.2]
+    L_max: [10.0, 20.0]
+    L_nuc_init: [0.008, 0.05]
+    k_grow: [5.0, 20.0]
+    C_nucleator: [10.0, 150.0]
+    k_nuc: [0.05, 0.5]
+    k_unbind_nuc: [0.001, 0.02]
+    C_total_actin: [100.0, 1000.0]
+    R_drop: [0.8, 1.5]
+    dl_monomer: [2.5, 3.0]
+    t_eval: [10.0, 100.0]
+  provenance: proposed
+  reason: "In the infinite monomer pool limit (C_total_actin -> oo, free_polymer -> 1) with uncapped L_max > L_seed_init + k_grow*t_eval, seed filament length L_seed_final in CytoSim's coupled Nucleator + FiberSet depletion solver reduces to deterministic linear elongation L0 + k_grow*t."
+
+- id: rel_cyto_nucleator_count_rounding
+  kind: approximated_by
+  a: chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+  b: chandrasekaran2024/molecule_count_from_concentration
+  mapping:
+    C: "C_nucleator"
+    R_drop: "R_drop"
+  output_map:
+    N: N_nuc_molecules
+  regime:
+    N_seed: [10.0, 50.0]
+    L_seed_init: [0.05, 0.2]
+    L_max: [6.0, 10.0]
+    L_nuc_init: [0.008, 0.05]
+    k_grow: [5.0, 20.0]
+    C_nucleator: [20.0, 200.0]
+    k_nuc: [0.05, 0.5]
+    k_unbind_nuc: [0.001, 0.02]
+    C_total_actin: [100.0, 200.0]
+    R_drop: [0.8, 2.0]
+    dl_monomer: [2.5, 3.0]
+    t_eval: [1.0, 5.0]
+  tolerance: 0.02
+  provenance: proposed
+  reason: "CytoSim's discrete integer-rounded nucleator count round(C_nucleator * N_A * V_drop) is approximated by chandrasekaran2024/molecule_count_from_concentration within relative rounding error <= 0.5 / N (< 2% for N >= 25)."

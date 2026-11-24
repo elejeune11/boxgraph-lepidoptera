@@ -1,0 +1,131 @@
+- id: rel_frap_fit_same_as_half_time
+  kind: same_as
+  a: nastkolb2022/frap_recovery_fit
+  b: nastkolb2022/frap_recovery_by_half_time
+  mapping:
+    a: "a"
+    t_half: "tau * log(2)"
+    c: "c"
+    t: "t"
+  regime:
+    a: [0.3, 1.0]
+    tau: [0.05, 1.0]
+    c: [0.001, 0.1]
+    t: [0.01, 2.0]
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "half-time calculated with t1/2 = τ∗ln 2."
+    where: "Data analysis"
+  assumptions:
+    - "Substituting tau = t_1/2 / ln(2) into y = a*(1 - exp(-t/tau)) + c yields y = a*(1 - exp(-t*ln(2)/t_1/2)) + c identically."
+
+- id: rel_frap_fit_reduces_to_plateau
+  kind: reduces_to
+  a: nastkolb2022/frap_recovery_fit
+  b: nastkolb2022/frap_mobile_fraction_plateau
+  mapping:
+    a: "a"
+    c: "c"
+  limit:
+    t: "oo"
+  regime:
+    a: [0.3, 1.0]
+    tau: [0.05, 1.0]
+    c: [0.0, 0.1]
+    t: [0.01, 2.0]
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "fitted using with the formula y = a∗(1 – e(-t/τ)) + c"
+    where: "Data analysis"
+  assumptions:
+    - "As post-bleach time t -> oo with tau > 0, exp(-t/tau) -> 0 and normalized FRAP recovery approaches the asymptotic mobile-fraction plateau y_inf = a + c."
+
+- id: rel_frap_half_time_fit_reduces_to_plateau
+  kind: reduces_to
+  a: nastkolb2022/frap_recovery_by_half_time
+  b: nastkolb2022/frap_mobile_fraction_plateau
+  mapping:
+    a: "a"
+    c: "c"
+  limit:
+    t: "oo"
+  regime:
+    a: [0.3, 1.0]
+    t_half: [0.05, 1.0]
+    c: [0.0, 0.1]
+    t: [0.01, 2.0]
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "fitted using with the formula y = a∗(1 – e(-t/τ)) + c and the recovery"
+    where: "Data analysis"
+  assumptions:
+    - "As t -> oo with t_1/2 > 0, 2^(-t/t_1/2) -> 0 and normalized FRAP recovery approaches the asymptotic mobile-fraction plateau y_inf = a + c."
+
+# Cross-record proposed relations with claessens2008 (Claessens et al., PNAS 105:8819-8822, 2008; cited as ref-claessens2008)
+- id: rel_claessens2008_hex_shells_scales_2d_spacing
+  kind: scales_as
+  a: claessens2008/hexagonal_shell_filaments
+  b: nastkolb2022/bundle_filament_count_2d_spacing
+  output_map:
+    n_f: D_fil
+  mapping:
+    W: "(12.4 / 1000) * sqrt((2 * sqrt(3) / pi) * (1 + 3 * k * (k + 1)))"
+    d_spacing: "12.4"
+  regime:
+    k: [3.0, 20.0]
+  provenance: proposed
+  reason: >
+    Connects Claessens et al.'s (2008) discrete 3D hexagonal-shell bundle diameter in filaments
+    D_fil = 2*k + 1 (p. 2, for k concentric shells containing n_f = 1 + 3*k*(k + 1) total
+    filaments) to Nast-Kolb et al.'s (2022) 2D single-layer filament count N_f = W / d_spacing
+    (p. 11). Mapping the 3D hexagonal cross-section to its area-equivalent circular bundle width
+    W_area(k) = 2*sqrt(n_f(k) / (pi*rho_0)) = (a_H/1000)*sqrt((2*sqrt(3)/pi)*(1 + 3*k*(k + 1)))
+    [um] (with hexagonal areal density rho_0 = 2/(sqrt(3)*a_H^2) at Claessens's SAXS lattice
+    constant a_H = 12.4 nm, and setting d_spacing = a_H = 12.4 nm so a_H cancels identically)
+    shows that Nast-Kolb's 2D single-layer count W / d_spacing scales as the 1D transverse
+    filament span D_fil (log-slopes in k agree within 0.6% for k >= 3, with continuum
+    hexagon-to-circle factor sqrt(3*sqrt(3)/(2*pi)) ~= 0.9094), rather than as the 3D
+    cross-sectional total filament count n_f = 1 + 3*k*(k + 1) ~ k^2. At Claessens's actual
+    1-2 shell fascin bundles (k = 1-2, n_f = 7-19), finite-shell discreteness introduces a
+    1.1-2.4% log-slope difference.
+  assumptions:
+    - "Multi-shell continuum regime k in [3, 20] (n_f in [37, 1261]); at k = 1-2 finite hexagonal-shell discreteness exceeds 1% in log-slope."
+    - "Area-equivalent circular diameter pi*(W/2)^2 = n_f / rho_0 with hexagonal areal filament density rho_0 = 2/(sqrt(3)*a_H^2) and d_spacing = a_H = 12.4 nm (a_H cancels in W/d_spacing)."
+    - "Geometric projection only: compares 2D single-layer filament count N_f = W/d_spacing to the 1D transverse filament span D_fil of a 3D hexagonal bundle, highlighting the 2D (N_f ~ W) vs 3D (n_f ~ W^2) packing dimensionality contrast."
+
+- id: rel_claessens2008_hex_width_reduces_to_2d_count
+  kind: reduces_to
+  a: claessens2008/hexagonal_shell_filaments
+  b: nastkolb2022/bundle_filament_count_2d_spacing
+  output_map:
+    n_f: D_fil
+  mapping:
+    W: "(2 * k * 12.4 + 7.4) / 1000"
+    d_spacing: "12.4"
+  limit:
+    k: "oo"
+  regime:
+    k: [1.0, 20.0]
+  provenance: proposed
+  reason: >
+    Tests exact asymptotic equality (unit prefactor, not only log-slope) between Claessens et
+    al.'s (2008) discrete vertex-to-vertex hexagonal diameter in filaments D_fil = 2*k + 1 (p. 2)
+    and Nast-Kolb et al.'s (2022) continuum 2D ribbon count N_f = W / d_spacing (p. 11). Using
+    the hydrated outer vertex-to-vertex physical width W_vertex(k) = (2*k*a_H + d_0) / 1000 [um]
+    at Claessens's SAXS lattice spacing a_H = 12.4 nm and implied actin filament diameter
+    d_0 = a_H - 5 nm = 7.4 nm (from aH_hex_saxs and interfilament_sep_fascin; giving 57.0 nm
+    for Claessens's saturated k = 2, 19-filament bundle), Nast-Kolb's formula evaluates to
+    2*k + d_0/a_H = 2*k + 0.597. This differs from D_fil = 2*k + 1 at finite k by the fencepost
+    offset 1 - d_0/a_H = 0.403 filaments (13.4% at k = 1, 8.1% at k = 2), and converges to D_fil
+    with zero relative error in the large-bundle limit k -> oo.
+  assumptions:
+    - "Outer hydrated vertex-to-vertex diameter W_vertex(k) = 2*k*a_H + d_0 across k concentric hexagonal shells with Claessens's a_H = 12.4 nm and d_0 = a_H - 5 nm = 7.4 nm."
+    - "Continuum large-shell limit k -> oo where the finite fencepost offset (1 - d_0/a_H)/(2*k + 1) vanishes."
+    - "Compares 2D single-layer count W/d_spacing to the 1D equatorial diameter D_fil of a 3D hexagonal bundle, not to the 3D cross-sectional total n_f = 1 + 3*k*(k + 1)."
+

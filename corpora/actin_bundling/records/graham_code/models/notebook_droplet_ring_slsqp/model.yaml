@@ -1,0 +1,48 @@
+id: notebook_droplet_ring_slsqp
+name: live notebook adapter for 2D VASP droplet-actin ring SLSQP energy minimization (VASPDroplet_simulate.ipynb)
+role: model
+software: true
+stated:
+  file: VASPDroplet_simulate.ipynb
+  lines: "557-558"
+  quote: "def gettotalenergy(opt_var,sysparams, printStatus=False):"
+  where: "VASPDroplet_simulate.ipynb cells 1, 3, 5, 7, 9, 11, 15, 17 (SystemParams, getkbend, getsurfaceF, getfilamentF, getfilamentmechF, getwettingF2, gettotalenergy, initializestraight2, extendstraight, addrandomnoise)"
+equation: "min_{a, r} gettotalenergy(opt_var, sp) = getfilamentmechF + getwettingF2 + getsurfaceF with lcyl = 0.1*D (or 100 nm), Nbeads = int(D*1e3/lcyl) + int((pi-1)*D/(lcyl*1e-3)) - 1, fixed kstr = 100 pN/nm"
+built_from:
+  - notebook_wetting_tension
+  - notebook_bundle_kbend
+  - notebook_surface_energy
+  - notebook_ring_discretization
+inputs:
+  D_droplet: {quantity: droplet_diameter, unit: um}
+  T_ring: {quantity: ring_thickness, unit: nm}
+  R_fil: {quantity: filament_spacing, unit: nm}
+  rcyl_init: {quantity: ring_thickness, unit: nm}
+  L_p: {quantity: actin_persistence_length, unit: um}
+  kBT_ring: {quantity: thermal_energy, unit: pN*nm}
+  kflex_fil: {quantity: flexural_rigidity, unit: pN*nm^2}
+  lcyl_fixed: {quantity: segment_length, unit: nm}
+  lcyl_scale_frac: {quantity: ring_extension_step_fraction, unit: dimensionless}
+  kstr: {quantity: stretching_constant, unit: pN/nm}
+  gamma_I: {quantity: droplet_line_tension, unit: pN}
+  gamma_AVR: {quantity: wetting_surface_tension, unit: pN/nm}
+  gamma_AVD: {quantity: wetting_surface_tension, unit: pN/nm}
+  noisefactor: {quantity: noise_scale_divisor, unit: dimensionless}
+  ellipse_com: {quantity: droplet_center_offset, unit: nm}
+  alpha: {quantity: crosslinker_coupling, unit: dimensionless}
+outputs:
+  aspect_ratio: {quantity: droplet_aspect_ratio, unit: dimensionless}
+  total_energy: {quantity: total_free_energy, unit: pN*nm}
+  surface_energy: {quantity: surface_energy, unit: pN*nm}
+  filament_energy: {quantity: filament_free_energy, unit: pN*nm}
+  a: {quantity: ellipse_semi_major_axis, unit: um}
+  b: {quantity: ellipse_semi_minor_axis, unit: um}
+settings:
+  seed: 0
+  ftol: 1.0e-6
+  lcylscalewithD: true
+  nonlinearbool: false
+  init_mode: circle
+  use_warmstart: true
+  polish_maxiter: 12
+stochastic: true

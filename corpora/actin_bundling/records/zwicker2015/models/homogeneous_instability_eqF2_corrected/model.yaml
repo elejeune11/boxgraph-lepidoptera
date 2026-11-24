@@ -1,0 +1,26 @@
+id: homogeneous_instability_eqF2_corrected
+name: binary homogeneous-state linear instability condition from exact Eq. (3b) (corrected Eq. F2)
+role: model
+stated:
+  page: 12
+  printed_page: "012317-12"
+  quote: "This equation only has solutions for kf + kb < DB /w 2 ,"
+  where: Appendix F, Eq. (F2)
+equation: "|k_f - k_b| < ((k_f + k_b)/sqrt(3)) * sqrt(1 - 2 * w * sqrt((k_f + k_b)/D_B)); (k_f + k_b)_max / k_0 = 1/4"
+variant_of: homogeneous_instability_eqF2
+corrections:
+  - equation: Eq. (F2)
+    change: "Replace w*sqrt((k_f + k_b)/D_B) with 2*w*sqrt((k_f + k_b)/D_B), lowering the instability cutoff from (k_f + k_b) < D_B/w^2 to (k_f + k_b) < D_B/(4*w^2) = k_0/4"
+    evidence: "Maximizing the exact linearization of Eq. (3b) (homogeneous_dispersion_eqF1_corrected) over q^2 yields lambda_max > 0 iff (D_B/w^2)*[(4*k_f*k_b - k_f^2 - k_b^2)/(k_f + k_b)^2]^2 > k_f + k_b, i.e., 1 - 3*(k_f - k_b)^2/(k_f + k_b)^2 > 2*w*sqrt((k_f + k_b)/D_B); confirmed by direct 1D pseudospectral PDE integration of Eq. (3b)."
+inputs:
+  D_B: {quantity: diffusivity_B, unit: m^2/s}
+  w: {quantity: interface_width, unit: m}
+  k_f: {quantity: forward_reaction_rate, unit: 1/s}
+  k_b: {quantity: backward_reaction_rate, unit: 1/s}
+outputs:
+  half_width_rate: {quantity: instability_margin_rate, unit: 1/s}
+  margin: {quantity: instability_margin_rate, unit: 1/s}
+  max_rate_sum_norm: {quantity: normalized_total_rate_cutoff, unit: dimensionless}
+built_from: [homogeneous_dispersion_eqF1_corrected]
+settings: {}
+stochastic: false

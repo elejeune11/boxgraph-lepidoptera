@@ -201,3 +201,26 @@ def test_a_link_can_say_where_a_value_comes_from_when_the_datum_does_not(tmp_pat
     syn = build_synthesis(root / "records", cache_dir=tmp_path / "c")
     c = next(x for x in syn["cited_values"] if x["datum"] == "toy/t_curve")
     assert c["verdict"] == "reproduced" and c["from_source"] == "toydata"
+
+
+def test_software_model_relations_and_cross_checks_receive_boxgraph_source(tmp_path):
+    """ModelAtlas relation tests and synthesis cross-checks pass BOXGRAPH_SOURCE to software: true models."""
+    root = _project(tmp_path)
+    p = root / "records" / "toy" / "data.yaml"
+    p.write_text(p.read_text().replace('printed: "0.2"', 'printed: "0.5"'))
+    (root / "records" / "toycode" / "relations.yaml").write_text(
+        "- id: rel_code_matches_decay\n"
+        "  kind: same_as\n"
+        "  a: toycode/code_lifetime\n"
+        "  b: toy/decay\n"
+        "  provenance: proposed\n"
+        "  reason: code implements Bell decay with k0=0.5 and xb=0.5\n"
+        "  mapping: {F: F, kT: kT, k0: '0.5', xb: '0.5'}\n"
+        "  regime: {F: [0.5, 10.0], kT: [3.5, 4.5]}\n")
+    syn = build_synthesis(root / "records", cache_dir=tmp_path / "c")
+    rel = next(r for r in syn["relations"] if r["id"] == "rel_code_matches_decay")
+    assert rel["status"] == "verified", rel
+    cc = [x for x in syn["cross_checks"]
+          if x["relation"] == "toycode/rel_code_matches_decay" and x["model"] == "toycode/code_lifetime" and x["run"] == "toy/run_decay"]
+    assert cc and all(x["status"] == "checked" for x in cc), cc
+

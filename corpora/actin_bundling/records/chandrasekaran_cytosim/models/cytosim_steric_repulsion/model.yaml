@@ -1,0 +1,24 @@
+id: cytosim_steric_repulsion
+name: "CytoSim Hookean steric repulsion & energy barrier (locus_grid.cc:82,92-107; meca_inter.cc:2106-2149; fiber_prop.h:270)"
+role: model
+stated:
+  file: src/sim/locus_grid.cc
+  lines: "99-106"
+  quote: "const float ran = aa.rad_ + bb.rad_;"
+  where: "LocusGrid::checkPP(), Meca::addLongLink1(), FiberProp steric potential"
+equation: "d0 = r1 + r2; F = k_push * (d0 - d) if 0 < d < d0 else 0; E = 0.5 * k_push * max(0, d0 - d)^2; F_max = k_push * d0; E_max_kT = 0.5 * k_push * d0^2 / kT"
+inputs:
+  r1: {quantity: particle_radius, unit: nm, description: "Radius of object 1 (nm)"}
+  r2: {quantity: particle_radius, unit: nm, description: "Radius of object 2 (nm)"}
+  d: {quantity: displacement, unit: nm, description: "Center-to-center or centerline separation d (nm)"}
+  k_push: {quantity: spring_stiffness, unit: pN/um, description: "Global SimulProp::steric_stiff_push[0] (pN/um)"}
+  kT: {quantity: thermal_energy, unit: pN*um, description: "SimulProp::kT (pN*um)"}
+outputs:
+  d0: {quantity: displacement, unit: nm, description: "Cutoff equilibrium separation d0 = r1 + r2 (nm)"}
+  F_repulsive: {quantity: force, unit: pN, description: "Repulsive steric force magnitude k_push * (d0 - d) for 0 < d < d0 (pN)"}
+  E_steric: {quantity: interaction_energy, unit: pN*um, description: "Steric potential energy 0.5 * k_push * (d0 - d)^2 (pN*um)"}
+  E_steric_kT: {quantity: energy_in_kbt, unit: dimensionless, description: "Steric energy at separation d in units of kT"}
+  F_max_overlap: {quantity: force, unit: pN, description: "Maximum repulsive force k_push * d0 at complete overlap (d -> 0)"}
+  E_max_kT: {quantity: energy_in_kbt, unit: dimensionless, description: "Maximum steric barrier 0.5 * k_push * d0^2 / kT at complete overlap"}
+settings: {}
+stochastic: false

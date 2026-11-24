@@ -1,0 +1,72 @@
+id: flat_membrane_protrusion_pde_1d
+name: 1D nonlinear coupled membrane-CMC protrusion PDE solver (Eqs. 2.1, 2.3, 2.4)
+role: model
+described_from: ref-35
+stated:
+  page: 5
+  printed_page: "5"
+  quote: "periodically spaced protrusions are initiated by this positive"
+  where: "Section 3, Fig. 2(c)"
+equation: "xi*dh/dt = -kappa*h_xxxx + sigma*h_xx + kappa*H0*n_xx + A*(n - <n>); dn/dt = -d_x(J_diff + J_disp + J_agg + J_curv)"
+reconstructed: "Gov (2018) shows nonlinear protrusion initiation and coarsening from closed-contour simulations of Kabaso et al. [35] (Fig. 2c-d) without printing the numerical discretization or parameter values; this reconstructed 1D periodic IMEX-RK2 pseudospectral solver directly integrates the printed Monge-gauge PDEs (Eqs. 2.1, 2.3, 2.4) to verify linear mode selection at q_max, nonlinear sharpening, positivity n > 0, and grid/timestep convergence."
+built_from:
+  - free_energy_density_eq2_1
+  - membrane_height_dynamics_eq2_3
+  - cmc_total_current_eq2_4
+inputs:
+  kappa:
+    quantity: bending_modulus
+    unit: pN * um
+  sigma:
+    quantity: membrane_tension
+    unit: pN / um
+  kBT:
+    quantity: thermal_energy
+    unit: pN * um
+  Lambda:
+    quantity: cmc_mobility
+    unit: um / (pN * s)
+  H0:
+    quantity: spontaneous_curvature
+    unit: 1 / um
+  ns:
+    quantity: cmc_saturation_density
+    unit: 1 / um^2
+  n0:
+    quantity: cmc_coverage_fraction
+    unit: dimensionless
+  J:
+    quantity: cmc_interaction_energy_density
+    unit: pN / um
+  xi:
+    quantity: membrane_friction_coefficient
+    unit: pN * s / um^3
+  A:
+    quantity: active_force_density
+    unit: pN / um^2
+  L:
+    quantity: domain_length
+    unit: um
+  n_pert_amp:
+    quantity: cmc_coverage_fraction
+    unit: dimensionless
+  t_end:
+    quantity: simulation_time
+    unit: s
+outputs:
+  n_max:
+    quantity: cmc_coverage_fraction
+    unit: dimensionless
+  n_min:
+    quantity: cmc_coverage_fraction
+    unit: dimensionless
+  h_max:
+    quantity: membrane_height
+    unit: um
+  mode4_growth_rate:
+    quantity: growth_rate
+    unit: 1 / s
+settings:
+  nx: 64
+  dt: 0.05
+stochastic: false

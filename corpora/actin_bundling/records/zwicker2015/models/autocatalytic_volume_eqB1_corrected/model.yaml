@@ -1,0 +1,29 @@
+id: autocatalytic_volume_eqB1_corrected
+name: stationary volume of autocatalytic droplet with exact linear Q and gamma corrections (corrected Eq. B1)
+role: model
+stated:
+  page: 11
+  printed_page: "012317-11"
+  quote: "keeping the linear contributions of the catalytic activity Q and"
+  where: Appendix B, Eq. (B1) (p. 12)
+equation: "V_bar = (V_s / psi) * (phibar - k_b / k) + (Q * k_b - 4 * pi * D_B * k * gamma*beta) / ((k * phibar - k_b) * k * psi)"
+variant_of: autocatalytic_volume_eqB1
+corrections:
+  - equation: Eq. (B1)
+    change: "Replace 4*pi*D_B*k^2*phibar*gamma*beta in the numerator with 4*pi*D_B*k*k_b*gamma*beta (giving (Q*k_b - 4*pi*D_B*k*gamma*beta)/((k*phibar - k_b)*k*psi))"
+    evidence: "Linearizing the exact Appendix B quadratic steady state (from Eq. 22 with phi_0^B = 0 and Eq. 12 phi_0^A = phibar - V*psi/V_s) around V_0 = (V_s/psi)*(phibar - k_b/k) gives delta_V = (Q*k_b - 4*pi*D_B*k*gamma*beta)/((k*phibar - k_b)*k*psi). Furthermore, at Q = 4*pi*D_B*k*gamma*beta/k_b, V = V_0 is an exact root of Eq. (22) (dV/dt = 0 identically), so delta_V must vanish there; printed Eq. (B1) fails this identity by the factor k*phibar/k_b."
+inputs:
+  V_s: {quantity: system_volume, unit: m^3}
+  psi: {quantity: equilibrium_droplet_volume_fraction, unit: dimensionless}
+  phibar: {quantity: total_reactive_volume_fraction, unit: dimensionless}
+  k_b: {quantity: backward_reaction_rate, unit: 1/s}
+  k: {quantity: autocatalytic_reaction_rate, unit: 1/s}
+  Q: {quantity: core_catalytic_activity, unit: m^3/s}
+  D_B: {quantity: diffusivity_B, unit: m^2/s}
+  gamma_beta: {quantity: capillary_length, unit: m}
+outputs:
+  V_bar: {quantity: droplet_volume, unit: m^3}
+  delta_V: {quantity: droplet_volume, unit: m^3}
+built_from: [autocatalytic_volume_quad_appB]
+settings: {}
+stochastic: false

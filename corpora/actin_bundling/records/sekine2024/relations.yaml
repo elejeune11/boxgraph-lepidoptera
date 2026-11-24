@@ -196,3 +196,62 @@
     - "Einstein-Stokes inverse-friction diffusivity D_y = D_x / (gamma_y^f / gamma_x^f) at fixed longitudinal D_x = 0.04 um^2/s and isotropic turnover time tau = 15 s (Hannezo Main p. 3 FRAP values)."
     - "Passive equilibrium single-filament scaling without motor-driven clustering or nonequilibrium turnover-induced directional bias."
 
+# Cross-record relation with weirich2017 (Weirich et al., PNAS 114(9):2131-2136, 2017; neither paper cites the other).
+# Note: Zero stated relations and zero exact (same_as / reduces_to / approximated_by) equivalences hold
+# across all 31 sekine2024 and 51 weirich2017 models (in particular, sekine2024/cgmd_anisotropic_langevin
+# vs weirich2017/tactoid_exponential_relaxation is purely a dimensional coincidence: t^(1/2) single-filament
+# Brownian spreading vs exponential macroscopic droplet relaxation). The single shared physical law across
+# both papers is single short-F-actin Stokes-Einstein Brownian diffusion D = k_B T / gamma proportional to
+# T / eta, captured below via the helper model sekine2024/filament_einstein_stokes_diffusion.
+
+- id: rel_weirich2017_filament_diffusion_scales_stokes_einstein
+  kind: scales_as
+  a: sekine2024/filament_einstein_stokes_diffusion
+  b: weirich2017/stokes_einstein_ellipsoid_diffusion
+  mapping:
+    T: "T"
+    eta: "eta_cyto"
+    L: "90"
+    r: "3.5"
+  output_map:
+    D: D_fil
+  regime:
+    T: [290.0, 310.0]
+    eta_cyto: [0.1, 5.0]
+    d_f: [0.007, 0.012]
+    L0_f: [0.075, 0.25]
+  provenance: proposed
+  reason: >
+    Both papers model passive translational Brownian diffusion of a single short rigid F-actin filament
+    (L_f ~ 100 nm in sekine2024 Table S1; L_f = 2*L ~ 180 nm in weirich2017 SI p. 8; both << l_p) in a
+    viscous Newtonian medium (eta ~ 0.1-3 Pa*s at T ~ 293-300 K) via overdamped Stokes-Einstein
+    fluctuation-dissipation D = k_B T / gamma (explicitly invoked as D proportional to 1/eta_cyto in
+    sekine2024 SI Notes p. 30 and D = k_B T ln(2*L/r)/(6*pi*eta*L) in weirich2017 SI p. 8). At fixed
+    rod geometry (anchored at Weirich's L = 90 nm, r = 3.5 nm), both models share exact log-slopes
+    +1 in temperature T and -1 in dynamic viscosity eta. Full rod-geometry mapping (L = 500*L0_f,
+    r = 500*d_f) is intentionally NOT equated because the two drag formulas differ in both prefactor
+    and aspect-ratio functional form: Sekine's two-bead cylindrical drag 2*gamma^f = 6*pi*eta*(3*d_f +
+    2*L0_f/5) lacks Weirich/Perrin's slender-ellipsoid logarithmic factor 1/ln(2*L_f/d_f) and exceeds
+    Weirich's drag by R_drag(p) = (6/p + 4/5)*ln(2*p) = 4.06-4.19x across p = L_f/d_f in [10, 30]
+    (see q_weirich2017_modelatlas_and_hydrodynamic_drag).
+  assumptions:
+    - "Fixed filament geometry in weirich2017 (half-length L = 90 nm, radius r = 3.5 nm, SI p. 8) isolates the shared Stokes-Einstein thermal-viscous scaling D proportional to T / eta."
+    - "Isotropic single-filament passive Brownian limit (friction_asymmetry = 1, FDT with restored k_B T) across T in [290, 310] K and eta in [0.1, 5.0] Pa*s spanning Sekine SI text (0.1 Pa*s), Sekine Table S1 (1 Pa*s), and Weirich FRAP (3 Pa*s)."
+    - "Does not equate absolute drag prefactors or aspect-ratio dependence: D_Weirich / D_Sekine = (6*d_f/L0_f + 4/5)*ln(2*L0_f/d_f) ~= 4.06-4.19 across short F-actin aspect ratios 10-30."
+
+# Cross-record audit with gov2018 (N. S. Gov, Phil. Trans. R. Soc. B 373:20170115, 2018; neither paper
+# cites the other or shares any overlapping references; indirect bridge only via hannezo2015 = ref-14/sref-21):
+# Zero stated relations, zero non-trivial proposed relations across all 37 x 32 = 1,184 model pairs, and
+# zero cited.yaml links. Specifically:
+# 1. gov2018/cylindrical_ring_critical_mode vs sekine2024/cgmd_2d_network is purely a coarse dimensional
+#    coincidence ([length], [energy], dimensionless -> [length]): cgmd_2d_network is non-runnable (12,150-agent
+#    flat 2D periodic CGMD with zero membrane height, bending rigidity, curvature, or tube radius R_0), whereas
+#    cylindrical_ring_critical_mode is a 1D axisymmetric continuum Helfrich cylindrical-membrane instability
+#    whose wavelength scales with R_0 (predicting 3.6-12.4 um on Drosophila tracheal radii vs 450 nm observed).
+# 2. Shared 1-2 op identities are excluded as too_plain: sekine2024/filament_einstein_stokes_diffusion vs
+#    gov2018/cmc_diffusion_einstein (D = Lambda * k_B * T, 1 op, tautological under Lambda = 1/(2*gamma^f)),
+#    structure_factor_interval[_wavenumber] vs wavelength_from_wavenumber (2*pi/q, 1-2 ops), and
+#    motor_walking_velocity.v_walk (f_walk/zeta, 1 op) vs membrane_height_dynamics_eq2_3.
+# Full ModelAtlas audit and quantitative Drosophila tracheal comparison are documented in
+# sekine2024/questions.yaml (q_gov2018_curvature_ring_vs_cgmd_contrasts) and
+# gov2018/questions.yaml (q_sekine2024_tracheal_cgmd_vs_curvature_rings).

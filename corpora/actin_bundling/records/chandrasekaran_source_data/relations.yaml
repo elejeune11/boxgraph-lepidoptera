@@ -1,0 +1,374 @@
+# No ModelAtlas symbolic equation relations between chandrasekaran_source_data and either
+# chandrasekaran2024 or chandrasekaran_cytosim:
+# All 20 models in chandrasekaran_source_data are `role: processing`, `software: true` workbook
+# reader/summary adapters that load fixed raw tables from 41467_2024_46726_MOESM9_ESM.xlsx under
+# $BOXGRAPH_SOURCE (discrete row lookups and piecewise-linear interpolations) rather than defining
+# continuous mathematical laws over free inputs. Cross-record quantitative checks against
+# chandrasekaran2024 live in data.yaml (`from_source: chandrasekaran2024`, `from_datum: <id>`),
+# cited.yaml (both records), comparisons.yaml, and validations.yaml (101 live validations).
+# Testing chandrasekaran_cytosim's 10 ported C++ physics models against raw Source Data sheets
+# (e.g., FigureS10B/C, FigureS2B, Figure7B) is an empirical validation task rather than a ModelAtlas
+# equation equivalence; cross-attachment findings are documented in questions.yaml.
+#
+# Audit against graham_source_data (all 20 x 11 = 220 model pairs): 0 ModelAtlas equation relations.
+# All 11 models in graham_source_data are likewise `role: processing`, `software: true` spreadsheet
+# readers over fixed experimental tables (MOESM12-22) rather than analytical equations over free
+# physical inputs, and the two archives have strictly complementary coverage on their crossover panels
+# (MOESM9 Figure6D omits WT rows 1-19 supplied by MOESM14 Fig 3d / MOESM20 Fig S4c; MOESM12-22 omits
+# Fig. 5c supplied by MOESM9 Figure7F). Full cross-workbook comparisons are documented in questions.yaml.
+#
+# Audit against graham_code (all 20 x 8 = 160 model pairs): 2 verified `approximated_by` relations
+# on the single shared deterministic function (`graham_code/notebook_surface_energy` <->
+# `chandrasekaran_source_data/fig7f_continuum_energy_reader`); 0 relations on the other 159 pairs.
+# Unlike the other 19 Excel readers (experimental/CytoSim/LAMMPS/PCA tables), sheet 'Figure7F'
+# Column C is literally a 19-row tabulated evaluation of `VASPDroplet_simulate.ipynb::getsurfaceF()`
+# (7-term Gauss-Kummer perimeter series, c_6 = 441/1048576) at R = 1 nm, gamma_I = 1 pN — matching
+# bit-for-bit (`0.00e+00`, 0 ULPs across all 19 rows; `<= 3.55e-15` under generic summation order).
+# Because `fig7f_continuum_energy_reader` fixes R = 1 nm, gamma_I = 1 pN and linearly interpolates
+# between the 19 discrete nodes (coarse integer grid AR = 1..9, fine dAR = 0.1 grid AR = 9.0..10.0),
+# `same_as` is refuted across continuous AR (median diff 5.49e-4, peak 1.44% at AR = 1.391), whereas
+# `approximated_by` cleanly measures the exact piecewise-linear table error on [1, 10] (`1.43e-2`
+# <= 0.02) and on the refined [9, 10] cliff window (`2.80e-6` <= 1e-5, nearly 10x tighter than the
+# `2.68e-5` error against exact complete elliptic integral `graham2023/ring_rod_transition_energy`).
+
+- id: rel_notebook_surface_approx_fig7f_table
+  kind: approximated_by
+  a: graham_code/notebook_surface_energy
+  b: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  mapping:
+    aspect_ratio: "AR"
+  output_map:
+    surface_energy: E_surf
+  regime:
+    R: [1.0, 1.0]
+    AR: [1.0, 10.0]
+    gamma_I: [1.0, 1.0]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    41467_2024_46726_MOESM9_ESM.xlsx sheet 'Figure7F' Column C tabulates live
+    VASPDroplet_simulate.ipynb::getsurfaceF() (graham_code/notebook_surface_energy, 7-term
+    Gauss-Kummer series with c_6 = 441/1048576) at the consistent Fig. 5c / Fig. 7F normalization
+    R = 1 nm, gamma_I = 1 pN with 0.00e+00 (19/19 bit-for-bit IEEE-754 float64) discrepancy at all
+    19 stored nodes (AR = 1..9 step 1.0, 9.1..10.0 step 0.1). Between nodes,
+    fig7f_continuum_energy_reader performs piecewise-linear interpolation, approximating continuous
+    notebook_surface_energy across AR in [1.0, 10.0] within 1.44% (max relative error 1.43e-2
+    sampled across 40 log-uniform points, peaking at AR = 1.391 between integer nodes 1 and 2,
+    dropping below 9.34e-4 on [2, 9] and 3.04e-6 on [9, 10]).
+  assumptions:
+    - "Fixed Fig. 5c / Fig. 7F unit normalization R = 1 nm, gamma_I = 1 pN (giving E_surf(1) = 2*pi = 6.28319 pN*nm in Figure7F cell C2, resolving graham2023/q_fig5c_unit_mismatch; fig7f_continuum_energy_reader has no free R or gamma_I ports)."
+    - "Tolerance 0.02 bounds piecewise-linear chord interpolation error between the coarse integer Excel rows AR = 1..9 (true continuous worst case 1.438% at AR = 1.3907; 0.00e+00 at all 19 tabulated nodes)."
+
+- id: rel_notebook_surface_approx_fig7f_fine_grid
+  kind: approximated_by
+  a: graham_code/notebook_surface_energy
+  b: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  mapping:
+    aspect_ratio: "AR"
+  output_map:
+    surface_energy: E_surf
+  regime:
+    R: [1.0, 1.0]
+    AR: [9.0, 10.0]
+    gamma_I: [1.0, 1.0]
+  tolerance: 1.0e-5
+  provenance: proposed
+  reason: >
+    On the refined dAR = 0.1 grid of MOESM9 sheet 'Figure7F' (AR = 9.0..10.0 around the AR_crit =
+    9.536 bending cliff), piecewise-linear chord interpolation in fig7f_continuum_energy_reader
+    approximates live graham_code/notebook_surface_energy (7-term Gauss-Kummer truncation) to
+    max relative error 2.80e-6 (true continuous peak 3.04e-6 at AR = 9.05, well within 1e-5).
+    Because the 7-term Gauss-Kummer truncation diverges from the exact complete elliptic integral
+    4*sqrt(AR)*E(1 - AR^-2) (graham2023/ring_rod_transition_energy) by 1.74e-5 to 2.46e-5 over
+    AR in [9, 10] (measured max relative error 2.68e-5, failing 1e-5) and from the notebook's
+    commented Ramanujan line 351 by 1.31e-5 at AR = 10, this tight tolerance executably
+    fingerprints Figure7F Column C as generated by getsurfaceF()'s 7-term series.
+  assumptions:
+    - "Fixed Fig. 5c / Fig. 7F normalization R = 1 nm, gamma_I = 1 pN on the refined dAR = 0.1 sub-grid AR in [9.0, 10.0]."
+    - "Tolerance 1.0e-5 cleanly separates 7-term Gauss-Kummer interpolation error (<= 3.04e-6) from exact elliptic integral truncation error (1.74e-5 to 2.46e-5, measured 2.68e-5) and commented Ramanujan approximation (1.31e-5)."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with graham2023 (Graham et al., Nat. Phys.
+# 2023; ref-graham2023). Full audit across all 20 x 31 = 620 model pairs:
+# - 19 of 20 chandrasekaran_source_data models read discrete experimental
+#   (Figure6D VASP-GABmut), CytoSim 3D (Figure3B/3D/3E/4B/5C/5D/6B/7B/S2C/S5/
+#   S9/S10*/S11*/S14C), LAMMPS (FigureS1B/EF), icosphere mesh (FigureS2B), or
+#   PCA/silhouette (FigureS4*/S8*/S11B*/S12*) sheets and share 0 mathematical
+#   relations with graham2023's 31 analytical/2D-SLSQP models (note that MOESM9
+#   sheet 'FigureS4C' holds CytoSim k-means silhouette scores, not Graham
+#   Extended Data Fig. 4c).
+# - On the single shared deterministic calculation, MOESM9 sheet 'Figure7F'
+#   (`fig7f_continuum_energy_reader`) tabulates Graham et al. Fig. 5c / SI
+#   Section 2.11 (`graham2023/ring_rod_transition_energy` E_bend and E_surf,
+#   evaluated at unit-consistent R = 1 nm = 0.001 um, L = 2*pi nm, k_b = 1
+#   pN*nm^2, gamma_I = 1 pN, with Column C matching Graham SI Eq. S11's 7-term
+#   Gauss-Kummer series `ellipse_perimeter_series_eqS11` to 2.88e-16 across all
+#   19 nodes and Column B matching `ring_rod_transition_energy` E_bend to
+#   3.8e-13..3.0e-11 on AR = 9.0..9.5 and <= 2.10e-6 on all 14 nodes AR <= 9.5).
+# - `graham2023/wetting_tension_profile_eqS5` (_corrected) and discrete SLSQP
+#   (`droplet_ring_minimization_*`) have 0 mathematical relations to `Figure7F`
+#   (SI Section 2.11 constrains the bundle onto the ellipse perimeter without a
+#   wetting-tension term). `ring_bending_energy_eq1` (_corrected) connects at
+#   u_m -> 0 via `graham2023/rel_eq1_reduces_to_confinement` and
+#   `rel_fig7f_bending_reduces_to_circular_confinement` below.
+# - Result: 9 proposed relations (7 verified, 2 not_verified documenting the
+#   exact 10^6 unit-scale contradiction of literal printed Fig. 5c / SI 2.11
+#   inputs R = 1 um, k_b = 1 pN*nm^2, gamma_I = 1 pN).
+# ==============================================================================
+
+- id: rel_graham2023_ring_rod_surface_approx_fig7f_full
+  kind: approximated_by
+  a: graham2023/ring_rod_transition_energy
+  b: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  mapping:
+    aspect_ratio: "AR"
+  output_map:
+    surface_energy: E_surf
+  regime:
+    R: [0.001, 0.001]
+    L: [0.006283185307179587, 0.006283185307179587]
+    k_b: [1.0, 1.0]
+    gamma_I: [1.0, 1.0]
+    AR: [1.0, 10.0]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    41467_2024_46726_MOESM9_ESM.xlsx sheet 'Figure7F' Column C tabulates Graham et al. (2023)
+    Fig. 5c / SI Section 2.11 droplet surface energy E_surf(AR) = gamma_I * P(a, b) on 19 nodes
+    (AR = 1..9 step 1.0, 9.1..10.0 step 0.1) at the consistent nanometre normalization R = 1 nm
+    (0.001 um), L = 2*pi nm, k_b = 1 pN*nm^2, gamma_I = 1 pN (giving cell C2 = 2*pi = 6.28319
+    pN*nm at AR = 1). Across the full AR in [1.0, 10.0] domain (including AR = 9.9 and 10.0 >
+    pi^2 = 9.8696), piecewise-linear interpolation in fig7f_continuum_energy_reader approximates
+    graham2023/ring_rod_transition_energy (exact elliptic perimeter integral Eq. S10) within
+    1.44% (sampled max relative error 1.44e-2, continuous peak 1.438% at AR = 1.391 between
+    integer nodes 1 and 2; node-by-node difference <= 2.46e-5 across all 19 rows).
+  assumptions:
+    - "Consistent nanometre normalization R = 1 nm (0.001 um), L = 2*pi*0.001 um, k_b = 1 pN*nm^2, gamma_I = 1 pN matching Figure7F cells B2 = pi, C2 = 2*pi pN*nm and graham2023/fig5c_radius_1nm_added."
+    - "Tolerance 0.02 bounds piecewise-linear chord interpolation error between the coarse integer Excel nodes AR = 1..9 (true continuous worst case 1.438% at AR = 1.391)."
+
+- id: rel_graham2023_ring_rod_surface_approx_fig7f_fine
+  kind: approximated_by
+  a: graham2023/ring_rod_transition_energy
+  b: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  mapping:
+    aspect_ratio: "AR"
+  output_map:
+    surface_energy: E_surf
+  regime:
+    R: [0.001, 0.001]
+    L: [0.006283185307179587, 0.006283185307179587]
+    k_b: [1.0, 1.0]
+    gamma_I: [1.0, 1.0]
+    AR: [9.0, 10.0]
+  tolerance: 3.0e-5
+  provenance: proposed
+  reason: >
+    On the refined dAR = 0.1 sub-grid of MOESM9 sheet 'Figure7F' (AR in [9.0, 10.0]),
+    fig7f_continuum_energy_reader approximates graham2023/ring_rod_transition_energy (exact
+    elliptic perimeter integral Eq. S10) to max relative error 2.68e-5 (within tolerance 3e-5;
+    node-by-node truncation gap rises monotonically from 1.74e-5 at AR = 9.0 to 2.46e-5 at AR =
+    10.0, plus <= 3.04e-6 chord error). Contrasted directly against
+    rel_notebook_surface_approx_fig7f_fine_grid (2.80e-6 <= 1e-5 against 7-term Gauss-Kummer
+    graham_code/notebook_surface_energy), this ~10x wider error executably separates the exact
+    Eq. S10 integral in ring_rod_transition_energy from the 7-term Eq. S11 series actually used
+    to generate Figure7F Column C (matching ellipse_perimeter_series_eqS11 to 2.88e-16 at all
+    19 nodes).
+  assumptions:
+    - "Consistent nanometre normalization R = 1 nm (0.001 um), L = 2*pi*0.001 um, gamma_I = 1 pN on the refined dAR = 0.1 cliff grid AR in [9.0, 10.0]."
+    - "Tolerance 3.0e-5 bounds the combined 7-term Gauss-Kummer truncation offset (up to 2.46e-5 at AR = 10) and dAR = 0.1 chord interpolation error (up to 3.04e-6)."
+
+- id: rel_graham2023_ring_rod_bending_approx_fig7f_precliff
+  kind: approximated_by
+  a: graham2023/ring_rod_transition_energy
+  b: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  mapping:
+    aspect_ratio: "AR"
+  output_map:
+    bending_energy: E_bend
+  regime:
+    R: [0.001, 0.001]
+    L: [0.006283185307179587, 0.006283185307179587]
+    k_b: [1.0, 1.0]
+    gamma_I: [1.0, 1.0]
+    AR: [9.0, 9.5]
+  tolerance: 2.0e-5
+  provenance: proposed
+  reason: >
+    MOESM9 sheet 'Figure7F' Column B supplies Graham et al. (2023) Fig. 5c / SI Section 2.11's
+    continuum minimum-bending-energy arc integral E_bend = min_{s0} (k_b/2) int_{s0}^{s0+L}
+    kappa(s)^2 ds (absent from VASPDroplet_simulate.ipynb and MOESM12-22). On the refined
+    pre-cliff dAR = 0.1 grid AR in [9.0, 9.5] immediately below the P = 2*L unfolding peak
+    (AR_crit = 9.5362), graham2023/ring_rod_transition_energy at consistent R = 1 nm, L = 2*pi
+    nm, k_b = 1 pN*nm^2 matches all 6 stored workbook nodes (9.0..9.5) to 3.80e-13..3.02e-11
+    (11-13 significant digits) and agrees continuously across [9.0, 9.5] to max relative error
+    1.15e-5 (purely piecewise-linear chord error peaking at AR = 9.05, well within 2e-5).
+  assumptions:
+    - "Consistent nanometre normalization R = 1 nm (0.001 um), L = 2*pi*0.001 um, k_b = 1 pN*nm^2 matching Figure7F cell B2 = pi pN*nm."
+    - "Pre-cliff sub-grid AR in [9.0, 9.5] strictly below the P(AR_crit) = 2*L cusp at AR_crit = 9.536210, where E_bend(AR) is smooth and tabulated at dAR = 0.1."
+
+- id: rel_graham2023_ring_rod_bending_approx_fig7f_full
+  kind: approximated_by
+  a: graham2023/ring_rod_transition_energy
+  b: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  mapping:
+    aspect_ratio: "AR"
+  output_map:
+    bending_energy: E_bend
+  regime:
+    R: [0.001, 0.001]
+    L: [0.006283185307179587, 0.006283185307179587]
+    k_b: [1.0, 1.0]
+    gamma_I: [1.0, 1.0]
+    AR: [1.0, 10.0]
+  tolerance: 0.15
+  provenance: proposed
+  reason: >
+    Across the complete Fig. 5c / Fig. 7F domain AR in [1.0, 10.0] (extending past (a/b)_max =
+    pi^2 = 9.8696 to AR = 9.9 and 10.0), fig7f_continuum_energy_reader approximates continuous
+    graham2023/ring_rod_transition_energy E_bend at consistent R = 1 nm, L = 2*pi nm, k_b = 1
+    pN*nm^2 within 15% (measured 40-sample max relative error 6.70e-2; true continuous worst case
+    1.429e-1 at AR = 9.535, right at the unresolved P = 2*L cusp AR_crit = 9.5362 where the
+    continuum curve rises to 19.798 while Figure7F linearly bridges AR = 9.5 [19.687] down to
+    AR = 9.6 [11.915]). On [1.0, 9.0], coarse integer-step chord error peaks at 7.11% near
+    AR = 2.40 past the shallow E_bend minimum (3.076 at AR = 2.0); on post-cliff nodes
+    AR = 9.6..10.0, Figure7F matches exact scipy quadrature to <= 1.35e-5 while
+    ring_rod_transition_energy's default n_arc = 4000 grid adds up to 0.98% discretization
+    jitter at AR = 9.6 and 9.8.
+  assumptions:
+    - "Consistent nanometre normalization R = 1 nm (0.001 um), L = 2*pi*0.001 um, k_b = 1 pN*nm^2."
+    - "Tolerance 0.15 honestly bounds the true continuous worst-case chord error across the unresolved AR_crit = 9.5362 cusp (14.29% at AR = 9.535; 10.28% between AR = 9.6 and 9.7; 7.11% near AR = 2.40)."
+
+- id: rel_graham2023_ring_rod_surface_printed_units_fig7f
+  kind: approximated_by
+  a: graham2023/ring_rod_transition_energy
+  b: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  mapping:
+    aspect_ratio: "AR"
+  output_map:
+    surface_energy: E_surf
+  regime:
+    R: [1.0, 1.0]
+    L: [6.283185307179586, 6.283185307179586]
+    k_b: [1.0, 1.0]
+    gamma_I: [1.0, 1.0]
+    AR: [1.0, 10.0]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    Tests graham2023/ring_rod_transition_energy E_surf evaluated at Graham et al.'s literal
+    printed Fig. 5c caption + SI Section 2.11 parameters (R = 1 um, L = 2*pi um, k_b = 1
+    pN*nm^2, gamma_I = 1 pN) directly against MOESM9 sheet 'Figure7F' Column C (in pN*nm).
+    Honestly not_verified (max relative error 9.99e-1 vs 0.02): literal micrometre radius R =
+    1 um = 1000 nm yields E_surf = 1000 * Figure7F (6283.19 vs 6.28319 pN*nm at AR = 1),
+    executably confirming the 1000x surface-energy half of the 10^6 scale contradiction
+    documented in graham2023/q_fig5c_unit_mismatch (compare verified R = 1 nm counterpart
+    rel_graham2023_ring_rod_surface_approx_fig7f_full).
+  assumptions:
+    - "Literal printed parameters from graham2023 SI Section 2.11 (R_droplet = 1 um, L = 2*pi*R) and Fig. 5c caption (k_b = 1 pN*nm^2, gamma_I = 1 pN, y-axis 'Energy (pN nm)')."
+    - "Same 0.02 interpolation tolerance as rel_graham2023_ring_rod_surface_approx_fig7f_full so the 9.99e-1 (1000x) failure isolates the printed unit mismatch."
+
+- id: rel_graham2023_ring_rod_bending_printed_units_fig7f
+  kind: approximated_by
+  a: graham2023/ring_rod_transition_energy
+  b: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  mapping:
+    aspect_ratio: "AR"
+  output_map:
+    bending_energy: E_bend
+  regime:
+    R: [1.0, 1.0]
+    L: [6.283185307179586, 6.283185307179586]
+    k_b: [1.0, 1.0]
+    gamma_I: [1.0, 1.0]
+    AR: [1.0, 10.0]
+  tolerance: 0.15
+  provenance: proposed
+  reason: >
+    Tests graham2023/ring_rod_transition_energy E_bend evaluated at Graham et al.'s literal
+    printed Fig. 5c caption + SI Section 2.11 parameters (R = 1 um, L = 2*pi um, k_b = 1
+    pN*nm^2, gamma_I = 1 pN) directly against MOESM9 sheet 'Figure7F' Column B (in pN*nm).
+    Honestly not_verified (max relative error 9.99e-1 vs 0.15): literal R = 1 um = 1000 nm
+    yields E_bend = 0.001 * Figure7F (0.0031416 vs 3.14159 pN*nm at AR = 1). Paired with
+    rel_graham2023_ring_rod_surface_printed_units_fig7f (1000x too large), this executably
+    demonstrates the 10^6 E_surf/E_bend ratio error (2e6 vs 2.0 in Figure7F / Fig. 5c / Fig. 7F;
+    graham2023/q_fig5c_unit_mismatch).
+  assumptions:
+    - "Literal printed parameters from graham2023 SI Section 2.11 (R_droplet = 1 um, L = 2*pi*R) and Fig. 5c caption (k_b = 1 pN*nm^2, gamma_I = 1 pN, y-axis 'Energy (pN nm)')."
+    - "Same 0.15 interpolation tolerance as rel_graham2023_ring_rod_bending_approx_fig7f_full so the 9.99e-1 (0.001x) failure isolates the printed unit mismatch."
+
+- id: rel_fig7f_bending_reduces_to_circular_confinement
+  kind: reduces_to
+  a: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  b: graham2023/ring_confinement_bending_energy
+  mapping:
+    k_b: "1"
+    L: "2 * pi / 1000"
+    R: "1 / 1000"
+  output_map:
+    E_bend_0: bending_energy
+  limit:
+    aspect_ratio: "1"
+  regime:
+    aspect_ratio: [1.0, 10.0]
+  provenance: proposed
+  reason: >
+    In the circular-droplet limit aspect_ratio -> 1, MOESM9 sheet 'Figure7F' Column B converges
+    to cell B2 = 3.1415926535897927 (= pi pN*nm), matching Graham et al.'s circular confinement
+    bending energy E_bend_0 = (k_b/2) * (L / R^2) (graham2023/ring_confinement_bending_energy,
+    SI Section 2.8; the exact u_m -> 0 zero-fluctuation limit of Eq. 1 / SI Eq. S21 via
+    graham2023/rel_eq1_reduces_to_confinement) at the consistent nanometre normalization k_b = 1
+    pN*nm^2, R = 1 nm = 0.001 um, L = 2*pi nm = 2*pi/1000 um (difference falls to 1.9e-9).
+    Directly mirrors graham2023/rel_ring_rod_reduces_to_circular_confinement.
+  assumptions:
+    - "Circular limit AR -> 1 with zero radial thermal fluctuation amplitude (u_m -> 0 in graham2023/ring_bending_energy_eq1 and ring_bending_energy_eq1_corrected)."
+    - "Consistent nanometre normalization R = 1 nm (0.001 um), L = 2*pi nm, k_b = 1 pN*nm^2 (literal R = 1 um differs by 1000x)."
+
+- id: rel_fig7f_surface_reduces_to_eqS12_circle
+  kind: reduces_to
+  a: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  b: graham2023/droplet_surface_energy_eqS12
+  mapping:
+    gamma_I: "1"
+    L: "2 * pi / 1000"
+  output_map:
+    Delta_E_surface: surface_energy
+  limit:
+    aspect_ratio: "1"
+  regime:
+    aspect_ratio: [1.0, 10.0]
+  provenance: proposed
+  reason: >
+    In the circular-droplet limit aspect_ratio -> 1, MOESM9 sheet 'Figure7F' Column C converges
+    to cell C2 = 6.283185307179586 (= 2*pi pN*nm), matching Graham et al.'s 2D droplet surface
+    free energy Delta_E_surface = gamma_I * L (graham2023/droplet_surface_energy_eqS12, Main
+    p. 6 / SI Eq. S12) at gamma_I = 1 pN and circular circumference L = 2*pi nm = 2*pi/1000 um
+    (difference falls to 8.1e-9). Directly mirrors graham_code/rel_notebook_surface_reduces_to_eqS12_circle.
+  assumptions:
+    - "Circular limit AR -> 1 with circumference L = 2*pi*R at consistent R = 1 nm (0.001 um) and gamma_I = 1 pN (literal R = 1 um differs by 1000x)."
+
+- id: rel_fig7f_surface_scales_as_eqS11_fine
+  kind: scales_as
+  a: chandrasekaran_source_data/fig7f_continuum_energy_reader
+  b: graham2023/ellipse_perimeter_series_eqS11
+  mapping:
+    a: "sqrt(aspect_ratio) / 1000"
+    b: "1 / (1000 * sqrt(aspect_ratio))"
+  output_map:
+    L: surface_energy
+  regime:
+    aspect_ratio: [9.0, 10.0]
+  provenance: proposed
+  reason: >
+    Bridges MOESM9 sheet 'Figure7F' Column C (surface_energy [pN*nm]) directly to Graham et al.'s
+    printed 7-term Gauss-Kummer elliptical perimeter series SI Eq. S11 (L [um],
+    graham2023/ellipse_perimeter_series_eqS11) via scale-invariant log-slopes on the refined
+    dAR = 0.1 sub-grid AR in [9.0, 10.0] under constant-area ellipse semi-axes a = R*sqrt(AR),
+    b = R/sqrt(AR). Log-slopes in aspect_ratio agree across all 12 samples to max difference
+    8.9e-4 (confirming the exact 2.88e-16 node-by-node identity between Column C and Eq. S11
+    independent of both the energy-vs-length unit factor gamma_I and the R = 1 um vs 1 nm
+    scale ambiguity). Directly mirrors graham_code/rel_notebook_surface_scales_as_eqS11.
+  assumptions:
+    - "Constant-area 2D ellipse parameterization a*b = R^2 with a = R*sqrt(AR), b = R/sqrt(AR) (scale-invariant in R)."
+    - "Refined dAR = 0.1 sub-grid AR in [9.0, 10.0] where piecewise-linear slopes closely track smooth analytical d(ln P)/d(ln AR) (max log-slope difference 8.9e-4 < 1e-2)."
+
+

@@ -1,0 +1,25 @@
+id: cytosim_polymerization_ratchet_depletion
+name: "CytoSim single-step Brownian ratchet & free_polymer monomer depletion (fiber_set.cc:226-249; growing_fiber.cc:66-79; classic_fiber.cc:112-125)"
+role: model
+stated:
+  file: src/sim/fibers/growing_fiber.cc
+  lines: "68-78"
+  quote: "addP = prop()->growing_speed_dt[P] * prop()->free_polymer;"
+  where: "FiberSet::steps(), GrowingFiber::step(), ClassicFiber::stepPlusEnd()"
+equation: "free_polymer = max(0, 1 - used_polymer/total_polymer); v_fil = k_grow * free_polymer * (exp(f_P / f_grow) if f_P < 0 else 1); v_net = N_fil * v_fil; t_2R = (2*R_drop - L0) / v_fil"
+inputs:
+  growing_speed: {quantity: elongation_rate, unit: nm/s, description: "GrowingFiberProp::growing_speed[0] (nm/s)"}
+  growing_force: {quantity: force, unit: pN, description: "GrowingFiberProp::growing_force[0] (pN)"}
+  projected_force: {quantity: force, unit: pN, description: "Signed end force projectedForceEndP() (negative = antagonistic/compressive, positive = assisting/tensile, pN)"}
+  used_polymer: {quantity: polymer_pool_length, unit: um, description: "FiberProp::used_polymer = sum_i L_i (um)"}
+  total_polymer: {quantity: polymer_pool_length, unit: um, description: "FiberProp::total_polymer (um)"}
+  n_filaments: {quantity: filament_count, unit: dimensionless, description: "Current number of growing filaments N_fil"}
+  L0: {quantity: filament_length, unit: um, description: "Initial seed filament length L0 (um)"}
+  R_drop: {quantity: droplet_radius, unit: um, description: "Spherical droplet radius R_drop (um)"}
+outputs:
+  free_polymer: {quantity: free_polymer_fraction, unit: dimensionless, description: "Normalized free monomer fraction max(0, 1 - used_polymer / total_polymer) (fiber_set.cc:239,247)"}
+  v_per_filament: {quantity: elongation_rate, unit: nm/s, description: "Actual per-filament plus-end elongation speed in CytoSim (nm/s)"}
+  v_total_network: {quantity: network_elongation_rate, unit: nm/s, description: "Total network contour-length addition rate N_fil * v_per_filament (nm/s)"}
+  t_to_2R: {quantity: time, unit: s, description: "Time (2*R_drop - L0) / v_per_filament for one filament to grow to droplet diameter 2*R_drop (s)"}
+settings: {}
+stochastic: false

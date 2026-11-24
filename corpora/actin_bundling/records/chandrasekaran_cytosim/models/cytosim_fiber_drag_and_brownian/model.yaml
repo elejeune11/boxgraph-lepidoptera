@@ -1,0 +1,29 @@
+id: cytosim_fiber_drag_and_brownian
+name: "CytoSim cylindrical fiber drag, point mobility & Brownian displacement (fiber.cc:884,976-1002,1057-1084; mecafil.cc:89-98; meca.cc:346)"
+role: model
+stated:
+  file: src/sim/fiber.cc
+  lines: "976-1002"
+  quote: "const real drag_cylinder = DRAG * len / ( std::log(0.5*lenc/prop->drag_radius) + 0.32 );"
+  where: "Fiber::dragCoefficientCylinder(), Fiber::setDragCoefficient(), Mecafil::addBrownianForces()"
+equation: "lenc = max(min(L, drag_length), drag_radius); drag = pi*|visc|*max(6*r, 3*L/(ln(0.5*lenc/r)+0.32)) if L > 2*r*exp(0.68) else 6*pi*|visc|*r; iPointMobility = N_pts/drag; sigma_v = sqrt(2*kT*dt*iPointMobility)"
+inputs:
+  L: {quantity: filament_length, unit: um, description: "Fiber contour length L (um)"}
+  segmentation: {quantity: filament_segment_length, unit: um, description: "Target FiberProp::segmentation (um)"}
+  viscosity: {quantity: dynamic_viscosity, unit: pN*s/um^2, description: "Effective fiber viscosity |prop->viscosity| (pN*s/um^2)"}
+  viscosity_water: {quantity: dynamic_viscosity, unit: pN*s/um^2, description: "Reference water viscosity 0.001 pN*s/um^2 (simul_prop.h:88)"}
+  drag_radius: {quantity: particle_radius, unit: um, description: "FiberProp::drag_radius (um; default 0.0125 um vs actin 0.0035 um)"}
+  drag_length: {quantity: hydrodynamic_cutoff_length, unit: um, description: "FiberProp::drag_length cutoff (um; default 5 um)"}
+  kT: {quantity: thermal_energy, unit: pN*um, description: "SimulProp::kT (pN*um)"}
+  dt: {quantity: time_step, unit: s, description: "SimulProp::time_step (s)"}
+outputs:
+  N_pts: {quantity: point_count, unit: dimensionless, description: "Number of fiber vertices from Chain::bestNumberOfPoints()"}
+  drag_total: {quantity: drag_coefficient, unit: pN*s/um, description: "Total fiber translational drag gamma (pN*s/um)"}
+  point_mobility: {quantity: mobility, unit: um/(pN*s), description: "Per-vertex mobility iPointMobility = N_pts / drag_total (fiber.cc:1077)"}
+  com_mobility: {quantity: mobility, unit: um/(pN*s), description: "Center-of-mass mobility 1 / drag_total"}
+  D_com: {quantity: diffusion_coefficient, unit: um^2/s, description: "Fiber center-of-mass diffusivity kT / drag_total (um^2/s)"}
+  brownian_disp_vertex: {quantity: displacement, unit: um, description: "Unconstrained per-vertex Brownian step std dt*b*iPointMobility = sqrt(2*kT*dt*iPointMobility) (mecafil.cc:91-97)"}
+  brownian_disp_com: {quantity: displacement, unit: um, description: "Center-of-mass Brownian step std sqrt(2*D_com*dt) (um)"}
+  viscosity_ratio_water: {quantity: viscosity_ratio, unit: dimensionless, description: "Ratio viscosity / viscosity_water"}
+settings: {}
+stochastic: false

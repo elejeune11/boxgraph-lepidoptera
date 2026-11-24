@@ -1,0 +1,53 @@
+# Cross-record validations of graham2023 models against independent experimental measurements
+# in nastkolb2022 (2D SLB-tethered VASP-driven actin bundles, Nast-Kolb et al., MBoC 2022).
+
+- id: val_ring_filament_count_vs_nastkolb_1um
+  model: ring_filament_count
+  inputs:
+    T_ring: "nastkolb2022/bundle_width_ref_1um"
+    delta: filament_spacing_vasp_delta
+  output: N_fil
+  against: "nastkolb2022/filament_count_1um_intensity_measured"
+  purpose: validation
+  quantities:
+    "nastkolb2022/bundle_width": ring_thickness
+    "nastkolb2022/filaments_per_bundle": filament_count
+  conditions_ok: >
+    Graham et al. (2023, SI Table 1 p. 39 and Section 2.6 p. 41) model VASP-bundled actin rings
+    inside 3D PEG8k-crowded human VASP droplets (150 mM NaCl, 50 mM Tris pH 7.4, no profilin,
+    no CP) as flat, 2D single-layer isotropic sheets of actin with assumed interfilament spacing
+    delta = 15 nm, yielding N_fil = T_ring / delta. Nast-Kolb et al. (2022, Data analysis p. 11)
+    directly measure filament stoichiometry in flat 2D tetrameric chimeric His6-human/Dicty-GAB
+    VASP actin bundles assembled on 10% DOGS-Ni-NTA fluid supported lipid bilayers (KMEI buffer,
+    50 mM KCl, 1 mM MgCl2, 2 uM actin, 10 uM profilin, 50 nM CP) by integrating transverse TIRF
+    fluorescence intensity calibrated against single filaments, obtaining 45 +/- 12 filaments per
+    1-um bundle width (bundle_width_ref_1um = 1 um). Despite the 3D droplet vs. 2D SLB assembly
+    route and buffer/construct differences, both papers explicitly treat the cross-section of a
+    VASP-mediated actin bundle as a flat 2D ribbon with linear packing N = W / d, so evaluating
+    graham2023/ring_filament_count with Graham's own delta = 15 nm at W = 1 um directly tests
+    Graham's VASP interfilament spacing parameterization against Nast-Kolb's independent
+    experimental filament-count measurement.
+  basis: >
+    Graham et al. (2023, SI Section 2.6, p. 41 / SI-14; SI Table 1, p. 39 / SI-12) state:
+    "We assume that the bundled-actin rings are flat, isotropic sheets of actin. As the G-actin
+    binding domains of VASP monomers are separated by ~12 nm [13], we assume an average spacing
+    of 15 nm between actin filaments in the ring. As a result, given a ring thickness, we can
+    estimate the number of filaments in the ring" (N_fil = T_ring / delta, delta = 15 nm).
+    Nast-Kolb et al. (2022, Data analysis, p. 11) independently measure the number of filaments
+    in 1-um-wide 2D VASP-driven actin bundles: "We verified this by integrating the intensity
+    over the diameter of filament bundles and used the result to extrapolate the number of
+    filaments for large bundles. This resulted in the expected number of filaments in 1-um-thick
+    bundles of 45 +/- 12" (noting on p. 9, citing the same Winkelman 2014 and Harker 2019
+    references as Graham, that VASP achieves a wider filament spacing than fascin).
+  note: >
+    Computes N_fil = 66.67 filaments per 1 um vs. Nast-Kolb's measured 45 +/- 12 ([33, 57]):
+    diff +21.67 (+48.1%, +1.81 uncertainty units above the mean, +9.67 above upper bound 57) ->
+    close (outside [33, 57], inside BoxGraph's 3x close band [9, 81]). Using zero added inputs,
+    this out-of-sample test shows that Graham's assumed delta = 15 nm overpredicts Nast-Kolb's
+    measured 2D VASP filament density by 1.48x (Nast-Kolb's measurement implies effective 2D
+    spacing 22.2 nm, range 17.5-30.3 nm). Sensitivity across other spacing inputs: Ena GAB
+    spacing filament_spacing_ena = 12 nm gives 83.33 (+85.2%, not reproduced); Nast-Kolb's
+    compact VASP diameter 28 nm gives 35.71 (-20.6%, reproduced inside [33, 57]); extended VASP
+    diameter 70 nm gives 14.29 (-68.3%, close). Substituting Nast-Kolb's 22.2 nm (or 28 nm)
+    spacing into Graham's weak-coupling rigidity K_b_ring = (T_ring/delta)*L_p*k_B*T would scale
+    Graham's ring bending stiffness down by 1.48x (or 1.87x) at fixed T_ring.

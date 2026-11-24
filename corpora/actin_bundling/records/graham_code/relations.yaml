@@ -1,0 +1,339 @@
+# Cross-record ModelAtlas relations between graham_code (VASPDroplet_simulate.ipynb) and graham2023.
+#
+# Notes on scope and unlinked models:
+# - graham_code/notebook_wetted_fraction_check has no counterpart model in graham2023 (Extended Data Fig. 6A
+#   is a digitized figure datum without a model in graham2023).
+# - graham2023's analytical thermal-fluctuation derivations (ring_bending_energy_eq1/_corrected,
+#   ring_confinement_bending_energy, ring_excess_bending_energy_eqS22, ring_equipartition_amplitude_eqS23,
+#   ring_amplitude_scaling_eqS24, ring_thickness_scaling_exponent), continuum ring-to-rod threshold models
+#   (ring_rod_critical_aspect_ratio, ring_rod_max_aspect_ratio), discrete_stretching_constant (not scaled by Nfil
+#   in VASPDroplet_simulate.ipynb; see q_kstr_not_scaled_by_nfil), and experimental image-processing/fit models
+#   (effective_spherical_diameter, elongation_monomer_rate, linear_bundle_elongation) have no direct model
+#   counterpart in VASPDroplet_simulate.ipynb.
+# - The paper's two stated code-vs-printed-SI equivalences (wetting_tension_profile_eqS5 and
+#   droplet_ring_minimization_printed vs notebook_wetting_tension and notebook_droplet_ring_slsqp) live in
+#   graham2023/relations.yaml with provenance: stated.
+# - Cross-attachment audit vs graham_source_data (all 8 x 11 = 88 model pairs): 0 ModelAtlas relations.
+#   All 11 models in graham_source_data are `role: processing`, `software: true` Excel workbook readers
+#   summarizing fixed experimental spreadsheets (MOESM12-22) rather than evaluating continuous physical
+#   equations (graham_code/notebook_critical_ring_thickness is already tested against graham2023's
+#   analytical power_law_thickness_fit below; empirical validation against MOESM15 Fig 4h belongs to
+#   validate:graham_code+graham_source_data). See q_source_data_panel_partition_tcrit_and_ar_ceiling.
+# - Note: boxgraph/atlas.py (lines 161-162, 275) currently invokes execute() without forwarding
+#   source=side.lr.source_file() for software: true records, causing boxgraph relations to report
+#   unverifiable (KeyError: 'BOXGRAPH_SOURCE') until atlas.py forwards source like engine.py:800-802.
+#   Every relation below has been independently verified against the live notebook using exact
+#   boxgraph.atlas.test_relation logic in build/actin_bundling/relate-check/graham2023+graham_code/.
+# - Cross-attachment audit vs chandrasekaran_source_data (all 8 x 20 = 160 model pairs): 2 verified
+#   `approximated_by` relations live in chandrasekaran_source_data/relations.yaml
+#   (`rel_notebook_surface_approx_fig7f_table` over AR in [1, 10], max err 1.43e-2 <= 0.02; and
+#   `rel_notebook_surface_approx_fig7f_fine_grid` over AR in [9, 10], max err 2.80e-6 <= 1e-5)
+#   linking `graham_code/notebook_surface_energy` (R = 1 nm, gamma_I = 1 pN) to
+#   `chandrasekaran_source_data/fig7f_continuum_energy_reader` (0.00e+00 bit-for-bit match at all
+#   19 Excel rows of MOESM9 sheet 'Figure7F' Column C; `same_as` refuted on continuous AR due to
+#   piecewise-linear interpolation and fixed R, gamma_I). The remaining 159 model pairs have 0
+#   ModelAtlas relations (19 other readers summarize fixed experimental/CytoSim/LAMMPS/PCA sheets).
+#   See q_chandrasekaran_source_data_fig7f_match_and_3d_ar_comparison.
+
+- id: rel_notebook_wetting_same_as_eqS5_corrected
+  kind: same_as
+  a: graham_code/notebook_wetting_tension
+  b: graham2023/wetting_tension_profile_eqS5_corrected
+  mapping:
+    e: "e"
+    gamma_AVR: "gamma_AVR"
+    gamma_AVD: "gamma_AVD"
+    k_e: "64"
+  regime:
+    e: [0.05, 2.0]
+    gamma_AVR: [1.0e-9, 1.0e-6]
+    gamma_AVD: [1000.0, 20000.0]
+  provenance: proposed
+  reason: "VASPDroplet_simulate.ipynb getsurfaceTension() (lines 161-168) implements Delta = (gamma_AVD - gamma_AVR)/2 and Delta*tanh(64*(e - 1)) + Delta + gamma_AVR, which is identical to graham2023/wetting_tension_profile_eqS5_corrected at k_e = 64 (settling q_eqS4_S5_wetting_sign_inverted)."
+
+- id: rel_ring_rod_surface_approx_notebook_surface
+  kind: approximated_by
+  a: graham2023/ring_rod_transition_energy
+  b: graham_code/notebook_surface_energy
+  mapping:
+    R: "1000 * R"
+    AR: "AR"
+    gamma_I: "gamma_I"
+  output_map: {E_surf: E_surf}
+  regime:
+    R: [0.5, 4.0]
+    L: [3.0, 10.0]
+    k_b: [10000.0, 1000000.0]
+    gamma_I: [1.0, 15.0]
+    AR: [1.0, 9.8]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: "graham2023/ring_rod_transition_energy computes E_surf = gamma_I * P via the exact elliptical arc-length integral (Eq. S10), whereas graham_code/notebook_surface_energy (getsurfaceF, 2D branch) evaluates the 7-term truncated Gauss-Kummer series (Eq. S11) over the same constant-area ellipse a = R*sqrt(AR), b = R/sqrt(AR) (R converted from um to nm by 1000x)."
+
+- id: rel_notebook_surface_scales_as_eqS11
+  kind: scales_as
+  a: graham_code/notebook_surface_energy
+  b: graham2023/ellipse_perimeter_series_eqS11
+  mapping:
+    a: "R * sqrt(AR) / 1000"
+    b: "R / sqrt(AR) / 1000"
+  regime:
+    R: [250.0, 2000.0]
+    AR: [1.05, 9.8]
+    gamma_I: [1.0, 15.0]
+  provenance: proposed
+  reason: "In 2D, getsurfaceF() computes E_surf = gamma_I * L using the exact same 7-term Gauss-Kummer perimeter expansion as graham2023/ellipse_perimeter_series_eqS11 with constant-area semi-axes a = R*sqrt(AR)/1000 um and b = R/sqrt(AR)/1000 um, so log-slopes in R and AR are identical."
+
+- id: rel_notebook_surface_reduces_to_eqS12_circle
+  kind: reduces_to
+  a: graham_code/notebook_surface_energy
+  b: graham2023/droplet_surface_energy_eqS12
+  mapping:
+    gamma_I: "gamma_I"
+    L: "2 * pi * R / 1000"
+  limit: {AR: "1"}
+  regime:
+    R: [250.0, 2000.0]
+    AR: [1.0, 5.0]
+    gamma_I: [1.0, 15.0]
+  provenance: proposed
+  reason: "In the circular droplet limit AR -> 1, the 2D Gauss-Kummer perimeter parameter h -> 0 and getsurfaceF() reduces exactly to SI Eq. S12 (Delta_E_surface = gamma_I * L) with circumference L = 2*pi*R / 1000 (nm -> um)."
+
+- id: rel_discrete_kbend_same_as_notebook_kbend
+  kind: same_as
+  a: graham2023/discrete_bending_constant
+  b: graham_code/notebook_bundle_kbend
+  mapping:
+    Nfil: "N_fil"
+    lcyl: "L_cyl"
+    kflex_fil: "1000 * L_p * kBT"
+    alpha: "0"
+  output_map: {k_bend: k_bend}
+  regime:
+    N_fil: [1.0, 40.0]
+    L_p: [10.0, 25.0]
+    kBT: [4.0, 4.3]
+    L_cyl: [50.0, 400.0]
+  provenance: proposed
+  reason: "With default nonlinearbool = False (used in graham2023 simulations), getkbend() computes k_bend = kflex_fil * Nfil / lcyl, which is identical to SI Table 1's discrete_bending_constant k_bend = N_fil * (1000 * L_p) * kBT / L_cyl under kflex_fil = 1000 * L_p * kBT (pN*nm^2)."
+
+- id: rel_notebook_kflex_same_as_linear_rigidity
+  kind: same_as
+  a: graham_code/notebook_bundle_kbend
+  b: graham2023/bundle_bending_rigidity_linear
+  mapping:
+    K_b_fil: "kflex_fil"
+    N_fil: "Nfil"
+  output_map: {K_b_ring: k_flex_bundle}
+  regime:
+    Nfil: [1.0, 40.0]
+    lcyl: [50.0, 400.0]
+    kflex_fil: [50000.0, 100000.0]
+    alpha: [0.0, 100.0]
+  provenance: proposed
+  reason: "With default nonlinearbool = False, getkbend()'s bundle flexural rigidity k_flex_bundle = k_bend * lcyl = kflex_fil * Nfil is identical to graham2023/bundle_bending_rigidity_linear (K_b_ring = K_b_fil * N_fil, SI Section 2.6)."
+
+- id: rel_bathe_eqS1_reduces_to_notebook_kbend
+  kind: reduces_to
+  a: graham2023/bundle_bending_rigidity_bathe_eqS1
+  b: graham_code/notebook_bundle_kbend
+  mapping:
+    Nfil: "N"
+    lcyl: "100"
+    kflex_fil: "k_b_fil"
+    alpha: "alpha"
+  output_map: {k_flex_bundle: k_b}
+  limit: {alpha: "0"}
+  regime:
+    k_b_fil: [10000.0, 200000.0]
+    N: [2.0, 30.0]
+    chi: [0.5, 3.0]
+    c_qj: [0.5, 5.0]
+    alpha: [0.01, 1.0]
+  provenance: proposed
+  reason: "In the weak inter-filament coupling limit alpha -> 0, Bathe et al. SI Eq. S1 reduces to the linear bundle stiffness implemented by notebook_bundle_kbend under its default nonlinearbool = False setting (note that getkbend's inactive nonlinearbool = True branch diverges from single-mode Eq. S1 by summing 10 modes j = 1..10 with hidden constants df=10, t=15, Ef=2600; see q_hidden_kbt_inconsistency_and_bathe_constants)."
+
+- id: rel_notebook_ring_disc_vs_extension_ratio
+  kind: same_as
+  a: graham_code/notebook_ring_discretization
+  b: graham2023/ring_extension_length_ratio
+  mapping:
+    n_cycles: "floor((pi - 1) / lcyl_scale_frac)"
+    step_frac: "lcyl_scale_frac"
+  output_map: {L_ratio: L_ratio_final}
+  regime:
+    D_droplet: [0.5, 4.0]
+    lcyl_fixed: [100.0, 100.0]
+    lcyl_scale_frac: [0.05, 0.2]
+    noisefactor: [1.0, 1.0]
+    ellipse_com: [8000.0, 8000.0]
+  provenance: proposed
+  reason: "Tests whether generatering()'s actual final contour length ratio L_ratio_final = (Nbeads_final - 1) * lcyl / (1000 * D) matches SI Section 2.6's stated formula L_ratio = 1 + n_cycles * step_frac with n_cycles = floor((pi - 1) / lcyl_scale_frac). Refuted because generatering() has two off-by-one bugs (Nbeads_init beads = Nbeads_init - 1 segments, and range(1, n_reps) adds only n_reps - 1 segments -> 2.9*D instead of 3.1*D at step_frac = 0.1) plus IEEE-754 truncation (2.8*D at D = 0.75, 1.5, 1.75, 3.0, 3.5 um)."
+
+- id: rel_slsqp_corrected_3p1_vs_notebook
+  kind: same_as
+  a: graham2023/droplet_ring_minimization_corrected
+  b: graham_code/notebook_droplet_ring_slsqp
+  mapping:
+    D_droplet: "D_droplet"
+    T_ring: "T_ring"
+    R_fil: "delta"
+    rcyl_init: "5"
+    L_p: "L_p"
+    kBT_ring: "kBT"
+    kflex_fil: "1000 * L_p * kBT"
+    lcyl_fixed: "L_cyl"
+    lcyl_scale_frac: "0.1"
+    kstr: "k_stretch_fil"
+    gamma_I: "gamma_I"
+    gamma_AVR: "gamma_AVR"
+    gamma_AVD: "gamma_AVD"
+    noisefactor: "1 / noise_amp"
+    ellipse_com: "8000"
+    alpha: "0"
+  output_map: {aspect_ratio: aspect_ratio}
+  regime:
+    D_droplet: [1.0, 1.0]
+    T_ring: [60.0, 360.0]
+    delta: [15.0, 15.0]
+    L_p: [17.73, 17.73]
+    kBT: [4.1117, 4.1117]
+    L_cyl: [100.0, 100.0]
+    k_stretch_fil: [100.0, 100.0]
+    gamma_AVR: [1.0e-8, 1.0e-8]
+    gamma_AVD: [10000.0, 10000.0]
+    k_e: [64.0, 64.0]
+    gamma_I: [2.5, 10.0]
+    L_ratio: [3.1, 3.1]
+    noise_amp: [0.1, 0.1]
+  provenance: proposed
+  reason: "Even after correcting SI Eq. S2 and Eqs. S4-S5 in droplet_ring_minimization_corrected, running it at SI Section 2.6's stated L_ratio = 3.1 still disagrees with live notebook_droplet_ring_slsqp (refuted across all 40 samples, median relative AR difference ~12.6%) because generatering() builds a shorter 2.9*D open arc (29 segments) instead of 3.1*D (31 segments)."
+
+- id: rel_slsqp_corrected_2p9_approx_notebook
+  kind: approximated_by
+  a: graham2023/droplet_ring_minimization_corrected
+  b: graham_code/notebook_droplet_ring_slsqp
+  mapping:
+    D_droplet: "D_droplet"
+    T_ring: "T_ring"
+    R_fil: "delta"
+    rcyl_init: "5"
+    L_p: "L_p"
+    kBT_ring: "kBT"
+    kflex_fil: "1000 * L_p * kBT"
+    lcyl_fixed: "L_cyl"
+    lcyl_scale_frac: "0.1"
+    kstr: "k_stretch_fil"
+    gamma_I: "gamma_I"
+    gamma_AVR: "gamma_AVR"
+    gamma_AVD: "gamma_AVD"
+    noisefactor: "1 / noise_amp"
+    ellipse_com: "8000"
+    alpha: "0"
+  output_map: {aspect_ratio: aspect_ratio}
+  regime:
+    D_droplet: [1.0, 1.0]
+    T_ring: [60.0, 360.0]
+    delta: [15.0, 15.0]
+    L_p: [17.73, 17.73]
+    kBT: [4.1117, 4.1117]
+    L_cyl: [100.0, 100.0]
+    k_stretch_fil: [100.0, 100.0]
+    gamma_AVR: [1.0e-8, 1.0e-8]
+    gamma_AVD: [10000.0, 10000.0]
+    k_e: [64.0, 64.0]
+    gamma_I: [2.5, 10.0]
+    L_ratio: [2.9, 2.9]
+    noise_amp: [0.1, 0.1]
+  tolerance: 0.01
+  provenance: proposed
+  reason: "Once droplet_ring_minimization_corrected is evaluated at generatering()'s actual double-off-by-one arc length L_ratio = 2.9 (29 segments at D = 1 um, L_cyl = 100 nm), its energy functional matches live VASPDroplet_simulate.ipynb gettotalenergy() up to wetting quadrature resolution (n_wet = 10 vs 4) and unscaled kstr = 100 vs N_fil * 100 pN/nm, collapsing the AR discrepancy from 12.6% down to < 0.7% (within 1%)."
+
+- id: rel_slsqp_corrected_2p9_approx_notebook_plus2_shifted
+  kind: approximated_by
+  a: graham2023/droplet_ring_minimization_corrected
+  b: graham_code/notebook_droplet_ring_slsqp_nfil_plus2
+  mapping:
+    D_droplet: "D_droplet"
+    T_ring: "T_ring - 2 * delta"
+    R_fil: "delta"
+    rcyl_init: "5"
+    L_p: "L_p"
+    kBT_ring: "kBT"
+    kflex_fil: "1000 * L_p * kBT"
+    lcyl_fixed: "L_cyl"
+    lcyl_scale_frac: "0.1"
+    kstr: "k_stretch_fil"
+    gamma_I: "gamma_I"
+    gamma_AVR: "gamma_AVR"
+    gamma_AVD: "gamma_AVD"
+    noisefactor: "1 / noise_amp"
+    ellipse_com: "8000"
+    alpha: "0"
+  output_map: {aspect_ratio: aspect_ratio}
+  regime:
+    D_droplet: [1.0, 1.0]
+    T_ring: [90.0, 390.0]
+    delta: [15.0, 15.0]
+    L_p: [17.73, 17.73]
+    kBT: [4.1117, 4.1117]
+    L_cyl: [100.0, 100.0]
+    k_stretch_fil: [100.0, 100.0]
+    gamma_AVR: [1.0e-8, 1.0e-8]
+    gamma_AVD: [10000.0, 10000.0]
+    k_e: [64.0, 64.0]
+    gamma_I: [2.5, 10.0]
+    L_ratio: [2.9, 2.9]
+    noise_amp: [0.1, 0.1]
+  tolerance: 0.01
+  provenance: proposed
+  reason: "At matched L_ratio = 2.9, graham2023/droplet_ring_minimization_corrected evaluated at thickness T_ring agrees within < 0.6% with diagnostic variant notebook_droplet_ring_slsqp_nfil_plus2 evaluated at T_ring - 2*delta (since the variant shifts Nfil_eff = Nfil + 2 to reproduce Fig. 4f-g and Extended Data Fig. 7)."
+
+- id: rel_tcrit_scales_as_eqS25
+  kind: scales_as
+  a: graham_code/notebook_critical_ring_thickness
+  b: graham2023/ring_thickness_scaling_eqS25
+  mapping:
+    R: "D_droplet / 2"
+    L_p: "kflex_fil / (4.1117 * 1000)"
+  output_map: {u_m: T_crit}
+  regime:
+    D_droplet: [1.0, 1.0]
+    gamma_I: [2.5, 10.0]
+    AR_thresh: [1.1, 1.1]
+    R_fil: [15.0, 15.0]
+    kflex_fil: [50000.0, 100000.0]
+    lcyl_fixed: [100.0, 100.0]
+    lcyl_scale_frac: [0.1, 0.1]
+    kstr: [100.0, 100.0]
+    gamma_AVR: [1.0e-8, 1.0e-8]
+    gamma_AVD: [5000.0, 5000.0]
+    noisefactor: [1.0, 1.0]
+    ellipse_com: [8000.0, 8000.0]
+  provenance: proposed
+  reason: "Tests whether the simulated 2D droplet-buckling threshold T_crit(D, kflex_fil) from Fig. 4h obeys the continuum thermal-fluctuation equipartition scaling Eq. S25 (u_m ~ R^1.5 / sqrt(L_p)). Not verified: mechanical energy balance E_bend ~ (T_crit/R_fil)*kflex_fil/D ~ E_surf ~ gamma_I*D yields T_crit ~ D^2.03 * gamma_I^1.00 * kflex_fil^-1.01 on constant-Nbeads=30 diameters (distinct from D^1.5 * L_p^-0.5), and across general floating-point D the IEEE-754 Nbeads=29/30 jump makes T_crit(D) piecewise discontinuous."
+
+- id: rel_tcrit_scales_as_power_law_fig4h
+  kind: scales_as
+  a: graham_code/notebook_critical_ring_thickness
+  b: graham2023/power_law_thickness_fit
+  mapping:
+    D: "D_droplet"
+    a: "0.0721"
+    b: "1.7195"
+  output_map: {T_ring: T_crit}
+  regime:
+    D_droplet: [1.0, 1.0]
+    gamma_I: [2.5, 10.0]
+    AR_thresh: [1.1, 1.1]
+    R_fil: [15.0, 15.0]
+    kflex_fil: [72900.0, 72900.0]
+    lcyl_fixed: [100.0, 100.0]
+    lcyl_scale_frac: [0.1, 0.1]
+    kstr: [100.0, 100.0]
+    gamma_AVR: [1.0e-8, 1.0e-8]
+    gamma_AVD: [5000.0, 5000.0]
+    noisefactor: [1.0, 1.0]
+    ellipse_com: [8000.0, 8000.0]
+  provenance: proposed
+  reason: "Compares the diameter scaling exponent of Fig. 4h's simulated critical thickness curve T_crit(D) (at IEEE-754-safe Nbeads=30 D = 1.0 um) against the experimental AR < 1.1 power-law trendline y = 0.0721 * D^1.7195 overlaid on Fig. 4h. Not verified because the 2D mechanical buckling balance scales as D^~2.03 rather than D^1.7195 (slope difference ~0.31-0.34)."

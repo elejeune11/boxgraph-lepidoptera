@@ -1,0 +1,29 @@
+id: cytosim_hand_binding_unbinding
+name: "CytoSim Hand binding probability, Bell/Kramers unbinding & stiffness checks (hand_prop.cc:244-247,296-333,360; hand.h:286-302; couple.cc:175-178)"
+role: model
+stated:
+  file: src/sim/hand_prop.cc
+  lines: "244-247"
+  quote: "binding_prob = -std::expm1(-BR);"
+  where: "HandProp::complete(), HandProp::checkStiffness(), HandProp::bindingSectionRate(), Hand::checkKramersDetachment(), Couple::stepFF()"
+equation: "p_bind = 1 - exp(-k_bind*dt); p_couple1 = 0.5*p_bind; k_off(F) = k_unbind0*exp(F/f_u); E[tau_disc] = dt/(1 - exp(-k_off*dt)); en_kT = k_link*r_bind^2/kT; ap = exp(k_link*r_bind/f_u)"
+inputs:
+  k_bind: {quantity: binding_rate, unit: 1/s, description: "HandProp::binding_rate (1/s)"}
+  binding_range: {quantity: binding_distance, unit: nm, description: "HandProp::binding_range (nm)"}
+  k_unbind0: {quantity: unbinding_rate, unit: 1/s, description: "HandProp::unbinding_rate at zero load (1/s)"}
+  unbinding_force: {quantity: force, unit: pN, description: "HandProp::unbinding_force f_u (pN)"}
+  force: {quantity: force, unit: pN, description: "Link force norm ||f|| (pN)"}
+  dt: {quantity: time_step, unit: s, description: "SimulProp::time_step (s)"}
+  stiffness: {quantity: spring_stiffness, unit: pN/um, description: "Link spring stiffness (pN/um) for HandProp::checkStiffness()"}
+  kT: {quantity: thermal_energy, unit: pN*um, description: "SimulProp::kT (pN*um)"}
+outputs:
+  binding_prob: {quantity: probability, unit: dimensionless, description: "Per-segment attachment probability -expm1(-k_bind * dt * POOL_UNATTACHED)"}
+  binding_prob_couple_first: {quantity: probability, unit: dimensionless, description: "Effective first-binding probability 0.5 * binding_prob for a free Couple (couple.cc:175-178)"}
+  binding_section_rate_3d: {quantity: binding_section_rate, unit: um^2/s, description: "3D binding section rate pi * binding_range^2 * k_bind (hand_prop.cc:360)"}
+  k_unbind_loaded: {quantity: unbinding_rate, unit: 1/s, description: "Bell/Kramers detachment rate k_unbind0 * exp(force / unbinding_force) (hand.h:297-299)"}
+  tau_res_continuum: {quantity: residence_time, unit: s, description: "Continuum mean bound lifetime 1 / k_unbind_loaded (s)"}
+  tau_res_discrete: {quantity: residence_time, unit: s, description: "Exact discrete-step expectation dt / (1 - exp(-k_unbind_loaded * dt)) of CytoSim Gillespie countdown"}
+  check_stiffness_kT: {quantity: energy_in_kbt, unit: dimensionless, description: "HandProp::checkStiffness() thermodynamic ratio stiffness * binding_range^2 / kT (warns if > 10)"}
+  check_stiffness_unbind_factor: {quantity: dimensionless_factor, unit: dimensionless, description: "HandProp::checkStiffness() immediate-unbinding factor exp(stiffness * binding_range / unbinding_force) (warns if > 10)"}
+settings: {}
+stochastic: false

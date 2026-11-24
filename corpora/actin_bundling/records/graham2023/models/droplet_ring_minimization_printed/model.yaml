@@ -1,0 +1,43 @@
+id: droplet_ring_minimization_printed
+name: 2D discrete droplet-actin ring SLSQP energy minimization as printed (SI Eqs. S2-S7, S11-S12)
+role: model
+stated:
+  page: 41
+  printed_page: "SI-14"
+  quote: "minimized using a nonlinear optimization algorithm called Sequential Least Squares"
+  where: "SI Sections 2.2-2.6, Eqs. S2-S7, S11-S12 (pp. 39-41)"
+built_from:
+  - ring_filament_count
+  - discrete_stretching_constant
+  - discrete_bending_constant
+  - wetting_tension_profile_eqS5
+  - ellipse_perimeter_series_eqS11
+  - droplet_surface_energy_eqS12
+equation: "min_{a, r} [E_mech(Eq. S2) + E_wet(Eqs. S3-S7) + Delta_E_surface(Eqs. S11-S12)] s.t. 4*a*b = D_droplet^2"
+inputs:
+  D_droplet: {quantity: droplet_diameter, unit: um}
+  T_ring: {quantity: ring_thickness, unit: nm}
+  delta: {quantity: filament_spacing, unit: nm}
+  L_p: {quantity: actin_persistence_length, unit: um}
+  kBT: {quantity: thermal_energy, unit: pN*nm}
+  L_cyl: {quantity: segment_length, unit: nm}
+  k_stretch_fil: {quantity: stretching_constant, unit: pN/nm}
+  gamma_AVR: {quantity: wetting_surface_tension, unit: pN/nm}
+  gamma_AVD: {quantity: wetting_surface_tension, unit: pN/nm}
+  k_e: {quantity: interface_steepness, unit: dimensionless}
+  gamma_I: {quantity: droplet_line_tension, unit: pN}
+  L_ratio: {quantity: ring_length_to_diameter_ratio, unit: dimensionless}
+  noise_amp: {quantity: coordinate_noise_amplitude, unit: nm}
+outputs:
+  aspect_ratio: {quantity: droplet_aspect_ratio, unit: dimensionless}
+  total_energy: {quantity: total_free_energy, unit: pN*nm}
+  a: {quantity: ellipse_semi_major_axis, unit: um}
+  b: {quantity: ellipse_semi_minor_axis, unit: um}
+settings:
+  seed: 42
+  ftol: 1.0e-6
+  n_wet_subseg: 10
+  n_perim_terms: 7
+  r_init_frac: 0.96
+  maxiter: 300
+stochastic: true

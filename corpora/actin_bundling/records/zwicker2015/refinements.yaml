@@ -1,0 +1,226 @@
+# ==============================================================================
+# 1. Exact Curved-Interface Coexistence Root-Finder (Appendix A, Eq. A1)
+# ==============================================================================
+- id: ref_coexistence_eqA1_phi_plus
+  run: run_coexistence_eqA1
+  setting: tol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: phi_plus_B
+  tolerance: "0.01%"
+  tolerance_basis: "added: tight root-finder convergence check on curved-interface exterior coexistence phi_+^B"
+  tolerance_added: true
+
+- id: ref_coexistence_eqA1_phi_minus
+  run: run_coexistence_eqA1
+  setting: tol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: phi_minus_B
+  tolerance: "0.01%"
+  tolerance_basis: "added: tight root-finder convergence check on curved-interface interior coexistence phi_-^B"
+  tolerance_added: true
+
+# ==============================================================================
+# 2. Binary Single- and Multi-Droplet Steady-State / Stability Solvers (Eqs. 13-14)
+# ==============================================================================
+- id: ref_binary_single_Rbar
+  run: run_binary_single_ss_fig3a
+  setting: rtol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: R_bar
+  tolerance: "0.01%"
+  tolerance_basis: "added: tight Brent root-finder convergence check on stationary radius R_bar of Eq. (13)"
+  tolerance_added: true
+
+- id: ref_binary_single_Rcrit
+  run: run_binary_single_ss_fig3a
+  setting: rtol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: R_crit
+  tolerance: "0.01%"
+  tolerance_basis: "added: tight Brent root-finder convergence check on critical radius R_crit of Eq. (13)"
+  tolerance_added: true
+
+- id: ref_binary_single_kfc
+  run: run_binary_single_ss_fig3a
+  setting: rtol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: k_f_c
+  tolerance: "0.01%"
+  tolerance_basis: "added: tight Brent root-finder convergence check on saddle-node rate k_f^c of Eq. (13)"
+  tolerance_added: true
+
+- id: ref_binary_multi_Rsym
+  run: run_fig4b_multidroplet
+  setting: rtol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: R_sym
+  tolerance: "0.01%"
+  tolerance_basis: "added: tight root-finder convergence check on finite-system symmetric two-droplet radius (Fig. 4b)"
+  tolerance_added: true
+
+- id: ref_binary_multi_lamsym
+  run: run_fig4b_multidroplet
+  setting: rtol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: lam_sym
+  tolerance: "0.01%"
+  tolerance_basis: "added: tight root-finder convergence check on two-droplet stability eigenvalue lambda (Fig. 4b)"
+  tolerance_added: true
+
+# ==============================================================================
+# 3. Ternary Autocatalytic Emulsion Solvers (Eqs. 22, 10, 12; Figs. 8b & 10a)
+# ==============================================================================
+- id: ref_autocat_fig8b_R1
+  run: run_fig8b_autocat
+  setting: rtol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: R1_pair
+  tolerance: "0.01%"
+  tolerance_basis: "added: tight root-finder convergence check on equal-core autocatalytic droplet radius (Fig. 8b)"
+  tolerance_added: true
+
+- id: ref_autocat_fig10a_ratio
+  run: run_fig10a_autocat
+  setting: rtol
+  factors: [1, 10, 100, 1000]
+  mode: divide
+  output: V1_over_V2
+  tolerance: "0.01%"
+  tolerance_basis: "added: tight root-finder convergence check on unequal-core volume ratio V_1/V_2 (Fig. 10a)"
+  tolerance_added: true
+
+# ==============================================================================
+# 4. 1D Pseudospectral Binary Cahn-Hilliard PDE Solver (Eq. 3b, Appendix F)
+#    Checking time step dt and spatial grid nx on rates, interface, AND minima/positivity
+# ==============================================================================
+- id: ref_pde1d_dt_lam
+  run: run_pde_1d_unstable
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: lam_mode_norm
+  tolerance: "0.1%"
+  tolerance_basis: "added: time-step convergence check on linear Fourier mode growth rate in 1D Eq. (3b)"
+  tolerance_added: true
+
+- id: ref_pde1d_dt_cutoff
+  run: run_pde_1d_unstable
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: max_rate_sum_norm
+  tolerance: "0.1%"
+  tolerance_basis: "added: time-step convergence check on homogeneous stability cutoff (k_f + k_b)_max / k_0 in 1D Eq. (3b)"
+  tolerance_added: true
+
+- id: ref_pde1d_dt_phi_min_if
+  run: run_pde_1d_unstable
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: phi_min_interface
+  tolerance: "0.001"
+  tolerance_basis: "added: positivity / Gibbs-undershoot convergence check on minimum volume fraction phi_min under dt refinement"
+  tolerance_added: true
+
+- id: ref_pde1d_nx_w
+  run: run_pde_1d_unstable
+  setting: nx
+  factors: [1, 2, 4]
+  mode: multiply
+  output: w_num_over_w
+  tolerance: "0.5%"
+  tolerance_basis: "added: spatial grid convergence check on flat-interface width w_num / w in 1D Eq. (3b)"
+  tolerance_added: true
+
+- id: ref_pde1d_nx_gamma
+  run: run_pde_1d_unstable
+  setting: nx
+  factors: [1, 2, 4]
+  mode: multiply
+  output: gamma_over_bw
+  tolerance: "0.5%"
+  tolerance_basis: "added: spatial grid convergence check on flat-interface surface tension gamma / (b*w) in 1D Eq. (3b)"
+  tolerance_added: true
+
+- id: ref_pde1d_nx_phi_min_if
+  run: run_pde_1d_unstable
+  setting: nx
+  factors: [1, 2, 4]
+  mode: multiply
+  output: phi_min_interface
+  tolerance: "0.001"
+  tolerance_basis: "added: positivity / Gibbs-undershoot convergence check on minimum volume fraction phi_min under spatial refinement"
+  tolerance_added: true
+
+# ==============================================================================
+# 5. 3D Axisymmetric Cylindrical Binary Cahn-Hilliard PDE Solver (Appendix E, Fig. 5)
+#    Checking dt, nr, nz on coarsening rate lambda AND positivity phi_min
+# ==============================================================================
+- id: ref_pde_axi_passive_dt_lam
+  run: run_pde_axi_fig5a_passive
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: lam_norm
+  tolerance: "2%"
+  tolerance_basis: "added: time-step convergence check on passive 3D axisymmetric Ostwald coarsening rate lambda/k_0"
+  tolerance_added: true
+
+- id: ref_pde_axi_passive_dt_phi_min
+  run: run_pde_axi_fig5a_passive
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: phi_min
+  tolerance: "0.001"
+  tolerance_basis: "added: positivity / undershoot convergence check on min(phi^B) in 3D axisymmetric passive PDE under dt refinement"
+  tolerance_added: true
+
+- id: ref_pde_axi_active_dt_lam
+  run: run_pde_axi_fig5c_active
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: lam_norm
+  tolerance: "2%"
+  tolerance_basis: "added: time-step convergence check on active first-order 3D axisymmetric relaxation rate lambda/k_0"
+  tolerance_added: true
+
+- id: ref_pde_axi_active_dt_phi_min
+  run: run_pde_axi_fig5c_active
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: phi_min
+  tolerance: "0.001"
+  tolerance_basis: "added: positivity / undershoot convergence check on min(phi^B) in 3D axisymmetric active PDE under dt refinement"
+  tolerance_added: true
+
+- id: ref_pde_axi_passive_nr_lam
+  run: run_pde_axi_fig5a_passive
+  setting: nr
+  factors: [1, 2, 4]
+  mode: multiply
+  output: lam_norm
+  tolerance: "5%"
+  tolerance_basis: "added: radial grid refinement from paper's 32 radial points (Appendix E) to 64 and 128 points on passive coarsening rate"
+  tolerance_added: true
+
+- id: ref_pde_axi_passive_nz_lam
+  run: run_pde_axi_fig5a_passive
+  setting: nz
+  factors: [1, 2]
+  mode: multiply
+  output: lam_norm
+  tolerance: "5%"
+  tolerance_basis: "added: axial grid refinement from paper's 128 axial points (Appendix E) to 256 points on passive coarsening rate"
+  tolerance_added: true
