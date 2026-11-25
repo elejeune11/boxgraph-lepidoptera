@@ -1,0 +1,64 @@
+# Cross-record validation of arnold2024's 2D SLB actin bundle filament-count model
+# against independent experimental TIRF intensity-calibrated measurements in
+# nastkolb2022 (Nast-Kolb, Bleicher, Payr & Bausch, Mol. Biol. Cell 33:ar91, 2022).
+#
+# Note on arnold2024 + gubbala2025: 0 direct CrossValidation entries exist in either
+# direction between arnold2024 and gubbala2025 due to normalization/dimensionality
+# barriers (dimensional a(t) [um] vs dimensionless R(t)/R_0) and disjoint measured
+# shape/dynamics observables; see q_gubbala2025_no_cross_validation in questions.yaml.
+
+- id: val_bundle_filament_count_vs_nastkolb_1um
+  model: bundle_filament_count
+  inputs:
+    w_bundle: "nastkolb2022/bundle_width_ref_1um"
+    d_spacing: actin_filament_spacing_ref29
+  output: N_fil
+  against: "nastkolb2022/filament_count_1um_intensity_measured"
+  purpose: validation
+  quantities:
+    "nastkolb2022/bundle_width": actin_bundle_width
+    "nastkolb2022/filaments_per_bundle": actin_bundle_filament_count
+  conditions_ok: >
+    Arnold & Takatori (2024, Methods p. 2 / Results p. 5) study pre-polymerized F-actin
+    (1 uM) electrostatically adsorbed onto 4% DOTAP fluid supported lipid bilayers
+    (45.7% DOPC / 35% DPPC / 15% cholesterol / 4% DOTAP / 0.3% DSPE-PEG2k-FITC on
+    HMM/PLL-g-PEG cushioned glass, no VASP, no profilin, no capping protein) and assume
+    a 2D interfilament center-to-center spacing of ~20 nm from Heath et al. (Biophys. J.
+    2013, Ref. 29) for DOTAP-bound F-actin sheets. Nast-Kolb et al. (2022, Materials &
+    Methods p. 11) assemble 2D actin bundles via membrane-tethered tetrameric His6-VASP
+    on single-phase fluid SLBs (87.45% egg-PC / 10% DOGS-Ni-NTA / 2.5% DOPE-PEG2000 /
+    0.05% dye; KMEI buffer, 50 mM KCl, 1 mM MgCl2, 2 uM actin, 10 uM profilin, 50 nM CP)
+    and directly measure filament count in 1-um-wide bundles (bundle_width_ref_1um = 1 um)
+    by integrating transverse TIRF actin fluorescence calibrated against single filaments,
+    obtaining 45 +/- 12 filaments. Despite the different tethering/bundling routes
+    (electrostatic DOTAP adsorption + Lo confinement vs. processive VASP polymerization +
+    LLPS), both papers explicitly model ~1-um-wide fluid-SLB actin bundles as flat 2D
+    single-layer parallel ribbons (N = W / d_spacing), so evaluating
+    arnold2024/bundle_filament_count with Arnold's ~20 nm SLB spacing at W = 1 um directly
+    tests Arnold's 2D SLB packing parameterization out-of-sample against Nast-Kolb's
+    independent experimental measurement.
+  basis: >
+    Arnold & Takatori (2024, Results, p. 5 / printed p. 26574) model ~1-2 um 2D SLB actin
+    bundles as single-layer parallel arrays via N_fil = w_bundle / d_spacing: "Assuming
+    ~20 nm spacing between filament centers,29 we estimate that the ~1-2 um actin bundles
+    are ≈50-100 filaments thick." Nast-Kolb et al. (2022, Data analysis, p. 11)
+    independently measure the filament count of 1-um-wide 2D SLB actin bundles using
+    calibrated fluorescence intensity integration: "We verified this by integrating the
+    intensity over the diameter of filament bundles and used the result to extrapolate the
+    number of filaments for large bundles. This resulted in the expected number of
+    filaments in 1-um-thick bundles of 45 +/- 12, which was in the same order of magnitude
+    as the number calculated from the segmented diameter." Because Arnold's ~20 nm spacing
+    comes solely from prior AFM/SLB literature (Heath et al., 2013, Ref. 29) and is not
+    fitted to Nast-Kolb's data, this is a genuine out-of-sample validation.
+  note: >
+    Computes N_fil = 50.0 filaments per 1 um vs. Nast-Kolb's measured 45 +/- 12 ([33, 57]):
+    diff +5.0 (+11.1%, +0.42 uncertainty units) -> reproduced (inside [33, 57]), with zero
+    added inputs. Notably, Arnold's ~20 nm electrostatic SLB spacing (50.0 filaments/um)
+    closely matches Nast-Kolb's intensity-implied effective 2D spacing of 22.2 nm (range
+    17.5-30.3 nm) and falls closer to Nast-Kolb's measurement than either Graham et al.'s
+    15 nm 3D-droplet VASP spacing (graham2023/val_ring_filament_count_vs_nastkolb_1um:
+    66.67, close, +48.1%) or Nast-Kolb's own geometric VASP molecular diameter bounds
+    (28 nm -> 35.71, -20.6%, reproduced; 70 nm -> 14.29, -68.3%, close). Note that
+    actin_filament_spacing_ref29 is printed with an approximate tilde ('~20'), and both
+    papers acknowledge that partial out-of-plane multilayer filament stacking may elevate
+    intensity-integrated counts above strictly monolayer VASP-spaced expectations.

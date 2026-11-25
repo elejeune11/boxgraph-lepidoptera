@@ -1,0 +1,577 @@
+- id: q_cytosim_not_runnable_and_missing_files
+  kind: unstated_model
+  about:
+    - cytosim_arp23_vca_config
+  text: >
+    The full 3D CytoSim simulations (40 configs in Arp23_concsweep_steric/ and 200 configs in
+    VCA_Arp23_concsweep_steric_kunbind_0/) cannot be executed from this repository because:
+    (1) README.md line 4 claims 'The source code that was used to generate the results is also shared.
+    VCA model required a minor code edit', but neither CytoSim's C++ source nor the modified
+    fiber_set.cc (which also has an unclosed brace syntax error as printed on graham2024 SI p. 25)
+    nor the binary ~/cytosim-stable-edited/bin/sim is included in the repository;
+    (2) README.md line 7 directs users to Analyze_data.ipynb, which is completely empty (1 blank cell),
+    while all actual scripts reside in CytoSimanalyze_VASP_Arp_VCA.ipynb;
+    (3) CytoSimanalyze_VASP_Arp_VCA.ipynb cannot be run end-to-end as shipped due to missing external
+    files (template_Arp/config0.cym, ./get_nsolids.sh), undefined functions (getfillength() in Cell 31,
+    writejobfile() in Cell 19), missing imports (scipy.constants in Cells 15/17, datetime in Cells 27/31),
+    use-before-definition (new_cmap on Cell 35 line 8 before line 17), commented-out variables still printed
+    (print([core_radius,peri_radius]) in Cell 39 line 2495), placeholder paths missing trailing slashes
+    ('PATH-TO-/PLOTCSVFILES' concatenated with 'Fillength_...'), hardcoded personal paths
+    ('/Users/aravind/...'), and np.trapz removed in NumPy 2.x;
+    (4) reference.txt in both sweep folders has 19 headers for 18 data columns (SSPEED commented out in
+    Cell 19 while keeping its header, ARPKON/NBLOB swapped, and VCA columns omitted entirely).
+  citation:
+    file: README.md
+    lines: "4-7"
+    quote: "The source code that was used to generate the results is also shared."
+
+- id: q_branching_angle_77deg_vs_paper_70deg
+  kind: possible_error
+  about:
+    - arp23_branching_angle_code
+    - paper_arp23_branching_angle
+    - config_parameter_audit
+    - cmp_branching_angle_code_vs_paper
+  text: >
+    DIRECT CODE-VS-PAPER CONTRADICTION: All 240 CytoSim .cym config files across both
+    Arp23_concsweep_steric/ and VCA_Arp23_concsweep_steric_kunbind_0/ comment out
+    '% angle = 1.22 % 70 degrees' (line 101) and run 'angle = 1.344 % 77 degrees (bovine arp2/3,
+    blanchoin 2000)' (line 102; 1.344 rad = 77.01 deg). By contrast, graham2024 states a 70 deg
+    branching angle in Table S1 (p. 20), Fig. S4f caption (p. 17), and SI Methods (p. 23).
+    Note also that line 105 comments that Blanchoin & Pollard measured 0.076 pN*um/rad^2 in 2D
+    while assigning angular_stiffness = 0.076 with comment 'in pN.micron / rad'.
+  citation:
+    file: Arp23_concsweep_steric/R_0_r_0/config0.cym
+    lines: "101-105"
+    quote: "angle = 1.344 % 77 degrees (bovine arp2/3, blanchoin 2000)"
+
+- id: q_rae_code_maximizes_count_not_density
+  kind: possible_error
+  about:
+    - csv_radial_density_and_rae
+    - csv_radial_density_rae_paper_def
+    - run_csv_rae_arp23_sweep_code
+    - run_csv_rae_arp23_sweep_paper_def
+    - run_csv_rae_arp150_code
+    - run_csv_rae_arp150_paper_def
+  text: >
+    MAJOR ANALYSIS-VS-PAPER DISCREPANCY: graham2024 SI Methods pp. 23-24 defines Relative Actin
+    Enrichment (R.A.E.) as rho(c, delta_r) / rho(p, delta_r) where c and p are the shell radii at
+    which the core and periphery actin DENSITIES rho(r) are maximal. However, CytoSimanalyze_VASP_Arp_VCA.ipynb
+    Cells 39 (lines 2464-2469), 41 (lines 2647-2652), and 43 (lines 2852-2857) instead locate
+    maxrcore = radvec_core[Ncore.idxmax()] and maxrperiphery = radvec_periphery[Nperiphery.idxmax()],
+    maximizing raw monomer COUNT N(r) ~ r^2 * rho(r) BEFORE dividing by r^2! Because r^2 grows 9-fold
+    across [0.2, 0.6) um, argmax(N) systematically pins maxrcore to the outer core edge (mean r = 0.571 um,
+    only {0.525, 0.550, 0.575} um at 150 nM Arp2/3) instead of the true core density peak (mean r = 0.253 um).
+    Running on PLOTCSVFILES/Density_Arp23_concsweep_steric reveals a 49.5% discrepancy at 150 nM Arp2/3:
+    the code's argmax(N) formula yields R.A.E. = 0.5674 +/- 0.0470 (matching the published Fig. 5C bar height
+    ~0.57 across all 8 concentrations: 0.000, 0.0715, 0.1153, 0.2334, 0.3715, 0.4560, 0.4849, 0.5674),
+    whereas the paper's stated max(rho) formula yields 0.8482 +/- 0.0927 (0.000, 0.1019, 0.1576, 0.3468,
+    0.5514, 0.7245, 0.7345, 0.8482). Additionally, np.std(relative_enrichment) pools all 50 (or 30)
+    replicate-frames together rather than taking SD across independent replicates.
+  citation:
+    file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+    lines: "2464-2472"
+    quote: "maxrcore = radvec_core[Ncore.idxmax()]"
+
+- id: q_vca_kunbind_2p7_calibration_vs_0_in_configs
+  kind: possible_error
+  about:
+    - vca_k_bind_nb_code
+    - vca_k_unbind_calib_nb_code
+    - vca_growing_off_speed_code
+    - notebook_vca_competition_ode
+    - cmp_vca_ode_ku0_vs_cell25_table
+    - cmp_vca_ode_1uM_ku2p7_vs_paper
+    - cmp_csv_vca1_dF_vs_paper
+  text: >
+    MAJOR PARAMETER/MODEL INCONSISTENCY IN VCA CALIBRATION:
+    (1) Cell 25 calibrated kbind = 3.44 um/s WITH kunbind = 2.7 (line 1656), matching Cell 17 line 769's
+    initial assignment vca_growingOFFspeedvec = np.multiply([-2.7], [0,2522,...]). Cell 17 lines 773-775
+    then overwrote vca_growingOFFspeedvec = [0,0,0,0,0] ('### Kundind 0') for all 200 .cym configs in
+    VCA_Arp23_concsweep_steric_kunbind_0/ (growing_off_speed = 0, 0), and graham2024 SI Eq. (3) omits
+    kunbind entirely. While kunbind = 2.7 and 0 coincide at [VCA] = 1 and 2 uM (where L_vca hits the
+    saturation cap L_Gmax = 34.047 and 68.094 um), they diverge drastically at [VCA] = 5 and 10 uM:
+    Cell 25 (kunbind = 2.7) stalls at free_polymer = 2.7/3.44 = 0.785 (12.66% and 13.02% reduction;
+    3.18 and 3.26 uM), whereas kunbind = 0 saturates L_Gmax = 170.24 and 340.47 um in milliseconds
+    (17.78% and 35.55% reduction; 4.46 and 8.91 uM in ODE, matching actual CytoSim CSVs' 4.34 and 8.68 uM).
+    With kunbind = 0, growing_speed = 8675.68 um/s reaches max_length = 34.047 um in ~0.004 s (4 time steps),
+    so the calibrated k_bind = 3.44 um/s has virtually no kinetic effect in the actual CytoSim runs.
+    (2) Cell 25 calibrated against target = 1/27.67 = 0.03614 (fractional reduction assuming 27.67 uM
+    baseline), obtaining 0.03555 at [VCA] = 1 uM; because the actual baseline is 170.77 um (25.07 uM)
+    in ODE and 165.76 um (24.34 uM) in CytoSim, absolute delta_[F-actin] is 0.891 uM (ODE) and 0.870 uM
+    (CytoSim), 11-13% below 1.00 uM (still passing 1-sig-fig '1 uM').
+    (3) Cell 23 model_VCA() lines 1550-1553 compare L[4] + DNvca_boundt >= Lmax (adding length in um
+    to a time derivative in um/s without dt, implicitly assuming dt = 1 s).
+  citation:
+    file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+    lines: "768-775"
+    quote: "vca_growingOFFspeedvec=[0,0,0,0,0];"
+
+- id: q_vca_sweep_incomplete_trajectories_and_nreps_2
+  kind: possible_error
+  about:
+    - csv_vca_filament_stats
+    - csv_radial_density_and_rae
+    - cmp_vca_fillength_replicates_vs_figs5
+    - cmp_csv_vca_arp150_vca1_final_time_vs_paper
+    - run_csv_vca_arp150_vca0
+    - run_csv_rae_vca_arp150_vca1
+  text: >
+    SEVERE DATA-INTEGRITY ISSUES IN VCA SWEEP CSVs (PLOTCSVFILES, Fig. S5):
+    (1) Although VCA_Arp23_concsweep_steric_kunbind_0/ holds 5 .cym replicates (r_0..r_4) and Fig. S5b/S5d
+    captions state 'Data from 3 replicates', every Nfil_mean entry across all 40 Fillength_VCA_*.csv files
+    (24,040 entries) has fractional part strictly in {0.0, 0.5} (never 1/3 or 2/3), proving Fig. S5a-b
+    averaged ONLY 2 replicates (r_0, r_1), not 3!
+    (2) In Density_VCA_*.csv (3 replicates r_0..r_2), 24/40 r_2 trajectories (all R = 20..39 plus
+    R = 13, 15, 17, 18) and 4/40 r_1 trajectories (R = 33, 35, 36, 38) terminated early before t = 600 s
+    (as early as t = 434 s for R = 36 r_2 and t = 543 s for R = 36 r_1).
+    (3) In Cell 31 getfillengthprops(), Lsum.append(np.sum(Lsum_r)) is erroneously indented OUTSIDE
+    'if (SREF < nsnaplocal):', appending 0 for crashed r_1 replicates and halving Lsum_mean(600) at
+    R = 33 (t >= 592), R = 35 (t >= 591: 431.09 um vs 857.91 um in Arp23 sweep), R = 36 (t >= 544),
+    and R = 38 (t >= 548), while Nfil_mean silently falls back to N = 1 replicate (Nfil_std = 0).
+    (4) In Cells 41 & 43 (Fig. S5c-d), 'for SREF in range(Nframes-10, Nframes):' takes the last 10 frames
+    of EACH file's own length, pooling non-600 s snapshots (e.g. t = 425..434 s of r_2 at R = 36) with
+    t = 591..600 s snapshots of r_0.
+  citation:
+    file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+    lines: "1860-1865"
+    quote: "Lsum.append(np.sum(Lsum_r))"
+
+- id: q_ode_bc_27p68uM_unmet_in_code_and_cytosim
+  kind: unexplained_difference
+  about:
+    - total_polymer_code
+    - polymer_pool_multiplier_code
+    - notebook_actin_ode
+    - cmp_ode_cell21_F600_vs_paper
+    - cmp_ode_cell25_F600_vs_paper
+    - cmp_csv_arp0_F600_vs_paper
+  text: >
+    Confirms and extends graham2024 q_eq2_unit_mismatch_and_bc_inconsistency:
+    Cell 15 line 698 sets total_polymer = 5*2*np.pi*np.array(Nfil)*radiusstring[0] = 942.4777960769379 um
+    ([T-actin] = 138.38 uM) directly as a hardcoded 5x multiplier on 30*2*pi*R rather than solving SI Eq. 2
+    for the boundary condition [F-actin](600) = 27.68 uM (188.496 um). Cell 21's own saved output prints
+    [170.89451798762576, 188.49555921538757] (25.091 uM at t = 600.50 s on linspace(0,1200,1200) vs target
+    27.68 uM), Cell 25 hardcodes true t = 600.0 s baseline no_vca_len = 170.7679 um (25.073 uM), and actual
+    CytoSim simulations at 0 nM Arp2/3 (Fillength_Arp23 R_0) reach only Lsum(600) = 165.765 um (Lfil = 5.5255 um,
+    [F-actin] = 24.338 uM, 12.1% below 27.68 uM) due to additional slowing by the 10 pN Brownian ratchet stall force.
+  citation:
+    file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+    lines: "1410"
+    quote: "[170.89451798762576, 188.49555921538757]"
+
+- id: q_vasp_wrist_diffusion_ignored_by_cytosim
+  kind: possible_error
+  about:
+    - vasp_single_diffusion_code
+    - viscosity_code
+    - vasp_blob_radius_code
+    - kT_cytosim_default_added
+    - config_parameter_audit
+    - cmp_vasp_stokes_D_vs_paper
+  text: >
+    Confirms and pinpoints the mechanism behind graham2024 q_vasp_diffusion_stokes_einstein_mismatch:
+    All 240 .cym configs assign 'diffusion = 10.0' on 'set single graftedcrosslinker' (lines 51-56),
+    which is grafted onto 'new 1000 blob' (sphere1 = 0 0 0, 0.03, ...). As audited in CytoSim's C++
+    source (chandrasekaran_cytosim: wrist.cc:19-22, 55-60; solid.cc:1289), grafted Singles (Wrist)
+    silently ignore diffusion, and Solid blobs diffuse strictly by Stokes drag D = k_B T / (6*pi*eta*R).
+    With viscosity = 0.5 pN*s/um^2 (= 500x water, confirming graham2024 q_viscosity_50x_vs_500x_water),
+    R = 0.03 um, and CytoSim's default k_B T = 0.0042 pN*um (unstated in .cym configs), VASP tetramers
+    actually diffuse at D = 0.01485 um^2/s -- 673x slower than Table S1's stated 10 um^2/s. By contrast,
+    couple arp23's hidden 'diffusion = 10' (line 93) is actively applied by CytoSim Couple::stepF().
+  citation:
+    file: Arp23_concsweep_steric/R_0_r_0/config0.cym
+    lines: "51-56"
+    quote: "diffusion = 10.0"
+
+- id: q_hidden_cytosim_parameters_and_sweeps
+  kind: unstated_input
+  about:
+    - vasp_crosslinker_stiffness_code
+    - init_fil_length_code
+    - arp23_nucleator_k_unbind_code
+    - arp23_nucleator_unbinding_force_code
+    - arp23_diffusion_code
+    - arp23_stiffness_code
+    - vasp_site_separation_code
+    - vasp_site_deviation_code
+    - actin_binding_key_vca_code
+    - vca_binding_key_code
+    - kT_cytosim_default_added
+  text: >
+    The released .cym configs expose 13 simulation parameters/choices omitted from graham2024 Table S1
+    and SI Methods (settling much of graham2024 q_cytosim_not_runnable):
+    (1) VASP graftedcrosslinker harmonic stiffness = 10.0 pN/um (line 54);
+    (2) Arp2/3 couple diffusion = 10 um^2/s (line 93) and linear link stiffness = 100 pN/um (line 94, 10x VASP);
+    (3) Arp2/3 couple trans_activated = 1 (line 107) and confine = inside (line 108);
+    (4) Arp2/3 hand nucleator (daughter minus end) unbinding = 0.005 1/s, 6 pN (line 82);
+    (5) VASP blob site separation = 0.054 um (0.9 * 2 * R, Cell 19 line 1265) and deviation = 0.001 um (line 116);
+    (6) initial actin filament length = 0.1 um (line 60);
+    (7) actin & VASP confinement mode 'inside' (not 'all_inside', lines 31 & 66);
+    (8) binding_key = 1 (actin/VASP/Arp2/3) vs binding_key = 2 (VCA fiber) in VCA sweep;
+    (9) Arp2/3 sweep sets 'shrinking_speed = 0' whereas VCA sweep sets 'growing_off_speed = 0, 0' (line 35);
+    (10) thermal energy kT is never set (implicitly CytoSim default 0.0042 pN*um, T ~ 304.2 K);
+    (11) no random seed is specified in any .cym file;
+    (12) full VCA concentration sweep grid is [0, 1, 2, 5, 10] uM across all 8 Arp2/3 concentrations;
+    (13) PLOTCSVFILES also contains 8 unreferenced 100-bin (dR = 10 nm) pooled Arp2/3 density CSVs
+    (Density_Arp23_concsweep_stericR_{0..7}.csv) alongside the 40 per-replicate 40-bin CSVs.
+  citation:
+    file: Arp23_concsweep_steric/R_0_r_0/config0.cym
+    lines: "89-119"
+    quote: "stiffness = 100"
+
+- id: q_radial_bin_right_edge_and_interpolation_cdf_bugs
+  kind: possible_error
+  about:
+    - notebook_monomer_interpolator
+    - csv_arp23_filament_stats
+    - movavg_nsnaps_code
+    - fillen_pdf_nbins_code
+    - cmp_uniform_sphere_outer_bin
+    - cmp_uniform_sphere_r01_bin
+  text: >
+    Four subtle numerical/indexing artifacts in CytoSimanalyze_VASP_Arp_VCA.ipynb analysis functions:
+    (1) Radial density factor of 3 SETTLED: Cell 39 line 2455 computes bulkfactor = 3*Nmax/(Rmax^3),
+    confirming graham2024 q_radial_density_missing_one_third (SI p. 23 omitted the factor of 1/3 in print).
+    (2) Right-bin-edge shift: Cell 27 line 1728 defines Radialbincenter = Radialbinvec[:-1] + dR (adding
+    a FULL bin width 0.025 um instead of 0.5*dR), assigning each shell [r_lo, r_hi] to its right edge r_hi.
+    Because Cell 39 divides by r_hi^2*dR instead of exact shell volume (r_hi^3 - r_lo^3)/3, even a strictly
+    homogeneous sphere is biased downward to 0.9752 at r = 1.0 um, 0.9508 at r = 0.5 um, and 0.7708 (-22.9%)
+    at r = 0.1 um (0.333 at r = 0.025 um).
+    (3) Monomer double-counting: Cell 27 interpolateallmonomers() appends both cyl1 and cyl2 for every
+    segment while iterating mid in range(1, nmonomers-1), double-counting every interior vertex and
+    omitting the final interior point (alpha = (nmonomers-1)/nmonomers); on a 5.5 um filament (0.1 um
+    segments) this emits 2090 points vs 2037.0 exact (+2.6%), matching the excess monomer count in
+    Density_Arp23_concsweep_stericR_0_r_0.csv (62,404 vs 61,394 from Lsum/0.0027).
+    (4) Filament-length CDF shift & moving average: Cell 35/37 shifts X to right bin edges (+0.0328 um),
+    integrates PX[0:iter] in converttocdf() (exclusive upper bound -> cdf[1]=0 and last bin dropped), and
+    reads df[595] which averages 10 snapshots [590..599] via hidden MOVAVG_NSNAPS = 5 (not t = 591..600 s).
+  citation:
+    file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+    lines: "1727-1729"
+    quote: "Radialbincenter = Radialbinvec[0:len(Radialbinvec)-1]+(Radialbinvec[1]-Radialbinvec[0])"
+
+- id: q_settled_graham2024_contradictions
+  kind: choice
+  about:
+    - vasp_blob_count_code
+    - nreps_arp23_plot_code
+    - arp23_binding_distance_code
+    - cmp_vasp_tet_conc_vs_tableS1
+    - cmp_vasp_tet_conc_vs_fig5a
+    - cmp_arp23_replicates_vs_methods
+    - cmp_arp23_replicates_vs_fig5c
+    - cmp_arp23_molecule_counts
+  text: >
+    Summary of graham2024 open questions cleanly settled by this code audit:
+    (1) q_vasp_tet_conc_contradiction_02_vs_04: SETTLED — all 240 .cym configs use 'new 1000 blob'
+    (0.3964 uM ~ 0.4 uM, matching Table S1 and refuting Fig. 5A / Fig. S6 captions' 0.2 uM).
+    (2) q_replicate_count_5_vs_6: SETTLED — Arp23_concsweep_steric has 5 replicates (r_0..r_4) in
+    both .cym configs and PLOTCSVFILES, and Cell 39 sets Nreps = 5, refuting Fig. 5C caption's 'six replicates'.
+    (3) q_radial_density_missing_one_third: SETTLED — Cell 39/41/43 uses bulkfactor = 3*Nmax/Rmax^3.
+    (4) q_molecule_count_truncation_vs_rounding: CONFIRMED — Cell 15 line 703 applies .astype(int)
+    truncation to reproduce all 8/8 Table S1 Arp2/3 counts {0, 25, 63, 126, 189, 252, 315, 378}.
+    (5) q_arp23_binding_distance_radius_plus_diameter: CONFIRMED — config0.cym line 74 explicitly
+    computes '~4.72 nm size of Arp2/3 + 7nm actin diameter ~12 nm distance' (radius + diameter).
+    (6) q_imaging_time_600s_vs_15min: CONFIRMED — all configs run 600,000 steps * 0.001 s = 600 s.
+  citation:
+    file: Arp23_concsweep_steric/R_0_r_0/config0.cym
+    lines: "112"
+    quote: "new 1000 blob"
+
+- id: q_chandrasekaran_source_data_nucleator_pipeline_fingerprint
+  kind: reading
+  about:
+    - notebook_monomer_interpolator
+    - csv_arp23_filament_stats
+    - csv_radial_density_and_rae
+    - notebook_arp23_molecule_count
+    - notebook_vca_config_params
+  text: >
+    Cross-record audit against chandrasekaran_source_data (MOESM9_ESM.xlsx) and chandrasekaran2024
+    (Nat. Commun. 15, 3139, 2024) reveals that chandrasekaran2024's linear-nucleator supplementary
+    analysis (Supplementary Table 4 and Supplementary Fig. 6B/C/F = MOESM9 sheets FigureS10B/C/F)
+    was generated by the exact same CytoSim setup and notebook analysis pipeline as graham2024_code:
+    (1) MOESM9 FigureS10C tabulates 99 filament-length bins at exact right-bin-edge coordinates
+    0.06565656565656566..6.500000000000001 um (= X_edges[:-1] + dx from np.linspace(0, 6.5, 100),
+    Cell 35 converttocdf() right-edge shift);
+    (2) MOESM9 FigureS10F tabulates 41 radial bins at [0, 0.025, 0.05, ..., 1.0] um (= [0] +
+    Radialbincenter right-edge shift from Cell 27/39, inheriting the small-r shell volume bias
+    quantified by notebook_monomer_interpolator);
+    (3) At 0 nM nucleator, both independent 5-replicate CytoSim ensembles closely reproduce the
+    same nucleator-free baseline: N_fil(600) = 30.0 vs 30.0, median length L_med = 5.5806 vs
+    5.5808 um, and peripheral radial density peak rho(r=0.975 um) = 4.7813 vs 4.7706 (0.22%
+    difference), whereas at 10..150 nM they diverge physically because chandrasekaran2024
+    simulates freely diffusing bulk linear nucleators (1488 filaments and core spike rho = 28.6
+    at r = 0.075 um at 150 nM) rather than mother-filament-bound trans_activated = 1 Arp2/3
+    branching (993.6 filaments at 150 nM);
+    (4) chandrasekaran2024 Supplementary Table 4's 8 nucleator molecule counts {0, 25, 63, 126,
+    189, 252, 315, 378} and [T-actin] = 138.38 uM match Cell 15's .astype(int) truncation and
+    Cell 17's total_polymer = 5*2*pi*30*1.0 um (138.3789 uM) exactly (captured via ModelAtlas
+    relations in chandrasekaran2024/relations.yaml). Zero ModelAtlas equation relations exist
+    between graham2024_code and the fixed workbook readers of chandrasekaran_source_data.
+  citation:
+    file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+    lines: "1727-1729"
+    quote: "Radialbincenter = Radialbinvec[0:len(Radialbinvec)-1]+(Radialbinvec[1]-Radialbinvec[0])"
+
+- id: q_chandrasekaran_source_data_no_cross_validation
+  kind: reading
+  about:
+    - csv_arp23_filament_stats
+    - csv_radial_density_and_rae
+    - notebook_actin_ode
+    - cytosim_arp23_vca_config
+    - q_chandrasekaran_source_data_nucleator_pipeline_fingerprint
+    - chandrasekaran_source_data/paper_exp_gabmut_ring_1_7p5
+    - chandrasekaran_source_data/paper_exp_gabmut_shell_1_7p5
+    - chandrasekaran_source_data/paper_exp_gabmut_disk_1_7p5
+    - chandrasekaran_source_data/paper_n_seed_filaments
+    - chandrasekaran_source_data/nucleator_conc_sweep_reader
+    - chandrasekaran_source_data/nucleator_radial_density_reader
+    - chandrasekaran_source_data/nucleator_timecourse_reader
+  citation:
+    file: Arp23_concsweep_steric/R_0_r_0/config0.cym
+    lines: "34"
+    quote: "growing_speed = 0.0103, 0"
+  text: >
+    Exhaustive bidirectional cross-record validation audit between graham2024_code (11 models: 10
+    runnable [52 output ports] + 1 non-runnable cytosim_arp23_vca_config; 109 datums: 0 origin:
+    measured) and chandrasekaran_source_data (20 role: processing, software: true Excel readers over
+    MOESM9_ESM.xlsx; 77 datums: 3 origin: measured) yields 0 genuine CrossValidation entries in either
+    direction:
+    (1) Forward direction — graham2024_code models vs chandrasekaran_source_data's 3 origin: measured
+    datums (paper_exp_gabmut_ring_1_7p5 = 53 +/- 6%, paper_exp_gabmut_shell_1_7p5 = 37 +/- 4%,
+    paper_exp_gabmut_disk_1_7p5 = < 10%; experimental VASP-GABmut droplet morphology abundances at
+    1:7.5 actin:VASP without Arp2/3 or VCA): across all 52 runnable output ports (24 dimensionless,
+    72 dimension-matching pairs), 0 models in graham2024_code predict shell/ring/disc morphology
+    percentages.
+    (2) Non-measured MOESM9 linear-nucleator sheets (FigureS10B/C/F = published Supp. Fig. 6B/C/F):
+    these tabulate CytoSim simulation outputs rather than experimental measurements, and
+    chandrasekaran_source_data/data.yaml contains no authored datums for FigureS10C median length or
+    FigureS10F radial density peak (their runs.yaml outputs carry printed = None -> no verdict, while
+    paper_n_seed_filaments = 30 has origin: reported and is merely the shared fixed seed input
+    N_fil_0 = 30). Diagnostically, live cross-execution at 0 nM confirms close baseline agreement
+    between the two independent 5-replicate CytoSim ensembles — N_fil(600) = 30.0 vs 30.0, median
+    length L_med = 5.5808 vs 5.5806 um (0.004% diff), and radial density peak rho(r=0.975 um) =
+    4.7706 vs 4.7813 (0.225% diff; mean abs diff 0.0125, max abs diff 0.159 across all 41 radial
+    bins) — while 10..150 nM diverge physically (freely diffusing bulk linear nucleators vs
+    mother-filament-bound trans_activated = 1 Arp2/3 branching; see
+    q_chandrasekaran_source_data_nucleator_pipeline_fingerprint).
+    (3) Reverse direction — chandrasekaran_source_data's 20 pure Excel workbook readers vs
+    graham2024_code's data: graham2024_code contains 0 origin: measured datums, and workbook readers
+    are data-extraction processors rather than predictive biophysical models.
+
+- id: q_graham2023_no_cross_validation
+  kind: reading
+  about:
+    - notebook_actin_ode
+    - notebook_vca_config_params
+    - csv_arp23_filament_stats
+    - csv_radial_density_and_rae
+    - cytosim_arp23_vca_config
+    - graham2023/elongation_rate_mean_text
+    - graham2023/elongation_rate_fit_fig5h
+    - graham2023/fig5h_linear_fit_fig
+    - graham2023/droplet_diam_range_obs
+    - graham2023/droplet_diam_median_20uM
+    - graham2023/droplet_diam_max_20uM
+    - graham2023/frap_t_half
+    - graham2023/vasp_droplet_fusion_time
+    - graham2023/derived_final_ring_length_ratio
+  citation:
+    file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+    lines: "1456"
+    quote: "kgrowplus = 0.0103#microns/s"
+  text: >
+    Exhaustive bidirectional cross-record validation audit between graham2024_code (11 models: 10
+    runnable [52 output ports] + 1 non-runnable cytosim_arp23_vca_config; 109 datums: 0 origin:
+    measured) and graham2023 (31 runnable models; 133 datums: 38 origin: measured [9 scalars + 29
+    digitized figures]) yields 0 genuine CrossValidation entries in either direction:
+    (1) Forward direction — graham2024_code's 52 runnable output ports vs graham2023's 38 origin:
+    measured datums (1,976 total pairs; 814 dimension-matching pairs = 39 [length] + 3
+    [length]/[time] + 4 [time] + 768 dimensionless; 0 [substance]/[length]^3 measured datums exist
+    in graham2023):
+    - [length]/[time] (3 pairs against elongation_rate_mean_text = 23 +/- 3 nm/s, Fig. 5h / p. 9 in
+      10 uM VASP + 2 uM actin + 1 mM ATP deformable linear rods): notebook_vca_config_params.k_bind_fiber
+      (dummy VCA competitor fiber speed 8675.68 um/s) and notebook_actin_ode.dP_dt (collective
+      30-filament summed polymerization rate 0.253 um/s) measure distinct physical quantities.
+      notebook_actin_ode.treadmilling_rate computes the per-filament instantaneous plus-end speed
+      v_fil(t) = k_grow_plus * (1 - L(t)/TFactin), which does NOT predict elongation velocity from
+      graham2023's experimental conditions (10 uM VASP, 2 uM actin, 1 mM ATP): instead it takes
+      prescribed k_grow_plus = 0.0103 um/s (chosen as (2*pi*1 - 0.1)/600 so 30 filaments reach one
+      circumference of a rigid R = 1 um sphere in 600 s) and explicitly non-physiological degenerate
+      TFactin = 942.48 um ([T-actin] = 138.38 uM, graham2024 SI p. 22) as inputs. Feeding Graham's
+      own 23 nm/s back as k_grow_plus is circular and requires fabricating unmeasured N_fil and
+      TFactin for Fig. 5h's linear rods (which elongate at constant speed R^2 = 0.9965 with no 2*pi*R
+      length cap or monomer depletion). Diagnostically, on graham2024_code's 0 nM Arp2/3 baseline
+      inputs, live notebook_actin_ode gives v_fil = 10.27 nm/s (t = 0), 9.65 nm/s (t = 190 s, -4.45
+      SD), 8.44 nm/s (t = 600 s, -4.86 SD), and 7.39 nm/s (t = 1000 s, -5.20 SD) — 2.24x to 3.11x
+      slower than Graham et al. (2023)'s own measured VASP-droplet elongation speed (23 +/- 3 nm/s).
+    - [length] (39 pairs: droplet_diam_range_obs '1 to 7' um, droplet_diam_median_20uM '2.86' um,
+      droplet_diam_max_20uM '7.22' um): actin-free 20 uM VASP droplet diameters vs filament/polymer
+      length and VASP site-separation ports (R_drop = 1.0 um is a fixed confinement input; graham2023
+      contains no origin: measured ring circumference, while non-measured fig5h_linear_fit_fig has
+      origin: predicted [dashed line y = 0.0227x] and derived_final_ring_length_ratio = 3.1 is a
+      simulation-derived dimensionless ratio).
+    - [time] (4 pairs: vasp_droplet_fusion_time 'about 1' s, frap_t_half '18 +/- 3' s) vs CSV
+      trajectory endpoint min_final_time (600 s): unrelated physical quantities.
+    - dimensionless (768 pairs: FRAP recovery %, shell/ring/disc morphology %, droplet aspect ratios,
+      normalized fluorescence intensities, partition coefficients, droplet size histograms/frequencies):
+      none of graham2024_code's 24 dimensionless outputs predicts any of these observables
+      (graham2024_code simulates a rigid non-deformable R = 1.0 um sphere).
+    (2) Reverse direction — graham2023's 31 models vs graham2024_code: graham2024_code contains 0
+    origin: measured datums (only software configs, notebook runs, and graham2024 targets). Structural
+    ModelAtlas links between the two records (rel_graham2023_lmax_same_as_ring_circumference and
+    rel_graham2023_ode_length_reduces_to_linear_bundle) are recorded in relations.yaml.
+
+- id: q_graham_code_no_cross_validation
+  kind: reading
+  about:
+    - cytosim_arp23_vca_config
+    - notebook_actin_ode
+    - notebook_vca_config_params
+    - graham_code/notebook_critical_ring_thickness
+    - graham_code/notebook_droplet_ring_slsqp
+  citation:
+    file: Arp23_concsweep_steric/R_0_r_0/config0.cym
+    lines: "8"
+    quote: "set simul system"
+  text: >
+    Bidirectional cross-record validation audit between graham2024_code (kind: software; 109 datums:
+    0 origin: measured) and graham_code (kind: software, VASPDroplet_simulate.ipynb; 72 datums: 0
+    origin: measured) yields 0 CrossValidation entries in either direction. Neither software record
+    contains any experimental measurement (0 measured targets on both sides), and their underlying
+    physical models are completely disjoint: graham_code implements 2D continuum SLSQP free-energy
+    minimization of an inextensible actin ring deforming an elliptical VASP droplet (wetting tension,
+    Bathe bundle bending, Gauss-Kummer surface energy, critical buckling thickness), whereas
+    graham2024_code contains non-runnable 3D rigid-sphere CytoSim actin-VASP-Arp2/3-VCA configs plus
+    live Python ODE and trajectory-CSV analysis adapters. The candidate-pair dimensional shape overlap
+    between graham2024_code/cytosim_arp23_vca_config (runnable: false) and
+    graham_code/notebook_critical_ring_thickness pairs unrelated physical quantities (3D total
+    polymer length L_sum_final vs 2D continuum critical buckling thickness T_crit).
+
+- id: q_graham_source_data_no_cross_validation
+  kind: reading
+  about:
+    - notebook_actin_ode
+    - notebook_vca_config_params
+    - csv_arp23_filament_stats
+    - csv_radial_density_and_rae
+    - cytosim_arp23_vca_config
+    - graham_source_data/f5h_rate_text
+    - graham_source_data/f1f_t_half_text
+    - graham_source_data/f1f_recovery_caption
+    - graham_source_data/f1f_recovery_text
+    - graham_source_data/f6f_d1_actin_195s_stored
+    - graham_source_data/f6f_d2_actin_195s_stored
+    - graham_source_data/s4e_diam_median_caption
+    - graham_source_data/s4e_diam_max_caption
+  citation:
+    file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+    lines: "1448"
+    quote: "dPdt = Nfil*(kgrowplus*(1-L[0]/TFactin) + kshrinkplus)"
+  text: >
+    Exhaustive bidirectional cross-record validation audit between graham2024_code (11 models: 10
+    runnable [52 output ports] + 1 non-runnable cytosim_arp23_vca_config; 109 datums: 0 origin:
+    measured) and graham_source_data (11 role: processing, software: true Excel readers over
+    MOESM12-22_ESM.xlsx; 94 datums: 8 origin: measured scalars) yields 0 genuine CrossValidation
+    entries in either direction:
+    (1) Forward direction — graham2024_code's 52 runnable output ports vs graham_source_data's 8
+    origin: measured scalars (416 total pairs; 127 dimension-matching pairs = 26 [length] + 3
+    [length]/[time] + 2 [time] + 96 dimensionless):
+    - f5h_rate_text (23 +/- 3 nm/s, verbatim copy of graham2023/elongation_rate_mean_text; 3
+      [length]/[time] matches): same physical and parameterization incompatibility documented in
+      q_graham2023_no_cross_validation — notebook_vca_config_params.k_bind_fiber and
+      notebook_actin_ode.dP_dt measure distinct speeds, while notebook_actin_ode.treadmilling_rate
+      takes prescribed rigid-sphere k_grow_plus = 0.0103 um/s and degenerate TFactin = 942.48 um as
+      inputs rather than predicting linear rod elongation from Fig. 5h's 10 uM VASP + 2 uM actin
+      conditions (diagnostically giving 9.65 nm/s at t = 190 s and 8.44 nm/s at t = 600 s, -4.45 to
+      -4.86 SD below 23 +/- 3 nm/s).
+    - s4e_diam_median_caption (2.86 um) & s4e_diam_max_caption (7.22 um) (26 [length] matches):
+      actin-free 20 uM VASP droplet diameters vs filament/polymer length and site-separation outputs.
+    - f1f_t_half_text (18 +/- 3 s, 2 [time] matches): VASP FRAP half-time vs CSV trajectory endpoint
+      min_final_time (600 s).
+    - f1f_recovery_{caption,text} (93.9 +/- 4.89%, 94 +/- 5%) & f6f_d{1,2}_actin_195s_stored
+      (3.0117, 3.3315) (96 dimensionless matches): none of graham2024_code's 24 dimensionless outputs
+      predicts FRAP recovery percentages or normalized photobleached bundle fluorescence intensity.
+    (2) Reverse direction — graham_source_data's 11 pure Excel workbook readers vs graham2024_code's
+    data: graham2024_code contains 0 origin: measured datums, and MOESM12-22 Excel readers are
+    fixed-workbook processors of Graham et al. (2023) microscopy data rather than predictive models.
+
+- id: q_chandrasekaran2024_no_cross_validation
+  kind: reading
+  about:
+    - config_parameter_audit
+    - csv_arp23_filament_stats
+    - csv_radial_density_and_rae
+    - csv_radial_density_rae_paper_def
+    - csv_vca_filament_stats
+    - cytosim_arp23_vca_config
+    - notebook_actin_ode
+    - notebook_arp23_molecule_count
+    - notebook_monomer_interpolator
+    - notebook_vca_competition_ode
+    - notebook_vca_config_params
+    - q_chandrasekaran_source_data_nucleator_pipeline_fingerprint
+    - chandrasekaran2024/exp_wt_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_ring_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_shell_pct_1_7p5
+    - chandrasekaran2024/fig6d_wt_shell_fig
+    - chandrasekaran2024/fig6d_wt_ring_fig
+    - chandrasekaran2024/fig6d_wt_disk_fig
+    - chandrasekaran2024/fig6d_gabmut_shell_fig
+    - chandrasekaran2024/fig6d_gabmut_ring_fig
+    - chandrasekaran2024/fig6d_gabmut_disk_fig
+    - chandrasekaran2024/figs6b_nuc50_fig
+    - chandrasekaran2024/figs6b_nuc150_fig
+    - chandrasekaran2024/figs6c_max_length_fig
+    - chandrasekaran2024/figs6f_nuc0_fig
+    - chandrasekaran2024/brownian_noise_from_mobility
+  citation:
+    file: README.md
+    lines: "4-6"
+    quote: "The input files for Arp2/3 sweep Arp23_concsweep_steric"
+  text: >
+    Exhaustive bidirectional cross-record validation audit between graham2024_code (kind: software;
+    11 models: 10 runnable [52 output ports] + 1 non-runnable cytosim_arp23_vca_config; 109 datums:
+    0 origin: measured, no figures.yaml) and chandrasekaran2024 (kind: article, Nat. Commun. 15,
+    3139, 2024, citing Graham et al. 2024 as ref-SI8; 46 models: 42 runnable + 4 non-runnable; 224
+    datums: only 10 origin: measured) yields 0 genuine CrossValidation entries in either direction:
+    (1) Forward direction — graham2024_code's 10 runnable models (52 output ports) vs
+    chandrasekaran2024's 10 origin: measured datums (520 total pairs; 240 dimensionless
+    dimension-matching pairs across 24 dimensionless output ports): all 10 origin: measured datums
+    in chandrasekaran2024 are Fig. 6D (p. 7) confocal microscopy droplet morphology abundances
+    (shell, ring, and disk %) for WT VASP (replotted from Graham et al. 2023 ref-15) and
+    VASP-GABmut across Actin:VASP = 1:20, 1:10, and 1:7.5 with no Arp2/3 or VCA — specifically 4
+    text scalars at 1:7.5 (exp_wt_disk_pct_1_7p5 = 70 +/- 13%, exp_gabmut_disk_pct_1_7p5 < 10%,
+    exp_gabmut_ring_pct_1_7p5 = 53 +/- 6%, exp_gabmut_shell_pct_1_7p5 = 37 +/- 4%) and 6 digitized
+    stacked-bar curves (fig6d_{wt,gabmut}_{shell,ring,disk}_fig). Zero models in graham2024_code
+    take VASP WT/GABmut variant or Actin:VASP molar ratio as inputs or predict experimental shell,
+    ring, or deformed-disk morphology percentages: all 24 dimensionless ports output unrelated
+    quantities (branching angle, replicate/filament/Arp2/3/monomer counts, nucleation fold change,
+    radial-density interpolation ratios, VCA fractional F-actin remaining/reduction, and Relative
+    Actin Enrichment inside a rigid non-deformable R = 1.0 um sphere), and cytosim_arp23_vca_config
+    is runnable: false (also rigid-sphere, outputting N_fil_final, L_sum_final, rae). The remaining
+    214 datums in chandrasekaran2024 are non-empirical (88 reported, 107 run, 15 derived, 3
+    predicted, 1 assumed); in particular, Supplementary Fig. 6's linear-nucleator simulation curves
+    (figs6b_nuc*_fig, figs6c_max_length_fig, figs6d_bound*_fig, figs6e_surface_area_fig,
+    figs6f_nuc*_fig) are origin: run CytoSim outputs for freely diffusing bulk linear nucleators
+    rather than experimental measurements or mother-filament-bound trans_activated = 1 Arp2/3
+    branching (agreeing only on the shared 0 nM 30-filament, [T-actin] = 138.38 uM, k_grow = 0.0103
+    um/s baseline while diverging sharply at 50 and 150 nM: N_fil = 296.0 and 993.6 in
+    graham2024_code Arp2/3 vs ~498 and ~1455 at t = 580 s in chandrasekaran2024 figs6b_nuc{50,150}_fig;
+    see q_chandrasekaran_source_data_nucleator_pipeline_fingerprint).
+    (2) Reverse direction — chandrasekaran2024's 46 models vs graham2024_code/data.yaml:
+    graham2024_code contains 0 origin: measured datums (91 reported, 10 run, 6 derived, 2
+    predicted — all .cym config parameters, notebook ODE/CSV outputs, or Graham et al. 2024
+    reported simulation targets). All 11 analytical/structural model correspondences between the
+    two records (Stokes-Einstein diffusion, Arp2/3 molecule count conversion, total/initial actin
+    concentrations, droplet circumference L_max, and ODE monomer-depletion/elongation limits) are
+    already verified in chandrasekaran2024/relations.yaml, while the automated pair-nomination
+    shape overlap (chandrasekaran2024/brownian_noise_from_mobility vs non-runnable
+    graham2024_code/cytosim_arp23_vca_config on length from energy, time) pairs physically
+    unrelated quantities (1D Brownian step sigma_B vs 3D total polymer length L_sum_final).
+

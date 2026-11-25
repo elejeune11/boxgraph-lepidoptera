@@ -1,0 +1,29 @@
+id: notebook_fig5d_averaging_last30
+name: corrected last-5% snapshot variant of Figures.ipynb Cell 13 (Figure 5D dynamic dimer state fractions)
+role: processing
+software: true
+variant_of: notebook_fig5d_averaging_adapter
+corrections:
+  - equation: "Figures.ipynb Cell 13 line 1708 (startpos = int(0.95*len(Row1)))"
+    change: "Slice each replicate's snapshot array at arr[int(0.95*len(arr)):] (or final 30 snapshots) instead of slicing the outer list of replicates Row1temp[int(0.95*len(Row1)):len(Row1)]."
+    evidence: "Fig. 5D caption (walker2025 p. 10) states 'the data were obtained from the last 30 snapshots (5%) of each replicate', and Cells 6, 18, 27, 33 in the same notebook slice the 1D 601-element snapshot array Row9[int(0.95*len(Row9)):]."
+stated:
+  file: Figures.ipynb
+  lines: "1637-1790"
+  quote: "startpos = int(0.95*len(Row1))"
+  where: "Figures.ipynb Cell 13 (corrected last-30-snapshots slice)"
+equation: "mean over the last 30 snapshots (iloc[:, -30:], t = 571..600 s) across all replicates"
+inputs:
+  r_index: {quantity: condition_index, unit: dimensionless}
+  n_reps: {quantity: count, unit: dimensionless}
+  n_monomers_total: {quantity: crosslinker_count, unit: dimensionless}
+outputs:
+  n_snapshots_per_rep: {quantity: count, unit: dimensionless}
+  frac_M0: {quantity: fraction, unit: dimensionless}
+  frac_M1: {quantity: fraction, unit: dimensionless}
+  frac_D0: {quantity: fraction, unit: dimensionless}
+  frac_D1: {quantity: fraction, unit: dimensionless}
+  frac_D2: {quantity: fraction, unit: dimensionless}
+settings:
+  n_last_snapshots: 30
+stochastic: false

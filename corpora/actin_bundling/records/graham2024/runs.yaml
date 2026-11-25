@@ -1,0 +1,506 @@
+# ==============================================================================
+# EXPERIMENTAL STOICHIOMETRY, PARTITIONING, AND STATISTICAL RUNS
+# ==============================================================================
+
+- id: run_vasp_tetramer_fig1
+  model: vasp_tetramer_from_monomer
+  inputs:
+    C_mono: vasp_monomer_conc_fig1
+    valency: sim_vasp_valency
+  outputs:
+    C_tet: vasp_tetramer_fig1_pred
+
+- id: run_vca_arp_ratio_50nM
+  model: vca_to_arp23_molar_ratio
+  inputs:
+    C_vca: vca_conc_2uM
+    C_arp: arp23_conc_50nM
+  outputs:
+    ratio: vca_arp_ratio_50nM_pred
+
+- id: run_vca_arp_ratio_100nM
+  model: vca_to_arp23_molar_ratio
+  inputs:
+    C_vca: vca_conc_4uM
+    C_arp: arp23_conc_100nM
+  outputs:
+    ratio: vca_arp_ratio_100nM_pred
+
+- id: run_vca_arp_ratio_150nM
+  model: vca_to_arp23_molar_ratio
+  inputs:
+    C_vca: vca_conc_6uM
+    C_arp: arp23_conc_150nM
+  outputs:
+    ratio: vca_arp_ratio_150nM_pred
+
+- id: run_vasp_actin_ratio_fig2a
+  model: vasp_to_actin_molar_ratio
+  inputs:
+    C_vasp: vasp_monomer_conc_fig2a
+    C_actin: actin_conc_fig2a
+  outputs:
+    vasp_to_actin: vasp_to_actin_fig2a_pred
+    actin_to_vasp: actin_to_vasp_fig2a_pred
+
+- id: run_vasp_actin_ratio_fig2e
+  model: vasp_to_actin_molar_ratio
+  inputs:
+    C_vasp: vasp_monomer_conc_fig2e
+    C_actin: actin_conc_fig2e
+  outputs:
+    vasp_to_actin: vasp_to_actin_fig2e_pred
+    actin_to_vasp: actin_to_vasp_fig2e_pred
+
+- id: run_vasp_actin_ratio_fig6a
+  model: vasp_to_actin_molar_ratio
+  inputs:
+    C_vasp: vasp_monomer_conc_fig6a
+    C_actin: actin_conc_fig6a
+  outputs:
+    vasp_to_actin: vasp_to_actin_fig6a_pred
+    actin_to_vasp: actin_to_vasp_fig6a_pred
+
+- id: run_vasp_actin_ratio_fig6b
+  model: vasp_to_actin_molar_ratio
+  inputs:
+    C_vasp: vasp_monomer_conc_fig6b
+    C_actin: actin_conc_fig6b
+  outputs:
+    vasp_to_actin: vasp_to_actin_fig6b_pred
+    actin_to_vasp: actin_to_vasp_fig6b_pred
+
+- id: run_vasp_arp_ratio_fig2e
+  model: vasp_to_arp23_molar_ratio
+  inputs:
+    C_vasp: vasp_monomer_conc_fig2e
+    C_arp: arp23_conc_50nM
+  outputs:
+    ratio: vasp_arp_ratio_fig2e_pred
+
+- id: run_spoke_partitioning_fold
+  model: spoke_partitioning_fold_change
+  inputs:
+    P_vasp: spoke_partitioning_vasp
+    P_arp: spoke_partitioning_arp23
+  outputs:
+    fold: spoke_partitioning_fold_pred
+
+- id: run_aster_spoke_enrichment_demo
+  model: aster_spoke_enrichment
+  inputs:
+    I_spoke_protein: test_I_spoke_protein_added
+    I_core_protein: test_I_core_protein_added
+    I_spoke_actin: test_I_spoke_actin_added
+    I_core_actin: test_I_core_actin_added
+  outputs:
+    enrichment: aster_spoke_enrichment_demo_pred
+  note: "Exercises the Methods p. 11 actin-normalized spoke enrichment formula on added illustrative intensities matching the text 6.8% raw spoke/core ratio and ~12% actin spoke/core ratio."
+
+- id: run_frap_t_half_ttest
+  model: frap_t_half_ttest
+  inputs:
+    mean_1: frap_t_half_vasp_only
+    sd_1: frap_t_half_vasp_only_sd
+    n_1: frap_droplet_n
+    mean_2: frap_t_half_composite
+    sd_2: frap_t_half_composite_sd
+    n_2: frap_droplet_n
+  outputs:
+    t_stat: frap_t_half_tstat_pred
+    p_value: frap_t_half_pvalue_pred
+
+- id: run_frap_mobile_ttest
+  model: frap_mobile_fraction_ttest
+  inputs:
+    mean_1: frap_mobile_vasp_only
+    sd_1: frap_mobile_vasp_only_sd
+    n_1: frap_droplet_n
+    mean_2: frap_mobile_composite
+    sd_2: frap_mobile_composite_sd
+    n_2: frap_droplet_n
+  outputs:
+    t_stat: frap_mobile_tstat_pred
+    p_value: frap_mobile_pvalue_pred
+
+# ==============================================================================
+# CYTOSIM GEOMETRY, MECHANICS, VISCOSITY, AND MOLECULE COUNT RUNS
+# ==============================================================================
+
+- id: run_viscosity_water_ratio
+  model: droplet_viscosity_water_ratio
+  inputs:
+    eta_droplet: sim_droplet_viscosity
+    eta_water: water_viscosity_20C
+  outputs:
+    ratio: sim_viscosity_ratio_pred
+
+- id: run_max_filament_length
+  model: max_filament_length_circumference
+  inputs:
+    R_drop: sim_droplet_radius
+    L_seg: sim_l_seg
+  outputs:
+    L_max: sim_max_fil_length_pred
+    N_seg: sim_max_fil_segments_pred
+
+- id: run_actin_persistence_length
+  model: actin_persistence_length_from_rigidity
+  inputs:
+    K_bend: sim_actin_flexural_rigidity
+    T: temperature_room_K
+  outputs:
+    L_p: actin_persistence_length_pred
+
+- id: run_boundary_force_actin
+  model: boundary_harmonic_force
+  inputs:
+    k_boundary: sim_boundary_stiffness_actin
+    d: test_boundary_excursion_added
+  outputs:
+    F_boundary: boundary_force_actin_pred
+
+- id: run_steric_force_vasp
+  model: steric_repulsion_force
+  inputs:
+    k_steric: sim_vasp_steric_stiffness
+    d: test_pair_separation_added
+    r: sim_vasp_radius
+  outputs:
+    F_steric: steric_force_vasp_pred
+
+- id: run_arp23_binding_distance
+  model: arp23_binding_distance_sum
+  inputs:
+    r_Arp: sim_arp23_radius
+    d_actin: sim_actin_diameter
+  outputs:
+    r_bind: arp23_binding_distance_pred
+
+- id: run_vasp_tet_count_tableS1
+  model: vasp_tet_molecule_count
+  inputs:
+    C: sim_vasp_tet_conc_tableS1
+    R_drop: sim_droplet_radius
+  outputs:
+    N: sim_vasp_tet_count_04uM_pred
+
+- id: run_vasp_tet_count_fig5
+  model: vasp_tet_molecule_count
+  inputs:
+    C: sim_vasp_tet_conc_fig5
+    R_drop: sim_droplet_radius
+  outputs:
+    N: sim_vasp_tet_count_02uM_pred
+
+- id: run_arp23_count_sweep
+  model: arp23_molecule_count
+  inputs:
+    R_drop: sim_droplet_radius
+  sweep:
+    C: sim_arp23_count_vs_conc
+  outputs:
+    N: sim_arp23_count_curve_pred
+
+- id: run_vca_count_1uM
+  model: vca_molecule_count
+  inputs:
+    C: vca_sample_conc
+    R_drop: sim_droplet_radius
+  outputs:
+    N: vca_molecule_count_1uM_pred
+
+- id: run_actin_count_from_conc_600s
+  model: actin_molecule_count_from_conc
+  inputs:
+    C: ode_f_actin_600s
+    R_drop: sim_droplet_radius
+  outputs:
+    N: ode_actin_monomers_from_conc_pred
+
+- id: run_filament_polymer_initial
+  model: filament_polymer_to_concentration
+  inputs:
+    N_fil: ode_n_fil_initial
+    L_fil: sim_actin_init_length_added
+    l_mono: actin_monomer_rise_val
+    R_drop: sim_droplet_radius
+  outputs:
+    L_total: ode_l_total_initial_pred
+    N_monomers: ode_monomers_initial_pred
+    C_F: ode_f_actin_initial_pred
+
+- id: run_filament_polymer_600s
+  model: filament_polymer_to_concentration
+  inputs:
+    N_fil: ode_n_fil_initial
+    L_fil: sim_max_fil_length_pred
+    l_mono: actin_monomer_rise_val
+    R_drop: sim_droplet_radius
+  outputs:
+    L_total: ode_l_total_600s_pred
+    N_monomers: ode_monomers_600s_pred
+    C_F: ode_f_actin_600s_from_length_pred
+
+- id: run_total_polymer_from_t_actin
+  model: total_polymer_from_concentration
+  inputs:
+    C_T: ode_t_actin_solved
+    l_mono: actin_monomer_rise_val
+    R_drop: sim_droplet_radius
+  outputs:
+    L_total: cytosim_total_polymer_pred
+
+- id: run_t_actin_from_total_polymer
+  model: concentration_from_total_polymer
+  inputs:
+    L_total: cytosim_vca_total_polymer
+    l_mono: actin_monomer_rise_val
+    R_drop: sim_droplet_radius
+  outputs:
+    C_T: ode_t_actin_from_polymer_pred
+
+# ==============================================================================
+# SI METHODS ODE (EQS. 1-3) AND VCA FIBER PARAMETER RUNS
+# ==============================================================================
+
+- id: run_actin_conservation_600s
+  model: actin_conservation_eq1
+  inputs:
+    T_actin: ode_t_actin_solved
+    F_actin: ode_f_actin_600s
+  outputs:
+    G_actin: ode_g_actin_600s_pred
+    free_fraction: ode_free_fraction_600s_pred
+
+- id: run_ode_eq2_printed
+  model: actin_polymerization_ode_eq2_printed
+  inputs:
+    k_grow: sim_k_grow
+    N_fil: ode_n_fil_initial
+    F_0: ode_f_actin_initial
+    T_actin: ode_t_actin_solved
+    t_end: sim_total_time
+  settings:
+    dt: 1.0
+  outputs:
+    F_end: ode_eq2_printed_f600_pred
+    G_end: ode_eq2_printed_g600_pred
+  note: "Integrates SI Eq. (2) as printed using scipy.integrate RK45 with max_step dt = 1.0 s (refined in refinements.yaml)."
+
+- id: run_ode_eq2_converted
+  model: actin_polymerization_ode_eq2_converted
+  inputs:
+    k_grow: sim_k_grow
+    N_fil: ode_n_fil_initial
+    F_0: ode_f_actin_initial
+    T_actin: ode_t_actin_solved
+    t_end: sim_total_time
+    R_drop: sim_droplet_radius
+    l_mono: actin_monomer_rise_val
+  settings:
+    dt: 1.0
+  outputs:
+    F_end: ode_eq2_converted_f600_pred
+    G_end: ode_eq2_converted_g600_pred
+  note: "Integrates dimensionally consistent variant of SI Eq. (2) with length-to-concentration conversion (refined in refinements.yaml)."
+
+- id: run_vca_fiber_params_1uM
+  model: vca_fiber_parameters
+  inputs:
+    k_bind: vca_k_bind_per_mol
+    N_VCA: vca_molecule_count_1uM
+    l_mono: actin_monomer_rise_val
+    factor_Gmax: vca_gmax_factor
+  outputs:
+    k_bind_fiber: vca_k_bind_fiber_pred
+    L_Gmax: vca_l_gmax_pred
+
+- id: run_ode_eq3_printed
+  model: actin_vca_competition_ode_eq3_printed
+  inputs:
+    k_grow: sim_k_grow
+    N_fil: ode_n_fil_initial
+    F_0: ode_f_actin_initial
+    T_actin: ode_t_actin_solved
+    t_end: sim_total_time
+    k_bind: vca_k_bind_per_mol
+    N_VCA: vca_molecule_count_1uM
+    C_vca: vca_sample_conc
+    factor_Gmax: vca_gmax_factor
+  settings:
+    dt: 1.0
+  outputs:
+    F_end: ode_eq3_printed_f600_pred
+    V_end: ode_eq3_printed_v600_pred
+    delta_F: ode_eq3_printed_delta_f_pred
+
+- id: run_ode_eq3_converted
+  model: actin_vca_competition_ode_eq3_converted
+  inputs:
+    k_grow: sim_k_grow
+    N_fil: ode_n_fil_initial
+    F_0: ode_f_actin_initial
+    T_actin: ode_t_actin_solved
+    t_end: sim_total_time
+    k_bind: vca_k_bind_per_mol
+    N_VCA: vca_molecule_count_1uM
+    C_vca: vca_sample_conc
+    factor_Gmax: vca_gmax_factor
+    R_drop: sim_droplet_radius
+    l_mono: actin_monomer_rise_val
+  settings:
+    dt: 1.0
+  outputs:
+    F_end: ode_eq3_converted_f600_pred
+    V_end: ode_eq3_converted_v600_pred
+    delta_F: ode_eq3_converted_delta_f_pred
+
+# ==============================================================================
+# DIFFUSION, LANGEVIN DYNAMICS, AND TRAJECTORY ANALYSIS RUNS (pp. 23-24)
+# ==============================================================================
+
+- id: run_einstein_mobility_vasp
+  model: einstein_diffusion_relation
+  inputs:
+    D: sim_vasp_diffusion_rate
+    kBT: thermal_energy_room
+  outputs:
+    mu: vasp_mobility_einstein_pred
+
+- id: run_stokes_einstein_vasp
+  model: stokes_einstein_sphere_diffusion
+  inputs:
+    eta: sim_droplet_viscosity
+    r: sim_vasp_radius
+    kBT: thermal_energy_room
+  outputs:
+    D: vasp_diffusion_stokes_einstein_pred
+    mu: vasp_mobility_stokes_einstein_pred
+
+- id: run_langevin_vasp
+  model: langevin_overdamped_1d
+  inputs:
+    mu: vasp_mobility_einstein_pred
+    kBT: thermal_energy_room
+    f: zero_force_added
+  settings:
+    dt: 0.001
+    t_sim: 0.2
+    n_particles: 2000
+    seed: 42
+  replicates: 5
+  outputs:
+    D_eff: vasp_langevin_D_eff_pred
+    mean_dx: vasp_langevin_mean_dx_pred
+  note: "Uses Table S1 time step dt = 0.001 s over an added 0.2 s horizon with 2000 independent Brownian particles (5 replicates) so the full refinement suite completes in < 2 s on CPU."
+
+- id: run_radial_density_uniform_printed
+  model: radial_density_ratio_printed
+  inputs:
+    N_shell: uniform_shell_monomers_added
+    r: uniform_shell_r_added
+    delta_r: sim_shell_thickness
+    N_total: ode_actin_monomers_600s
+    R_drop: sim_droplet_radius
+  outputs:
+    density_ratio: radial_density_uniform_printed_pred
+
+- id: run_radial_density_uniform_corrected
+  model: radial_density_ratio_corrected
+  inputs:
+    N_shell: uniform_shell_monomers_added
+    r: uniform_shell_r_added
+    delta_r: sim_shell_thickness
+    N_total: ode_actin_monomers_600s
+    R_drop: sim_droplet_radius
+  outputs:
+    density_ratio: radial_density_uniform_corrected_pred
+
+- id: run_rae_demo
+  model: relative_actin_enrichment_rae
+  inputs:
+    rho_core: test_rho_core_added
+    rho_periphery: test_rho_periphery_added
+  outputs:
+    rae: rae_demo_pred
+
+# ==============================================================================
+# AUDIT ADDITIONS: INVERSE SI EQ. (2) [T-ACTIN] SOLVER & FIG. 6F T-TESTS
+# ==============================================================================
+
+- id: run_ode_eq2_printed_solve_t_actin
+  model: actin_t_actin_solver_eq2_printed
+  inputs:
+    k_grow: sim_k_grow
+    N_fil: ode_n_fil_initial
+    F_0: ode_f_actin_initial
+    F_end: ode_f_actin_600s
+    t_end: sim_total_time
+  settings:
+    dt: 1.0
+  outputs:
+    T_actin: ode_eq2_printed_t_actin_pred
+  note: "Directly solves printed SI Eq. (2) numerically via scipy.integrate RK45 + root-finding for [T-actin] satisfying [F-actin](0)=0.44 uM and [F-actin](600)=27.68 uM (refined in refinements.yaml)."
+
+- id: run_fig6f_total_droplets
+  model: experiment_total_droplets
+  inputs:
+    n_exp: fig6f_experiments_n
+    n_per_exp: fig6f_droplets_per_exp
+  outputs:
+    n_total: fig6f_total_droplets_pred
+
+- id: run_spoke_partitioning_ttest_n3
+  model: spoke_partitioning_ttest
+  inputs:
+    mean_1: spoke_partitioning_vasp
+    sd_1: spoke_partitioning_vasp_sd
+    n_1: fig6f_experiments_n
+    mean_2: spoke_partitioning_arp23
+    sd_2: spoke_partitioning_arp23_sd
+    n_2: fig6f_experiments_n
+  outputs:
+    t_stat: spoke_partitioning_tstat_n3_pred
+    p_value: spoke_partitioning_pvalue_n3_pred
+  note: "Tests Fig. 6F unpaired two-tailed t-test on text spoke partitioning (6.8 ± 2.3% vs 0.69 ± 0.52%) using stated n = 3 experiments."
+
+- id: run_spoke_partitioning_ttest_n30
+  model: spoke_partitioning_ttest_droplets
+  inputs:
+    mean_1: spoke_partitioning_vasp
+    sd_1: spoke_partitioning_vasp_sd
+    n_1: fig6f_total_droplets_pred
+    mean_2: spoke_partitioning_arp23
+    sd_2: spoke_partitioning_arp23_sd
+    n_2: fig6f_total_droplets_pred
+  outputs:
+    t_stat: spoke_partitioning_tstat_n30_pred
+    p_value: spoke_partitioning_pvalue_n30_pred
+  note: "Tests Fig. 6F unpaired two-tailed t-test when pooling all 3 x 10 = 30 droplets across the 3 experiments."
+
+# ==============================================================================
+# DIGITIZE ADDITION: VCA COMPETITION ODE FILAMENT LENGTH SWEEP (FIG. S5b)
+# ==============================================================================
+
+- id: run_figs5b_vca_ode_length
+  model: cytosim_vca_ode_filament_length
+  inputs:
+    k_grow: sim_k_grow
+    N_fil: ode_n_fil_initial
+    L_0: sim_actin_init_length_added
+    L_total: cytosim_vca_total_polymer
+    t_end: sim_total_time
+    k_bind: vca_k_bind_per_mol
+    factor_Gmax: vca_gmax_factor
+    R_drop: sim_droplet_radius
+    l_mono: actin_monomer_rise_val
+  sweep:
+    C_vca: figs5b_0arp_length_vs_vca_fig
+  settings:
+    dt: 1.0
+  outputs:
+    L_fil: figs5b_vca_ode_length_pred
+  note: "Sweeps the length-based SI Eqs. (1)-(3) / fiber_set.cc VCA monomer-competition ODE over [VCA] = 0, 1, 2, 5, 10 uM at [Arp2/3] = 0 nM to compare against digitized Supplemental Fig. S5b median filament lengths (refined in refinements.yaml)."
+
+

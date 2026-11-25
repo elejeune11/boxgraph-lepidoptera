@@ -1,0 +1,929 @@
+# ==========================================================================
+# Basic preparation, morphology statistics, and geometry checks
+# ==========================================================================
+
+- id: run_c_actin_total
+  model: actin_total_concentration
+  inputs:
+    c_unlabeled: c_actin_unlabeled_si
+    c_labeled: c_actin_labeled_si
+  outputs:
+    c_total: c_actin_total_computed
+
+- id: run_mc_total
+  model: methylcellulose_total_fraction
+  inputs:
+    mc_base: mc_base_si
+    mc_added: mc_added_nematic_si
+  outputs:
+    mc_total: mc_total_computed
+
+- id: run_divided_frac_low_active
+  model: divided_droplet_fraction
+  inputs:
+    N_divided: n_divided_low_active
+    N_total: n_total_low_active
+  outputs:
+    frac_divided: frac_divided_low_active_computed
+
+- id: run_AR_figS5_axes
+  model: tactoid_aspect_ratio_from_axes
+  inputs:
+    L_D: LD_figS5
+    L_y: Ly_figS5
+  outputs:
+    AR: AR_figS5_axes_computed
+
+- id: run_AR_figS5_angle
+  model: tactoid_aspect_ratio_angle
+  inputs:
+    R: R_tactoid_probe_added
+    alpha: alpha_tactoid_probe_added
+  outputs:
+    AR: AR_figS5_angle_computed
+    L_D: LD_figS5_angle_computed
+    L_y: Ly_figS5_angle_computed
+
+- id: run_ratio_figS4_blue
+  model: myosin_to_tactoid_ratio
+  inputs:
+    L_M: LM_figS4_blue
+    L_D: LD_figS4
+  outputs:
+    ratio: LM_over_LD_figS4_blue_computed
+
+- id: run_ratio_figS4_red
+  model: myosin_to_tactoid_ratio
+  inputs:
+    L_M: LM_figS4_red
+    L_D: LD_figS4
+  outputs:
+    ratio: LM_over_LD_figS4_red_computed
+
+- id: run_ratio_figS4_green
+  model: myosin_to_tactoid_ratio
+  inputs:
+    L_M: LM_figS4_green
+    L_D: LD_figS4
+  outputs:
+    ratio: LM_over_LD_figS4_green_computed
+
+# ==========================================================================
+# Bipolar nematic tactoid crossover and Eq. 6 geometry / equilibrium
+# ==========================================================================
+
+- id: run_nematic_crossover
+  model: nematic_distortion_length
+  inputs:
+    K: K_frank_si
+    gamma: gamma_tactoid_si
+  outputs:
+    l_K: l_K_crossover_computed
+
+- id: run_bipolar_geom_eq6
+  model: bipolar_tactoid_geometry_eq6
+  inputs:
+    K: K_frank_si
+    gamma: gamma_tactoid_si
+    R: R_tactoid_probe_added
+    alpha: alpha_tactoid_probe_added
+  outputs:
+    f_el: f_el_probe_computed
+    f_s: f_s_probe_computed
+    v: v_probe_computed
+    V: V_probe_computed
+    F_el: F_el_probe_computed
+    F_s: F_s_probe_computed
+    F_bare: F_bare_probe_computed
+
+- id: run_bipolar_eq_exact
+  model: bipolar_tactoid_equilibrium_exact
+  inputs:
+    K: K_frank_si
+    gamma: gamma_tactoid_si
+    V: V_tactoid_probe_added
+  outputs:
+    alpha_eq: alpha_eq_exact_computed
+    R_eq: R_eq_exact_computed
+    AR_eq: AR_eq_exact_computed
+    F_eq: F_eq_exact_computed
+
+- id: run_bipolar_small_alpha_scaling
+  model: bipolar_tactoid_small_alpha_scaling
+  inputs:
+    K: K_frank_si
+    gamma: gamma_tactoid_si
+    R: R_tactoid_probe_added
+    alpha: alpha_tactoid_probe_added
+  outputs:
+    V: V_small_alpha_scaling_computed
+    F_bare: F_small_alpha_scaling_computed
+
+# ==========================================================================
+# Motor centering continuum model (Eqs. 1-5) and SI p. 11 numerical chain
+# ==========================================================================
+
+- id: run_onsager_F0
+  model: onsager_energy_scale
+  inputs:
+    D_M: myosin_diameter_lit
+    L_M: LM_si_p10
+    L_a: actin_length_main
+    c_a: c_a_tactoid_added
+    kBT: kBT_si
+  outputs:
+    F_0: F0_onsager_computed
+    F_0_kBT: F0_kBT_onsager_computed
+
+- id: run_local_misalignment
+  model: rod_misalignment_energy_local
+  inputs:
+    F_0: F0_onsager_computed
+    alpha: alpha_local_added
+  outputs:
+    Delta_F: Delta_F_local_computed
+
+- id: run_director_arc_probe
+  model: bipolar_director_arc
+  inputs:
+    x: x_probe_added
+    y: y_probe_added
+    L_D: LD_figS5
+  outputs:
+    R: R_arc_probe_computed
+    sin_alpha_d: sin_alpha_d_probe_computed
+
+- id: run_director_small_x_bdy
+  model: bipolar_director_small_x_boundary
+  inputs:
+    x: x_probe_added
+    L_D: LD_figS5
+    alpha: alpha_tactoid_probe_added
+  outputs:
+    sin_alpha_d: sin_alpha_d_bdy_computed
+
+- id: run_eq3_exact
+  model: rod_centering_energy_integral
+  inputs:
+    f_0: f0_probe_added
+    x_c: xc_probe_added
+    y_c: yc_probe_added
+    L_D: LD_si_p10
+    L_M: LM_si_p10
+  outputs:
+    Delta_F: Delta_F_eq3_exact_computed
+    Delta_F_over_F0: Delta_F_over_F0_eq3_exact_computed
+
+- id: run_eq3_small_y_printed
+  model: rod_centering_energy_small_y_printed
+  inputs:
+    f_0: f0_probe_added
+    x_c: xc_probe_added
+    y_c: yc_probe_added
+    L_D: LD_si_p10
+    L_M: LM_si_p10
+  outputs:
+    Delta_F: Delta_F_eq3_small_y_printed_computed
+    Delta_F_over_F0: Delta_F_over_F0_eq3_small_y_printed_computed
+
+- id: run_eq3_small_y_corrected
+  model: rod_centering_energy_small_y_corrected
+  inputs:
+    f_0: f0_probe_added
+    x_c: xc_probe_added
+    y_c: yc_probe_added
+    L_D: LD_si_p10
+    L_M: LM_si_p10
+  outputs:
+    Delta_F: Delta_F_eq3_small_y_corrected_computed
+    Delta_F_over_F0: Delta_F_over_F0_eq3_small_y_corrected_computed
+
+- id: run_traversal_time
+  model: traversal_timescale
+  inputs:
+    distance: traversal_distance_added
+    v: speed_unit_nm_s_added
+  outputs:
+    tau: tau_traversal_computed
+
+- id: run_tau_inv_si
+  model: centering_rate_from_timescale
+  inputs:
+    tau: tau_centering_si
+  outputs:
+    tau_inv: tau_inv_si_computed
+
+- id: run_tau_inv_main
+  model: centering_rate_from_timescale
+  inputs:
+    tau: tau_centering_main
+  outputs:
+    tau_inv: tau_inv_main_computed
+
+- id: run_stokes_drag_LM1p5
+  model: rod_stokes_drag
+  inputs:
+    eta: eta_tactoid_si
+    L_M: LM_si_p10
+    D_M: myosin_diameter_lit
+  outputs:
+    Gamma: Gamma_LM1p5_computed
+
+- id: run_stokes_drag_LM1p0
+  model: rod_stokes_drag
+  inputs:
+    eta: eta_tactoid_si
+    L_M: myosin_length_lit
+    D_M: myosin_diameter_lit
+  outputs:
+    Gamma: Gamma_LM1p0_computed
+
+- id: run_k_from_Gamma_printed
+  model: centering_spring_from_rate
+  inputs:
+    Gamma: Gamma_rod_si
+    tau_inv: tau_inv_si
+  outputs:
+    k: k_from_Gamma_printed_computed
+
+- id: run_k_from_Gamma_exact
+  model: centering_spring_from_rate
+  inputs:
+    Gamma: Gamma_LM1p5_computed
+    tau_inv: tau_inv_si
+  outputs:
+    k: k_from_Gamma_exact_computed
+
+- id: run_F0_eq5_k_printed
+  model: rod_centering_energy_scale_from_k
+  inputs:
+    k: k_spring_si
+    L_D: LD_si_p10
+    L_M: LM_si_p10
+  outputs:
+    F_0: F0_eq5_k_printed_computed
+
+- id: run_F0_eq5_k_chained
+  model: rod_centering_energy_scale_from_k
+  inputs:
+    k: k_from_Gamma_printed_computed
+    L_D: LD_si_p10
+    L_M: LM_si_p10
+  outputs:
+    F_0: F0_eq5_k_chained_computed
+
+- id: run_F0_eq5_Gamma_exact
+  model: rod_centering_energy_scale_from_k
+  inputs:
+    k: k_from_Gamma_exact_computed
+    L_D: LD_si_p10
+    L_M: LM_si_p10
+  outputs:
+    F_0: F0_eq5_Gamma_exact_computed
+
+- id: run_F0_kBT_from_printed_misprint
+  model: energy_in_kBT
+  inputs:
+    F_0: F0_energy_si_printed
+    kBT: kBT_si
+  outputs:
+    F0_kBT: F0_kBT_from_printed_misprint_computed
+  note: "Directly divides the printed F_0 ~ 30 pN*um (SI p. 11) by k_B T = 4 pN*nm, exposing the 10^3 unit misprint (7500 vs ~10 k_B T)."
+
+- id: run_F0_kBT_from_eq5_k_printed
+  model: energy_in_kBT
+  inputs:
+    F_0: F0_eq5_k_printed_computed
+    kBT: kBT_si
+  outputs:
+    F0_kBT: F0_kBT_from_eq5_k_printed_computed
+
+- id: run_F0_kBT_from_eq5_k_chained
+  model: energy_in_kBT
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    kBT: kBT_si
+  outputs:
+    F0_kBT: F0_kBT_from_eq5_k_chained_computed
+
+- id: run_F0_kBT_from_eq5_Gamma_exact
+  model: energy_in_kBT
+  inputs:
+    F_0: F0_eq5_Gamma_exact_computed
+    kBT: kBT_si
+  outputs:
+    F0_kBT: F0_kBT_from_eq5_Gamma_exact_computed
+
+- id: run_harmonic_potential_main
+  model: harmonic_centering_potential
+  inputs:
+    k: k_spring_si
+    d: xc_probe_added
+    L_D: LD_si_p10
+  outputs:
+    f: f_harmonic_probe_computed
+    Delta_F: Delta_F_harmonic_probe_computed
+    F_0: F0_harmonic_main_computed
+
+- id: run_F0_kBT_harmonic_main
+  model: energy_in_kBT
+  inputs:
+    F_0: F0_harmonic_main_computed
+    kBT: kBT_si
+  outputs:
+    F0_kBT: F0_kBT_harmonic_main_computed
+
+- id: run_F0_harmonic_scaling
+  model: harmonic_energy_scale_scaling
+  inputs:
+    k: k_spring_si
+    L_D: LD_si_p10
+  outputs:
+    F_0: F0_harmonic_scaling_computed
+
+- id: run_F0_kBT_harmonic_scaling
+  model: energy_in_kBT
+  inputs:
+    F_0: F0_harmonic_scaling_computed
+    kBT: kBT_si
+  outputs:
+    F0_kBT: F0_kBT_harmonic_scaling_computed
+
+- id: run_eq4_probe
+  model: rod_centering_energy_eq4
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    x_c: xc_probe_added
+    L_D: LD_si_p10
+    L_M: LM_si_p10
+  outputs:
+    Delta_F: Delta_F_eq4_probe_computed
+    Delta_F_over_F0: Delta_F_over_F0_eq4_probe_computed
+    Delta_F_shifted: Delta_F_shifted_eq4_probe_computed
+    Delta_F_shifted_over_F0: Delta_F_shifted_over_F0_eq4_probe_computed
+
+- id: run_centering_velocity_eq4
+  model: rod_centering_force_velocity
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    x_c: xc_probe_added
+    L_D: LD_si_p10
+    L_M: LM_si_p10
+    Gamma: Gamma_rod_si
+  outputs:
+    f: f_eq4_probe_computed
+    v: v_eq4_probe_computed
+
+- id: run_eq5_spring_check
+  model: rod_centering_spring_constant
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    L_D: LD_si_p10
+    L_M: LM_si_p10
+  outputs:
+    k: k_eq5_roundtrip_computed
+    k_over_F0: k_over_F0_eq5_computed
+
+- id: run_spring_scaling_LD
+  model: rod_centering_spring_scaling
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    L_D: LD_si_p10
+  outputs:
+    k: k_scaling_LD_computed
+
+- id: run_harmonic_kinetics_check
+  model: centering_kinetics_force_balance
+  inputs:
+    k: k_from_Gamma_printed_computed
+    Gamma: Gamma_rod_si
+    d: xc_probe_added
+  outputs:
+    tau: tau_harmonic_computed
+    v: v_harmonic_probe_computed
+
+# ==========================================================================
+# Myosin cluster-induced tactoid division models (Eqs. 7-8, Figs. 4A, 4D, S9-S11)
+# ==========================================================================
+
+- id: run_adhesion_dimless_params
+  model: adhesion_dimensionless_params
+  inputs:
+    w: w_adhesion_probe_added
+    gamma: gamma_tactoid_si
+    K: K_frank_si
+    a: a_colloid_added
+  outputs:
+    W_sph: W_sph_probe_computed
+    W_el: W_el_probe_computed
+
+- id: run_sph_div_energy_low
+  model: spherical_droplet_division_energy
+  inputs:
+    W: w_over_gamma_fig4a_low
+    V_ratio: V_ratio_fig4a_S9_added
+    f_V: fV_equal_added
+    gamma: gamma_tactoid_si
+    a: a_colloid_added
+  outputs:
+    F_tot_dimless: F_sph_low_dimless_computed
+    F_tot: F_sph_low_computed
+    u_L: u_L_sph_low_computed
+    d2F_sym: d2F_sym_sph_low_computed
+
+- id: run_sph_div_energy_high
+  model: spherical_droplet_division_energy
+  inputs:
+    W: w_over_gamma_fig4a_high
+    V_ratio: V_ratio_fig4a_S9_added
+    f_V: fV_equal_added
+    gamma: gamma_tactoid_si
+    a: a_colloid_added
+  outputs:
+    F_tot_dimless: F_sph_high_dimless_computed
+    F_tot: F_sph_high_computed
+    u_L: u_L_sph_high_computed
+    d2F_sym: d2F_sym_sph_high_computed
+
+- id: run_sph_div_phase_probe
+  model: spherical_droplet_division_phase_diagram
+  inputs:
+    V_ratio: V_ratio_phase_probe_added
+  outputs:
+    W_sym: W_sym_sph_probe_computed
+    W_unequal: W_unequal_sph_probe_computed
+
+- id: run_sph_div_eq_low
+  model: spherical_droplet_division_equilibrium
+  inputs:
+    W: w_over_gamma_fig4a_low
+    V_ratio: V_ratio_fig4a_S9_added
+  outputs:
+    f_V_eq: fV_eq_sph_low_computed
+    F_min_dimless: F_min_sph_low_computed
+
+- id: run_sph_div_eq_mid
+  model: spherical_droplet_division_equilibrium
+  inputs:
+    W: w_over_gamma_figS9_mid
+    V_ratio: V_ratio_fig4a_S9_added
+  outputs:
+    f_V_eq: fV_eq_sph_mid_computed
+    F_min_dimless: F_min_sph_mid_computed
+
+- id: run_sph_div_eq_high
+  model: spherical_droplet_division_equilibrium
+  inputs:
+    W: w_over_gamma_fig4a_high
+    V_ratio: V_ratio_fig4a_S9_added
+  outputs:
+    f_V_eq: fV_eq_sph_high_computed
+    F_min_dimless: F_min_sph_high_computed
+
+- id: run_el_div_energy_low
+  model: elongated_tactoid_division_energy
+  inputs:
+    W_el: w_el_figS10_low
+    V_ratio: V_ratio_figS10_added
+    f_V: fV_equal_added
+    K: K_frank_si
+    gamma: gamma_tactoid_si
+  outputs:
+    F_tot_dimless: F_el_low_dimless_computed
+    F_tot: F_el_low_computed
+    d2F_sym: d2F_sym_el_low_computed
+
+- id: run_el_div_energy_high
+  model: elongated_tactoid_division_energy
+  inputs:
+    W_el: w_el_figS10_high
+    V_ratio: V_ratio_figS10_added
+    f_V: fV_equal_added
+    K: K_frank_si
+    gamma: gamma_tactoid_si
+  outputs:
+    F_tot_dimless: F_el_high_dimless_computed
+    F_tot: F_el_high_computed
+    d2F_sym: d2F_sym_el_high_computed
+
+- id: run_el_div_phase_probe
+  model: elongated_tactoid_division_phase_diagram
+  inputs:
+    V_ratio: V_ratio_phase_probe_added
+  outputs:
+    W_el_sym: W_el_sym_probe_computed
+    W_el_unequal: W_el_unequal_probe_computed
+
+- id: run_el_div_eq_low
+  model: elongated_tactoid_division_equilibrium
+  inputs:
+    W_el: w_el_figS10_low
+    V_ratio: V_ratio_figS10_added
+  outputs:
+    f_V_eq: fV_eq_el_low_computed
+    F_min_dimless: F_min_el_low_computed
+
+- id: run_el_div_eq_mid
+  model: elongated_tactoid_division_equilibrium
+  inputs:
+    W_el: w_el_figS10_mid
+    V_ratio: V_ratio_figS10_added
+  outputs:
+    f_V_eq: fV_eq_el_mid_computed
+    F_min_dimless: F_min_el_mid_computed
+
+- id: run_el_div_eq_high
+  model: elongated_tactoid_division_equilibrium
+  inputs:
+    W_el: w_el_figS10_high
+    V_ratio: V_ratio_figS10_added
+  outputs:
+    f_V_eq: fV_eq_el_high_computed
+    F_min_dimless: F_min_el_high_computed
+
+# ==========================================================================
+# Digitized figure sweep runs (Figs. 2D, 2F, 4B, 4D, S4-S6, S9-S11)
+# ==========================================================================
+
+- id: run_fig2d_v_LD3p6
+  model: rod_centering_force_velocity
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    L_D: LD_fig2d_black
+    L_M: LM_si_p10
+    Gamma: Gamma_rod_si
+  sweep:
+    x_c: d_fig2d_LD3p6
+  outputs:
+    v: fig2d_v_LD3p6_pred
+
+- id: run_fig2d_v_LD4p4
+  model: rod_centering_force_velocity
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    L_D: LD_fig2d_blue
+    L_M: LM_si_p10
+    Gamma: Gamma_rod_si
+  sweep:
+    x_c: d_fig2d_LD4p4
+  outputs:
+    v: fig2d_v_LD4p4_pred
+
+- id: run_fig2d_v_LD5p1
+  model: rod_centering_force_velocity
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    L_D: LD_fig2d_green
+    L_M: LM_si_p10
+    Gamma: Gamma_rod_si
+  sweep:
+    x_c: d_fig2d_LD5p1
+  outputs:
+    v: fig2d_v_LD5p1_pred
+
+- id: run_fig2f_LM1p5_caption
+  model: rod_centering_energy_eq4_kBT
+  inputs:
+    L_D: LD_fig2f_caption
+    L_M: LM_long_main
+    F0_kBT: F0_kBT_main
+  sweep:
+    u: d_fig2f_LM1p5
+  outputs:
+    Delta_F_kBT: fig2f_LM1p5_caption_pred
+
+- id: run_fig2f_LM0p33_caption
+  model: rod_centering_energy_eq4_kBT
+  inputs:
+    L_D: LD_fig2f_caption
+    L_M: LM_short_fig2f
+    F0_kBT: F0_kBT_main
+  sweep:
+    u: d_fig2f_LM0p33
+  outputs:
+    Delta_F_kBT: fig2f_LM0p33_caption_pred
+
+- id: run_fig2f_LM0p30_caption
+  model: rod_centering_energy_eq4_kBT
+  inputs:
+    L_D: LD_fig2f_caption
+    L_M: LM_short_main
+    F0_kBT: F0_kBT_main
+  sweep:
+    u: d_fig2f_LM0p33
+  outputs:
+    Delta_F_kBT: fig2f_LM0p30_caption_pred
+
+- id: run_fig2f_LM1p5_LD3p6
+  model: rod_centering_energy_eq4_kBT
+  inputs:
+    L_D: LD_fig2d_black
+    L_M: LM_long_main
+    F0_kBT: F0_kBT_main
+  sweep:
+    u: d_fig2f_LM1p5
+  outputs:
+    Delta_F_kBT: fig2f_LM1p5_LD3p6_pred
+
+- id: run_fig2f_LM0p33_LD3p6
+  model: rod_centering_energy_eq4_kBT
+  inputs:
+    L_D: LD_fig2d_black
+    L_M: LM_short_fig2f
+    F0_kBT: F0_kBT_main
+  sweep:
+    u: d_fig2f_LM0p33
+  outputs:
+    Delta_F_kBT: fig2f_LM0p33_LD3p6_pred
+
+- id: run_fig4b_equal_length
+  model: equal_droplet_division_length
+  inputs: {}
+  sweep:
+    L_A: d_fig4b_bisected_lengths
+  outputs:
+    L_B: fig4b_equal_length_pred
+
+- id: run_fig4d_equal
+  model: spherical_droplet_equal_boundary
+  inputs: {}
+  sweep:
+    W: d_fig4d_equal_boundary
+  outputs:
+    V_ratio_sym: fig4d_equal_pred
+
+- id: run_fig4d_unequal
+  model: spherical_droplet_unequal_boundary
+  inputs: {}
+  sweep:
+    W: d_fig4d_unequal_boundary
+  outputs:
+    V_ratio_unequal: fig4d_unequal_pred
+
+- id: run_figS4_0p4_caption
+  model: rod_centering_energy_eq4_norm
+  inputs:
+    L_D: LD_figS4
+    L_M: LM_figS4_blue
+  sweep:
+    u: d_figS4_ratio0p4
+  outputs:
+    Delta_F_shifted_over_F0: figS4_0p4_caption_pred
+
+- id: run_figS4_0p2_caption
+  model: rod_centering_energy_eq4_norm
+  inputs:
+    L_D: LD_figS4
+    L_M: LM_figS4_red
+  sweep:
+    u: d_figS4_ratio0p2
+  outputs:
+    Delta_F_shifted_over_F0: figS4_0p2_caption_pred
+
+- id: run_figS4_0p1_caption
+  model: rod_centering_energy_eq4_norm
+  inputs:
+    L_D: LD_figS4
+    L_M: LM_figS4_green
+  sweep:
+    u: d_figS4_ratio0p1
+  outputs:
+    Delta_F_shifted_over_F0: figS4_0p1_caption_pred
+
+- id: run_figS4_0p4_legend
+  model: rod_centering_energy_eq4_ratio
+  inputs:
+    ratio: LM_over_LD_figS4_blue
+  sweep:
+    u: d_figS4_ratio0p4
+  outputs:
+    Delta_F_shifted_over_F0: figS4_0p4_legend_pred
+
+- id: run_figS4_0p2_legend
+  model: rod_centering_energy_eq4_ratio
+  inputs:
+    ratio: LM_over_LD_figS4_red
+  sweep:
+    u: d_figS4_ratio0p2
+  outputs:
+    Delta_F_shifted_over_F0: figS4_0p2_legend_pred
+
+- id: run_figS4_0p1_legend
+  model: rod_centering_energy_eq4_ratio
+  inputs:
+    ratio: LM_over_LD_figS4_green
+  sweep:
+    u: d_figS4_ratio0p1
+  outputs:
+    Delta_F_shifted_over_F0: figS4_0p1_legend_pred
+
+- id: run_figS4_0p4_LD3p6
+  model: rod_centering_energy_eq4_norm
+  inputs:
+    L_D: LD_fig2d_black
+    L_M: LM_figS4_blue
+  sweep:
+    u: d_figS4_ratio0p4
+  outputs:
+    Delta_F_shifted_over_F0: figS4_0p4_LD3p6_pred
+
+- id: run_figS4_0p2_LD3p6
+  model: rod_centering_energy_eq4_norm
+  inputs:
+    L_D: LD_fig2d_black
+    L_M: LM_figS4_red
+  sweep:
+    u: d_figS4_ratio0p2
+  outputs:
+    Delta_F_shifted_over_F0: figS4_0p2_LD3p6_pred
+
+- id: run_figS4_0p1_LD3p6
+  model: rod_centering_energy_eq4_norm
+  inputs:
+    L_D: LD_fig2d_black
+    L_M: LM_figS4_green
+  sweep:
+    u: d_figS4_ratio0p1
+  outputs:
+    Delta_F_shifted_over_F0: figS4_0p1_LD3p6_pred
+
+- id: run_figS5_0p4_caption
+  model: rod_centering_energy_transverse
+  inputs:
+    x_c: xc_figS5
+    L_D: LD_figS5
+    L_y: Ly_figS5
+    L_M: LM_figS4_blue
+  sweep:
+    v: d_figS5_ratio0p4
+  outputs:
+    Delta_F_over_f0: figS5_0p4_caption_pred
+
+- id: run_figS5_0p2_caption
+  model: rod_centering_energy_transverse
+  inputs:
+    x_c: xc_figS5
+    L_D: LD_figS5
+    L_y: Ly_figS5
+    L_M: LM_figS4_red
+  sweep:
+    v: d_figS5_ratio0p2
+  outputs:
+    Delta_F_over_f0: figS5_0p2_caption_pred
+
+- id: run_figS5_0p1_caption
+  model: rod_centering_energy_transverse
+  inputs:
+    x_c: xc_figS5
+    L_D: LD_figS5
+    L_y: Ly_figS5
+    L_M: LM_figS4_green
+  sweep:
+    v: d_figS5_ratio0p1
+  outputs:
+    Delta_F_over_f0: figS5_0p1_caption_pred
+
+- id: run_figS5_0p4_LD3p6
+  model: rod_centering_energy_transverse
+  inputs:
+    x_c: xc_figS5
+    L_D: LD_fig2d_black
+    L_y: Ly_figS5_LD3p6_added
+    L_M: LM_figS4_blue
+  sweep:
+    v: d_figS5_ratio0p4
+  outputs:
+    Delta_F_over_f0: figS5_0p4_LD3p6_pred
+
+- id: run_figS5_0p2_LD3p6
+  model: rod_centering_energy_transverse
+  inputs:
+    x_c: xc_figS5
+    L_D: LD_fig2d_black
+    L_y: Ly_figS5_LD3p6_added
+    L_M: LM_figS4_red
+  sweep:
+    v: d_figS5_ratio0p2
+  outputs:
+    Delta_F_over_f0: figS5_0p2_LD3p6_pred
+
+- id: run_figS5_0p1_LD3p6
+  model: rod_centering_energy_transverse
+  inputs:
+    x_c: xc_figS5
+    L_D: LD_fig2d_black
+    L_y: Ly_figS5_LD3p6_added
+    L_M: LM_figS4_green
+  sweep:
+    v: d_figS5_ratio0p1
+  outputs:
+    Delta_F_over_f0: figS5_0p1_LD3p6_pred
+
+- id: run_figS6_LM1p5
+  model: rod_centering_spring_constant
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    L_M: LM_si_p10
+  sweep:
+    L_D: d_figS6_LM1p5
+  outputs:
+    k_over_F0: figS6_LM1p5_pred
+
+- id: run_figS6_LM0p33
+  model: rod_centering_spring_constant
+  inputs:
+    F_0: F0_eq5_k_chained_computed
+    L_M: LM_short_fig2f
+  sweep:
+    L_D: d_figS6_LM0p33
+  outputs:
+    k_over_F0: figS6_LM0p33_pred
+
+- id: run_figS9_w1p5
+  model: spherical_droplet_division_energy
+  inputs:
+    W: w_over_gamma_fig4a_low
+    V_ratio: V_ratio_fig4a_S9_added
+    gamma: gamma_tactoid_si
+    a: a_colloid_added
+  sweep:
+    f_V: d_figS9_w1p5
+  outputs:
+    F_tot_dimless: figS9_w1p5_pred
+
+- id: run_figS9_w2p5
+  model: spherical_droplet_division_energy
+  inputs:
+    W: w_over_gamma_figS9_mid
+    V_ratio: V_ratio_fig4a_S9_added
+    gamma: gamma_tactoid_si
+    a: a_colloid_added
+  sweep:
+    f_V: d_figS9_w2p5
+  outputs:
+    F_tot_dimless: figS9_w2p5_pred
+
+- id: run_figS9_w3p5
+  model: spherical_droplet_division_energy
+  inputs:
+    W: w_over_gamma_fig4a_high
+    V_ratio: V_ratio_fig4a_S9_added
+    gamma: gamma_tactoid_si
+    a: a_colloid_added
+  sweep:
+    f_V: d_figS9_w3p5
+  outputs:
+    F_tot_dimless: figS9_w3p5_pred
+
+- id: run_figS10_w0p1
+  model: elongated_tactoid_division_energy
+  inputs:
+    W_el: w_el_figS10_low
+    V_ratio: V_ratio_figS10_added
+    K: K_frank_si
+    gamma: gamma_tactoid_si
+  sweep:
+    f_V: d_figS10_w0p1
+  outputs:
+    F_tot_dimless: figS10_w0p1_pred
+
+- id: run_figS10_w0p5
+  model: elongated_tactoid_division_energy
+  inputs:
+    W_el: w_el_figS10_mid
+    V_ratio: V_ratio_figS10_added
+    K: K_frank_si
+    gamma: gamma_tactoid_si
+  sweep:
+    f_V: d_figS10_w0p5
+  outputs:
+    F_tot_dimless: figS10_w0p5_pred
+
+- id: run_figS10_w2p0
+  model: elongated_tactoid_division_energy
+  inputs:
+    W_el: w_el_figS10_high
+    V_ratio: V_ratio_figS10_added
+    K: K_frank_si
+    gamma: gamma_tactoid_si
+  sweep:
+    f_V: d_figS10_w2p0
+  outputs:
+    F_tot_dimless: figS10_w2p0_pred
+
+- id: run_figS11_equal
+  model: elongated_tactoid_equal_boundary
+  inputs: {}
+  sweep:
+    W_el: d_figS11_equal_boundary
+  outputs:
+    V_ratio_sym: figS11_equal_pred
+
+- id: run_figS11_unequal
+  model: elongated_tactoid_unequal_boundary
+  inputs: {}
+  sweep:
+    W_el: d_figS11_unequal_boundary
+  outputs:
+    V_ratio_unequal: figS11_unequal_pred
+

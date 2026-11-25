@@ -1127,3 +1127,307 @@
     printed_page: "7"
     quote: "higher-order wrinkling instabilities over the entire surface"
     where: "Main text p. 7 (cross-validation assessment between totz2024 and gov2018)"
+
+- id: q_mcdougal2021_no_model_relations
+  kind: reading
+  about:
+    - ref-35
+    - fit_cosine_amplitude
+    - rayleigh_ritz_amplitude_eq3_corrected
+    - mcdougal2021/phase_wrapping_eq1_eq2
+    - mcdougal2021/phase_unwrapping_itoh_eq3
+    - mcdougal2021/phase_gradient_eq4
+    - mcdougal2021/phase_gradient_2d_vector
+    - mcdougal2021/reflection_phase_to_height
+    - mcdougal2021/profile_slope_rotation_and_peaks
+    - mcdougal2021/ridge_peak_height_baseline
+    - mcdougal2021/rayleigh_lateral_resolution
+  text: >
+    ModelAtlas audit across all 21 models of mcdougal2021 and all 34 models of totz2024 yields 0
+    cross-record model relations: the two papers are mathematically complementary rather than
+    overlapping in formal models. mcdougal2021 contains 20 optical/image-processing/geometric/staging
+    models (phase wrapping Eqs. 1-2, 1D Itoh unwrapping Eq. 3, wrapped phase gradient Eq. 4, 2D phase
+    gradient vector, double-pass phase-to-height, 1D/2D FFT spatial frequency and spacing, 1D slope
+    rotation + trough-baseline peak height, pooled mean/SD, macroscopic scale cuboid volume/area,
+    longitudinal plane extrapolation, pupal development percentage/duration) and 1 optical diffraction
+    model (rayleigh_lateral_resolution), with zero continuum mechanics or buckling equations
+    (mcdougal2021 p. 6 explicitly defers mechanical modeling of constrained growth buckling to future
+    studies). Conversely, totz2024 contains 29 Föppl-von-Kármán thin-plate buckling, plane-stress
+    Hooke, and nondimensionalization models plus 5 local processing/bookkeeping helpers
+    (extract_species_spacings, fit_cosine_amplitude, profile_filter_count, scale_bundle_spacing,
+    sum_five_profile_counts), with zero optical microscopy or phase-processing models. Although
+    totz2024 Experimental Procedures (p. 11) and SI Note S1 (pp. 16-18) explicitly reuse McDougal's
+    speckle-correlation reflection phase microscopy, 2D phase-gradient orientation visualization
+    (SI Fig. S1B citing ref-S1 = mcdougal2021), and 1D MATLAB unwrap (implementing Itoh's Eq. 3),
+    totz2024 prints no equations and declares no models for optical imaging or phase unwrapping.
+    Among profile-height analyzers, mcdougal2021/profile_slope_rotation_and_peaks and
+    totz2024/fit_cosine_amplitude both take whole-curve ports (untestable in ModelAtlas) and perform
+    distinct operations (multi-ridge slope rotation + findpeaks trough-baseline height vs. single-ridge
+    OLS projection onto (1/2)*(1 + cos(2*pi*x/L))).
+  citation:
+    page: 17
+    quote: "reported the continuous, in vivo quantitative phase imaging of butterfly scales"
+    where: "SI Note S1 (ModelAtlas audit between mcdougal2021 and totz2024)"
+
+- id: q_mcdougal2021_cited_values_and_L_1p6_unprinted
+  kind: reading
+  about:
+    - ref-35
+    - lateral_resolution_p4
+    - lateral_resolution_p11
+    - axial_resolution_p11
+    - height_sensitivity_p11
+    - L_Vcardui_p8
+    - L_fig2E
+    - mcdougal2021/lateral_resolution_theoretical
+    - mcdougal2021/axial_resolution_theoretical
+    - mcdougal2021/phase_height_sensitivity
+    - mcdougal2021/actin_bundle_spacing_plateau
+    - mcdougal2021/figS10_ridge_spacing
+    - mcdougal2021/fig5h_ridge_spacing_data
+  text: >
+    Cross-record audit of every value in totz2024 attributed to mcdougal2021 (ref-35 / SI ref-S1)
+    identifies two provenance findings:
+    (1) Optical specifications: totz2024/cited.yaml links lateral_resolution_p4 ('~500 nm', p. 4),
+    lateral_resolution_p11 ('~500 nm', p. 11), and axial_resolution_p11 ('~1 um', p. 11) — all with
+    inline from_source: ref-35 — to mcdougal2021/lateral_resolution_theoretical ('490 nm') and
+    mcdougal2021/axial_resolution_theoretical ('1.03 um', both corroborated in Choi et al. 2014,
+    ref-37), and links height_sensitivity_p11 ('~10 nm', p. 11, same ref-35 sentence) directly with
+    from_source: mcdougal2021 to mcdougal2021/phase_height_sensitivity ('~10 nm', p. 2). Note that
+    totz2024 rounds 490 nm -> '~500 nm' (+2.0%) and 1.03 um -> '~1 um' (-2.9%), and that
+    totz2024/references.yaml does not yet set `source: mcdougal2021` on `ref-35` (read-only during
+    relate jobs), so the three ref-35 links await reference binding in references.yaml to activate
+    in BoxGraph Synthesis.
+    (2) Unprinted L = 1.6 um citation: on p. 8, totz2024 cites mcdougal2021 (ref-35) for
+    `width L = 1.6 um` (`L_Vcardui_p8`, also used as reference normalization width on p. 6, Fig. 3F/H,
+    Table S1, and Fig. 4C), yet mcdougal2021 never prints '1.6 um' anywhere in its text, captions, or
+    tables. The only spacing printed in mcdougal2021's main text is the second pupa's Fig. 5G plateau
+    '~1.8 um' (`actin_bundle_spacing_plateau`, p. 5; which matches totz2024's Fig. 2E baseline
+    `L_fig2E = 1.8 um`, not `1.6 um`), alongside SI Fig. S10D `1.4618 um` (41% dev, first pupa) and
+    SI Fig. S11B `1.85 um` (61% dev, second pupa). In mcdougal2021's digitized Fig. 5H (first pupa,
+    39.6-41.0% dev), 1D FFT spacings span 1.255-1.628 um (mean 1.47 um, peaking at 1.624 and 1.628 um
+    at 40.3% and 40.7%), closely matching totz2024 Fig. 3G unscaled widths (1.277-1.598 um, mean
+    1.48 um). Accordingly, `L_Vcardui_p8` stays unlinked in totz2024/cited.yaml because no scalar
+    '1.6 um' datum exists in mcdougal2021.
+  citation:
+    page: 8
+    printed_page: "7"
+    quote: "L = 1:6 mm35, Poisson ratio n = 0:5, and thickness"
+    where: "Main text p. 7 (also pp. 3, 10; compared with mcdougal2021 pp. 2, 5, 6, SI pp. 15-16)"
+
+- id: q_mcdougal2021_shared_pupa_heights_and_Ymin_sensitivity
+  kind: unexplained_difference
+  about:
+    - ref-35
+    - d_fig3F_w0_mean
+    - d_fig3G_L_mean
+    - d_fig3A_invivo_39_6pct
+    - Y_min_printed
+    - youngs_modulus_lower_bound_eq3_corrected
+    - mcdougal2021/fig5h_ridge_height_data
+    - mcdougal2021/fig5h_ridge_spacing_data
+  text: >
+    totz2024 Experimental Procedures (p. 11) states that "Other portions of the resulting dataset
+    related to a broader range of developmental time points, which are not shown here, were previously
+    used in McDougal et al.35" (same single V. cardui pupa). However, comparing digitized timestamps
+    reveals that totz2024 Fig. 3A-H's five developmental time points (39.6%, 40.0%, 40.3%, 40.7%,
+    41.0%) directly overlap the final five time points of mcdougal2021 Fig. 5H / SI Fig. S8D
+    (39.63%, 39.98%, 40.34%, 40.68%, 41.04%, ~1 h spacing for the ~11.9 d pupa; SI Fig. S1B also
+    displays the same 41% phase-gradient field as mcdougal2021 Fig. 5B / Fig. S8C). Re-processing the
+    same pupa's five timestamps with totz2024's 2D ROI unwrapping + ridge segmentation + width-rescaling
+    pipeline (n = 607-911 profiles across 3-5 scales) yields closely matching mean spacing
+    (1.48 um in Fig. 3G vs. 1.47 um in McDougal Fig. 5H 1D FFT; at 39.6%: 1.277 um vs. 1.255 +/-
+    0.337 um), but systematically lower protoridge heights than mcdougal2021's 1D trace peak-above-trough
+    analysis:
+    - 39.6%: McDougal Fig. 5H = 44.0 +/- 17.4 nm vs. Totz Fig. 3F mean w_0 = 31.9 nm (-28%) and Fig. 3A
+      mean-profile peak = 22.8 nm (model fit 24.4 nm, -45% to -48%);
+    - 40.0%: 48.2 +/- 21.0 nm vs. 36.7 nm (-24%) and 32.3 nm (fit 32.8 nm);
+    - 40.3%: 67.3 +/- 43.0 nm vs. 53.4 nm (-21%) and 40.2 nm (fit 41.7 nm);
+    - 40.7%: 77.0 +/- 26.4 nm vs. 48.5 nm (-37%, non-monotonic dip) and 41.0 nm (fit 42.2 nm);
+    - 41.0%: 89.2 +/- 34.4 nm vs. 72.1 nm (-19%) and 61.3 nm (fit 63.7 nm).
+    The 19-37% drop in mean peak height likely reflects mcdougal2021's manual MATLAB `findpeaks`
+    minimum-height threshold (which excludes small nascent ridges) vs. totz2024's broader 2D ROI
+    sampling and filtering, while the additional drop from Fig. 3F to Fig. 3A-E arises from averaging
+    unaligned profiles pointwise across x. Because `youngs_modulus_lower_bound_eq3_corrected` scales as
+    Y_min propto L^4 / (a * (1 + 3*a^2/(4*h^2))), totz2024's headline bound Y_min = 3.5 x 10^6 Pa
+    (reproduced at 3.49 x 10^6 Pa for a = 25 nm, L = 1.6 um at 39.6%) is highly sensitive to these
+    pipeline choices: evaluating the same corrected formula at totz2024's Fig. 3F individual-peak mean
+    (31.9 nm, 1.6 um) gives 2.04 x 10^6 Pa (-41%); at mcdougal2021 Fig. 5H's 39.63% mean height
+    (44.0 nm, 1.6 um) gives 9.28 x 10^5 Pa (3.8x lower); and using both McDougal's 39.63% height and
+    spacing (44.0 nm, 1.255 um) yields 3.51 x 10^5 Pa — nearly an order of magnitude (9.9x) below
+    the printed bound.
+  citation:
+    page: 11
+    printed_page: "10"
+    quote: "Other portions of the resulting dataset related to a broader range"
+    where: "Experimental Procedures (compared with Fig. 3, p. 8 Y_min, and mcdougal2021 Fig. 5H)"
+
+- id: q_mcdougal2021_no_cross_validation
+  kind: unstated_model
+  about:
+    - ref-35
+    - rayleigh_ritz_amplitude_eq3
+    - rayleigh_ritz_amplitude_eq3_corrected
+    - rayleigh_ritz_strain_eq3_corrected
+    - rayleigh_ritz_width_eq3_corrected
+    - youngs_modulus_lower_bound_eq3_corrected
+    - critical_growth_strain_eq4
+    - zero_pressure_amplitude_e44
+    - zero_pressure_profile_e44
+    - fvk_1d_ode_solver_e42_e29
+    - buckled_profile_cosine
+    - buckled_profile_cosine_trough_origin
+    - fit_cosine_amplitude
+    - Y_min_printed
+    - L_Vcardui_p8
+    - protoridge_height_approx
+    - protoridge_onset_fraction
+    - protoridge_onset_days
+    - lateral_resolution_p4
+    - lateral_resolution_p11
+    - axial_resolution_p11
+    - d_fig1E_profile_35_8pct
+    - d_fig1F_profile_40_0pct
+    - d_fig1G_profile_41_0pct
+    - d_fig3A_invivo_39_6pct
+    - d_fig3B_invivo_40_0pct
+    - d_fig3C_invivo_40_3pct
+    - d_fig3D_invivo_40_7pct
+    - d_fig3E_invivo_41_0pct
+    - d_fig3F_w0_mean
+    - d_fig3G_L_mean
+    - d_fig3G_L_median_iqr
+    - d_figS1E_mean_profile
+    - d_figS1E_peaks
+    - d_figS1E_troughs
+    - d_figS1F_ridge1
+    - d_figS1F_ridge5
+    - d_figS1J_mean_sd
+    - q_mcdougal2021_shared_pupa_heights_and_Ymin_sensitivity
+    - q_mcdougal2021_cited_values_and_L_1p6_unprinted
+    - q_mcdougal2021_no_model_relations
+    - mcdougal2021/q_totz2024_no_cross_validation
+    - mcdougal2021/dominant_spatial_frequency_fft_1d
+    - mcdougal2021/dominant_spatial_frequency_fft_1d_uncentered
+    - mcdougal2021/profile_slope_rotation_and_peaks
+    - mcdougal2021/ridge_peak_height_baseline
+    - mcdougal2021/pupal_development_percent
+    - mcdougal2021/rayleigh_lateral_resolution
+    - mcdougal2021/fig5h_ridge_height_data
+    - mcdougal2021/fig5h_ridge_spacing_data
+    - mcdougal2021/fig5B_protoridge_height
+    - mcdougal2021/fig5a_profile_35pct_data
+    - mcdougal2021/fig5b_profile_41pct_data
+    - mcdougal2021/figS8b_profile_37pct_data
+    - mcdougal2021/figS10b_unrotated_profile_data
+    - mcdougal2021/figS10c_rotated_profile_data
+    - mcdougal2021/figS10_ridge_spacing
+    - mcdougal2021/figS11_ridge_spacing
+    - mcdougal2021/fig5g_actin_smooth_data
+    - mcdougal2021/fig2j_ridge_profile_data
+    - mcdougal2021/fig2k_lamellae_profile_data
+    - mcdougal2021/actin_bundle_spacing_plateau
+  text: >
+    No cross-record validations are entered in validations.yaml for either totz2024 or mcdougal2021
+    (0 entries in both directions), despite both papers coming from the same group on the same species
+    (Vanessa cardui) and re-processing overlapping timestamps (39.6%-41.0% development) from the same
+    single pupa dataset (totz2024 p. 11, citing mcdougal2021 as ref-35 / SI ref-S1). Every candidate
+    model-measurement pair across both directions was audited and fails either identifiability/physical
+    domain validity or BoxGraph target/verdict criteria:
+    (1) totz2024 models (34 models) vs mcdougal2021 measurements (65 origin: measured and 5 origin:
+    derived entries):
+    (a) Ridge peak height time series (fig5h_ridge_height_data, 10 points over 34.82%-41.04%, mean +/-
+    SD): totz2024 is a purely static elastic plate theory with zero models taking pupal_development_fraction
+    or elapsed time as an input; growth strain g(t) and Young's modulus Y(t) are never measured or
+    parameterized dynamically (Fig. 3H only traces degenerate g(Y) isocontours fitted to observed
+    amplitudes w_0). Offline cross-evaluation of totz2024's corrected Eq. 3 across mcdougal2021 Fig. 5H
+    reveals strong pipeline sensitivity beyond q_mcdougal2021_shared_pupa_heights_and_Ymin_sensitivity:
+    (i) evaluating youngs_modulus_lower_bound_eq3_corrected at mcdougal2021 Fig. 5H's 39.63% mean
+    (H = 44.02 +/- 17.4 nm, L = 1.255 +/- 0.337 um) yields Y_min = 3.52e5 Pa at own L (9.9x below
+    totz2024's printed 3.5e6 Pa; 1.16e6 Pa even at H - 1 SD = 26.6 nm) and 9.28e5 Pa at L = 1.6 um
+    (3.8x below; 3.06e6 Pa at H - 1 SD), while across all 10 Fig. 5H points Y_min(own L) spans
+    9.49e4-1.62e6 Pa (vs 1.33e5-1.26e7 Pa at fixed L = 1.6 um due to L^4 scaling);
+    (ii) matching mcdougal2021 Fig. 5H's 41.04% mean (89.16 +/- 34.4 nm, L = 1.469 um) with Eq. 3
+    requires growth strain g = 1.258% at Y = 3.5 MPa (1.170% at Y = 1 MPa; 1.049% at Y = 3.5 MPa,
+    L = 1.6 um) — 50%-80% above totz2024 Table S1's entire stated range g = 0.0%-0.7%;
+    (iii) conversely, driving rayleigh_ritz_amplitude_eq3_corrected along totz2024's own Fig. 3H
+    isocontour trajectory g(t) at Y = 3.5 MPa (-0.008%, 0.103%, 0.203%, 0.211%, 0.542%) with
+    mcdougal2021's Fig. 5H spacings L(t) (1.255, 1.382, 1.624, 1.628, 1.469 um) predicts amplitudes
+    14.2, 26.1, 42.6, 43.3, 58.1 nm — systematically 22-34 nm (-35% to -68%, -0.58 to -1.72 SD) below
+    mcdougal2021's Fig. 5H means (44.0, 48.2, 67.3, 77.0, 89.2 nm) across all 5 shared timestamps,
+    directly reflecting the data-processing pipeline offset (unaligned pointwise averaging across
+    n = 607-911 profiles in Totz Fig. 3A-E vs manual findpeaks in McDougal Fig. 5H).
+    (b) Scalar 41% height caption estimate (fig5B_protoridge_height = "about 100" nm): (i) both Y
+    (Table S1 10^4-10^8 Pa) and g (0.0%-0.7%) are unmeasured free parameters, so Eq. 3 / exact 1D ODE
+    at L = figS10_ridge_spacing = 1.4618 um spans 20.8-83.1 nm across Table S1/Fig. 2E parameter
+    choices (57.3-58.1 nm along Fig. 3H's 41.0% isocontour at Y = 1-10 MPa; 70.8-71.3 nm at Y = 1 MPa,
+    g = 0.7%); (ii) "about 100" carries no precision and yields BoxGraph verdict 'no verdict' for any
+    computed value; and (iii) Fig. 5B comes from the same pupa and 41% snapshot re-analyzed in Fig. 3E.
+    (c) 1D unwrapped surface height profiles (fig5a_profile_35pct_data, figS8b_profile_37pct_data,
+    fig5b_profile_41pct_data, figS10b_unrotated_profile_data, figS10c_rotated_profile_data,
+    fig2j_ridge_profile_data, fig2k_lamellae_profile_data): totz2024's profile models
+    (buckled_profile_cosine, buckled_profile_cosine_trough_origin, zero_pressure_profile_e44) are
+    single-ridge profiles defined on [-L/2, L/2] or [0, L] with peak or trough pinned at x = 0 and no
+    phase-offset parameter. Sweeping them over mcdougal2021's unaligned 41% multi-ridge line traces
+    (fig5b_profile_41pct_data, figS10c_rotated_profile_data: 4 ridges with unequal spacings 1.33, 1.33,
+    1.77 um, unequal troughs 1.5-42.6 nm, and an arbitrary 0.35 um cursor offset from the first trough)
+    fails purely from coordinate-origin phase mismatch (trough-origin r = -0.551/-0.594; peak-origin
+    predicts ~95 nm at the x = 0 trough of 11.0 nm) and requires unpredicted amplitude a or unmeasured g.
+    The other five profiles lie outside totz2024's early periodic protoridge buckling domain: smooth
+    pre-buckling epicuticle (35%, Fig. 5A), irregular pre-periodic onset (37%, Fig. S8B), unrotated
+    tilted trace (Fig. S10B), mature sclerotized chitinous ridges with lamellae (83%, Fig. 2J, peaks
+    187-251 nm and widths 1.0-2.6 um), and longitudinal lamellae along one ridge (83%, Fig. 2K).
+    (d) Actin/ridge periodic spacings (fig5h_ridge_spacing_data, fig5g_* curves, figS10_ridge_spacing
+    = 1.4618 um, figS11_ridge_spacing = 1.85 um, actin_bundle_spacing_plateau = "~1.8" um) and FFT
+    frequencies/spectra: totz2024 treats actin-bundle spacing L as an external upstream boundary
+    condition (p. 10 leaves scaffold formation unmodeled); rayleigh_ritz_width_eq3_corrected is only an
+    algebraic isocontour inversion requiring unmeasured (g, Y) and amplitude a. On mcdougal2021's
+    independent second pupa (Fig. 5G), critical_growth_strain_eq4 predicts g_c falling 3.9x from 0.181%
+    (smooth stage, L = 0.984 um) to 0.0465%-0.0719% (ridged plateau, L = 1.562-1.943 um), qualitatively
+    matching buckling facilitation as spacing widens, but mcdougal2021 measures no growth strain g.
+    (e) Mechanical, macroscopic, optical, and timing measurements: mcdougal2021 measures 0 elastic
+    parameters (no Y, p, g, nu, h, D, or stress/strain) so youngs_modulus_lower_bound_eq3_corrected,
+    critical_growth_strain_eq4, rayleigh_ritz_strain_eq3_corrected, and constitutive models have no
+    measured target in mcdougal2021; conversely totz2024 has no models for whole-scale dimensions
+    (Fig. 5C-F), optical depth intensity (Fig. S3B), tissue apolysis/retraction (Fig. S4), or staging.
+    (2) mcdougal2021 models (21 models: 20 optical/processing/geometric/staging models + 1 diffraction
+    formula) vs totz2024 measurements (37 origin: measured and 24 origin: reported entries):
+    (a) 1D FFT spacing extractors (dominant_spatial_frequency_fft_1d and _uncentered): on totz2024's
+    Fig. 3A-E (d_fig3A..E_invivo_*), Fig. S1F, and Fig. S1J, each digitized curve is a pre-segmented
+    single-ridge window spanning only 1.03-1.21 um (< 1 full period L = 1.6 um), so 1D FFT is invalid
+    and returns window-length or f_min-cutoff artifacts (centered 1.03-1.14 um, uncentered 2.14-2.19 um).
+    On Fig. S1E (d_figS1E_mean_profile, 11 sparse points across 0.5-9.5 um, mean dx = 0.90 um), Nyquist
+    0.556 um^-1 < 0.625 um^-1 aliases the ridges (2.63 / 2.05 um). On multi-ridge Fig. 1G
+    (d_fig1G_profile_41_0pct, 19 points, dx = 0.25 um, 3 peaks at 0.75, 2.50, 4.25 um -> true spacing
+    1.75 um), centered FFT gives 1.796 um and uncentered gives 1.846 um (inside Fig. 3G 41.0% IQR
+    1.38-1.80 um; on Fig. 1F 40.0%, uncentered gives 1.586 um vs Fig. 3G 40.0% mean 1.595 um), but
+    totz2024 has no scalar origin: measured spacing target (d_fig3G_L_mean is a 5-point curve;
+    L_Vcardui_p8 = 1.6 um is origin: reported with from_source: ref-35 citing mcdougal2021 itself).
+    (b) Peak-height extraction (profile_slope_rotation_and_peaks and ridge_peak_height_baseline): on
+    totz2024 Fig. 3A-E and S1J, unobstructed curves terminate at x = +/-0.46..0.67 um above w = 0, so
+    trough-baseline subtraction removes an artificial 6-15 nm chord offset (16.8, 23.5, 29.8, 25.7,
+    50.7 nm vs curve peaks 22.8, 32.3, 40.2, 41.0, 61.3 nm), and totz2024 has no scalar per-timepoint
+    measured amplitude target (d_fig3F_w0_mean is a 5-point curve). On Fig. 1G, outer peaks 1 and 3 are
+    truncated at x = 0.25 and 4.75 um (biasing profile_slope_rotation_and_peaks down to 68.8 +/- 14.0 nm
+    vs central bracketed peak 71.9 nm and trough-referenced peak elevations 83.2-100.0 nm; Fig. 1F gives
+    30.5 +/- 2.8 nm; Fig. 1E smooth surface correctly gives nan), while totz2024's only scalar measured
+    height datum (protoridge_height_approx = "~100" nm, p. 4) is an approximate prose summary yielding
+    'no verdict'. Offline application of mcdougal2021/ridge_peak_height_baseline to totz2024 Fig. S1E's
+    5 peaks and 6 troughs (d_figS1E_peaks, d_figS1E_troughs) gives 31.37, 30.70, 74.22, 49.81, 82.63 nm,
+    reproducing totz2024 Fig. S1F's rotated individual ridge peaks (32.36, 30.02, 74.32, 48.17, 82.32 nm)
+    to within -0.99 to +1.64 nm and proving the two papers' trough-flattening height definitions agree;
+    however, those datums are stored as curves rather than scalar inputs/targets.
+    (c) Staging and optical models: totz2024 prints no elapsed times for Fig. 1B-D or Fig. 3 timestamps
+    (while pupal_development_percent on protoridge_onset_days "~3.5 to 4.5" d / pupal_duration_typical
+    "about 10" d vs protoridge_onset_fraction "~35 to 45" % is approximate prose arithmetic with 'no
+    verdict'); lateral_resolution_p4/p11 ("~500" nm) and axial_resolution_p11 ("~1" um) are origin:
+    reported rounded citations of mcdougal2021's own 490 nm / 1.03 um specs (already linked in
+    totz2024/cited.yaml); and totz2024 has no numerical optical phase, intensity, z-step, or whole-scale
+    geometry measurements. See mcdougal2021/q_totz2024_no_cross_validation.
+  citation:
+    page: 8
+    printed_page: "7"
+    quote: "our model can predict feasible time courses of Y and g."
+    where: "Main text p. 7 (cross-validation assessment between totz2024 and mcdougal2021)"
+
+

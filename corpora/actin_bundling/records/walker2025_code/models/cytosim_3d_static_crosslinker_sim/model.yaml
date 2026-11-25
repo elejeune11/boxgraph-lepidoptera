@@ -1,0 +1,45 @@
+id: cytosim_3d_static_crosslinker_sim
+name: 3D CytoSim Brownian dynamics of growing F-actin with static bivalent (mini-Lpd) and/or tetravalent (VASP) crosslinkers
+role: model
+runnable: false
+not_runnable_reason: >
+  Full 3D multi-agent CytoSim simulation (30 growing F-actin fibers and 1,000-20,000 rigid spherical
+  Solid crosslinkers over 300,000-1,200,000 steps = 600-2,400 s across 495 .cym configs in
+  Figure_4-S6E-G, Figure_S5, and Figure_S6A-D) requires compiling and executing the bundled C++
+  CytoSim binary (Source_Code/Cytosim/), which is not compiled or executed inside BoxGraph.
+stated:
+  file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+  lines: "11-96"
+  quote: "set simul system"
+  where: "Inputfile_Templates/inputTemplate-miniLpd/config.cym & inputTemplate-miniLpd-VASP/config.cym; Figure_4-S6E-G, Figure_S5, Figure_S6A-D"
+equation: "3D semi-implicit CytoSim Meca Brownian dynamics with confined growing fibers (rigidity=0.075, L_seg=0.1, k_grow=0.0103, F_grow=10, L_max=6.2832, confine=200), global steric push=1 pN/um, and Solid crosslinker spheres (r=0.03, confine=100, grafted Wrist stiffness=10 pN/um)"
+inputs:
+  R_drop: {quantity: droplet_radius, unit: um}
+  dt: {quantity: time, unit: s}
+  eta: {quantity: dynamic_viscosity, unit: pN*s/um^2}
+  k_steric: {quantity: spring_stiffness, unit: pN/um}
+  N_fil: {quantity: filament_count, unit: dimensionless}
+  L0: {quantity: filament_length, unit: um}
+  L_seg: {quantity: filament_segment_length, unit: um}
+  L_max: {quantity: filament_length, unit: um}
+  k_grow: {quantity: elongation_rate, unit: um/s}
+  F_grow: {quantity: force, unit: pN}
+  rigidity: {quantity: flexural_rigidity, unit: pN*um^2}
+  r_actin: {quantity: particle_radius, unit: um}
+  k_confine_actin: {quantity: spring_stiffness, unit: pN/um}
+  N_blob: {quantity: crosslinker_count, unit: dimensionless}
+  r_blob: {quantity: particle_radius, unit: um}
+  k_confine_blob: {quantity: spring_stiffness, unit: pN/um}
+  k_bond: {quantity: spring_stiffness, unit: pN/um}
+  k_bind: {quantity: rate, unit: 1/s}
+  r_bind: {quantity: binding_distance, unit: um}
+  k_unbind: {quantity: rate, unit: 1/s}
+  F_unbind: {quantity: force, unit: pN}
+outputs:
+  frac_occupied: {quantity: surface_area_fraction, unit: dimensionless}
+  frac_bound_2fil: {quantity: fraction, unit: dimensionless}
+settings:
+  n_steps: 300000
+  nb_frames: 600
+  seed: 0
+stochastic: true

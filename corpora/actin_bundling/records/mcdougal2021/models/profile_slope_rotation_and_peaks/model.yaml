@@ -1,0 +1,37 @@
+id: profile_slope_rotation_and_peaks
+name: 1D profile slope-flattening rotation and per-profile peak height mean/SD (SI p. 11, Fig. S10B-C)
+role: processing
+from_words: true
+stated:
+  page: 11
+  printed_page: "SI 3"
+  quote: "rotated such that the best-fit slope lies flat"
+  where: "SI Detailed Methods (Image analysis, also p. 7 and SI Fig. S10B-C p. 23)"
+equation: "OLS fit h = m*x + b; rotate by -arctan(m); find peaks/troughs; compute mean and sample SD of trough-baseline peak heights"
+built_from:
+  - ridge_peak_height_baseline
+inputs:
+  h_raw:
+    quantity: surface_height
+    unit: nm
+    curve:
+      quantity: lateral_distance
+      unit: um
+    description: Unwrapped 1D surface height profile h(x) in nm versus lateral distance x in um prior to flattening rotation.
+outputs:
+  mean_peak_height:
+    quantity: ridge_peak_height
+    unit: nm
+    description: Per-profile mean ridge peak height above adjacent trough-connecting lines (nm).
+  sd_peak_height:
+    quantity: ridge_peak_height_sd
+    unit: nm
+    description: Per-profile sample standard deviation (ddof=1) of ridge peak heights (nm).
+  slope_angle:
+    quantity: profile_tilt_angle
+    unit: rad
+    description: Best-fit physical tilt angle arctan(m) removed by flattening rotation (rad).
+settings:
+  min_peak_prominence_nm: 15.0
+  min_peak_distance_um: 0.8
+stochastic: false

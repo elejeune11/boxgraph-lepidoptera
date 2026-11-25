@@ -1,0 +1,30 @@
+id: csv_radial_density_rae_paper_def
+name: diagnostic variant computing R.A.E. via literal paper max(rho) definition (SI Methods p. 23-24)
+role: processing
+software: true
+variant_of: csv_radial_density_and_rae
+corrections:
+  - equation: "Cell 39 lines 2464-2469 / Cell 43 lines 2852-2857 (R.A.E.)"
+    change: "Maximize shell density rho(r) = N(r)/r^2 directly over core and periphery rather than maximizing raw monomer count N(r) first and dividing by r_maxN^2"
+    evidence: "graham2024 SI Methods pp. 23-24 defines rho(c, delta_r) = max{rho(r_c, delta_r)} and rho(p, delta_r) = max{rho(r_p, delta_r)}; maximizing raw count N(r) ~ r^2*rho(r) biases r_c to the outer core edge (0.525-0.575 um at 150 nM Arp2/3) and lowers R.A.E. from 0.848 to 0.567."
+stated:
+  file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+  lines: "2464-2472"
+  quote: "core_density = maxNcore/(maxrcore*maxrcore)"
+  where: "Diagnostic comparison of Cell 39/43 R.A.E. against literal graham2024 SI Methods p. 23-24 equation"
+equation: "R.A.E._paper = max_{r in core}(N(r)/r^2) / max_{r in periphery}(N(r)/r^2)"
+inputs:
+  C_Arp: {quantity: arp23_concentration, unit: nM}
+  C_VCA: {quantity: vca_concentration, unit: uM}
+  r_core_min: {quantity: radial_coordinate, unit: um}
+  r_cutoff: {quantity: radial_coordinate, unit: um}
+outputs:
+  rae_mean: {quantity: relative_actin_enrichment, unit: dimensionless}
+  rae_sd: {quantity: relative_actin_enrichment, unit: dimensionless}
+  rho_ratio_peak: {quantity: radial_density_ratio, unit: dimensionless}
+  n_reps_found: {quantity: replicate_count, unit: dimensionless}
+  min_final_time: {quantity: time, unit: s}
+settings:
+  dataset: arp23
+  n_tail_frames: 10
+stochastic: false

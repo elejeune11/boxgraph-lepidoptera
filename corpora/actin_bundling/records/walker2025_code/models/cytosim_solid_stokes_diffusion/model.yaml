@@ -1,0 +1,19 @@
+id: cytosim_solid_stokes_diffusion
+name: CytoSim Solid Stokes drag diffusivity and Brownian step size (Source_Code/Cytosim/src/sim/solid.cc, simul_prop.cc, wrist.cc)
+role: model
+stated:
+  file: Source_Code/Cytosim/src/sim/solid.cc
+  lines: "854-862"
+  quote: "return ( 6 * M_PI ) * prop->viscosity * sumR;"
+  where: "Solid::dragCoefficient(), Solid::setDragCoefficient() (solid.cc:854-943), SimulProp::clear() (simul_prop.cc:24), Wrist::stepF() (wrist.cc:17-83)"
+equation: "drag = 6 * pi * eta * r_solid; D_solid = kT / drag; sigma_B = sqrt(2 * D_solid * dt)"
+inputs:
+  eta: {quantity: dynamic_viscosity, unit: pN*s/um^2}
+  r_solid: {quantity: particle_radius, unit: um}
+  kT: {quantity: energy, unit: pN*um}
+  dt: {quantity: time, unit: s}
+outputs:
+  D_solid: {quantity: diffusion_coefficient, unit: um^2/s}
+  sigma_B: {quantity: displacement, unit: nm}
+settings: {}
+stochastic: false

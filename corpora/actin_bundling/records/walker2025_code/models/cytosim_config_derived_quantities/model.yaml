@@ -1,0 +1,31 @@
+id: cytosim_config_derived_quantities
+name: Derived simulation horizon, filament length, molar concentration, packing fraction, and persistence length from .cym parameters and CytoSim default kT
+role: processing
+stated:
+  file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+  lines: "14-95"
+  quote: "run 300000 system"
+  where: "Inputfile_Templates/inputTemplate-miniLpd/config.cym & Source_Code/Cytosim/src/sim/simul_prop.cc:24"
+equation: "T_sim = n_steps * dt; dt_frame = T_sim / nb_frames; L_final = min(L0 + k_grow * T_sim, L_max); C = N_blob / (N_A * 4/3 * pi * R^3); phi = N_blob * (r_solid / R)^3; L_p = rigidity / kT"
+inputs:
+  n_steps: {quantity: count, unit: dimensionless}
+  nb_frames: {quantity: count, unit: dimensionless}
+  dt: {quantity: time, unit: s}
+  L0: {quantity: filament_length, unit: um}
+  k_grow: {quantity: elongation_rate, unit: um/s}
+  L_max: {quantity: filament_length, unit: um}
+  N_blob: {quantity: crosslinker_count, unit: dimensionless}
+  r_solid: {quantity: particle_radius, unit: um}
+  R_drop: {quantity: droplet_radius, unit: um}
+  rigidity: {quantity: flexural_rigidity, unit: pN*um^2}
+  kT: {quantity: energy, unit: pN*um}
+outputs:
+  T_sim: {quantity: time, unit: s}
+  dt_frame: {quantity: time, unit: s}
+  n_snaps_out: {quantity: count, unit: dimensionless}
+  L_final: {quantity: filament_length, unit: um}
+  C_crosslinker: {quantity: concentration, unit: uM}
+  phi_crosslinker: {quantity: volume_fraction, unit: percent}
+  L_p: {quantity: persistence_length, unit: um}
+settings: {}
+stochastic: false

@@ -2293,3 +2293,462 @@
 # documented in gubbala2025/questions.yaml
 # (q_nastkolb2022_2d_slb_nematic_vs_vasp_bundling_synthesis).
 # ==============================================================================
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with arnold2024
+# (Arnold & Takatori, Langmuir 40, 26570-26578, 2024; cited in gubbala2025 as
+# ref-9 on pp. 1, 4, 5 and ref-S6 on SI p. 12)
+# Gubbala et al. (2025) is the direct theoretical/phase-field companion to
+# Arnold & Takatori (2024) from the same laboratory (D. P. Arnold and S. C.
+# Takatori co-author both studies). Gubbala Sec. 3 (p. 5) explicitly compares
+# its Model C simulations against Arnold 2024's two previously measured
+# membrane-actin metrics: (1) domain boundary curvature distribution and
+# (2) structure-factor average domain size over time (plus adopting Arnold's
+# Ld actin density metric rho = I_actin / A_Ld qualitatively on p. 4 / SI p. 12).
+# ==============================================================================
+
+# --- 1. Domain Boundary Curvature (Stated Metric Comparison & Eq. S2 Refutation) ---
+
+- id: rel_arnold2024_curvature_s2_printed_vs_spline_circle
+  kind: same_as
+  a: gubbala2025/boundary_curvature_s2
+  b: arnold2024/domain_curvature_spline
+  mapping:
+    R: "R"
+    aspect_ratio: "1"
+  output_map:
+    kappa_mean: kappa_mean
+  regime:
+    R: [0.5, 5.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "6247"
+    quote: "size of domains over time and the distribution of domain"
+    where: "Sec. 3 (citing Ref. 9, Arnold & Takatori 2024) & SI Sec. 2.3 Eq. (S2)"
+  assumptions:
+    - "Evaluates both boundary curvature metrics on a circular Lo domain of radius R in [0.5, 5.0] um (aspect_ratio = 1 in arnold2024/domain_curvature_spline), where Gubbala Sec. 3 (p. 5) states circular domains have constant curvature."
+    - "Refuted at all 40 sampled radii (median relative difference 9.45e-01): Gubbala's printed SI Eq. (S2) kappa = |x'y'' - y'x''|/(x' + y')^(3/2) omits the squares on x' and y' and scales as R^(+1/2) instead of 1/R, independently corroborating gubbala2025/q_eqS2_curvature_denominator against Arnold 2024's reference spline div(n) pipeline."
+
+- id: rel_arnold2024_curvature_spline_reduces_to_s2_corrected
+  kind: reduces_to
+  a: arnold2024/domain_curvature_spline
+  b: gubbala2025/boundary_curvature_s2_corrected
+  mapping:
+    R: "R"
+  output_map:
+    kappa_mean: kappa_mean
+  limit:
+    aspect_ratio: "1"
+  regime:
+    R: [0.5, 5.0]
+    aspect_ratio: [1.0, 3.0]
+  provenance: proposed
+  reason: >
+    Verifies that Arnold & Takatori's (2024) 5x-oversampled periodic cubic-spline boundary
+    curvature pipeline kappa = div(n) = (dn/ds) . T_hat on an area-preserving elliptical domain
+    (p. 3 Methods, Fig. 2D; arnold2024/domain_curvature_spline) reduces in the circular domain
+    limit (aspect_ratio -> 1) to Gubbala et al.'s (2025) corrected planar parametric curvature
+    formula kappa = |x'y'' - y'x''|/((x')^2 + (y')^2)^(3/2) = 1/R (SI Sec. 2.3 Eq. S2 corrected;
+    gubbala2025/boundary_curvature_s2_corrected). Relative difference falls to 8.5e-07 (< 1e-6)
+    across R in [0.5, 5.0] um, confirming that the refutation of
+    rel_arnold2024_curvature_s2_printed_vs_spline_circle is solely due to the missing-squares
+    misprint in printed Eq. (S2). (On a circle, normalized curvature also matches closely:
+    kappa_norm_min = 0.9987 in Arnold's 40-pixel spline vs. kappa_norm_mean = 1.0 in corrected
+    Eq. S2, vs. 0.0274 in printed Eq. S2.)
+  assumptions:
+    - "Circular domain limit aspect_ratio -> 1 of the area-preserving ellipse (a = R*sqrt(AR), b = R/sqrt(AR)) at Arnold's default spline discretization (n_edge_pixels = 40, oversample_factor = 5)."
+    - "Uses Gubbala's corrected SI Eq. (S2) denominator ((x')^2 + (y')^2)^(3/2) rather than the misprinted (x' + y')^(3/2)."
+
+# --- 2. Static Structure-Factor Domain Size (Stated Metric Comparison & 2*pi / |FFT| Shifts) ---
+
+- id: rel_arnold2024_structure_factor_pipeline_scales_s1_R
+  kind: scales_as
+  a: arnold2024/structure_factor_eq5_pipeline
+  b: gubbala2025/structure_factor_domain_size_s1_s34
+  mapping:
+    k_max: "2 * pi * 4 / L"
+    k_cut_ratio: "50"
+    L: "L"
+    N: "512"
+  output_map:
+    R: wavelength
+  regime:
+    L: [10.0, 100.0]
+    n0: [4.0, 4.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "6247"
+    quote: "measured metrics for the membrane–actin system – the average"
+    where: "Sec. 3 (citing Ref. 9, Arnold & Takatori 2024) & SI Sec. 2.2 Eq. (S1)"
+  assumptions:
+    - "Fixed spatial Fourier mode n0 = 4 (held constant so Arnold's integer-rounded n0 does not step under continuous log-slope perturbation), varying field width L in [10, 100] with peak wavenumber k_max = 2*pi*4/L, Gubbala cutoff k_cut/k_max = 50, and N = 512."
+    - "Both pipelines yield exact L^(+1) scaling (log-slope agreement to ~4.4e-13), while their absolute values differ by a constant factor a/R = 2*pi * 1.00112 = 6.290 because Arnold Eq. (5) defines wavelength a = 2*pi/<k> whereas Gubbala SI Eq. (S1) defines R = 1/k_m (the 2*pi factor cancels in Gubbala Fig. 3's normalized R(t)/R_0)."
+    - "On broad multi-mode experimental spectra, Arnold p. 4's unsquared S(n) = |FFT(n)| (upweighting high-k tails) and < 5 px wavelength cutoff further diverge from Gubbala SI Eq. (S1)/(S33)'s squared S(k) = <|phi_k|^2> and k_cut = 50*k_max."
+
+- id: rel_arnold2024_structure_factor_s1_scales_mean_wavelength
+  kind: scales_as
+  a: gubbala2025/structure_factor_domain_size_s1_s34
+  b: arnold2024/mean_wavelength_from_k
+  mapping:
+    k_mean: "k_max"
+  output_map:
+    wavelength: R
+  regime:
+    k_max: [0.2, 2.0]
+    k_cut_ratio: [50.0, 50.0]
+    L: [500.0, 500.0]
+    N: [512.0, 512.0]
+  provenance: proposed
+  reason: >
+    Directly tests the inverse-wavenumber scaling between Gubbala et al.'s (2025) dimensionless
+    structure-factor domain size R = 1/k_m (SI Eqs. S1 & S34, evaluated at Gubbala's simulation
+    grid L = 500, N = 512, k_cut/k_max = 50) and Arnold & Takatori's (2024) dimensional domain
+    wavelength a = 2*pi/<k> (Fig. 3C, p. 5; arnold2024/mean_wavelength_from_k). Across k_max in
+    [0.2, 2.0] (where the fundamental mode dk = 2*pi/500 = 0.0126 lies well below k_max), both
+    models share the exact k^(-1) log-slope (max difference 5.7e-05), differing by the constant
+    2*pi wavelength factor and the l_c non-dimensionalization scale.
+  assumptions:
+    - "Gubbala simulation domain parameters (L = 500, N = 512, k_cut_ratio = 50) with k_max in [0.2, 2.0] >> dk = 2*pi/L so lower-tail truncation is negligible (< 1e-4)."
+    - "Identifies the test spectrum peak wavenumber k_max (where k_m ~= k_max) with Arnold's mean wave vector <k> up to Gubbala's characteristic length scale l_c."
+
+# --- 3. Passive Ostwald-Ripening Coarsening Baseline & Low-Actin Suppression Contrast ---
+
+- id: rel_arnold2024_coarsening_passive_scales
+  kind: scales_as
+  a: gubbala2025/coarsening_power_law
+  b: arnold2024/passive_coarsening_scaling
+  mapping:
+    t: "t"
+  output_map:
+    a: R_over_R0
+  regime:
+    t: [720.0, 7180.0]
+    t0: [720.0, 720.0]
+    alpha: [0.3333333333333333, 0.3333333333333333]
+  provenance: proposed
+  reason: >
+    Both papers adopt classical bulk-diffusion Lifshitz-Slyozov / Ostwald ripening (~ t^(1/3))
+    as the actin-free passive lipid membrane domain coarsening baseline: Arnold & Takatori (2024,
+    p. 7) state passive lipid membrane domains grow as a ~= t^(1/3) (arnold2024/passive_coarsening_scaling,
+    prefactor unknown), and Gubbala et al. (2025, pp. 1, 4, 6, Fig. 3) parameterize R(t)/R_0 =
+    (t/t_0)^alpha with alpha = 1/3 in the absence of actin (gubbala2025/coarsening_power_law).
+    Over Gubbala's experimental coarsening window t in [720, 7180] s (t_0 = 720 s), both share
+    the exact +1/3 temporal log-slope to machine precision.
+  assumptions:
+    - "Actin-free passive lipid coarsening limit (alpha = 1/3) over Gubbala's experimental measurement window t in [720, 7180] s with normalization time t_0 = 720 s."
+
+- id: rel_arnold2024_coarsening_low_actin_contrast
+  kind: scales_as
+  a: gubbala2025/coarsening_power_law
+  b: arnold2024/passive_coarsening_scaling
+  mapping:
+    t: "t"
+  output_map:
+    a: R_over_R0
+  regime:
+    t: [720.0, 7180.0]
+    t0: [720.0, 720.0]
+    alpha: [0.25, 0.25]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast comparing Gubbala et al.'s (2025) low-actin hindered coarsening
+    regime (alpha = 0.25, Sec. 3 pp. 5-6, Fig. 3; slowing further to alpha < 0.25 at high actin)
+    against Arnold & Takatori's (2024, p. 7) passive actin-free coarsening baseline a ~= t^(1/3).
+    Honestly not_verified with an exact temporal log-slope discrepancy of 1/3 - 1/4 = 1/12 =
+    0.0833, quantifying the core claim of Gubbala 2025 that nematic actin elasticity suppresses
+    lipid domain coarsening below passive t^(1/3) diffusive ripening.
+  assumptions:
+    - "Evaluates Gubbala's coarsening_power_law at the reported low-actin exponent alpha = 0.25 over t in [720, 7180] s against Arnold's passive t^(1/3) law."
+
+# --- 4. Actin Bending Elasticity & 2D Interfacial Line-Energy Scales ---
+
+- id: rel_arnold2024_elastic_eq5_bend_scales_buckling_euler
+  kind: scales_as
+  a: gubbala2025/elastic_free_energy_eq5
+  b: arnold2024/actin_buckling_force_euler
+  mapping:
+    EI: "1e-25 * (8 * E1 * Q_xx**2 + 8 * E3 * Q_xx**3)"
+    L: "2 * Q_xx / dQxy_x"
+  output_map:
+    F_b: f_elastic
+  regime:
+    E1: [0.1, 2.0]
+    E3: [0.05, 2.0]
+    Q_xx: [0.25, 1.0]
+    Q_xy: [0.0, 0.0]
+    dQxx_x: [0.0, 0.0]
+    dQxx_y: [0.0, 0.0]
+    dQxy_x: [0.1, 2.0]
+    dQxy_y: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Connects Gubbala et al.'s (2025) 2D continuum nematic bend elastic energy density Eq. (5)
+    to Arnold & Takatori's (2024, p. 5) microscopic actin filament Euler buckling force scale
+    F_b = pi^2*EI/L^2 (arnold2024/actin_buckling_force_euler; note Arnold's printed misprint
+    pi*EI/L^2 in arnold2024/actin_buckling_force shares identical scaling up to the missing
+    factor of pi). On a pure-bend deformation along director n || x (Q_xx = S/2, Q_xy = 0,
+    dQxy_x = S/L, all other gradients zero), Gubbala Eq. (5) evaluates to f_elastic =
+    (E_1 + E_3*Q_xx)*dQxy_x^2 = (1/2)*k_{33,2D}/L^2 with exact 2D Frank bend constant
+    k_{33,2D} = 2*E_1*S^2 + E_3*S^3 = 8*E_1*Q_xx^2 + 8*E_3*Q_xx^3. Identifying the 2D sheet bend
+    stiffness per filament spacing with single-filament flexural rigidity (EI proportional to
+    k_{33,2D}*d_spacing) and bend curvature 1/L = dQxy_x/(2*Q_xx) yields exact agreement across
+    all four mapped variables (E_1, E_3, Q_xx, dQxy_x) — including the nontrivial rational
+    log-slopes E_1/(E_1 + E_3*Q_xx) and E_3*Q_xx/(E_1 + E_3*Q_xx) — to 4.4e-13.
+  assumptions:
+    - "Pure-bend slice of 2D Q-tensor Eq. (3) (Q_xy = dQxx_x = dQxx_y = dQxy_y = 0, S = 2*Q_xx > 0, bend length L = S/dQxy_x)."
+    - "Linear density-rigidity scaling EI proportional to k_{33,2D}*d_spacing (uncrosslinked 2D nematic sheet) using the exact 2D Frank bend modulus k_{33,2D} = 2*E_1*S^2 + E_3*S^3 (not printed 3D Beris-Edwards Eq. 6)."
+
+- id: rel_arnold2024_crossover_scales_excess_perimeter_dF
+  kind: scales_as
+  a: gubbala2025/anchoring_elastic_crossover
+  b: arnold2024/excess_perimeter_eq3
+  mapping:
+    L: "2 * pi * R * 1.286"
+    A: "pi * R**2"
+    lam: "10 * (sqrt(2) / 3) * chi"
+  output_map:
+    dF: xi_bend_2d
+  regime:
+    chi: [0.1, 2.0]
+    R: [0.5, 5.0]
+    E1: [2.0, 2.0]
+    E3: [2.0, 2.0]
+    S: [1.0, 1.0]
+  provenance: proposed
+  reason: >
+    Connects the shared 2D interfacial line-energy scale of deformed Lo lipid domains across
+    both papers: Arnold & Takatori's (2024, p. 4 Eq. 3) excess interfacial free energy
+    Delta F = lam*(L - L_0) = 2*pi*L_ex*lam*R for a constant-area domain of area A = pi*R^2 at
+    fixed non-circular shape (illustrated at equilateral triangle L_ex = 0.286) and Gubbala et
+    al.'s (2025) 2D anchoring-to-bend crossover ratio xi_bend_2d = (sqrt(2)/3)*chi*R / k_{33,2D}
+    at fixed high-actin 2D Frank bend stiffness (E_1 = E_3 = 2, S = 1). Both share exact
+    bilinear (+1, +1) log-slopes in (line tension <-> anchoring chi, domain radius R) to
+    6.7e-13. Physically, Arnold's Delta F uses the bare isotropic Lo/Ld line tension lam
+    (1-10 pN) whereas Gubbala's xi_bend_2d uses the anisotropic anchoring line-tension
+    contribution gamma_A = (sqrt(2)/3)*chi; furthermore, comparing Delta F ~ lam*R against
+    Gubbala's scale-invariant 2D sheet bend energy (~ k_{33,2D}*R^0) yields an R^1 crossover,
+    contrasting with Arnold p. 5's single-filament balance lam/F_b = lam*L^2/(pi^2*EI) ~ L^2
+    until bundle filament count scales as N_fil ~ R/d_spacing.
+  assumptions:
+    - "Fixed non-circular domain shape (L/L_0 = 1.286, equilateral triangle, A = pi*R^2) and fixed high-actin 2D nematic bend modulus (E_1 = E_3 = 2, S = 1) isolating the 2D interfacial line-energy numerator."
+    - "Maps Gubbala's 1D Cahn-Hilliard kink anchoring tension (sqrt(2)/3)*chi proportionally to Arnold's 2D Lo/Ld line tension lam [pN] (constant scale factor 10 pN drops out in scales_as)."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with arnold2023
+# (Arnold, Gubbala & Takatori, Phys. Rev. Lett. 131, 128402, 2023; cited in
+# gubbala2025 as ref-8 on p. 1 / 6243)
+# Same laboratory (A. Gubbala, D. P. Arnold & S. C. Takatori co-author both
+# studies). Both papers model 2D Lo/Ld lipid membrane domain coarsening on the
+# same cushioned DOPC/DPPC/cholesterol/DOTAP supported lipid bilayer platform
+# using the identical double-well Cahn-Hilliard concentration field phi(x, t)
+# (gubbala2025 Eq. 9 / SI Eq. S17 reduces identically to arnold2023 Eq. 1 / SI
+# Eq. 46 at Q = 0, alpha = 0, v = 0 with lambda_tilde <-> kappa), but in
+# opposite physical regimes: arnold2023 adds active myosin II + ATP to
+# accelerate coarsening to alpha = 2/3, whereas gubbala2025 couples passive
+# nematic actin elasticity Q_ij(x, t) to hinder coarsening to alpha <= 1/4.
+# Because gubbala2025 cites arnold2023 only qualitatively on p. 1 without
+# writing explicit equation-to-equation mappings, all relations below are
+# provenance: proposed.
+# Note: arnold2023/structure_factor_first_moment_eq47 takes a curve input port
+# (S_k) so it cannot be directly linked in ModelAtlas without being
+# unverifiable; full PDE, structure-factor, and verbatim SI error provenance
+# comparisons are documented in gubbala2025/questions.yaml
+# (q_arnold2023_si_error_provenance and q_arnold2023_modelatlas_and_pde_synthesis).
+# ==============================================================================
+
+# --- 1. Shared Cahn-Hilliard Non-Dimensionalization Scales (l_c, t_phi <-> t_c) ---
+
+- id: rel_arnold2023_nondim_lc_scales_ch_lc
+  kind: scales_as
+  a: gubbala2025/nondim_parameters_s32
+  b: arnold2023/cahn_hilliard_scales_peclet
+  mapping:
+    M: "M"
+    kappa: "lambda_tilde"
+    gamma_dot: "Gamma"
+  output_map:
+    l_c: l_c
+  regime:
+    M: [0.1, 10.0]
+    Gamma: [0.1, 10.0]
+    lambda_tilde: [0.1, 10.0]
+    alpha: [0.05, 5.0]
+    L1: [0.1, 5.0]
+    L3: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Both papers non-dimensionalize the identical dimensional Cahn-Hilliard concentration equation
+    d_t phi = M*grad^2(phi^3 - phi - kappa*grad^2 phi) (with surface-tension gradient parameter
+    denoted kappa in arnold2023 Eq. 1 / SI Sec. III.B.3 p. 14 and lambda_tilde in gubbala2025
+    SI Sec. 3.2 Eq. S17 p. 15 — explaining why gubbala2025 SI Eqs. S29 & S31 accidentally revert
+    to writing kappa) using the exact same interfacial width scale l_c = sqrt(lambda_tilde) =
+    sqrt(kappa). Under the direct parameter dictionary (M <-> M, lambda_tilde <-> kappa,
+    Gamma <-> gamma_dot), both models share the exact +1/2 log-slope in lambda_tilde <-> kappa
+    (and 0 in M, Gamma) to machine precision (scales_as rather than same_as because gubbala2025
+    declares l_c in um whereas arnold2023 declares l_c dimensionless).
+  assumptions:
+    - "Identifies gubbala2025's bare Cahn-Hilliard gradient parameter lambda_tilde [um^2] (Eq. S17) with arnold2023's gradient coefficient kappa (Eq. 1 / SI Eq. 46)."
+
+- id: rel_arnold2023_nondim_tphi_scales_ch_tc
+  kind: scales_as
+  a: gubbala2025/nondim_parameters_s32
+  b: arnold2023/cahn_hilliard_scales_peclet
+  mapping:
+    M: "M"
+    kappa: "lambda_tilde"
+    gamma_dot: "Gamma"
+  output_map:
+    t_c: t_phi
+  regime:
+    M: [0.1, 10.0]
+    Gamma: [0.1, 10.0]
+    lambda_tilde: [0.1, 10.0]
+    alpha: [0.05, 5.0]
+    L1: [0.1, 5.0]
+    L3: [0.05, 2.0]
+  provenance: proposed
+  reason: >
+    Links the identical Cahn-Hilliard interfacial diffusion timescale across both papers:
+    gubbala2025 SI Sec. 3.2 (p. 15) defines t_phi = lambda_tilde / M [s] ("the timescale of
+    diffusion of phi across the interface") and arnold2023 SI Sec. III.B.3 (p. 14) / Sec. I (p. 7)
+    defines t_c = kappa / M (dimensionless simulation time scale). Both share exact (+1 in
+    lambda_tilde <-> kappa, -1 in M <-> M, 0 in Gamma <-> gamma_dot) log-slopes to machine
+    precision. Note further that the two papers' dimensionless timescale ratios are exact
+    reciprocals under Gamma <-> gamma_dot: arnold2023 defines Pe = t_c / t_flow = gamma_dot*kappa/M,
+    whereas gubbala2025 defines gamma = t_Q / t_phi = M / (lambda_tilde * Gamma) = 1 / Pe_nematic.
+  assumptions:
+    - "Direct Cahn-Hilliard parameter mapping (M <-> M, lambda_tilde <-> kappa, Gamma <-> gamma_dot); scales_as accommodates gubbala2025's dimensional seconds vs. arnold2023's dimensionless simulation time units."
+
+# --- 2. Coarsening Power-Law Equivalence, Passive Baseline & Active-vs-Hindered Contrast ---
+
+- id: rel_arnold2023_coarsening_power_law_same_shift
+  kind: same_as
+  a: gubbala2025/coarsening_power_law
+  b: arnold2023/domain_growth_power_law_shift
+  mapping:
+    A: "1 / t0"
+    B: "1"
+    alpha: "alpha"
+    t: "t - t0"
+  output_map:
+    a: R_over_R0
+  regime:
+    t: [1000.0, 7180.0]
+    t0: [100.0, 720.0]
+    alpha: [0.2, 0.7]
+  provenance: proposed
+  reason: >
+    Exact symbolic identity showing that arnold2023's empirical time-shifted power-law fit
+    a(t_exp) = (A*t_exp + B)^alpha with shifted plotting time t_plot = t_exp + B/A and initial
+    size a_0 = B^alpha (SI Sec. II.F Eq. 1, p. 9; arnold2023/domain_growth_power_law_shift)
+    equals gubbala2025's normalized coarsening power law R(t)/R_0 = (t/t_0)^alpha (Fig. 3,
+    pp. 5-6; gubbala2025/coarsening_power_law) upon normalizing by initial domain size (B = 1 =>
+    a_0 = 1) and identifying t_plot = t (t_exp = t - t_0, A = 1/t_0, t > t_0). Both outputs are
+    dimensionless; flagged too_plain by ModelAtlas's <= 2-op threshold on coarsening_power_law
+    so it does not merge into an algebraic family.
+  assumptions:
+    - "Evaluated for elapsed times t > t_0 (t in [1000, 7180] s, t_0 in [100, 720] s) so shifted experimental time t_exp = t - t_0 > 0, with dimensionless normalization a_0 = B^alpha = 1."
+
+- id: rel_arnold2023_coarsening_passive_scales
+  kind: scales_as
+  a: gubbala2025/coarsening_power_law
+  b: arnold2023/domain_growth_power_law_scaling
+  mapping:
+    t: "t"
+    alpha: "1/3"
+  output_map:
+    a_norm: R_over_R0
+  regime:
+    t: [720.0, 7180.0]
+    t0: [720.0, 720.0]
+    alpha: [0.3333333333333333, 0.3333333333333333]
+  provenance: proposed
+  reason: >
+    Both papers adopt the exact same actin-free passive thermal lipid domain coarsening baseline
+    (~ t^(1/3), citing Bray & Emmott 1995 [arnold2023 ref-S8 <-> gubbala2025 ref-54]) on the
+    same cushioned DOPC/DPPC/cholesterol/DOTAP bilayer platform: gubbala2025 Fig. 3 inset plots
+    R(t)/R_0 = (t/t_0)^(1/3) with t_0 = 720 s, and arnold2023 Fig. 2 plots passive a(t)/a_0 ~
+    t^(1/3). Both share the exact +1/3 temporal log-slope to machine precision across t in
+    [720, 7180] s.
+  assumptions:
+    - "Actin-free passive thermal coarsening limit (alpha = 1/3) over gubbala2025's experimental window t in [720, 7180] s with t_0 = 720 s."
+
+- id: rel_arnold2023_active_vs_gubbala_hindered_contrast
+  kind: scales_as
+  a: gubbala2025/coarsening_power_law
+  b: arnold2023/domain_growth_power_law_scaling
+  mapping:
+    t: "t"
+    alpha: "2/3"
+  output_map:
+    a_norm: R_over_R0
+  regime:
+    t: [720.0, 7180.0]
+    t0: [720.0, 720.0]
+    alpha: [0.25, 0.25]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast capturing the opposing dynamical effects of F-actin on the same
+    2D phase-separated lipid bilayer across the two papers (gubbala2025 p. 1 citing arnold2023 as
+    ref-8): adding myosin II + ATP in arnold2023 drives active surface flows that accelerate
+    coarsening to a ~ t^(2/3) (experimentally alpha = 0.59-0.74), whereas passive nematic F-actin
+    elasticity without myosin activity in gubbala2025 suppresses coarsening to R(t)/R_0 ~ t^(1/4)
+    at low actin (and alpha < 0.25 at high actin). Honestly not_verified with an exact temporal
+    log-slope discrepancy of 2/3 - 1/4 = 5/12 = 0.4167.
+  assumptions:
+    - "Compares gubbala2025's low-actin coarsening exponent (alpha = 0.25) against arnold2023's active shear-coalescence exponent (alpha = 2/3) over t in [720, 7180] s."
+
+- id: rel_arnold2023_ls2d_asymptotic_scales_coarsening_passive
+  kind: scales_as
+  a: arnold2023/lifshitz_slyozov_2d_asymptotic_eq11
+  b: gubbala2025/coarsening_power_law
+  mapping:
+    t: "t"
+    t0: "1"
+    alpha: "1/3"
+  output_map:
+    R_over_R0: a
+  regime:
+    sigma: [0.1, 2.0]
+    t: [10.0, 1000.0]
+  provenance: proposed
+  reason: >
+    Links arnold2023's explicit 2D Lifshitz-Slyozov Ostwald ripening asymptotic law
+    a = ((9/2)*sigma*t)^(1/3) (SI Sec. III.A Eq. 11) directly to gubbala2025's actin-free passive
+    coarsening baseline R(t)/R_0 = (t/t_0)^(1/3) (p. 1, Fig. 3 inset). Both share exact +1/3
+    temporal scaling across all dimensionless line tensions sigma in [0.1, 2.0] and t in [10, 1000].
+  assumptions:
+    - "Maps dimensionless simulation time t in arnold2023 proportionally to elapsed time t in gubbala2025 (with reference time t_0 = 1 and alpha = 1/3)."
+
+- id: rel_arnold2023_linear_ch_spinodal_scales_low_actin_alpha025
+  kind: scales_as
+  a: arnold2023/cahn_hilliard_linear_shear_eq45
+  b: gubbala2025/coarsening_power_law
+  mapping:
+    t: "t"
+    t0: "1"
+    alpha: "0.25"
+  output_map:
+    R_over_R0: a_rad
+  regime:
+    phi_0: [0.5773502691896257, 0.5773502691896257]
+    Pe: [1.0e-4, 1.0e-4]
+    t: [10.0, 1000.0]
+  provenance: proposed
+  reason: >
+    Identifies a shared t^(1/4) scaling exponent arising from two distinct physical mechanisms
+    within the same lab's Cahn-Hilliard literature: in arnold2023 SI Sec. III.B.3 Eq. (45) (and
+    main text p. 5), the linearized Cahn-Hilliard equation evaluated at the spinodal boundary
+    phi_0 = 1/sqrt(3) (where 1 - 3*phi_0^2 = 0) produces an isotropic angular-averaged structure
+    factor S(k, t) = exp(-2*k^4*t) (independent of Pe at O(Pe) because <k_x k_y>_theta = 0) whose
+    Eq. (47) first-moment domain size scales as a_rad(t) ~ t^(1/4); in gubbala2025 pp. 5-6
+    (Fig. 3), low-actin nematic-coupled Model C simulations and experiments exhibit R(t)/R_0 ~
+    t^(1/4) (comparable to Bray & Emmott's interface-diffusion scaling, ref-54). Both share the
+    exact +1/4 temporal log-slope to < 1e-4 over t in [10, 1000], despite their distinct origins
+    (linearized spinodal-edge k^4 damping vs. nonlinear nematic-hindered coarsening).
+  assumptions:
+    - "Evaluates arnold2023/cahn_hilliard_linear_shear_eq45 at the spinodal edge phi_0 = 1/sqrt(3) = 0.5773502691896257 with small nonzero Pe = 1e-4 (the O(Pe) isotropic angular average in a_rad vanishes identically, while nonzero Pe avoids 0/0 in the model's auxiliary diagonal-ray diagnostic)."
+
+

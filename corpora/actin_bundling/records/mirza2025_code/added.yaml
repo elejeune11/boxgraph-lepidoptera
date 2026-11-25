@@ -1,0 +1,89 @@
+# Added probe inputs not stated in mirza2025_code, used for sensitivity checks and bug quantification
+- id: k_lim_zero_probe
+  quantity: barrier_stiffness_dimless
+  unit: dimensionless
+  printed: "0"
+  basis: "Zero-barrier baseline (matching mirza2025 Eq. 3, which omits AuxCortexNematic2D.cpp:1130's hidden logarithmic barrier k_lim = 1e-4) to quantify the exact effect of the hidden barrier on linear threshold, S_max, and omega."
+  alternatives: ["1 x 10^-4"]
+  stands_for: "k_lim in AuxCortexNematic2D.cpp:1130 (set to 0 to recover paper Eq. 3)"
+
+- id: lambda_rot_fig4aIII_probe
+  quantity: code_lambda_rot_parameter
+  unit: dimensionless
+  printed: "-10.05"
+  basis: "Negation of mirza2025/lambda_o_bar_fig4aIII (10.05) into the C++ code's sign convention lambda_rot = -lambda_bar_o to test AuxCortexNematic2D.cpp:160's q_int formula in the spontaneously ordered Fig. 4a(III) regime."
+  alternatives: ["-6"]
+  stands_for: "lambda_rot in AuxCortexNematic2D.cpp:160 for Fig. 4a(III)"
+
+- id: probe_h_state
+  quantity: relative_density
+  unit: dimensionless
+  printed: "2.5"
+  basis: "Representative dense-bundle state (h ~ 2.5 in Fig. 2c(I) / Fig. 4-S1) for quantifying constitutive stress and post-processing Ten_sym / Border bugs."
+  alternatives: ["1.0", "3.0"]
+  stands_for: "Local dimensionless density h at a quadrature point"
+
+- id: probe_q1_state
+  quantity: nematic_tensor_1d
+  unit: dimensionless
+  printed: "-0.3"
+  basis: "Representative aligned bundle state (S = 2*|q1| = 0.6 in Fig. 2c(I)) for testing 3-parameter active stress equivalence and post-processing stress bugs."
+  alternatives: ["0.0", "-0.45"]
+  stands_for: "Local nematic component q1 = q_11 = -q_22"
+
+- id: probe_q2_state
+  quantity: nematic_tensor_1d
+  unit: dimensionless
+  printed: "0.05"
+  basis: "Small off-diagonal nematic component to exercise non-diagonal 2D active and post-processing tensor entries."
+  alternatives: ["0.0", "0.1"]
+  stands_for: "Local nematic component q2 = q_12 = q_21"
+
+- id: probe_grad_q_state
+  quantity: nematic_gradient_dimless
+  unit: dimensionless
+  printed: "0.2"
+  basis: "Representative bundle-edge nematic gradient |d_x q_1| = 0.2 (1/ell_s) to quantify the 2/deltat Frank stress bug in Ten_sym (AuxCortexNematic2D.cpp:1109) and 2x bug in LS_CortexNematic_Border (line 1241)."
+  alternatives: ["0.0", "0.5"]
+  stands_for: "Local nematic spatial gradient d_x q1"
+
+- id: probe_d11_state
+  quantity: velocity_gradient_dimless
+  unit: dimensionless
+  printed: "-0.3"
+  basis: "Representative compressive strain rate d_11 = -0.3 at a bundle peak to quantify the 4*rodt_ vs 2*(rodt + tr(rodt)*I) viscous stress bug in Ten_sym (line 1109) and 1*rodt bug in LS_CortexNematic_Border (line 1241)."
+  alternatives: ["-0.1", "0.2"]
+  stands_for: "Local rate-of-deformation component d_11 = dv_x/dx"
+
+- id: probe_d22_state
+  quantity: velocity_gradient_dimless
+  unit: dimensionless
+  printed: "0.1"
+  basis: "Nonzero transverse strain rate d_22 = 0.1 to expose the missing bulk-viscosity coupling 2*d_22*delta_ij in Ten_sym (line 1109) and LS_CortexNematic_Border (line 1241)."
+  alternatives: ["0.0", "-0.1"]
+  stands_for: "Local rate-of-deformation component d_22 = dv_y/dy"
+
+- id: probe_d12_state
+  quantity: velocity_gradient_dimless
+  unit: dimensionless
+  printed: "0.15"
+  basis: "Nonzero shear strain rate d_12 = 0.15 to expose the 2x excess shear viscosity (4*d_12 vs 2*d_12) in Ten_sym (line 1109) and 0.5x deficit (1*d_12 vs 2*d_12) in LS_CortexNematic_Border (line 1241)."
+  alternatives: ["0.0", "0.3"]
+  stands_for: "Local shear strain rate d_12 = 0.5*(dv_x/dy + dv_y/dx)"
+
+- id: lambda_aniso_banded_probe
+  quantity: parallel_active_tension_dimless
+  unit: dimensionless
+  printed: "3.80609553274979143"
+  basis: "Parallel active tension lambda_iso*(1 + kappa/2) = 1.1*lambda_iso for kappa = +0.2 (swapping src/config's lambda_aniso and crossLinker to probe the banded regime omega > 0)."
+  alternatives: ["3.11407816315892026"]
+  stands_for: "lambda_aniso in src/config for banded kappa = +0.2"
+
+- id: crossLinker_banded_probe
+  quantity: transverse_active_tension_dimless
+  unit: dimensionless
+  printed: "3.11407816315892026"
+  basis: "Transverse active tension lambda_iso*(1 - kappa/2) = 0.9*lambda_iso for kappa = +0.2 (swapping src/config's lambda_aniso and crossLinker to probe the banded regime omega > 0)."
+  alternatives: ["3.80609553274979143"]
+  stands_for: "crossLinker in src/config for banded kappa = +0.2"
+

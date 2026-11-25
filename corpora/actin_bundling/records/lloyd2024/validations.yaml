@@ -1,0 +1,245 @@
+# Cross-record validations of lloyd2024 runnable models against independent
+# experimental measurements in paired actin_bundling records.
+#
+# Audit scope across all three paired records:
+# - lloyd2024 + mcdougal2021 (Vanessa cardui butterfly wing scale morphogenesis):
+#   5 validations below test two lloyd2024 processing models out-of-sample on
+#   mcdougal2021's calibrated measurements with zero added inputs:
+#   (1)-(3) pupal_development_time_from_percent (t = (p_dev/100)*T_pupal, p. 12)
+#   tests Lloyd 2024's fixed species-average prospective staging conversion using
+#   McDougal 2021's species-typical V. cardui duration (~10 d) against all three
+#   measured individual-pupa elapsed times (Fig. 2G 8.12 d at 83%, Fig. 5 ~100 h
+#   at ~35%, and Fig. 5 ~114 h at ~40%);
+#   (4)-(5) afm_ridge_height_from_profile (H_mean = mean_k(z_peak,k - min(z)),
+#   SI p. 7) tests Lloyd 2024's un-detrended global-minimum ridge-height extractor
+#   against McDougal 2021's 41% protoridge height ("about 100 nm", Fig. 5B) on
+#   both the raw unrotated (SI Fig. S10B) and OLS slope-rotated (SI Fig. S10C)
+#   1D transverse surface profiles, directly quantifying both baseline-tilt bias
+#   and global-minimum vs local-trough-chord bias.
+#   Excluded models/measurements (scale_rectangular_area vs Fig. 5F normalized 3D
+#   cuboid %, ridge_spacing_from_width_and_count / actin_templated_ridge_spacing
+#   lacking measured ridge count N, correlation_peak_*, and reverse-direction
+#   mcdougal2021 models on lloyd2024 AFM profiles) are documented quantitatively
+#   in q_mcdougal2021_cross_validation_audit in questions.yaml.
+# - lloyd2024 + totz2024 (V. cardui early FvK membrane buckling): 0 validations
+#   (see q_totz2024_no_cross_validation in questions.yaml).
+# - lloyd2024 + sekine2024 (Drosophila tracheal CGMD actin cables): 0 validations
+#   (see q_sekine2024_no_cross_validation in questions.yaml).
+
+- id: val_pupal_time_vs_mcdougal_fig2G
+  model: pupal_development_time_from_percent
+  inputs:
+    p_dev: "mcdougal2021/fig2G_dev_fraction"
+    T_pupal: "mcdougal2021/pupal_duration_typical"
+  output: t_days
+  against: "mcdougal2021/fig2G_elapsed_time"
+  purpose: validation
+  quantities:
+    "mcdougal2021/pupal_development_fraction": pupal_development_percent
+    "mcdougal2021/pupal_stage_duration": pupal_duration
+    "mcdougal2021/elapsed_pupal_time": elapsed_pupal_time
+  conditions_ok: >
+    Both papers stage butterfly wing-scale morphogenesis as a linear percentage of
+    total pupation duration from pupal case formation to adult eclosion
+    (t = (p_dev / 100) * T_pupal). Lloyd et al. (2024, Methods p. 12) rear H. sara
+    and M. helenor at 25 degC and convert target percentages to dissection times
+    using a fixed species-mean pupal duration (8 d and 14 d) because destructive
+    fixation precludes observing each pupa's own eclosion time. McDougal et al.
+    (2021, pp. 2-3, SI p. 10) rear V. cardui at ~21 degC (typical duration ~10 d,
+    inter-individual variation <= 2 d) and normalize each live optical-window pupa
+    retrospectively after eclosion; Fig. 2G reports 83% development at 8.12 d
+    (implying an individual pupal duration of 9.78 d for that specimen).
+    Evaluating Lloyd 2024's fixed-duration staging rule using V. cardui's printed
+    species-typical duration (10 d, independent of the Fig. 2G specimen) directly
+    tests prospective constant-duration staging accuracy against an individual
+    pupa's measured elapsed clock time.
+  basis: >
+    Lloyd et al. (2024, Methods p. 12) define pupal developmental staging via
+    fixed species-mean pupal durations: "Developmental stages of pupae were
+    recorded as a percentage of pupal development, with H. sara and M. helenor
+    taking 8 and 14 days from pupal case formation to eclosion at 25 C,
+    respectively." McDougal et al. (2021, p. 2 & Fig. 2G caption p. 3) report
+    "the duration of the pupal stage (100% development) is typically about 10 d
+    and can vary by up to 2 d" and measure "forewing scales in a pupa at 83%
+    development (8.12 d for this specimen)." Because pupal_duration_typical
+    (about 10 d) is the species average rather than fitted to the Fig. 2G
+    specimen, this is an out-of-sample test of constant-duration percentage-to-
+    time staging.
+  note: >
+    Computes t_days = 8.30 d (propagating 83 +/- 0.5% gives [8.25, 8.35] d) vs
+    measured 8.12 d ([8.115, 8.125] d): diff +0.18 d (+2.22%), not reproduced
+    against the 3-sig-fig clock timestamp because the Fig. 2G pupa developed
+    2.2% faster than the species mean (actual individual duration 9.78 d vs
+    typical ~10 d, well within McDougal 2021's stated <= 2 d variability).
+
+- id: val_pupal_time_vs_mcdougal_fig5_start
+  model: pupal_development_time_from_percent
+  inputs:
+    p_dev: "mcdougal2021/fig5_key_window_start_pct"
+    T_pupal: "mcdougal2021/pupal_duration_typical"
+  output: t_hours
+  against: "mcdougal2021/fig5_key_window_start_time"
+  purpose: validation
+  quantities:
+    "mcdougal2021/pupal_development_fraction": pupal_development_percent
+    "mcdougal2021/pupal_stage_duration": pupal_duration
+    "mcdougal2021/elapsed_pupal_time": elapsed_pupal_time
+  conditions_ok: >
+    Same butterfly pupal staging correspondence (t = (p_dev / 100) * T_pupal)
+    tested on the Fig. 5 V. cardui pupa (reared at ~21 degC, species-typical
+    T_pupal = about 10 d with <= 2 d individual variation, vs Lloyd 2024's fixed
+    species-mean 25 degC staging). Unlike the slightly fast Fig. 2G pupa (9.78 d),
+    the Fig. 5 specimen sat near the slow upper bound of individual pupation time
+    (11.90 d implied by 100 h / 35%), providing an independent test of prospective
+    species-mean staging error in hours at mid-pupation.
+  basis: >
+    Lloyd et al. (2024, Methods p. 12) convert developmental percentage to elapsed
+    pupation time via a fixed species-mean duration ("recorded as a percentage of
+    pupal development, with H. sara and M. helenor taking 8 and 14 days from pupal
+    case formation to eclosion at 25 C"). McDougal et al. (2021, p. 2 & p. 5)
+    state a typical V. cardui pupal duration of "about 10 d" (variation <= 2 d)
+    and report for the Fig. 5 pupa "A relatively short window of time, roughly 35
+    to 40% of development (around 100 h to 114 h)".
+  note: >
+    Computes t_hours = 84.0 h vs printed "~100" h (diff -16.0 h, -16.0%; BoxGraph
+    verdict: no verdict because "~100" carries an approximate tilde without
+    precision). Together with val_pupal_time_vs_mcdougal_fig5_end (-18.0 h) and
+    val_pupal_time_vs_mcdougal_fig2G (+0.18 d), this directly quantifies the
+    +/-15-20% (up to ~16-18 h at 35-40% development) timing uncertainty inherent
+    in fixed-duration prospective staging protocols like Lloyd 2024 when
+    individual pupation duration varies by <= 2 d (and analogously across
+    P. arcas's 14-21 d range in Lloyd 2024 p. 12).
+
+- id: val_pupal_time_vs_mcdougal_fig5_end
+  model: pupal_development_time_from_percent
+  inputs:
+    p_dev: "mcdougal2021/fig5_key_window_end_pct"
+    T_pupal: "mcdougal2021/pupal_duration_typical"
+  output: t_hours
+  against: "mcdougal2021/fig5_key_window_end_time"
+  purpose: validation
+  quantities:
+    "mcdougal2021/pupal_development_fraction": pupal_development_percent
+    "mcdougal2021/pupal_stage_duration": pupal_duration
+    "mcdougal2021/elapsed_pupal_time": elapsed_pupal_time
+  conditions_ok: >
+    Same butterfly pupal staging correspondence (t = (p_dev / 100) * T_pupal)
+    tested at the 40% upper checkpoint of the Fig. 5 V. cardui key scale-formation
+    window (reared at ~21 degC, species-typical T_pupal = about 10 d, individual
+    pupa duration 11.88 d implied by 114 h / 40% within the stated <= 2 d
+    individual variation).
+  basis: >
+    Lloyd et al. (2024, Methods p. 12) map pupal developmental percentage to
+    elapsed time via a fixed species-mean pupal duration ("recorded as a
+    percentage of pupal development, with H. sara and M. helenor taking 8 and
+    14 days from pupal case formation to eclosion at 25 C"). McDougal et al.
+    (2021, p. 2 & p. 5) report a typical V. cardui pupal duration of "about 10 d"
+    and measure the 40% endpoint of the Fig. 5 key morphogenesis window as
+    "around 100 h to 114 h".
+  note: >
+    Computes t_hours = 96.0 h vs printed "~114" h (diff -18.0 h, -15.8%; BoxGraph
+    verdict: no verdict because "~114" carries an approximate tilde without
+    precision). Matches the -16.0% offset at the 35% start checkpoint
+    (val_pupal_time_vs_mcdougal_fig5_start), confirming an internally consistent
+    11.88-11.90 d individual pupation duration for the Fig. 5 specimen vs the
+    10 d species mean.
+
+- id: val_afm_ridge_height_vs_mcdougal_figS10b_unrotated
+  model: afm_ridge_height_from_profile
+  inputs:
+    profile: "mcdougal2021/figS10b_unrotated_profile_data"
+  settings:
+    min_prominence_um: 0.02
+    min_distance_um: 0.4
+  output: H_mean
+  against: "mcdougal2021/fig5B_protoridge_height"
+  purpose: validation
+  quantities:
+    "mcdougal2021/surface_height": surface_height
+    "mcdougal2021/lateral_distance": lateral_profile_position
+    "mcdougal2021/ridge_peak_height": ridge_height
+  conditions_ok: >
+    Both records measure 1D transverse topographic height profiles z(x) across
+    parallel longitudinal ridges on butterfly wing scales and extract average
+    ridge peak height H, but differ in modality, developmental stage, and
+    detrending: Lloyd et al. (2024, SI p. 7 & SI Fig. 12) apply global-minimum
+    subtraction (z_peak - min(z), without slope rotation or local trough-chord
+    subtraction) to tapping-mode AFM profiles of mature adult H. sara scales
+    (~1.0-1.5 um ridges), whereas McDougal et al. (2021, Fig. 5B p. 5 & SI Fig.
+    S10B-C p. 23) acquire reflection phase microscopy profiles of 41% developing
+    V. cardui protoridges ("about 100 nm in height") and first rotate out the
+    linear best-fit tilt before measuring peaks above local adjacent-trough
+    chords. Because Lloyd 2024 SI p. 7 states the algorithm only in words and
+    the default 0.2 um (200 nm) prominence heuristic in model.yaml was set for
+    1-um adult ridges, min_prominence_um is scaled here to 0.02 um (20 nm,
+    matching McDougal's 15 nm scale for ~100 nm protoridges) so all 4 ridges in
+    Fig. S10B are detected rather than falling back to H_max.
+  basis: >
+    Lloyd et al. (2024, SI p. 7 / PDF p. 22) define transverse scale ridge height
+    extraction without baseline rotation: "From these profiles, ridge height
+    measurements were calculated using the absolute minimum value of the data to
+    the top of the ridge peak. Average height per ridge was plotted". Running
+    afm_ridge_height_from_profile directly on McDougal et al.'s (2021, SI Fig.
+    S10B, p. 23) raw unwrapped, unrotated 41% ridge profile ("profile
+    corresponding to the trace in (A) after unwrapping, but not yet rotated")
+    against the Fig. 5B measured ridge height ("about 100 nm in height", p. 5)
+    quantitatively tests how un-detrended global-minimum extraction performs on
+    a tilted butterfly scale profile (0.94 deg tilt across 6.91 um).
+  note: >
+    Detects all 4/4 protoridge peaks at x = 1.505, 2.833, 4.161, 5.843 um and
+    computes H_mean = 0.1527 um (152.7 nm; H_max = 183.4 nm, which is also
+    returned at default min_prominence_um = 0.2 um) vs printed "about 100" nm
+    (+52.7 nm, +52.7%; BoxGraph verdict: no verdict because "about 100" has no
+    precision). Compared against McDougal 2021's OLS-rotated local-trough-chord
+    height on this identical trace (90.8 +/- 6.6 nm in cmp_rot_peaks_figS10b_height,
+    matching Fig. 5H 41.0% pooled mean 89.2 +/- 34.4 nm), Lloyd 2024's
+    un-detrended global-minimum method introduces a +61.9 nm (+68.2%) upward bias
+    from the 16.3 nm/um (-0.936 deg) scan tilt. Compare
+    val_afm_ridge_height_vs_mcdougal_figS10c_rotated (107.5 nm after rotation).
+
+- id: val_afm_ridge_height_vs_mcdougal_figS10c_rotated
+  model: afm_ridge_height_from_profile
+  inputs:
+    profile: "mcdougal2021/figS10c_rotated_profile_data"
+  settings:
+    min_prominence_um: 0.02
+    min_distance_um: 0.4
+  output: H_mean
+  against: "mcdougal2021/fig5B_protoridge_height"
+  purpose: validation
+  quantities:
+    "mcdougal2021/surface_height": surface_height
+    "mcdougal2021/lateral_distance": lateral_profile_position
+    "mcdougal2021/ridge_peak_height": ridge_height
+  conditions_ok: >
+    Same 1D transverse butterfly wing-scale surface-profile correspondence as
+    val_afm_ridge_height_vs_mcdougal_figS10b_unrotated (reflection phase
+    microscopy of 41% developing V. cardui protoridges vs tapping-mode AFM of
+    adult H. sara ridges), evaluated here on McDougal 2021's already OLS
+    slope-rotated profile (SI Fig. S10C, identical to Fig. 5B bottom to 1.06 nm
+    RMS) with min_prominence_um = 0.02 um (20 nm) so all 4 protoridges are
+    detected instead of falling back to H_max. Comparing this run against
+    val_afm_ridge_height_vs_mcdougal_figS10b_unrotated cleanly separates global
+    scan-tilt bias from global-minimum vs local-trough-chord baseline bias.
+  basis: >
+    Lloyd et al. (2024, SI p. 7 / PDF p. 22) define average ridge height from a
+    transverse height profile as peak elevation above the global profile minimum
+    ("ridge height measurements were calculated using the absolute minimum value
+    of the data to the top of the ridge peak. Average height per ridge was
+    plotted"). Evaluating afm_ridge_height_from_profile on McDougal et al.'s
+    slope-flattened 41% trace (SI Fig. S10C, p. 23: "The profile is rotated such
+    that the best-fit slope lies flat") tests Lloyd 2024's global-minimum height
+    definition against McDougal 2021's reported Fig. 5B ridge height ("about
+    100 nm in height", p. 5) once linear sample tilt has been removed.
+  note: >
+    Detects all 4/4 protoridge peaks at x = 1.505, 2.833, 4.161, 5.931 um and
+    computes H_mean = 0.1075 um (107.5 nm; H_max = 121.0 nm, also returned at
+    default min_prominence_um = 0.2 um; running on fig5b_profile_41pct_data gives
+    nearly identical H_mean = 105.0 nm, H_max = 118.0 nm) vs printed "about 100"
+    nm (+7.5 nm, +7.5%; BoxGraph verdict: no verdict because "about 100" has no
+    precision). Removing the -0.936 deg tilt eliminates 45.2 nm of bias relative
+    to val_afm_ridge_height_vs_mcdougal_figS10b_unrotated (152.7 -> 107.5 nm),
+    while the remaining +16.7 nm (+18.4%) elevation above McDougal 2021's local
+    trough-to-trough chord baseline (90.8 nm on Fig. S10B; 87.6 nm on Fig. 5B;
+    89.2 +/- 34.4 nm in Fig. 5H at 41.0%) reflects uneven trough heights
+    (15-43 nm) sitting above the single global minimum (0.6 nm).

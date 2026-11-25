@@ -1,0 +1,115 @@
+# Figure readings for `mcdougal2021`
+
+Calibrated figure digitization of `corpus/actin_bundling/2021_McDougal.pdf` (PNAS 118(49), e2112009118, 2021; main article PDF pp. 1–8, Supplementary Information PDF pp. 9–25). All 29 quantitative figure series were read with `mode: code` scripts in `figures/` (every axis tick, curve centerline, marker centroid, and error-bar cap detected directly from the rendered PDF crop), visually verified on magenta overlays (`boxgraph figure check`) under `figwork/`, cached and saved to `readings.json` (29/29 matching recipes).
+
+Calibration misfits across all 29 readings are `0.00–0.40 px` (at `1200–1800 dpi`). All 80 pre-existing printed/eye-read entries in `data.yaml` and all 19 pre-existing models were preserved unchanged; 29 figure-backed data entries, 2 new models (`dominant_spatial_frequency_fft_1d_uncentered`, `scale_bounding_box_percent_curves`), 13 curve-port runs, 10 comparisons, and 3 new open questions were added.
+
+## Main article (PDF pp. 1–8)
+
+*Pages 1, 6, 7, and 8 contain text, equations, Methods, and References only (no figures).*
+
+### Fig. 1 (p. 2 — Imaging the structure of fully formed butterfly scales)
+- **Fig. 1A**: Left out — photograph of an adult *Vanessa cardui* butterfly (no plotted data).
+- **Fig. 1B**: Left out — optical micrograph of orange and black adult wing scales (scale bar only).
+- **Fig. 1C**: Left out — SEM micrograph of individual adult scales (scale bar only).
+- **Fig. 1D**: Left out — high-magnification SEM micrograph of a scale finger showing ridge lamellae and crossribs (scale bar only).
+- **Fig. 1E**: Left out — 3D volumetric reflection amplitude rendering of an adult scale (depth color map, no 1D curve or scatter data).
+- **Fig. 1F**: Left out — 2D slice of phase data for the adult scale in E (qualitative image, no plotted curve).
+
+### Fig. 2 (p. 3 — Optical window and in vivo microscopy to image developing scales)
+- **Fig. 2A**: Left out — schematic illustration of the pupal cuticle window surgery (no quantitative plot).
+- **Fig. 2B**: Left out — stereomicrograph of exposed hindwing at 2% pupal development (scale bar only).
+- **Fig. 2C–E**: Left out — stereomicrographs of the optically accessible wing window at 3%, 73%, and 100% development (scale bars only).
+- **Fig. 2F**: Left out — optical schematic of the speckle-correlation reflection phase microscope (no plotted data).
+- **Fig. 2G**: Left out — single 2D slice of deconvolved reflected-light amplitude at 83% development (8.12 d) (micrograph; timestamp and % dev already recorded in `data.yaml`).
+- **Fig. 2H**: Left out — 3D volumetric amplitude stack (6 µm depth) of overlapping scales (micrograph, no plotted curve).
+- **Fig. 2I**: Left out — 2D phase-gradient orientation map corresponding to G, showing white dashed profile lines J and K (micrograph; panel-reference slip in caption logged in `q_fig2_caption_panel_ref`).
+- **Fig. 2J**: **Read** — `fig2j_ridge_profile` (`fig2j_ridge_profile_data`), 1D unwrapped surface height profile $h(x)$ across developing ridges at 83% development, 90 uniform samples at $0.1\,\mu\text{m}$ steps over $[0.1, 9.0]\,\mu\text{m}$ ($h \in [4.9, 251.0]\,\text{nm}$). Rendered at `1800 dpi`; calibrated from 10 outward bottom x-ticks (`0..9 um`, misfit `0.29 px`) and 3 inward left y-ticks (`200, 100, 0 nm`, misfit `0.17 px`; panel label `J` masked). Curve-port model runs: `run_fft1d_fig2j` gives dominant frequency `0.4541 um^-1` (`s = 2.202 um`); `run_rot_peaks_fig2j` gives mean peak height `151.9 nm` (`SD = 62.4 nm`, slope `-3.08e-5 rad`).
+- **Fig. 2K**: **Read** — `fig2k_lamellae_profile` (`fig2k_lamellae_profile_data`), 1D unwrapped surface height profile $h(x)$ along a ridge showing ridge lamellae at 83% development, 90 uniform samples at $0.1\,\mu\text{m}$ steps over $[0.1, 9.0]\,\mu\text{m}$ ($h \in [1.9, 97.9]\,\text{nm}$). Rendered at `1800 dpi`; calibrated from 10 outward bottom x-ticks (`0..9 um`, misfit `0.29 px`) and 3 outward left y-ticks (`300, 200, 100 nm` excluding the unticked bottom frame border, misfit `0.33 px`; panel label `K` masked). Curve-port model runs: `run_rot_peaks_fig2k` gives mean peak height `53.7 nm` (`SD = 10.0 nm`); `run_fft1d_fig2k` returns `0.4321 um^-1` (`s = 2.314 um`, picking up the slower envelope modulation above `f_min = 0.3 um^-1` alongside finer ~0.8 µm lamellae ripples).
+
+### Fig. 3 (p. 4 — Continuous imaging of scale growth on an individual *V. cardui* pupa)
+- **Fig. 3A–F**: Left out — 3D volumetric amplitude micrographs of wing tissue and developing scales at 5%, 15%, 34%, 44%, 62%, and 99% development (qualitative volumetric images; display depths 6 µm and 16.8 µm already recorded in `data.yaml`).
+- **Fig. 3G**: Left out — qualitative phenomenological timeline bar of developmental milestones across 0–100% development (no quantitative measurements or data points; developmental stages already captured in `data.yaml`).
+
+### Fig. 4 (p. 4 — Scale precursor cells appear in two stages)
+- **Fig. 4A–D**: Left out — 3D volumetric micrographs tracking cover and ground scale precursor cells at 13%, 15%, 16%, and 18% development (no plotted data; developmental timestamps already recorded in `data.yaml`).
+- **Fig. 4A'–D'**: Left out — schematic cell-arrangement drawings corresponding to A–D (illustrative drawings only).
+
+### Fig. 5 (p. 5 — Quantification of scale shape evolution and ridge growth)
+- **Fig. 5A (Top & Middle)**: Left out — 3D volumetric amplitude micrograph and 2D phase-gradient map at 35% development (micrographs, no plotted curves).
+- **Fig. 5A (Bottom)**: **Read** — `fig5a_profile_35pct` (`fig5a_profile_35pct_data`), 1D smooth-epicuticle surface height profile $h(x)$ at 35% development (identical to SI Fig. S8A bottom to `0.13 nm` RMS), 70 uniform samples over $[0.1, 7.0]\,\mu\text{m}$ ($h \in [0.7, 69.2]\,\text{nm}$). Rendered at `1800 dpi`; calibrated from 4 inward bottom x-ticks (`0, 2, 4, 6 um`, misfit `0.40 px`) and 4 inward left y-ticks (`150, 100, 50, 0 nm`, misfit `0.00 px`).
+- **Fig. 5B (Top & Middle)**: Left out — 3D volumetric amplitude micrograph and 2D phase-gradient map at 41% development (micrographs, no plotted curves).
+- **Fig. 5B (Bottom)**: **Read** — `fig5b_profile_41pct` (`fig5b_profile_41pct_data`), 1D proto-ridge surface height profile $h(x)$ at 41% development (same trace as SI Fig. S8C bottom and SI Fig. S10C to `1.06 nm` RMS), 69 uniform samples over $[0.1, 6.9]\,\mu\text{m}$ ($h \in [1.3, 119.3]\,\text{nm}$). Rendered at `1800 dpi`; calibrated from 4 inward x-ticks (`0, 2, 4, 6 um`, misfit `0.00 px`) and 4 inward y-ticks (`150, 100, 50, 0 nm`, misfit `0.00 px`). Curve-port runs & comparisons: `run_rot_peaks_fig5b` gives mean peak height `87.6 nm` (`SD = 5.8 nm`; `cmp_rot_peaks_fig5b_height` vs `"about 100"` nm = `no verdict`); `run_fft1d_fig5b` (mean-subtracted) gives `0.6616 um^-1` (`s = 1.511 um`; `cmp_fft1d_fig5b_freq` vs `0.684 um^-1` = `not reproduced`, `-3.27%`); `run_fft1d_uncentered_fig5b` (uncentered) gives `0.6777 um^-1` (`s = 1.476 um`; `cmp_fft1d_uncentered_fig5b_freq` = `not reproduced`, `-0.92%`, 3.5× closer).
+- **Fig. 5C**: **Read** — `fig5c_length_scales` (`fig5c_length_scales_data`, all 15 individual black `x` markers, $n = 3,3,3,3,2,1$ scales, $L \in [38.4, 211.8]\,\mu\text{m}$) and `fig5c_length_mean` (`fig5c_length_mean_data`, 6-timepoint mean curve at `29.70, 34.77, 37.13, 41.02, 47.01, 53.68%`: `42.20, 97.33, 178.9, 141.7, 151.5, 143.1 um`). Rendered at `1800 dpi`; calibrated from 3 inward x-ticks (`30, 40, 50%`, misfit `0.33 px`) and 4 interior y-ticks + bottom border (`200, 150, 100, 50, 0 um`, misfit `0.17 px`). Cross markers located via matched-filter correlation + 5×5 centroid refinement.
+- **Fig. 5D**: **Read** — `fig5d_width_scales` (`fig5d_width_scales_data`, all 15 individual black `x` markers, $n = 3,3,3,3,2,1$, $W \in [7.8, 52.8]\,\mu\text{m}$) and `fig5d_width_mean` (`fig5d_width_mean_data`, 6-timepoint mean curve: `8.58, 24.74, 30.75, 45.79, 39.98, 46.14 um`). Rendered at `1800 dpi`; calibrated from 3 inward x-ticks (`30, 40, 50%`, misfit `0.33 px`) and 2 interior y-ticks + bottom border (`40, 20, 0 um`, misfit `0.00 px`).
+- **Fig. 5E**: **Read** — `fig5e_thickness_scales` (`fig5e_thickness_scales_data`, all 15 individual black `x` markers, $n = 3,3,3,3,2,1$, $T \in [4.32, 7.32]\,\mu\text{m}$) and `fig5e_thickness_mean` (`fig5e_thickness_mean_data`, 6-timepoint mean curve: `6.27, 6.19, 5.18, 5.04, 5.03, 4.32 um`). Rendered at `1800 dpi`; calibrated from 3 inward x-ticks (`30, 40, 50%`, misfit `0.00 px`) and 2 interior y-ticks + bottom border (`6, 3, 0 um`, misfit `0.00 px`).
+- **Fig. 5F**: **Read** — four series at `1800 dpi` (calibrated from 3 inward x-ticks `30, 40, 50%`, misfit `0.00 px`, and 2 interior y-ticks + bottom border `100, 50, 0%`, misfit `0.17 px`; legend box masked dynamically):
+  - `fig5f_surface_scales` (`fig5f_surface_scales_data`): all 15 individual black `x` markers ($S_{\%} \in [7.7, 114.0]\%$).
+  - `fig5f_surface_mean` (`fig5f_surface_mean_data`): 6-timepoint black dotted mean curve (`8.78, 42.74, 89.05, 99.95, 94.66, 99.95%`).
+  - `fig5f_volume_scales` (`fig5f_volume_scales_data`): all 14 unobstructed individual pink/red `x` markers ($V_{\%} \in [5.1, 125.1]\%$; the 3rd pink cross at `29.7%` is occluded behind the middle black cross).
+  - `fig5f_volume_mean` (`fig5f_volume_mean_data`): 6-timepoint pink/red dotted mean curve (`6.23, 45.71, 87.52, 99.98, 91.68, 86.74%`; earliest vertex recovered directly from the visible pink dotted-line segment across `30.8–34.0%`).
+  - **Model verification**: `run_bounding_box_fig5f` (`scale_bounding_box_percent_curves`) maps the digitized Fig. 5C–E mean curves into normalized bounding-box surface area (`9.15, 42.55, 88.58, 100.0, 94.45, 99.79%`) and volume (`6.94, 45.52, 87.02, 100.0, 93.19, 87.06%`). `cmp_bounding_box_fig5f_surf` = **`reproduced`** (6/6 timepoints within `0.05–0.46` pp); `cmp_bounding_box_fig5f_vol` = **`close`** (5/6 timepoints strictly `reproduced`; 47.01% is `+1.51` pp due to averaging $L, W, T$ before vs. after multiplying across $n = 2$ scales). Settles `q_bounding_box_percent_normalization` (see `q_digitize_fig5f_normalization_and_n`).
+- **Fig. 5G**: **Read** — eight color-separated series at `1500 dpi` (calibrated from 7 bottom inward x-ticks `30..90%`, misfit `0.37 px`, and 6 right-border inward y-ticks `2.0..1.0 um` to avoid the bottom-left axis break, misfit `0.35 px`):
+  - `fig5g_actin_smooth` (`fig5g_actin_smooth_data`): all 8 smooth-stage black `x` markers (`38.24–43.53%`, spacing `0.984–1.409 um`).
+  - `fig5g_early_scale1`–`fig5g_early_scale4` (`fig5g_early_scale1_data`–`fig5g_early_scale4_data`): 4 early tracked individual scales isolated by exact RGB hue (`(0,179,179)`, `(0,192,197)`, `(0,102,102)`, `(0,153,153)`), each with 3 points spanning `47.23–60.39%` (`1.906–1.943`, `1.825–1.884`, `1.649–1.699`, and `1.562–1.612 um`).
+  - `fig5g_late_scale5`–`fig5g_late_scale7` (`fig5g_late_scale5_data`–`fig5g_late_scale7_data`): 3 late tracked individual scales isolated by exact RGB hue (`(0,48,49)`, `(0,129,129)`, `(0,76,76)`), each with 3 points spanning `61.30–87.20%` (`1.836–1.854`, `1.784–1.819`, and `1.772–1.800 um`; leftmost vertex of scale 7 sits behind scale 6 and is recovered by extrapolating its own visible straight line segment in `63.5–74.0%` back to scale 6's `61.30%` anchor column).
+  - **Finding**: All three late-stage trajectories end at `87.19–87.20%`, nearly 3 percentage points before the 90% tick, rather than `≥89%` as stated on pp. 5–6 (logged in `q_digitize_fig5g_end_87_vs_89`).
+- **Fig. 5H**: **Read** (identical to SI Fig. S8D on p. 20 to `0.01 nm` and `0.001 um`) — two `error_bars: sd` series at `1500 dpi` across all 10 timepoints (`34.815, 35.516, 37.169, 38.927, 39.279, 39.630, 39.983, 40.335, 40.684, 41.037%`), calibrated from left/right borders `34, 42%` + 3 inward x-ticks `36, 38, 40%` (misfit `0.30 px`):
+  - `fig5h_ridge_height` (`fig5h_ridge_height_data`): 10 purple mean ± SD bars calibrated from 4 purple left y-ticks (`150, 100, 50, 0 nm`, misfit `0.00 px`), yielding `11.9±6.9, 19.0±8.9, 52.0±20.1, 35.7±12.5, 59.4±18.3, 44.0±17.4, 48.2±21.0, 67.3±43.0, 77.0±26.4, 89.2±34.4 nm`.
+  - `fig5h_ridge_spacing` (`fig5h_ridge_spacing_data`): 10 teal mean ± SD bars calibrated from the teal left y-tick (`2 um`) and bottom frame border (`0 um`, exact 2-point misfit `0.00 px`), yielding `0.717±0.139, 1.046±0.143, 1.810±0.646, 1.614±0.806, 1.790±1.149, 1.255±0.337, 1.382±0.265, 1.624±0.135, 1.628±0.083, 1.469±0.155 um`.
+
+## Supplementary Information (PDF pp. 9–25)
+
+*Pages 9–11 (SI title page and Detailed Methods) and page 25 (Movie S1–S5 legends and SI References) contain no figures.*
+
+### SI Fig. S1 (p. 12 — Speckle-correlation reflection phase microscopy)
+- **SI Fig. S1**: Left out — optical layout schematic of the 800 nm interferometric microscope (no plotted data).
+
+### SI Fig. S2 (pp. 13–14 — Image data processing and visualization)
+- **SI Fig. S2A–L**: Left out — 2D image-processing pipeline visualizations of the Fig. 2G–I dataset (raw interferogram, wrapped phase, x/y wrapped phase gradients, gradient orientation, gradient magnitude, amplitude-masked orientation, raw/deconvolved amplitude, depth-colored stacks, and 3.2 µm max projection). These are 2D spatial maps rather than 1D curves or scatter plots; their colorbar tick extrema (`±40`, `60 rad/um`) and display depths are already recorded in `data.yaml` (with `q_audit_figS2_colorbar_ticks` documenting the rounded colorbar ticks).
+
+### SI Fig. S3 (p. 15 — Kymograph of wing development)
+- **SI Fig. S3A**: Left out — cross-sectional volumetric micrograph of the hindwing at 42% development (no plotted curve).
+- **SI Fig. S3B**: **Read** — `figS3b_depth_intensity` (`figS3b_depth_intensity_data`), reflected light intensity $I = A^2$ vs. imaging depth $z$ at 42% development, 33 samples over $z \in [1.0, 108.0]\,\mu\text{m}$ including all four named reflection peaks and both major troughs: Glass+membrane `8.64 um` (`3.15e11`), Hairs `18.66 um` (`3.67e9`), trough `28.29 um` (`6.34e8`), Cover scales `41.29 um` (`4.63e9`), trough `67.54 um` (`9.36e8`), Wing tissue `91.98 um` (`8.24e9`). Rendered at `1200 dpi`; because depth $z$ runs vertically downward while $\log_{10}(I)$ runs horizontally, the single-valued function $I(z)$ is indexed by $x = z$ (6 inward left y-ticks `0..100 um`, misfit `0.37 px`) and read along $y = I$ on a `log10` axis (3 inward major bottom ticks `10^9, 10^10, 10^11` + right border `10^12`, misfit `0.20 px`).
+- **SI Fig. S3C–F**: Left out — 2D amplitude micrographs at the four peak depths (glass/membrane, hairs, cover scales, wing tissue; scale bars only).
+- **SI Fig. S3G**: Left out — continuous 2D intensity kymograph image (color-coded heat map of $\log_{10} I(z, t)$ with no discrete plotted curves or markers; key retraction depths and timing checkpoints already recorded in `data.yaml`).
+
+### SI Fig. S4 (p. 16 — Development of cellular junctions underneath the epithelial sheet)
+- **SI Fig. S4A–D**: Left out — paired apical and basal 3D volumetric micrographs at 3%, 5%, 15%, and 19% development (micrographs; exact apical-basal depth offsets `8.0, 12.0, 24.4, 15.6 um` already tabulated in `data.yaml`).
+
+### SI Fig. S5 (p. 17 — Mitosis of scale precursor cells)
+- **SI Fig. S5A–C, A'–C', D–F**: Left out — volumetric micrographs and cross-sections showing pI and pIIa precursor cell divisions (micrographs; developmental timestamps `19.0–19.7%` and `23.6–23.8%` already recorded in `data.yaml`).
+
+### SI Fig. S6 (p. 18 — Appearance of the smooth epicuticle)
+- **SI Fig. S6A–B**: Left out — paired volumetric amplitude micrographs and 2D phase-gradient maps at 31% and 35% development (micrographs only).
+
+### SI Fig. S7 (p. 19 — Second subset of scale precursor cells)
+- **SI Fig. S7A–E**: Left out — 3D volumetric micrographs at 17.8%, 18.3%, 29.6%, and 32.8% development (micrographs; timestamps and depths already recorded in `data.yaml`).
+
+### SI Fig. S8 (pp. 20–21 — Surface transition from smooth to irregular to periodic proto-ridges)
+- **SI Fig. S8A (Top, Middle, Zoomed, Bottom plot)**: Left out — top/middle/zoomed panels are micrographs; the bottom 1D height profile at 35% development is an exact duplicate of main-text Fig. 5A bottom (`0.13 nm` RMS difference), already read as `fig5a_profile_35pct`.
+- **SI Fig. S8B (Top, Middle, Zoomed)**: Left out — volumetric and phase-gradient micrographs at 37% development.
+- **SI Fig. S8B (Bottom)**: **Read** — `figS8b_profile_37pct` (`figS8b_profile_37pct_data`), 1D surface height profile $h(x)$ of the irregular nascent-ridge stage at 37% development (unique to SI Fig. S8B; not shown in Fig. 5), 69 uniform samples over $[0.1, 6.9]\,\mu\text{m}$ ($h \in [20.7, 69.7]\,\text{nm}$). Rendered at `1800 dpi`; calibrated from 4 inward bottom x-ticks (`0, 2, 4, 6 um`, misfit `0.30 px`) and 4 inward left y-ticks (`150, 100, 50, 0 nm`, misfit `0.35 px`). Curve-port model runs: `run_rot_peaks_figS8b` gives mean peak height `38.3 nm` (`SD = 2.4 nm`); `run_fft1d_figS8b` gives `0.3882 um^-1` (`s = 2.576 um`).
+- **SI Fig. S8C (Top, Middle, Zoomed, Bottom plot)**: Left out — top/middle/zoomed panels are micrographs; the bottom 1D height profile at 41% development is an exact duplicate of main-text Fig. 5B bottom and SI Fig. S10C (`1.06 nm` RMS), already read as `fig5b_profile_41pct` and `figS10c_rotated_profile`.
+- **SI Fig. S8D**: Left out — exact duplicate of main-text Fig. 5H (matching to `0.01 nm` in height and `0.001 um` in spacing), already read as `fig5h_ridge_height` and `fig5h_ridge_spacing`.
+
+### SI Fig. S9 (p. 22 — Measuring scale shape parameters)
+- **SI Fig. S9A–C**: Left out — annotated deconvolved amplitude micrographs and geometric diagram illustrating width, thickness, and plane-extrapolation length definitions at 35% development (no plotted numerical data; point counts already recorded in `data.yaml`).
+
+### SI Fig. S10 (p. 23 — Measuring ridge height and spacing in the phase data)
+- **SI Fig. S10A**: Left out — 2D phase-gradient micrograph at 41% development showing the selected trace line (no plotted curve).
+- **SI Fig. S10B**: **Read** — `figS10b_unrotated_profile` (`figS10b_unrotated_profile_data`), unwrapped unrotated 1D height profile $h(x)$ at 41% development, 79 uniform samples over $[0.0, 6.905]\,\mu\text{m}$ ($\Delta x = 88.5\,\text{nm}$, $h \in [0.6, 184.0]\,\text{nm}$). Rendered at `1500 dpi`; calibrated from 8 inward bottom x-ticks (`0..7 um`, misfit `0.00 px`) and 3 inward left y-ticks (`200, 100, 0 nm`, misfit `0.00 px`). Curve-port run `run_rot_peaks_figS10b` computes OLS tilt `-0.01633 rad` (`-0.936 deg`), reproduces the rotated Fig. S10C profile to `~1.2 nm` RMS, and yields mean trough-baseline peak height `90.8 nm` (`SD = 6.6 nm`), matching the 41.0% pooled mean `89.2 nm` in Fig. 5H to `1.9%` (`cmp_rot_peaks_figS10b_height` vs `"about 100"` nm = `no verdict`).
+- **SI Fig. S10C**: **Read** — `figS10c_rotated_profile` (`figS10c_rotated_profile_data`), slope-rotated 1D height profile $h(x)$ at 41% development (red peak-height annotation masked by color filtering), 79 uniform samples over $[0.0, 6.905]\,\mu\text{m}$ ($h \in [0.6, 121.5]\,\text{nm}$). Rendered at `1500 dpi`; calibrated from 8 inward bottom x-ticks (`0..7 um`, misfit `0.00 px`) and 3 inward left y-ticks (`200, 100, 0 nm`, misfit `0.00 px`). Curve-port runs & comparisons:
+  - `run_fft1d_figS10c` (pre-existing mean-subtracted `dominant_spatial_frequency_fft_1d`): `freq = 0.6591 um^-1`, `s = 1.5172 um` -> `cmp_fft1d_figS10c_freq` = `not reproduced` (`-3.64%` vs `0.684 um^-1`), `cmp_fft1d_figS10c_spacing` = `not reproduced` (`+3.79%` vs `1.4618 um`).
+  - `run_fft1d_uncentered_figS10c` (uncentered variant `dominant_spatial_frequency_fft_1d_uncentered`, `n_uniform = 79`, retaining the DC peak shown in Fig. S10D): `freq = 0.6784 um^-1`, `s = 1.4740 um` -> `cmp_fft1d_uncentered_figS10c_freq` = `not reproduced` (`-0.81%`, 4.5× closer than mean-subtracted; outside strict 3-sig-fig `0.684 ± 0.0005` rounding due to raster trace uncertainty), `cmp_fft1d_uncentered_figS10c_spacing` = `not reproduced` (`+0.83%`).
+- **SI Fig. S10D**: **Read** — `figS10d_fft_spectrum` (`figS10d_fft_spectrum_data`), 1D FFT magnitude spectrum $|\text{FFT}(h)|$ (nm) vs. spatial frequency ($1/\mu\text{m}$) at 41% development, 42 samples across $[0.02, 5.60]\,\mu\text{m}^{-1}$ (including near-DC `4.17e3 nm` at `0.02 um^-1`, peak `1.265e3 nm` at `0.684 um^-1`, and Nyquist termination at `5.649 um^-1`). Rendered at `1200 dpi`; calibrated from left/right borders (`0, 6 um^-1`) + 5 inward top x-ticks (`1..5 um^-1`, misfit `0.29 px`) and 4 inward right y-ticks (`4, 3, 2, 1 x 10^3 nm`) + bottom border (`0`, misfit `0.20 px`; red circle and printed text annotation masked). Settles `q_audit_fft_dc_and_findpeaks` (see `q_digitize_fft_uncentered_confirmed`).
+
+### SI Fig. S11 (p. 24 — Measuring actin and ridge spacing in the amplitude data)
+- **SI Fig. S11A–C**: Left out — 2D masked amplitude micrograph (A), 2D spatial-frequency power image with printed peak annotation `freq = 0.540 um^-1`, `s = 1.85 um` (B), and red inverse-FFT stripe overlay (C) at 61% development. No 1D curve or scatter data are plotted; the printed frequency and spacing are already captured and reproduced (`cmp_figS11_spacing_from_freq = reproduced`).
+
+## Open questions settled and curve-port model notes
+
+1. **`q_audit_fft_dc_and_findpeaks` settled** (logged in `q_digitize_fft_uncentered_confirmed`): Digitizing SI Fig. S10B–D confirms that the paper's 1D FFT was computed **without subtracting the mean** (producing the large `4.38e3 nm` DC peak in Fig. S10D and shifting the dominant peak upward from `0.659` to `~0.678–0.684 um^-1` via the negative DC sinc sidelobe), and reveals the exact lateral sampling rate ($f_{\text{Nyq}} = 5.649\,\mu\text{m}^{-1} \implies \Delta x = 88.5\,\text{nm}$, $N = 79$ diagonal `improfile` samples).
+2. **`q_bounding_box_percent_normalization` settled** (logged in `q_digitize_fig5f_normalization_and_n`): Digitizing Fig. 5C–F proves that both volume $V = LWT$ and surface area $S = 2(LW + LT + WT)$ are normalized by the **maximum of the timepoint mean curve** ($\max \bar{V} \approx 32.9 \times 10^3\,\mu\text{m}^3$ at 41.0%; $\max \bar{S} \approx 14.9 \times 10^3\,\mu\text{m}^2$ at 41.0% and 53.7%), reproducing Fig. 5F surface area at 6/6 timepoints (`reproduced`) and volume at 5/6 (`close`), while revealing actual sample counts $n = 3, 3, 3, 3, 2, 1$ across the six timepoints.
+3. **New discrepancy identified (`q_digitize_fig5g_end_87_vs_89`)**: All three late-stage trajectories in Fig. 5G terminate at `87.19–87.20%` pupal development rather than `≥89%` as stated in the main text (p. 5) and Conclusion (p. 6).
+4. **`phase_unwrapping_itoh_eq3` curve-port model**: Confirmed across all 25 PDF pages that no 1D wrapped phase trace $\phi_{\text{wrapped}}(x)$ is plotted anywhere in the PDF (every 1D line plot in Figs. 2J–K, 5A–B, S8A–C, and S10B–C is already unwrapped height in nm), confirming `q_itoh_raw_wrapped_phase_unprinted`.

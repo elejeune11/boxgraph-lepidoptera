@@ -1,0 +1,47 @@
+id: code_q1_fem_1d_solver
+name: "Exact 1D periodic Q1 FEM Newton-Raphson port of LS_CortexNematic_2D (AuxCortexNematic2D.cpp:241-1162; CortexNematic2D.cpp:511-538)"
+role: model
+stated:
+  file: src/AuxCortexNematic2D.cpp
+  lines: "524-565"
+  quote: "fillStr->Bk(0)[i*numDOFs + 0] += jac*( bf[i]*((h-h0)/deltat + Dh[0]*v[0] + Dh[1]*v[1] + h*divv -visc*(heqb-h)) +  (Dbf_gI[0]*Dh[0]  + Dbf_gI[1]*Dh[1]));"
+  where: "AuxCortexNematic2D.cpp:241-1162 (1D periodic Q1 reduction, q2 = vy = 0) & CortexNematic2D.cpp:511-538"
+built_from:
+  - code_linear_stability
+equation: "1D periodic Q1 finite-element Newton-Raphson solver of LS_CortexNematic_2D with 2-pt Gauss quadrature, exact q0-lagged 3-term active stress and lambda_rot, exact hidden log barrier f_lim = -k_lim*ln(S2_max - S^2) with line-1140 extra-h factor, and CortexNematic2D.cpp adaptive stepping (deltat -> maxDelt)"
+inputs:
+  visc: {quantity: turnover_rate_dimless, unit: dimensionless}
+  cvisc: {quantity: flow_alignment_dimless, unit: dimensionless}
+  rvisc: {quantity: rotational_viscosity_dimless, unit: dimensionless}
+  frank: {quantity: code_frank_parameter, unit: dimensionless}
+  sus20: {quantity: susceptibility_a_dimless, unit: dimensionless}
+  sus40: {quantity: susceptibility_b_dimless, unit: dimensionless}
+  lambda_rot: {quantity: code_lambda_rot_parameter, unit: dimensionless}
+  lambda_iso: {quantity: active_tension_dimless, unit: dimensionless}
+  lambda_aniso: {quantity: parallel_active_tension_dimless, unit: dimensionless}
+  crossLinker: {quantity: transverse_active_tension_dimless, unit: dimensionless}
+  heqb: {quantity: relative_density, unit: dimensionless}
+  k_lim: {quantity: barrier_stiffness_dimless, unit: dimensionless}
+  S2_max: {quantity: barrier_S2_cutoff, unit: dimensionless}
+  r_out: {quantity: position_dimless, unit: dimensionless}
+  deltat_init: {quantity: time_dimless, unit: dimensionless}
+  maxDelt: {quantity: time_dimless, unit: dimensionless}
+  adaptiveStepTime: {quantity: step_adapt_factor, unit: dimensionless}
+  noiseStrength: {quantity: perturbation_amplitude, unit: dimensionless}
+outputs:
+  rho_max: {quantity: relative_density, unit: dimensionless}
+  rho_min: {quantity: relative_density, unit: dimensionless}
+  S_max: {quantity: nematic_order_parameter, unit: dimensionless}
+  omega: {quantity: architecture_order_parameter, unit: dimensionless}
+  wavelength_ratio: {quantity: wavelength_ratio, unit: dimensionless}
+  lambda_crit_fem_1d: {quantity: active_tension_dimless, unit: dimensionless}
+  threshold_rel_err_pct: {quantity: threshold_relative_error, unit: percent}
+settings:
+  N_elem: 160
+  dt_max_scale: 1.0
+  t_max: 140.0
+  init_amp: 0.05
+  extra_h_bug: true
+  compute_threshold: false
+  seed: 1
+stochastic: false

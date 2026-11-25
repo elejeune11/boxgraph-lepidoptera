@@ -1,0 +1,297 @@
+# =============================================================================
+# 1. Live Python adapter runs: Analysis_Scripts/icosphere.py
+# =============================================================================
+- id: run_icosphere_code_f4
+  model: icosphere_mesh_adapter
+  inputs:
+    R_drop: ico_radius_code
+    n_subdiv: ico_subdiv_code
+    d_mon: ico_monomer_rise_code
+  outputs:
+    n_faces: ico_f4_n_faces
+    n_vertices: ico_f4_n_vertices
+    median_edge: ico_f4_median_edge
+    eq_side: ico_f4_eq_side
+    n_monomers: ico_f4_n_monomers
+  note: "Live icosphere.icosphere(4, 1.0) matching Main_Analyze_Trajectory.py:711-713 (5,120 faces, 27.9 monomers at 2.7 nm spacing)."
+
+- id: run_icosphere_paper_n3
+  model: icosphere_mesh_adapter
+  inputs:
+    R_drop: ico_radius_code
+    n_subdiv: paper_icosphere_subdiv
+    d_mon: ico_monomer_rise_code
+  outputs:
+    n_faces: ico_n3_n_faces
+    n_vertices: ico_n3_n_vertices
+    median_edge: ico_n3_median_edge
+    eq_side: ico_n3_eq_side
+    n_monomers: ico_n3_n_monomers
+  note: "Live icosphere.icosphere(3, 1.0) at Methods S1 p. 43's printed subdivision depth 3 (1,280 faces, 55.6 monomers)."
+
+- id: run_icosphere_surface_shell
+  model: icosphere_surface_density_adapter
+  inputs:
+    R_drop: ico_radius_code
+    n_subdiv: ico_subdiv_code
+    r_fil: probe_radius_surface_added
+    L_fil: probe_filament_length_added
+    L_seg: cym_actin_segmentation
+  outputs:
+    shell_thickness: ico_shell_thickness_computed
+    interpolated_monomers: ico_surf_interp_monomers
+    occupied_triangles: ico_surf_occupied_tris
+    frac_occupied: ico_surf_frac_occupied
+  note: "Live icosphere.py surface occupancy on a 5-segment (0.5 um) test arc at r = 0.95 um (inside 100 nm shell)."
+
+- id: run_icosphere_interior_cutoff
+  model: icosphere_surface_density_adapter
+  inputs:
+    R_drop: ico_radius_code
+    n_subdiv: ico_subdiv_code
+    r_fil: probe_radius_interior_added
+    L_fil: probe_filament_length_added
+    L_seg: cym_actin_segmentation
+  outputs:
+    shell_thickness: ico_int_shell_thickness
+    interpolated_monomers: ico_int_interp_monomers
+    occupied_triangles: ico_int_occupied_tris
+    frac_occupied: ico_int_frac_occupied
+  note: "Live icosphere.py radial shell cutoff verification at r = 0.85 um (outside r >= 0.9 um shell -> 0 occupied triangles)."
+
+# =============================================================================
+# 2. Live Python adapter runs: Analysis_Scripts/Main_Analyze_Trajectory.py
+# =============================================================================
+- id: run_multimer_topology_check
+  model: trajectory_multimer_topology_adapter
+  inputs:
+    chain_len: probe_chain_len_added
+    ring_len: probe_ring_len_added
+    n_doubles: probe_n_doubles_added
+  outputs:
+    chains_found: topo_chains_found
+    rings_found: topo_rings_found
+    doubles_found: topo_doubles_found
+    total_multimer_monomers: topo_total_monomers
+  note: "Live verification of Main_Analyze_Trajectory.find_chains_rings_and_doubles() on synthetic 4-mer chain + 3-mer ring + 2 double-bonded dimers."
+
+- id: run_vaspprops_bug_audit
+  model: trajectory_vaspprops_bug_adapter
+  inputs:
+    n_crosslinkers: probe_vaspprops_ncross_added
+  settings:
+    n_snaps: 20
+  outputs:
+    mean_nfpc_2_fil: vaspprops_bug_nfpc_2
+    mean_nfpc_4_fil: vaspprops_bug_nfpc_4
+    frac_misclassified_to_4fil: vaspprops_bug_frac_4fil
+  note: "Live execution of shipped Main_Analyze_Trajectory.getvaspprops() on 100 2-filament crosslinkers, proving 0 are counted in 2-fil and all 100 are misclassified into 4-fil via enumerate(unique)."
+
+# =============================================================================
+# 3. Live Jupyter notebook adapter runs: Figures.ipynb
+# =============================================================================
+- id: run_nb_fig5d_r22_as_written
+  model: notebook_fig5d_averaging_adapter
+  inputs:
+    r_index: nb_fig5_r22_index
+    n_reps: nb_nreps_dynamic_code
+    n_monomers_total: cym_monomer_count_baseline
+  outputs:
+    n_snapshots_per_rep: fig5d_r22_nsnaps_written
+    frac_M0: fig5d_r22_M0_written
+    frac_M1: fig5d_r22_M1_written
+    frac_D0: fig5d_r22_D0_written
+    frac_D1: fig5d_r22_D1_written
+    frac_D2: fig5d_r22_D2_written
+  note: "Live Figures.ipynb Cell 13 as written at R_22 (k_form=10, k_split=0.1): averages all 601 snapshots (D2=0.3461) instead of last 30."
+
+- id: run_nb_fig5d_r22_last30
+  model: notebook_fig5d_averaging_last30
+  inputs:
+    r_index: nb_fig5_r22_index
+    n_reps: nb_nreps_dynamic_code
+    n_monomers_total: cym_monomer_count_baseline
+  settings:
+    n_last_snapshots: 30
+  outputs:
+    n_snapshots_per_rep: fig5d_r22_nsnaps_last30
+    frac_M0: fig5d_r22_M0_last30
+    frac_M1: fig5d_r22_M1_last30
+    frac_D0: fig5d_r22_D0_last30
+    frac_D1: fig5d_r22_D1_last30
+    frac_D2: fig5d_r22_D2_last30
+  note: "Corrected last-30-snapshots variant at R_22 (k_form=10, k_split=0.1): yields D2=0.6145 (+0.2684 higher than published buggy Fig. 5D)."
+
+- id: run_nb_fig5d_r21_as_written
+  model: notebook_fig5d_averaging_adapter
+  inputs:
+    r_index: nb_fig5_r21_index
+    n_reps: nb_nreps_dynamic_code
+    n_monomers_total: cym_monomer_count_baseline
+  outputs:
+    n_snapshots_per_rep: fig5d_r21_nsnaps_written
+    frac_M0: fig5d_r21_M0_written
+    frac_M1: fig5d_r21_M1_written
+    frac_D0: fig5d_r21_D0_written
+    frac_D1: fig5d_r21_D1_written
+    frac_D2: fig5d_r21_D2_written
+  note: "Live Figures.ipynb Cell 13 as written at R_21 (k_form=10, k_split=0.01): averages all 601 snapshots (D2=0.3818)."
+
+- id: run_nb_fig5d_r21_last30
+  model: notebook_fig5d_averaging_last30
+  inputs:
+    r_index: nb_fig5_r21_index
+    n_reps: nb_nreps_dynamic_code
+    n_monomers_total: cym_monomer_count_baseline
+  settings:
+    n_last_snapshots: 30
+  outputs:
+    n_snapshots_per_rep: fig5d_r21_nsnaps_last30
+    frac_M0: fig5d_r21_M0_last30
+    frac_M1: fig5d_r21_M1_last30
+    frac_D0: fig5d_r21_D0_last30
+    frac_D1: fig5d_r21_D1_last30
+    frac_D2: fig5d_r21_D2_last30
+  note: "Corrected last-30-snapshots variant at R_21 (k_form=10, k_split=0.01): yields D2=0.6762 (+0.2944 higher than published buggy Fig. 5D)."
+
+- id: run_nb_fig4j_r22_replicates
+  model: notebook_fig4j_replicates_adapter
+  inputs:
+    r_index: nb_fig4_r22_index
+  outputs:
+    replicates_plotted: fig4j_r22_reps_plotted
+    fo_t600_plotted: fig4j_r22_fo_plotted
+    fo_t600_second5: fig4j_r22_fo_second5
+    fo_t600_all10: fig4j_r22_fo_all10
+  note: "Live Figures.ipynb Cell 4 + Cell 8 at R_22 (k_bind=10, k_unbind=0.1): plots only 5 replicates (FO=0.1986) rather than pooling all 10 replicates (FO=0.1608)."
+
+# =============================================================================
+# 4. CytoSim C++ physics & .cym config derived quantity runs
+# =============================================================================
+- id: run_cytosim_solid_stokes_baseline
+  model: cytosim_solid_stokes_diffusion
+  inputs:
+    eta: cym_viscosity_baseline
+    r_solid: cym_blob_radius
+    kT: cpp_default_kT
+    dt: cym_time_step
+  outputs:
+    D_solid: solid_D_actual
+    sigma_B: solid_sigma_B_actual
+  note: "Actual CytoSim Solid diffusivity (0.01485 um^2/s) and Brownian step (7.71 nm) at eta=0.5, r=30 nm, kT=0.0042 pN*um (proving Wrist diffusion=10.0 is a no-op)."
+
+- id: run_cytosim_dimerizer_mechanics
+  model: cytosim_dimerizer_bond_mechanics
+  inputs:
+    k_single: cym_monomer_dimer_bond_stiffness
+    dx: probe_dimer_extension_added
+    k_bind: cym_actin_kbind_ring
+    k_unbind_0: probe_dimer_ksplit_ring_added
+    F_unbind: cym_dimerizer_unbinding_force
+    dt: cym_time_step
+  outputs:
+    k_eff: dimer_k_eff_computed
+    F_mech: dimer_F_mech_computed
+    F_bell: dimer_F_bell_computed
+    k_unbind_code: dimer_kunbind_code_computed
+    k_unbind_at_Fmech: dimer_kunbind_trueF_computed
+    p_bind_single: dimer_pbind_single_computed
+    p_bind_pair: dimer_pbind_pair_computed
+  note: "Evaluates double-counted stiffness k_eff = 10 pN/um vs nominal 5 pN/um, halved Bell force F_bell = F_mech/2, and pairwise double-attempt binding probability."
+
+- id: run_config_derived_bivalent
+  model: cytosim_config_derived_quantities
+  inputs:
+    n_steps: cym_nsteps_baseline
+    nb_frames: cym_nb_frames_baseline
+    dt: cym_time_step
+    L0: cym_filament_init_length
+    k_grow: cym_actin_growing_speed
+    L_max: cym_actin_max_length
+    N_blob: cym_dimer_count_baseline
+    r_solid: cym_blob_radius
+    R_drop: cym_droplet_radius
+    rigidity: cym_actin_rigidity
+    kT: cpp_default_kT
+  outputs:
+    T_sim: cfg_T_sim_baseline
+    dt_frame: cfg_dt_frame_baseline
+    n_snaps_out: cfg_nsnaps_baseline
+    L_final: cfg_L_final_baseline
+    C_crosslinker: cfg_C_dimer_baseline
+    phi_crosslinker: cfg_phi_dimer_baseline
+    L_p: cfg_Lp_actin_cytosim
+  note: "Checks 600 s horizon, 6.280 um final length, 0.3964 uM dimer concentration, 2.7% packing fraction, and 17.86 um persistence length from baseline mini-Lpd .cym."
+
+- id: run_config_derived_monomer
+  model: cytosim_config_derived_quantities
+  inputs:
+    n_steps: cym_nsteps_baseline
+    nb_frames: cym_nb_frames_baseline
+    dt: cym_time_step
+    L0: cym_filament_init_length
+    k_grow: cym_actin_growing_speed
+    L_max: cym_actin_max_length
+    N_blob: cym_monomer_count_baseline
+    r_solid: cym_blob_radius
+    R_drop: cym_droplet_radius
+    rigidity: cym_actin_rigidity
+    kT: cpp_default_kT
+  outputs:
+    T_sim: cfg_T_sim_monomer
+    dt_frame: cfg_dt_frame_monomer
+    n_snaps_out: cfg_nsnaps_monomer
+    L_final: cfg_L_final_monomer
+    C_crosslinker: cfg_C_monomer_baseline
+    phi_crosslinker: cfg_phi_monomer_baseline
+    L_p: cfg_Lp_monomer_cytosim
+  note: "Checks 0.7929 uM monomer concentration from DynamicDimer/DynamicMultimer new 2000 blob."
+
+- id: run_config_derived_high_visc
+  model: cytosim_config_derived_quantities
+  inputs:
+    n_steps: cym_nsteps_high_visc
+    nb_frames: cym_nb_frames_high_visc
+    dt: cym_time_step
+    L0: cym_filament_init_length
+    k_grow: cym_actin_growing_speed
+    L_max: cym_actin_max_length
+    N_blob: cym_dimer_count_baseline
+    r_solid: cym_blob_radius
+    R_drop: cym_droplet_radius
+    rigidity: cym_actin_rigidity
+    kT: cpp_default_kT
+  outputs:
+    T_sim: cfg_T_sim_high_visc
+    dt_frame: cfg_dt_frame_high_visc
+    n_snaps_out: cfg_nsnaps_high_visc
+    L_final: cfg_L_final_high_visc
+    C_crosslinker: cfg_C_high_visc
+    phi_crosslinker: cfg_phi_high_visc
+    L_p: cfg_Lp_high_visc
+  note: "Checks Figure_S5B extended run: 1,200,000 * 0.002 = 2,400 s and filament length capped at max_length = 6.2832 um."
+
+- id: run_config_vol_frac_sweep
+  model: cytosim_config_derived_quantities
+  inputs:
+    n_steps: cym_nsteps_baseline
+    nb_frames: cym_nb_frames_baseline
+    dt: cym_time_step
+    L0: cym_filament_init_length
+    k_grow: cym_actin_growing_speed
+    L_max: cym_actin_max_length
+    r_solid: cym_blob_radius
+    R_drop: cym_droplet_radius
+    rigidity: cym_actin_rigidity
+    kT: cpp_default_kT
+  sweep:
+    N_blob: paper_vol_frac_table
+  outputs:
+    T_sim: cfg_vf_T_sim
+    dt_frame: cfg_vf_dt_frame
+    n_snaps_out: cfg_vf_nsnaps
+    L_final: cfg_vf_L_final
+    C_crosslinker: cfg_vf_C_curve
+    phi_crosslinker: cfg_vf_phi_curve
+    L_p: cfg_vf_Lp
+  note: "Sweeps N_blob in {1000, 20000} against walker2025 Fig. S5C-E volume fraction endpoints (2.7% and 54%)."

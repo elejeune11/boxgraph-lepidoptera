@@ -1,0 +1,34 @@
+id: notebook_vca_competition_ode
+name: live notebook VCA-actin competition ODE model_VCA() (Cells 23 & 25)
+role: model
+software: true
+stated:
+  file: CytoSimanalyze_VASP_Arp_VCA.ipynb
+  lines: "1527-1558"
+  quote: "def model_VCA(L,t, Nfil , TFactin, growkinetics, shrinkkinetics, vcakinetics):"
+  where: "CytoSimanalyze_VASP_Arp_VCA.ipynb Cell 23 & Cell 25"
+equation: "dL/dt = N_fil*k_grow*(1 - (L + L_vca)/TFactin); dL_vca/dt = clip((k_bind*(1 - (L + L_vca)/TFactin) - k_unbind)*N_vca, L_vca <= 5*0.0027*N_vca)"
+inputs:
+  N_fil: {quantity: filament_count, unit: dimensionless}
+  TFactin: {quantity: total_polymer_length, unit: um}
+  k_grow_plus: {quantity: filament_growth_rate, unit: um/s}
+  k_bind_vca: {quantity: vca_binding_speed_per_molecule, unit: um/s}
+  k_unbind_vca: {quantity: vca_binding_speed_per_molecule, unit: um/s}
+  N_vca: {quantity: molecule_count, unit: dimensionless}
+  L0_per_fil: {quantity: filament_length, unit: um}
+  R_drop: {quantity: droplet_radius, unit: um}
+  l_mono: {quantity: actin_monomer_rise, unit: um}
+outputs:
+  L_total: {quantity: total_polymer_length, unit: um}
+  L_vca: {quantity: total_polymer_length, unit: um}
+  F_actin_conc: {quantity: actin_concentration, unit: uM}
+  delta_F_actin: {quantity: actin_concentration, unit: uM}
+  frac_F_actin_reduction: {quantity: fractional_f_actin_reduction, unit: dimensionless}
+  frac_F_actin_remaining: {quantity: fractional_f_actin_remaining, unit: dimensionless}
+settings:
+  t_grid_max: 600.0
+  n_grid: 601
+  eval_index: 600
+  rtol: 1.0e-8
+  atol: 1.0e-8
+stochastic: false

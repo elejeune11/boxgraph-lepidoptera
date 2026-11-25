@@ -1,0 +1,469 @@
+# Cross-record validations of mirza2025 dimensional active-gel / active-nematic
+# pattern-wavelength models against independent experimental measurements across all
+# 7 paired actin_bundling records.
+#
+# Audit scope across all 7 paired records:
+# 1. hannezo2015 + mirza2025 (11 validations below: 10 purpose: validation, 1 purpose: fit_quality):
+#    Mirza et al. (2025) explicitly introduces Drosophila tracheal actin rings (~1 um,
+#    Main p. 2, citing Hannezo et al., 2015) as a motivating periodic actin bundle pattern,
+#    explicitly claims its isotropic limit recovers Hannezo et al. (2015) (Main pp. 4, 6;
+#    Appendix C.1 p. 25), and cites Hannezo et al. (2015) for all four dimensional transport
+#    parameters in Appendix D (p. 27: eta, ell_s, k_d, D). The 11 validations below test
+#    mirza2025's dimensional isotropic (isotropic_threshold_dimensional_eq9) and active-nematic
+#    Case A (caseA_critical_dimensional_eq9_10) pattern-wavelength models against Hannezo et al.
+#    (2015)'s measured wild-type Drosophila tracheal ring/taenidial spacings across four
+#    distinct parameter regimes:
+#    - Group 1 (3 validations): mirza2025's own Appendix D reference parameters (0 new added
+#      inputs) vs embryonic stage-16 WT (0.5 +/- 0.1 um) and early 3rd-instar larval WT
+#      (1.2 +/- 0.1 um) -> predicts 3.160 / 3.158 um (6.32x and 2.63x too large).
+#    - Group 2 (4 validations): hannezo2015's Main p. 3 FRAP + literature inputs with 1D
+#      longitudinal viscosity matched (eta_mirza = eta_hannezo / 4 = 25 Pa*s, per
+#      rel_hannezo2015_iso_wavelength_same_as_eq3) vs embryonic WT (0.5 +/- 0.1 um), early
+#      larval WT (1.2 +/- 0.1 um), and late larval WT taenidial folds (1.45 +/- 0.3 um)
+#      -> predicts 1.749 / 1.748 um (3.50x too large on embryo, 1.46x on early larva, within
+#      1 SD [+0.99 SD] on late larva; nematic coupling shifts wavelength by only -0.04%).
+#    - Group 3 (2 validations): hannezo2015's Main p. 3 inputs with literal 3D shear viscosity
+#      (eta = hannezo2015/viscosity_3d_lit = 100 Pa*s) directly testing mirza2025 Eq. (6)'s 2D
+#      compressible factor-of-4 viscosity convention -> predicts 2.473 um (sqrt(2) larger:
+#      4.95x embryonic WT, 2.06x early larval WT).
+#    - Group 4 (2 validations: 1 fit_quality + 1 out-of-sample validation): hannezo2015 SI
+#      Sec. 2.6.4 embryo-calibrated l_h = 10 nm (gamma = 10^18 Pa*s/m^2 at eta = 25 Pa*s) ->
+#      0.553 um preserves the embryonic fit (fit_quality, +0.53 SD) but fails out-of-sample on
+#      early larval WT (1.2 +/- 0.1 um, -53.9%, -6.47 SD).
+#    Excluded hannezo2015 measurements (Src42A, moesin RNAi, kkv1 lacking measured mutant
+#    friction/transport inputs; categorical bar charts; ring counts; FRAP curves; ramps; FFT;
+#    spacing PDFs; tube diameters / gamma-COP) are audited in q_val_hannezo2015_cross_validation_summary.
+# 2. mirza2025 + mirza2025_code: 0 validations (both are pure theory/simulation/C++ FEM code
+#    with 0 origin: measured empirical datums; see q_val_audit_mirza2025_code).
+# 3. bois2011 + mirza2025: 0 validations (both pure theory/simulation, 0 measured datums;
+#    see q_val_audit_bois2011).
+# 4. frohoff2021 + mirza2025: 0 validations (both pure theory/simulation, 0 measured datums;
+#    see q_val_audit_frohoff2021).
+# 5. gubbala2025 + mirza2025: 0 validations (passive myosin-free Lo/Ld GUV coarsening and
+#    domain curvature vs active contractile turnover gel; see q_val_audit_gubbala2025).
+# 6. mirza2025 + weirich2017: 0 validations (passive myosin-free F-actin/filamin tactoids and
+#    capillary bundles vs active contractile turnover gel; see q_val_audit_weirich2017).
+# 7. mirza2025 + weirich2019: 0 validations (bipolar F-actin tactoid passive myosin-rod
+#    centering and adhesive capillary bisection without turnover; see q_val_audit_weirich2019).
+
+# ==============================================================================
+# Group 1: mirza2025 Appendix D reference parameters vs hannezo2015 WT trachea
+# ==============================================================================
+
+- id: val_iso_appD_vs_hannezo_embryo_wt
+  model: isotropic_threshold_dimensional_eq9
+  inputs:
+    gamma: gamma_ref_calc
+    D: D_ref
+    k_d: k_d_ref
+    eta: eta_ref
+  output: ell_pattern_0
+  against: "hannezo2015/ring_wavelength_embryo_wt"
+  purpose: validation
+  quantities:
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Mirza et al. (2025) Appendix D (p. 27) specifies generic reference actin-cytoskeleton
+    parameters (eta = 10^4 Pa*s, ell_s = 0.2 um -> gamma = 2.5e17 Pa*s/m^2, k_d ~ 0.1 s^-1,
+    D ~ 0.04 um^2/s) explicitly citing Hannezo et al. (2015) alongside Salbreux et al. (2009),
+    Yolland et al. (2019), and Callan-Jones et al. (2008), while Main p. 2 cites Drosophila
+    tracheal actin bundles (~1 um, Hannezo et al., 2015) as a motivating periodic pattern.
+    Hannezo et al. (2015) measures circumferential actin ring spacing specifically in wild-type
+    embryonic stage-16 Drosophila tracheal dorsal trunks (0.5 +/- 0.1 um, confocal Lifeact-mEGFP).
+    No parameters in Mirza et al. (2025) Appendix D were fitted to Hannezo et al.'s ring spacing.
+  basis: >
+    Mirza et al. (2025) Main p. 2 cites Drosophila tracheal morphogenesis ("a parallel
+    arrangement of actin bundles spaced by ~1 um ... Hannezo et al., 2015"), Main p. 6 states
+    that the isotropic limit (kappa = 0 or beta = 0) recovers Hannezo et al. (2015) with
+    nu_crit,0^2 = [k_d*gamma/(4*eta*D)]^(1/2) = 1/(2*ell_s*ell_D) and ell_pattern,0 = 2*pi/nu_crit,0,
+    and Appendix D (p. 27) justifies all four dimensional parameters (eta, ell_s, k_d, D) by
+    citing Hannezo et al. (2015). Evaluating isotropic_threshold_dimensional_eq9 on Mirza et al.'s
+    own Appendix D reference tuple tests its uncalibrated dimensional wavelength prediction
+    directly against Hannezo et al. (2015)'s primary wild-type embryonic tracheal measurement.
+  note: >
+    Computes ell_pattern_0 = 3.160 um vs measured 0.5 +/- 0.1 um (+2.660 um, 6.32x larger,
+    +26.6 SDs; not reproduced). Even accounting for Mirza et al. (2025) Fig. 2—figure supplement 1's
+    supercritical nonlinear shortening (0.87 * ell_pattern = 2.749 um at lambda = 1.3*lambda_crit),
+    the prediction remains 5.50x too large. The overshoot combines Mirza Appendix D's 2x larger
+    bare hydrodynamic length (ell_s = 0.2 um vs Hannezo Main p. 3's l_h = 0.1 um; 20x Hannezo SI's
+    0.01 um) with Mirza Eq. (6)'s 2D compressible viscous stress yielding effective 1D length
+    2*ell_s = 0.4 um (4x Hannezo Main p. 3's 0.1 um).
+
+- id: val_caseA_appD_vs_hannezo_embryo_wt
+  model: caseA_critical_dimensional_eq9_10
+  inputs:
+    gamma: gamma_ref_calc
+    D: D_ref
+    k_d: k_d_ref
+    eta: eta_ref
+    kappa: kappa_fig4bI
+    beta: beta_ref_calc
+    c_0: c_0_ref_calc
+  output: ell_pattern
+  against: "hannezo2015/ring_wavelength_embryo_wt"
+  purpose: validation
+  quantities:
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Mirza et al. (2025) Appendix D (p. 27) and Appendix 4—table 1 (Fig. 2 / Fig. 4a-b default
+    fibrillar active-nematic parameters: eta = 10^4 Pa*s, gamma = 2.5e17 Pa*s/m^2, k_d ~ 0.1 s^-1,
+    D ~ 0.04 um^2/s, kappa = -0.2, beta = -2000 Pa*s, c_0 = 40000 Pa, delta = 0.005) define the
+    paper's reference dimensional actomyosin cortex explicitly citing Hannezo et al. (2015);
+    tested out-of-sample against Hannezo et al. (2015)'s wild-type embryonic stage-16 Drosophila
+    tracheal actin ring wavelength (0.5 +/- 0.1 um).
+  basis: >
+    Mirza et al. (2025) Main Eq. (10) (p. 6) generalizes the isotropic active-gel wavelength of
+    Hannezo et al. (2015) to include active-nematic coupling (kappa < 0, beta < 0) forming dense
+    parallel actin bundles ("fibrillar patterns", Fig. 2bI), explicitly motivated by parallel
+    ~1 um actin bundles in Drosophila trachea (Main p. 2, citing Hannezo et al., 2015). Evaluating
+    caseA_critical_dimensional_eq9_10 on Appendix D's default fibrillar parameters tests whether
+    Mirza et al.'s full nematic wavelength law improves agreement with embryonic tracheal spacing.
+  note: >
+    Computes ell_pattern = 3.158 um (delta = 0.0050) vs measured 0.5 +/- 0.1 um (+2.658 um, 6.32x
+    larger, +26.6 SDs; not reproduced). Nematic coupling at default Appendix D parameters shifts
+    the linear wavelength by only -0.08% relative to isotropic 3.160 um; even replacing kappa = -0.2
+    with Mirza et al.'s CytoSim discrete-network estimate kappa = -1.6 (Fig. 5e, delta = 0.040)
+    gives ell_pattern = 3.139 um (-0.66%), confirming that nematic coupling leaves the 6.3x
+    overprediction essentially unchanged.
+
+- id: val_caseA_appD_vs_hannezo_larva_early
+  model: caseA_critical_dimensional_eq9_10
+  inputs:
+    gamma: gamma_ref_calc
+    D: D_ref
+    k_d: k_d_ref
+    eta: eta_ref
+    kappa: kappa_fig4bI
+    beta: beta_ref_calc
+    c_0: c_0_ref_calc
+  output: ell_pattern
+  against: "hannezo2015/ring_wavelength_larva_wt_early"
+  purpose: validation
+  quantities:
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Mirza et al. (2025) Appendix D reference fibrillar parameters (citing Hannezo et al., 2015
+    for generic actin-cortex transport parameters) evaluated out-of-sample against Hannezo et al.
+    (2015)'s wild-type early third-instar larval Drosophila tracheal actin ring spacing
+    (1.2 +/- 0.1 um, fixed Lifeact-GFP / phalloidin, Main p. 1 & Fig. 1C).
+  basis: >
+    Mirza et al. (2025) Main p. 2 summarizes Drosophila tracheal parallel actin bundles as
+    "spaced by ~1 um ... (Hannezo et al., 2015)", which closely matches Hannezo et al. (2015)'s
+    early third-instar larval ring spacing (1.2 +/- 0.1 um; Fig. 1C Fourier peak 1.2 um).
+    Testing caseA_critical_dimensional_eq9_10 at Mirza et al.'s Appendix D parameters against
+    ring_wavelength_larva_wt_early checks whether Mirza et al.'s reference cortex matches even
+    the larger ~1.2 um larval tracheal bundle spacing.
+  note: >
+    Computes ell_pattern = 3.158 um vs measured 1.2 +/- 0.1 um (+1.958 um, 2.63x larger, +19.6 SDs;
+    not reproduced). Even with Mirza et al.'s supercritical nonlinear shortening (0.87 * 3.158 =
+    2.747 um), the prediction remains 2.29x (+15.5 SDs) above early third-instar larval ring
+    spacing.
+
+# ==============================================================================
+# Group 2: hannezo2015 Main p. 3 physiological inputs with 1D-matched viscosity
+#          (eta_mirza = eta_hannezo / 4 = 25 Pa*s, per relations.yaml)
+# ==============================================================================
+
+- id: val_iso_hannezo_matched_vs_embryo_wt
+  model: isotropic_threshold_dimensional_eq9
+  inputs:
+    gamma: gamma_hannezo_main_added
+    D: "hannezo2015/diffusion_coeff_frap"
+    k_d: kd_hannezo_frap_added
+    eta: eta_hannezo_div4_added
+  output: ell_pattern_0
+  against: "hannezo2015/ring_wavelength_embryo_wt"
+  purpose: validation
+  quantities:
+    "hannezo2015/diffusion_coefficient": effective_diffusivity
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Uses Hannezo et al. (2015) Main p. 3 wild-type embryonic stage-15 Drosophila tracheal FRAP
+    measurements (D = 0.04 +/- 0.03 um^2/s directly from hannezo2015/diffusion_coeff_frap;
+    k_d = 1/tau = 1/15 = 0.06667 s^-1 from turnover_time_frap = 15 +/- 7 s) together with
+    Hannezo Main p. 3 uncalibrated literature cortex parameters (xi_2D = 10^9 Pa*s/m, h = 100 nm
+    -> gamma = 10^16 Pa*s/m^2) and 1D-viscosity-matched eta_mirza = eta_3D,hannezo / 4 = 25 Pa*s
+    (matching Mirza Eq. 6's 4*eta*d_x v to Hannezo Eq. 2's eta*d_x v so 2*ell_s = 0.10 um =
+    hannezo2015/lh_derived_main) to predict wild-type embryonic stage-16 tracheal ring spacing
+    (0.5 +/- 0.1 um).
+  basis: >
+    Mirza et al. (2025) Main p. 6 states that freezing S = 0 (or kappa = 0) reduces its model to
+    Hannezo et al. (2015)'s active gel model; mirza2025/relations.yaml
+    (rel_hannezo2015_iso_wavelength_same_as_eq3) proves exact symbolic identity between
+    isotropic_threshold_dimensional_eq9.ell_pattern_0 and hannezo2015/critical_wavelength_eq3
+    under tau = 1/k_d and eta_mirza = eta_hannezo / 4. Running isotropic_threshold_dimensional_eq9
+    on Hannezo's uncalibrated Main p. 3 inputs tests Mirza et al.'s isotropic limit out-of-sample
+    on Hannezo's embryonic stage-16 measurement.
+  note: >
+    Computes ell_pattern_0 = 1.749 um vs measured 0.5 +/- 0.1 um (+1.249 um, 3.50x larger,
+    +12.5 SDs; not reproduced), matching hannezo2015/cmp_lambda_c_val_embryo (1.749 um; printed
+    1.8 um) identically. Across added-input alternatives: FRAP k_d in [0.04545, 0.125] s^-1 gives
+    [1.925, 1.494] um (3.0x-3.8x too large); even at the lowest +/-1 SD FRAP corner (D = 0.01 um^2/s,
+    tau = 8 s), ell_pattern_0 = 1.057 um (2.11x too large). Using Hannezo SI keratocyte-stress
+    friction alternatives gamma = 2.5e16 or 1e17 Pa*s/m^2 lowers ell_pattern_0 to 1.391 or
+    0.983 um (still 2.8x or 2.0x above 0.5 +/- 0.1 um); matching 0.5 um requires gamma ~ 1.5e18
+    Pa*s/m^2 (150x higher friction than Main p. 3).
+
+- id: val_caseA_hannezo_matched_vs_embryo_wt
+  model: caseA_critical_dimensional_eq9_10
+  inputs:
+    gamma: gamma_hannezo_main_added
+    D: "hannezo2015/diffusion_coeff_frap"
+    k_d: kd_hannezo_frap_added
+    eta: eta_hannezo_div4_added
+    kappa: kappa_fig4bI
+    beta: beta_hannezo_div4_added
+    c_0: c0_hannezo_main_added
+  output: ell_pattern
+  against: "hannezo2015/ring_wavelength_embryo_wt"
+  purpose: validation
+  quantities:
+    "hannezo2015/diffusion_coefficient": effective_diffusivity
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Combines Hannezo et al. (2015) Main p. 3 embryonic stage-15 FRAP inputs (D = 0.04 um^2/s,
+    k_d = 1/15 s^-1) and 1D-matched literature mechanics (gamma = 10^16 Pa*s/m^2, eta = 25 Pa*s)
+    with Mirza et al. (2025) Appendix D's dimensionless fibrillar nematic ratios (kappa = -0.2,
+    beta/eta = -0.2 -> beta = -5 Pa*s, c_bar_0 = 4 -> c_0 = 1600 Pa, giving delta = 0.005) to
+    test Mirza et al.'s full active-nematic Eq. (10) out-of-sample against wild-type embryonic
+    stage-16 tracheal ring spacing (0.5 +/- 0.1 um).
+  basis: >
+    Mirza et al. (2025) Main Eq. (10) (p. 6) predicts that fibrillar active-nematic coupling
+    (kappa < 0, beta < 0 -> delta > 0) increases critical wavenumber nu_crit and shortens pattern
+    wavelength relative to Hannezo et al. (2015)'s isotropic active-gel prediction. Evaluating
+    caseA_critical_dimensional_eq9_10 on Hannezo's uncalibrated embryonic inputs tests directly
+    whether nematic coupling can bridge the 3.5x gap between Hannezo's 1.75 um isotropic estimate
+    and the measured 0.5 +/- 0.1 um embryonic tracheal ring spacing.
+  note: >
+    Computes ell_pattern = 1.748 um (delta = 0.0050) vs measured 0.5 +/- 0.1 um (+1.248 um,
+    3.50x larger, +12.5 SDs; not reproduced). Nematic coupling shortens the wavelength by only
+    -0.04% relative to isotropic 1.749 um. Across all declared nematic alternatives: Fig. 3b
+    entropy-bound flow alignment (beta = -35.36 Pa*s, delta = 0.0354) gives 1.744 um (-0.28%);
+    Fig. 3c 10x weaker susceptibility (c_0 = 160 Pa, delta = 0.050) gives 1.742 um (-0.39%);
+    CytoSim kappa = -1.6 (delta = 0.040) gives 1.743 um (-0.31%); even extreme combined Fig. 3b/3c
+    coupling (delta = 0.663) yields 1.663 um (-4.9%, still 3.33x too large). Thus Case A nematic
+    coupling cannot resolve the embryonic tracheal wavelength gap.
+
+- id: val_caseA_hannezo_matched_vs_larva_early
+  model: caseA_critical_dimensional_eq9_10
+  inputs:
+    gamma: gamma_hannezo_main_added
+    D: "hannezo2015/diffusion_coeff_frap"
+    k_d: kd_hannezo_frap_added
+    eta: eta_hannezo_div4_added
+    kappa: kappa_fig4bI
+    beta: beta_hannezo_div4_added
+    c_0: c0_hannezo_main_added
+  output: ell_pattern
+  against: "hannezo2015/ring_wavelength_larva_wt_early"
+  purpose: validation
+  quantities:
+    "hannezo2015/diffusion_coefficient": effective_diffusivity
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Evaluates Mirza et al. (2025) Case A Eq. (10) on Hannezo et al. (2015) Main p. 3 embryonic
+    stage-15 FRAP inputs and 1D-matched literature mechanics (plus Mirza Appendix D default
+    nematic ratios, delta = 0.005) against wild-type early third-instar larval Drosophila tracheal
+    ring spacing (1.2 +/- 0.1 um). Note that D and tau were measured in stage-15 embryos rather
+    than third-instar larvae; Hannezo et al. (2015) Main p. 3 explicitly compares its 1.8 um
+    threshold prediction against both embryonic and larval tracheal data.
+  basis: >
+    Hannezo et al. (2015) Main p. 3 compares its uncalibrated Eq. (3) prediction (1.8 um) against
+    both embryonic and larval tracheal spacing ("slightly larger, although of the same order of
+    magnitude, than the data for embryonic and larval trachea"), and Mirza et al. (2025) Main p. 2
+    cites ~1 um Drosophila tracheal bundles. This out-of-sample test evaluates Mirza et al.'s
+    nematic generalization against the 1.2 +/- 0.1 um early third-instar larval measurement.
+  note: >
+    Computes ell_pattern = 1.748 um vs measured 1.2 +/- 0.1 um (+0.548 um, 1.46x larger, +5.48 SDs;
+    not reproduced). Applying Mirza et al. (2025) Fig. 2—figure supplement 1's supercritical
+    nonlinear shortening factor (0.87 * 1.748 = 1.521 um) narrows the gap to +0.321 um (+3.21 SDs,
+    still outside the 1.2 +/- 0.1 um band). Under Hannezo SI keratocyte-stress friction
+    alternatives, gamma = 2.5e16 Pa*s/m^2 gives 1.390 um (+1.9 SD) and 1e17 Pa*s/m^2 gives
+    0.983 um (-2.2 SD).
+
+- id: val_caseA_hannezo_matched_vs_larva_late
+  model: caseA_critical_dimensional_eq9_10
+  inputs:
+    gamma: gamma_hannezo_main_added
+    D: "hannezo2015/diffusion_coeff_frap"
+    k_d: kd_hannezo_frap_added
+    eta: eta_hannezo_div4_added
+    kappa: kappa_fig4bI
+    beta: beta_hannezo_div4_added
+    c_0: c0_hannezo_main_added
+  output: ell_pattern
+  against: "hannezo2015/taenidial_wavelength_larva_wt_late"
+  purpose: validation
+  quantities:
+    "hannezo2015/diffusion_coefficient": effective_diffusivity
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Evaluates Mirza et al. (2025) Case A Eq. (10) on Hannezo et al. (2015) Main p. 3 embryonic
+    stage-15 FRAP inputs and 1D-matched literature mechanics (plus Mirza Appendix D default
+    nematic ratios, delta = 0.005) against Hannezo et al. (2015) Main p. 4's wild-type late
+    third-instar larval taenidial fold spacing (1.45 +/- 0.3 um, which Hannezo et al. show to be
+    precisely complementary to the tracheal actin ring pattern, SI Fig. S2). Involves a cross-stage
+    transfer from stage-15 embryonic FRAP parameters to late third-instar larval cuticle spacing.
+  basis: >
+    Hannezo et al. (2015) Main p. 4 states "taenidial folds are precisely complementary with
+    actin pattern (SI Appendix, Fig. S2)" and reports wild-type late larval spacing 1.45 +/- 0.3 um,
+    while Main p. 3 compares its uncalibrated active-gel threshold wavelength (1.8 um) against
+    both embryonic and larval trachea. Testing Mirza et al.'s 1D-matched Case A Eq. (10) against
+    taenidial_wavelength_larva_wt_late completes the wild-type developmental comparison across
+    all three measured Drosophila stages in hannezo2015.
+  note: >
+    Computes ell_pattern = 1.748 um vs measured 1.45 +/- 0.3 um (+0.298 um, 1.21x, +0.99 SD;
+    reproduced — sits just inside the upper +1 SD bound 1.75 um). Notably, this agreement depends
+    strictly on adopting the 1D-matched viscosity eta_mirza = eta_hannezo / 4 = 25 Pa*s (and on
+    transferring embryonic FRAP parameters to late larvae): substituting literal 3D shear viscosity
+    eta = 100 Pa*s raises ell_pattern to 2.472 um (+3.41 SDs, not reproduced), and Mirza Appendix D
+    parameters yield 3.158 um (+5.69 SDs, not reproduced).
+
+# ==============================================================================
+# Group 3: hannezo2015 Main p. 3 inputs with LITERAL 3D shear viscosity
+#          (eta = hannezo2015/viscosity_3d_lit = 100 Pa*s) — tests 2D factor of 4
+# ==============================================================================
+
+- id: val_iso_hannezo_literal_eta_vs_embryo_wt
+  model: isotropic_threshold_dimensional_eq9
+  inputs:
+    gamma: gamma_hannezo_main_added
+    D: "hannezo2015/diffusion_coeff_frap"
+    k_d: kd_hannezo_frap_added
+    eta: "hannezo2015/viscosity_3d_lit"
+  output: ell_pattern_0
+  against: "hannezo2015/ring_wavelength_embryo_wt"
+  purpose: validation
+  quantities:
+    "hannezo2015/diffusion_coefficient": effective_diffusivity
+    "hannezo2015/viscosity_3d": cortical_viscosity
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Feeds Hannezo et al. (2015) Main p. 3's printed 3D cortical shear viscosity
+    (hannezo2015/viscosity_3d_lit = 10^2 Pa*s) and FRAP diffusivity (diffusion_coeff_frap =
+    0.04 +/- 0.03 um^2/s) directly into Mirza et al. (2025)'s 2D compressible active-gel
+    wavelength law (with k_d = 1/15 s^-1 and gamma = xi_2D / h = 10^16 Pa*s/m^2), without
+    dividing eta by 4, to predict stage-16 wild-type embryonic tracheal ring spacing (0.5 +/- 0.1 um).
+  basis: >
+    Both mirza2025/quantities.yaml (cortical_viscosity: 3D shear viscosity eta in Eq. 6
+    sigma^diss = rho*[2*eta*(d + tr(d)*I) + beta*q_hat]) and hannezo2015/quantities.yaml
+    (viscosity_3d: bulk 3D cortical viscosity eta_3D = 10^2 Pa*s) define eta as the 3D shear
+    viscosity of the actin cortex. In 1D uniaxial compression of a 2D thin film, Mirza Eq. (6)
+    produces longitudinal viscous stress 4*eta*d_x v (vs Hannezo Eq. 2's eta_3D*h*d_x v),
+    multiplying the predicted wavelength by 4^(1/4) = sqrt(2). Testing isotropic_threshold_dimensional_eq9
+    with literal hannezo2015/viscosity_3d_lit directly quantifies this 2D constitutive-law shift
+    against Hannezo's embryonic measurement.
+  note: >
+    Computes ell_pattern_0 = 2.473 um vs measured 0.5 +/- 0.1 um (+1.973 um, 4.95x larger,
+    +19.7 SDs; not reproduced) — exactly sqrt(2) = 1.4142x larger than Hannezo's 1D prediction
+    (1.749 um) and val_iso_hannezo_matched_vs_embryo_wt. Adding default Case A nematic coupling
+    at literal eta = 100 Pa*s (kappa = -0.2, beta = -20 Pa*s, c_0 = 1600 Pa, delta = 0.005)
+    yields 2.472 um (-0.05%).
+
+- id: val_iso_hannezo_literal_eta_vs_larva_early
+  model: isotropic_threshold_dimensional_eq9
+  inputs:
+    gamma: gamma_hannezo_main_added
+    D: "hannezo2015/diffusion_coeff_frap"
+    k_d: kd_hannezo_frap_added
+    eta: "hannezo2015/viscosity_3d_lit"
+  output: ell_pattern_0
+  against: "hannezo2015/ring_wavelength_larva_wt_early"
+  purpose: validation
+  quantities:
+    "hannezo2015/diffusion_coefficient": effective_diffusivity
+    "hannezo2015/viscosity_3d": cortical_viscosity
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Same literal 3D shear viscosity substitution (hannezo2015/viscosity_3d_lit = 10^2 Pa*s,
+    diffusion_coeff_frap = 0.04 um^2/s, k_d = 1/15 s^-1, gamma = 10^16 Pa*s/m^2) evaluated
+    out-of-sample against Hannezo et al. (2015)'s early third-instar larval wild-type tracheal
+    ring spacing (1.2 +/- 0.1 um; stage-15 embryonic FRAP parameters transferred to larval stage
+    as in Hannezo Main p. 3).
+  basis: >
+    Directly tests the sqrt(2) wavelength amplification induced by Mirza et al. (2025) Eq. (6)'s
+    2D compressible viscous stress (4*eta*d_x v) when supplied with Hannezo et al. (2015)'s
+    printed 3D cortical viscosity eta_3D = 10^2 Pa*s against early third-instar larval spacing.
+  note: >
+    Computes ell_pattern_0 = 2.473 um vs measured 1.2 +/- 0.1 um (+1.273 um, 2.06x larger,
+    +12.7 SDs; not reproduced). Even against late third-instar larval taenidial spacing
+    (1.45 +/- 0.3 um), literal eta = 100 Pa*s overshoots by +1.023 um (1.71x, +3.41 SDs).
+
+# ==============================================================================
+# Group 4: hannezo2015 SI Sec. 2.6.4 embryo-calibrated l_h = 10 nm
+#          (fit_quality on embryo WT; out-of-sample validation on early larva WT)
+# ==============================================================================
+
+- id: val_caseA_hannezo_si_cal_vs_embryo_wt
+  model: caseA_critical_dimensional_eq9_10
+  inputs:
+    gamma: gamma_hannezo_si_cal_added
+    D: "hannezo2015/diffusion_coeff_frap"
+    k_d: kd_hannezo_frap_added
+    eta: eta_hannezo_div4_added
+    kappa: kappa_fig4bI
+    beta: beta_hannezo_div4_added
+    c_0: c0_hannezo_si_cal_added
+  output: ell_pattern
+  against: "hannezo2015/ring_wavelength_embryo_wt"
+  purpose: fit_quality
+  quantities:
+    "hannezo2015/diffusion_coefficient": effective_diffusivity
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Uses Hannezo et al. (2015) stage-15 embryonic FRAP inputs (D = 0.04 um^2/s, k_d = 1/15 s^-1)
+    paired with gamma_hannezo_si_cal_added = 10^18 Pa*s/m^2 and eta_hannezo_div4_added = 25 Pa*s
+    (so effective 1D hydrodynamic length 2*ell_s = 10 nm matches hannezo2015/lh_inverted_si =
+    10^-8 m, which Hannezo et al. SI Sec. 2.6.4 calibrated directly to ring_wavelength_embryo_wt =
+    0.5 um) plus Mirza Appendix D default nematic ratios (kappa = -0.2, beta/eta = -0.2,
+    c_bar_0 = 4 -> c_0 = 1.6e5 Pa, delta = 0.005). Recorded as fit_quality (not out-of-sample
+    validation) because l_h = 10^-8 m was inverted from this same embryonic measurement.
+  basis: >
+    Hannezo et al. (2015) Main p. 3 designates l_h as 'the one fitting parameter to match the
+    observed wavelength', and SI Sec. 2.6.4 (p. 21) inverts l_h = 10^-8 m from d = 0.5 um.
+    Evaluating Mirza et al. (2025) caseA_critical_dimensional_eq9_10 at this calibrated friction
+    tests fit quality and verifies whether Mirza's active-nematic correction disrupts Hannezo's
+    embryonic calibration.
+  note: >
+    Computes ell_pattern = 0.5528 um (delta = 0.0050) vs measured 0.5 +/- 0.1 um (+0.0528 um,
+    1.11x, +0.53 SD; reproduced). The +10.6% offset from 0.500 um stems solely from Hannezo SI
+    p. 21's rounding of exact l_h = 8.175 nm to 10^-8 m (under exact-inversion alternative
+    gamma = 1.496e18 Pa*s/m^2, Case A gives 0.4998 um, differing from isotropic 0.5000 um by
+    only -0.04%).
+
+- id: val_caseA_hannezo_si_cal_vs_larva_early
+  model: caseA_critical_dimensional_eq9_10
+  inputs:
+    gamma: gamma_hannezo_si_cal_added
+    D: "hannezo2015/diffusion_coeff_frap"
+    k_d: kd_hannezo_frap_added
+    eta: eta_hannezo_div4_added
+    kappa: kappa_fig4bI
+    beta: beta_hannezo_div4_added
+    c_0: c0_hannezo_si_cal_added
+  output: ell_pattern
+  against: "hannezo2015/ring_wavelength_larva_wt_early"
+  purpose: validation
+  quantities:
+    "hannezo2015/diffusion_coefficient": effective_diffusivity
+    "hannezo2015/ring_wavelength": pattern_wavelength
+  conditions_ok: >
+    Evaluates Mirza et al. (2025) Case A Eq. (10) parameterized exclusively on Hannezo et al.
+    (2015)'s embryonic stage-15/16 Drosophila trachea (FRAP D, tau plus SI Sec. 2.6.4
+    embryo-calibrated l_h = 10 nm -> gamma = 10^18 Pa*s/m^2 at eta = 25 Pa*s; default Mirza
+    nematic ratios delta = 0.005) out-of-sample against early third-instar larval wild-type
+    tracheal actin ring spacing (1.2 +/- 0.1 um).
+  basis: >
+    Because gamma_hannezo_si_cal_added (l_h = 10 nm) was calibrated strictly to embryonic
+    stage-16 rings (0.5 um), evaluating caseA_critical_dimensional_eq9_10 on early third-instar
+    larval rings (1.2 +/- 0.1 um) is a genuine out-of-sample developmental transfer test asking
+    whether a single embryonic active-nematic parameter set generalizes across Drosophila
+    tracheal growth.
+  note: >
+    Computes ell_pattern = 0.5528 um vs measured 1.2 +/- 0.1 um (-0.6472 um, 0.46x, -6.47 SDs;
+    not reproduced; exact-inversion alternative gamma = 1.496e18 Pa*s/m^2 gives 0.4998 um,
+    -7.00 SDs). Because ell_pattern ~ (eta*D/(gamma*k_d))^(1/4), accounting for the 2.4x
+    wavelength growth from embryonic stage 16 (0.5 um) to early third-instar larvae (1.2 um)
+    within Mirza et al. / Hannezo et al.'s linear theory requires a ~2.4^4 = 33x increase in
+    eta*D/(gamma*k_d) (e.g. reduced cortical-ECM friction or slower turnover during larval tube
+    expansion).

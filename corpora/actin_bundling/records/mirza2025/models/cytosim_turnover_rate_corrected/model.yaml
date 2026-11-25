@@ -1,0 +1,33 @@
+id: cytosim_turnover_rate_corrected
+name: corrected discrete actin turnover rate r_A = N_t / (N_s * dt * N_A) [1/s]
+role: model
+stated:
+  page: 28
+  printed_page: 28 of 33
+  quote: according to a turnover rate
+  where: Appendix E.1 (p. 28) & Appendix 5—table 2 (p. 32)
+variant_of: cytosim_turnover_rate_printed
+corrections:
+- equation: Appendix E.1 (p. 28), inline formula for r_A
+  change: 'Include the time step dt in the denominator: r_A = N_t / (N_s * dt * N_A) [1/s] instead of N_t / (N_s * N_A).'
+  evidence: The same sentence states that N_t filaments are replaced 'every N_s time steps' so that a given fraction is replaced 'per unit of time', and Appendix 5—table 2 (p. 32) reports r_A = 20 %/s = 0.2 s^-1; omitting dt leaves N_t/(N_s*N_A) dimensionless (fraction per time step).
+equation: r_A = N_t / (N_s * dt * N_A)
+inputs:
+  N_t:
+    quantity: filament_count
+    unit: dimensionless
+  N_s:
+    quantity: output_stride
+    unit: dimensionless
+  dt:
+    quantity: simulation_timestep
+    unit: s
+  N_A:
+    quantity: filament_count
+    unit: dimensionless
+outputs:
+  r_A:
+    quantity: actin_turnover_rate
+    unit: 1/s
+settings: {}
+stochastic: false

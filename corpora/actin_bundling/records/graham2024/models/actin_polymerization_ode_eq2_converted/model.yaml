@@ -1,0 +1,28 @@
+id: actin_polymerization_ode_eq2_converted
+name: monomer-depletion F-actin polymerization ODE with length-to-concentration conversion (variant of SI Eq. 2)
+role: model
+stated:
+  page: 22
+  printed_page: "SI-10"
+  quote: "solved the following ordinary differential equations in series"
+  where: "SI Methods, Eq. (2)"
+equation: "d[F-actin]/dt = (k_grow / (l_mono * (4/3)*pi*R_drop^3 * N_A)) * N_fil * (1 - [F-actin] / [T-actin])"
+variant_of: actin_polymerization_ode_eq2_printed
+corrections:
+  - equation: "SI Eq. (2)"
+    change: "divide k_grow (um/s) by (l_mono * (4/3)*pi*R_drop^3 * N_A) to convert linear filament elongation speed (um/s) into molar F-actin rate (uM/s)"
+    evidence: "k_grow is printed in um/s (0.0103 um/s, Table S1 p. 19 and SI Methods p. 22) while [F-actin] and [T-actin] are printed in uM (p. 22), making the printed Eq. (2) dimensionally inconsistent; p. 24 converts polymer length to concentration via R_drop = 1 um and monomer length increment l_mono = 2.7 nm."
+inputs:
+  k_grow: {quantity: filament_growth_rate, unit: um/s}
+  N_fil: {quantity: filament_count, unit: dimensionless}
+  F_0: {quantity: actin_concentration, unit: uM}
+  T_actin: {quantity: actin_concentration, unit: uM}
+  t_end: {quantity: time, unit: s}
+  R_drop: {quantity: droplet_radius, unit: um}
+  l_mono: {quantity: actin_monomer_rise, unit: nm}
+outputs:
+  F_end: {quantity: actin_concentration, unit: uM}
+  G_end: {quantity: actin_concentration, unit: uM}
+settings:
+  dt: 1.0
+stochastic: false

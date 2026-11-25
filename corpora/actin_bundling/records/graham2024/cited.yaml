@@ -1,0 +1,139 @@
+# ==============================================================================
+# Cross-record cited links from graham2024 values to partner records in the
+# actin_bundling corpus.
+#
+# Pairwise audit summary across all 10 related partners:
+# 1. chandrasekaran2024 (Chandrasekaran et al., Nat. Commun. 15, 3139, 2024;
+#    cited as ref-SI3 [bioRxiv 2023.05.26.542517], SI Methods p. 23: "we used
+#    the parameters from our previous study (3) that resulted in the formation
+#    of ring-shaped networks"):
+#    - All 4 datums in graham2024/data.yaml with `from_source: ref-SI3`
+#      (`sim_actin_steric_radius`, `sim_actin_steric_stiffness`,
+#      `sim_vasp_k_bind`, `sim_vasp_k_unbind`) are linked below (omitting
+#      `from_source` so BoxGraph resolves via references.yaml ref-SI3 ->
+#      chandrasekaran2024).
+#    - 13 additional baseline CytoSim droplet/actin/VASP parameters in Table S1
+#      (pp. 19-20) directly carried over from chandrasekaran2024 Supplementary
+#      Table 2 (which graham2024 Table S1 even echoes with the carry-over note
+#      "kinetic parameters explored in Figure 4" on sim_vasp_steric_stiffness)
+#      are linked below with `from_source: chandrasekaran2024`.
+#    - `sim_droplet_viscosity` (0.5 pN*s/um^2) is intentionally NOT linked to
+#      `chandrasekaran2024/viscosity_droplet_printed` because chandrasekaran2024
+#      misprinted the unit as `pN/(s*um^2)` (incompatible Pint dimension), while
+#      `sim_viscosity_ratio_water` (50) IS linked to
+#      `chandrasekaran2024/viscosity_ratio_water_printed` (50), tracking the
+#      shared 10-fold "50x water" error.
+#    - `ode_t_actin_solved` (138.38 uM) and `sim_arp23_count_vs_conc` ({0..378})
+#      are NOT linked to chandrasekaran2024 Supplementary Table 4 because
+#      chandrasekaran2024's linear-nucleator supplement cites Graham et al.
+#      (2024) as ref-SI8 (later revision); provenance runs graham2024 ->
+#      chandrasekaran2024 for those nucleator-sweep values.
+# 2. graham2024_code (CytoSim_VASP_Arp_VCA, ref-63): 0 links added here.
+#    - 66 datums in graham2024_code/data.yaml (covering 59 distinct graham2024
+#      datums) already declare inline `from_source: graham2024` + `from_datum`
+#      (including `arp23_branching_angle_code = 1.344 rad` vs
+#      `sim_arp23_branching_angle = 70 deg`); reverse links back from
+#      graham2024 would create dependency cycles and are omitted.
+#    - graham2024's 31 digitized CytoSim figure curves (Fig. 5B-E, Fig. S5b,
+#      Fig. S5d) cannot be linked via `_cited_table` because
+#      graham2024_code/data.yaml declares no table datums for PLOTCSVFILES
+#      (accessing all CSVs live via `software: true` models); quantitative
+#      curve-by-curve comparisons against live PLOTCSVFILES adapters are
+#      documented in questions.yaml (`q_code_discrepancies_rae_vca_angle_and_replicates`).
+# 3. chandrasekaran_cytosim: 0 direct links added here (`sim_boundary_stiffness_actin`
+#    traces transitively via `chandrasekaran2024/boundary_stiffness_actin` ->
+#    `chandrasekaran_cytosim/cyto_cym_actin_confine_stiff`; CytoSim defaults
+#    kT = 0.0042 pN*um and eta_water = 0.001 Pa*s are unstated in graham2024).
+# 4. graham2023 (ref-10): 0 direct links added here (`sim_droplet_radius` and
+#    `sim_l_seg` trace transitively via `chandrasekaran2024` -> `graham2023`;
+#    graham2024/data.yaml has 0 `from_source: ref-10` entries, and graham2023/
+#    data.yaml does not author separate scalar datums for buffer recipes).
+# 5. nastkolb2022 (ref-61), graham_code, graham_source_data,
+#    chandrasekaran_source_data, feigeles2025, walker2025_code: 0 shared or
+#    copied datums (0 links).
+# ==============================================================================
+
+# --- 4 explicit `from_source: ref-SI3` datums in graham2024/data.yaml ---------
+
+- datum: sim_actin_steric_radius
+  from_datum: actin_steric_radius
+  evidence: "Table S1 (p. 19) cites SI ref. (3) (Chandrasekaran et al., 2023/2024) for actin steric repulsion radius 3.5 nm, matching chandrasekaran2024 Supplementary Table 2 (p. 18, actin_steric_radius = 3.5 nm)."
+
+- datum: sim_actin_steric_stiffness
+  from_datum: actin_steric_stiffness
+  evidence: "Table S1 (p. 19) cites SI ref. (3) (Chandrasekaran et al., 2023/2024) for actin steric repulsion stiffness 1.0 pN/um, matching chandrasekaran2024 Supplementary Table 2 (p. 18, actin_steric_stiffness = 1.0 pN/um)."
+
+- datum: sim_vasp_k_bind
+  from_datum: k_bind_fig6
+  evidence: "Table S1 (p. 20) cites SI ref. (3) (Chandrasekaran et al., 2023/2024) and SI Methods p. 23 states 'we used the parameters from our previous study (3) that resulted in the formation of ring-shaped networks' for VASP binding rate k_bind = 1.0 /s, matching chandrasekaran2024's baseline ring-forming rate (k_bind_fig6 = 1.0 /s)."
+
+- datum: sim_vasp_k_unbind
+  from_datum: k_unbind_ring_fig4
+  evidence: "Table S1 (p. 20) cites SI ref. (3) (Chandrasekaran et al., 2023/2024) for VASP unbinding rate k_unbind = 1.0 /s in the ring-forming regime, matching chandrasekaran2024 Fig. 4 / Fig. 6 (k_unbind_ring_fig4 = 1 /s)."
+
+# --- 13 inherited baseline CytoSim parameters from chandrasekaran2024 ---------
+
+- datum: sim_droplet_radius
+  from_source: chandrasekaran2024
+  from_datum: r_drop_baseline
+  evidence: "Table S1 (p. 19) and Results (p. 7) adopt the identical rigid spherical droplet radius R_drop = 1 um from the companion Rangamani-lab CytoSim model in chandrasekaran2024 (Supplementary Table 2 p. 17, r_drop_baseline = 1 um, which in turn traces to graham2023/fig5c_droplet_radius)."
+
+- datum: sim_l_seg
+  from_source: chandrasekaran2024
+  from_datum: l_seg_actin
+  evidence: "Table S1 (p. 19) and SI Methods (p. 22) inherit the identical F-actin segmentation length L_seg = 100 nm from chandrasekaran2024 (Supplementary Table 2 p. 17, l_seg_actin = 100 nm, tracing to graham2023/segment_length_lcyl)."
+
+- datum: sim_total_time
+  from_source: chandrasekaran2024
+  from_datum: t_sim_baseline
+  evidence: "Table S1 (p. 19) inherits the identical total CytoSim run duration 600 s (with the same note 'Experimental images are taken at 600s') from chandrasekaran2024 Supplementary Table 2 (p. 17, t_sim_baseline = 600 s)."
+
+- datum: sim_viscosity_ratio_water
+  from_source: chandrasekaran2024
+  from_datum: viscosity_ratio_water_printed
+  evidence: "Table S1 (p. 19) copies the identical '50x water' annotation for droplet viscosity 0.5 pN*s/um^2 from chandrasekaran2024 Supplementary Table 2 (p. 17, viscosity_ratio_water_printed = 50), propagating the same 10-fold error (0.5 Pa*s is ~500x water)."
+
+- datum: sim_boundary_stiffness_actin
+  from_source: chandrasekaran2024
+  from_datum: boundary_stiffness_actin
+  evidence: "Table S1 (p. 19) inherits actin boundary confinement stiffness 200 pN/um directly from chandrasekaran2024 Supplementary Table 2 (p. 17, boundary_stiffness_actin = 200 pN/um)."
+
+- datum: sim_boundary_stiffness_vasp
+  from_source: chandrasekaran2024
+  from_datum: boundary_stiffness_vasp
+  evidence: "Table S1 (p. 19) inherits VASP boundary confinement stiffness 100 pN/um directly from chandrasekaran2024 Supplementary Table 2 (p. 17, boundary_stiffness_vasp = 100 pN/um)."
+
+- datum: sim_vasp_radius
+  from_source: chandrasekaran2024
+  from_datum: vasp_radius
+  evidence: "Table S1 (p. 19) and SI Methods (p. 23) inherit the spherical VASP tetramer radius 30 nm from chandrasekaran2024 Supplementary Table 2 (p. 18, vasp_radius = 30 nm)."
+
+- datum: sim_vasp_diffusion_rate
+  from_source: chandrasekaran2024
+  from_datum: vasp_diffusion_rate
+  evidence: "Table S1 (p. 19) inherits VASP tetramer nominal diffusion rate 10 um^2/s directly from chandrasekaran2024 Supplementary Table 2 (p. 18, vasp_diffusion_rate = 10 um^2/s), carrying over the same 673x-687x Stokes-Einstein / Wrist-diffusion discrepancy."
+
+- datum: sim_vasp_tet_conc_tableS1
+  from_source: chandrasekaran2024
+  from_datum: vasp_tet_conc_baseline
+  evidence: "Table S1 (p. 20) inherits baseline [VASP-tet] = 0.4 uM (1000 molecules in an R = 1 um sphere) from chandrasekaran2024 Supplementary Table 2 (p. 18, vasp_tet_conc_baseline = 0.40 uM)."
+
+- datum: sim_vasp_binding_distance
+  from_source: chandrasekaran2024
+  from_datum: vasp_binding_distance
+  evidence: "Table S1 (p. 20) inherits VASP-actin binding distance 30 nm (with the identical parameter-sweep justification) from chandrasekaran2024 Supplementary Table 2 (p. 18, vasp_binding_distance = 30 nm)."
+
+- datum: sim_vasp_valency
+  from_source: chandrasekaran2024
+  from_datum: vasp_valency
+  evidence: "Table S1 (p. 20) inherits VASP tetramer binding valency 4 directly from chandrasekaran2024 Supplementary Table 2 (p. 18, vasp_valency = 4)."
+
+- datum: sim_vasp_unbinding_force
+  from_source: chandrasekaran2024
+  from_datum: vasp_characteristic_unbinding_force
+  evidence: "Table S1 (p. 20) inherits VASP characteristic unbinding force 10 pN ('Typical values for passive crosslinkers') directly from chandrasekaran2024 Supplementary Table 2 (p. 19, vasp_characteristic_unbinding_force = 10 pN)."
+
+- datum: sim_vasp_steric_stiffness
+  from_source: chandrasekaran2024
+  from_datum: vasp_steric_stiffness
+  evidence: "Table S1 (p. 20) copies VASP steric repulsion stiffness 1.0 pN/um verbatim from chandrasekaran2024 Supplementary Table 2 (p. 19, vasp_steric_stiffness = 1.0 pN/um), including the carry-over note 'Chosen to ensure ring formation is observed in the kinetic parameters explored in Figure 4'."

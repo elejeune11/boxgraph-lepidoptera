@@ -1,0 +1,33 @@
+id: two_d_fourier_ridge_spacing
+name: 2D Fourier transform actin/ridge spacing extraction from amplitude stacks (SI Fig. S11)
+role: processing
+stated:
+  page: 11
+  printed_page: "SI 3"
+  quote: "employ 2D Fourier analysis via the fast Fourier transform in MATLAB"
+  where: "SI Detailed Methods (Image analysis, also p. 7 and SI Fig. S11 p. 24)"
+equation: "Rotate 3D amplitude volume in Dragonfly -> mask single scale ROI -> high-pass 2D FFT -> pick peak freq -> s = 1 / freq"
+built_from:
+  - spacing_from_spatial_frequency
+inputs:
+  dx:
+    quantity: lateral_fov_dimension
+    unit: um
+    description: Lateral field-of-view scale (75 um x 75 um) of the masked rotated amplitude slice.
+outputs:
+  freq:
+    quantity: dominant_spatial_frequency
+    unit: 1/um
+    description: Selected 2D FFT spatial frequency peak (e.g., 0.540 um^-1 in SI Fig. S11B).
+  s:
+    quantity: ridge_or_actin_spacing
+    unit: um
+    description: Periodic actin/ridge spacing s = 1 / freq (e.g., 1.85 um in SI Fig. S11B).
+settings: {}
+runnable: false
+not_runnable_reason: >
+  The 2D FFT pipeline operates on manually rotated and masked single-scale amplitude images
+  from 3D microscopy volumes (archived separately on Zenodo, ref-48, not tabulated in the PDF)
+  and applies unstated high-pass spatial-frequency filter cutoffs. The final reciprocal step
+  s = 1 / freq is implemented separately in spacing_from_spatial_frequency.
+stochastic: false

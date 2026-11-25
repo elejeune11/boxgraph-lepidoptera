@@ -1,0 +1,57 @@
+id: smoluchowski_passive_approx_eq28_corrected
+name: passive Smoluchowski late-time approximation (corrected physical contact limit and b)
+role: model
+variant_of: smoluchowski_passive_approx_eq28
+corrections:
+  - equation: "SI Eqs. (27)-(28)"
+    change: "Expand around the physical contact bound L/(2a) = 1 + epsilon (instead of L/a = 1 + epsilon, which puts 2a > L), replacing 3*ln(1/2) + 3*epsilon + 1 < 0 by 3*epsilon + 1 > 0 in k."
+    evidence: "For eps << 1, the printed denominator 3*ln(1/2) + 3*eps + 1 ≈ -1.079 < 0 yields k < 0 and negative/shrinking domain radii a(t) < 0, contradicting SI Eq. (25) (da/dt > 0 for 2a < L) and SI Eq. (29) (a ~ t^(1/3) growth)."
+  - equation: "SI Eq. (28)"
+    change: "Divide b by the same denominator (3*epsilon + 1): b = (3*ln(L/(2*a_0)) + 1) / (3*epsilon + 1)."
+    evidence: "Solving SI Eq. (27) for a^3 divides both the t term and the a_0^3 term by the bracket multiplying (1/9)*a^3; Eq. (28) divided k by that bracket but omitted it in b."
+stated:
+  page: 12
+  printed_page: "SI-6"
+  quote: "Thus domains grow approximately as"
+  where: "SI Sec. III.B.1 Eqs. (27)-(28)"
+equation: "a = (k * t + b * a_0^3)^(1/3); k = 9*k_B*T*phi_A / (16*eta*(3*epsilon + 1)); b = (3*ln(L/(2*a_0)) + 1) / (3*epsilon + 1)"
+inputs:
+  T:
+    quantity: temperature
+    unit: K
+  eta:
+    quantity: solvent_viscosity
+    unit: Pa*s
+  phi_A:
+    quantity: domain_area_fraction
+    unit: dimensionless
+  L:
+    quantity: system_size
+    unit: um
+  a_0:
+    quantity: domain_size
+    unit: um
+  epsilon:
+    quantity: size_ratio_deviation
+    unit: dimensionless
+  t:
+    quantity: time
+    unit: s
+outputs:
+  k:
+    quantity: smoluchowski_cubic_rate
+    unit: um^3/s
+  b:
+    quantity: initial_size_weight
+    unit: dimensionless
+  a:
+    quantity: domain_size
+    unit: um
+  da_dt:
+    quantity: domain_growth_rate
+    unit: um/s
+  alpha_eff:
+    quantity: coarsening_exponent
+    unit: dimensionless
+settings: {}
+stochastic: false

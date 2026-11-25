@@ -950,3 +950,329 @@
 # Full quantitative Fig. 6D/7F and workbook cross-checks live in questions.yaml.
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Cross-record ModelAtlas relations with graham2024_code
+# (CytoSim_VASP_Arp_VCA, GitHub achansek/CytoSim_VASP_Arp_VCA, 2023;
+# accompanying Graham et al., PNAS 121(3), e2309152121, 2024 = ref-SI8).
+# Full audit across all 46 x 11 = 506 model pairs: 11 verified proposed
+# relations (4 same_as, 2 approximated_by, 5 reduces_to).
+# ---------------------------------------------------------------------------
+
+- id: rel_graham2024_code_stokes_einstein_diffusion
+  kind: same_as
+  a: graham2024_code/config_parameter_audit
+  b: chandrasekaran2024/stokes_einstein_diffusion
+  mapping:
+    kBT: "1000 * kT"
+    eta: "0.5"
+    r: "30"
+  output_map:
+    D_SE: vasp_stokes_D
+  regime:
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: >
+    graham2024_code/config_parameter_audit parses viscosity = 0.5 pN*s/um^2 and VASP blob
+    radius r_blob = 0.03 um (= 30 nm) live from Arp23_concsweep_steric/R_0_r_0/config0.cym
+    (identical to chandrasekaran2024 Supplementary Table 2's eta = 0.5 and r = 30 nm) and
+    evaluates CytoSim's actual Stokes-Einstein blob diffusivity D = kT / (6*pi*eta*r_blob).
+    This matches chandrasekaran2024/stokes_einstein_diffusion identically across thermal
+    energies kT in [0.0035, 0.005] pN*um (max relative difference 2.15e-16), linking the
+    identical ~673x VASP diffusivity discrepancy (0.01485 vs stated 10 um^2/s; see
+    q_viscosity_unit_and_50x_water_error and graham2024_code/q_vasp_wrist_diffusion_ignored_by_cytosim).
+  assumptions:
+    - "Thermal energy conversion kBT [pN*nm] = 1000 * kT [pN*um]."
+    - "Fixed config0.cym droplet viscosity eta = 0.5 pN*s/um^2 and VASP tetramer sphere radius r = 30 nm (0.03 um), matching Supplementary Table 2."
+
+- id: rel_graham2024_code_arp23_count_approx_continuous
+  kind: approximated_by
+  a: graham2024_code/notebook_arp23_molecule_count
+  b: chandrasekaran2024/molecule_count_from_concentration
+  mapping:
+    C: "C_Arp"
+    R_drop: "1"
+  output_map:
+    N: N_arp
+  regime:
+    C_Arp: [10.0, 150.0]
+  tolerance: 0.04
+  provenance: proposed
+  reason: >
+    chandrasekaran2024 Supplementary Table 4 (p. 20) and graham2024_code Cell 15/17 share the
+    exact same 8-point concentration-to-copy-number table {0, 10, 25, 50, 75, 100, 125, 150} nM
+    -> {0, 25, 63, 126, 189, 252, 315, 378} molecules inside an R_drop = 1 um spherical droplet.
+    Live Cell 15 truncates the continuous formula N = C * N_A * (4/3)*pi*R^3 via .astype(int),
+    so across the non-zero sweep regime C_Arp in [10, 150] nM (N in [25, 378]) continuous
+    molecule_count_from_concentration approximates notebook_arp23_molecule_count with relative
+    truncation error < 1/N <= 3.85% (sampled max relative error 2.95e-2 <= 0.04).
+  assumptions:
+    - "Fixed spherical droplet radius R_drop = 1 um hardcoded in Cell 15/17 of CytoSimanalyze_VASP_Arp_VCA.ipynb."
+    - "Tolerance 0.04 bounds the worst-case .astype(int) floor truncation error (< 1/26 = 3.85% just below N = 26 at C_Arp ~ 10.31 nM) over [10, 150] nM."
+
+- id: rel_graham2024_code_arp23_count_reduces_to_continuous
+  kind: reduces_to
+  a: graham2024_code/notebook_arp23_molecule_count
+  b: chandrasekaran2024/molecule_count_from_concentration
+  mapping:
+    C: "C_Arp"
+    R_drop: "1"
+  output_map:
+    N: N_arp
+  limit:
+    C_Arp: "oo"
+  regime:
+    C_Arp: [10.0, 150.0]
+  provenance: proposed
+  reason: >
+    In the large-concentration / large-copy-number limit C_Arp -> oo, the O(1) molecule
+    integer truncation (.astype(int)) in graham2024_code/notebook_arp23_molecule_count becomes
+    asymptotically negligible (O(1/C_Arp) -> 0) and Cell 15's discrete formula converges to
+    chandrasekaran2024/molecule_count_from_concentration evaluated at R_drop = 1 um.
+  assumptions:
+    - "Fixed droplet radius R_drop = 1 um hardcoded in Cell 15/17."
+
+- id: rel_graham2024_code_f_actin_init_same_as_conc
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: chandrasekaran2024/final_actin_concentration
+  mapping:
+    N_fil: "N_fil"
+    L_fil: "L0_per_fil"
+    dl: "1000 * l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C_actin: F_actin_init_conc
+  regime:
+    N_fil: [10.0, 100.0]
+    R_drop: [0.5, 2.0]
+    L0_per_fil: [0.05, 6.5]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [0.0, 25000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [1.0, 10.0]
+    r_blob: [0.01, 0.05]
+  provenance: proposed
+  reason: >
+    Both graham2024_code/notebook_vca_config_params (output F_actin_init_conc) and
+    chandrasekaran2024/final_actin_concentration compute spherical-droplet molar F-actin
+    concentration via the identical formula C_actin = (N_fil * L / l_mono) / (N_A * (4/3)*pi*R^3)
+    using exact SI Avogadro's constant N_A = 6.02214076e23 (agreeing to 3.54e-16 after converting
+    monomer axial rise l_mono from um to nm via dl = 1000 * l_mono).
+  assumptions:
+    - "Unit conversion dl [nm] = 1000 * l_mono [um]."
+
+- id: rel_graham2024_code_t_actin_same_as_5x_circ_conc
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: chandrasekaran2024/final_actin_concentration
+  mapping:
+    N_fil: "N_fil"
+    L_fil: "5 * 2 * pi * R_drop"
+    dl: "1000 * l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C_actin: T_actin_conc
+  regime:
+    N_fil: [10.0, 100.0]
+    R_drop: [0.5, 2.0]
+    L0_per_fil: [0.05, 6.5]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [0.0, 25000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [1.0, 10.0]
+    r_blob: [0.01, 0.05]
+  provenance: proposed
+  reason: >
+    Live Cell 17 of CytoSimanalyze_VASP_Arp_VCA.ipynb sets total_polymer = 5 * 2*pi*N_fil*R_drop
+    (= 942.4778 um at N_fil = 30, R_drop = 1 um), whose molar concentration T_actin_conc is
+    identically chandrasekaran2024/final_actin_concentration evaluated at L_fil = 5 * 2*pi*R_drop
+    (max relative difference 2.42e-16). This directly resolves q_actin_nucleation_ode_unstated
+    by showing that chandrasekaran2024 Supplementary Table 4's [T-actin] = 138.38 uM (stated as
+    coming from an unprinted ODE model) is literally 5x the baseline circumference concentration
+    (5 * 27.6758 uM = 138.3789 uM) hardcoded in Cell 17.
+  assumptions:
+    - "Effective per-filament reservoir contour length L_fil = 5 * 2*pi*R_drop matching Cell 17's hardcoded 5x multiplier."
+    - "Unit conversion dl [nm] = 1000 * l_mono [um]."
+
+- id: rel_graham2024_code_lmax_same_as_droplet_circ
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: chandrasekaran2024/droplet_characteristic_lengths
+  mapping:
+    R_drop: "R_drop"
+  output_map:
+    L_circ: L_max_fil
+  regime:
+    N_fil: [10.0, 100.0]
+    R_drop: [0.5, 2.0]
+    L0_per_fil: [0.05, 6.5]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [0.0, 25000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [1.0, 10.0]
+    r_blob: [0.01, 0.05]
+  provenance: proposed
+  reason: >
+    Both graham2024_code/notebook_vca_config_params (L_max_fil = 2*pi*R_drop = 6.283185 um in
+    all 240 .cym configs) and chandrasekaran2024/droplet_characteristic_lengths (L_circ =
+    2*pi*R_drop, Main p. 3) define the maximum actin filament length as one equatorial
+    circumference of the spherical droplet (flagged too_plain by ModelAtlas as a 2-op product).
+
+- id: rel_graham2024_code_ode_dpdt_approx_monomer_depletion
+  kind: approximated_by
+  a: graham2024_code/notebook_actin_ode
+  b: chandrasekaran2024/monomer_depletion_elongation_rate
+  mapping:
+    k_grow: "k_grow_plus"
+    N_fil: "N_fil"
+    T_actin: "(TFactin / l_mono) / (6.02214076e23 * (4 / 3) * pi * R_drop**3 * 1e-15) * 1e6"
+    F_actin: "((TFactin - (TFactin - N_fil * L0_per_fil) * exp(-N_fil * k_grow_plus * 600 / TFactin)) / l_mono) / (6.02214076e23 * (4 / 3) * pi * R_drop**3 * 1e-15) * 1e6"
+  output_map:
+    v_elong: dP_dt
+  regime:
+    N_fil: [10.0, 50.0]
+    TFactin: [500.0, 1500.0]
+    k_grow_plus: [0.005, 0.02]
+    L0_per_fil: [0.05, 0.5]
+    R_drop: [0.5, 2.0]
+    l_mono: [0.0025, 0.003]
+  tolerance: 0.002
+  provenance: proposed
+  reason: >
+    chandrasekaran2024 Supplementary Table 4 (p. 20) states the monomer-depletion actin
+    elongation rate v_elong = k_grow * N_fil * (1 - [F-actin]/[T-actin]) citing Graham et al.
+    (2024) (ref-SI8). Live Cell 21 of graham2024_code (notebook_actin_ode::model()) integrates
+    this exact total-polymerization-rate ODE dP/dt = N_fil * k_grow_plus * (1 - L/TFactin) from
+    L(0) = N_fil * L0_per_fil to t = 600 s and reports the 1-second finite difference dP_dt =
+    (P(600) - P(599))/1 s. Evaluating monomer_depletion_elongation_rate along the analytical
+    trajectory L(600) matches Cell 21's backward 1-second finite difference dP_dt to <= 0.1%
+    across the physiological regime (sampled max relative error 6.55e-4 <= 0.002; exact
+    discretization factor (exp(r) - 1)/r - 1 <= r/2 = 1.0e-3 where r = N_fil*k_grow_plus/TFactin).
+  assumptions:
+    - "Default Cell 21 settings k_grow_minus = k_shrink_plus = k_shrink_minus = 0, t_grid_max = 600 s, dt_grid = 1 s."
+    - "Tolerance 0.002 bounds the 1-second backward finite-difference offset (exp(r) - 1)/r - 1 <= 1.001e-3 between Cell 21's np.diff(y[:, 1])/dt over [599, 600] s and instantaneous v_elong(600)."
+
+- id: rel_graham2024_code_ode_dpdt_reduces_to_total_addition
+  kind: reduces_to
+  a: graham2024_code/notebook_actin_ode
+  b: chandrasekaran2024/total_actin_addition_rate
+  mapping:
+    k_grow: "k_grow_plus"
+    N_fil: "N_fil"
+  output_map:
+    R_add: dP_dt
+  limit:
+    TFactin: "oo"
+  regime:
+    N_fil: [10.0, 50.0]
+    TFactin: [500.0, 1500.0]
+    k_grow_plus: [0.005, 0.02]
+    L0_per_fil: [0.05, 0.5]
+    R_drop: [0.5, 2.0]
+    l_mono: [0.0025, 0.003]
+  provenance: proposed
+  reason: >
+    In the undepleted monomer-reservoir limit TFactin -> oo (L/TFactin -> 0), live Cell 21
+    model()'s total polymerization rate dP_dt at t = 600 s reduces identically to
+    chandrasekaran2024/total_actin_addition_rate (R_add = k_grow * N_fil, Main p. 5),
+    mirroring chandrasekaran2024/rel_monomer_depletion_to_constant_addition.
+  assumptions:
+    - "Undepleted monomer reservoir limit TFactin -> oo with default Cell 21 shrinking/minus-end rates set to zero."
+
+- id: rel_graham2024_code_ode_factin_reduces_to_undepleted_conc
+  kind: reduces_to
+  a: graham2024_code/notebook_actin_ode
+  b: chandrasekaran2024/final_actin_concentration
+  mapping:
+    N_fil: "N_fil"
+    L_fil: "L0_per_fil + 600 * k_grow_plus"
+    dl: "1000 * l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C_actin: F_actin_conc
+  limit:
+    TFactin: "oo"
+  regime:
+    N_fil: [10.0, 50.0]
+    TFactin: [500.0, 1500.0]
+    k_grow_plus: [0.005, 0.02]
+    L0_per_fil: [0.05, 0.5]
+    R_drop: [0.5, 2.0]
+    l_mono: [0.0025, 0.003]
+  provenance: proposed
+  reason: >
+    In the undepleted monomer-reservoir limit TFactin -> oo, live Cell 21 model()'s integrated
+    600 s F-actin concentration F_actin_conc converges identically to
+    chandrasekaran2024/final_actin_concentration evaluated at undepleted linear filament length
+    L_fil = L0_per_fil + 600 * k_grow_plus (27.6758 uM at baseline N_fil = 30, L0 = 0.1 um,
+    k_grow = 0.0103 um/s, R_drop = 1 um, dl = 2.7 nm). At finite TFactin = 942.48 um (138.38 uM),
+    monomer depletion depresses F_actin_conc(600) by -9.4% to 25.07 uM (170.89 um; see
+    graham2024_code/q_ode_bc_27p68uM_unmet_in_code_and_cytosim).
+  assumptions:
+    - "Default Cell 21 integration horizon t = 600 s with zero shrinking/minus-end rates."
+    - "Unit conversion dl [nm] = 1000 * l_mono [um]."
+
+- id: rel_graham2024_code_ode_length_reduces_to_linear_elongation
+  kind: reduces_to
+  a: graham2024_code/notebook_actin_ode
+  b: chandrasekaran2024/filament_elongation_length
+  mapping:
+    L0: "L0_per_fil"
+    k_grow: "1000 * k_grow_plus"
+    t: "600"
+  output_map:
+    L_fil: L_total
+  limit:
+    TFactin: "oo"
+  regime:
+    N_fil: [1.0, 1.0]
+    TFactin: [500.0, 1500.0]
+    k_grow_plus: [0.005, 0.02]
+    L0_per_fil: [0.05, 0.5]
+    R_drop: [0.5, 2.0]
+    l_mono: [0.0025, 0.003]
+  provenance: proposed
+  reason: >
+    For a single filament (N_fil = 1) in the undepleted monomer-reservoir limit TFactin -> oo,
+    live Cell 21 model()'s integrated polymer length L_total at t = 600 s reduces identically
+    to chandrasekaran2024/filament_elongation_length (L_fil(t) = L0 + k_grow * t, Main p. 3)
+    after converting k_grow_plus from um/s to nm/s.
+  assumptions:
+    - "Single filament N_fil = 1 at default Cell 21 horizon t = 600 s."
+    - "Unit conversion k_grow [nm/s] = 1000 * k_grow_plus [um/s]."
+
+- id: rel_graham2024_code_vca_ode_reduces_to_undepleted_conc
+  kind: reduces_to
+  a: graham2024_code/notebook_vca_competition_ode
+  b: chandrasekaran2024/final_actin_concentration
+  mapping:
+    N_fil: "N_fil"
+    L_fil: "L0_per_fil + 600 * k_grow_plus"
+    dl: "1000 * l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C_actin: F_actin_conc
+  limit:
+    N_vca: "0"
+    TFactin: "oo"
+  regime:
+    N_fil: [10.0, 50.0]
+    TFactin: [500.0, 1500.0]
+    k_grow_plus: [0.005, 0.02]
+    k_bind_vca: [1.0, 5.0]
+    k_unbind_vca: [0.0, 3.0]
+    N_vca: [100.0, 5000.0]
+    L0_per_fil: [0.05, 0.5]
+    R_drop: [0.5, 2.0]
+    l_mono: [0.0025, 0.003]
+  provenance: proposed
+  reason: >
+    In the joint zero-VCA, undepleted-monomer limit (N_vca -> 0, TFactin -> oo), live Cell 23/25
+    model_VCA()'s integrated 600 s F-actin concentration F_actin_conc reduces identically to
+    chandrasekaran2024/final_actin_concentration evaluated at linear filament elongation length
+    L_fil = L0_per_fil + 600 * k_grow_plus.
+  assumptions:
+    - "Joint zero-sequestration (N_vca -> 0) and infinite-reservoir (TFactin -> oo) limit at default horizon t = 600 s."
+    - "Unit conversion dl [nm] = 1000 * l_mono [um]."
+
+

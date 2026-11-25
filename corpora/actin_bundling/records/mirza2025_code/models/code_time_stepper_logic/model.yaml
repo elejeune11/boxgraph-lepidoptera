@@ -1,0 +1,25 @@
+id: code_time_stepper_logic
+name: "Adaptive time-stepping loop and bug audit (CortexNematic2D.cpp:265,511-538,609-625)"
+role: model
+stated:
+  file: src/CortexNematic2D.cpp
+  lines: "518-538"
+  quote: "nIter = userNum->iparam[1];"
+  where: "CortexNematic2D.cpp:265,511-538,609-625"
+equation: "nIter = testCase (constant 3 <= 8, never updated by nonlinSolver); on step k >= 0 if converged: deltat_next = min(deltat / adaptiveStepTime, maxDelt); time_logged += deltat_next (post-update); time_true += deltat_used; at timeStep == 1000 noise written to nodeDOFs is overwritten by nodeDOFs0 at line 511"
+inputs:
+  deltat_init: {quantity: time_dimless, unit: dimensionless}
+  maxDelt: {quantity: time_dimless, unit: dimensionless}
+  adaptiveStepTime: {quantity: step_adapt_factor, unit: dimensionless}
+  testCase: {quantity: test_case_index, unit: dimensionless}
+  noiseStrength: {quantity: perturbation_amplitude, unit: dimensionless}
+outputs:
+  dt_step0_used: {quantity: time_dimless, unit: dimensionless}
+  dt_step1_used: {quantity: time_dimless, unit: dimensionless}
+  time_logged_after_10: {quantity: time_dimless, unit: dimensionless}
+  time_true_after_10: {quantity: time_dimless, unit: dimensionless}
+  time_offset_error: {quantity: time_dimless, unit: dimensionless}
+  step1000_noise_retained: {quantity: perturbation_amplitude, unit: dimensionless}
+settings:
+  n_steps: 10
+stochastic: false

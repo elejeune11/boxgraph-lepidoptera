@@ -1,0 +1,57 @@
+id: cytosim_arp23_vca_config
+name: 3D CytoSim agent-based actin-VASP-Arp2/3-VCA simulation configs
+role: model
+runnable: false
+not_runnable_reason: >
+  The 40 .cym configs in Arp23_concsweep_steric/ and 200 .cym configs in
+  VCA_Arp23_concsweep_steric_kunbind_0/ require the authors' custom-compiled C++ CytoSim
+  executable (~/cytosim-stable-edited/bin/sim, with the multi-fiber FiberSet::step() edit in
+  fiber_set.cc mentioned in README.md line 4 and printed with a syntax error on graham2024 SI
+  p. 25), neither of which is included in this repository or compiled in this environment.
+  Furthermore, the generator template config0.cym and trajectory helper ./get_nsolids.sh are
+  omitted from the repository.
+stated:
+  file: Arp23_concsweep_steric/R_0_r_0/config0.cym
+  lines: "8-128"
+  quote: "set simul system"
+  where: "Arp23_concsweep_steric/R_0_r_0/config0.cym & VCA_Arp23_concsweep_steric_kunbind_0/R_0_r_0/config0.cym"
+inputs:
+  dt: {quantity: time_step, unit: s}
+  eta: {quantity: dynamic_viscosity, unit: pN*s/um^2}
+  k_steric: {quantity: spring_stiffness, unit: pN/um}
+  R_drop: {quantity: droplet_radius, unit: um}
+  K_bend: {quantity: flexural_rigidity, unit: pN*um^2}
+  L_seg: {quantity: filament_segment_length, unit: um}
+  k_grow: {quantity: filament_growth_rate, unit: um/s}
+  F_grow: {quantity: force, unit: pN}
+  total_polymer: {quantity: total_polymer_length, unit: um}
+  L_max: {quantity: filament_length, unit: um}
+  r_actin: {quantity: molecular_radius, unit: um}
+  N_fil_0: {quantity: filament_count, unit: dimensionless}
+  L_0: {quantity: filament_length, unit: um}
+  N_vasp: {quantity: molecule_count, unit: dimensionless}
+  r_vasp: {quantity: molecular_radius, unit: um}
+  k_vasp_link: {quantity: spring_stiffness, unit: pN/um}
+  D_vasp_single: {quantity: diffusion_coefficient, unit: um^2/s}
+  k_bind_vasp: {quantity: binding_rate, unit: 1/s}
+  r_bind_vasp: {quantity: binding_distance, unit: um}
+  k_unbind_vasp: {quantity: unbinding_rate, unit: 1/s}
+  F_unbind_vasp: {quantity: force, unit: pN}
+  k_bind_arp: {quantity: binding_rate, unit: 1/s}
+  r_bind_arp: {quantity: binding_distance, unit: um}
+  k_unbind_arp: {quantity: unbinding_rate, unit: 1/s}
+  F_unbind_arp: {quantity: force, unit: pN}
+  k_nuc: {quantity: nucleation_rate, unit: 1/s}
+  D_arp: {quantity: diffusion_coefficient, unit: um^2/s}
+  k_arp_link: {quantity: spring_stiffness, unit: pN/um}
+  theta_branch: {quantity: branching_angle, unit: rad}
+  k_angle: {quantity: angular_stiffness, unit: pN*um/rad}
+outputs:
+  N_fil_final: {quantity: filament_count, unit: dimensionless}
+  L_sum_final: {quantity: total_polymer_length, unit: um}
+  rae: {quantity: relative_actin_enrichment, unit: dimensionless}
+settings:
+  n_steps: 600000
+  nb_frames: 600
+  seed: 0
+stochastic: true

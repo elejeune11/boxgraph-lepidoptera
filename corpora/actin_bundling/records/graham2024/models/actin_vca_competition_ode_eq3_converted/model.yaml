@@ -1,0 +1,35 @@
+id: actin_vca_competition_ode_eq3_converted
+name: coupled F-actin and VCA-actin competition ODE with length-to-concentration conversion (variant of SI Eqs. 1-3)
+role: model
+stated:
+  page: 24
+  printed_page: "SI-12"
+  quote: "VCA fiber competes for total available actin according to the following equation."
+  where: "SI Methods, Eqs. (1)-(3)"
+equation: "d[F-actin]/dt = (k_grow/c_L)*N_fil*(1 - ([F-actin]+[VCA-actin])/[T-actin]); d[VCA-actin]/dt = (k_bind/c_L)*N_VCA*(1 - delta), c_L = l_mono*(4/3)*pi*R_drop^3*N_A"
+variant_of: actin_vca_competition_ode_eq3_printed
+corrections:
+  - equation: "SI Eqs. (2) and (3)"
+    change: "divide linear fiber elongation speeds k_grow and k_bind (um/s) by c_L = l_mono * (4/3) * pi * R_drop^3 * N_A (um/uM) to yield molar rates in uM/s"
+    evidence: "k_grow = 0.0103 um/s (p. 22) and k_bind = 3.44 um/s (p. 24) are linear speeds in um/s while [F-actin], [VCA-actin], and [T-actin] are concentrations in uM; p. 24 converts polymer length to molar concentration using R_drop = 1 um and actin monomer rise l_mono = 2.7 nm, matching the CytoSim fiber_set.cc length-based implementation on p. 25."
+built_from:
+  - actin_polymerization_ode_eq2_converted
+inputs:
+  k_grow: {quantity: filament_growth_rate, unit: um/s}
+  N_fil: {quantity: filament_count, unit: dimensionless}
+  F_0: {quantity: actin_concentration, unit: uM}
+  T_actin: {quantity: actin_concentration, unit: uM}
+  t_end: {quantity: time, unit: s}
+  k_bind: {quantity: vca_binding_speed_per_molecule, unit: um/s}
+  N_VCA: {quantity: molecule_count, unit: dimensionless}
+  C_vca: {quantity: vca_concentration, unit: uM}
+  factor_Gmax: {quantity: vca_sequestration_factor, unit: dimensionless}
+  R_drop: {quantity: droplet_radius, unit: um}
+  l_mono: {quantity: actin_monomer_rise, unit: nm}
+outputs:
+  F_end: {quantity: actin_concentration, unit: uM}
+  V_end: {quantity: vca_actin_concentration, unit: uM}
+  delta_F: {quantity: actin_concentration, unit: uM}
+settings:
+  dt: 1.0
+stochastic: false

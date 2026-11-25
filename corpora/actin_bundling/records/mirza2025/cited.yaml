@@ -1,0 +1,41 @@
+# Cross-record cited-value links and provenance audit for mirza2025 across all 7 related records:
+#   1. mirza2025_code (released C++/HiperLife FEM repository; Mirza, 2025, ref-mirza2025)
+#   2. bois2011 (Bois, Julicher & Grill, PRL 106:028103, 2011, ref-bois2011)
+#   3. hannezo2015 (Hannezo et al., PNAS 112:8620-8625, 2015, ref-hannezo2015)
+#   4. frohoff2021 (Frohoff-Hulsmann, Wrembel & Thiele, PRE 103:042602, 2021; not cited)
+#   5. gubbala2025 (Gubbala et al., Soft Matter 21:6242-6252, 2025; not cited)
+#   6. weirich2017 (Weirich et al., PNAS 114:2131-2136, 2017, ref-weirich2017)
+#   7. weirich2019 (Weirich et al., PNAS 116:11125-11130, 2019, ref-weirich2019)
+#
+# Audit summary:
+# - hannezo2015 (5 datums in mirza2025/data.yaml carry `from_source: ref-hannezo2015`):
+#   1. `D_ref` ('~0.04 um^2/s', Appendix D p. 27) -> LINKED below to `hannezo2015/diffusion_coeff_frap`
+#      ('0.04 ± 0.03 um^2/s', Main p. 3 / printed p. 8622).
+#   2. `eta_ref` ('10^4 Pa*s', Appendix D p. 27, joint citation "Hannezo et al., 2015; Salbreux et al., 2009"):
+#      intentionally UNLINKED because hannezo2015 prints `viscosity_3d_lit = 10^2 Pa*s` (Main p. 3),
+#      100x smaller; the 10^4 Pa*s cortical viscosity originates from Salbreux et al. (2009) (not in corpus).
+#   3. `ell_s_ref` ('0.2 um', Appendix D p. 27, joint citation "Hannezo et al., 2015; Salbreux et al., 2009"):
+#      intentionally UNLINKED because hannezo2015 never prints '0.2 um' (it prints `lh_derived_main ≈ 0.1 um`
+#      on Main p. 3 and `lh_inverted_si = 10^-8 m = 0.01 um` on SI p. 21; moreover mirza2025's 2D viscous
+#      stress yields effective 1D screening length 2*ell_s = 0.4 um).
+#   4. `k_d_ref` ('~0.1 1/s', Appendix D p. 27, joint citation "Yolland et al., 2019; Hannezo et al., 2015;
+#      Callan-Jones et al., 2008"): intentionally UNLINKED because hannezo2015 reports FRAP turnover TIME
+#      `turnover_time_frap = 15 ± 7 s` (Main p. 3; reciprocal 1/tau ~ 0.067 s^-1) rather than a rate in 1/s.
+#   5. `spacing_drosophila_trachea` ('~1 um', Main p. 2, joint citation "Ozturk-Colak et al., 2016;
+#      Hannezo et al., 2015"): intentionally UNLINKED because '~1 um' is an order-of-magnitude summary
+#      spanning multiple distinct developmental stages printed in hannezo2015 (`ring_wavelength_embryo_wt =
+#      0.5 ± 0.1 um`, `ring_wavelength_larva_wt_early = 1.2 ± 0.1 um`, `taenidial_wavelength_larva_wt_late =
+#      1.45 ± 0.3 um`) rather than a single value printed in hannezo2015.
+#   See `q_hannezo2015_cited_parameter_mismatches` in mirza2025/questions.yaml.
+# - mirza2025_code: pure C++ FEM simulation code (no precomputed figure-curve datasets); all 18 shared
+#   parameters and printed predictions are already linked inline in mirza2025_code/data.yaml via
+#   `from_source: mirza2025` + `from_datum`. Reverse links from mirza2025 back to mirza2025_code are
+#   omitted to keep the provenance DAG strictly acyclic.
+# - bois2011 (ref-bois2011), weirich2017 (ref-weirich2017), weirich2019 (ref-weirich2019): cited only
+#   qualitatively in mirza2025; 0 datums in mirza2025/data.yaml carry `from_source` to any of these three
+#   records (and none of them cite mirza2025).
+# - frohoff2021, gubbala2025: neither cites mirza2025 nor is cited by mirza2025; 0 shared cited datums.
+
+- datum: D_ref
+  from_datum: diffusion_coeff_frap
+  evidence: "Appendix D (p. 27 / 27 of 33, citing ref-hannezo2015 Hannezo et al. 2015 and Yolland et al. 2019) takes effective actin diffusivity 'D ~ 0.04 um^2 s^-1', directly matching hannezo2015's FRAP-measured actin diffusion coefficient `diffusion_coeff_frap` ('0.04 ± 0.03 um^2/s', Main p. 3 / printed p. 8622)."

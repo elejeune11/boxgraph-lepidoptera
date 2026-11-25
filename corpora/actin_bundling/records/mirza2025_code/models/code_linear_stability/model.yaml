@@ -1,0 +1,36 @@
+id: code_linear_stability
+name: "Exact linear stability of the mirza2025_code governing equations (AuxCortexNematic2D.cpp:420,514-565,1070-1140; config:9-63)"
+role: model
+stated:
+  file: src/config
+  lines: "18-24"
+  quote: "lambda_iso   = 3.46008684795435584664"
+  where: "src/config:9-63 & AuxCortexNematic2D.cpp:420,514-565,1070-1140"
+equation: "L_eff = frank/2; c0_eff = 2*sus20 + lambda_rot*heqb + 4*k_lim/S2_max; kappa = (lambda_aniso - crossLinker)/lambda_iso; lambda_crit = min_{x>0} [(1/x + 4)*(x + visc)*(2*c0_eff + 2*L_eff*x) / ((2*c0_eff + 2*L_eff*x) + kappa*cvisc*(x + visc))]; ell_pattern = 2*pi/sqrt(x_crit); activity_ratio = lambda_iso / lambda_crit; domain_wavelengths = r_out / ell_pattern; ell_max_over_ell_pattern = nu_crit / nu_max(lambda_iso)"
+inputs:
+  visc: {quantity: turnover_rate_dimless, unit: dimensionless}
+  cvisc: {quantity: flow_alignment_dimless, unit: dimensionless}
+  rvisc: {quantity: rotational_viscosity_dimless, unit: dimensionless}
+  frank: {quantity: code_frank_parameter, unit: dimensionless}
+  sus20: {quantity: susceptibility_a_dimless, unit: dimensionless}
+  lambda_rot: {quantity: code_lambda_rot_parameter, unit: dimensionless}
+  lambda_iso: {quantity: active_tension_dimless, unit: dimensionless}
+  lambda_aniso: {quantity: parallel_active_tension_dimless, unit: dimensionless}
+  crossLinker: {quantity: transverse_active_tension_dimless, unit: dimensionless}
+  heqb: {quantity: relative_density, unit: dimensionless}
+  k_lim: {quantity: barrier_stiffness_dimless, unit: dimensionless}
+  S2_max: {quantity: barrier_S2_cutoff, unit: dimensionless}
+  r_out: {quantity: position_dimless, unit: dimensionless}
+outputs:
+  lambda_crit: {quantity: active_tension_dimless, unit: dimensionless}
+  nu_crit: {quantity: wavenumber_dimless, unit: dimensionless}
+  ell_pattern: {quantity: pattern_wavelength_dimless, unit: dimensionless}
+  activity_ratio: {quantity: activity_supercritical_ratio, unit: dimensionless}
+  domain_wavelengths: {quantity: domain_size_in_wavelengths, unit: dimensionless}
+  nu_max_supercrit: {quantity: wavenumber_dimless, unit: dimensionless}
+  wavelength_ratio_lin: {quantity: wavelength_ratio, unit: dimensionless}
+settings:
+  n_grid: 4000
+  x_min: 0.0001
+  x_max: 1000.0
+stochastic: false

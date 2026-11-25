@@ -1,0 +1,107 @@
+id: graham2024_code
+kind: software
+title: "CytoSim_VASP_Arp_VCA: CytoSim input configs, trajectory-analysis CSVs, and Python notebook (Graham et al., 2024)"
+authors:
+  - Aravind Chandrasekaran
+year: 2023
+file: corpus/actin_bundling/code/graham2024_code
+url: https://github.com/achansek/CytoSim_VASP_Arp_VCA
+version: "sha256:5c0ee4f08b767b4c77fe4f0bdc57b681b0a632ae53ed0f6711cb858de51afd15"
+licence: none stated
+language: Python, CytoSim
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1"
+  date: "2026-11-24"
+notes: >
+  Full code audit and live BoxGraph adapter verification of `corpus/actin_bundling/code/graham2024_code`
+  (GitHub https://github.com/achansek/CytoSim_VASP_Arp_VCA, commit 457099b, no licence stated), the
+  released CytoSim configurations, analysis notebook, and trajectory-analysis CSVs accompanying
+  Graham, Chandrasekaran, Wang, Yang, Lafer, Rangamani & Stachowiak, PNAS 121(3), e2309152121 (2024)
+  (`graham2024`; bioRxiv preprint 10.1101/2023.06.23.546267 linked in `README.md`).
+
+  Repository files and entry points:
+  (1) `Arp23_concsweep_steric/`: 40 CytoSim `.cym` input files (`R_0..R_7` x 5 replicates `r_0..r_4`,
+  spanning `[Arp2/3] = {0, 10, 25, 50, 75, 100, 125, 150} nM` -> `{0, 25, 63, 126, 189, 252, 315, 378}`
+  molecules) plus `reference.txt` (41 lines, column-shifted header bug).
+  (2) `VCA_Arp23_concsweep_steric_kunbind_0/`: 200 CytoSim `.cym` input files (`R_0..R_39` x 5 replicates
+  `r_0..r_4`, spanning 8 `[Arp2/3]` levels x 5 `[VCA] = {0, 1, 2, 5, 10} uM` levels) plus `reference.txt`.
+  (3) `PLOTCSVFILES/`: 264 pre-computed trajectory-analysis CSV files — 40 per-replicate 40-bin (`dR = 25 nm`)
+  `Density_Arp23_..._r_{0..4}.csv`, 8 unreferenced pooled 100-bin (`dR = 10 nm`) `Density_Arp23_...R_{0..7}.csv`,
+  120 per-replicate 40-bin `Density_VCA_..._r_{0..2}.csv`, 8 + 40 `Fillength_*.csv`, and 8 + 40 `Fillength_dist_*.csv`.
+  (4) `CytoSimanalyze_VASP_Arp_VCA.ipynb` (44 cells, 2933 JSON lines): trajectory reader (`readcytosimtraj`,
+  Cell 2), snapshot movie stitcher (`trajplotter`, Cell 12), config generators (Cells 15, 17, 19),
+  actin and VCA competition ODEs (`model()` Cell 21, `model_VCA()` Cell 23, VCA calibration Cell 25),
+  monomer interpolation & radial histogramming (`interpolateallmonomers`, `getradialdensitysnap`,
+  `getradialdensity`, Cell 27), filament statistics (`getfillengthprops`, Cell 31), CDF/length plotting
+  (`converttocdf`, Cells 35 & 37), and radial density / R.A.E. plotting (Cells 39, 41, 43).
+  (5) `Analyze_data.ipynb` (referenced by `README.md` line 7 as holding the analysis scripts) is
+  completely empty (1 blank cell). Neither the custom CytoSim C++ source (`fiber_set.cc`) claimed by
+  `README.md` line 4 nor `template_Arp/config0.cym` nor `./get_nsolids.sh` is present in the repository.
+
+  Record contents: 52 quantities, 109 data (74 parameters/constants across `.cym` and notebook files,
+  9 saved notebook run outputs, 17 targets copied from `graham2024`, 66 inline `from_source: graham2024` /
+  `from_datum` cross-links checked against `graham2024`), 3 added probe inputs, 11 models (1 non-runnable
+  3D CytoSim config `cytosim_arp23_vca_config`, 9 live `software: true` Python/CSV/config adapters loading
+  directly from `BOXGRAPH_SOURCE`, plus 1 diagnostic `variant_of` model `csv_radial_density_rae_paper_def`),
+  26 runs, 39 comparisons (28 reproduced, 9 not reproduced, 2 close), 3 converged ODE refinements
+  (`settles: True`, `belongs_to: model`), and 10 open questions.
+
+  What the code reproduces and settles from `graham2024`:
+  (1) Reproduces all 8/8 Table S1 Arp2/3 molecule counts `{0, 25, 63, 126, 189, 252, 315, 378}` via live
+  Cell 15 `.astype(int)` truncation (`cmp_arp23_molecule_counts`), confirming `q_molecule_count_truncation_vs_rounding`.
+  (2) Reproduces `total_polymer = 942.4777960769379 um` (`300*pi`), `[T-actin] = 138.38 uM`, `[F-actin](0) = 0.44 uM`,
+  `k_bind^fiber(1 uM) = 8675.68 um/s`, `L_Gmax(1 uM) = 34.047 um`, and `separation = 0.054 um` (`0.9 * 2 * R_blob`).
+  (3) Reproduces every saved notebook ODE output (`Cell 21`: `170.8945 um`, `Lmax = 188.4956 um`, `dPdt = 0.25293 um/s`,
+  `treadmilling = 0.0074 um/s`; `Cell 23`: all 5/5 remaining-fraction points; `Cell 25`: `no_vca_len = 170.7679 um`
+  and all 5/5 fractional reductions) and saved Cell 37 CSV `Lsum` prints (`165.763` and `159.837 um`).
+  (4) Reproduces Table S1's `10x` filament amplification at `[Arp2/3] = 50 nM` from actual CytoSim CSVs:
+  `296.0 / 30.0 = 9.867x` (`Arp23` sweep, `cmp_csv_arp50_fold_vs_paper`) and `294.5 / 30.0 = 9.817x` (`VCA=0` sweep).
+  (5) Settles `q_vasp_tet_conc_contradiction_02_vs_04`: all 240 `.cym` configs use `new 1000 blob`
+  (`0.3964 uM ~ 0.4 uM`, matching Table S1 and refuting Fig. 5A / Fig. S6 captions' `0.2 uM`).
+  (6) Settles `q_replicate_count_5_vs_6`: `Arp23_concsweep_steric` has 5 replicates (`r_0..r_4`) in configs and
+  `PLOTCSVFILES`, and Cell 39 uses `Nreps = 5`, refuting Fig. 5C caption's 'six replicates'.
+  (7) Settles `q_radial_density_missing_one_third`: Cell 39/41/43 implements `bulkfactor = 3*Nmax/(Rmax^3)`
+  (yielding `0.975` at the outer bin for a uniform sphere rather than `3.0`).
+  (8) Confirms `q_viscosity_50x_vs_500x_water` (`viscosity = 0.5` = `500x` water), `q_arp23_binding_distance_radius_plus_diameter`
+  (`config0.cym` line 74 comment `~4.72 nm + 7 nm ~ 12 nm`), and `q_imaging_time_600s_vs_15min` (`600000 * 0.001 s = 600 s`).
+
+  What the code does NOT reproduce and every discrepancy / hidden choice relative to `graham2024`:
+  (1) BRANCHING ANGLE CONTRADICTION (`q_branching_angle_77deg_vs_paper_70deg`, NOT REPRODUCED): All 240 `.cym`
+  configs comment out `% angle = 1.22 % 70 degrees` (line 101) and run `angle = 1.344` rad = `77.01 deg`
+  (line 102, bovine Arp2/3, Blanchoin 2000), contradicting Table S1, Fig. S4f, and SI Methods p. 23 (`70 deg`).
+  (2) R.A.E. MAXIMIZES COUNT INSTEAD OF DENSITY (`q_rae_code_maximizes_count_not_density`): Cells 39, 41, 43 pick
+  `maxrcore = radvec_core[Ncore.idxmax()]` before dividing by `r^2`, maximizing raw count `N(r) ~ r^2*rho(r)`
+  instead of density `rho(r)` as stated on SI pp. 23-24. At 150 nM Arp2/3, this pins `maxrcore` to `0.525-0.575 um`
+  (vs true density peak `0.253 um`) and lowers R.A.E. by 33% from `0.8482 +/- 0.0927` (literal paper definition)
+  to `0.5674 +/- 0.0470` (matching published Fig. 5C bar heights), while pooling all 50 replicate-frames into `np.std`.
+  (3) VCA `kunbind = 2.7` CALIBRATION VS `kunbind = 0` IN CONFIGS (`q_vca_kunbind_2p7_calibration_vs_0_in_configs`,
+  NOT REPRODUCED at 5 & 10 uM): Cell 25 calibrated `kbind = 3.44 um/s` with `kunbind = 2.7`, targeting fractional drop
+  `1/27.67 = 0.03614` (`0.03555` -> `0.891 uM` ODE / `0.870 uM` CytoSim, 11-13% below `1.00 uM`). Cell 17 then
+  overwrote `vca_growingOFFspeedvec = [0,0,0,0,0]` (`growing_off_speed = 0, 0` in all 200 VCA `.cym` configs,
+  and `kunbind` omitted from SI Eq. 3), causing `[VCA] = 5` and `10 uM` to diverge sharply from Cell 25
+  (`17.78%`/`35.55%` = `4.46`/`8.91 uM` in ODE and `4.34`/`8.68 uM` in CytoSim CSVs vs `12.66%`/`13.02%` = `3.18`/`3.26 uM`
+  in Cell 25) and making `kbind = 3.44 um/s` kinetically irrelevant (saturating `34.047 um` in `0.004 s`).
+  (4) INCOMPLETE VCA TRAJECTORIES & `N = 2` REPLICATES (`q_vca_sweep_incomplete_trajectories_and_nreps_2`,
+  NOT REPRODUCED / CLOSE): Despite Fig. S5 claiming '3 replicates', `Fillength_VCA_*.csv` (Fig. S5a-b) averaged
+  only 2 replicates (`Nfil_mean` fractional parts strictly in `{0.0, 0.5}`), 24/40 `r_2` and 4/40 `r_1` trajectories
+  in `Density_VCA_*.csv` ended early before `600 s` (down to `434 s` at `R = 36`), Cell 31's misplaced
+  `Lsum.append(np.sum(Lsum_r))` outside `if (SREF < nsnaplocal):` halved `Lsum_mean(600)` at `R = 33, 35, 36, 38`
+  (`431.09 um` vs `857.91 um` at `R = 35`), and Cells 41 & 43 pooled truncated tail frames (`t = 425..434 s`) with `t = 591..600 s`.
+  (5) UNMET `[F-actin](600) = 27.68 uM` BOUNDARY CONDITION (`q_ode_bc_27p68uM_unmet_in_code_and_cytosim`,
+  NOT REPRODUCED in length space & CytoSim): `total_polymer` was hardcoded as `5*2*pi*30*1.0`; Cell 21/25 ODE reaches
+  only `170.77 um` (`25.07 uM`, `-9.4%` vs `188.50 um` / `27.68 uM`), and CytoSim `0 nM Arp2/3` reaches `165.77 um`
+  (`24.34 uM`, `-12.1%`, `cmp_csv_arp0_F600_vs_paper` NOT REPRODUCED) due to `growing_force = 10 pN`.
+  (6) VASP `Wrist` DIFFUSION SILENTLY IGNORED (`q_vasp_wrist_diffusion_ignored_by_cytosim`, NOT REPRODUCED):
+  `diffusion = 10.0` is set on `single graftedcrosslinker` (a `Wrist` on `solid blob`), which CytoSim ignores;
+  blobs actually diffuse by Stokes drag at `D = 0.01485 um^2/s` (673x slower than Table S1's `10 um^2/s`).
+  (7) HIDDEN `.cym` PARAMETERS & ANALYSIS ARTIFACTS (`q_hidden_cytosim_parameters_and_sweeps`,
+  `q_radial_bin_right_edge_and_interpolation_cdf_bugs`, `q_cytosim_not_runnable_and_missing_files`):
+  13 unstated `.cym` parameters (`graftedcrosslinker stiffness = 10 pN/um`, `arp23 diffusion = 10 um^2/s`,
+  `arp23 stiffness = 100 pN/um`, `trans_activated = 1`, `nucleator unbinding = 0.005, 6`, `separation = 0.054 um`,
+  `deviation = 0.001 um`, `L_0 = 0.1 um`, `confine = inside`, `binding_key = 1/2`, `shrinking_speed` vs
+  `growing_off_speed`, default `kT = 0.0042 pN*um`, unstated seeds), plus right-bin-edge `Radialbincenter`
+  (`-22.9%` bias at `r = 0.1 um` for a uniform sphere, NOT REPRODUCED), `interpolateallmonomers()` vertex
+  double-counting (`+2.6%` excess points on a `5.5 um` filament), `converttocdf()` right-edge shift + NumPy 2.x
+  `np.trapz` incompatibility + `MOVAVG_NSNAPS = 5` averaging, and non-runnable notebook bugs.

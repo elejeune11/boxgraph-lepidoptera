@@ -1,0 +1,178 @@
+- id: q_hidden_log_barrier_and_extra_h_bug
+  kind: unstated_model
+  about:
+    - cpp_k_lim
+    - cpp_S2_max
+    - code_fem_q1_element_check
+    - cmp_fem1d_barrier_vs_nobarrier_Smax
+    - cmp_fem1d_barrier_vs_nobarrier_omega
+  text: >
+    AuxCortexNematic2D.cpp lines 1123-1150 add a hidden logarithmic barrier free-energy density
+    f_lim = -k_lim*log(0.999 - S^2) with hardcoded k_lim = 1e-4/deltat and S^2 cutoff 0.999 to
+    enforce realizability S < 0.9995. This regularization is never mentioned anywhere in mirza2025
+    (Eq. 3 prints only (a/2)S^2 + (b/8)S^4 + (L/2)|grad q|^2). Moreover, line 1140 writes
+    `Bk(all,range(3,4)) += jac*h*f_lim*dvh_` with an extraneous factor of `h` (unlike line 1071's
+    susceptibility term `2*(0.5*jac*S2*(sus2+sus4*S2))*dvh_` which correctly omits `h` because
+    `dvh_` already represents delta_v(dt*h_dot) = -dt*div(h*delta_v)). Because of this extra `h`,
+    the barrier term fails to cancel with the q-EOM in momentum balance, injecting a spurious
+    uncompensated force -h*grad[(h - 1)*f_lim] (~1.1e-6 in our weak-form check). At Fig. 2b(I)
+    parameters (S_max ~ 0.61), the barrier and its extra-h bug shift lambda_crit by +3.9e-8,
+    c_bar_0 by +0.010% (4.0004 vs 4), and S_max by < 0.01%, making it benign in the published
+    parameter regime, though it becomes non-negligible as S approaches 1.
+  citation:
+    file: src/AuxCortexNematic2D.cpp
+    lines: "1123-1140"
+    quote: "double k_lim =1E-4/deltat;"
+    where: "AuxCortexNematic2D.cpp:1123-1150"
+
+- id: q_frank_factor_of_two_and_naming_mismatches
+  kind: reading
+  about:
+    - cfg_frank
+    - cfg_visc
+    - cfg_lambda_rot
+    - cfg_kp
+    - cfg_kd
+    - cfg_fric
+    - cmp_L_bar_eff_vs_paper
+    - cmp_activity_ratio_bare_vs_paper
+  text: >
+    Several config parameter names, signs, and prefactors in src/config and CortexNematic2D.cpp
+    differ substantially from mirza2025's notation and Appendix 4—table 1:
+    (1) `frank = 2` (src/config:15) is 2*L_bar rather than L_bar = 1 because AuxCortexNematic2D.cpp:420
+    defines `DqDq = 0.5*(|grad q1|^2 + |grad q2|^2) = (1/4)|grad q|^2` instead of `(1/2)|grad q|^2`;
+    exact 16-digit matching of config's `lambda_iso = 3.46008684795435584664 = 1.3 * lambda_crit`
+    confirms L_bar = frank/2 = 1. The C++ fallback default `frank = 1.0` (CortexNematic2D.cpp:89)
+    therefore corresponds to L_bar = 0.5.
+    (2) `visc = 0.1` (src/config:9) is NOT shear viscosity eta (hardcoded via `c = 2.` = 2*eta_bar
+    at AuxCortexNematic2D.cpp:265); it is the dimensionless depolymerization/turnover rate k_bar_d
+    in `-visc*(heqb - h)` (AuxCortexNematic2D.cpp:524), while `kp = 1`, `kd = 1`, and `fric = 1.`
+    in src/config are completely dead/unused in LS_CortexNematic_2D (diffusion D_bar = 1 and
+    friction gamma_bar = 1 are hardcoded).
+    (3) `lambda_rot = -6.` (src/config:27) carries the opposite sign to mirza2025's lambda_bar_o = +6.
+    (4) Active stress uses a 3-parameter decomposition `lambda_iso*(1-S)*I + lambda_aniso*Snn +
+    crossLinker*Snn_` (AuxCortexNematic2D.cpp:409-416,527-528,561-565) with `lambda_aniso = 0.9*lambda_iso`
+    and `crossLinker = 1.1*lambda_iso`, which reduces identically to mirza2025 Eq. (7)
+    `lambda*(I + kappa*q)` with `kappa = -0.2`, EXCEPT that it is evaluated with explicit lagged q0
+    rather than implicit q (and `lambda_rot` at lines 1086-1087 also uses lagged q0).
+  citation:
+    file: src/config
+    lines: "9-37"
+    quote: "frank   = 2"
+    where: "src/config:9-37 & AuxCortexNematic2D.cpp:420,524-565"
+
+- id: q_postprocessing_stress_and_globinteg_bugs
+  kind: possible_error
+  about:
+    - code_constitutive_and_stress
+    - cmp_Ten_sym_xx_bug_vs_exact
+    - cmp_Ten_sym_xy_bug_vs_exact
+    - cmp_border_xx_bug_vs_exact
+  text: >
+    The post-processing stress diagnostics in AuxCortexNematic2D.cpp and CortexNematic2D.cpp contain
+    multiple bugs (which do NOT affect the Newton-Raphson PDE residual Bk, but corrupt CSV stress logs):
+    (1) In LS_CortexNematic_2D line 1109, `Ten_sym` writes `4*rodt_` instead of Paper Eq. (6)'s
+    `2*(rodt_ + tr(rodt_)*I)` (2x excess shear stress and missing bulk coupling `2*d_22*delta_ij`)
+    AND multiplies `-product(Dq_, Dq_, {{0,0},{1,1}})` by `frank`, which was already divided by
+    `deltat` on line 270 (yielding `2/deltat = 5x` the true Frank stress at `deltat = 0.4`!).
+    (2) Line 1108 computes `nablaq` mixing unscaled `rvisc*Jq_ + cvisc*rodt_ + lambda_rot*h*q_`
+    with `deltat`-divided `4*(sus20 + 2*sus40*S2)*q_` and divides by `deltat`-divided `frank`, and
+    uses full `rodt_` instead of deviatoric `d^dev`.
+    (3) In LS_CortexNematic_Border line 1241, `Ten_sym` uses `1*product(rodt, bnormal)` (missing the
+    factor of 2 AND the bulk `tr(rodt)*I` term) and unscaled `frank = 2` (2x L_bar = 1).
+    (4) CortexNematic2D.cpp line 593 logs raw unnormalized `biLinear` (missing `/ (r_out*r_out)` to
+    obtain omega), divides 2D area integrals `sigma_xx`, `sigma_yy` by `r_out` instead of `r_out^2`,
+    and queries `globIntegral("fric_xx")` and `globIntegral("fric_yy")` even though line 405 and
+    lines 1120-1121 registered `"fric_x"` and `"fric_y"`.
+  citation:
+    file: src/AuxCortexNematic2D.cpp
+    lines: "1108-1112"
+    quote: "tensor<double,2> Ten_sym =  jac*h*( 4*rodt_  + lambda_iso*(1-S)*id2d_ + lambda_aniso*_Snn  +  crossLinker*_Snn_  + cvisc*Jq_ - frank*product(Dq_,Dq_,{{0,0},{1,1}} ));"
+    where: "AuxCortexNematic2D.cpp:1108-1121, 1239-1248 & CortexNematic2D.cpp:405, 593"
+
+- id: q_time_stepper_and_dead_code_bugs
+  kind: possible_error
+  about:
+    - code_time_stepper_logic
+    - cmp_time_logged_vs_true
+    - cfg_deltat
+    - cfg_maxDelt
+    - cfg_linTol
+    - cfg_linImax
+    - cpp_noise_step
+  text: >
+    CortexNematic2D.cpp contains several control-flow and parameter-plumbing bugs not visible from mirza2025:
+    (1) Line 518 sets `nIter = userNum->iparam[1]`, which was initialized to `testCase` (= 3) at line
+    265 and is NEVER updated by `nonlinSolver->solve()`. Thus `nIter <= 8` (line 529) is always true
+    on converged steps and the step-shrink branch `else if (nIter > 8)` (line 531) is unreachable.
+    (2) Line 538 updates `time = time + deltat` AFTER modifying and clamping `deltat` (lines 529-534).
+    Because src/config sets initial `deltat = 0.8 > maxDelt = 0.4`, step 0 integrates dt = 0.8 but
+    advances logged `time` by only 0.4 (permanent -0.4 offset in output timestamps).
+    (3) Lines 609-625 attempt to inject velocity noise at `timeStep == 1000` into `dofHand->nodeDOFs`,
+    not `nodeDOFs0`; line 511 immediately overwrites `nodeDOFs` with `nodeDOFs0` at the top of the
+    next loop iteration, making the perturbation dead code.
+    (4) Lines 445-446 and 482-483 hardcode GMRES tolerance `1e-10`, max iterations `7000`, and NR
+    tolerances `1E-8`, silently ignoring `linTol = 1e-8`, `linImax = 10000`, `resTol`, and `solTol`
+    parsed from src/config; line 491 hardcodes `while (time < 100000)`, ignoring `totalTimeSteps`.
+    (5) AuxCortexNematic2D.cpp:160,167 computes `q_int = -sqrt(-(4*sus20+lambda_rot*heqb)/(32*sus40))`
+    and prints it at every node (printing `-nan` 160,000 times for config where c_bar_0 = +4 > 0).
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "518-538"
+    quote: "nIter = userNum->iparam[1];"
+    where: "CortexNematic2D.cpp:265,445-446,482-483,511-538,609-625"
+
+- id: q_hidden_numerics_and_initial_conditions
+  kind: unstated_input
+  about:
+    - cfg_nx
+    - cfg_ny
+    - cfg_r_out
+    - cfg_deltat
+    - cfg_maxDelt
+    - cfg_noiseStrength
+    - cpp_bfOrder
+    - cpp_gauss_pts_bulk
+    - cpp_t_end
+    - cmp_domain_wavelengths_vs_paper
+  text: >
+    mirza2025 (p. 7, p. 15) reports only that 2D periodic FEM simulations use a square domain of
+    size `8 * ell_pattern`, omitting all numerical discretization and initialization details. The
+    released code reveals these previously unstated choices:
+    (1) Structured 400 x 400 bilinear Q1 quadrilateral mesh (`bfOrder = 1`, 4-point Gauss quadrature,
+    dx = 127/400 = 0.3175 ell_s, ~50 elements per linear wavelength) on an integer-rounded square
+    domain `r_out = 127` (= ceil(8 * 15.7895) = 8.0433 * ell_pattern, +0.54% above 8*ell_pattern).
+    (2) Backward-Euler/semi-implicit time stepping with `deltat = 0.8` -> `maxDelt = 0.4`, Newton-Raphson
+    `maxIter = 8`, `resTol = solTol = 1e-8`, AztecOO GMRES (`tol = 1e-10`, ILUT domain-decomposition
+    preconditioner), integrated to `t_max = 100000`.
+    (3) Initial density perturbation `h = heqb + noiseStrength * fRand(0, 1.0)` (AuxCortexNematic2D.cpp:202,
+    `noiseStrength = 1e-4`), which adds a strictly positive mean mass shift +0.5e-4 rather than
+    zero-mean noise, while `q1, q2` use zero-mean `noiseStrength * fRand(-1, 1.0)` and `fRand`
+    (AuxCortexNematic2D.h:28-33) never seeds `std::rand()` (fixed C stdlib default seed 1).
+  citation:
+    file: src/AuxCortexNematic2D.cpp
+    lines: "162-202"
+    quote: "dofHand->nodeDOFs->setValue(0, i, IndexType::Local, h_init + noise_strength*fRand(0,1.0)) ;"
+    where: "src/config:1-67, CortexNematic2D.cpp:215,410,491, AuxCortexNematic2D.cpp:162-202, AuxCortexNematic2D.h:28-33"
+
+- id: q_readme_fig2bI_and_unreleased_postproc
+  kind: reading
+  about:
+    - hiperlife_2d_fem_driver
+    - run_pde_2d_config_fibrillar
+    - run_pde_2d_swapped_banded
+  text: >
+    README.md line 1 states that the released repository reproduces Figure 2b(I) (point (I) on
+    Fig. 2(b) at kappa = -0.2, whose 2D spatial snapshot is Fig. 2c(I)). Only this single config
+    file is included (no sweep configs for kappa in [-0.8, 0.8], Figs. 3-4, or post-processing/plotting
+    scripts converting VTK / raw `bilinear.csv` into omega and figure panels). Additionally, the full
+    400 x 400 MPI + Trilinos + HiperLife 4.3.0 C++ executable cannot run in the Python runtime
+    (`hiperlife_2d_fem_driver`, runnable: false), so our record ports and executes the exact 2D Q1
+    element residual/Jacobian (`code_fem_q1_element_check`), exact 1D Q1 FEM Newton-Raphson solver
+    (`code_q1_fem_1d_solver`), and 2D periodic continuum PDE (`code_2d_pde_continuum_port`, on a
+    smaller L = 2*ell_pattern box for fast CPU execution).
+  citation:
+    file: README.md
+    lines: "1"
+    quote: "**Note:** This code reproduces **Figure 2b(I)** from the following scientific publication:"
+    where: "README.md:1-4 & src/config"

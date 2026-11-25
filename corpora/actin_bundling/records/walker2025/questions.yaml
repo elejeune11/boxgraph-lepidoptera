@@ -1,0 +1,881 @@
+- id: q_cytosim_bivalent_not_runnable
+  kind: unstated_model
+  about: [cytosim_bivalent_tetravalent_droplet]
+  text: >
+    The full 3D CytoSim agent-based simulations of 30 growing actin filaments and 1,000-20,000
+    bivalent (mini-Lpd) and/or tetravalent (VASP) spherical solid crosslinkers (Figs. 4I-K, S5, S6)
+    cannot be run inside BoxGraph from the printed text alone: they require the external C++ CytoSim
+    engine and omit key configuration parameters (crosslinker bond spring stiffness, steric repulsion
+    cutoff/potential shape, simulation temperature T, Brownian ratchet force-velocity law, binding-site
+    geometry on the 30 nm sphere, and random seeds).
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "Simulations were performed in Cytosim"
+    where: "Methods S1 & Tables S1-S2"
+
+- id: q_cytosim_dynamic_multimer_not_runnable
+  kind: unstated_model
+  about: [cytosim_dynamic_multimerization_droplet]
+  text: >
+    The custom 3D CytoSim dynamic dimerization (Fig. 5B-D) and dynamic multimerization (Fig. S7)
+    simulations require custom edits to the C++ CytoSim source code (GitHub
+    RangamaniLabUCSD/Dynamic_multimerization, Zenodo 10.5281/zenodo.14522973) and omit protein-protein
+    bond spring stiffness, angular binding-site geometry on the 30 nm solid spheres, temperature T,
+    and random seeds.
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "The implementation of our dynamic dimerization model required edits to the Cytosim"
+    where: "Methods S1 & Tables S1-S2"
+
+- id: q_mu_viscosity_misprint
+  kind: possible_error
+  about: [einstein_diffusion_relation, langevin_overdamped_1d]
+  text: >
+    Methods S1 (p. 42) writes dx^{ij}(t) = mu * f^{ij}_{tot}(t) * dt + dB_j(t) and D = mu * k_B T,
+    but verbally defines mu as 'the viscosity of the solvent'. Dimensionally and physically, mu in
+    both equations must be the particle hydrodynamic mobility (units um/(pN*s)), not solvent dynamic
+    viscosity eta (units pN*s/um^2 = Pa*s); substituting viscosity 0.5 pN*s/um^2 into D = mu * k_B T
+    yields mismatched units (pN^2*s/um rather than um^2/s).
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "Here, µ is the viscosity of the solvent"
+    where: "Methods S1 (Position evolution)"
+
+- id: q_stokes_einstein_vs_prescribed_D
+  kind: unexplained_difference
+  about: [stokes_einstein_diffusion, sim_crosslinker_diffusion_rate, sim_condensate_viscosity, sim_crosslinker_radius, cmp_stokes_einstein_vs_prescribed_D]
+  text: >
+    Table S1 (pp. 25-27) specifies condensate viscosity eta = 0.5 pN*s/um^2 (500x water) and
+    crosslinker solid radius r = 30 nm alongside a prescribed diffusion rate D = 10 um^2/s for
+    mini-Lpd dimers, VASP tetramers, and mini-Lpd monomers. By the Stokes-Einstein relation at
+    T = 298 K (k_B T = 4.114 pN*nm), a 30 nm sphere in 0.5 Pa*s fluid has D_SE = 0.01455 um^2/s —
+    a 687-fold discrepancy. A diffusivity of 10 um^2/s for a 30 nm sphere corresponds to a solvent
+    viscosity of 0.00073 Pa*s (below pure water), not 500x water.
+  citation:
+    page: 25
+    printed_page: "SI-2"
+    quote: "Condensate viscosity 0.5 pN"
+    where: "Table S1 (pp. 25-27)"
+
+- id: q_brownian_step_exceeds_binding_radius
+  kind: numerics
+  about: [brownian_noise_stddev, sim_time_step, sim_crosslinker_diffusion_rate, sim_actin_binding_distance, sim_monomer_monomer_binding_distance]
+  text: >
+    At the Table S1 crosslinker diffusion rate D = 10 um^2/s and time step dt = 0.002 s, the single-step
+    1D Brownian displacement standard deviation sigma_B = sqrt(2*D*dt) = 200 nm (3D RMS jump = 346 nm).
+    This single-step diffusive jump is 6.7x larger than both the crosslinker solid radius (30 nm) and
+    the actin-binding capture radius (30 nm), 2.2x larger than the monomer-monomer capture radius
+    (90 nm), and 20% of the droplet radius (1000 nm), raising a numerical question about steric
+    tunneling and reaction-encounter sampling at dt = 0.002 s (whereas at Stokes-Einstein
+    D_SE = 0.01455 um^2/s, sigma_B = 7.6 nm).
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "centered around a mean of 0 with a standard deviation of"
+    where: "Methods S1 & Table S1"
+
+- id: q_kd_dimensionless_and_fig5b_contradiction
+  kind: possible_error
+  about: [binding_affinity_printed, binding_affinity_molar]
+  text: >
+    Methods S1 (p. 43) states: 'Binding affinity (as shown in Figure 5B) can be calculated from
+    K_d = k_unbind / k_bind.' This contains three inconsistencies: (1) on p. 42, k_bind is defined
+    as a first-order mesoscopic rate (1/s) while k_{bind,2} = k_bind * N_AV * V_bind is the
+    second-order association rate (M^-1 s^-1), so k_unbind / k_bind is a dimensionless ratio rather
+    than a molar dissociation constant K_d = k_unbind / k_{bind,2} (0.587 uM for ring actin binding
+    and 5.44 nM for dimerization at k_form = 10 s^-1, k_split = 0.1 s^-1); (2) Figure 5B (p. 9)
+    plots k_dimer_form (1/s) vs k_dimer_split (1/s) and prints no K_d values; and (3) main text
+    (p. 10) explicitly states 'this model lacks the necessary biochemical detail to support the
+    calculation of meaningful binding constants for dimerization.'
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "Binding affinity (as shown in Figure 5B) can be calculated from"
+    where: "Methods S1 p. 43 vs Results p. 10 & Fig. 5B p. 9"
+
+- id: q_icosphere_eight_triangles_misprint
+  kind: possible_error
+  about: [icosphere_subdivision_geometry_printed, icosphere_subdivision_geometry_icosahedron, sim_icosphere_init_triangles_printed, sim_icosphere_subdiv_printed, sim_icosphere_target_monomers, cmp_icosphere_printed_monomers]
+  text: >
+    Methods S1 (p. 43) states that 'The icosphere was generated by dividing the initial eight
+    triangles 3 more times to generate triangles whose effective size was comparable to 10 actin
+    monomers. [S4]'. An icosphere starts from a 20-triangle regular icosahedron, not 8 triangles
+    (an octahedron). Eight triangles subdivided 3 times yield 512 faces on an R = 1 um sphere
+    with equivalent equilateral edge length 238.1 nm (~88 actin monomers at 2.7 nm helical rise or
+    ~43 monomers at 5.5 nm globular diameter), far coarser than 10 monomers. Even the cited method
+    [S4] (Chandrasekaran et al., 2024) uses 20 initial faces subdivided 4 times (5,120 faces,
+    s_eq = 75.3 nm, ~27.9 helical rises or ~13.7 globular monomer diameters).
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "The icosphere was generated by dividing the initial eight triangles 3 more times"
+    where: "Methods S1 (Actin-covered surface area calculation)"
+
+- id: q_unstated_temperature
+  kind: unstated_input
+  about: [kBT_added, einstein_diffusion_relation, langevin_overdamped_1d, stokes_einstein_diffusion, persistence_length_from_rigidity]
+  text: >
+    Neither Table S1 nor Methods S1 states the simulation temperature T or thermal energy k_B T
+    used in D = mu * k_B T (p. 42) or filament thermal fluctuations. We supply k_B T = 4.114 pN*nm
+    (298 K) in added.yaml with alternatives 4.142 pN*nm (300 K), 4.2 pN*nm (CytoSim default), and
+    4.28 pN*nm (310 K).
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "where kB is the Boltzmann constant and T is temperature"
+    where: "Methods S1 (Position evolution)"
+
+- id: q_table_s1_max_length_units
+  kind: possible_error
+  about: [droplet_circumference, sim_filament_max_length_circumference]
+  text: >
+    Table S1 (p. 25) prints Maximum length as '2piR um' even though Radius R = 1 um already
+    carries units of micrometers (making 2*pi*R um dimensionally um^2); the adjacent notes row
+    confirms the intended value is '2pi um' (i.e., 2*pi*R with R = 1 um).
+  citation:
+    page: 25
+    printed_page: "SI-2"
+    quote: "Maximum length 2πR µm"
+    where: "Table S1 (Actin filaments)"
+
+- id: q_steric_stiffness_difference
+  kind: choice
+  about: [sim_minilpd_steric_stiffness, sim_vasp_steric_stiffness, sim_monomer_actin_steric_stiffness, sim_monomer_monomer_steric_stiffness]
+  text: >
+    Table S1 (pp. 26-27) assigns steric repulsion stiffness 1.0 pN/um to bivalent mini-Lpd dimers,
+    10 pN/um to both tetravalent VASP tetramers and monovalent mini-Lpd monomer-actin interactions,
+    and 5.0 pN/um to monomer-monomer interactions. Whether the 10-fold softer steric repulsion for
+    bivalent mini-Lpd dimers affects ring formation compared to tetravalent VASP is not tested.
+  citation:
+    page: 26
+    printed_page: "SI-3"
+    quote: "mini-Lpd steric repulsion Radius 30 nm"
+    where: "Table S1 (pp. 26-27)"
+
+- id: q_figs4a_lseg_unit_typo
+  kind: possible_error
+  about: [sim_filament_seg_length]
+  text: >
+    In Figure S4A (page-035.png), the actin filament segment length is labelled 'L_seg = 0.1 uM'
+    (micromolar concentration) instead of '0.1 um' (micrometers, as stated in Table S1 p. 25 and
+    Methods S1 p. 42).
+  citation:
+    page: 35
+    printed_page: "SI-12"
+    quote: "Actin filaments are modeled as inextensible segments of length Lseg"
+    where: "Figure S4A schematic (page-035.png)"
+
+- id: q_figs2_cd_caption_swap_and_nacl
+  kind: possible_error
+  about: [exp_minilpd_llps_conc_range]
+  text: >
+    In Figure S2 (pp. 31-32), panel C image header reads 'mini-Lpd actin' and panel D reads
+    'mini-Lpd + VASP actin', whereas the caption (p. 32) swaps them, describing C as 'mini-Lpd and
+    VASP' and D as 'mini-Lpd' alone. Additionally, Fig. S2B bottom caption lists '150 mM NaCl' for
+    5 uM mini-Lpd condensates, whereas STAR Methods (p. 22) and Figs. 4 & 7 specify 50 mM NaCl for
+    mini-Lpd alone.
+  citation:
+    page: 32
+    printed_page: "SI-9"
+    quote: "Time-lapse of sphere-to- rod transformation of a condensate formed from mini-Lpd"
+    where: "Figure S2B-D (pp. 31-32)"
+
+- id: q_figs5e_wrong_caption
+  kind: possible_error
+  about: [sim_crosslinker_vol_frac_table]
+  text: >
+    Figure S5E (page-036.png) plots 'Fraction of mini-Lpd dimers' stratified by 'Number of bound
+    filaments: 0, 1, 2' for bivalent crosslinkers, whereas the caption on p. 37 misdescribes the
+    bars as 'free monomers, free dimers, actin-bound monomers, and actin-bound dimers' (text
+    erroneously carried over from the dynamic dimerization plot Fig. 5D).
+  citation:
+    page: 37
+    printed_page: "SI-14"
+    quote: "free monomers, free dimers, actin-bound monomers, and actin-bound dimers"
+    where: "Figure S5E caption (p. 37) vs image (p. 36)"
+
+- id: q_figs1_typos_and_wrong_ref_s9
+  kind: possible_error
+  about: [fl_lpd_phasepred_score, guv_lipid_composition_sum, cmp_guv_lipid_closure, ref-S9]
+  text: >
+    Figure S1 caption (p. 30) contains three distinct printed errors: (1) it writes 'amino acids
+    850-0250' twice instead of '850-1250' (as printed on Fig. S1A-B p. 29 and main text p. 3);
+    (2) 'PhasePred9' cites Supplemental Reference S9, which on p. 44 is Chen (2021, Biophys. J.
+    120:752-753, on membrane curvature sensing) rather than the PhasePred machine-learning LLPS
+    predictor; and (3) the GUV lipid percentages 84% DOPC + 15% DGS-NiNTA + 1% DP-EG10 biotin +
+    0.1% Texas Red-DHPE sum to 100.1% rather than 100.0%.
+  citation:
+    page: 30
+    printed_page: "SI-7"
+    quote: "amino acids 850-0250 of Lamellipodin that are contained within mini-Lpd"
+    where: "Figure S1 caption (p. 30) & Supplemental References (p. 44)"
+
+- id: q_crossref_and_axis_inconsistencies
+  kind: possible_error
+  about: [cytosim_bivalent_tetravalent_droplet, cytosim_dynamic_multimerization_droplet]
+  text: >
+    Multiple internal cross-reference and axis-ordering inconsistencies occur across the article and
+    SI: (1) Fig. 5D caption (p. 10) cites 'Figure S6J' for the 5-state cartoon that actually resides
+    in Figure S4J (p. 35; Fig. S6 ends at G); (2) Discussion (p. 15) refers to 'the mechanism
+    proposed in Figure 7F' (aspect-ratio box plots) instead of Figure 7H (mechanism cartoon);
+    (3) Methods S1 (p. 42) cites '[S4,10]' instead of '[S4,S10]' (main ref 10 is Elbaum-Garfinkle,
+    whereas S10 is Graham et al. 2024); (4) Fig. S6A caption (p. 39) cites Video S1 while main text
+    (p. 10) cites Video S3 for Fig. S6A and Fig. 4I caption (p. 8) assigns Video S1 to Fig. 4I and
+    Video S2 to Fig. S6E (which Fig. S6E caption p. 39 cites as Video S3); (5) Fig. S7C (p. 40)
+    orders k_multimer_split left-to-right from 0.001 to 10.0, opposite to 10.0 to 0.001 in Fig. 5B,
+    Fig. S7B, and Fig. S7E-G; and (6) Fig. S3K (p. 33) timestamps jump from 15 s to 30 s (omitting
+    20 s and 25 s) while other frames step by 5 s.
+  citation:
+    page: 10
+    printed_page: "1558"
+    quote: "A cartoon depiction of each formation can be seen in Figure S6J"
+    where: "Fig. 5D caption p. 10, Discussion p. 15, SI pp. 33, 39, 40, 42"
+
+- id: q_langevin_run_horizon_choice
+  kind: choice
+  about: [run_langevin_1d_crosslinker, langevin_overdamped_1d]
+  text: >
+    To keep validation fast (<25 s on CPU), run_langevin_1d_crosslinker integrates the single-body
+    1D overdamped Langevin equation for t_sim = 1.0 s (500 steps at paper dt = 0.002 s) over
+    n_particles = 4,000 across 5 replicates rather than the full 600 s 3D multi-agent trajectory,
+    and verifies time-step and ensemble convergence via ref_langevin_dt and ref_langevin_n_particles.
+  citation:
+    page: 25
+    printed_page: "SI-2"
+    quote: "Total time 600 s"
+    where: "Table S1"
+
+- id: q_figs5_vasp_and_5pas_discrepancy
+  kind: possible_error
+  about: [sim_high_viscosity_figs5b, sim_total_time_high_visc, sim_figs5_kbind_fixed, cytosim_bivalent_tetravalent_droplet]
+  text: >
+    Three inconsistencies appear in the viscosity and crosslinker-count sweeps of Figure S5
+    (pp. 10, 36-37): (1) main text (p. 10) states that Figures S5A and S5B simulated varied
+    viscosities 'using ring-forming kinetics for VASP-actin binding', whereas the Figure S5A-B
+    caption (p. 37) and green-sphere snapshots (p. 36) actually simulate 1,000 bivalent mini-Lpd
+    crosslinkers (using ring-forming kinetics from Fig. 4I), not tetravalent VASP; (2) Figure S5B
+    caption (p. 37) claims increasing simulation time to 2,400 s recovers ring formation at
+    5.0 Pa*s 'in a viscosity condition where rings are absent at 600 s', yet 5.0 Pa*s is not
+    present among the t = 600 s columns of Figure S5A (which jump from 1.0 to 10.0 pN*s/um^2);
+    and (3) Figure S5C caption (p. 37) first states 'at various binding and unbinding rates' before
+    stating two sentences later that the binding rate 'is held constant at 1.0 s^-1 in all
+    simulation conditions'.
+  citation:
+    page: 10
+    printed_page: "1558"
+    quote: "range of viscosities using ring-forming kinetics for VASP-actin"
+    where: "Results p. 10 & Fig. S5A-C pp. 36-37"
+
+- id: q_fig5c_panel_split_and_table_s2_omission
+  kind: possible_error
+  about: [cytosim_dynamic_multimerization_droplet, sim_rate_sweep_min, sim_rate_sweep_max]
+  text: >
+    Main text (p. 10) states that when association rate exceeds dissociation rate, actin-covered
+    surface area is low '(Figure 5C top)', whereas when dissociation exceeds association, shells
+    occur '(Figure 5C bottom)'. However, Figure 5C (p. 9) actually splits top and bottom panels by
+    k_dimer_form = 10 s^-1 (top) versus k_dimer_form = 1.0 s^-1 (bottom), with each panel plotting
+    all five k_dimer_split values (0.001 to 10.0 s^-1) and containing both ring-forming and
+    shell-forming curves (e.g., k_dimer_split = 10.0 s^-1 forms a shell in 5C top, while
+    k_dimer_split = 0.001-0.1 s^-1 form rings in 5C bottom). In addition, Table S2 (p. 28) lists a
+    5-value grid {10^-3, 10^-2, 10^-1, 10^0, 10^+1} s^-1 for k_dimer_form, but Figure 5B-D (p. 9)
+    and Figure S7B (p. 40) only display k_dimer_form = 10.0 and 1.0 s^-1.
+  citation:
+    page: 10
+    printed_page: "1558"
+    quote: "surface area covered by actin is low, corresponding to a ring"
+    where: "Results p. 10, Fig. 5C p. 9 & Table S2 p. 28"
+
+- id: q_fig5i_axis_vs_caption_cutoff
+  kind: possible_error
+  about: [exp_fig5i_omitted_tail_pct]
+  text: >
+    Figure 5I caption (p. 10) states that for the 1 uM actin condition, 'values for aspect ratios
+    above 10, corresponding to 2.97% of the data, are not displayed', whereas the plotted Figure 5I
+    panel (p. 9) has a y-axis running to 12 and visibly displays dozens of individual data points
+    between aspect ratios 10 and ~12 (unlike Fig. 3E and Fig. 6J, whose plotted clouds terminate
+    sharply at their stated cutoffs of 10 and 15). It is therefore unclear whether 2.97% is the
+    tail above AR = 10 or above AR = 12.
+  citation:
+    page: 10
+    printed_page: "1558"
+    quote: "values for aspect ratios above 10, corresponding to 2.97% of the data"
+    where: "Fig. 5I caption p. 10 vs Fig. 5I plot p. 9"
+
+- id: q_kbind2_units_wording_slip
+  kind: possible_error
+  about: [mesoscopic_binding_rate_cylinder, second_order_binding_rate_cylinder, mesoscopic_binding_rate_sphere, second_order_binding_rate_sphere, langevin_overdamped_1d]
+  text: >
+    Methods S1 (p. 42) describes the second-order association rate k_{bind,2} as having 'units of
+    molarity' rather than inverse molarity per second (M^-1 s^-1); dimensional consistency of
+    k_{bind,2} / (N_AV * V_bind) = k_bind (1/s) requires k_{bind,2} in M^-1 s^-1 since N_AV * V_bind
+    has units of M^-1. On the same page, the printed Langevin SDE dx^{ij}(t) = mu * f^{ij}_tot(t) * dt
+    + dB_j(t) omits particle index i from dB_j(t) while giving noise standard deviation sqrt(2 * D^i * dt),
+    and refers to B_j(t) rather than dB_j(t) as the sampled increment.
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "with units of molarity as follows"
+    where: "Methods S1 (Position evolution & Actin-droplet kinetics)"
+
+- id: q_fig4k_caption_and_buffer_omissions
+  kind: possible_error
+  about: [sim_last_snapshots_count, sim_last_snapshots_fraction, exp_minilpd_fusion_time]
+  text: >
+    Minor caption and citation omissions/slips: (1) Figure 4K caption (p. 8) writes 'For (J) and
+    (K), 10 replicates are considered per condition, and the data were obtained from the last 30
+    snapshots (5%) of each replicate', even though panel (J) plots the full 0-600 s time series
+    and only panel (K) aggregates the last 30 snapshots; (2) Figure 1D caption (p. 4) omits 3% PEG
+    8000 for 10 uM mini-Lpd condensate fusion (whereas STAR Methods p. 22 specifies 3% PEG for
+    mini-Lpd alone), and Figure 4 caption (pp. 7-8) omits buffer NaCl and PEG concentrations
+    altogether; and (3) Methods S1 (p. 43) prints '[S12,13]' instead of '[S12,S13]'.
+  citation:
+    page: 8
+    printed_page: "1556"
+    quote: "For (J) and (K), 10 replicates are considered per condition, and the data were obtained from the last 30 snapshots"
+    where: "Fig. 4K caption p. 8, Fig. 1D p. 4, Fig. 4 pp. 7-8 & Methods S1 p. 43"
+
+- id: q_reading_guv_lipid_rounding
+  kind: reading
+  about: [guv_lipid_composition_sum, cmp_guv_lipid_closure, guv_lipid_closure_target_added, q_figs1_typos_and_wrong_ref_s9]
+  text: >
+    Audit reading note: q_figs1_typos_and_wrong_ref_s9 flags the Figure S1E GUV lipid percentages
+    (84% DOPC + 15% DGS-NiNTA + 1% DP-EG10 biotin + 0.1% Texas Red-DHPE = 100.1%) as a printed
+    error, while cmp_guv_lipid_closure evaluates to 'reproduced' against 100.0% because BoxGraph
+    propagates +/-0.5% printed-digit rounding on the integer inputs 84%, 15%, and 1% (band
+    98.55%-101.65%). Under standard reporting of lipid stock recipes rounded to whole percents
+    for major components (e.g., 83.9% DOPC rounded to 84%), 100.1% is compatible with a closed
+    100.0% mixture rather than an unambiguous error.
+  citation:
+    page: 30
+    printed_page: "SI-7"
+    quote: "GUVs were made consisting of 84% DOPC, 15%"
+    where: "Figure S1E caption"
+
+- id: q_reading_exact_sim_radius_and_l0_test
+  kind: reading
+  about: [sim_droplet_radius, cmp_elongation_rate_zero_L0, filament_elongation_rate]
+  text: >
+    Audit reading note: sim_droplet_radius is transcribed from Table S1 (p. 25) as '1' um
+    (printed-digit interval 0.5-1.5 um), whereas Methods S1 (p. 42) prints '1.0 um' and R_drop = 1 um
+    is an exact simulation parameter. As a result, BoxGraph propagates +/-0.5 um rounding on R_drop
+    into cmp_elongation_rate_zero_L0 (L0 = 0 gives point value 2*pi/600 = 0.010472 um/s vs printed
+    0.0103 um/s), yielding verdict 'reproduced' (band 0.00523-0.01572 um/s) even though the exact
+    point comparison distinguishes L0 = 0.1 um (0.010305 um/s, matching 0.0103) from L0 = 0
+    (0.010472 um/s).
+  citation:
+    page: 25
+    printed_page: "SI-2"
+    quote: "assuming a final filament length of 2π µm at 600 s"
+    where: "Table S1 p. 25 & Methods S1 p. 42"
+
+- id: q_reading_icosphere_effective_size_metric
+  kind: reading
+  about: [sim_icosphere_target_monomers, icosphere_subdivision_geometry_printed, icosphere_subdivision_geometry_icosahedron, cmp_icosphere_printed_monomers, cmp_icosphere_variant_n4_s4_monomers]
+  text: >
+    Audit reading note: Methods S1 (p. 43) writes 'triangles whose effective size was comparable to
+    10 actin monomers' without defining 'effective size' or the actin monomer length scale. The
+    record enters '10' (exact digits rather than '~10') and measures effective size as equilateral
+    triangle side s_eq divided by axial rise 2.7 nm (giving 88.2 monomers for printed 512 faces and
+    27.9 for ref-S4's 5,120 faces). If 'effective size' is instead interpreted as sqrt(face_area)
+    (49.5 nm for 5,120 faces) divided by globular monomer diameter 5.5 nm, ref-S4's 5,120-face
+    icosphere gives 9.0 monomers (~10), whereas the literally printed 8-triangle / 3-subdivision
+    mesh (512 faces, sqrt(face_area) = 156.7 nm) still yields 28.5-88.2 monomers across all
+    reasonable length definitions.
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "generate triangles whose effective size was comparable to 10 actin monomers"
+    where: "Methods S1 (Actin-covered surface area calculation)"
+
+- id: q_reading_phasepred_superscript_9
+  kind: reading
+  about: [fl_lpd_phasepred_score, ref-S9, q_figs1_typos_and_wrong_ref_s9]
+  text: >
+    Audit reading note: Figure S1B caption (p. 30) prints 'PSPredictor[S8] and PhasePred9' with an
+    unbracketed superscript '9' lacking the 'S' prefix used on neighboring SI citations ([S6,7],
+    [S6], [S8]). While fl_lpd_phasepred_score links from_source to ref-S9 (Chen 2021, membrane
+    curvature sensing), the unbracketed '9' could alternatively be read as main-text ref-9
+    (Boeynaems et al. 2018, LLPS review); neither ref-9 nor ref-S9 is the PhaSePred software paper.
+  citation:
+    page: 30
+    printed_page: "SI-7"
+    quote: "prediction algorithms PSPredictor[S8] and PhasePred9"
+    where: "Figure S1B caption"
+
+
+- id: q_figs7d_inverted_legend
+  kind: possible_error
+  about: [figs7d_surf_kf1_ks10, figs7d_surf_kf0p01_ks0p001, figs7d_surf_kf0p01_ks10, cytosim_dynamic_multimerization_droplet]
+  text: >
+    Calibrated digitization of Figure S7D (p. 40) reveals that its color legend for k_multimer_split (1/s)
+    is completely inverted relative to the plotted curves and Figure S7C snapshots. The printed legend maps
+    blue = 10.0, red = 1.0, dark grey = 0.1, light grey = 0.01, pale teal = 0.001 s^-1, whereas cross-checking
+    against Figure S7C (p. 40) proves the plotted curves actually use the same forward color ordering as
+    Figure 5C (blue = 0.001, red = 0.01, dark grey = 0.1, light grey = 1.0, pale teal = 10.0 s^-1): for
+    instance, at k_multimer_form = 1.0 s^-1 only k_multimer_split = 10.0 s^-1 forms an actin shell (high
+    surface area ~0.39-0.42), and that shell curve is drawn in pale teal while blue/red/dark-grey/light-grey
+    all plateau in the ring regime (~0.12-0.18); similarly at k_multimer_form = 0.01 s^-1, the blue ring curve
+    (~0.17) corresponds to k_multimer_split = 0.001 s^-1 while the pale teal shell curve (~0.47) corresponds to
+    k_multimer_split = 10.0 s^-1. Additionally, the Fig. S7D caption (p. 41) states 'The k_multimer-form value
+    is shown on top of each subpanel' (copied from Fig. 5C), whereas it is actually printed to the left.
+  citation:
+    page: 41
+    printed_page: "SI-18"
+    quote: "The k multimer-form value is shown on top of each subpanel while time series are"
+    where: "Figure S7D plot (p. 40) vs caption (p. 41) & Fig. S7C (p. 40)"
+
+- id: q_figs6d_miscolored_legend_and_missing_ylabels
+  kind: possible_error
+  about: [figs6d_lpd_sr_b0, figs6d_lpd_sr_b1, figs6d_lpd_sr_b2, cytosim_bivalent_tetravalent_droplet]
+  text: >
+    Figure S6D (p. 38) prints a color legend mapping Number of bound filaments 0 = green, 1 = yellow-green,
+    2 = orange (the first three colors of Fig. S6C's 5-class tetramer palette), whereas the actual plotted
+    bars in Fig. S6D use 0 = green, 1 = orange, 2 = dark red (the same 3-class bivalent palette as Fig. 4K,
+    Fig. S5E, and Fig. S6G). Fig. S6D also omits numerical y-axis tick labels (sharing the 0.0-1.0 scale of
+    Fig. S6C), and both Figs. S6C and S6D retain extra short minor ticks at 0.25/0.50/0.75 alongside major
+    ticks at 0.0/0.2/0.4/0.6/0.8/1.0.
+  citation:
+    page: 39
+    printed_page: "SI-16"
+    quote: "The stacked bar graphs show the distribution of bivalent crosslinkers"
+    where: "Figure S6D plot (p. 38) vs caption (p. 39)"
+
+- id: q_fig6k_caption_sd_bars_absent
+  kind: possible_error
+  about: [fig6k_frac_ar_gt1p2, fig6k_wt_frac_ar_gt1p2, exp_fig6k_frac_ar_gt1p2]
+  text: >
+    Figure 6K caption (p. 12) states 'Data are mean +/- standard deviation across three independent experiments',
+    whereas the plotted Figure 6K bar chart (p. 11) displays only bars and overlaid gray replicate circles with
+    no error bars (unlike Figure 6D, which does draw +/- SD error bars). In addition, the top y-axis tick at
+    1.2 in Figure 6K is visually compressed (~25 px closer to 1.0 than the uniform 278 px spacing across 0.0-1.0).
+  citation:
+    page: 12
+    printed_page: "1560"
+    quote: "Data are mean ± standard deviation across three independent experiments"
+    where: "Figure 6K caption (p. 12) vs Figure 6K plot (p. 11)"
+
+- id: q_fig5i_and_ar_cutoffs_verified
+  kind: reading
+  about: [q_fig5i_axis_vs_caption_cutoff, fig5i_ar_mean, fig4c_ar_mean, fig7f_ar_mean, fig7g_frac_ar_gt1p2]
+  text: >
+    Calibrated 1200-dpi digitization resolves q_fig5i_axis_vs_caption_cutoff and reveals two additional unstated
+    scatter cutoffs plus minor axis typos: (1) in Fig. 5I (p. 9, 1 uM actin), individual scatter points reach
+    AR = 12.00 (dozens of visible points between AR = 10 and 12), proving the display cutoff is AR = 12 rather
+    than AR = 10 as stated in the caption; (2) in Fig. 4C (p. 7, 2 uM and 3 uM actin), visible scatter clouds
+    terminate sharply at AR = 4.00 without mention in the caption; (3) in Fig. 7F (p. 13, VASP WT), the scatter
+    cloud terminates sharply at AR = 15.0 without mention in the caption; and (4) Fig. 7G (p. 13) misprints
+    'Fractrion' on its y-axis label, while Fig. S3B (p. 33) carries a stray 'Time(s)' label above the top axis.
+  citation:
+    page: 10
+    printed_page: "1558"
+    quote: "values for aspect ratios above 10, corresponding to 2.97% of the data"
+    where: "Figs. 4C (p. 7), 5I (pp. 9-10), 7F-G (p. 13), S3B (p. 33)"
+
+- id: q_ode_vs_fig5d_spatial_and_cactin
+  kind: unexplained_difference
+  about: [well_mixed_dynamic_dimerization_ode, ode_actin_binding_site_conc_added, cmp_fig5d_kf10_free_monomer_ode, cmp_fig5d_kf10_free_dimer_ode, cmp_fig5d_kf10_doubly_bound_dimer_ode]
+  text: >
+    Comparing the reconstructed well-mixed 5-state ODE (well_mixed_dynamic_dimerization_ode) against the
+    calibrated Figure 5D CytoSim state fractions across both k_dimer_form = 10 and 1.0 s^-1 reveals a large
+    systematic discrepancy across all five species: the well-mixed ODE predicts near-total actin binding
+    (<=1.8% free monomers, ~0% free dimers, 43%-95% doubly bound dimers at k_form = 10 s^-1), whereas 3D
+    CytoSim retains 1.0%-65.5% free monomers and 1.3%-38.9% free dimers (with at most 39.5% doubly bound dimers).
+    Two physical/modeling factors explain the gap: (1) ode_actin_binding_site_conc_added = 27.67 uM counts
+    individual 2.7 nm actin monomers while the ODE multiplies by the entire 0.1 um filament-segment cylinder
+    V_cyl = pi*r_a^2*L_seg, overcounting the segment concentration (C_seg = 1885 segments / (N_AV * V_drop) =
+    0.747 uM) by 37-fold; and (2) even at C_seg = 0.747 uM, 3D CytoSim filaments condense into a peripheral
+    ring/shell occupying only a small fraction of the droplet volume, leaving substantial free monomers and
+    dimers in the droplet interior.
+  citation:
+    page: 10
+    printed_page: "1558"
+    quote: "Stacked bar graph showing the distribution of condensate protein at different states"
+    where: "Fig. 5D (pp. 9-10) vs well_mixed_dynamic_dimerization_ode"
+
+- id: q_code_vs_paper_fig4j_fig5d_figs7d_and_dimerizer
+  kind: possible_error
+  about:
+    - bell_slip_bond_unbinding
+    - snapshot_count_from_fraction
+    - icosphere_subdivision_geometry_printed
+    - icosphere_subdivision_geometry_icosahedron
+    - stokes_einstein_diffusion
+    - well_mixed_dynamic_dimerization_ode
+    - sim_fig4j_surf_kb10_ku0p1
+    - sim_fig5d_kf10_doubly_bound_dimer
+    - sim_fig5d_kf1_doubly_bound_dimer
+    - q_ode_vs_fig5d_spatial_and_cactin
+    - q_figs7d_inverted_legend
+    - rel_wcode_bell_unbinding_double_spring_discrepancy
+    - rel_wcode_icosphere_printed_n_faces_mismatch
+    - rel_wcode_fig5d_as_written_vs_claimed_30
+  text: >
+    Cross-record audit against the released software repository walker2025_code
+    (RangamaniLabUCSD/Dynamic_multimerization, Zenodo 10.5281/zenodo.14522973) quantitatively confirms
+    four major code-vs-paper discrepancies and settles five internal questions:
+    (1) Fig. 5D all-601-snapshot averaging bug: across all 10 (k_dimer_form, k_dimer_split) conditions,
+    walker2025's calibrated 1200-dpi digitized Fig. 5D bars match walker2025_code/notebook_fig5d_averaging_adapter
+    (averaging all 601 snapshots t = 0..600 s because startpos = int(0.95*len(Row1)) slices the replicate
+    list instead of time) to 0.001-0.004 — e.g., at k_form = 10 s^-1, D2 digitized vs buggy-601 vs true
+    last-30 is 0.3952 vs 0.3939 vs 0.6766 (k_split = 0.001), 0.3831 vs 0.3818 vs 0.6762 (0.01), and
+    0.3470 vs 0.3461 vs 0.6145 (0.1); at k_form = 1 s^-1, k_split = 0.001: 0.3894 vs 0.3881 vs 0.6889.
+    This bug directly explains a substantial fraction of the low doubly-bound dimer ceiling and large
+    free-monomer/dimer fractions noted in q_ode_vs_fig5d_spatial_and_cactin.
+    (2) Fig. 4J 5-vs-10-replicate bug: across all 9 (k_bind, k_unbind) panels, walker2025's digitized
+    Fig. 4J endpoints (t = 590 s) match ONLY the first 5 replicates from outputfiles/ (notebook_fig4j_replicates_adapter)
+    while discarding outputfiles_2/ (e.g., kb=10, ku=0.1: digitized 0.1986 == first-5 0.1986 vs all-10
+    0.1608; kb=1, ku=0.1: 0.1214 vs first-5 0.1231 vs all-10 0.1594; kb=10, ku=0.01: 0.4430 vs first-5
+    0.4465 vs all-10 0.4115), contradicting the Fig. 4J caption claim of 10 replicates.
+    (3) Custom C++ Dimerizer double-counted bond spring & halved Bell force: Wrist::setInteractions()
+    (wrist.cc:131-135) adds two parallel 5.0 pN/um springs (k_eff = 10.0 pN/um, F_mech = 2*k_single*dx)
+    while Wrist::force() (wrist.cc:64) supplies only F_mech/2 to Dimerizer::testKramersDetachment(),
+    refuting Methods S1's stated Bell law at true mechanical tension (rel_wcode_bell_unbinding_double_spring_discrepancy)
+    and doubling effective F_unbind from 10 pN to 20 pN.
+    (4) Live code settles q_figs7d_inverted_legend (Figures.ipynb Cell 42 reuses Panel E's descending
+    labelvec for Panel D), q_icosphere_eight_triangles_misprint (icosphere.py uses 20 faces & f = 4,
+    refuting the printed 8-face octahedron via rel_wcode_icosphere_printed_n_faces_mismatch),
+    q_stokes_einstein_vs_prescribed_D & q_brownian_step_exceeds_binding_radius (Wrist::stepF() ignores
+    diffusion = 10.0; Solid Stokes D = 0.01485 um^2/s and sigma_B = 7.71 nm at hidden kT = 0.0042 pN*um,
+    settling q_unstated_temperature), and q_steric_stiffness_difference (all 874 .cym configs use global
+    steric = 1, 1 pN/um while Table S1 mislabels crosslinker SingleProp::stiffness = 10/5 pN/um as
+    steric repulsion stiffness).
+  citation:
+    page: 16
+    printed_page: "1564"
+    quote: "The Cytosim input files and data files are available on GitHub"
+    where: "Data and code availability (p. 16), Fig. 4J-K (p. 8), Fig. 5D (pp. 9-10) & Methods S1 (pp. 42-43)"
+
+- id: q_cross_paper_chandrasekaran_graham_lineage_discrepancies
+  kind: unexplained_difference
+  about:
+    - sim_viscosity_ratio_water
+    - sim_vasp_steric_stiffness
+    - sim_monomer_actin_steric_stiffness
+    - sim_icosphere_subdiv_printed
+    - sim_icosphere_target_monomers
+    - sim_crosslinker_diffusion_rate
+    - condensate_viscosity_ratio
+    - icosphere_subdivision_geometry_printed
+    - rel_chandra2024_icosphere_printed_n_faces_mismatch
+    - rel_chandra_sdata_figs2b_printed_n_faces_mismatch
+  text: >
+    Cross-record audit against the companion Rangamani-lab CytoSim lineage (chandrasekaran2024 [ref-18/S4],
+    chandrasekaran_source_data, graham2024 [ref-23/S10], and graham2024_code) reveals four concrete
+    parameter discrepancies and two persistent multi-paper errors:
+    (1) Viscosity ratio fixed (500x vs 50x): walker2025 Table S1 (p. 25) prints '500x water' for
+    eta = 0.5 pN*s/um^2, silently correcting the 10-fold '50x water' error printed in both
+    chandrasekaran2024 Supplementary Table 2 (p. 17) and graham2024 Table S1 (p. 19).
+    (2) Steric-stiffness citation mismatch (10 vs 1.0 pN/um): walker2025 Table S1 (pp. 26-27) prints
+    10 pN/um for VASP and mini-Lpd monomer-actin steric repulsion stiffness while citing [S4]
+    (chandrasekaran2024), which printed 1.0 pN/um (matching global CytoSim steric = 1, 1); walker2025_code
+    confirms 10 pN/um is actually crosslinker bond spring stiffness (SingleProp::stiffness).
+    (3) Icosphere specification mismatch against [S4] and MOESM9: walker2025 Methods S1 (p. 43) cites
+    [S4] while printing 8 initial triangles, 3 subdivisions (512 faces), and '10 actin monomers', whereas
+    chandrasekaran2024 (p. 10) and chandrasekaran_source_data (MOESM9 sheet FigureS2B) use a 20-triangle
+    icosahedron subdivided 4 times (5,120 faces, refuted by rel_chandra2024_icosphere_printed_n_faces_mismatch
+    and rel_chandra_sdata_figs2b_printed_n_faces_mismatch) sized to the 100 nm actin segmentation length
+    (chandrasekaran2024 never prints '10 actin monomers', leaving sim_icosphere_target_monomers unlinked).
+    (4) Two errors persist identically across all three papers (chandrasekaran2024, graham2024, walker2025):
+    prescribed D = 10 um^2/s for 30 nm crosslinkers in 0.5 Pa*s condensates (673x-687x above Stokes-Einstein
+    and ignored by CytoSim Wrist::stepF()) and Methods prose mislabelling hydrodynamic mobility mu as
+    'the viscosity of the solvent'.
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Table S1 (pp. 25-27) & Methods S1 (pp. 42-43) vs chandrasekaran2024 & graham2024"
+
+# ==============================================================================
+# Cross-record validation audits across all 9 paired records (0 validations)
+# ==============================================================================
+
+- id: q_walker2025_code_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_bivalent_tetravalent_droplet
+    - cytosim_dynamic_multimerization_droplet
+    - icosphere_subdivision_geometry_printed
+    - icosphere_subdivision_geometry_icosahedron
+    - sim_icosphere_target_monomers
+    - sim_fig4j_surf_kb10_ku0p1
+    - sim_fig5d_kf10_doubly_bound_dimer
+    - sim_figs7d_surf_kf1_ks10
+    - sim_figs7e_kf10_bm2
+    - q_code_vs_paper_fig4j_fig5d_figs7d_and_dimerizer
+    - walker2025_code/notebook_fig5d_averaging_adapter
+    - walker2025_code/notebook_fig5d_averaging_last30
+    - walker2025_code/notebook_fig4j_replicates_adapter
+    - walker2025_code/icosphere_mesh_adapter
+    - walker2025_code/icosphere_surface_density_adapter
+    - walker2025_code/trajectory_multimer_topology_adapter
+    - walker2025_code/trajectory_vaspprops_bug_adapter
+  text: >
+    No cross-record validations are entered between walker2025 and walker2025_code (0 entries
+    in either direction):
+    (1) walker2025 models (31 runnable closed-form/ODE/Langevin/processing models; 2 non-runnable
+    3D CytoSim models) vs walker2025_code datums: walker2025_code/data.yaml contains 0 origin:
+    measured, 0 origin: fitted, 0 origin: run, and 0 origin: predicted datums (only 68 origin:
+    reported .cym/.cpp/.py/.ipynb configuration parameters and 5 origin: derived/estimated paper_*
+    values copied verbatim from walker2025 itself). All 19 mathematical and code-vs-paper
+    equivalences and discrepancies are already recorded in walker2025/relations.yaml and
+    walker2025_code/comparisons.yaml.
+    (2) Audit of reverse direction (walker2025_code live software: true adapters vs walker2025
+    datums): First, all 169 simulation curves digitized in walker2025 (including 9 Fig. 4J,
+    10 Fig. 5D, 9 Fig. S7D, and 30 Fig. S7E curves) are origin: run CytoSim outputs from the
+    authors' own software rather than origin: measured wet-lab experiments, whereas none of
+    walker2025_code's CytoSim/analysis adapters predicts any of walker2025's 55 origin: measured
+    confocal/FRAP/aspect-ratio/partitioning datums. Second, even as code-vs-figure run checks,
+    the live notebook adapters cannot form BoxGraph CrossValidation sweeps without redesigning
+    their port signatures: notebook_fig5d_averaging_adapter and notebook_fig5d_averaging_last30
+    take scalar r_index (condition_index, dimensionless) and return scalar species fractions,
+    whereas walker2025's Fig. 5D curves (sim_fig5d_*) are 5-point curves indexed by k_dimer_split
+    (rate, 1/s, dimensionally incompatible with dimensionless r_index); notebook_fig4j_replicates_adapter
+    takes scalar r_index and returns only the single t = 600 s endpoint scalar, whereas sim_fig4j_*
+    are 9-point time series indexed by time [s] (200-590 s); walker2025_code has no Fig. S7D or
+    Fig. S7E adapters; and icosphere_mesh_adapter's only scalar target in walker2025
+    (sim_icosphere_target_monomers = 10) is origin: estimated rather than measured and is already
+    checked by walker2025_code/cmp_icosphere_f4_monomers_vs_paper and walker2025/relations.yaml.
+    Full numerical verification of Fig. 5D (all-601-snapshot bug matching digitized bars to
+    0.001-0.004 vs true last-30 differing by 0.27-0.30) and Fig. 4J (first-5-replicate bug matching
+    digitized t = 590 s endpoints vs all-10 differing by up to 0.038) is documented in
+    q_code_vs_paper_fig4j_fig5d_figs7d_and_dimerizer.
+  citation:
+    page: 16
+    printed_page: "1564"
+    quote: "The Cytosim input files and data files are available on GitHub"
+    where: "Data and code availability (p. 16) vs walker2025_code live adapters"
+
+- id: q_chandrasekaran2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_bivalent_tetravalent_droplet
+    - cytosim_dynamic_multimerization_droplet
+    - condensate_aspect_ratio
+    - condensate_viscosity_ratio
+    - icosphere_subdivision_geometry_printed
+    - icosphere_subdivision_geometry_icosahedron
+    - exp_fig7f_ar_mean
+    - exp_fig7f_ar_median
+    - exp_fig7g_frac_ar_gt1p2
+    - ref-18
+    - ref-S4
+    - q_cross_paper_chandrasekaran_graham_lineage_discrepancies
+    - chandrasekaran2024/exp_wt_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_ring_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_shell_pct_1_7p5
+    - chandrasekaran2024/filament_length_limited_aspect_ratio
+    - chandrasekaran2024/ellipse_2d_constant_area
+    - chandrasekaran2024/prolate_spheroid_volume_conserving
+    - chandrasekaran_source_data/fig6d_gabmut_experiment_reader
+    - chandrasekaran_source_data/figs2b_icosphere_reader
+  text: >
+    No cross-record validations are entered between walker2025 and either chandrasekaran2024
+    (ref-18/S4) or chandrasekaran_source_data (MOESM9) (0 entries in either direction):
+    (1) walker2025 models vs chandrasekaran2024 & chandrasekaran_source_data measurements:
+    All 10 origin: measured datums in chandrasekaran2024 (and all 3 in chandrasekaran_source_data)
+    are Fig. 6D experimental droplet morphology abundances (shell, ring, and disk percentages for
+    VASP WT vs VASP GABmut across 1:7.5, 1:10, and 1:20 actin:VASP ratios). None of walker2025's
+    31 runnable closed-form/ODE/processing models outputs morphology percentages (and walker2025's
+    two 3D CytoSim models are runnable: false). All shared CytoSim/icosphere parameter and equation
+    correspondences (including the 500x vs 50x viscosity-ratio fix, 10 vs 1.0 pN/um steric-stiffness
+    mixup, and 8-face/3-subdivision vs 20-face/4-subdivision icosphere mismatch) are already
+    captured via 23 relations in walker2025/relations.yaml, 24 links in walker2025/cited.yaml, and
+    q_cross_paper_chandrasekaran_graham_lineage_discrepancies.
+    (2) Audit of reverse direction (chandrasekaran2024 & chandrasekaran_source_data models vs
+    walker2025 measurements): chandrasekaran2024's 3D CytoSim and LAMMPS models are runnable: false,
+    and chandrasekaran_source_data's 20 models are software: true Excel readers bound to MOESM9.
+    chandrasekaran2024's runnable geometric aspect-ratio models (filament_length_limited_aspect_ratio
+    giving (L_max / 2R)^(3/2) = pi^(3/2) = 5.568 at L_max = 2*pi*R; ellipse_2d_constant_area giving
+    pi^2 = 9.870; prolate_spheroid_volume_conserving; quasistatic_droplet_deformation_schedule)
+    predict single-droplet geometric upper bounds from individual filament length L_max and droplet
+    radius R, whereas walker2025 never measures L_max or per-droplet (R, AR) pairs in its
+    experiments (plotting ensemble droplet AR means/medians across G-actin concentration or VASP
+    mutants, with high-AR tails exceeding 10-15 in Figs. 3E, 5I, 6J, and 7F). Qualitatively,
+    chandrasekaran2024 Fig. 6D (1:7.5 VASP WT 70 +/- 13% disks vs GABmut < 10% disks, 53 +/- 6%
+    rings, 37 +/- 4% shells) and walker2025 Fig. 7F-G (15 uM VASP + 2 uM actin = 1:7.5: VASP WT
+    mean AR 4.52 / median 3.29 / 87.2% AR > 1.2 vs VASP mut-GAB mean AR 1.94 / median 1.24 /
+    57.1% AR > 1.2) are mutually consistent experimental observations of impaired rod/disk
+    deformation in GABmut condensates, measuring distinct observables (morphology % vs aspect ratio).
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Methods S1 (p. 42) & Fig. 7E-G (p. 14) vs chandrasekaran2024 & chandrasekaran_source_data"
+
+- id: q_graham2023_no_cross_validation
+  kind: unstated_model
+  about:
+    - droplet_circumference
+    - filament_elongation_rate
+    - filament_final_length
+    - condensate_aspect_ratio
+    - partition_coefficient_ratio
+    - exp_fig3e_ar_mean
+    - exp_fig4c_ar_mean
+    - exp_fig5i_ar_mean
+    - exp_fig6j_ar_mean
+    - exp_fig7d_vasp_actin_enrichment
+    - exp_fig7f_ar_mean
+    - exp_fig7f_ar_median
+    - ref-13
+    - graham2023/droplet_ring_minimization_corrected
+    - graham2023/ring_rod_critical_aspect_ratio
+    - graham2023/ring_rod_max_aspect_ratio
+    - graham2023/elongation_rate_mean_text
+    - graham2023/fig5a_aspect_ratio_fig
+    - graham2023/edfig3e_actin_partition_fig
+    - graham_code/notebook_droplet_ring_slsqp
+    - graham_source_data/fig5_aspect_ratio_reader
+  text: >
+    No cross-record validations are entered between walker2025 and graham2023 (ref-13),
+    graham_code, or graham_source_data (0 entries in either direction):
+    (1) walker2025 models vs graham2023, graham_code & graham_source_data measurements:
+    graham_code has 0 origin: measured and 0 origin: fitted datums. graham2023 (38 measured,
+    20 fitted) and graham_source_data (8 measured, 18 fitted) measure VASP droplet FRAP recovery
+    and t_1/2 (18 +/- 3 s), droplet diameters (median 2.86 um, max 7.22 um), ring-thickness
+    power-law fits (exponent ~1.8), morphology abundances, protein/actin partitioning, droplet
+    aspect ratios, and linear rod elongation speed (23 +/- 3 nm/s, Fig. 5h slope 0.0227 um/s).
+    None of walker2025's 31 runnable models predicts those measurements: walker2025/filament_elongation_rate
+    (k_grow = (2*pi*R_drop - L0) / t_sim = 0.0103 um/s, role: processing) is purely a CytoSim
+    setup calculation forcing a simulated filament to reach circumference 2*pi*R in 600 s, not a
+    biophysical predictor of unconfined experimental rod elongation (23 +/- 3 nm/s); and neither
+    graham2023 nor graham_source_data prints raw (L_long, L_short) or (I_in, I_out) pairs alongside
+    measured AR or partition coefficients, or any measured filament contour length for
+    droplet_circumference (2*pi*R_drop, already related via rel_graham2023_droplet_circumference).
+    (2) Audit of reverse direction (graham2023, graham_code & graham_source_data models vs
+    walker2025 measurements): graham2023/droplet_ring_minimization_corrected (and
+    graham_code/notebook_droplet_ring_slsqp) predicts single-droplet aspect ratio as a function of
+    measured actin ring thickness T_ring, droplet diameter D_droplet, VASP interfilament spacing
+    delta = 15 nm, and droplet line tension gamma_I. walker2025 never measures T_ring, delta, or
+    gamma_I for any condensate (VASP, mini-Lpd, monomer mini-Lpd, or Eps15-Lifeact) and reports
+    only ensemble AR distributions vs G-actin concentration (Figs. 3E, 4C, 5I, 6J) or VASP mutant
+    (Fig. 7F), so running graham2023's continuum ring-minimization model on walker2025 would
+    require inventing all governing inputs. Likewise, ring_rod_critical_aspect_ratio (6.13) and
+    ring_rod_max_aspect_ratio (pi^2 = 9.87) are single-droplet fixed-contour-length geometric
+    bounds rather than ensemble AR predictors, and graham_source_data's 11 models are Excel readers
+    of Graham 2023's own spreadsheets rather than predictive models. Experimental data-to-data
+    comparison at the shared Stachowiak-lab 1:7.5 condition (15 uM VASP WT + 2 uM actin, 3% PEG,
+    150 mM NaCl, 15 min) shows substantial inter-study spread: walker2025 Fig. 7F measures mean
+    AR = 4.520, median AR = 3.285 (n >= 800) vs graham2023 Fig. 5a / graham_source_data mean
+    AR = 2.403 +/- 1.828, median AR = 1.52 (n = 589; digitized bar 2.394); similarly, VASP mut-FAB
+    actin partitioning is 22.44 in walker2025 Fig. 7D (20 uM VASP + 500 nM G-actin + 5 uM LatA)
+    vs 12.64 +/- 3.44 in graham2023 ED Fig. 3e (15 uM VASP + 2 uM actin without LatA).
+  citation:
+    page: 14
+    printed_page: "1562"
+    quote: "Condensates formed from 15 mM VASP or associated VASP mutants"
+    where: "Fig. 7C-G (p. 14) vs graham2023 Fig. 5a, ED Fig. 3e & continuum ring models"
+
+- id: q_graham2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_bivalent_tetravalent_droplet
+    - condensate_viscosity_ratio
+    - concentration_from_copy_number
+    - protein_oligomer_concentration
+    - stokes_einstein_diffusion
+    - exp_fig7f_ar_mean
+    - exp_fig7f_ar_median
+    - ref-23
+    - ref-S10
+    - q_cross_paper_chandrasekaran_graham_lineage_discrepancies
+    - graham2024/fig2b_aspect_ratio_fig
+    - graham2024/fig2d_aspect_ratio_fig
+    - graham2024/frap_t_half_vasp_only
+    - graham2024/actin_polymerization_ode_eq2_converted
+    - graham2024/actin_vca_competition_ode_eq3_converted
+    - graham2024/relative_actin_enrichment_rae
+    - graham2024_code/notebook_actin_ode
+    - graham2024_code/notebook_vca_competition_ode
+  text: >
+    No cross-record validations are entered between walker2025 and either graham2024 (ref-23/S10)
+    or graham2024_code (0 entries in either direction):
+    (1) walker2025 models vs graham2024 & graham2024_code measurements: graham2024_code has 0
+    origin: measured and 0 origin: fitted datums. graham2024 (60 origin: measured datums) studies
+    competition between Arp2/3 + VCA actin branching and VASP actin bundling inside VASP droplets,
+    measuring droplet diameter (~3 um), VASP FRAP t_1/2 (4.93 +/- 1.16 s) and mobile fraction
+    (96.86 +/- 0.02%), aspect ratios across [Arp2/3] / [VCA] / CK666 conditions, Hedges' g and
+    p-values, peripheral actin abundance, radial fluorescence line profiles, relative actin
+    enrichment (RAE), rod vs aster morphology abundances, and aster spoke partitioning (6.8% VASP
+    vs 0.69% Arp2/3). None of walker2025's 31 runnable models predicts any of these quantities
+    (walker2025 has no FRAP model, no Arp2/3-VCA branching model, no radial-profile/RAE model,
+    and no runnable droplet aspect-ratio model); shared CytoSim equations and parameter links are
+    already recorded via 15 relations in walker2025/relations.yaml (10 with graham2024, 5 with
+    graham2024_code) and 1 link in walker2025/cited.yaml.
+    (2) Audit of reverse direction (graham2024 & graham2024_code models vs walker2025 measurements):
+    graham2024's runnable models cover F-actin/VCA polymerization ODEs (Eqs. 1-3), Arp2/3/VCA/VASP
+    copy-number bookkeeping, radial density ratio / RAE, aster spoke partitioning and t-tests,
+    FRAP t_1/2 / mobile-fraction t-tests, and CytoSim Langevin/Stokes-Einstein sub-equations
+    (while its full 3D CytoSim model is runnable: false), and graham2024_code's models analyze
+    Arp2/3/VCA CytoSim CSVs and ODE notebooks. walker2025 contains no Arp2/3, no VCA, no asters,
+    no measured radial density profiles or F-actin concentration time courses, and no printed FRAP
+    t_1/2 or mobile-fraction values. As an experimental consistency observation at the shared
+    0 nM Arp2/3 control condition (15 uM VASP + 2 uM actin, 3% PEG, 150 mM NaCl, 15 min),
+    graham2024 Fig. 2B reports mean AR = 1.604 (Fig. 2D minor axis < 3 um: 1.674) vs 2.403 in
+    graham2023 Fig. 5a and 4.520 (median 3.285) in walker2025 Fig. 7F (20 mM vs 50 mM Tris buffer).
+  citation:
+    page: 15
+    printed_page: "1563"
+    quote: "that VASP condensates incorporate Arp2/3 and thereby facilitate"
+    where: "Discussion (p. 15) vs graham2024 & graham2024_code"
+
+- id: q_nastkolb2022_no_cross_validation
+  kind: unstated_model
+  about:
+    - exp_fig1f_frap_minilpd
+    - exp_fig2g_frap_minilpd
+    - exp_fig2g_frap_vasp
+    - exp_figs3b_frap_minilpd
+    - exp_figs3d_frap_minilpd
+    - exp_figs3f_frap_monomer_minilpd
+    - exp_figs3h_frap_eps15
+    - partition_coefficient_ratio
+    - guv_lipid_composition_sum
+    - nastkolb2022/frap_recovery_fit
+    - nastkolb2022/frap_recovery_by_half_time
+    - nastkolb2022/frap_mobile_fraction_plateau
+    - nastkolb2022/bundle_width_vasp_scaling
+    - nastkolb2022/bundle_filament_count_2d_spacing
+    - nastkolb2022/frap_t_half_vasp_slb
+    - nastkolb2022/filament_count_1um_intensity_measured
+  text: >
+    No cross-record validations are entered between walker2025 and nastkolb2022 (0 cross-citations,
+    0 entries in either direction):
+    (1) walker2025 models vs nastkolb2022 measurements: nastkolb2022 (66 measured, 8 fitted datums)
+    investigates 2D supported lipid bilayer (SLB) and monolayer (ML) tethered chimeric His6-VASP
+    actin bundling, measuring bundle widths (0.942 um VASP, 0.584 um VASP-Delta-tetra, and curves
+    vs [VASP], [actin], and capping protein), network pore sizes, calibrated filament stoichiometry
+    (45 +/- 12 filaments per 1-um bundle), TIRF polymerization intensity kinetics, Spearman
+    colocalization, lipid depletion/relaxation, bilayer VASP LLPS threshold (>= 0.5 uM), and 2D
+    SLB/ML VASP FRAP curves with t_1/2 (0.102 min SLB, 0.399 min ML) and mobile fractions (0.57-0.97).
+    None of walker2025's 31 runnable 3D-droplet CytoSim/processing models predicts 2D SLB bundle
+    widths, pore sizes, filament counts, TIRF kinetics, or FRAP half-times (and nastkolb2022 does
+    not print raw I_in and I_out pairs for partition_coefficient_ratio, nor 4-component GUV lipid
+    sums).
+    (2) Audit of reverse direction (nastkolb2022 models vs walker2025 measurements): Careful
+    inspection confirms that nastkolb2022/frap_recovery_fit (y = a*(1 - exp(-t/tau)) + c) and
+    frap_recovery_by_half_time (y = a*(1 - exp(-t*ln(2)/t_1/2)) + c) CANNOT genuinely validate
+    against any of walker2025's 11 digitized FRAP curves (Fig. 1F mini-Lpd; Fig. 2G mini-Lpd and
+    VASP; Figs. S3B/D/F/H mini-Lpd, monomer mini-Lpd, Eps15, and actin) for three independent
+    reasons: (a) walker2025 prints zero FRAP kinetic parameters (no t_1/2, no tau, no mobile
+    fraction a, and no baseline c) anywhere in the 44-page article or SI, so evaluating
+    nastkolb2022's fit models would require inventing fitted parameters rather than testing printed
+    ones; (b) walker2025 STAR Methods (p. 23) normalizes fluorescence only to maximum pre-bleach
+    intensity without zero-pinning the post-bleach minimum (leaving post-bleach floors at 0.12-0.18
+    in Figs. 1F [0.180 -> 0.692], 2G [12.0%-17.4% -> 60.3%-76.9%], and S3B/D/F/H [0.123-0.163 ->
+    0.500-0.633]), unlike nastkolb2022's Siggia double normalization pinning t = 0 to 0; and (c) in
+    all four Fig. S3 panels (S3B, S3D, S3F, S3H), the plotted time axis keeps pre-bleach frames at
+    t = 0-15 s (y = 0.957-0.987 at t = 5 s) and bleaches at t ~ 15-20 s (minimum at t = 20 s)
+    rather than t = 0, making t = 0 exponential recovery directly inapplicable on the plotted axis.
+    Moreover, nastkolb2022's remaining models (bundle_width_vasp_scaling,
+    bundle_filament_count_2d_spacing, bundle_effective_spacing, cp_to_actin_ratio) target 2D SLB
+    bundle width, filament counts, and capping-protein ratios that walker2025 never measures.
+  citation:
+    page: 23
+    printed_page: "e4"
+    quote: "FRAP data were analyzed using ImageJ where fluorescence recovery"
+    where: "STAR Methods (p. 23), Fig. 1F, Fig. 2G & Fig. S3B/D/F/H vs nastkolb2022 FRAP models"

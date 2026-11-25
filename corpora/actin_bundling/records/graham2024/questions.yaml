@@ -1,0 +1,705 @@
+- id: q_cytosim_not_runnable
+  kind: unstated_model
+  about: [cytosim_actin_vasp_arp23_vca]
+  text: >
+    The full 3D CytoSim simulation (Fig. 5, Fig. S4-S6, Table S1, SI Methods pp. 22-25) cannot be
+    executed solely from the printed paper and SI because it requires a custom-modified C++ CytoSim
+    build (fiber_set.cc edit on p. 25, GitHub repo ref-63) and leaves several simulation parameters
+    unstated: temperature T (or k_B T) for Brownian noise, Arp2/3 diffusion coefficient, crosslinker
+    spring stiffnesses for VASP and Arp2/3, initial filament length at t = 0 (only implied as 0.1 um
+    from [F-actin](0) = 0.44 uM), exact Brownian ratchet force-velocity functional form, exact
+    force-dependent unbinding law k(F)_unbind, and random seeds.
+  citation: {page: 19, printed_page: "SI-7", quote: "Table S1. Table of parameters used to set up the actin model in Cytosim.", where: "Table S1"}
+
+- id: q_eq2_unit_mismatch_and_bc_inconsistency
+  kind: possible_error
+  about: [actin_polymerization_ode_eq2_printed, actin_polymerization_ode_eq2_converted, ode_f_actin_600s, ode_t_actin_solved, sim_k_grow]
+  text: >
+    SI Eq. (2) on p. 22, d[F-actin]/dt = k_grow * N_fil * (1 - [F-actin]/[T-actin]), has two
+    separate problems. First, it is dimensionally inconsistent as printed: the LHS is in uM/s while
+    k_grow = 0.0103 um/s is in um/s without the polymer-length-to-concentration factor
+    1/(l_mono * (4/3)*pi*R_drop^3 * N_A) (1/6.8109 uM/um); integrating literally yields 102.25 uM
+    instead of 27.68 uM. Second, even after restoring the length-to-concentration conversion
+    (actin_polymerization_ode_eq2_converted), integrating from F(0) = 0.44 uM with N_fil = 30,
+    k_grow = 0.0103 um/s, and [T-actin] = 138.38 uM yields [F-actin](600) = 25.07 uM (5.69 um per
+    filament), not the stated boundary condition 27.68 uM (2*pi = 6.283 um per filament). Because
+    even without depletion 0.1 + 0.0103 * 600 = 6.280 um < 2*pi = 6.2832 um, no finite positive
+    [T-actin] satisfies Eq. (2) with k_grow = 0.0103 um/s. Notably, (2*pi - 0.1)/600 = 0.010305 um/s
+    is the zero-depletion average elongation speed, while total_polymer = 942.4777960769379 um (p. 24)
+    equals 300*pi = 5 * (30 * 2*pi) to double precision (giving [T-actin] = 138.378 uM = 138.38 uM);
+    reaching 27.68 uM at t = 600 s with [T-actin] = 138.38 uM requires k_grow = 0.01152 um/s.
+  citation: {page: 22, printed_page: "SI-10", quote: "we find that [T-actin]=138.38 uM", where: "SI Methods, Eqs. (1)-(2)"}
+
+- id: q_eq3_unit_mismatch_and_calibration
+  kind: possible_error
+  about: [actin_vca_competition_ode_eq3_printed, actin_vca_competition_ode_eq3_converted, vca_f_actin_reduction_target, vca_l_gmax_1uM]
+  text: >
+    SI Eq. (3) on p. 24 repeats the dimensional mismatch of Eq. (2) by equating d[VCA-actin]/dt (uM/s)
+    to k_bind * N_VCA * (1 - delta) with k_bind = 3.44 um/s (um/s), and the sample calculation writes
+    L_Gmax = [G_max] = 0.0027 * 5 * N_VCA = 34.047 um, equating a concentration symbol [G_max] to a
+    length in um. With consistent length-to-concentration conversion (actin_vca_competition_ode_eq3_converted),
+    [VCA] = 1 uM reduces [F-actin](600) by 0.893 uM (within the printed 1-sig-fig precision of '1 uM',
+    though 10.7% below 1.00 uM because k_grow = 0.0103 um/s falls short of 27.68 uM; with k_grow =
+    0.01152 um/s the reduction is 0.987 uM).
+  citation: {page: 24, printed_page: "SI-12", quote: "such that [VCA] = 1uM reduces [F - actin] at t=600s by 1uM", where: "SI Methods, Eq. (3)"}
+
+- id: q_frap_mobile_sd_hundredfold_error
+  kind: possible_error
+  about: [frap_mobile_vasp_only, frap_mobile_composite, frap_mobile_pvalue, frap_mobile_fraction_ttest]
+  text: >
+    The Fig. 1E inset table (p. 3) reports '% mobile' as 96.86 ± 0.02 (VASP alone) vs 96.20 ± 0.02
+    (+Arp2/3 +VCA) for n = 13 droplets per condition, with an unpaired two-tailed t-test p-value of
+    0.407. Evaluating the t-test on the printed numbers literally gives t = 84.13 and p = 3.58 x 10^-31
+    (not reproduced by 30 orders of magnitude). By contrast, if the SD was 2% (0.02 as a dimensionless
+    fraction before converting to percentage), the t-test yields t = 0.841 and p = 0.408 (matching
+    0.407), strongly indicating that the means were multiplied by 100 to convert fractions to percent
+    while the SD (0.02) was accidentally left unscaled.
+  citation: {page: 3, printed_page: "3", quote: "VASP alone 4.93 ± 1.16 96.86 ± 0.02", where: "Fig. 1E inset table"}
+
+- id: q_viscosity_50x_vs_500x_water
+  kind: possible_error
+  about: [sim_droplet_viscosity, sim_viscosity_ratio_water, droplet_viscosity_water_ratio]
+  text: >
+    Table S1 (p. 19) lists 'Viscosity of droplet medium' as 0.5 pN*s/um^2 with note '50x water'.
+    Because 1 pN*s/um^2 = 1 Pa*s and water has viscosity ~0.001 Pa*s at 20 C (0.00089 Pa*s at 25 C),
+    0.5 pN*s/um^2 is 500x-562x water viscosity, not 50x water (a 10-fold error; 50x water would be
+    0.05 pN*s/um^2).
+  citation: {page: 19, printed_page: "SI-7", quote: "Viscosity of droplet 0.5 pN.s/um2 50x water", where: "Table S1"}
+
+- id: q_vasp_diffusion_stokes_einstein_mismatch
+  kind: unexplained_difference
+  about: [sim_vasp_diffusion_rate, sim_droplet_viscosity, sim_vasp_radius, stokes_einstein_sphere_diffusion]
+  text: >
+    Table S1 (p. 19) specifies droplet viscosity eta = 0.5 pN*s/um^2, VASP tetramer sphere radius
+    r = 30 nm, and VASP diffusion rate D = 10 um^2/s. Under Stokes-Einstein hydrodynamic drag
+    (D = k_B T / (6 pi eta r)), a 30 nm sphere in a 0.5 pN*s/um^2 medium at 298 K has D = 0.0146 um^2/s,
+    687-fold smaller than the printed 10 um^2/s (even in pure water at 0.001 Pa*s, D = 7.28 um^2/s).
+  citation: {page: 19, printed_page: "SI-7", quote: "Diffusion rate 10 um2/s", where: "Table S1"}
+
+- id: q_langevin_mu_viscosity_misprint
+  kind: possible_error
+  about: [langevin_overdamped_1d, einstein_diffusion_relation]
+  text: >
+    SI Methods (p. 23) prints the overdamped Langevin equation dx^{ij}(t) = mu f^{ij}_tot(t) dt + dB_j(t)
+    and D^i = mu k_B T, but immediately defines mu as 'the viscosity of solvent'. Dimensionally and
+    physically, mu is the particle mobility (1 / drag coefficient, units um/(pN*s)), not solvent
+    viscosity (units pN*s/um^2).
+  citation: {page: 23, printed_page: "SI-11", quote: "Here, u is the viscosity of solvent, and", where: "SI Methods (Position evolution)"}
+
+- id: q_radial_density_missing_one_third
+  kind: possible_error
+  about: [radial_density_ratio_printed, radial_density_ratio_corrected]
+  text: >
+    SI Methods (p. 23) prints rho(r, delta_r)/rho(R_drop) = [N(r, delta_r)/(r^2 delta_r)] / [N_total/R^3],
+    omitting the factor of 1/3 = ((4/3) pi) / (4 pi) arising from the ratio of sphere volume (4/3) pi R^3
+    to thin spherical shell volume 4 pi r^2 delta_r. For a homogeneous distribution inside a sphere, the
+    printed equation yields 3.0 rather than 1.0, whereas Fig. 5B (p. 8) and Fig. S5c (p. 17) approach 1.0
+    for homogeneous networks at [Arp2/3] = 150 nM. Note that the missing factor of 1/3 cancels out in the
+    core-to-periphery ratio R.A.E. = rho(c, delta_r) / rho(p, delta_r) on p. 24.
+  citation: {page: 23, printed_page: "SI-11", quote: "local density within shells and the bulk density as", where: "SI Methods (Analysis of trajectories)"}
+
+- id: q_vasp_tet_conc_contradiction_02_vs_04
+  kind: possible_error
+  about: [sim_vasp_tet_conc_tableS1, sim_vasp_tet_conc_fig5, sim_vasp_tet_count]
+  text: >
+    Table S1 (p. 20) states '[VASP-tet] = 0.4 uM (1000 molecules of VASP-tetramer)' (matching
+    0.4 uM * V_drop * N_A = 1009 molecules), whereas both Fig. 5A caption (p. 8) and Supplemental Fig. S6
+    caption (p. 18) state '[VASP-tet] = 0.2 uM' (which corresponds to 504.5 molecules in a 1 um radius
+    sphere). It is unclear from the paper alone whether simulations used 500 or 1000 VASP tetramers.
+  citation: {page: 8, printed_page: "8", quote: "from rigid droplets (radius = 1 um) [VASP-tet] = 0.2 uM", where: "Fig. 5A caption vs Table S1 (p. 20)"}
+
+- id: q_fig6e_arp_unit_misprint
+  kind: possible_error
+  about: [arp23_conc_fig6e_printed, arp23_conc_fig6_500nM]
+  text: >
+    Fig. 6E caption (p. 9) prints 'Condition: 1 uM VASP, 500 uM Arp2/3, 4 uM VCA, 4 uM actin.'
+    Because the Arp2/3 titration in Fig. 6A-C runs from 0 to 500 nM (with 4 uM VCA), '500 uM Arp2/3'
+    is an evident 1000-fold unit misprint for 500 nM Arp2/3.
+  citation: {page: 9, printed_page: "9", quote: "Condition: 1 uM VASP, 500 uM Arp2/3, 4 uM VCA, 4 uM actin.", where: "Fig. 6E caption"}
+
+- id: q_fig6f_text_vs_plot_tenfold_mismatch
+  kind: unexplained_difference
+  about: [spoke_partitioning_vasp, spoke_partitioning_arp23, aster_spoke_enrichment]
+  text: >
+    Main text on p. 9 reports VASP spoke partitioning as '6.8 ± 2.3% compared to 0.69 ± 0.52% mean ± SD'
+    for Arp2/3, citing Fig. 6F. However, the Fig. 6F bar plot (p. 9, y-axis 'Relative enrichment', 0 to 1,
+    caption 'Enrichment is normalized to actin intensity') shows bar heights of approximately 0.56 (~56%)
+    for VASP and 0.07 (~7%) for Arp2/3 -- roughly 8-10x larger than 6.8% and 0.69%. Either the prose cites
+    unnormalized spoke-to-core intensity ratios while Fig. 6F plots actin-normalized enrichment (consistent
+    with an actin spoke/core ratio of ~12%), or there is a factor-of-10 discrepancy to verify during figure
+    digitization.
+  citation: {page: 9, printed_page: "9", quote: "greater than Arp2/3's (partitioning of 6.8 ± 2.3% compared to", where: "Results vs Fig. 6F"}
+
+- id: q_monomer_count_69823_rounding
+  kind: unexplained_difference
+  about: [ode_actin_monomers_600s, ode_f_actin_600s, filament_polymer_to_concentration]
+  text: >
+    SI Methods (p. 22) states that [F-actin](600) = 27.68 uM corresponds to 69,823 actin monomers and a
+    per-filament length of 2*pi um for 30 filaments. Direct conversion of 30 * 2*pi um / 0.0027 um yields
+    69,813.2 monomers (10 molecules fewer than 69,823); converting the rounded 27.68 uM back to molecules
+    in a 1 um sphere gives 69,824.1 (CODATA N_A = 6.02214076e23) or 69,822.5 (4-digit N_A = 6.022e23),
+    indicating 69,823 was calculated from rounded 27.68 uM using N_A = 6.022e23.
+  citation: {page: 22, printed_page: "SI-10", quote: "calculated to be 69,823 molecules.The boundary condition corresponds", where: "SI Methods"}
+
+- id: q_molecule_count_truncation_vs_rounding
+  kind: reading
+  about: [sim_arp23_count_vs_conc, vca_molecule_count_1uM, sim_vasp_tet_count]
+  text: >
+    Molecule counts in a 1 um radius sphere are truncated toward zero rather than rounded to nearest
+    integer for Arp2/3 ({0, 25.23, 63.06, 126.13, 189.19, 252.25, 315.32, 378.38} -> {0, 25, 63, 126,
+    189, 252, 315, 378}) and VCA (2522.55 -> 2522, p. 24), whereas VASP-tetramer at 0.4 uM (1009.02)
+    is rounded down to 1000 molecules in Table S1 (p. 20).
+  citation: {page: 20, printed_page: "SI-8", quote: "{0, 25, 63, 126, 189, 252, 315, 378 } molecules", where: "Table S1 & SI Methods (p. 24)"}
+
+- id: q_arp23_binding_distance_radius_plus_diameter
+  kind: possible_error
+  about: [sim_arp23_binding_distance, sim_arp23_radius, sim_actin_diameter, sim_actin_steric_radius]
+  text: >
+    Table S1 (p. 20) computes the Arp2/3 binding distance as '12nm~4.72nm+7nm' by adding Arp2/3 radius
+    (4.72 nm) and actin filament diameter (7 nm). Center-to-center contact between an Arp2/3 sphere of
+    radius 4.72 nm and an actin cylinder of radius 3.5 nm (listed on p. 19) is 4.72 + 3.5 = 8.22 nm,
+    not 11.72 nm.
+  citation: {page: 20, printed_page: "SI-8", quote: "binding distance 12nm~4.72nm+7nm", where: "Table S1"}
+
+- id: q_fiber_set_cc_syntax_error
+  kind: possible_error
+  about: [cytosim_actin_vasp_arp23_vca]
+  text: >
+    In the C++ FiberSet::step() code edit printed on SI p. 25, the loop 'for ( Property * i : plist ){'
+    opens a brace that is never closed before the following loop (four '{' vs three '}' in the function),
+    so the printed listing would not compile verbatim as shown.
+  citation: {page: 25, printed_page: "SI-13", quote: "set the total to be sum of all fiber types", where: "SI Methods (fiber_set.cc)"}
+
+- id: q_replicate_count_5_vs_6
+  kind: possible_error
+  about: [sim_replicates_fig5c, sim_replicates_methods]
+  text: >
+    Fig. 5C caption (p. 8) states 'Data from six replicates', contradicting both Fig. 5E caption (p. 8,
+    'Data from five replicates') and SI Methods (p. 23, 'Five trajectories were generated for each
+    [Arp2/3] concentration studied').
+  citation: {page: 8, printed_page: "8", quote: "Data from six replicates; the last 10 snapshots per replicate", where: "Fig. 5C caption vs Fig. 5E & SI p. 23"}
+
+- id: q_imaging_time_600s_vs_15min
+  kind: possible_error
+  about: [sim_total_time, exp_actin_polymerization_time]
+  text: >
+    Table S1 (p. 19) gives Total time = 600 s with note 'Experimental images are taken at 600s' (10 min),
+    whereas Results (p. 2) and Methods (p. 11) both state actin was polymerized for 15 min (900 s) before
+    imaging (and an additional 15 min for phalloidin staining; 10 min was the pre-actin droplet formation time).
+  citation: {page: 19, printed_page: "SI-7", quote: "Total time 600 s Experimental images are taken at 600s", where: "Table S1 vs Methods (p. 11)"}
+
+- id: q_main_text_miscitations_35_36_and_dup_44
+  kind: possible_error
+  about: [cytosim_actin_vasp_arp23_vca, ref-35, ref-36, ref-12, ref-44]
+  text: >
+    On p. 7, main text mis-cites Cytosim as ref (35) (Blanchoin et al. 2000, an experimental dendritic
+    network paper, instead of Nedelec & Foethke 2007) and mis-cites the authors' prior VASP-only droplet
+    simulations as ref (36) (Higgs et al. 1999, instead of Chandrasekaran et al. 2023/2024, SI ref 3).
+    Additionally, main references 12 and 44 are identical duplicates of Wubshet et al. (MBoC 32, 2021).
+  citation: {page: 7, printed_page: "7", quote: "we used Cytosim, an agent-based framework for modeling cytoskeletal dynamics", where: "Results (p. 7) & References (p. 12)"}
+
+- id: q_minor_figure_and_table_typos
+  kind: possible_error
+  about: [dmso_conc_figs2, vca_conc_750nM, vca_conc_6uM, sim_boundary_stiffness_actin]
+  text: >
+    Several additional minor typographical defects appear in figures/tables: (1) Fig. 1C y-axis ticks (p. 3)
+    read 0, 0.04, 0.08, 0.18, 0.14, 0.18 (0.18 printed instead of 0.12); (2) Supplemental Fig. S2 (p. 14)
+    tests 2% DMSO in droplets with 6 uM VCA while claiming to match the CK666 experiment in Fig. 3E, which
+    used 750 nM VCA; (3) Fig. 5C caption (p. 8) prints '0.6 <= r_c < 1.0' instead of r_p; (4) Fig. S4c
+    heading (p. 16) prints 'Boundary conformation' instead of 'Boundary confinement'; (5) Table S1 (p. 19)
+    notes 'Here the stiffness depends on the distance outside the boundary' (the force, not stiffness,
+    depends on distance).
+  citation: {page: 14, printed_page: "SI-2", quote: "DMSO was added to 15 uM VASP droplets", where: "Fig. 1C (p. 3), Fig. 5C (p. 8), Fig. S2 (p. 14), Fig. S4c (p. 16), Table S1 (p. 19)"}
+
+- id: q_steric_force_sign_and_cutoff
+  kind: reading
+  about: [steric_repulsion_force]
+  text: >
+    Fig. S4d (p. 16) prints F_steric = k_steric(d - r) without specifying the sign convention (d < r gives
+    a negative value) or whether the cutoff r is a single particle radius or the sum of two radii (r_1 + r_2).
+    We implemented the equation verbatim as printed for d < r.
+  citation: {page: 16, printed_page: "SI-4", quote: "Steric repulsion potentials prevent spatial", where: "Supplemental Fig. S4d"}
+
+- id: q_unstated_temperature_and_water_viscosity
+  kind: unstated_input
+  about: [temperature_room_K, thermal_energy_room, water_viscosity_20C]
+  text: >
+    The paper does not state the simulation temperature T (or k_B T) or reference water viscosity used for
+    '50x water'. Added values T = 298.15 K (k_B T = 4.116 pN*nm, alternatives 293.15, 300, 310 K) and
+    eta_water = 0.001 pN*s/um^2 (alternatives 0.00089, 0.00069 pN*s/um^2) are labelled in added.yaml.
+
+- id: q_rae_cutoff_change_fig5_vs_figs5
+  kind: choice
+  about: [sim_rae_core_max_fig5, sim_rae_core_max_figs5, relative_actin_enrichment_rae]
+  text: >
+    The radial boundary defining core vs periphery in R.A.E. shifts from r = 0.6 um in Fig. 5C / SI Methods
+    p. 23 (0.2 <= r_c < 0.6, r_p > 0.6) to r = 0.4 um in Fig. S5d p. 17 (0.2 <= r_c < 0.4, r_p >= 0.4) to
+    accommodate actin peaks near r = 0.5 um at [VCA] = 10 uM, meaning R.A.E. values are not directly
+    comparable across Fig. 5C and Fig. S5d.
+  citation: {page: 17, printed_page: "SI-5", quote: "in some cases ([VCA]=10 uM, last column), we define core as", where: "Supplemental Fig. S5d caption"}
+
+- id: q_numerical_settings_choice
+  kind: choice
+  about: [run_langevin_vasp, run_ode_eq2_printed, run_ode_eq2_converted, run_ode_eq3_printed, run_ode_eq3_converted]
+  text: >
+    SI Methods states scipy.integrate was used for Eqs. (1)-(3) without giving step-size or tolerance settings
+    (we use RK45 with max_step dt = 1.0 s, refined by 1x-8x). For the standalone 1D overdamped Langevin check
+    (run_langevin_vasp), we use Table S1's exact dt = 0.001 s over an added horizon t_sim = 0.2 s with
+    n_particles = 2000 (5 replicates), refined over both dt and n_particles, to keep total runtime fast (<25 s).
+
+- id: q_fig6f_pvalue_n3_vs_n30
+  kind: possible_error
+  about: [fig6f_pvalue, spoke_partitioning_vasp, spoke_partitioning_arp23, fig6f_experiments_n, fig6f_droplets_per_exp, spoke_partitioning_ttest, spoke_partitioning_ttest_droplets]
+  text: >
+    Main text on p. 9 reports spoke partitioning of 6.8 ± 2.3% (VASP) vs 0.69 ± 0.52% (Arp2/3), and Fig. 6F
+    caption states 'Bars are mean ± SD across n = 3 experiments, with 10 droplets analyzed per experiment.
+    Asterisks indicates data tested for significance via an unpaired two-tailed t-test, with P < 0.001.'
+    However, an unpaired two-tailed t-test on 6.8 ± 2.3% vs 0.69 ± 0.52% with n = 3 experiments yields
+    t = 4.49, df = 4, p = 0.0109 (Welch p = 0.0385), which does not satisfy P < 0.001 (the same holds for
+    the ~0.56 ± 0.17 vs ~0.07 ± 0.08 bar heights plotted in Fig. 6F). Achieving P < 0.001 requires pooling
+    all 3 x 10 = 30 individual droplets as independent observations (t = 14.19, df = 58, p = 1.60 x 10^-20),
+    indicating either droplet-level pseudoreplication in the t-test or an inconsistency with the stated n = 3.
+  citation: {page: 9, printed_page: "9", quote: "are mean ± SD across n = 3 experiments, with 10 droplets analyzed per experiment.", where: "Fig. 6F caption & Results (p. 9)"}
+
+- id: q_fig1e_xaxis_tick_misprint
+  kind: possible_error
+  about: [frap_t_half_vasp_only, frap_t_half_composite]
+  text: >
+    In Fig. 1E (p. 3), the uniformly spaced x-axis ('Time (s)') tick labels read 0, 20, 40, 60, 80, 120,
+    jumping by 40 s instead of 20 s on the final equally spaced interval (120 printed where 100 belongs).
+    Digitization of the FRAP curves in Fig. 1E should calibrate on the regular 0-80 s ticks rather than
+    treating the final tick as 120 s.
+  citation: {page: 3, printed_page: "3", quote: "Composite droplets formed of 20 uM VASP", where: "Fig. 1E x-axis ticks"}
+
+- id: q_audit_additional_si_and_design_defects
+  kind: possible_error
+  about: [cytosim_actin_vasp_arp23_vca, actin_t_actin_solver_eq2_printed, vca_k_bind_per_mol, vca_conc_4uM, sim_shell_thickness]
+  text: >
+    Additional printed defects and omissions identified during independent audit: (1) Table S1 (p. 19) gives
+    boundary repulsion stiffness for actin (200 pN/um) and VASP (100 pN/um) but omits Arp2/3 boundary
+    stiffness even though Fig. S4c (p. 16) depicts F_boundary^Arp2/3; (2) SI p. 22 symbol table lists '[P]'
+    ('Plus End', never used in Eqs. 1-3), omits '[T-actin]', and lists N_fil ('Number of filaments') under
+    column header 'Represents concentration of'; (3) SI p. 25 FiberSet::step() prints four '{' and only two '}'
+    (missing both the added for-loop closing brace and the function closing brace, refining
+    q_fiber_set_cc_syntax_error's count of three '}'); (4) Table S1 p. 20 VASP steric repulsion notes
+    'kinetic parameters explored in Figure 4', a carry-over from SI ref (3) since Fig. 4 here is experimental
+    phalloidin staining; (5) SI p. 23 defines core/periphery at r = 0.6 um as closed [0.2, 0.6] and open
+    (0.6, 1.0) and prints 'd=25 nm' instead of 'dr=25 nm', conflicting with open 0.2 <= r < 0.6 and closed
+    r >= 0.6 on pp. 7-8; (6) Fig. 2E (p. 4) and Fig. 6A-B (p. 9) headers show [VCA] = 0 uM at 0 nM Arp2/3
+    and 4 uM at 50-500 nM Arp2/3, whereas pp. 3-4 prose describes VCA as constant at 4 uM across Fig. 2E-F;
+    (7) SI p. 24 specifies k_bind = 3.44 um/s (3 sig figs), yielding k_bind^fiber = 8675.68 um/s which
+    saturates L_Gmax = 34.047 um in 4 ms (4 CytoSim steps out of 600 s), rendering [F-actin](600) insensitive
+    to any k_bind >= 0.01 um/s.
+  citation: {page: 22, printed_page: "SI-10", quote: "Symbol Represents concentration of", where: "Fig. 2E (p. 4), Table S1 (pp. 19-20), SI Methods (pp. 22-25)"}
+
+- id: q_audit_quantity_conflation_spoke_vs_rae
+  kind: reading
+  about: [aster_spoke_enrichment, relative_actin_enrichment]
+  text: >
+    Audit reading note: aster_spoke_enrichment declares its output port using quantity
+    relative_actin_enrichment (defined in quantities.yaml as core-to-periphery actin enrichment R.A.E. for
+    Figs. 4D, 5C, and S5d), whereas Methods p. 11 and Fig. 6F define actin-normalized protein (VASP or Arp2/3)
+    spoke-to-core enrichment. These are physically distinct ratios and should ideally use separate quantities
+    when Fig. 6F is digitized.
+  citation: {page: 11, printed_page: "11", quote: "the average intensities of the proteins in the spokes were divided by the average", where: "Methods (Image Analysis)"}
+
+- id: q_audit_reading_origins_and_eq2_rounding
+  kind: reading
+  about: [fig6f_pvalue, fig3c_p_vasp_vs_arp_vca, cmp_ode_eq2_converted_f600, cmp_ode_eq2_printed_t_actin]
+  text: >
+    Audit reading notes on first-reader conventions: (1) fig6f_pvalue, fig3c_p_*, fig3e_p_*, figs2_p_*, and
+    all Hedges' g datums in data.yaml are tagged origin: measured, whereas Fig. 1E t-test p-values
+    (frap_t_half_pvalue, frap_mobile_pvalue) are tagged origin: derived; statistical test outputs are derived
+    from measurements rather than raw measurements. (2) cmp_ode_eq2_converted_f600 receives verdict reproduced
+    only because input-rounding propagation assigns +/-0.5, +/-5, and +/-50 rounding intervals to the exact
+    simulation constants R_drop = '1', N_fil = '30', and t = '600' (band [-60.6, 110.7] uM), whereas at exact
+    parameter values converted Eq. (2) gives 25.07 uM vs 27.68 uM (-9.4%) and has no finite positive [T-actin]
+    solution; the added inverse comparison cmp_ode_eq2_printed_t_actin directly tests printed Eq. (2) against
+    the claimed [T-actin] = 138.38 uM (giving 27.71 uM, not reproduced).
+  citation: {page: 22, printed_page: "SI-10", quote: "Solving this numerically in Python using scipy.integrate, we find that [T-actin]=138.38 uM.", where: "SI Methods, Eqs. (1)-(2) & data.yaml"}
+
+- id: q_digitize_fig1c_three_ytick_misprints
+  kind: possible_error
+  about: [fig1c_vasp_fig, fig1c_arp23_fig, fig1c_vca_fig, fig1c_vca_arp23_fig]
+  text: >
+    Calibrated digitization of Fig. 1C (p. 3, 1800 dpi) refines q_minor_figure_and_table_typos:
+    the six outward y-axis ticks sit at consecutive pixel intervals of 343.5, 351.5, 344.0, 351.0,
+    and 176.0 px from top (0.18) to bottom (0), so the lowest interval is exactly half (0.02) of
+    the four upper 0.04 intervals. Consequently, the true tick values are 0, 0.02, 0.06, 0.10,
+    0.14, 0.18 — meaning three y-axis labels are misprinted (0.02 printed as 0.04, 0.06 printed
+    as 0.08, and 0.10 printed as 0.18). Calibrating on 0, 0.02, 0.06, 0.10, 0.14, 0.18 yields
+    normalized histogram sums of 1.0035 (VASP), 1.0052 (+Arp2/3), 1.0050 (+VCA), and 1.0022
+    (+VCA+Arp2/3), confirming unity normalization to within 0.5%.
+  citation: {page: 3, printed_page: "3", quote: "Histogram of droplet sizes quantified from B. Data from n = 3 replicates.", where: "Fig. 1C y-axis ticks"}
+
+- id: q_digitize_fig1e_frap_confirms_100s_tick
+  kind: possible_error
+  about: [fig1e_frap_vasp_fig, fig1e_frap_composite_fig, frap_t_half_vasp_only, frap_t_half_composite]
+  text: >
+    Calibrated digitization of Fig. 1E (p. 3) confirms q_fig1e_xaxis_tick_misprint: the six x-axis
+    ticks are evenly spaced, so the final tick labeled 120 sits at 100 s. Calibrating on the
+    regular 0, 20, 40, 60, 80 s ticks aligns the photobleach minimum with t = 6 s (matching the
+    Fig. 1F 6 s micrograph), places 50%-of-mobile recovery near t = 10.6 s (delta_t ~ 4.6 s vs
+    printed t_1/2 = 4.93 ± 1.16 s) for VASP-only and t = 12.7 s (delta_t ~ 6.7 s vs printed
+    7.24 ± 0.99 s) for composite droplets, and yields plateaus of 97.0-97.4% vs 96.1% at 80-84 s
+    (matching printed 96.86% and 96.20%).
+  citation: {page: 3, printed_page: "3", quote: "Curves show the average VASP recovery profile with error bars representing SD", where: "Fig. 1E"}
+
+- id: q_digitize_fig6f_bar_heights_and_ttest
+  kind: unexplained_difference
+  about: [fig6f_spoke_enrichment_fig, spoke_partitioning_vasp, spoke_partitioning_arp23, fig6f_pvalue]
+  text: >
+    Calibrated digitization of Fig. 6F (p. 9) yields actin-normalized spoke relative enrichment
+    bars of 0.563 ± 0.178 (SD, [0.382, 0.737]) for VASP and 0.074 ± 0.070 (SD, [0.007, 0.147])
+    for Arp2/3 (fold ratio 7.63x). This settles q_fig6f_text_vs_plot_tenfold_mismatch: the plotted
+    bars are 8.3x (VASP) and 10.7x (Arp2/3) larger than the main-text percentages (6.8 ± 2.3% vs
+    0.69 ± 0.52%, ratio 9.86x), consistent with prose reporting unnormalized spoke/core ratios
+    while Fig. 6F plots actin-normalized enrichment (for an actin spoke/core ratio of ~0.10-0.12).
+    Moreover, an unpaired two-tailed t-test on the digitized Fig. 6F bars at stated n = 3
+    experiments gives Student t = 4.43, df = 4, p = 0.0114 (Welch p = 0.0285), confirming
+    q_fig6f_pvalue_n3_vs_n30 directly on the plotted bars (P < 0.001 requires pooling all 30
+    droplets: t = 14.02, p = 2.8 x 10^-20).
+  citation: {page: 9, printed_page: "9", quote: "Quantification of the relative enrichment of VASP and Arp2/3 to the spokes", where: "Fig. 6F & Results (p. 9)"}
+
+- id: q_digitize_figs5b_sub_2pi_length_and_vca_ode
+  kind: unexplained_difference
+  about: [figs5b_0arp_length_vs_vca_fig, fig5e_0nM_fig, ode_f_actin_600s, cytosim_vca_ode_filament_length, cmp_figs5b_vca_ode_length]
+  text: >
+    Calibrated digitization of Supplemental Fig. S5b ([Arp2/3] = 0 nM, p. 17) and Fig. 5E
+    ([Arp2/3] = 0 nM, p. 8) confirms q_eq2_unit_mismatch_and_bc_inconsistency directly from the
+    paper's own CytoSim outputs: at [Arp2/3] = 0 nM, [VCA] = 0 uM, the simulated final filament
+    length at t = 600 s is 5.568 ± 0.088 um (not 2*pi = 6.283 um as stated for the [F-actin](600)
+    = 27.68 uM boundary condition on p. 22). Across [VCA] = 0, 1, 2, 5, 10 uM, digitized median
+    lengths are 5.568, 5.370, 5.172, 4.592, and 3.606 um (slope -0.196 um/uM), while our
+    length-based SI Eqs. (1)-(3) / fiber_set.cc ODE (cytosim_vca_ode_filament_length, zero
+    boundary force) yields 5.692, 5.490, 5.287, 4.679, and 3.665 um (slope -0.203 um/uM).
+    cmp_figs5b_vca_ode_length evaluates to reproduced (5/5) under BoxGraph input-rounding
+    propagation, while at exact simulation constants CytoSim is systematically 0.06-0.12 um
+    (1.6-2.2%) shorter than the zero-force ODE — decreasing with shorter filaments, consistent
+    with the 10 pN Brownian ratchet stall force at the spherical boundary.
+  citation: {page: 17, printed_page: "SI-5", quote: "The final distribution of filament lengths (last 10 snapshots per replicate) is plotted", where: "Supplemental Fig. S5b & Fig. 5E"}
+
+- id: q_digitize_fig4d_tick_offset_and_fig5_rae_notes
+  kind: reading
+  about: [fig4d_relative_enrichment_fig, fig5b_150nM_fig, fig5c_sim_rae_fig, figs5d_vca0_fig]
+  text: >
+    Additional quantitative findings from figure calibration: (1) In Fig. 4D (p. 6), y-ticks
+    0, 0.1, 0.2, 0.3 are strictly evenly spaced (< 1 px residual), whereas the top tick 0.4 is
+    displaced upward by ~20 px (~0.005 units); calibrating on 0..0.3 gives 0.092 ± 0.003,
+    0.283 ± 0.100, and 0.308 ± 0.064. (2) In Fig. 5B (p. 8), the [Arp2/3] = 150 nM radial
+    density ratio lies around 0.80-1.18 in the droplet core (not ~3.0), confirming
+    q_radial_density_missing_one_third that the analysis code included the 1/3 geometric factor
+    omitted from the printed equation on p. 23. Computing max(rho_core)/max(rho_periphery) from
+    the trajectory-averaged Fig. 5B curves yields 0.77 at 150 nM vs 0.571 in Fig. 5C because
+    Fig. 5C averages per-snapshot peak ratios rather than taking the ratio of peaks of the mean
+    curve. (3) Fig. 5C ([VCA]=0, core r_c < 0.6, n=6) vs Supplemental Fig. S5d ([VCA]=0, core
+    r_c < 0.4, n=3) differ modestly (e.g., 0.485 vs 0.621 at 125 nM, 0.571 vs 0.599 at 150 nM),
+    reflecting the core cutoff change (q_rae_cutoff_change_fig5_vs_figs5) and replicate count;
+    neither caption states whether the error bars represent SD or SEM (recorded as unstated).
+    (4) Fig. 5D at [Arp2/3] = 50 nM reaches 295.2 filaments at t = 600 s (9.84x the initial 30
+    filaments), directly matching Table S1's reported 10x filament-count increase.
+  citation: {page: 8, printed_page: "8", quote: "Actin enrichment close to droplet core is calculated as defined in", where: "Fig. 4D (p. 6), Fig. 5B-C (p. 8), Supplemental Fig. S5d (p. 17)"}
+
+- id: q_code_discrepancies_rae_vca_angle_and_replicates
+  kind: possible_error
+  about:
+    - sim_arp23_branching_angle
+    - relative_actin_enrichment_rae
+    - radial_density_ratio_printed
+    - radial_density_ratio_corrected
+    - actin_vca_competition_ode_eq3_converted
+    - fig5c_sim_rae_fig
+    - figs5d_vca0_fig
+    - figs5d_vca1_fig
+    - figs5d_vca10_fig
+    - sim_vasp_tet_conc_fig5
+    - sim_replicates_fig5c
+    - graham2024_code/csv_radial_density_and_rae
+    - graham2024_code/csv_radial_density_rae_paper_def
+    - graham2024_code/notebook_vca_competition_ode
+    - graham2024_code/config_parameter_audit
+  text: >
+    Cross-record ModelAtlas audit against the paper's released GitHub repository
+    graham2024_code (CytoSim_VASP_Arp_VCA, ref-63) establishes four concrete code-vs-paper
+    discrepancies and settles five earlier open questions in graham2024:
+    (1) R.A.E. MAXIMIZES RAW COUNT N(r) INSTEAD OF DENSITY rho(r) (refuted in
+    rel_code_rae_argmax_count_vs_paper_density): Cell 39/43 selects maxrcore = radvec_core[Ncore.idxmax()]
+    before dividing by r^2 instead of maximizing density rho(r) as stated on SI pp. 23-24.
+    Direct comparison against graham2024's calibrated figure readings proves published Fig. 5C
+    (0.000, 0.0713, 0.1152, 0.2333, 0.3713, 0.4595, 0.4850, 0.5709 across 0..150 nM Arp2/3)
+    matches code argmax(N) (0.000, 0.0715, 0.1153, 0.2334, 0.3715, 0.4560, 0.4849, 0.5674) and its
+    pooled 50-frame SD error bars to 3-4 decimal places, whereas the printed SI pp. 23-24 argmax(rho)
+    definition gives 0.000, 0.1019, 0.1576, 0.3468, 0.5514, 0.7245, 0.7345, 0.8482 (+37% to +59%
+    higher). Likewise Fig. S5d at 150 nM Arp2/3 across VCA = {0, 1, 2, 5, 10} uM (0.5985, 0.5714,
+    0.5211, 0.3721, 0.2734) matches code argmax(N) (0.5978, 0.5701, 0.5195, 0.3698, 0.2675) while
+    pooling crashed trajectories that terminated early (down to t = 434 s at VCA = 1 uM) with t = 600 s.
+    (2) VCA CALIBRATION kunbind = 2.7 vs CONFIG/PAPER kunbind = 0 (refuted in
+    rel_code_vca_ode_kunbind2p7_vs_eq3_converted): Cell 25 calibrated k_bind = 3.44 um/s using
+    kunbind = 2.7 um/s, whereas Cell 17 overwrote growing_off_speed = 0, 0 in all 200 VCA .cym
+    configs and SI Eq. (3) omits kunbind entirely; at [VCA] = 5-10 uM this creates a 29%-63%
+    divergence in delta_[F-actin] (3.18-3.26 uM vs 4.46-8.93 uM). Even at kunbind = 0, Cell 23's
+    unscaled L[4] + DNvca_boundt >= Lmax check introduces a ~1 s / 600 s clipping offset (< 0.15%,
+    verified by rel_code_vca_ode_kunbind0_approx_eq3_converted).
+    (3) BRANCHING ANGLE 77.01 deg vs 70 deg: All 240 .cym configs comment out '% angle = 1.22'
+    (70 deg) and run 'angle = 1.344' rad = 77.01 deg (bovine Arp2/3), contradicting Table S1,
+    Fig. S4f, and SI p. 23 (70 deg; checked via graham2024_code/arp23_branching_angle_code).
+    (4) SETTLED EARLIER QUESTIONS: q_vasp_tet_conc_contradiction_02_vs_04 settled as 1000 VASP
+    tetramers (~0.4 uM, refuting Fig. 5A/S6's 0.2 uM); q_replicate_count_5_vs_6 settled as 5
+    replicates in Arp23 sweep (refuting Fig. 5C's 'six replicates') and only 2 replicates averaged
+    in Fillength_VCA CSVs (refuting Fig. S5's '3 replicates'); q_radial_density_missing_one_third
+    settled via rel_code_radial_density_outer_corrected / _printed_factor3 (factor of 3, plus right-edge
+    bias); q_eq2_unit_mismatch_and_bc_inconsistency settled via rel_code_actin_ode_eq2_converted /
+    _printed_unit_mismatch and rel_code_config_t_actin_5x_circ (hardcoded 5*2*pi*30 = 300*pi um);
+    and q_vasp_diffusion_stokes_einstein_mismatch pinpointed via rel_code_config_stokes_einstein
+    (CytoSim Wrist ignores diffusion = 10.0, yielding Stokes D = 0.01485 um^2/s, 673x slower).
+  citation: {page: 11, printed_page: "11", quote: "analysis, and plotting scripts are available on GitHub", where: "Data Availability (p. 11, ref-63) & SI Methods (pp. 22-25)"}
+
+- id: q_cross_record_chandrasekaran_viscosity_unit_and_shared_cyto_params
+  kind: reading
+  about:
+    - sim_droplet_viscosity
+    - sim_viscosity_ratio_water
+    - steric_repulsion_force
+    - stokes_einstein_sphere_diffusion
+    - langevin_overdamped_1d
+    - chandrasekaran2024/viscosity_droplet_printed
+    - chandrasekaran_cytosim/cytosim_steric_repulsion
+    - walker2025_code/cytosim_solid_stokes_diffusion
+  text: >
+    Cross-record ModelAtlas and cited-value audit across the Rangamani-lab CytoSim droplet family
+    (chandrasekaran2024, chandrasekaran_cytosim, graham2024_code, walker2025_code) highlights four
+    structural cross-paper findings:
+    (1) All 4 ref-SI3 datums and 13 additional Table S1 baseline CytoSim parameters in graham2024
+    trace directly to chandrasekaran2024 Supplementary Table 2 (linked in cited.yaml), including
+    the shared 10-fold viscosity-ratio error ('50x water' for 0.5 pN*s/um^2 = ~500x water).
+    However, sim_droplet_viscosity (0.5 pN*s/um^2) cannot be linked in cited.yaml to
+    chandrasekaran2024/viscosity_droplet_printed because chandrasekaran2024 misprinted its unit
+    as pN/(s*um^2) (inverted s placement, incompatible Pint dimension), which graham2024 corrected
+    to pN*s/um^2 in Table S1 p. 19.
+    (2) The reconstructed Stokes-Einstein check joins graham2024 into the unified Stokes-Einstein
+    ModelAtlas family alongside chandrasekaran2024, chandrasekaran_cytosim, graham2024_code, and
+    walker2025_code, confirming the identical 673x-687x Wrist-diffusion-ignored discrepancy
+    (0.0146-0.0149 um^2/s vs stated 10 um^2/s) across all three Rangamani-lab droplet papers.
+    (3) rel_cyto_steric_repulsion_sign_discrepancy exposes the exact factor -1 sign difference
+    between Fig. S4d's literal printed F_steric = k_steric*(d - r) (< 0 for overlap d < r) and
+    CytoSim's repulsive magnitude F_repulsive = k_push*(r1 + r2 - d) (> 0, meca_inter.cc:2106).
+    (4) graham2024's digitized CytoSim figure curves (Fig. 5B-E, Fig. S5b, Fig. S5d) are not linked
+    in cited.yaml because graham2024_code/data.yaml exposes PLOTCSVFILES via live software models
+    rather than authored table datums; cross-validation of those curves against live software
+    adapters belongs to the cross-validation stage.
+  citation: {page: 19, printed_page: "SI-7", quote: "Viscosity of droplet 0.5 pN.s/um2 50x water", where: "Table S1 (pp. 19-20) & SI Methods (p. 23)"}
+
+- id: q_graham2024_code_cross_validation_audit
+  kind: unexplained_difference
+  about:
+    - fig4d_relative_enrichment_fig
+    - fig4c_single_droplet_enrichment
+    - fig5c_sim_rae_fig
+    - figs5b_0arp_length_vs_vca_fig
+    - figs5d_vca0_fig
+    - figs5d_vca1_fig
+    - figs5d_vca2_fig
+    - figs5d_vca5_fig
+    - figs5d_vca10_fig
+    - sim_arp23_nucleation_fold_50nM
+    - cytosim_vca_ode_filament_length
+    - actin_polymerization_ode_eq2_converted
+    - graham2024_code/csv_radial_density_and_rae
+    - graham2024_code/csv_radial_density_rae_paper_def
+    - graham2024_code/csv_arp23_filament_stats
+    - graham2024_code/csv_vca_filament_stats
+    - graham2024_code/notebook_vca_competition_ode
+  text: >
+    Cross-record validation audit between graham2024 and its released code repository
+    graham2024_code (CytoSim_VASP_Arp_VCA, ref-63):
+    (1) Forward direction (graham2024 models -> graham2024_code datums; 0 entries in
+    graham2024/validations.yaml): graham2024_code is a software record with 0 origin: measured and
+    0 origin: fitted datums. Its 10 origin: run datums are notebook-printed total_polymer_length
+    [um] (nb_cell21_L600_out = 170.895, nb_cell21_Lmax_out = 188.496, nb_cell25_no_vca_len =
+    170.768, nb_cell37_lsum_600_vca0 = 165.763, nb_cell37_lsum_600_vca1 = 159.837 um), growth
+    rates, fractional F-actin tables, and paper_arp23_nucleation_fold_50nM (copied from
+    graham2024). None matches the output quantities of graham2024's runnable ODE models
+    (actin_concentration [uM] or single-filament filament_length [um]), and
+    total_polymer_from_concentration on ode_f_actin_600s = 27.68 uM is a trivial unit conversion
+    of the paper's own boundary condition rather than a validation against independent data.
+    (2) Reverse direction (graham2024_code live software: true models -> graham2024 datums;
+    structurally belongs in graham2024_code/validations.yaml per BoxGraph CrossValidation.model
+    ownership): offline evaluation yields two major quantitative cross-validation findings:
+    (a) Out-of-sample experimental validation against Fig. 4D R.A.E. (fig4d_relative_enrichment_fig,
+    origin: measured at 0, 100, 150 nM Arp2/3 with 0, 4, 6 uM VCA: 0.0924 +/- 0.0025, 0.2831 +/-
+    0.1002, 0.3079 +/- 0.0636; single-droplet Fig. 4C: 0.10, 0.26, 0.24): without VCA (dataset:
+    arp23, C_VCA = 0, r_cutoff = 0.6), csv_radial_density_and_rae (code argmax(N)) predicts
+    0.0000, 0.4560 (SD 0.0542), 0.5674 (SD 0.0470) — 0/3 inside experimental 1-SD bands (missing
+    finite experimental core fluorescence 0.0924 at 0 nM and overshooting by +61% at 100 nM and
+    +84% at 150 nM). Using the printed SI pp. 23-24 max(rho) definition
+    (csv_radial_density_rae_paper_def, dataset: arp23) worsens the overshoot dramatically to
+    0.0000, 0.7245, 0.8482 (0/3; 2.56x / +156% at 100 nM and 2.75x / +175% at 150 nM). Including
+    VCA monomer competition (dataset: vca, r_cutoff = 0.4, C_VCA = 5 uM bracketing experimental
+    4/6 uM VCA) brings csv_radial_density_and_rae down to 0.0000, 0.4309, 0.3698 (1/3 in 1-SD
+    band, matching 150 nM [0.2443, 0.3714]; at C_VCA = 10 uM, 0.2370 and 0.2675 both fall inside
+    1 SD at 100 and 150 nM), whereas csv_radial_density_rae_paper_def at 5 uM VCA still overshoots
+    at both 100 nM (0.5341) and 150 nM (0.4653, 0/3). Note the operational difference between 2D
+    confocal center-box/ring-line intensity (Fig. 4D, Methods p. 11) and 3D spherical-shell ratio
+    (Fig. 5C/S5d, SI pp. 23-24).
+    (b) Live code-vs-figure reproduction against graham2024's digitized simulation outputs
+    (origin: run): csv_radial_density_and_rae reproduces 8/8 Fig. 5C bars (max |err| = 0.0035) and
+    40/40 Fig. S5d bars across VCA = 0, 1, 2, 5, 10 uM (max |err| = 0.0061), while
+    csv_radial_density_rae_paper_def fails on Fig. 5C (+37% to +59% high) and Fig. S5d (4/8, 4/8,
+    5/8, 5/8, 6/8); csv_vca_filament_stats.L_fil_mean_600 reproduces 5/5 Fig. S5b 0 nM Arp2/3
+    lengths (5.525, 5.328, 5.131, 4.541, 3.556 um vs digitized 5.568, 5.370, 5.172, 4.592, 3.606
+    um, every point inside [lo, hi] with a consistent -0.045 um CDF right-edge offset); and
+    csv_arp23_filament_stats.N_fil_fold reproduces sim_arp23_nucleation_fold_50nM (9.867 vs 10).
+    Fig. 5B (vs r), Fig. 5D (vs t), and Fig. 5E (vs L) cannot be swept directly because the CSV
+    adapters return scalar summaries at fixed C_Arp rather than r/t/L sweep ports.
+  citation: {page: 6, printed_page: "6", quote: "Quantification of the relative enrichment of actin to the interior of the droplet", where: "Fig. 4D (p. 6), Fig. 5C (p. 8) & Fig. S5b/S5d (p. 17)"}
+
+- id: q_nastkolb2022_cross_validation_audit
+  kind: unexplained_difference
+  about:
+    - fig1e_frap_vasp_fig
+    - fig1e_frap_composite_fig
+    - frap_t_half_vasp_only
+    - frap_t_half_composite
+    - frap_mobile_vasp_only
+    - frap_mobile_composite
+    - nastkolb2022/frap_recovery_by_half_time
+    - nastkolb2022/frap_recovery_fit
+    - nastkolb2022/bundle_filament_count_2d_spacing
+    - nastkolb2022/filament_count_1um_intensity_measured
+  text: >
+    Zero valid BoxGraph CrossValidation entries exist in either direction between graham2024 and
+    nastkolb2022 (ref-61):
+    (1) Forward direction (graham2024 models -> nastkolb2022 measurements): nastkolb2022 measures
+    2D SLB-tethered VASP actin bundle widths, pore sizes, intensity-calibrated filament counts
+    (45 +/- 12 per 1 um width), TIRF polymerization kinetics, and 2D SLB/ML FRAP recovery curves,
+    completely disjoint from the output quantities of graham2024's 39 runnable models.
+    (2) Reverse direction (nastkolb2022 models -> graham2024 measurements):
+    (a) FRAP time-origin mismatch prevents direct BoxGraph sweep of nastkolb2022/frap_recovery_by_half_time
+    and frap_recovery_fit against graham2024's Fig. 1E FRAP curves (fig1e_frap_vasp_fig,
+    fig1e_frap_composite_fig). Although units convert cleanly (s <-> min, percent <-> dimensionless),
+    nastkolb2022's single-exponential formula y(t) = a*(1 - exp(-t*ln(2)/t_1/2)) + c hardcodes
+    photobleaching at t = 0 with no t_bleach offset port (port t = frap_recovery_time, 'Elapsed time
+    t after photobleaching'), whereas graham2024 Fig. 1E plots total assay time starting pre-bleach
+    (t = 2 s at 99.67%) with photobleaching at t_bleach = 6 s (confirmed by Fig. 1F 6 s micrograph).
+    Sweeping unshifted t directly yields a spurious +41.0% / +35.6% time-offset artifact at t = 8 s
+    (65.41% vs 24.43% VASP-only, RMSE 25.43%, 3/15 in band; 51.48% vs 15.87% composite, RMSE 15.35%,
+    2/14 in band).
+    (b) Offline post-bleach fit-quality check on shifted time dt = t - 6 s (n = 14 post-bleach points,
+    dt = 2..78 s) with graham2024's printed parameters (c = 0; VASP-only a = 96.86%, t_1/2 = 4.93 s;
+    composite a = 96.20%, t_1/2 = 7.24 s) uncovers the exact same S-shaped diffusive-vs-single-exponential
+    residual signature found in nastkolb2022 Fig. 4C and graham2023 Fig. 1f: VASP-only gives 7/14 in
+    digitization band, RMSE 3.31%, max error +6.31% at t = 25 s (dt = 19 s; free 3-parameter
+    single-exp fit still gives RMSE 2.20% at a = 95.05%, t_1/2 = 5.62 s, t_0 = 5.18 s); composite gives
+    4/14 in band, RMSE 3.04%, max error +5.47% at t = 30 s (dt = 24 s; free single-exp RMSE 2.19%).
+    Both traces are underpredicted early (-3.14% / -3.57% at dt = 4 s), systematically overpredicted
+    across mid-recovery (dt = 14..44 s), and converge at the late plateau (dt = 78 s). By contrast,
+    2D Soumpasis circular-disk diffusive recovery reduces RMSE 7x-12x to 0.27% (VASP-only) and 0.44%
+    (composite), confirming non-single-exponential diffusive FRAP kinetics across all three VASP papers.
+    (c) All other nastkolb2022 models (2D SLB bundle width scaling, 2D spacing/filament counts,
+    frap_mobile_fraction_plateau tautology) have no corresponding non-tautological graham2024 targets.
+  citation: {page: 3, printed_page: "3", quote: "Composite droplets formed of 20 uM VASP", where: "Fig. 1E-F (p. 3) vs nastkolb2022 Data analysis (p. 11)"}
+
+- id: q_graham2023_family_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_actin_vasp_arp23_vca
+    - fig2b_aspect_ratio_fig
+    - fig2f_aspect_ratio_fig
+    - aspect_ratio_max_5uM_vasp_no_arp
+    - fig4f_0nM_fig
+    - graham2023/droplet_ring_minimization_corrected
+    - graham2023/ring_rod_max_aspect_ratio
+    - graham2023/fig3d_1to7p5_fig
+    - graham_code/notebook_droplet_ring_slsqp
+    - graham_source_data/morphology_abundance_reader
+  text: >
+    Zero valid BoxGraph CrossValidation entries exist in either direction between graham2024 and the
+    companion graham2023 record family (graham2023 ref-10, graham_code, graham_source_data), despite
+    using the same Stachowiak/Rangamani-lab reconstituted human VASP droplet assay (3% PEG8k, 50 mM
+    Tris pH 7.4, 150 mM NaCl, 5 mM TCEP):
+    (1) Forward direction (graham2024 models -> graham2023 / graham_code / graham_source_data):
+    graham2024's full 3D CytoSim model is runnable: false, and its 39 runnable models compute CytoSim
+    setup/ODE/geometry/radial-density/t-test quantities completely disjoint from graham2023 and
+    graham_source_data's measured droplet aspect ratios, FRAP recovery curves/half-times, droplet
+    diameters, bundle elongation rates, ring thicknesses, partition coefficients, and morphology
+    percentages (graham_code has 0 measured, fitted, or run datums).
+    (2) Reverse direction (graham2023 / graham_code / graham_source_data models -> graham2024):
+    graham2023 and graham_code's 2D droplet-ring free-energy minimization and continuum ring-rod
+    models (droplet_ring_minimization_corrected, notebook_droplet_ring_slsqp,
+    ring_rod_max_aspect_ratio) lack Arp2/3 and VCA terms (cannot sweep [Arp2/3] across Figs. 2B, 2D,
+    2F) and require measured ring thickness T_ring or filament contour length L, neither of which is
+    measured in graham2024. All 11 software: true models in graham_source_data are Excel lookup
+    readers (role: processing) for graham2023's own Source Data workbooks rather than mechanistic
+    models predicting graham2024's independent experiments.
+    (3) Quantitative cross-study replication checks at the shared 0 nM Arp2/3, 1:7.5 actin:VASP
+    condition: (a) 3D morphology percentages in graham2024 Fig. 4F 0 nM (15 uM VASP + 2 uM actin:
+    Shell 12.8 +/- 8.7%, Ring 34.2 +/- 13.1%, Disc 53.6 +/- 15.4%) agree within 1 SD with graham2023
+    Fig. 3d 1:7.5 (Shell 6.7 +/- 6.8%, Ring 25.0 +/- 16.3%, Disc 70.3 +/- 20.9%); (b)
+    graham2023/ring_rod_max_aspect_ratio yields the fixed-length (L = 2*pi*R) straightening upper
+    bound pi^2 = 9.87, matching graham2024 Fig. 2F 0 nM (5 uM VASP + 0.67 uM actin) mean AR =
+    9.91 +/- 5.78, while graham2024's aspect_ratio_max_5uM_vasp_no_arp = '> 20' confirms ongoing
+    post-straightening filament elongation beyond L = 2*pi*R (paralleling graham2023's > 15 rods).
+  citation: {page: 2, printed_page: "2", quote: "As expected from previous work (10), VASP droplets lacking Arp2/3", where: "Results (p. 2), Fig. 2 (p. 4) & Fig. 4F (p. 6) vs graham2023"}
+
+- id: q_chandrasekaran_walker_family_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_actin_vasp_arp23_vca
+    - cytosim_vca_ode_filament_length
+    - fig5d_50nM_fig
+    - fig5d_150nM_fig
+    - chandrasekaran2024/figs6c_max_length_fig
+    - chandrasekaran2024/filament_length_limited_aspect_ratio
+    - chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+    - chandrasekaran_cytosim/paper_figs6c_max_length_curve
+    - chandrasekaran_source_data/fig6d_gabmut_experiment_reader
+    - walker2025_code/cytosim_3d_dynamic_multimer_sim
+  text: >
+    Zero valid BoxGraph CrossValidation entries exist in either direction between graham2024 and the
+    four companion Rangamani-lab CytoSim records (chandrasekaran2024 ref-SI3, chandrasekaran_cytosim,
+    chandrasekaran_source_data, walker2025_code):
+    (1) Forward direction (graham2024 models -> partner datums): chandrasekaran2024 and
+    chandrasekaran_source_data contain origin: measured datums only for WT/GABmut shell, ring, and
+    disk percentages (not predicted by any runnable graham2024 model); chandrasekaran_cytosim and
+    walker2025_code have 0 origin: measured datums. For the origin: run linear-nucleator length
+    curve chandrasekaran2024/figs6c_max_length_fig (and copied
+    chandrasekaran_cytosim/paper_figs6c_max_length_curve), graham2024/cytosim_vca_ode_filament_length
+    fixes N_fil = 30 with no nucleator concentration port and cannot sweep [Nucleator] = 0..150 nM
+    (at [Nucleator] = 0 nM alone, its 5.692 um agrees with 5.65 +/- 0.06 um because both share the
+    identical 30-filament, 300*pi um pool, k_grow = 0.0103 um/s CytoSim baseline).
+    (2) Reverse direction (partner models -> graham2024 datums): full 3D CytoSim/LAMMPS models in
+    chandrasekaran2024 and walker2025_code are runnable: false; chandrasekaran_source_data's 20
+    models are software: true MOESM9 Excel lookup readers; walker2025_code's runnable models audit
+    Walker 2025 dynamic dimerizers, icospheres, and notebooks; and chandrasekaran2024's runnable
+    geometry/kinetic models require unmeasured L_max or duplicate parameter conversions already linked
+    in graham2024/relations.yaml. Importantly,
+    chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim models free-solution linear
+    Nucleator recycling (Nucleator::stepUnattached) rather than filament-bound Arp2/3 Fork
+    side-branching: evaluated at graham2024's parameters (k_nuc = 0.2 1/s, k_unbind = 0.005 1/s,
+    [T-actin] = 138.38 uM), it yields N_fil(600 s) = 518.7 at 50 nM (1.76x above graham2024 Fig. 5D's
+    295.2) and 1496.0 at 150 nM (1.51x above Fig. 5D's 992.0), quantitatively confirming distinct
+    nucleation kinetics.
+  citation: {page: 7, printed_page: "7", quote: "kinetic parameters for VASP were chosen based on", where: "Results (p. 7) & Fig. 5D (p. 8) vs chandrasekaran2024/cytosim/source_data & walker2025_code"}
+
+- id: q_feigeles2025_no_cross_validation
+  kind: unstated_model
+  about:
+    - fig2b_aspect_ratio_fig
+    - fig2f_aspect_ratio_fig
+    - fig4d_relative_enrichment_fig
+    - feigeles2025/unduloid_capillary_pressure
+    - feigeles2025/unduloid_ode_eq3_lhs
+    - feigeles2025/coalescence_deltaL_linear_scaling
+    - feigeles2025/droplet_aspect_ratio
+    - feigeles2025/contact_angle_avg
+  text: >
+    Zero valid BoxGraph CrossValidation entries exist in either direction between graham2024 and
+    feigeles2025 (0 cross-citations, physically disjoint experimental systems and observables):
+    feigeles2025 studies capillary unduloid wetting, Young-Laplace contact angles (39.5 +/- 9.01 deg),
+    capillary pressure, and viscous coalescence/spreading of FUS protein condensates wetting
+    preformed F-actin bundles; graham2024 studies co-polymerizing VASP-Arp2/3-VCA droplets with
+    branching-vs-bundling competition, FRAP, radial actin enrichment, and asters. No runnable model
+    output of either record predicts any measured quantity of the other, and even droplet aspect ratio
+    uses opposite geometric definitions (2*R_max / l <= 1 for unduloid beads wetting an exterior fiber
+    in feigeles2025 vs major / minor >= 1 for internally deformed prolate VASP droplets in graham2024).
+  citation: {page: 10, printed_page: "10", quote: "Additionally, the droplet’s surface tension may enhance bundling", where: "Discussion (p. 10) vs feigeles2025"}

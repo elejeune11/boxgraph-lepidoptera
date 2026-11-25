@@ -1,0 +1,29 @@
+id: cytosim_vca_ode_filament_length
+name: single-filament length under VCA monomer competition (SI Eqs. 1-3 & fiber_set.cc)
+role: model
+stated:
+  page: 24
+  printed_page: "SI-12"
+  quote: "VCA fiber competes for total available actin according to the following equation."
+  where: "SI Methods, Eqs. (1)-(3) & CytoSim VCA fiber config (pp. 24-25)"
+equation: "dL_fil/dt = k_grow*(1 - (N_fil*L_fil + L_vca)/L_total); dL_vca/dt = k_bind*N_VCA*(1 - (N_fil*L_fil + L_vca)/L_total) for L_vca < L_Gmax, N_VCA = floor(C_vca*V_drop*N_A), L_Gmax = l_mono*factor_Gmax*N_VCA"
+built_from:
+  - actin_vca_competition_ode_eq3_converted
+  - vca_molecule_count
+  - vca_fiber_parameters
+inputs:
+  k_grow: {quantity: filament_growth_rate, unit: um/s}
+  N_fil: {quantity: filament_count, unit: dimensionless}
+  L_0: {quantity: filament_length, unit: um}
+  L_total: {quantity: total_polymer_length, unit: um}
+  t_end: {quantity: time, unit: s}
+  k_bind: {quantity: vca_binding_speed_per_molecule, unit: um/s}
+  C_vca: {quantity: vca_concentration, unit: uM}
+  factor_Gmax: {quantity: vca_sequestration_factor, unit: dimensionless}
+  R_drop: {quantity: droplet_radius, unit: um}
+  l_mono: {quantity: actin_monomer_rise, unit: nm}
+outputs:
+  L_fil: {quantity: filament_length, unit: um}
+settings:
+  dt: 1.0
+stochastic: false

@@ -1,0 +1,391 @@
+# ==============================================================================
+# 1. Parameter mapping & equilibrium order (CortexNematic2D.cpp, AuxCortexNematic2D.cpp)
+# ==============================================================================
+- id: run_param_map_config
+  model: code_parameter_mapping
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: cpp_k_lim
+    S2_max: cpp_S2_max
+    r_out: cfg_r_out
+    nx: cfg_nx
+  outputs:
+    k_bar_d: k_bar_d_config
+    L_bar_eff: L_bar_eff_config
+    lambda_o_bar: lambda_o_bar_config
+    c0_bar_bare: c0_bar_bare_config
+    c0_bar_with_barrier: c0_bar_barrier_config
+    kappa_eff: kappa_eff_config
+    iso_S_excess: iso_S_excess_config
+    q_int: q_int_config
+    S_0: S_0_config
+    dx_elem: dx_elem_config
+    entropy_margin_2d: entropy_margin_2d_config
+    beta_bar_min_2d: beta_bar_min_2d_config
+
+- id: run_param_map_fig4aIII
+  model: code_parameter_mapping
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_rot: lambda_rot_fig4aIII_probe
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: k_lim_zero_probe
+    S2_max: cpp_S2_max
+    r_out: cfg_r_out
+    nx: cfg_nx
+  outputs:
+    c0_bar_bare: c0_bar_fig4aIII_calc
+    q_int: q_int_fig4aIII_calc
+    S_0: S_0_fig4aIII_calc
+
+- id: run_param_map_cpp_default_frank
+  model: code_parameter_mapping
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cpp_default_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: cpp_k_lim
+    S2_max: cpp_S2_max
+    r_out: cfg_r_out
+    nx: cfg_nx
+  outputs:
+    L_bar_eff: L_bar_cpp_default_calc
+
+# ==============================================================================
+# 2. Constitutive free energy, active stress & post-processing Ten_sym audit
+# ==============================================================================
+- id: run_constitutive_probe
+  model: code_constitutive_and_stress
+  inputs:
+    h: probe_h_state
+    q1: probe_q1_state
+    q2: probe_q2_state
+    grad_q1x: probe_grad_q_state
+    d11: probe_d11_state
+    d22: probe_d22_state
+    d12: probe_d12_state
+    c_visc: cpp_c_visc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    k_lim: cpp_k_lim
+    S2_max: cpp_S2_max
+    deltat: cfg_maxDelt
+  outputs:
+    S: S_probe_val
+    f_paper: f_paper_val
+    f_code_with_barrier: f_code_barrier_val
+    sigma_act_xx_code: sigma_act_xx_code_val
+    sigma_act_xx_paper: sigma_act_xx_paper_val
+    sigma_act_xy_code: sigma_act_xy_code_val
+    sigma_act_mean_slope: sigma_act_mean_slope_val
+    sigma_xx_paper_exact: sigma_xx_paper_exact_val
+    sigma_xx_Ten_sym_bug: sigma_xx_Ten_sym_bug_val
+    sigma_xx_border_bug: sigma_xx_border_bug_val
+    sigma_xy_paper_exact: sigma_xy_paper_exact_val
+    sigma_xy_Ten_sym_bug: sigma_xy_Ten_sym_bug_val
+    sigma_xy_border_bug: sigma_xy_border_bug_val
+    Ten_sym_frank_ratio: Ten_sym_frank_ratio_val
+
+# ==============================================================================
+# 3. Linear stability of the exact C++ code equations (with & without barrier)
+# ==============================================================================
+- id: run_lin_stab_config_bare
+  model: code_linear_stability
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: k_lim_zero_probe
+    S2_max: cpp_S2_max
+    r_out: cfg_r_out
+  outputs:
+    lambda_crit: lam_crit_bare
+    nu_crit: nu_crit_bare
+    ell_pattern: ell_pat_bare
+    activity_ratio: act_ratio_bare
+    domain_wavelengths: dom_wl_bare
+    nu_max_supercrit: nu_max_bare
+    wavelength_ratio_lin: w_ratio_lin_bare
+
+- id: run_lin_stab_config_barrier
+  model: code_linear_stability
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: cpp_k_lim
+    S2_max: cpp_S2_max
+    r_out: cfg_r_out
+  outputs:
+    lambda_crit: lam_crit_barrier
+    nu_crit: nu_crit_barrier
+    ell_pattern: ell_pat_barrier
+    activity_ratio: act_ratio_barrier
+    domain_wavelengths: dom_wl_barrier
+    nu_max_supercrit: nu_max_barrier
+    wavelength_ratio_lin: w_ratio_lin_barrier
+
+# ==============================================================================
+# 4. Time-stepping logic bug audit & 2D Q1 FEM element ConsistencyCheck
+# ==============================================================================
+- id: run_time_stepper_config
+  model: code_time_stepper_logic
+  inputs:
+    deltat_init: cfg_deltat
+    maxDelt: cfg_maxDelt
+    adaptiveStepTime: cfg_adaptiveStepTime
+    testCase: cpp_testCase_default
+    noiseStrength: cfg_noiseStrength
+  settings:
+    n_steps: 10
+  outputs:
+    dt_step0_used: dt_step0_used_val
+    dt_step1_used: dt_step1_used_val
+    time_logged_after_10: time_logged_10_val
+    time_true_after_10: time_true_10_val
+    time_offset_error: time_offset_err_val
+    step1000_noise_retained: step1000_noise_ret_val
+
+- id: run_fem_q1_element_check
+  model: code_fem_q1_element_check
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: cpp_k_lim
+    S2_max: cpp_S2_max
+    deltat: cfg_maxDelt
+    dx_elem: dx_elem_config
+    ccheck_delta: cpp_ccheck_delta
+  outputs:
+    jacobian_fd_max_err: jac_fd_max_err_val
+    weak_q1_vs_paper_err: weak_q1_err_val
+    weak_vx_onsager_vs_paper_err: weak_vx_err_val
+    barrier_extra_h_force_err: barrier_extra_h_err_val
+
+# ==============================================================================
+# 5. Exact 1D periodic Q1 FEM Newton-Raphson solver runs
+# ==============================================================================
+- id: run_fem_1d_config_exact
+  model: code_q1_fem_1d_solver
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: cpp_k_lim
+    S2_max: cpp_S2_max
+    r_out: cfg_r_out
+    deltat_init: cfg_deltat
+    maxDelt: cfg_maxDelt
+    adaptiveStepTime: cfg_adaptiveStepTime
+    noiseStrength: cfg_noiseStrength
+  settings:
+    N_elem: 160
+    dt_max_scale: 1.0
+    t_max: 140.0
+    init_amp: 0.05
+    extra_h_bug: true
+    compute_threshold: false
+    seed: 1
+  outputs:
+    rho_max: fem1d_rho_max
+    rho_min: fem1d_rho_min
+    S_max: fem1d_S_max
+    omega: fem1d_omega
+    wavelength_ratio: fem1d_w_ratio
+  note: "Full 1D Q1 FEM port of LS_CortexNematic_2D with exact hidden log barrier (k_lim = 1e-4) + line-1140 extra-h factor on r_out = 127."
+
+- id: run_fem_1d_threshold_check
+  model: code_q1_fem_1d_solver
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: cpp_k_lim
+    S2_max: cpp_S2_max
+    r_out: cfg_r_out
+    deltat_init: cfg_deltat
+    maxDelt: cfg_maxDelt
+    adaptiveStepTime: cfg_adaptiveStepTime
+    noiseStrength: cfg_noiseStrength
+  settings:
+    N_elem: 160
+    dt_max_scale: 1.0
+    t_max: 0.4
+    init_amp: 0.05
+    extra_h_bug: true
+    compute_threshold: true
+    seed: 1
+  outputs:
+    lambda_crit_fem_1d: fem1d_lam_crit
+    threshold_rel_err_pct: fem1d_thresh_err_pct
+  note: "Nonlinear 1D Q1 FEM instability threshold bisection on a 1-wavelength periodic cell at dx = 127/160, verifying mirza2025's < 2% linear stability accuracy claim."
+
+- id: run_fem_1d_config_nobarrier
+  model: code_q1_fem_1d_solver
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: k_lim_zero_probe
+    S2_max: cpp_S2_max
+    r_out: cfg_r_out
+    deltat_init: cfg_deltat
+    maxDelt: cfg_maxDelt
+    adaptiveStepTime: cfg_adaptiveStepTime
+    noiseStrength: cfg_noiseStrength
+  settings:
+    N_elem: 160
+    dt_max_scale: 1.0
+    t_max: 140.0
+    init_amp: 0.05
+    extra_h_bug: false
+    compute_threshold: false
+    seed: 1
+  outputs:
+    rho_max: fem1d_nobar_rho_max
+    S_max: fem1d_nobar_S_max
+    omega: fem1d_nobar_omega
+    wavelength_ratio: fem1d_nobar_w_ratio
+  note: "Zero-barrier baseline (k_lim = 0, matching mirza2025 Eq. 3) to isolate the quantitative effect of the hidden log barrier and line-1140 extra-h bug; also used as base run for dt and mesh refinements."
+
+# ==============================================================================
+# 6. 2D periodic continuum PDE port (fibrillar kappa = -0.2 vs banded kappa = +0.2)
+# ==============================================================================
+- id: run_pde_2d_config_fibrillar
+  model: code_2d_pde_continuum_port
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: cfg_lambda_aniso
+    crossLinker: cfg_crossLinker
+    heqb: cfg_heqb
+    k_lim: cpp_k_lim
+    S2_max: cpp_S2_max
+  settings:
+    N_grid: 24
+    dt: 0.06
+    t_max: 60.0
+    L_mult: 2.0
+    pcg_maxiter: 3
+    extra_h_bug: true
+    seed: 1
+  outputs:
+    omega: pde2d_fib_omega
+    rho_max: pde2d_fib_rho_max
+    rho_min: pde2d_fib_rho_min
+    S_max: pde2d_fib_S_max
+  note: "2D periodic PDE port at exact src/config Fig. 2b(I) parameters (kappa = -0.2, fibrillar state omega < 0) on L = 2*ell_pattern (smaller than config's 8*ell_pattern to keep CPU runs fast)."
+
+- id: run_pde_2d_swapped_banded
+  model: code_2d_pde_continuum_port
+  inputs:
+    visc: cfg_visc
+    cvisc: cfg_cvisc
+    rvisc: cfg_rvisc
+    frank: cfg_frank
+    sus20: cfg_sus20
+    sus40: cfg_sus40
+    lambda_rot: cfg_lambda_rot
+    lambda_iso: cfg_lambda_iso
+    lambda_aniso: lambda_aniso_banded_probe
+    crossLinker: crossLinker_banded_probe
+    heqb: cfg_heqb
+    k_lim: cpp_k_lim
+    S2_max: cpp_S2_max
+  settings:
+    N_grid: 32
+    dt: 0.04
+    t_max: 75.0
+    L_mult: 2.0
+    pcg_maxiter: 4
+    extra_h_bug: true
+    seed: 1
+  outputs:
+    omega: pde2d_band_omega
+    rho_max: pde2d_band_rho_max
+    rho_min: pde2d_band_rho_min
+    S_max: pde2d_band_S_max
+  note: "Swapping lambda_aniso and crossLinker flips kappa from -0.2 to +0.2, confirming the fibrillar (omega < 0) to banded (omega > 0) architectural transition in the code's 2D PDE."

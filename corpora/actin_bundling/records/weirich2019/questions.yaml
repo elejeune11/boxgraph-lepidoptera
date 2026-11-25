@@ -1,0 +1,728 @@
+- id: q_F0_unit_misprint_pNum
+  kind: possible_error
+  about:
+    - F0_energy_si_printed
+    - F0_kBT_si
+    - rod_centering_energy_scale_from_k
+    - energy_in_kBT
+    - cmp_F0_eq5_k_printed_vs_misprinted_unit
+    - cmp_F0_eq5_k_chained_vs_misprinted_unit
+    - cmp_F0_kBT_from_printed_misprint
+  text: >
+    On SI p. 11 (SI-5), inverting Eq. 5 with L_D = 3.2 um, L_M = 1.5 um, and k ~ 10^-2 pN/um
+    (or k = Gamma * tau^-1 = 15 * 10^-3 = 0.015 pN/um) yields
+    F_0 = k * (L_M^2 - 4*L_D^2)^2 / (16 * (L_M^2 + 4*L_D^2)) = 0.0217 to 0.0325 pN*um = 21.7 to 32.5 pN*nm
+    (~30 pN*nm), which divided by k_B T ~= 4 pN*nm gives 5.4 to 8.1 k_B T (~10 k_B T).
+    However, SI p. 11 prints 'F_0 ~ 30 pN · μm' instead of '30 pN · nm' — a 1000-fold unit misprint.
+    Literally dividing the printed 30 pN*um by 4 pN*nm yields 7,500 k_B T rather than ~10 k_B T.
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "LD = 3.2 µm and LM = 1.5 µm: F0 ∼ 30 pN · µm, which given"
+    where: "SI Theory 2"
+
+- id: q_eq3_rhs_missing_factor_of_2
+  kind: possible_error
+  about:
+    - rod_centering_energy_integral
+    - rod_centering_energy_small_y_printed
+    - rod_centering_energy_small_y_corrected
+    - rod_centering_energy_eq4
+    - rel_eq3_exact_reduces_to_small_y_printed
+    - rel_eq3_exact_reduces_to_small_y_corrected
+    - rel_eq3_small_y_printed_same_as_eq4
+    - rel_eq3_small_y_corrected_same_as_eq4
+  text: >
+    On SI p. 10 (SI-4), Eq. 3 approximates the exact integral f_0 * int |sin(alpha_d(x, y_c))| dx
+    as '~ f_0 * y_c * int |x| / (L_D^2 - x^2) dx', dropping the factor of 2 from the small-y
+    expansion of Eq. 2 (sin(alpha_d) = 2*x*y / (4*y^2*L_D^2 + (L_D^2 - x^2 - y^2)^2)^(1/2)
+    = 2*x*y / (L_D^2 - x^2) + O(y^3)). Because int 2*x/(L_D^2 - x^2) dx = -log(L_D^2 - x^2),
+    Eq. 4 (written with '=' and F_0 = f_0 * y_c) equals the exact y_c -> 0 limit of Eq. 3 LHS
+    and requires the factor of 2 in Eq. 3 RHS; the literal printed Eq. 3 RHS gives exactly half of Eq. 4.
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "In the second step above, we used a small y approximation to derive"
+    where: "SI Theory 2, Eq. 3"
+
+- id: q_eq4_slope_continuity_claim
+  kind: possible_error
+  about:
+    - rod_centering_energy_eq4
+    - rod_centering_force_velocity
+  text: >
+    SI p. 10 (SI-4) claims that Eq. 4 has 'discontinuities in slope at x_c = ±L_M/2' due to |sin alpha|.
+    In fact, because the integrand 2*|x|/(L_D^2 - x^2) is continuous everywhere (vanishing at x = 0),
+    its integral Eq. 4 is C^1 smooth: both left and right limits of d(Delta F)/dx_c at x_c = L_M/2 equal
+    2*F_0*L_M / (L_D^2 - L_M^2). Only the second derivative (curvature) d^2(Delta F)/dx_c^2 has a jump
+    discontinuity of -4*F_0 / L_D^2 at x_c = ±L_M/2.
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "The piecewise nature of the expression in Eq. 4 with discontinuities in slope at xc = ±LM /2"
+    where: "SI Theory 2"
+
+- id: q_stokes_drag_full_vs_half_length
+  kind: possible_error
+  about:
+    - rod_stokes_drag
+    - Gamma_rod_si
+    - cmp_stokes_drag_LM1p5
+    - cmp_stokes_drag_LM1p0
+  text: >
+    SI p. 11 (SI-5) writes Gamma = 6*pi*eta*L_M / log(L_M / D_M) ~ 15 pN*s/um. With eta = 3 Pa*s,
+    L_M = 1.5 um (from SI p. 10), and D_M = 30 nm, this printed formula gives 21.7 pN*s/um using
+    natural log (or 49.9 pN*s/um using log10); with L_M = 1.0 um (Main p. 2) it gives 16.1 pN*s/um.
+    Furthermore, the prolate-ellipsoid formula 6*pi*eta*a / ln(2*a/b) used in Weirich et al. (2017)
+    takes the half-length a = L_M/2 (giving 3*pi*eta*L_M / ln(2*L_M/D_M) = 9.2 pN*s/um at L_M = 1.5 um),
+    while slender-body rod drag is 2*pi*eta*L_M / ln(L_M/D_M) = 7.2 pN*s/um parallel to the rod axis
+    and 4*pi*eta*L_M / ln(L_M/D_M) = 14.5 pN*s/um perpendicular to it.
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "Γ = 6πηLM / log(LM /DM ) ∼ 15pN · s/µm"
+    where: "SI Theory 2"
+
+- id: q_LD_definition_and_fig2d_vs_si_p10
+  kind: possible_error
+  about:
+    - LD_fig2d_black
+    - LD_fig2d_blue
+    - LD_fig2d_green
+    - LD_fig2f_caption
+    - LD_si_p10
+  text: >
+    The symbol L_D is described inconsistently across Main Text pp. 3-4 and SI p. 10. Main p. 3 col 2
+    ('long axis, 2L_D'), Fig. 2C ('d / 2L_D' in [-0.5, 0.2]), Fig. 2F ('d / L_D' in [-1, 1]), and SI p. 10
+    ('semi-major axis, L_D = 3.2 um') define L_D as the half-length. In Fig. 2D, measured distances d reach
+    ~2.7 um for blue circles (L_D = 4.4 um) and ~3.0 um for green diamonds (L_D = 5.1 um), confirming L_D
+    is also the half-length there, even though the Fig. 2D caption calls 3.6, 4.4, 5.1 um 'length' and
+    Fig. 2F caption writes 'tactoid of length, L_T = 3.2 um'. In addition, SI p. 10 attributes L_D = 3.2 um
+    to 'data corresponding to blue circles' in Fig. 2D, whereas Fig. 2D labels the blue circles L_D = 4.4 um.
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "tactoid with semi-major axis, LD = 3.2 µm. This is seen from the initial speed"
+    where: "SI Theory 2 & Fig. 2D, 2F"
+
+- id: q_figS4_figS5_caption_vs_legend_ratios
+  kind: possible_error
+  about:
+    - LM_figS4_blue
+    - LM_figS4_red
+    - LM_figS4_green
+    - LD_figS4
+    - LM_over_LD_figS4_blue
+    - LM_over_LD_figS4_red
+    - LM_over_LD_figS4_green
+    - cmp_figS4_ratio_blue
+    - cmp_figS4_ratio_red
+    - cmp_figS4_ratio_green
+    - LM_short_main
+    - LM_short_fig2f
+  text: >
+    Both Fig. S4 (p. 16) and Fig. S5 (p. 17) captions state L_M = 1.5, 0.73, and 0.33 um in a tactoid
+    of L_D = 3 um, which correspond to ratios L_M / L_D = 0.50, 0.243, and 0.110. However, the legends
+    in both figures label the curves L_M / L_D = 0.4, 0.2, and 0.1, and direct evaluation of shifted Eq. 4
+    (Fig. S4) and Eq. 3 LHS (Fig. S5) confirms that the plotted curves were generated with the legend ratios
+    0.4, 0.2, and 0.1 (e.g., Eq. 4 shifted at x_c/L_D = 0.5 gives 0.497 for 0.4 vs 0.633 for 0.5; Eq. 3 at
+    x_c = 1, y_c = 1, L_D = 3 gives 0.269 for 0.4 vs 0.342 for 0.5). Separately, Main p. 4 prints L_M = 0.3 um
+    for the red curve of Fig. 2F, whereas Fig. 2F legend prints L_M = 0.33 um.
+  citation:
+    page: 16
+    printed_page: "SI-10"
+    quote: "motor filament lengths, blue: LM = 1.5 µm, red: 0.73 µm, and green: 0.33 µm, in a tactoid of size, LD = 3 µm"
+    where: "Figs. S4 & S5"
+
+- id: q_eq6_unstated_wetting_fraction_and_eq8_3d_scaling
+  kind: unstated_model
+  about:
+    - tactoid_colloid_free_energy_eq6
+    - elongated_tactoid_division_energy
+    - elongated_tactoid_division_phase_diagram
+  text: >
+    Eq. 6 on SI p. 11 (SI-5) writes F = K*R*f_el(alpha) + gamma*R^2*f_s(alpha) - w*a^2*f_w(R/a, alpha)
+    without stating a closed-form expression for f_w(R/a, alpha) at arbitrary tip angle alpha, making
+    general Eq. 6 non-runnable. Solving the exact 3D intersection of a circular-arc bipolar tactoid (R, alpha)
+    with an orthogonal spherical colloid of radius a (center at z = sqrt(R^2 sin^2 alpha + a^2)) yields
+    the wetted cap area A_cap = 2*pi*a^2 * [1 - (a*sqrt(R^2*sin^2(alpha) + a^2) + R^2*cos(alpha)) / (R^2 + a^2)].
+    At alpha = pi/2 this reproduces Eq. 7 up to 2*pi (2*pi*a^2*(1 - a/sqrt(a^2+R^2))). For small alpha,
+    however, this 3D cap area scales as pi*a^2*alpha^2 when L_D = R*sin(alpha) >> a (solid angle of cone
+    of half-angle alpha) or as O(alpha^4) when R*alpha << a — not linearly in alpha as written in Eq. 8
+    ('- w*a^2*alpha', which is a 2D arc-length scaling). Replacing alpha by alpha^2 in Eq. 8 preserves the
+    qualitative transition (since -V^(2/5) remains convex in V) but changes the symmetric phase boundary
+    scaling in Fig. S11 from (V_d/V_c)^(2/5) to (V_d/V_c)^(1/5).
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "adhesion energy given by the surface area of the colloid covered by the tactoid which grows as α for small tip angle"
+    where: "SI Theory 3, Eqs. 6 and 8"
+
+- id: q_eq7_eq8_prefactors_and_figS9_S10_rescaling
+  kind: choice
+  about:
+    - spherical_droplet_division_energy
+    - spherical_droplet_division_phase_diagram
+    - elongated_tactoid_division_energy
+    - elongated_tactoid_division_phase_diagram
+    - V_ratio_fig4a_S9_added
+    - V_ratio_figS10_added
+  text: >
+    Eqs. 7 and 8 (SI p. 11; note also an unmatched extra ')' at the end of Eq. 7) are printed with '~'
+    omitting geometric factors (e.g., 4*pi*gamma*R^2 vs 2*pi*w*a^2 in Eq. 7, whose 2:1 ratio would double
+    all critical w/gamma values in Fig. 4D; and R_eq = 4*K/gamma giving F_bare = (80*pi/3)*(K^2/gamma)*alpha^3
+    in Eq. 8), yet Figs. 4D and S11 evaluate Eqs. 7 and 8 verbatim with unit prefactors. Moreover, Figs. 4A,
+    S9, and S10 omit V_d/V_c from their captions (V_d/V_c = 4 matches Figs. 4A & S9; V_d/V_c = 1 matches
+    Fig. S10). Although Fig. S9 caption states F is plotted 'in units of gamma*a^2', raw Eq. 7 requires
+    F(V_1=0) to decrease linearly with w/gamma, whereas Fig. S9 plots F(0) ~ 2.12 (w/gamma=1.5), ~2.41
+    (w/gamma=2.5), and ~2.39 (w/gamma=3.5), showing that each curve was shifted vertically and the w/gamma=2.5
+    curve magnified by ~4x (similarly Fig. S10 curves are individually shifted and rescaled). Finally, because
+    dF/dV -> -infinity as V -> 0 in Eq. 8, an infinitesimal second droplet always lowers F below V_1 = 0,
+    necessitating the finite-size cutoff V_1 = V_c for the red phase boundary in Fig. S11.
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "Free energy (in units of γa2) of two nearly spherical tactoids adhered to a colloid"
+    where: "SI Theory 3, Eqs. 7-8 & Figs. 4A, S9, S10"
+
+- id: q_bipolar_vs_homogeneous_weirich2017
+  kind: unexplained_difference
+  about:
+    - K_frank_si
+    - gamma_tactoid_si
+    - tactoid_size_min_si
+    - nematic_distortion_length
+    - actin_spacing_main
+  text: >
+    SI Section 1 (p. 9) combines K ~ 1 pN (Oakes et al. 2007, SI Ref. 15) and gamma ~ 300 nN/m
+    (Weirich et al. 2017, SI Ref. 8) to obtain K/gamma = 3.33 um ('about a few um') and justifies modeling
+    >= 5 um tactoids as bipolar throughout this paper. However, Weirich et al. (2017) prepared actin-filamin
+    tactoids under the same conditions (2.6 uM actin, 10 mol% filamin, 1.5 mol% capping protein, L ~ 5 um)
+    and modeled them as homogeneous (uniform director) with negligible bulk elasticity. Separately, Main p. 4
+    cites Weirich et al. (2017) (Ref. 17) for a '~50-nm spacing between actin filaments' inside tactoids,
+    whereas Weirich et al. (2017) reports ~250 uM tactoid concentration and ~1 um pre-cross-linking mesh size
+    without printing a 50 nm spacing.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "study tactoids of size about 5 µm or greater, justifying the use of the bipolar model"
+    where: "SI Theory 1 & Main p. 11128"
+
+- id: q_si_figure_crossrefs_and_editorial_typos
+  kind: possible_error
+  about:
+    - myosin_conc_range_si
+    - myosin_conc_movieS2
+    - myosin_conc_movieS3
+    - w_over_gamma_figS9_mid
+    - ref-si-8
+  text: >
+    Several editorial, figure-reference, and caption discrepancies appear in the main article and SI:
+    (1) SI figure cross-references are shifted after inserting Figs. S1-S2: SI p. 8 cites Fig. S2 for linescans
+    (no linescan appears); Main p. 4 cites Fig. S2 for the bipolar director schematic (actually Fig. S3);
+    SI p. 10 cites Figs. S6A/S6B (actually S3A/S3B, where the intersecting arc is dashed blue rather than red),
+    Figs. S7/S8 (actually S4/S5), and Figs. S9/S10 (actually S6/S7); SI p. 11 cites Fig. S6A (actually S8A).
+    (2) Fig. S9 caption (p. 21) prints 'Higher values of γ favor division into two equal tactoids' (inverted:
+    higher w/γ, i.e., higher w or lower γ, favors division).
+    (3) Fig. S6 caption (p. 18) describes the 0.33 um curve as 'green' whereas the plot and legend show red.
+    (4) Fig. 4E (p. 5) labels its fourth panel 'vi' instead of 'iv'.
+    (5) Fig. S2 (p. 14) prints scale bar '10 uM' (micromolar) instead of '10 um' (micrometers).
+    (6) SI Ref. 8 (p. 25) misprints the publication year of Weirich et al. PNAS 114 as (2007) instead of (2017);
+    SI p. 8 cites main-text ref '(29)' instead of SI ref '(16)'; Main p. 5 cites Ref. 35 (Stam et al. 2017,
+    active networks) for colloids in molecular liquid-crystal droplets (Refs. 21, 38, 39).
+    (7) Movie S3/S6 (0.7 nM) and Movies S2/S4/S5/S8 (12.3 nM) lie slightly outside the 1-12 nM myosin
+    concentration range stated on SI p. 8.
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "Higher values of γ favor division into two equal tactoids."
+    where: "Main & SI text, captions, and references"
+
+- id: q_unstated_plot_parameters
+  kind: unstated_input
+  about:
+    - yc_probe_added
+    - f0_probe_added
+    - c_a_tactoid_added
+    - a_colloid_added
+    - V_ratio_fig4a_S9_added
+    - V_ratio_figS10_added
+  text: >
+    Multiple quantitative calculations and theory plots omit numerical parameter values: Fig. 2F does not
+    state f_0 or y_c separately (plotting shifted Delta F(d) - Delta F(0) with F_0 = 10 k_B T); Fig. S7
+    omits L_M (1.5 um inferred from the vertical asymptotes 1 - L_M/(2*L_D) = 0.8125, 0.850, 0.875 for
+    L_D = 4, 5, 6), the length unit on L_D, and all y-axis tick values/units; Figs. 4A, S9, and S10 omit
+    V_d/V_c; SI Section 3 does not specify colloid radius a numerically; and SI p. 9 does not state the
+    filament number density c_a needed to evaluate the Onsager energy scale F_0 ~ D_M*L_M*L_a*c_a*k_B T.
+  citation:
+    page: 19
+    printed_page: "SI-13"
+    quote: "Centering velocity of motor filaments as a function of their distance from the midplane"
+    where: "Figs. 2F, 4A, S7, S9, S10 & SI pp. 9-12"
+
+- id: q_eq8_missing_length_ratio_and_large_alpha_figS11
+  kind: possible_error
+  about:
+    - elongated_tactoid_division_energy
+    - elongated_tactoid_division_phase_diagram
+    - elongated_tactoid_division_equilibrium
+    - V_ratio_figS10_added
+    - K_frank_si
+    - gamma_tactoid_si
+    - a_colloid_added
+  text: >
+    On SI p. 11 (SI-5), an elongated bipolar tactoid has volume V(alpha) ~ R_eq^3 * alpha^5 ~ (K/gamma)^3 * alpha^5,
+    whereas the spherical colloid has volume V_c ~ a^3. Relating V_1 to V_c therefore gives
+    V_1 / V_c ~ [K / (gamma * a)]^3 * alpha_1^5, introducing an extra dimensionless length ratio beta = K / (gamma * a)
+    that scales both Eq. 8 phase boundaries by beta^(-6/5): W_el,sym = (3/2) * beta^(-6/5) * (V_d / (2*V_c))^(2/5)
+    and W_el,unequal = beta^(-6/5) * 3*(V_d/V_c - 1)^(2/5) / [1 + (V_d/V_c - 1)^(2/5)]. However, Fig. S11 (p. 23)
+    plots V_d / V_c vs. w*a^2*gamma / K^2 using alpha_1^5 + alpha_2^5 = V_d / V_c (implicitly setting beta = 1, i.e.,
+    identifying V_c with (K/gamma)^3 rather than a^3), whereas for the paper's own parameters (K/gamma ~= 3.33 um,
+    a ~= 0.6 um) beta ~= 5.5, beta^3 ~= 166, and beta^(-6/5) ~= 0.13. Furthermore, setting alpha_1^5 + alpha_2^5 = V_d/V_c
+    across Fig. S11 (V_d/V_c in [1, 40]) evaluates the small-angle approximation Eq. 8 at symmetric tip angles
+    alpha* in [0.87, 1.82] rad (exceeding the spherical limit pi/2 ~= 1.571 rad for V_d/V_c > 19.1) and places the
+    red unequal-to-single cutoff V_1 = V_c at alpha_1 = 1 rad (~57 deg, with alpha_2 up to 2.08 rad > pi/2), well
+    outside the small-tip-angle regime.
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "explicitly minimizing Fel(α) + Fs(α) with respect to α with constant V"
+    where: "SI Theory 3, Eq. 8 & Fig. S11 (p. 23)"
+
+- id: q_F0_overloaded_definitions_main_vs_si
+  kind: unexplained_difference
+  about:
+    - onsager_energy_scale
+    - rod_centering_energy_eq4
+    - rod_centering_spring_constant
+    - harmonic_centering_potential
+    - F0_kBT_main
+    - F0_kBT_si
+    - cmp_F0_kBT_harmonic_main
+    - cmp_F0_kBT_onsager_scaling
+    - centering_energy_scale
+  text: >
+    The paper uses the same symbol F_0 for three distinct energy scales across Main p. 4 and SI pp. 9-11:
+    (1) SI p. 9 defines F_0 ~ D_M * L_M * L_a * c_a * (k_B T) as the Onsager alignment energy of the entire rod,
+    which is proportional to L_M and independent of transverse position y_c;
+    (2) SI p. 10 (Eq. 4) redefines F_0 = f_0 * y_c, which is proportional to y_c (vanishing on the major axis y_c = 0)
+    and independent of L_M (so F_0^(Eq.4) = F_0^(Onsager) * (y_c / L_M) if f_0 = F_0^(Onsager) / L_M; Figs. 2F and S6
+    hold F_0 constant when changing L_M from 1.5 um to 0.33 um); and
+    (3) Main p. 4 writes Delta F = k*d^2/2 = F_0*(d/L_D)^2 ('approximately the work required to move a motor across
+    the droplet'), implying F_0 = k*L_D^2/2, which is larger than SI Eq. 5's F_0 by a factor of 2 in the L_D >> L_M
+    limit (k ~= 4*F_0/L_D^2) and by 2.36x at L_D = 3.2 um, L_M = 1.5 um (while Eq. 4 actually diverges logarithmically
+    as d -> L_D - L_M/2 rather than equaling F_0 across the droplet).
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "we defined an energy scale, F0 = f0 yc , that depends on the transverse position"
+    where: "Main p. 4 & SI Theory 2 (pp. 9-11)"
+
+- id: q_fig2c_fit_type_axis_and_unstated_params
+  kind: possible_error
+  about:
+    - linear_fit_window_si
+    - tau_centering_main
+    - LD_fig2d_black
+  text: >
+    Main p. 3 and Fig. 2C contain three internal inconsistencies: (1) Main text col 1 states 'Tracking the normalized
+    distance from the midplane, d/L_D, as a function of time ... (Fig. 2C)', whereas the Fig. 2C y-axis is labeled
+    'Myosin position, d / 2L_D' (spanning -0.5 to 0.2); (2) Main text col 2 cites Fig. 2C Inset for extracting 'the
+    initial velocity from a linear fit to the early trajectory' (described on SI p. 9 as a linear fit to the initial
+    50 s), whereas the Fig. 2C caption states 'Line is an exponential fit to the data' and plots a curved fit across
+    0 to 1000 s (on an inverted y-axis running from -3 at the top to 1 at the bottom); and (3) neither the main text
+    nor the SI reports the fitted parameters or decay timescale of the exponential curve in Fig. 2C Inset.
+  citation:
+    page: 3
+    printed_page: "11127"
+    quote: "Line is an exponential fit to the data."
+    where: "Main text p. 3 & Fig. 2C"
+
+- id: q_fig2b_central_40_vs_60_percent
+  kind: possible_error
+  about:
+    - centering_frac_2min
+    - central_region_frac
+    - centering_frac_5min
+    - n_coalescence_events
+  text: >
+    SI p. 8 states 'Each tactoid is split into 5 regions with respect to the tactoid midplane' (five bins of width 0.2
+    in d_i / L_D: [0, 0.2], [0.2, 0.4], [0.4, 0.6], [0.6, 0.8], [0.8, 1.0]), and Fig. 2B (p. 3) plots the five nonzero
+    t < 2 min bin probabilities at their left bin edges 0, 0.2, 0.4, 0.6, 0.8 (~0.32, ~0.31, ~0.26, ~0.08, ~0.02,
+    summing to ~0.99; with 0 at 1.0). Main p. 3 reports 'Within 2 min of coalescence, ~90% of myosin puncta are
+    dispersed along the central 40% of the droplet long axis (Fig. 2 A and B).' Summing the first three plotted points
+    (0, 0.2, 0.4) yields ~89% (~90%), which spans d_i / L_D in [0, 0.6] — the central 60% of the droplet long axis —
+    whereas the first two bins ([0, 0.2] and [0.2, 0.4], the central 40%) sum to only ~63%.
+  citation:
+    page: 3
+    printed_page: "11127"
+    quote: "central 40% of the droplet long axis (Fig. 2 A and B)."
+    where: "Main text p. 3, Fig. 2B & SI p. 8"
+
+- id: q_audit_reading_probe_velocity_and_eq6_quantity
+  kind: reading
+  about:
+    - cmp_centering_v_eq4_vs_near
+    - run_centering_velocity_eq4
+    - xc_probe_added
+    - speed_near_midplane
+    - tactoid_colloid_free_energy_eq6
+    - division_free_energy_spherical
+  text: >
+    Audit disagreements with first-reader choices (left unchanged): (1) cmp_centering_v_eq4_vs_near compares
+    v_eq4_probe_computed (evaluated at xc_probe_added = 1.6 um and L_D = 3.2 um, which computes 1.77 nm/s rather than
+    the '~2.0 nm/s' stated in the comparison note) against speed_near_midplane (~1.4 nm/s), which Main p. 3 defines
+    for d < 1.5 um (condition omitted on speed_near_midplane) and measures in Fig. 2D for L_D = 3.6, 4.4, 5.1 um
+    (within d < 1.5 um, Eq. 4 yields 0.78-1.55 nm/s for L_D = 3.2 um and 0.35-0.51 nm/s for L_D = 4.4 um);
+    (2) non-runnable general Eq. 6 (tactoid_colloid_free_energy_eq6, arbitrary tip angle alpha) assigns its output F
+    to division_free_energy_spherical (defined in quantities.yaml specifically for spherical Eq. 7) rather than a
+    separate general tactoid-colloid free-energy quantity; and (3) Fig. S4 (p. 16) also subtracts the nonzero baseline
+    Delta F(0) = -2*F_0*log(1 - L_M^2/(4*L_D^2)) from Eq. 4 without stating this shift in the caption or SI text
+    (analogous to Fig. 2F noted in q_unstated_plot_parameters).
+  citation:
+    page: 3
+    printed_page: "11127"
+    quote: "have low initial speeds (∼1.4 nm/s), while their speeds"
+    where: "Main text p. 3, SI p. 11 (Eq. 6) & Fig. S4 (p. 16)"
+
+- id: q_digitized_LD3p6_figs_2f_S4_S5
+  kind: possible_error
+  about:
+    - d_fig2f_LM1p5
+    - d_fig2f_LM0p33
+    - d_figS4_ratio0p4
+    - d_figS4_ratio0p2
+    - d_figS4_ratio0p1
+    - d_figS5_ratio0p4
+    - d_figS5_ratio0p2
+    - d_figS5_ratio0p1
+    - cmp_fig2f_LM1p5_caption
+    - cmp_fig2f_LM1p5_LD3p6
+    - cmp_figS4_0p4_caption
+    - cmp_figS4_0p4_legend
+    - cmp_figS4_0p4_LD3p6
+    - cmp_figS5_0p4_caption
+    - cmp_figS5_0p4_LD3p6
+    - LD_fig2f_caption
+    - LD_fig2d_black
+    - Ly_figS5_LD3p6_added
+  text: >
+    Calibrated sub-pixel digitization of Figs. 2F, S4, and S5 refines q_figS4_figS5_caption_vs_legend_ratios and
+    reveals that ALL three theory figures were generated using L_D = 3.6 um (matching the experimental L_D = 3.6 um
+    droplet in Fig. 2D black x's, with L_y = L_D / 3 = 1.2 um in Fig. S5) and L_M = 1.5, 0.73, and 0.33 um — giving
+    exact ratios L_M/L_D = 0.4167, 0.2028, and 0.0917 (which the legends rounded to 0.4, 0.2, and 0.1). Specifically:
+    (1) in Fig. 2F (shifted Eq. 4 with F_0 = 10 k_B T), L_D = 3.6 um reproduces both L_M = 1.5 and 0.33 um curves
+    to <= 0.017 k_B T across all 22 sampled points (12/12 and 10/10 reproduced), whereas the caption's L_T = 3.2 um
+    overpredicts L_M = 1.5 um by up to 1.31 k_B T (+13-16%, not reproduced) and L_M = 0.33 um by up to 0.78 k_B T
+    (+12-16%, not reproduced; Main p. 4's rounded L_M = 0.3 um with L_T = 3.2 um happens to give 0.3/3.2 = 0.0938
+    close to 0.33/3.6 = 0.0917, max diff 0.135 k_B T, 13x larger than L_D = 3.6 um);
+    (2) in Fig. S4 (shifted Eq. 4), L_D = 3.6 um reproduces all three curves to <= 0.005 (26/26 reproduced), whereas
+    the caption's L_D = 3 um overpredicts by +22-43% (max diff 0.59, not reproduced) and the rounded legend ratios
+    0.4, 0.2, 0.1 have 20-50x larger residuals (up to 0.099, matching only within 1-digit ±0.05 rounding); and
+    (3) in Fig. S5 (Eq. 3 LHS exact integral at x_c = 1 um), L_D = 3.6 um, L_y = 1.2 um reproduces all three curves
+    to <= 0.00012 um (30/30 reproduced), whereas the caption's L_D = 3 um, L_y = 1 um overpredicts by +26-30%
+    (not reproduced).
+  citation:
+    page: 3
+    printed_page: "11127"
+    quote: "within a tactoid of length, LT = 3.2 μm"
+    where: "Figs. 2F, S4 & S5"
+
+- id: q_digitized_fig2b_fig2e_histc_bin_shift
+  kind: possible_error
+  about:
+    - d_fig2b_t_lt_2min
+    - d_fig2b_t_gt_5min
+    - d_fig2e_alignment
+    - centering_frac_2min
+    - central_region_frac
+    - centering_frac_5min
+    - aligned_frac_10deg
+    - alignment_angle_threshold
+    - n_myosin_alignment
+  text: >
+    Calibrated digitization of Fig. 2B and Fig. 2E settles q_fig2b_central_40_vs_60_percent and uncovers an identical
+    left-bin-edge (MATLAB histc) indexing error in Fig. 2E:
+    (1) In Fig. 2B (n = 50 droplets, data layer shifted +0.0023 right of axis ticks), t < 2 min bin probabilities at
+    d_i/L_D = 0, 0.2, 0.4, 0.6, 0.8, 1.0 are 0.3134, 0.3140, 0.2640, 0.0753, 0.0106, 0.0072 (sum 0.9845): the first
+    two bins [0, 0.4] (central 40%) sum to 62.7%, whereas the first three bins [0, 0.6] (central 60%) sum to 89.1%
+    (~90%); at t > 5 min, probabilities are 0.6635, 0.2887, 0.0217, 0.0116, 0.0008, -0.0019 (sum 0.9844), with 66.4%
+    in the midplane bin (vs printed 65%).
+    (2) In Fig. 2E (n = 29 myosin), the four nonzero black bars lie at theta_MD = 0.5, 5.0, 10.0, 20.0 deg with
+    heights 0.4830, 0.2756, 0.1723, 0.0690 — exact integer counts 14, 8, 5, 2 out of 29 (sum 0.9999). Main p. 3's
+    claim that '> 90% align to within 10 deg' sums the first three bars (27/29 = 93.1%), which span [0, 15) deg for
+    5-deg left-edged bins (or [-2.5, 12.5) deg if centered), whereas the first two bars ([0, 10) deg) contain only
+    22/29 = 75.9%.
+  citation:
+    page: 3
+    printed_page: "11127"
+    quote: "droplet major axis to within 10° (Fig. 2E)"
+    where: "Main text p. 3, Fig. 2B & Fig. 2E"
+
+- id: q_digitized_fig2c_inset_and_fig2d_speed_underprediction
+  kind: unexplained_difference
+  about:
+    - d_fig2c_inset_data
+    - d_fig2c_inset_fit
+    - d_fig2d_LD3p6
+    - d_fig2d_LD4p4
+    - d_fig2d_LD5p1
+    - cmp_fig2d_v_LD3p6
+    - cmp_fig2d_v_LD4p4
+    - cmp_fig2d_v_LD5p1
+    - tau_centering_main
+    - tau_centering_si
+    - F0_eq5_k_chained_computed
+  text: >
+    Calibrated digitization of Fig. 2C Inset and Fig. 2D settles q_fig2c_fit_type_axis_and_unstated_params and exposes
+    a 6-8x speed underprediction by the overdamped Eq. 4 model:
+    (1) The solid red curve in Fig. 2C Inset is a 3-parameter single exponential d(t) = -1.859*exp(-t/177.4 s) + 0.138 um
+    (RMS 0.0043 um over 0-1000 s), yielding decay time tau = 177.4 s = 2.96 min (3.4-6.8x faster than Main p. 4 / SI p. 10's
+    tau ~ 10-20 min) and initial speed |d'(0)| = 10.5 nm/s.
+    (2) Sweeping rod_centering_force_velocity with SI p. 11's F_0 = 32.5 pN*nm, Gamma = 15 pN*s/um, and L_M = 1.5 um
+    against Fig. 2D matches L_D = 3.6 um near the midplane (0.42, 0.75 vs measured 0.19, 0.78 nm/s), but underpredicts
+    distal speeds by 6-8x for L_D = 4.4 um (0.65, 0.82, 1.42 vs measured 5.29, 4.79, 8.79 nm/s at d = 1.90, 2.18, 2.68 um)
+    and by 6.3x for L_D = 5.1 um (0.72 vs measured 4.53 nm/s at d = 2.77 um). This 6-8x deficit arises from calibrating
+    F_0 with tau ~ 10-20 min instead of ~3 min (3.4-6.8x), using L_D = 3.2 um instead of the blue circles' L_D = 4.4 um
+    ((4.4/3.2)^2 = 1.89x), and omitting punctum-to-punctum variation in transverse position y_c (F_0 = f_0 * y_c).
+  citation:
+    page: 3
+    printed_page: "11127"
+    quote: "increase to ∼6−10 nm/s when farther from the midplane"
+    where: "Main text p. 3, Fig. 2C Inset, Fig. 2D & SI pp. 10-11"
+
+- id: q_digitized_figS9_S10_exact_affine_rescaling
+  kind: choice
+  about:
+    - d_figS9_w1p5
+    - d_figS9_w2p5
+    - d_figS9_w3p5
+    - d_figS10_w0p1
+    - d_figS10_w0p5
+    - d_figS10_w2p0
+    - cmp_figS9_w1p5
+    - cmp_figS9_w2p5
+    - cmp_figS9_w3p5
+    - cmp_figS10_w0p1
+    - cmp_figS10_w0p5
+    - cmp_figS10_w2p0
+  text: >
+    Calibrated digitization of Figs. S9 and S10 determines the exact undocumented curve-specific affine transformations
+    applied to Eqs. 7 and 8 (refining q_eq7_eq8_prefactors_and_figS9_S10_rescaling):
+    (1) In Fig. S9 (Eq. 7 at V_d/V_c = 4, despite the caption stating 'in units of gamma*a^2'), the plotted curves are
+    F_S9 = 1.0*F_Eq7 + 0.3 (w/gamma = 1.5), F_S9 = 4.0*F_Eq7 - 3.0 (w/gamma = 2.5, magnified 4x), and
+    F_S9 = 1.0*F_Eq7 + 1.5 (w/gamma = 3.5).
+    (2) In Fig. S10 (Eq. 8 at V_d/V_c = 1), the plotted curves are F_S10 = 2.0*F_Eq8 - 0.2 (W_el = 0.1),
+    F_S10 = 3.0*F_Eq8 - 0.4 (W_el = 0.5), and F_S10 = 1.3*F_Eq8 + 3.3 (W_el = 2.0), matching the digitized curves to
+    RMS <= 0.00013 once the affine map is applied.
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "Free energy (in units of γa2 ) of two nearly spherical tactoids adhered to a colloid"
+    where: "Figs. S9 & S10"
+
+- id: q_weirich2017_cross_model_crossover_and_spacing
+  kind: unexplained_difference
+  about:
+    - K_frank_si
+    - gamma_tactoid_si
+    - tactoid_size_min_si
+    - actin_spacing_main
+    - bipolar_tactoid_equilibrium_exact
+    - rel_weirich2019_eq6_Fbare_reduces_to_weirich2017_iso
+    - rel_weirich2019_bipolar_eq_reduces_to_weirich2017_iso_sphere
+    - weirich2017/tactoid_equilibrium_minimizer
+    - weirich2017/director_crossover_parameter
+    - weirich2017/c_actin_tactoid_est
+  text: >
+    Cross-record quantitative audit against weirich2017 sharpens q_bipolar_vs_homogeneous_weirich2017
+    in two ways:
+    (1) Direct comparison of weirich2017/tactoid_equilibrium_minimizer (homogeneous F_hom) against
+    weirich2019/bipolar_tactoid_equilibrium_exact (bipolar F_bip) using both papers' own printed
+    parameters (K = 1 pN, gamma = 300 nN/m, and 10 mol% filamin anchoring strength omega = 1.4
+    [Weirich 2017 Main p. 4] or 1.87 [Table S1]) shows that for an L = 5 um tactoid (V = 9.39 um^3,
+    V^(1/3) = 2.11 um, AR_hom = 2.42, chi = gamma_A*V^(1/3)/K = 0.89 at omega = 1.4), the homogeneous
+    free energy F_hom = 8.25 pN*um is 37% lower than the bipolar free energy F_bip = 11.33 pN*um
+    (which also predicts an overly elongated AR_bip = 5.97, L_bip = 9.25 um; similarly F_hom = 7.11
+    vs F_bip = 9.54 pN*um at omega = 1.87). The exact crossover F_bip < F_hom occurs only at
+    V_cross = 2291 um^3 (V^(1/3) = 13.2 um, L_cross = 30-31 um, chi_cross = 5.54) for omega = 1.4
+    and V_cross = 1047 um^3 (L_cross = 25-27 um, chi_cross = 5.70) for omega = 1.87 — roughly 5-6x
+    larger in length than weirich2019 SI p. 9's ~5 um justification (and even >2.5x larger than the
+    L ~ 10 um droplets in Fig. 2D), because comparing major-axis length L directly to K/gamma = 3.33 um
+    omits both the aspect-ratio factor L/V^(1/3) ~ 2.4 and the Prinsen-van der Schoot numerical
+    prefactor chi_cross ~ 5.5-5.7 (consistent with weirich2017 SI p. 8 assigning L ~ 5 um to the
+    homogeneous regime and L ~ 50 um to the bipolar regime).
+    (2) Regarding actin_spacing_main ('~50 nm', citing ref-17 Weirich et al. 2017): weirich2017
+    never prints '50 nm' anywhere (so actin_spacing_main stays unlinked in cited.yaml), though
+    applying weirich2017 SI p. 7's cross-sectional-area spacing definition to its printed 250 uM
+    monomeric actin density (c_actin_tactoid_est, p. 1) at 2.7 nm/monomer yields
+    1/sqrt(c_m * N_A * 2.7 nm) = 49.6 nm (~50 nm) for parallel aligned filaments.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "nN/m estimated previously for actin tactoids (8, 15), the crossover tactoid size is about a few µm."
+    where: "SI Theory 1 & Main p. 11128"
+
+- id: q_weirich2017_cross_validation_summary
+  kind: unexplained_difference
+  about:
+    - bipolar_tactoid_equilibrium_exact
+    - tactoid_aspect_ratio_angle
+    - K_frank_si
+    - gamma_tactoid_si
+    - V_tactoid_2p5pct_weirich2017_added
+    - V_tactoid_15pct_weirich2017_added
+    - AR_figS5
+    - d_fig1g_high_centered
+    - d_fig2c_inset_data
+    - d_fig4b_bisected_lengths
+    - q_weirich2017_cross_model_crossover_and_spacing
+    - weirich2017/aspect_ratio_2p5_filamin
+    - weirich2017/aspect_ratio_15_filamin
+    - weirich2017/d_fig2a_aspect_ratio
+    - weirich2017/d_fig3a_aspect_ratio_data
+    - weirich2017/d_fig3a_length_data
+    - weirich2017/gamma_I_est_main
+    - weirich2017/tactoid_equilibrium_minimizer
+    - weirich2017/tactoid_exponential_relaxation
+  text: >
+    Complete bidirectional cross-validation audit between weirich2017 and weirich2019:
+    (1) weirich2019 models against weirich2017 measurements (2 validations recorded in
+    weirich2019/validations.yaml: val_bipolar_ar_vs_weirich2017_2p5pct and
+    val_bipolar_ar_vs_weirich2017_15pct): Evaluating bipolar_tactoid_equilibrium_exact.AR_eq
+    at K = 1 pN (K_frank_si) and gamma = 300 nN/m (weirich2017/gamma_I_est_main) against
+    weirich2017's two scalar measured aspect ratios yields AR_eq = 6.450 vs "~3" (2.5 mol %
+    filamin, V = 6.26 um^3; 2.15x too elongated) and AR_eq = 5.571 vs "~2" (15 mol % filamin,
+    V = 13.45 um^3; 2.79x too elongated), both formally "no verdict" due to the printed "~"
+    markers, while sitting 14.0 and 12.1 error-bar half-widths above weirich2017's calibrated
+    Fig. 2A points (2.938 [2.691, 3.191] and 2.037 [1.750, 2.331]). Two richer digitized
+    aspect-ratio curves in weirich2017 cannot be swept directly in validations.yaml because
+    their x-axes (filamin_mole_fraction in d_fig2a_aspect_ratio; elapsed_time in
+    d_fig3a_aspect_ratio_data) are not input ports of bipolar_tactoid_equilibrium_exact(K,
+    gamma, V); evaluating bipolar_tactoid_equilibrium_exact at their reconstructed circular-arc
+    volumes sharpens the failure dramatically: (a) on Fig. 2A at L = 5 um across 2.5, 5, 10,
+    15 mol % filamin (V = 6.26, 6.88, 9.22, 13.45 um^3), AR_bip = 6.450, 6.334, 5.988, 5.571
+    vs measured 2.938, 2.808, 2.438, 2.037 (2.20x-2.73x high; notably 5.988 vs 2.438 [2.241,
+    2.640], 2.46x / +17.8 error-bar half-widths at 10 mol % filamin — the exact assay
+    composition of weirich2019); (b) on Fig. 3A coarsening (5 mol % filamin, 16 points from
+    t = 10.0 to 85.4 min as L grows 1.461 -> 4.237 um and V grows 24-fold from 0.336 ->
+    8.044 um^3), AR_bip drops steeply from 11.430 to 6.146 (3.0x-5.6x above every point),
+    directly contradicting both the magnitude and size-invariance of the measured flat aspect
+    ratio (2.037-2.163). Only at Oakes et al. (2007)'s L ~ 50 um bipolar droplets (V ~ 8751
+    um^3, weirich2017/tactoid_length_bipolar_ref23) does bipolar_tactoid_equilibrium_exact
+    yield realistic shapes (AR_eq = 1.893). All other 44 measured/fitted datums in weirich2017
+    (FRAP recovery, phase boundaries, coarsening L(t) & exponent, coalescence relaxation
+    dynamics & Table S1 fitted omega/gamma_I/eta/L_eq, fluid-bundle pearling & contraction)
+    have no corresponding weirich2019 physical model (tactoid_aspect_ratio_angle is purely
+    geometric given unmeasured (R, alpha) and outputs semi-major axis L_D = L/2 rather than
+    full major axis L; all myosin centering and colloid-division models require myosin II,
+    absent from weirich2017).
+    (2) Reverse direction (weirich2017 models against weirich2019 measurements — 0 valid
+    cross-validations): weirich2019 records 0 origin: measured tactoid_aspect_ratio datums
+    (AR_figS5 = "3" is origin: derived from theoretical SI Fig. S5 plot parameters L_D = 3 um,
+    L_y = 1 um — not a measurement — though note weirich2017/tactoid_equilibrium_minimizer at
+    10 mol % filamin gives AR = 2.423 at Fig. 2A omega = 1.4 and AR = 2.756 at Table S1
+    omega = 1.87). weirich2017/tactoid_exponential_relaxation (role: fit, L(t) = L_f +
+    (L_i - L_f)*exp(-t/tau) for positive coalescing tactoid major-axis length) does not
+    validate against weirich2019/d_fig2c_inset_data (myosin II punctum signed axial position
+    d(t) from -2.15 to +0.42 um): the two quantities (tactoid_major_axis vs
+    rod_center_axial_position) are physically distinct (sharing only [length] dimension),
+    weirich2019 prints no (d_i, d_f, tau) fit parameters for Fig. 2C Inset (whose digitized
+    exponential time constant tau = 177.4 s is 3.4-6.8x faster than printed tau_centering ~
+    10-20 min), and weirich2017's droplet coalescence relaxation time (25-59 s) describes
+    interfacial shape relaxation rather than motor transport. All remaining weirich2019
+    measurements (Fig. 1G morphology probabilities vs myosin concentration, Fig. 2B/2D/2E
+    myosin centering distributions/speeds/angles, Fig. 4B bisected daughter-droplet lengths,
+    Fig. S1 myosin cluster dimensions, detachment/centering times, droplet counts) pertain to
+    myosin-containing composite droplets outside weirich2017's myosin-free models.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "study tactoids of size about 5 µm or greater, justifying"
+    where: "SI Theory 1 & Theory 3 (Eq. 6)"
+
+- id: q_bois2011_no_cross_validation
+  kind: unstated_model
+  about:
+    - bipolar_tactoid_equilibrium_exact
+    - rod_centering_force_velocity
+    - centering_kinetics_force_balance
+    - spherical_droplet_division_phase_diagram
+    - d_fig2d_LD4p4
+    - d_fig4b_bisected_lengths
+    - bois2011/characteristic_velocity
+    - bois2011/steady_velocity_eq8
+    - bois2011/single_species_pde_eq1_3
+  text: >
+    Zero genuine cross-record validations exist in either direction between bois2011 and
+    weirich2019:
+    (1) weirich2019 models against bois2011 measurements: bois2011 ("Pattern Formation in
+    Active Fluids", PRL 2011) is a purely theoretical study with 0 origin: measured and 0
+    origin: fitted datums in bois2011/data.yaml (32 predicted, 18 reported, 3 derived).
+    (2) bois2011 models against weirich2019 measurements: the two papers model physically
+    disjoint regimes and share 0 cross-citations. bois2011 solves 1D active-gel hydrodynamic
+    patterning PDEs (advection-diffusion of active stress regulators coupled to compressible
+    viscous cortical flow driven by active stress gradients zeta*Delta*mu*f(c) against
+    substrate friction gamma), outputting regulator concentration profiles, peak counts,
+    dimensionless Peclet thresholds, and cortical flow velocities. weirich2019 measures
+    passive nematic-splay-driven centering of single myosin II rods (explicitly shown to occur
+    with low-activity/inactive motors at 100x below gliding speeds, governed by director
+    misalignment energy against Stokes drag without active-stress gradients or substrate
+    friction) and myosin-cluster-adhesion-driven droplet bisection in isolated 3D F-actin
+    tactoids. No bois2011 output quantity matches any weirich2019 measured quantity, and
+    weirich2019 measures none of bois2011's governing parameters (active stress zeta*Delta*mu,
+    substrate friction gamma, or advected regulator diffusivity D).
+  citation:
+    page: 3
+    printed_page: "11127"
+    quote: "The low speeds indicate that actomyosin sliding is not likely re-"
+    where: "Main text p. 11127 vs bois2011 Eqs. 1-15"
+
+- id: q_hannezo2015_no_cross_validation
+  kind: unstated_model
+  about:
+    - centering_kinetics_force_balance
+    - rod_centering_force_velocity
+    - bipolar_tactoid_equilibrium_exact
+    - d_fig2d_LD3p6
+    - d_fig2d_LD4p4
+    - d_fig2d_LD5p1
+    - hannezo2015/nonlocal_velocity_kernel_corrected
+    - hannezo2015/critical_wavelength_eq3
+    - hannezo2015/frap_moment_recovery_eq14
+    - hannezo2015/ring_wavelength_embryo_wt
+    - hannezo2015/diffusion_coeff_frap
+  text: >
+    Zero genuine cross-record validations exist in either direction between hannezo2015 and
+    weirich2019 (0 cross-citations, physically disjoint biological/soft-matter systems):
+    (1) weirich2019 models against hannezo2015 measurements: hannezo2015 measures in vivo
+    Drosophila embryonic/larval tracheal epithelial circumferential actin ring spacing
+    (ring_wavelength, ring_count, ring_spacing_probability), tracheal tube_diameter, and live
+    cortical actin FRAP kinetics (turnover_time, diffusion_coefficient, frap_variance,
+    immobile_fraction, fluorescence_intensity). None of weirich2019's models (bipolar nematic
+    tactoid equilibrium, passive myosin-rod centering in curved director fields, or spherical-
+    colloid-induced droplet bisection) predicts epithelial cortical ring patterning, tube
+    diameters, or FRAP recovery.
+    (2) hannezo2015 models against weirich2019 measurements: hannezo2015 models 1D active-gel
+    contractile cortical patterning with actin turnover (lambda_c = 2*pi*(D*tau*eta/xi)^(1/4),
+    dispersion relations, nonlinear bifurcation branches, cortical velocity kernel, and FRAP
+    moment recovery). weirich2019 uses pre-polymerized capped F-actin without turnover, does
+    not perform FRAP, does not form periodic cortical rings, and measures none of hannezo2015's
+    active-gel parameters (active cortical stress sigma_a, ECM friction xi, actin turnover
+    time tau, or cortical diffusivity D). Although automated dimensional screening flags
+    hannezo2015/nonlocal_velocity_kernel_corrected and weirich2019/centering_kinetics_force_balance
+    as sharing the signature (velocity from [mass]/[time], length, [force]/[length]), this is a
+    pure dimensional coincidence: 2D active stress sigma_a [Pa*m = N/m] vs harmonic centering
+    spring constant k [pN/um = 10^-6 N/m], 2D cortical viscosity eta [Pa*s*m = kg/s] vs rod
+    Stokes drag coefficient Gamma [pN*s/um = 10^-6 kg/s], and 1D epithelial cortical flow
+    velocity v_unif vs single-myosin-rod passive centering speed v = (k/Gamma)*d inside an
+    isolated 3D nematic tactoid. Mapping those quantities would violate BoxGraph's rule against
+    equating distinct physical quantities that only share a dimension.
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "This force balance relation is, kd = Γv, where k is the harmonic"
+    where: "SI Theory 2 (p. SI-4) vs hannezo2015 Main Eq. 3 & SI Eq. 4"
+
+
+

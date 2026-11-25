@@ -1,0 +1,39 @@
+id: code_2d_pde_continuum_port
+name: "2D periodic continuum PDE port of AuxCortexNematic2D.cpp including 3-term active stress and hidden log barrier (AuxCortexNematic2D.cpp:403-420,514-565,1070-1150)"
+role: model
+stated:
+  file: src/AuxCortexNematic2D.cpp
+  lines: "1101"
+  quote: "fillStr->addContribGlobInteg(\"biLinear\", product(outer(Dh_,Dh_),q_,{{0,0},{1,1}})*jac);"
+  where: "AuxCortexNematic2D.cpp:403-420, 514-565, 1070-1150 (2D periodic square domain, biLinear / |A| = omega)"
+built_from:
+  - code_linear_stability
+equation: "d_t h + div(h*v) - lap(h) + visc*(h - heqb) = 0; h*v = div(sigma_code) - h*grad[(h-1)*f_lim]; rvisc*Jq + cvisc*d^dev + (2*sus20 + sus40*S^2 + h*lambda_rot + 4*k_lim/(S2_max - S^2))*q - (frank/2)/h * div(h*grad q) = 0; omega = (1/|A|)*int(grad h . q . grad h dS)"
+inputs:
+  visc: {quantity: turnover_rate_dimless, unit: dimensionless}
+  cvisc: {quantity: flow_alignment_dimless, unit: dimensionless}
+  rvisc: {quantity: rotational_viscosity_dimless, unit: dimensionless}
+  frank: {quantity: code_frank_parameter, unit: dimensionless}
+  sus20: {quantity: susceptibility_a_dimless, unit: dimensionless}
+  sus40: {quantity: susceptibility_b_dimless, unit: dimensionless}
+  lambda_rot: {quantity: code_lambda_rot_parameter, unit: dimensionless}
+  lambda_iso: {quantity: active_tension_dimless, unit: dimensionless}
+  lambda_aniso: {quantity: parallel_active_tension_dimless, unit: dimensionless}
+  crossLinker: {quantity: transverse_active_tension_dimless, unit: dimensionless}
+  heqb: {quantity: relative_density, unit: dimensionless}
+  k_lim: {quantity: barrier_stiffness_dimless, unit: dimensionless}
+  S2_max: {quantity: barrier_S2_cutoff, unit: dimensionless}
+outputs:
+  omega: {quantity: architecture_order_parameter, unit: dimensionless}
+  rho_max: {quantity: relative_density, unit: dimensionless}
+  rho_min: {quantity: relative_density, unit: dimensionless}
+  S_max: {quantity: nematic_order_parameter, unit: dimensionless}
+settings:
+  N_grid: 24
+  dt: 0.06
+  t_max: 60.0
+  L_mult: 2.0
+  pcg_maxiter: 3
+  extra_h_bug: true
+  seed: 1
+stochastic: false

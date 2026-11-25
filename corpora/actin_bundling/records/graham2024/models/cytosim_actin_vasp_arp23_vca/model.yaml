@@ -1,0 +1,39 @@
+id: cytosim_actin_vasp_arp23_vca
+name: 3D agent-based CytoSim actin-VASP-Arp2/3-VCA droplet simulation
+role: model
+stated:
+  page: 7
+  printed_page: "7"
+  quote: "we used Cytosim, an agent-based framework for modeling cytoskeletal dynamics"
+  where: "Results (Fig. 5), Fig. S4, Table S1 & SI Methods (pp. 16-25)"
+equation: "dx^{ij}(t) = mu f^{ij}_tot(t) dt + dB_j(t); coupled stochastic VASP/Arp2/3 binding, branching (70 deg), unbinding, and deterministic monomer-depletion growth with passive VCA competitor fiber"
+inputs:
+  R_drop: {quantity: droplet_radius, unit: um}
+  N_fil_0: {quantity: filament_count, unit: dimensionless}
+  L_seg: {quantity: filament_segment_length, unit: nm}
+  k_grow: {quantity: filament_growth_rate, unit: um/s}
+  T_actin: {quantity: actin_concentration, unit: uM}
+  vasp_conc: {quantity: vasp_tetramer_concentration, unit: uM}
+  arp23_conc: {quantity: arp23_concentration, unit: nM}
+  vca_conc: {quantity: vca_concentration, unit: uM}
+  K_bend: {quantity: flexural_rigidity, unit: pN*um^2}
+  eta: {quantity: dynamic_viscosity, unit: pN*s/um^2}
+outputs:
+  rae: {quantity: relative_actin_enrichment, unit: dimensionless}
+settings:
+  dt: 0.001
+  t_sim: 600.0
+  seed: 0
+described_from: ref-cytosim
+runnable: false
+not_runnable_reason: >
+  Full 3D many-body agent-based simulation of semiflexible F-actin filaments, tetrameric VASP
+  crosslinkers, diffusing Arp2/3 branch nucleators, and a modified passive VCA competitor fiber
+  requires the modified C++ CytoSim engine (fiber_set.cc edit on p. 25; GitHub repo ref-63) and
+  leaves essential simulation specifications unstated in the text and Table S1: temperature T /
+  thermal energy k_B T, Arp2/3 diffusivity, crosslinker spring stiffnesses for VASP and Arp2/3,
+  exact Brownian ratchet force-velocity functional form, exact force-dependent unbinding law
+  k(F)_unbind, initial actin filament length, and random seeds. In addition, Table S1 ([VASP-tet] =
+  0.4 uM, 1000 molecules) conflicts with Fig. 5A/S6 ([VASP-tet] = 0.2 uM), and the printed
+  fiber_set.cc code listing on p. 25 contains an unclosed brace syntax error.
+stochastic: true

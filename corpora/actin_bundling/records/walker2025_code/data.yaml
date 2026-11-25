@@ -1,0 +1,883 @@
+# =============================================================================
+# 1. CytoSim .cym configuration parameters (templates & Figure_* inputfiles)
+# =============================================================================
+- id: cym_dim
+  quantity: spatial_dimension
+  unit: dimensionless
+  origin: reported
+  printed: "3"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "13"
+    quote: "dim = 3"
+  note: "Shared 3D setting across all 874 non-Source_Code .cym files."
+
+- id: cym_time_step
+  quantity: time
+  unit: s
+  origin: reported
+  printed: "0.002"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "14"
+    quote: "time_step = 0.002"
+  from_source: walker2025
+  from_datum: sim_time_step
+  note: "Matches Table S1 time step 0.002 s across all 874 simulation configs."
+
+- id: cym_viscosity_baseline
+  quantity: dynamic_viscosity
+  unit: pN*s/um^2
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "15"
+    quote: "viscosity = 0.5"
+  from_source: walker2025
+  from_datum: sim_condensate_viscosity
+  note: "CytoSim viscosity unit is pN*s/um^2 (= Pa*s); matches Table S1 0.5 pN*s/um^2 across baseline configs."
+
+- id: cym_viscosity_s5a_min
+  quantity: dynamic_viscosity
+  unit: pN*s/um^2
+  origin: reported
+  printed: "0.001"
+  citation:
+    file: Figure_S5/Figure_S5A/inputfiles/R_0_r_0/config0.cym
+    lines: "15"
+    quote: "viscosity = 0.001"
+  note: "Minimum viscosity in Figure_S5A sweep {0.001, 0.01, 0.1, 0.5, 1.0, 10.0, 100.0, 1000.0} pN*s/um^2 (5 replicates each)."
+
+- id: cym_viscosity_s5a_max
+  quantity: dynamic_viscosity
+  unit: pN*s/um^2
+  origin: reported
+  printed: "1000.0"
+  citation:
+    file: Figure_S5/Figure_S5A/inputfiles/R_7_r_0/config7.cym
+    lines: "15"
+    quote: "viscosity = 1000.0"
+  note: "Maximum viscosity in Figure_S5A 8-value sweep."
+
+- id: cym_viscosity_s5b
+  quantity: dynamic_viscosity
+  unit: pN*s/um^2
+  origin: reported
+  printed: "5"
+  citation:
+    file: Figure_S5/Figure_S5B/inputfiles/R_0_r_0/config0.cym
+    lines: "15"
+    quote: "viscosity = 5"
+  from_source: walker2025
+  from_datum: sim_high_viscosity_figs5b
+  note: "High-viscosity extended simulation in Fig. S5B; matches walker2025 5.0 Pa*s."
+
+- id: cym_steric_push_global
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "1"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "16"
+    quote: "steric = 1, 1"
+  from_source: walker2025
+  from_datum: sim_actin_steric_stiffness
+  note: "In CytoSim (simul_prop.cc:79, simul_solve.cc:191), steric = 1, 1 sets ONE global steric push stiffness steric_stiffness_push[0] = 1.0 pN/um for ALL species (actin, mini-Lpd, VASP, monomers) across all 874 configs. Contradicts Table S1's claim of 10 pN/um steric stiffness for VASP and monomer-actin and 5.0 pN/um for monomer-monomer."
+
+- id: cym_droplet_radius
+  quantity: droplet_radius
+  unit: um
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "32"
+    quote: "radius = 1.0"
+  from_source: walker2025
+  from_datum: sim_droplet_radius
+  note: "Spherical space cell radius 1.0 um across all 874 configs; matches Table S1."
+
+- id: cym_actin_rigidity
+  quantity: flexural_rigidity
+  unit: pN*um^2
+  origin: reported
+  printed: "0.075"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "37"
+    quote: "rigidity = 0.075"
+  from_source: walker2025
+  from_datum: sim_actin_flexural_rigidity
+  note: "Matches Table S1 actin flexural rigidity 0.075 pN*um^2."
+
+- id: cym_actin_segmentation
+  quantity: filament_segment_length
+  unit: um
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "38"
+    quote: "segmentation = 0.1"
+  from_source: walker2025
+  from_datum: sim_filament_seg_length
+  note: "Matches Table S1 segmentation length L_seg = 0.1 um."
+
+- id: cym_actin_confine_stiffness
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "200"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "39"
+    quote: "confine = inside, 200, cell"
+  from_source: walker2025
+  from_datum: sim_boundary_stiffness_actin
+  note: "Matches Table S1 boundary confinement stiffness 200 pN/um for actin filaments."
+
+- id: cym_actin_growing_speed
+  quantity: elongation_rate
+  unit: um/s
+  origin: reported
+  printed: "0.0103"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "45"
+    quote: "growing_speed = 0.0103, 0"
+  from_source: walker2025
+  from_datum: sim_polymerization_rate
+  note: "Plus-end growth speed 0.0103 um/s (minus-end = 0); matches Table S1."
+
+- id: cym_actin_shrinking_speed
+  quantity: elongation_rate
+  unit: um/s
+  origin: reported
+  printed: "0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "46"
+    quote: "shrinking_speed = 0"
+  note: "Zero depolymerization rate across all configs."
+
+- id: cym_actin_growing_force
+  quantity: force
+  unit: pN
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "47"
+    quote: "growing_force = 10.0"
+  from_source: walker2025
+  from_datum: sim_brownian_ratchet_force
+  note: "Brownian ratchet force 10.0 pN (one-sided for antagonistic force < 0 in growing_fiber.cc:71-72); matches Table S1."
+
+- id: cym_actin_max_length
+  quantity: filament_length
+  unit: um
+  origin: reported
+  printed: "6.2832"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "48"
+    quote: "max_length = 6.2832"
+  from_source: walker2025
+  from_datum: sim_filament_max_length_circumference
+  note: "4-decimal approximation of 2*pi*R = 6.283185 um across all configs."
+
+- id: cym_actin_steric_radius
+  quantity: particle_radius
+  unit: um
+  origin: reported
+  printed: "0.0035"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "49"
+    quote: "steric = 1, 0.0035"
+  from_source: walker2025
+  from_datum: sim_actin_steric_radius
+  note: "0.0035 um = 3.5 nm steric radius; matches Table S1. Note that fiber hydrodynamic drag_radius is NOT set and defaults to 0.0125 um (fiber_prop.cc:264)."
+
+- id: cym_actin_binding_distance
+  quantity: binding_distance
+  unit: um
+  origin: reported
+  printed: "0.03"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "56"
+    quote: "binding = 1, 0.03"
+  from_source: walker2025
+  from_datum: sim_actin_binding_distance
+  note: "0.03 um = 30 nm actin-binding capture radius across all configs; matches Table S1."
+
+- id: cym_actin_kbind_ring
+  quantity: rate
+  unit: 1/s
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: Figure_5/inputfiles/R_22_r_0/config22.cym
+    lines: "66"
+    quote: "binding = 10.0, 0.03"
+  from_source: walker2025
+  from_datum: sim_actin_kbind_ring
+  note: "Actin-binding rate 10.0 s^-1 in ring conditions (all Fig. 5, Fig. S7, Fig. S5A-B, and Ring regimes of Fig. S6A-D); matches Table S1."
+
+- id: cym_actin_kbind_shell
+  quantity: rate
+  unit: 1/s
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: Figure_S6A-D/inputfiles/R_5_r_0/config5.cym
+    lines: "55"
+    quote: "binding = 0.1, 0.03"
+  from_source: walker2025
+  from_datum: sim_actin_kbind_shell
+  note: "Actin-binding rate 0.1 s^-1 in shell conditions of Fig. S6A-D; matches Table S1."
+
+- id: cym_actin_kbind_figs5
+  quantity: rate
+  unit: 1/s
+  origin: reported
+  printed: "1"
+  citation:
+    file: Figure_S5/Figure_S5C-E/inputfiles/R_20_r_0/config20.cym
+    lines: "56"
+    quote: "binding = 1, 0.03"
+  from_source: walker2025
+  from_datum: sim_figs5_kbind_fixed
+  note: "Fixed bivalent actin-binding rate 1.0 s^-1 in Fig. S5C-E copy-number sweep; matches Fig. S5C caption."
+
+- id: cym_actin_kunbind_zero
+  quantity: rate
+  unit: 1/s
+  origin: reported
+  printed: "1"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "58"
+    quote: "unbinding = 1, 10.0"
+  from_source: walker2025
+  from_datum: sim_actin_kunbind_zero_force
+  note: "Baseline zero-force actin-unbinding rate 1.0 s^-1; matches Table S1."
+
+- id: cym_actin_unbinding_force
+  quantity: force
+  unit: pN
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "58"
+    quote: "unbinding = 1, 10.0"
+  from_source: walker2025
+  from_datum: sim_actin_unbinding_force
+  note: "Bell slip-bond actin-unbinding force 10.0 pN; matches Table S1."
+
+- id: cym_minilpd_bond_stiffness
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "66"
+    quote: "stiffness = 10.0"
+  from_source: walker2025
+  from_datum: sim_minilpd_steric_stiffness
+  note: "MAJOR DISCREPANCY vs walker2025 Table S1: every bivalent mini-Lpd .cym sets SingleProp::stiffness = 10.0 pN/um (bond tether stiffness, NOT steric repulsion stiffness), whereas Table S1 prints 'mini-Lpd steric repulsion Stiffness = 1.0 pN/um' and omits bond stiffness entirely."
+
+- id: cym_vasp_bond_stiffness
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd-VASP/config.cym
+    lines: "89"
+    quote: "stiffness = 10.0"
+  from_source: walker2025
+  from_datum: sim_vasp_steric_stiffness
+  note: "Matches numerical value 10 pN/um in Table S1, but MISLABELLED in Table S1 as 'VASP steric repulsion Stiffness': in CytoSim this is SingleProp::stiffness (bond spring stiffness), while actual steric push stiffness is global 1.0 pN/um (steric = 1, 1)."
+
+- id: cym_monomer_actin_bond_stiffness
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-DynamicDimer/config.cym
+    lines: "76"
+    quote: "stiffness = 10.0"
+  from_source: walker2025
+  from_datum: sim_monomer_actin_steric_stiffness
+  note: "Matches numerical value 10 pN/um in Table S1, but MISLABELLED in Table S1 as 'mini-Lpd monomer-actin steric repulsion Stiffness': in CytoSim this is SingleProp::stiffness of actincrosslinker, while steric push stiffness is global 1.0 pN/um."
+
+- id: cym_monomer_dimer_bond_stiffness
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "5.0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-DynamicDimer/config.cym
+    lines: "58"
+    quote: "stiffness = 5.0"
+  from_source: walker2025
+  from_datum: sim_monomer_monomer_steric_stiffness
+  note: "Matches numerical value 5.0 pN/um in Table S1, but MISLABELLED as 'mini-Lpd monomer-monomer steric repulsion Stiffness': in CytoSim this is SingleProp::stiffness of dimerizer graftedcrosslinker — AND wrist.cc:131-135 adds it TWICE per dimer bond (effective mechanical stiffness 10.0 pN/um while Wrist::force() uses 5.0 pN/um)."
+
+- id: cym_single_diffusion_dead
+  quantity: diffusion_coefficient
+  unit: um^2/s
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "67"
+    quote: "diffusion = 10.0"
+  from_source: walker2025
+  from_datum: sim_crosslinker_diffusion_rate
+  note: "DEAD PARAMETER: written in all 874 .cym files on grafted Wrist singles and reported as 'Diffusion rate 10 um^2/s' in Table S1, but SILENTLY IGNORED by CytoSim because Wrist's diffusion>0 guard is '#if (0)' disabled (wrist.cc:17-20) and Wrist::stepF() never calls diffuse() (wrist.cc:68-83). Actual blob diffusion is Stokes-Einstein 0.01485 um^2/s."
+
+- id: cym_blob_confine_stiffness
+  quantity: spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "100"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "72"
+    quote: "confine = inside, 100"
+  from_source: walker2025
+  from_datum: sim_boundary_stiffness_crosslinker
+  note: "Matches Table S1 boundary stiffness 100 pN/um for crosslinkers."
+
+- id: cym_blob_radius
+  quantity: particle_radius
+  unit: um
+  origin: reported
+  printed: "0.03"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "84"
+    quote: "sphere1 = 0 0 0, 0.03, 1 graftedcrosslinker, 1 graftedcrosslinker"
+  from_source: walker2025
+  from_datum: sim_crosslinker_radius
+  note: "0.03 um = 30 nm solid sphere radius across all bivalent, tetravalent, and monomer blobs; matches Table S1."
+
+- id: cym_minilpd_site_separation
+  quantity: site_separation
+  unit: um
+  origin: reported
+  printed: "0.06"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "81"
+    quote: "separation = 0.06"
+  note: "HIDDEN PARAMETER (unstated in walker2025): sets minimum binding-site separation 60 nm = 2*R (antipodal poles) on bivalent mini-Lpd solids."
+
+- id: cym_vasp_dimer_site_separation
+  quantity: site_separation
+  unit: um
+  origin: reported
+  printed: "0.054"
+  citation:
+    file: Inputfile_Templates/inputTemplate-DynamicDimer/config.cym
+    lines: "91"
+    quote: "separation = 0.054"
+  note: "HIDDEN PARAMETER (unstated in walker2025): sets minimum binding-site separation 54 nm = 1.8*R on tetravalent VASPblob, DynamicDimer (2 sites), and DynamicMultimer (3 sites)."
+
+- id: cym_site_deviation
+  quantity: site_deviation
+  unit: um
+  origin: reported
+  printed: "0.001"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "82"
+    quote: "deviation = 0.001"
+  note: "HIDDEN PARAMETER (unstated in walker2025): 1 nm radial placement jitter on solid binding sites across all 874 configs."
+
+- id: cym_dimer_count_baseline
+  quantity: crosslinker_count
+  unit: dimensionless
+  origin: reported
+  printed: "1000"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "78"
+    quote: "new 1000 blob"
+  from_source: walker2025
+  from_datum: sim_dimer_count_baseline
+  note: "Matches Table S1 baseline 1000 bivalent dimers (also 1000 total crosslinkers in Fig. S6A-D mixtures)."
+
+- id: cym_crosslinker_count_max
+  quantity: crosslinker_count
+  unit: dimensionless
+  origin: reported
+  printed: "20000"
+  citation:
+    file: Figure_S5/Figure_S5C-E/inputfiles/R_20_r_0/config20.cym
+    lines: "78"
+    quote: "new 20000 blob"
+  from_source: walker2025
+  from_datum: sim_crosslinker_count_max
+  note: "Maximum bivalent crosslinker count in Fig. S5C-E sweep {1000, 5000, 10000, 15000, 20000}; matches walker2025 p. 10."
+
+- id: cym_monomer_count_baseline
+  quantity: crosslinker_count
+  unit: dimensionless
+  origin: reported
+  printed: "2000"
+  citation:
+    file: Inputfile_Templates/inputTemplate-DynamicDimer/config.cym
+    lines: "88"
+    quote: "new 2000 blob"
+  from_source: walker2025
+  from_datum: sim_monomer_count_baseline
+  note: "2000 diffusing monovalent actin-binding blobs in DynamicDimer (Fig. 5) and DynamicMultimer (Fig. S7); matches Table S1."
+
+- id: cym_filament_count
+  quantity: filament_count
+  unit: dimensionless
+  origin: reported
+  printed: "30"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "87"
+    quote: "new 30 actin"
+  from_source: walker2025
+  from_datum: sim_filament_count
+  note: "30 actin filaments in all actin-containing configs (omitted in Figure_S7G no-actin control configs); matches Methods S1."
+
+- id: cym_filament_init_length
+  quantity: filament_length
+  unit: um
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "89"
+    quote: "length = 0.1"
+  from_source: walker2025
+  from_datum: sim_filament_initial_length
+  note: "Initial filament length 0.1 um; matches Methods S1."
+
+- id: cym_dimerizer_binding_distance
+  quantity: binding_distance
+  unit: um
+  origin: reported
+  printed: "0.09"
+  citation:
+    file: Inputfile_Templates/inputTemplate-DynamicDimer/config.cym
+    lines: "48"
+    quote: "binding = 1.0, 0.09"
+  from_source: walker2025
+  from_datum: sim_monomer_monomer_binding_distance
+  note: "0.09 um = 90 nm = 3*R_solid; matches Table S1, but point_grid.cc:127-132 tests anchor-to-center distance rather than center-to-center distance."
+
+- id: cym_dimerizer_unbinding_force
+  quantity: force
+  unit: pN
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: Inputfile_Templates/inputTemplate-DynamicDimer/config.cym
+    lines: "50"
+    quote: "unbinding = 1.0, 10.0"
+  from_source: walker2025
+  from_datum: sim_monomer_monomer_splitting_force
+  note: "Nominal Bell splitting force 10.0 pN; matches Table S1, though doubled spring stiffness in wrist.cc:134 makes effective unbinding force 20 pN relative to true mechanical tension."
+
+- id: cym_rate_sweep_min
+  quantity: rate
+  unit: 1/s
+  origin: reported
+  printed: "0.001"
+  citation:
+    file: Figure_4-S6E-G/inputfiles/R_0_r_0/config0.cym
+    lines: "56"
+    quote: "binding = 0.001, 0.03"
+  from_source: walker2025
+  from_datum: sim_rate_sweep_min
+  note: "Minimum rate 10^-3 s^-1 of 5-decade logarithmic sweep across Figs. 4/S6, 5, S5C-E, and S7; matches Table S2."
+
+- id: cym_rate_sweep_max
+  quantity: rate
+  unit: 1/s
+  origin: reported
+  printed: "10.0"
+  citation:
+    file: Figure_4-S6E-G/inputfiles/R_24_r_0/config24.cym
+    lines: "56"
+    quote: "binding = 10.0, 0.03"
+  from_source: walker2025
+  from_datum: sim_rate_sweep_max
+  note: "Maximum rate 10^1 s^-1 of 5-decade logarithmic sweep; matches Table S2."
+
+- id: cym_nsteps_baseline
+  quantity: count
+  unit: dimensionless
+  origin: reported
+  printed: "300000"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "92"
+    quote: "run 300000 system"
+  note: "300,000 steps x 0.002 s = 600 s total simulation duration."
+
+- id: cym_nb_frames_baseline
+  quantity: count
+  unit: dimensionless
+  origin: reported
+  printed: "600"
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "94"
+    quote: "nb_frames = 600"
+  note: "600 output intervals producing 601 snapshots (t = 0, 1, ..., 600 s)."
+
+- id: cym_nsteps_high_visc
+  quantity: count
+  unit: dimensionless
+  origin: reported
+  printed: "1200000"
+  citation:
+    file: Figure_S5/Figure_S5B/inputfiles/R_0_r_0/config0.cym
+    lines: "92"
+    quote: "run 1200000 system"
+  note: "1,200,000 steps x 0.002 s = 2,400 s for Fig. S5B high-viscosity run."
+
+- id: cym_nb_frames_high_visc
+  quantity: count
+  unit: dimensionless
+  origin: reported
+  printed: "2400"
+  citation:
+    file: Figure_S5/Figure_S5B/inputfiles/R_0_r_0/config0.cym
+    lines: "94"
+    quote: "nb_frames = 2400"
+  note: "2,400 output intervals (2,401 snapshots) for Fig. S5B."
+
+# =============================================================================
+# 2. Hidden C++ CytoSim engine constants (Source_Code/Cytosim/src/sim/)
+# =============================================================================
+- id: cpp_default_kT
+  quantity: energy
+  unit: pN*um
+  origin: reported
+  printed: "0.0042"
+  citation:
+    file: Source_Code/Cytosim/src/sim/simul_prop.cc
+    lines: "24"
+    quote: "kT                = 0.0042;"
+  note: "HIDDEN PARAMETER (settles walker2025 q_unstated_temperature): none of the 874 .cym files specify kT, so CytoSim uses its built-in default kT = 0.0042 pN*um = 4.2 pN*nm (~304.2 K)."
+
+- id: cpp_default_fiber_drag_radius
+  quantity: particle_radius
+  unit: um
+  origin: reported
+  printed: "0.0125"
+  citation:
+    file: Source_Code/Cytosim/src/sim/fiber_prop.cc
+    lines: "264"
+    quote: "drag_radius         = 0.0125;  // radius of a Microtubule"
+  note: "HIDDEN PARAMETER: none of the 874 .cym files set fiber:drag_radius, so actin filaments inherit CytoSim's microtubule hydrodynamic radius 12.5 nm (3.57x larger than actin's 3.5 nm steric radius)."
+
+- id: cpp_cylinder_drag_const
+  quantity: dimensionless_constant
+  unit: dimensionless
+  origin: reported
+  printed: "0.32"
+  citation:
+    file: Source_Code/Cytosim/src/sim/fiber.cc
+    lines: "604"
+    quote: "const real drag_cylinder = 3 * len / ( log(0.5*lenc/prop->drag_radius) + 0.32 );"
+  note: "Hidden hydrodynamic cylinder-drag constant in Fiber::dragCoefficientCylinder()."
+
+# =============================================================================
+# 3. Python analysis & plotting script parameters (icosphere.py, Main_Analyze_Trajectory.py, Figures.ipynb)
+# =============================================================================
+- id: ico_init_triangles_code
+  quantity: count
+  unit: dimensionless
+  origin: reported
+  printed: "20"
+  citation:
+    file: Analysis_Scripts/icosphere.py
+    lines: "40-44"
+    quote: "faces = [[0, 11, 5],[0, 5, 1],[0, 1, 7],[0, 7, 10],"
+  from_source: walker2025
+  from_datum: sim_icosphere_init_triangles_printed
+  note: "DISCREPANCY vs walker2025 (settles q_icosphere_eight_triangles_misprint): icosphere.py initializes a 20-face regular icosahedron (12 vertices, 20 faces), NOT 8 initial triangles as printed in Methods S1 p. 43."
+
+- id: ico_subdiv_code
+  quantity: icosphere_subdivision
+  unit: dimensionless
+  origin: reported
+  printed: "4"
+  citation:
+    file: Analysis_Scripts/Main_Analyze_Trajectory.py
+    lines: "711"
+    quote: "f=4"
+  from_source: walker2025
+  from_datum: sim_icosphere_subdiv_printed
+  note: "DISCREPANCY vs walker2025 (settles q_icosphere_eight_triangles_misprint): Main_Analyze_Trajectory.py subdivides 4 times (f=4 -> 5,120 triangles), NOT 3 times as printed in Methods S1 p. 43."
+
+- id: ico_radius_code
+  quantity: droplet_radius
+  unit: um
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: Analysis_Scripts/Main_Analyze_Trajectory.py
+    lines: "713"
+    quote: "meshvar=ic.icosphere(f,1.0);"
+  from_source: walker2025
+  from_datum: sim_droplet_radius
+  note: "Hardcoded droplet radius 1.0 um in analyzetrajectory()."
+
+- id: ico_monomer_rise_code
+  quantity: monomer_axial_rise
+  unit: um
+  origin: reported
+  printed: "2.7 x 10^-3"
+  citation:
+    file: Analysis_Scripts/icosphere.py
+    lines: "160"
+    quote: "nmonomers = int(np.ceil(cyllength/2.7e-3))"
+  note: "HIDDEN PARAMETER (unstated in walker2025): actin monomer linear spacing 2.7e-3 um = 2.7 nm used in interpolateallmonomers()."
+
+- id: ico_shell_inner_radius_code
+  quantity: radial_position
+  unit: um
+  origin: reported
+  printed: "0.9"
+  citation:
+    file: Analysis_Scripts/icosphere.py
+    lines: "224"
+    quote: "dthreshold_4m_center =  0.9*0.9"
+  note: "Hardcoded inner shell cutoff r >= 0.9 um (also frac = radius*0.9 on line 66), corresponding to 100 nm from the R = 1.0 um surface."
+
+- id: ico_plane_dthreshold_code
+  quantity: surface_threshold_distance
+  unit: um
+  origin: reported
+  printed: "0.2"
+  citation:
+    file: Analysis_Scripts/icosphere.py
+    lines: "223"
+    quote: "dthreshold = 0.2"
+  note: "HIDDEN PARAMETER (unstated in walker2025): triangle-plane distance threshold 0.2 um = 200 nm (also line 190 in checkdist_bead_tangle), twice the 100 nm radial shell thickness."
+
+- id: traj_bar_min_frac_code
+  quantity: fraction
+  unit: dimensionless
+  origin: reported
+  printed: "0.95"
+  citation:
+    file: Analysis_Scripts/Main_Analyze_Trajectory.py
+    lines: "206"
+    quote: "bar_min_snap = int(0.95*Nsnaps)"
+  note: "Snapshot fraction threshold 0.95 (last 5%, i.e., snapshots 570..600 = 31 frames of 601) used in getvaspprops(), getvasppropsLpdVASP(), and Figures.ipynb Cell 4/6/18/23/27/31/33."
+
+- id: nb_last_snaps_length_code
+  quantity: count
+  unit: dimensionless
+  origin: reported
+  printed: "30"
+  citation:
+    file: Figures.ipynb
+    lines: "7110"
+    quote: "length_df_counts_tmp = length_monomers.iloc[:, -30:]"
+  from_source: walker2025
+  from_datum: sim_last_snapshots_count
+  note: "Explicit last 30 snapshots used for multimer length distributions (Fig. S7F-G), contrasting with the int(0.95*len(Row1)) bug in Cells 13, 40, and 46 that averages all 601 snapshots for Fig. 5D and Fig. S7E."
+
+- id: nb_nreps_dynamic_code
+  quantity: count
+  unit: dimensionless
+  origin: reported
+  printed: "5"
+  citation:
+    file: Figures.ipynb
+    lines: "1785"
+    quote: "Nreps = 5"
+  from_source: walker2025
+  from_datum: sim_replicates_dynamic
+  note: "5 replicates per condition in Fig. 5, Fig. S5, Fig. S6A-D, and Fig. S7; matches walker2025."
+
+- id: nb_fig5_r22_index
+  quantity: condition_index
+  unit: dimensionless
+  origin: reported
+  printed: "22"
+  citation:
+    file: Figure_5/inputfiles/R_22_r_0/config22.cym
+    lines: "48-50"
+    quote: "binding = 10.0, 0.09"
+  note: "Condition index R_22 in Figure_5/outputfiles/ (k_dimer_form = 10.0 s^-1, k_dimer_split = 0.1 s^-1, ring-forming dynamic dimerization regime)."
+
+- id: nb_fig5_r21_index
+  quantity: condition_index
+  unit: dimensionless
+  origin: reported
+  printed: "21"
+  citation:
+    file: Figure_5/inputfiles/R_21_r_0/config21.cym
+    lines: "48-50"
+    quote: "binding = 10.0, 0.09"
+  note: "Condition index R_21 in Figure_5/outputfiles/ (k_dimer_form = 10.0 s^-1, k_dimer_split = 0.01 s^-1)."
+
+- id: nb_fig4_r22_index
+  quantity: condition_index
+  unit: dimensionless
+  origin: reported
+  printed: "22"
+  citation:
+    file: Figure_4-S6E-G/inputfiles/R_22_r_0/config22.cym
+    lines: "56-58"
+    quote: "binding = 10.0, 0.03"
+  note: "Condition index R_22 in Figure_4-S6E-G/ (k_bind = 10.0 s^-1, k_unbind = 0.1 s^-1, top-middle ring condition in Fig. 4J-K)."
+
+# =============================================================================
+# 4. Target values copied from walker2025 for live reproduction comparisons
+# =============================================================================
+- id: paper_total_time
+  quantity: time
+  unit: s
+  origin: reported
+  printed: "600"
+  citation:
+    none: "Copied target from walker2025/sim_total_time (Table S1 p. 25) to compare against n_steps * dt from .cym configs."
+  from_source: walker2025
+  from_datum: sim_total_time
+
+- id: paper_total_time_high_visc
+  quantity: time
+  unit: s
+  origin: reported
+  printed: "2400"
+  citation:
+    none: "Copied target from walker2025/sim_total_time_high_visc (Fig. S5B caption p. 37) to compare against n_steps * dt in Figure_S5B."
+  from_source: walker2025
+  from_datum: sim_total_time_high_visc
+
+- id: paper_filament_max_length
+  quantity: filament_length
+  unit: um
+  origin: derived
+  printed: "6.283185"
+  citation:
+    none: "Copied derived circumference 2*pi um from walker2025/sim_filament_max_length_circumference (Table S1 p. 25) to compare against L0 + k_grow*T_sim and max_length = 6.2832."
+  from_source: walker2025
+  from_datum: sim_filament_max_length_circumference
+
+- id: paper_dimer_conc_baseline
+  quantity: concentration
+  unit: uM
+  origin: derived
+  printed: "0.40"
+  citation:
+    none: "Copied derived concentration from walker2025/sim_dimer_conc_baseline (Table S1 p. 26) for 1,000 blobs in R = 1.0 um sphere."
+  from_source: walker2025
+  from_datum: sim_dimer_conc_baseline
+
+- id: paper_monomer_conc_baseline
+  quantity: concentration
+  unit: uM
+  origin: derived
+  printed: "0.79"
+  citation:
+    none: "Copied derived concentration from walker2025/sim_monomer_conc_baseline (Table S1 p. 27) for 2,000 blobs in R = 1.0 um sphere."
+  from_source: walker2025
+  from_datum: sim_monomer_conc_baseline
+
+- id: paper_vol_frac_table
+  quantity: volume_fraction
+  unit: percent
+  origin: derived
+  citation:
+    none: "Copied derived volume-fraction endpoints from walker2025/sim_crosslinker_vol_frac_table (Results p. 10: 2.7% at N=1000, 54% at N=20000)."
+  from_source: walker2025
+  from_datum: sim_crosslinker_vol_frac_table
+  table:
+    index_quantity: crosslinker_count
+    index_unit: dimensionless
+    index: ["1000", "20000"]
+    values: ["2.7", "54"]
+
+- id: paper_actin_persistence_length
+  quantity: persistence_length
+  unit: um
+  origin: reported
+  printed: "10 to 20"
+  citation:
+    none: "Copied reported actin persistence length range from walker2025/actin_persistence_length_reported (p. 2, 15) to check rigidity / kT at CytoSim default kT = 0.0042 pN*um."
+  from_source: walker2025
+  from_datum: actin_persistence_length_reported
+
+- id: paper_crosslinker_diffusion_rate
+  quantity: diffusion_coefficient
+  unit: um^2/s
+  origin: reported
+  printed: "10"
+  citation:
+    none: "Copied Table S1 prescribed crosslinker diffusion rate from walker2025/sim_crosslinker_diffusion_rate (pp. 25-27) to compare against CytoSim Solid Stokes-Einstein diffusivity."
+  from_source: walker2025
+  from_datum: sim_crosslinker_diffusion_rate
+
+- id: paper_icosphere_subdiv
+  quantity: icosphere_subdivision
+  unit: dimensionless
+  origin: reported
+  printed: "3"
+  citation:
+    none: "Copied stated subdivision depth from walker2025/sim_icosphere_subdiv_printed (Methods S1 p. 43) to run icosphere.py at paper's stated n=3 vs code's f=4."
+  from_source: walker2025
+  from_datum: sim_icosphere_subdiv_printed
+
+- id: paper_icosphere_target_monomers
+  quantity: monomer_equivalents
+  unit: dimensionless
+  origin: estimated
+  printed: "10"
+  citation:
+    none: "Copied target effective triangle size from walker2025/sim_icosphere_target_monomers (Methods S1 p. 43: 'comparable to 10 actin monomers') to compare against live icosphere.py triangle size."
+  from_source: walker2025
+  from_datum: sim_icosphere_target_monomers
+
+- id: paper_surface_threshold_dist
+  quantity: surface_threshold_distance
+  unit: nm
+  origin: reported
+  printed: "100"
+  citation:
+    none: "Copied radial surface shell thickness from walker2025/sim_surface_threshold_dist (Methods S1 p. 43: '100 nm') to verify icosphere.py radial shell cutoff R - 0.9 = 100 nm."
+  from_source: walker2025
+  from_datum: sim_surface_threshold_dist
+
+- id: paper_last_snapshots_count
+  quantity: count
+  unit: dimensionless
+  origin: reported
+  printed: "30"
+  citation:
+    none: "Copied stated last-5% snapshot count from walker2025/sim_last_snapshots_count (Fig. 4K, 5D, S5E, S6D/G, S7E-G captions) to compare against actual snapshot count averaged in Figures.ipynb Cell 13 (601 snapshots due to len(Row1) bug)."
+  from_source: walker2025
+  from_datum: sim_last_snapshots_count
+
+- id: paper_replicates_bivalent
+  quantity: count
+  unit: dimensionless
+  origin: reported
+  printed: "10"
+  citation:
+    none: "Copied stated replicate count from walker2025/sim_replicates_bivalent (Fig. 4J-K caption p. 8) to compare against replicates actually plotted by Figures.ipynb Cells 4 & 8 (5 replicates)."
+  from_source: walker2025
+  from_datum: sim_replicates_bivalent

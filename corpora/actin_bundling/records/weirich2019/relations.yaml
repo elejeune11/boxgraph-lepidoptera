@@ -1,0 +1,460 @@
+# ==========================================================================
+# Within-paper model relations stated by Weirich et al. (2019)
+# ==========================================================================
+
+- id: rel_aspect_ratio_axes_same_as_angle
+  kind: same_as
+  a: weirich2019/tactoid_aspect_ratio_angle
+  b: weirich2019/tactoid_aspect_ratio_from_axes
+  mapping:
+    L_D: "R * sin(alpha)"
+    L_y: "R * (1 - cos(alpha))"
+  output_map:
+    AR: AR
+  regime:
+    R: [1.0, 10.0]
+    alpha: [0.1, 1.5]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "also the tip angle of the tactoid and determines its aspect ratio = cot(α/2)"
+    where: "SI Theory 2"
+  assumptions:
+    - "Circular-arc bipolar tactoid has semi-major axis L_D = R*sin(alpha) and semi-minor axis L_y = R*(1 - cos(alpha))."
+
+- id: rel_director_arc_reduces_to_small_x_bdy
+  kind: reduces_to
+  a: weirich2019/bipolar_director_arc
+  b: weirich2019/bipolar_director_small_x_boundary
+  mapping:
+    x: "x"
+    L_D: "L_D"
+    alpha: "2 * atan(y / L_D)"
+  output_map:
+    sin_alpha_d: sin_alpha_d
+  regime:
+    x: [0.001, 0.1]
+    y: [0.3, 2.0]
+    L_D: [2.0, 6.0]
+  limit:
+    x: "0"
+  provenance: stated
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "with large y, the angle goes as sin(αd ) ∼ x/LD sin(α), as seen from Eq. 2"
+    where: "SI Theory 2"
+  assumptions:
+    - "Evaluated on the midplane tactoid boundary y = L_D * tan(alpha / 2) in the limit x -> 0."
+
+- id: rel_eq3_exact_reduces_to_eq4
+  kind: reduces_to
+  a: weirich2019/rod_centering_energy_integral
+  b: weirich2019/rod_centering_energy_eq4
+  mapping:
+    F_0: "1000 * f_0 * y_c"
+    x_c: "x_c"
+    L_D: "L_D"
+    L_M: "L_M"
+  output_map:
+    Delta_F_over_F0: Delta_F_over_F0
+  regime:
+    f_0: [0.02, 0.2]
+    x_c: [0.2, 1.5]
+    y_c: [0.001, 0.1]
+    L_D: [3.0, 5.0]
+    L_M: [0.4, 1.2]
+  limit:
+    y_c: "0"
+  provenance: stated
+  tolerance: 1.0e-3
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "In the second step above, we used a small y approximation to derive"
+    where: "SI Theory 2, Eqs. 3-4"
+  assumptions:
+    - "Tests that exact Eq. 3 LHS reduces to piecewise Eq. 4 with F_0 = f_0 * y_c as y_c -> 0."
+
+- id: rel_eq3_exact_reduces_to_small_y_printed
+  kind: reduces_to
+  a: weirich2019/rod_centering_energy_integral
+  b: weirich2019/rod_centering_energy_small_y_printed
+  mapping:
+    f_0: "f_0"
+    x_c: "x_c"
+    y_c: "y_c"
+    L_D: "L_D"
+    L_M: "L_M"
+  output_map:
+    Delta_F_over_F0: Delta_F_over_F0
+  regime:
+    f_0: [0.02, 0.2]
+    x_c: [0.2, 1.5]
+    y_c: [0.001, 0.1]
+    L_D: [3.0, 5.0]
+    L_M: [0.4, 1.2]
+  limit:
+    y_c: "0"
+  provenance: stated
+  tolerance: 1.0e-3
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "In the second step above, we used a small y approximation to derive"
+    where: "SI Theory 2, Eq. 3"
+  assumptions:
+    - "Tests the paper's printed Eq. 3 small-y step; expected to fail by a factor of 2 because printed Eq. 3 RHS drops the factor of 2 from expanding Eq. 2."
+
+- id: rel_eq3_exact_reduces_to_small_y_corrected
+  kind: reduces_to
+  a: weirich2019/rod_centering_energy_integral
+  b: weirich2019/rod_centering_energy_small_y_corrected
+  mapping:
+    f_0: "f_0"
+    x_c: "x_c"
+    y_c: "y_c"
+    L_D: "L_D"
+    L_M: "L_M"
+  output_map:
+    Delta_F_over_F0: Delta_F_over_F0
+  regime:
+    f_0: [0.02, 0.2]
+    x_c: [0.2, 1.5]
+    y_c: [0.001, 0.1]
+    L_D: [3.0, 5.0]
+    L_M: [0.4, 1.2]
+  limit:
+    y_c: "0"
+  provenance: stated
+  tolerance: 1.0e-3
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "In the second step above, we used a small y approximation to derive"
+    where: "SI Theory 2, Eq. 3 (corrected variant)"
+  assumptions:
+    - "Tests that restoring the factor of 2 in Eq. 3 RHS matches the exact y_c -> 0 limit of Eq. 3 LHS."
+
+- id: rel_eq3_small_y_printed_same_as_eq4
+  kind: same_as
+  a: weirich2019/rod_centering_energy_small_y_printed
+  b: weirich2019/rod_centering_energy_eq4
+  mapping:
+    F_0: "1000 * f_0 * y_c"
+    x_c: "x_c"
+    L_D: "L_D"
+    L_M: "L_M"
+  output_map:
+    Delta_F_over_F0: Delta_F_over_F0
+  regime:
+    f_0: [0.02, 0.2]
+    x_c: [0.2, 1.5]
+    y_c: [0.1, 1.0]
+    L_D: [3.0, 5.0]
+    L_M: [0.4, 1.2]
+  provenance: stated
+  tolerance: 1.0e-4
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "The total free energy of the rod through the misalignment with the director lines"
+    where: "SI Theory 2, Eqs. 3-4"
+  assumptions:
+    - "Tests whether literal Eq. 3 RHS evaluates to Eq. 4; expected to fail by a factor of 2."
+
+- id: rel_eq3_small_y_corrected_same_as_eq4
+  kind: same_as
+  a: weirich2019/rod_centering_energy_small_y_corrected
+  b: weirich2019/rod_centering_energy_eq4
+  mapping:
+    F_0: "1000 * f_0 * y_c"
+    x_c: "x_c"
+    L_D: "L_D"
+    L_M: "L_M"
+  output_map:
+    Delta_F_over_F0: Delta_F_over_F0
+  regime:
+    f_0: [0.02, 0.2]
+    x_c: [0.2, 1.5]
+    y_c: [0.1, 1.0]
+    L_D: [3.0, 5.0]
+    L_M: [0.4, 1.2]
+  provenance: stated
+  tolerance: 1.0e-4
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "The total free energy of the rod through the misalignment with the director lines"
+    where: "SI Theory 2, Eqs. 3-4 (corrected variant)"
+  assumptions:
+    - "Tests exact agreement between corrected Eq. 3 RHS (with factor of 2) and Eq. 4."
+
+- id: rel_eq4_velocity_reduces_to_harmonic
+  kind: reduces_to
+  a: weirich2019/rod_centering_force_velocity
+  b: weirich2019/centering_kinetics_force_balance
+  mapping:
+    k: "16 * (F_0 / 1000) * (L_M**2 + 4 * L_D**2) / (L_M**2 - 4 * L_D**2)**2"
+    Gamma: "Gamma"
+    d: "x_c"
+  output_map:
+    v: v
+  regime:
+    F_0: [10.0, 100.0]
+    x_c: [0.001, 0.1]
+    L_D: [3.0, 6.0]
+    L_M: [0.4, 1.5]
+    Gamma: [5.0, 30.0]
+  limit:
+    x_c: "0"
+  provenance: stated
+  tolerance: 1.0e-3
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "This force balance relation is, kd = Γv, where k is the harmonic"
+    where: "SI Theory 2, Eq. 5 & overdamped velocity"
+  assumptions:
+    - "Small-displacement harmonic limit x_c -> 0 of Eq. 4 overdamped centering velocity matches v = (k / Gamma) * d with Eq. 5 spring constant k."
+
+- id: rel_eq5_scales_as_LD_inv2
+  kind: scales_as
+  a: weirich2019/rod_centering_spring_constant
+  b: weirich2019/rod_centering_spring_scaling
+  mapping:
+    F_0: "F_0"
+    L_D: "L_D"
+  output_map:
+    k: k
+  regime:
+    F_0: [10.0, 100.0]
+    L_D: [15.0, 60.0]
+    L_M: [0.2, 0.5]
+  provenance: stated
+  tolerance: 0.01
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "This maybe seen through Eq. 5 which for LD LM , suggests k ∼ L−2"
+    where: "SI Theory 2, Eq. 5"
+  assumptions:
+    - "Large-tactoid regime L_D >> L_M where Eq. 5 scales as k = 4*F_0 / L_D^2."
+
+- id: rel_eq6_vol_scales_as_small_alpha
+  kind: scales_as
+  a: weirich2019/bipolar_tactoid_geometry_eq6
+  b: weirich2019/bipolar_tactoid_small_alpha_scaling
+  mapping:
+    K: "K"
+    gamma: "gamma"
+    R: "R"
+    alpha: "alpha"
+  output_map:
+    V: V
+  regime:
+    K: [0.5, 2.0]
+    gamma: [100.0, 500.0]
+    R: [2.0, 10.0]
+    alpha: [0.02, 0.08]
+  provenance: stated
+  tolerance: 0.01
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "constant V ∼ R3α5 . The free energy for a small angle tactoid"
+    where: "SI Theory 3"
+  assumptions:
+    - "Small tip-angle expansion v(alpha) = (4*pi/15)*alpha^5 + O(alpha^7) yields V ~ R^3 * alpha^5."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with weirich2017 (same authors; actin tactoids)
+# Note: bois2011 and hannezo2015 were also audited against weirich2019 and share
+# 0 genuine mathematical model relations (active cortical gel patterning PDEs vs
+# nematic tactoid equilibrium geometry, rod centering, and colloid-induced division).
+# ==========================================================================
+
+- id: rel_weirich2017_tactoid_volume_same_as_eq6
+  kind: same_as
+  a: weirich2019/bipolar_tactoid_geometry_eq6
+  b: weirich2017/tactoid_geometry_circular_arc
+  mapping:
+    R: "R"
+    alpha: "alpha"
+  output_map:
+    V: V
+  regime:
+    K: [0.5, 2.0]
+    gamma: [100.0, 500.0]
+    R: [1.0, 10.0]
+    alpha: [0.1, 1.5]
+  provenance: proposed
+  reason: >
+    Both Weirich et al. (2017) (SI p. 8, homogeneous nematic tactoid) and Weirich et al. (2019)
+    (SI p. 11, Eq. 6, bipolar nematic tactoid) parameterize the spindle droplet as the identical
+    solid of revolution of a circular arc of radius R and half-opening (tip) angle alpha
+    (following Kaznacheev et al. 2002 and Prinsen & van der Schoot 2003), yielding the exact
+    same volume formula V(R, alpha) = 2*pi*R^3*(sin(alpha) - alpha*cos(alpha) - (1/3)*sin^3(alpha)).
+  assumptions:
+    - "Arc radius R [um] and half-opening/tip angle alpha [rad] represent the same circular-arc spindle parameterization in both records."
+
+- id: rel_weirich2017_tactoid_ar_same_as_angle
+  kind: same_as
+  a: weirich2019/tactoid_aspect_ratio_angle
+  b: weirich2017/tactoid_geometry_circular_arc
+  mapping:
+    R: "R"
+    alpha: "alpha"
+  output_map:
+    aspect_ratio: AR
+  regime:
+    R: [1.0, 10.0]
+    alpha: [0.1, 1.5]
+  provenance: proposed
+  reason: >
+    Both papers express the circular-arc tactoid aspect ratio identically as a function of tip
+    angle alpha: Weirich et al. (2019) (SI p. 9) writes AR = cot(alpha/2) = L_D/L_y using
+    semi-axes L_D = R*sin(alpha), L_y = R*(1 - cos(alpha)), while Weirich et al. (2017)
+    (SI p. 8, Fig. S2B) writes L/r = sin(alpha)/(1 - cos(alpha)) using full axes L = 2*R*sin(alpha),
+    r = 2*R*(1 - cos(alpha)); the factor of 2 cancels and sin(alpha)/(1 - cos(alpha)) = cot(alpha/2)
+    identically.
+  assumptions:
+    - "Identical circular-arc geometry (R, alpha) with L = 2*L_D and r = 2*L_y."
+
+- id: rel_weirich2019_eq6_Fbare_reduces_to_weirich2017_iso
+  kind: reduces_to
+  a: weirich2019/bipolar_tactoid_geometry_eq6
+  b: weirich2017/tactoid_free_energy
+  mapping:
+    R: "R"
+    alpha: "alpha"
+    gamma_I: "gamma"
+    gamma_A: "0"
+  output_map:
+    F: F_bare
+  regime:
+    K: [0.5, 2.0]
+    gamma: [100.0, 500.0]
+    R: [1.0, 10.0]
+    alpha: [0.1, 1.5]
+  limit:
+    K: "0"
+  provenance: proposed
+  reason: >
+    In the zero-elasticity (surface-tension-dominated, R >> K/gamma) limit K -> 0, the bare
+    bipolar tactoid free energy F_bare = K*R*f_el(alpha) + gamma*R^2*f_s(alpha) of Weirich et al.
+    (2019) Eq. 6 (w = 0) reduces identically to the isotropic-anchoring slice (gamma_A = 0) of
+    Weirich et al. (2017)'s homogeneous tactoid free energy F = gamma_I*A(R, alpha) + gamma_A*A_omega(R, alpha),
+    because both models share the exact circular-arc isotropic surface energy
+    4*pi*gamma*R^2*(sin(alpha) - alpha*cos(alpha)).
+  assumptions:
+    - "Vanishing bulk Frank elastic constant K -> 0 removes the bipolar elastic term K*R*f_el(alpha)."
+    - "Weirich et al. (2017) free energy is evaluated on its isotropic-tension slice gamma_A = 0 (omega = 0)."
+
+- id: rel_weirich2017_tactoid_F_reduces_to_weirich2019_eq6_Fs
+  kind: reduces_to
+  a: weirich2017/tactoid_free_energy
+  b: weirich2019/bipolar_tactoid_geometry_eq6
+  mapping:
+    K: "1.0"
+    gamma: "gamma_I"
+    R: "R"
+    alpha: "alpha"
+  output_map:
+    F_s: F
+  regime:
+    R: [1.0, 10.0]
+    alpha: [0.1, 1.5]
+    gamma_I: [100.0, 500.0]
+    gamma_A: [100.0, 1000.0]
+  limit:
+    gamma_A: "0"
+  provenance: proposed
+  reason: >
+    Converse limit of the shared circular-arc interfacial free energy: as the anisotropic surface
+    anchoring energy gamma_A -> 0, Weirich et al. (2017)'s homogeneous tactoid free energy
+    F = gamma_I*A(R, alpha) + gamma_A*A_omega(R, alpha) reduces identically to the interfacial
+    energy component F_s = gamma*R^2*f_s(alpha) of Weirich et al. (2019) Eq. 6.
+  assumptions:
+    - "Vanishing anisotropic anchoring gamma_A -> 0 removes the Rapini-Papoular surface term gamma_A*A_omega."
+    - "Output F_s of bipolar_tactoid_geometry_eq6 is independent of K (set to nominal 1.0 pN)."
+
+- id: rel_weirich2017_tactoid_vol_scales_small_alpha
+  kind: scales_as
+  a: weirich2017/tactoid_geometry_circular_arc
+  b: weirich2019/bipolar_tactoid_small_alpha_scaling
+  mapping:
+    K: "1.0"
+    gamma: "300.0"
+    R: "R"
+    alpha: "alpha"
+  output_map:
+    V: V
+  regime:
+    R: [2.0, 10.0]
+    alpha: [0.02, 0.08]
+  provenance: proposed
+  reason: >
+    In the elongated small-tip-angle regime (alpha << 1), Weirich et al. (2017)'s exact circular-arc
+    volume V = 2*pi*R^3*(sin(alpha) - alpha*cos(alpha) - (1/3)*sin^3(alpha)) expands as
+    (4*pi/15)*R^3*alpha^5 + O(alpha^7), matching the V ~ R^3*alpha^5 scaling law used in Weirich et al.
+    (2019) SI Theory 3 to derive the elongated bipolar tactoid free energy Eq. 8.
+  assumptions:
+    - "Small tip-angle regime alpha in [0.02, 0.08] rad where O(alpha^2) corrections to the alpha^5 log-slope are < 0.004."
+
+- id: rel_weirich2019_bipolar_eq_reduces_to_weirich2017_iso_sphere
+  kind: reduces_to
+  a: weirich2019/bipolar_tactoid_equilibrium_exact
+  b: weirich2017/tactoid_equilibrium_minimizer
+  mapping:
+    omega: "0"
+  output_map:
+    aspect_ratio: AR_eq
+  regime:
+    K: [0.5, 1.0]
+    gamma: [200.0, 500.0]
+    V: [10.0, 100.0]
+  limit:
+    K: "0"
+  provenance: proposed
+  reason: >
+    Although Weirich et al. (2019)'s fixed-volume bipolar tactoid minimizer predicts a
+    volume-dependent aspect ratio (decreasing with V) while Weirich et al. (2017)'s homogeneous
+    tactoid minimizer predicts a volume-independent aspect ratio controlled solely by omega = gamma_A/gamma_I,
+    both equilibrium shape models converge to the same isotropic spherical droplet (alpha_eq = pi/2,
+    AR = 1) when bulk elasticity vanishes (K -> 0, or equivalently V^(1/3) >> K/gamma) in the
+    bipolar model and anisotropic anchoring vanishes (omega = 0) in the homogeneous model.
+  assumptions:
+    - "Large-droplet / zero-elasticity limit K -> 0 at fixed (gamma, V) drives bipolar alpha_eq -> pi/2 and AR_eq -> 1."
+    - "Homogeneous equilibrium minimizer evaluated at omega = 0 (isotropic surface tension)."
+
+- id: rel_weirich2019_spherical_eq7_scales_weirich2017_iso_sphere
+  kind: scales_as
+  a: weirich2019/spherical_droplet_division_energy
+  b: weirich2017/tactoid_free_energy
+  mapping:
+    R: "a * V_ratio**(1/3)"
+    alpha: "pi/2"
+    gamma_I: "gamma"
+    gamma_A: "0"
+  output_map:
+    F: F_tot
+  regime:
+    W: [1.0e-7, 1.0e-6]
+    V_ratio: [1.0, 20.0]
+    f_V: [1.0e-9, 1.0e-8]
+    gamma: [100.0, 500.0]
+    a: [0.3, 1.5]
+  provenance: proposed
+  reason: >
+    In the undivided single-droplet (f_V -> 0), zero-colloid-adhesion (W -> 0) regime, Weirich et al.
+    (2019) Eq. 7 (F(R) ~ gamma*R^2 - w*a^2*(1 - a/sqrt(a^2+R^2))) reduces to gamma*a^2*V_ratio^(2/3)
+    = gamma*R^2, sharing identical log-slopes in surface tension (+1), colloid length scale (+2),
+    and volume ratio (+2/3) with Weirich et al. (2017)'s spherical (alpha = pi/2), isotropic
+    (gamma_A = 0) tactoid free energy 4*pi*gamma_I*R^2, differing only by the geometric factor 4*pi
+    omitted in Weirich et al. (2019) Eq. 7.
+  assumptions:
+    - "Undivided droplet (f_V <= 1e-8) and negligible adhesion (W <= 1e-6) isolate the bare spherical interfacial energy term of Eq. 7."
+    - "Spherical limit alpha = pi/2 and isotropic anchoring gamma_A = 0 in Weirich et al. (2017)'s tactoid free energy."
+

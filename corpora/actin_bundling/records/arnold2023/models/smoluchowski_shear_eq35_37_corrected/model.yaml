@@ -1,0 +1,61 @@
+id: smoluchowski_shear_eq35_37_corrected
+name: Smoluchowski domain growth in simple shear flow (corrected phi_A factor and positive log limit)
+role: model
+variant_of: smoluchowski_shear_eq35_37
+corrections:
+  - equation: "SI Eq. (35)"
+    change: "Restore area fraction phi_A and factor 1/16 (instead of pi/8): da/dt = (k_B*T*phi_A / (16*eta*a^2*ln(L/(2a)))) * (1 + C*Pe_c^(1/2))."
+    evidence: "Substituting constant area fraction phi_A = pi*a^2*n into SI Eq. (34) and dn/dt = -J (SI Eq. 19) cancels pi and introduces phi_A/2, giving k_B*T*phi_A/(16*eta) in exact agreement with passive SI Eq. (25) at Pe_c = 0; printed Eq. (35) drops phi_A/(2*pi)."
+  - equation: "SI Eq. (36)"
+    change: "Expand around the physical contact limit L/(2a) = 1 + epsilon (instead of L/a = 1 + epsilon), replacing negative ln(1/2) + epsilon < 0 with positive epsilon > 0 so m = k_B*T*phi_A / (16*eta*epsilon) > 0."
+    evidence: "For eps << 1, printed ln(1/2) + eps ≈ -0.693 < 0 makes m < 0 and causes finite-time collapse of a(t) to 0 in SI Eq. (37), contradicting positive domain growth in SI Eqs. (25), (38), and (39)."
+stated:
+  page: 13
+  printed_page: "SI-7"
+  quote: "The solution to Eq. 36 is"
+  where: "SI Sec. III.B.2 Eqs. (35)-(37)"
+equation: "da/dt = (m / a^2) * (1 + C * Pe_c^(1/2)); m = k_B*T*phi_A / (16*eta*epsilon); (2/(3*C_1^2))*[C_1*a^(3/2) - ln(1 + C_1*a^(3/2))] = C_0 + m*t"
+inputs:
+  T:
+    quantity: temperature
+    unit: K
+  eta:
+    quantity: solvent_viscosity
+    unit: Pa*s
+  phi_A:
+    quantity: domain_area_fraction
+    unit: dimensionless
+  gamma_dot:
+    quantity: shear_rate
+    unit: 1/s
+  C:
+    quantity: smoluchowski_matching_constant
+    unit: dimensionless
+  epsilon:
+    quantity: size_ratio_deviation
+    unit: dimensionless
+  a_0:
+    quantity: domain_size
+    unit: um
+  t:
+    quantity: time
+    unit: s
+outputs:
+  m:
+    quantity: smoluchowski_cubic_rate
+    unit: um^3/s
+  a:
+    quantity: domain_size
+    unit: um
+  da_dt:
+    quantity: domain_growth_rate
+    unit: um/s
+  C1_a_three_halves:
+    quantity: dimensionless_shear_domain_param
+    unit: dimensionless
+  alpha_eff:
+    quantity: coarsening_exponent
+    unit: dimensionless
+settings:
+  root_tol: 1.0e-11
+stochastic: false

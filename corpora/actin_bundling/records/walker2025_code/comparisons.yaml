@@ -1,0 +1,119 @@
+# =============================================================================
+# 1. Reproduction checks: live code models vs walker2025 printed claims/results
+# =============================================================================
+- id: cmp_icosphere_f4_monomers_vs_paper
+  purpose: reproduction
+  computed: ico_f4_n_monomers
+  printed: paper_icosphere_target_monomers
+  note: "Live icosphere.icosphere(4, 1.0) (5,120 faces, s_eq = 75.24 nm) spans 27.9 actin monomers at icosphere.py's 2.7 nm rise, disagreeing with Methods S1 p. 43's stated ~10 actin monomers."
+
+- id: cmp_icosphere_n3_monomers_vs_paper
+  purpose: reproduction
+  computed: ico_n3_n_monomers
+  printed: paper_icosphere_target_monomers
+  note: "Live icosphere.icosphere(3, 1.0) at Methods S1's stated subdivision depth 3 (1,280 faces, s_eq = 150.21 nm) spans 55.6 monomers, even further from ~10."
+
+- id: cmp_icosphere_shell_thickness_vs_paper
+  purpose: reproduction
+  computed: ico_shell_thickness_computed
+  printed: paper_surface_threshold_dist
+  note: "Verifies icosphere.py:224 radial shell cutoff (R_drop - 0.9 = 100 nm) matches Methods S1 p. 43's 100 nm surface threshold distance."
+
+- id: cmp_icosphere_interior_zero_occupancy
+  purpose: consistency
+  computed: ico_int_frac_occupied
+  printed: probe_zero_occupied_target_added
+  note: "Verifies live icosphere.generatedensityfield() assigns zero occupied triangles to a filament at r = 0.85 um (outside the 100 nm surface shell)."
+
+- id: cmp_multimer_topology_monomer_conservation
+  purpose: consistency
+  computed: topo_total_monomers
+  printed: probe_topology_monomer_sum_added
+  note: "Verifies live Main_Analyze_Trajectory.find_chains_rings_and_doubles() classifies 1 chain (4-mer) + 1 ring (3-mer) + 2 double-bonded dimers conserving all 11 monomers."
+
+- id: cmp_vaspprops_bug_2fil_count
+  purpose: consistency
+  computed: vaspprops_bug_nfpc_2
+  printed: probe_vaspprops_ncross_added
+  note: "Proves shipped Main_Analyze_Trajectory.getvaspprops() fails to count 100 2-filament crosslinkers (returns 0 in 2-fil and 100 in 4-fil due to enumerate(unique) tuple comparison bug)."
+
+- id: cmp_nb_fig5d_nsnaps_as_written_vs_paper
+  purpose: reproduction
+  computed: fig5d_r22_nsnaps_written
+  printed: paper_last_snapshots_count
+  note: "Live Figures.ipynb Cell 13 as written averages ALL 601 snapshots per replicate due to int(0.95*len(Row1)), directly contradicting Fig. 5D caption's claim of 'last 30 snapshots (5%)'."
+
+- id: cmp_nb_fig5d_nsnaps_last30_vs_paper
+  purpose: reproduction
+  computed: fig5d_r22_nsnaps_last30
+  printed: paper_last_snapshots_count
+  note: "Corrected last-30-snapshots variant of Figures.ipynb Cell 13 matches Fig. 5D caption's 30 snapshots per replicate and raises Dimer_2 at R_22 from 0.3461 to 0.6145."
+
+- id: cmp_nb_fig4j_replicates_vs_paper
+  purpose: reproduction
+  computed: fig4j_r22_reps_plotted
+  printed: paper_replicates_bivalent
+  note: "Live Figures.ipynb Cell 4 + Cell 8 only plot 5 replicates from outputfiles/ (ignoring outputfiles_2/), contradicting Fig. 4J caption's claim of 10 replicates per condition."
+
+- id: cmp_solid_stokes_D_vs_paper
+  purpose: reproduction
+  computed: solid_D_actual
+  printed: paper_crosslinker_diffusion_rate
+  note: "CytoSim Solid Stokes-Einstein diffusivity (0.01485 um^2/s at eta=0.5, r=30 nm, kT=0.0042) is 673x smaller than Table S1's claimed 10 um^2/s because Wrist ignores SingleProp::diffusion (wrist.cc:17-83)."
+
+- id: cmp_dimer_keff_vs_nominal_stiffness
+  purpose: consistency
+  computed: dimer_k_eff_computed
+  printed: cym_monomer_dimer_bond_stiffness
+  note: "Shows Wrist::setInteractions() (wrist.cc:134) double-counts dimerizer spring stiffness to 10.0 pN/um vs the configured SingleProp::stiffness = 5.0 pN/um (while Wrist::force() still uses 5.0 pN/um)."
+
+# =============================================================================
+# 2. Reproduction checks: .cym config derived quantities vs walker2025 Table S1
+# =============================================================================
+- id: cmp_cfg_total_time_baseline
+  purpose: reproduction
+  computed: cfg_T_sim_baseline
+  printed: paper_total_time
+  note: "Checks 300,000 steps x 0.002 s = 600 s against walker2025 Table S1."
+
+- id: cmp_cfg_total_time_high_visc
+  purpose: reproduction
+  computed: cfg_T_sim_high_visc
+  printed: paper_total_time_high_visc
+  note: "Checks Figure_S5B 1,200,000 steps x 0.002 s = 2,400 s against walker2025 Fig. S5B caption."
+
+- id: cmp_cfg_final_length_baseline
+  purpose: reproduction
+  computed: cfg_L_final_baseline
+  printed: paper_filament_max_length
+  note: "Checks L0 + k_grow*T_sim = 0.1 + 0.0103*600 = 6.280 um vs 2*pi = 6.283185 um (0.05% rounding from 3-sig-fig growing_speed)."
+
+- id: cmp_cfg_final_length_high_visc
+  purpose: reproduction
+  computed: cfg_L_final_high_visc
+  printed: paper_filament_max_length
+  note: "Checks Figure_S5B filament length saturates at max_length = 6.2832 um vs 2*pi = 6.283185 um."
+
+- id: cmp_cfg_dimer_conc_baseline
+  purpose: reproduction
+  computed: cfg_C_dimer_baseline
+  printed: paper_dimer_conc_baseline
+  note: "Checks new 1000 blob in R = 1.0 um sphere (0.3964 uM) against Table S1 0.40 uM."
+
+- id: cmp_cfg_monomer_conc_baseline
+  purpose: reproduction
+  computed: cfg_C_monomer_baseline
+  printed: paper_monomer_conc_baseline
+  note: "Checks new 2000 blob in R = 1.0 um sphere (0.7929 uM) against Table S1 0.79 uM."
+
+- id: cmp_cfg_vol_frac_sweep
+  purpose: reproduction
+  computed: cfg_vf_phi_curve
+  printed: paper_vol_frac_table
+  note: "Checks Figure_S5C-E copy-number endpoints N = 1,000 (2.7%) and N = 20,000 (54%) against walker2025 p. 10."
+
+- id: cmp_cfg_actin_Lp_cytosim
+  purpose: consistency
+  computed: cfg_Lp_actin_cytosim
+  printed: paper_actin_persistence_length
+  note: "Checks rigidity / kT = 0.075 / 0.0042 = 17.86 um at CytoSim default kT = 0.0042 pN*um lies inside walker2025's reported 10-20 um range."

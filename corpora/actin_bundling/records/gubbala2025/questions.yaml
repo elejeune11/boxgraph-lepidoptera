@@ -1289,3 +1289,360 @@
     P_kappa_fig4c_exp_{no_actin,low,high}. See nastkolb2022/q_gubbala2025_no_cross_validation for
     the complete Direction B item-by-item audit.
 
+- id: q_arnold2024_metric_shifts_and_laplace_bridge
+  kind: choice
+  about:
+    - boundary_curvature_s2
+    - boundary_curvature_s2_corrected
+    - structure_factor_domain_size_s1_s34
+    - coarsening_power_law
+    - elastic_free_energy_eq5
+    - anchoring_elastic_crossover
+    - actin_density_figS1_exp
+    - q_eqS2_curvature_denominator
+    - arnold2024/domain_curvature_spline
+    - arnold2024/structure_factor_eq5_pipeline
+    - arnold2024/mean_wavelength_from_k
+    - arnold2024/passive_coarsening_scaling
+    - arnold2024/actin_density
+    - arnold2024/modified_laplace_young_eq4
+    - arnold2024/actin_buckling_force_euler
+    - arnold2024/excess_perimeter_eq3
+  citation:
+    page: 5
+    printed_page: "6247"
+    quote: "size of domains over time and the distribution of domain"
+    where: "Sec. 3 (p. 5), Sec. 2.2 (p. 4), Sec. 3 (p. 6), & SI Sec. 2.1-2.3 (pp. 12-13)"
+  text: >
+    Cross-record ModelAtlas audit with arnold2024 (Arnold & Takatori, Langmuir 40:26570-26578,
+    2024; cited as ref-9 and ref-S6). Although gubbala2025 explicitly positions itself as the
+    theoretical phase-field interpretation of arnold2024 and compares against arnold2024's domain
+    size and curvature metrics (Sec. 3, p. 5), four methodological shifts and unmodeled links
+    emerge across the two records:
+    (1) Boundary curvature refutation and recovery: comparing gubbala2025's printed SI Eq. (S2)
+    (boundary_curvature_s2, missing squares in (x' + y')^(3/2)) directly against arnold2024's
+    periodic smoothing-spline div(n) curvature (arnold2024/domain_curvature_spline at aspect_ratio
+    = 1) refutes equivalence at all 40 sampled radii (median relative difference 9.45e-01;
+    rel_arnold2024_curvature_s2_printed_vs_spline_circle), whereas the corrected planar curvature
+    boundary_curvature_s2_corrected verifies reduces_to as aspect_ratio -> 1 to 8.5e-07
+    (rel_arnold2024_curvature_spline_reduces_to_s2_corrected).
+    (2) Static structure-factor definition shift: both papers compute domain length from the
+    inverse first moment of S(k) (verified L^(+1) and k^(-1) scaling via
+    rel_arnold2024_structure_factor_pipeline_scales_s1_R and
+    rel_arnold2024_structure_factor_s1_scales_mean_wavelength), but arnold2024 prints wavelength
+    a = 2*pi/<k> using unsquared S(n) = |FFT(n)| and a < 5 px wavelength cutoff (p. 4, Eq. 5;
+    arnold2024/q_structure_factor_unsquared_fft), whereas gubbala2025 defines R = 1/k_m (smaller
+    by 2*pi ~= 6.283 in absolute units, cancelling in Fig. 3's normalized R(t)/R_0) using standard
+    squared S(k) = <|phi_k|^2> and k_cut = 50*k_max (SI Eqs. S1 & S33-S34).
+    (3) Inherited actin density metric without printed formula: gubbala2025 p. 4 (citing ref-9)
+    and SI Sec. 2.1 p. 12 (citing ref-S6) adopt arnold2024/actin_density (rho = I_actin / A_Ld) to
+    classify its 5 experimental samples in Fig. S1 without writing an equation, inheriting
+    arnold2024/q_actin_density_mean_vs_total_intensity (dividing mean intensity rather than
+    integrated intensity by available Ld area).
+    (4) Qualitative Laplace-Young bridge and disjoint dynamics: gubbala2025 p. 6 invokes classical
+    Laplace-Young proportionality between curvature and excess elastic stress qualitatively
+    (citing refs. 8 & 22) without writing a Laplace-Young equation, so arnold2024's
+    modified_laplace_young_eq4 / effective_laplace_young have no non-tautological ModelAtlas
+    equation target in gubbala2025; likewise, arnold2024's DDM non-ergodic ISF / relaxation-time
+    models (ddm_image_structure_function_eq1*, ddm_isf_eq2, relaxation_speedup_ratio), discrete
+    bundle_filament_count, and cholesterol tracer models have no counterparts in gubbala2025's
+    continuum phase-field Model C.
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with arnold2024 (2026-11-25)
+# ---------------------------------------------------------------------------
+- id: q_arnold2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - coarsening_power_law
+    - model_c_pde_2d_eq9_10
+    - model_c_pde_2d_variational
+    - nondim_parameters_s32
+    - boundary_curvature_s2
+    - boundary_curvature_s2_corrected
+    - coupled_binodal_coexistence
+    - cahn_hilliard_free_energy_eq2
+    - ldg_bulk_free_energy_eq4
+    - ldg_bulk_free_energy_eq10_consistent
+    - elastic_free_energy_eq5
+    - anchoring_free_energy_eq7_s13
+    - nematic_q_tensor_eq3
+    - nematic_saturation_eq4_s5
+    - nematic_saturation_from_eq4_exact
+    - effective_line_tension_p3
+    - effective_line_tension_s13
+    - frank_elastic_constants_eq6
+    - frank_elastic_constants_2d
+    - elastic_ratio_bounds_p3
+    - elastic_ratio_bounds_eq6_corrected
+    - anchoring_elastic_crossover
+    - linear_stability_s24_s28
+    - linear_stability_s24_s28_corrected
+    - cubic_elastic_variational_sign_eq10
+    - structure_factor_domain_size_s1_s34
+    - R_ratio_low_exp_fig3_end
+    - R_ratio_high_exp_fig3_end
+    - R_ratio_fig3_exp_low
+    - R_ratio_fig3_exp_high
+    - R_ratio_fig3_inset_no_actin_exp
+    - R_ratio_figS2_exp_low
+    - R_ratio_figS2_exp_high
+    - P_kappa_fig4c_exp_no_actin
+    - P_kappa_fig4c_exp_low
+    - P_kappa_fig4c_exp_high
+    - actin_density_figS1_exp
+    - domain_size_no_actin
+    - actin_filament_length_exp
+    - coarsening_time_actin
+    - intermediate_time_start
+    - actin_unbinding_time
+    - q_arnold2024_metric_shifts_and_laplace_bridge
+    - arnold2024/passive_coarsening_scaling
+    - arnold2024/actin_buckling_force
+    - arnold2024/actin_buckling_force_euler
+    - arnold2024/bundle_filament_count
+    - arnold2024/domain_curvature_spline
+    - arnold2024/excess_perimeter_eq3
+    - arnold2024/modified_laplace_young_eq4
+    - arnold2024/effective_laplace_young
+    - arnold2024/actin_density
+    - arnold2024/ld_area_fraction
+    - arnold2024/ddm_isf_eq2
+    - arnold2024/relaxation_speedup_ratio
+    - arnold2024/structure_factor_eq5_pipeline
+    - arnold2024/mean_wavelength_from_k
+    - arnold2024/fig3c_domain_a_measured
+    - arnold2024/fig3c_actin_xi_measured
+    - arnold2024/fig2c_Lex_vs_rho_measured
+    - arnold2024/fig4b_phi_Lo_measured
+    - arnold2024/fig4b_actin_xi_measured
+    - arnold2024/fig4b_Lex_measured
+    - arnold2024/fig4c_tracer_variance_measured
+    - arnold2024/fig3b_isf_LoLd_measured
+    - arnold2024/fig3b_isf_Ld_measured
+    - arnold2024/tau_Ld_measured
+    - arnold2024/tau_LoLd_measured
+    - arnold2024/delta_k_mean_single_vs_two
+    - arnold2024/q_gubbala2025_no_cross_validation
+  citation:
+    page: 5
+    printed_page: "6247"
+    quote: "We compare the performance of our model against previously"
+    where: "Sec. 3 (p. 5 / 6247; bidirectional cross-validation audit with arnold2024)"
+  text: >
+    No direct cross-record validations are entered in validations.yaml between gubbala2025
+    (26 runnable models [82 output ports] and 16 origin: measured datums out of 121 total data
+    [7 scalars + 9 digitized figures]) and arnold2024 (21 runnable models [38 output ports] and
+    41 origin: measured datums out of 153 total data [25 scalars + 16 digitized figures]): 0
+    genuine executable CrossValidation entries exist in either direction across all
+    3,362 + 608 = 3,970 port-datum pairs (1,651 + 214 = 1,865 Pint dimension-matched,
+    1,711 + 394 = 2,105 dimension-mismatched). Despite sharing the same Takatori lab and
+    cushioned 45.7% DOPC / 35% DPPC / 15% chol / 4% DOTAP / 0.3% FITC SLB experimental
+    platform (gubbala2025 cites arnold2024 as ref-9 on pp. 1, 4, 5 and ref-S6 on SI p. 12),
+    direct CrossValidation is blocked in both directions by normalization/dimensionality
+    incompatibilities and disjoint measured observables:
+    (1) Direction A — gubbala2025 (26 runnable models, 82 ports) vs arnold2024 (41 origin:
+    measured datums; 3,362 pairs = 1,651 dim-matched [1,617 dimensionless + 28 [time] +
+    4 [length] + 2 1/[length]] + 1,711 dim-mismatched): 0 valid CrossValidation entries.
+    - Coarsening normalization barrier (coarsening_power_law.R_over_R0 and
+      model_c_pde_2d_{eq9_10,variational}.{alpha_fit, R_final, R_growth_ratio, Q_max_final}
+      vs arnold2024/fig3c_domain_a_measured): all gubbala2025 coarsening ports output
+      dimensionless normalized ratios R(t)/R_0, coarsening exponents alpha, or dimensionless
+      simulation-unit lengths (with unstated dimensional scales l_c, t_c), whereas
+      arnold2024/fig3c_domain_a_measured records unnormalized dimensional structure-factor
+      wavelength a(t) = 2*pi/<k> in um (2.684 to 3.800 um over 0-4000 s) and arnold2024 prints
+      no normalized a(t)/a(t_0) datum or fitted exponent alpha. Off-line diagnostic
+      normalization of arnold2024/fig3c_domain_a_measured at t_0 = 800 s (nearest digitized
+      point to gubbala2025's t_0 = 720 s) yields a(4000 s)/a(800 s) = 1.3381 — matching
+      gubbala2025's fig3_exp_low (1.3385 at 4000 s) and close to fig3_exp_high (1.3882) — with
+      log-log exponent alpha = 0.1881 over 800-4000 s (0.1822 over 600-4000 s; 0.1644 over
+      1400-4000 s), strictly below interface-driven alpha = 1/4 ((4000/800)^(1/4) = 1.495) and
+      passive alpha = 1/3 ((4000/800)^(1/3) = 1.710).
+    - 1/[length] pairs (2): boundary_curvature_s2{_corrected}.kappa_mean (circle boundary
+      curvature 1/R) is physically disjoint from arnold2024/delta_k_mean_single_vs_two
+      ('≈ 1' um^-1, DDM mean Fourier wave-vector shift); arnold2024 Fig. 2D curvature heatmaps
+      have no numeric scale or measured curvature datum.
+    - [length] & [time] pairs (4 + 28 = 32): nondim_parameters_s32.{l_c, t_Q, t_phi} requires
+      6 unmeasured dimensional PDE coefficients (M, Gamma, lambda_tilde, alpha, L_1, L_3) and
+      predicts microscopic interfacial width l_c and nematic relaxation time t_Q (~0.24 s from
+      Fig. S6's t_tilde_max = 30000 vs 7180 s), physically disjoint from arnold2024's
+      macroscopic wavelengths (a, xi, splatter size >100 um) and DDM network relaxation times
+      (tau_LoLd ≈ 1600 s, tau_Ld ≈ 4100 s) or assay duration/bleach markers.
+    - Remaining dimensionless pairs (1,617): coupled_binodal_coexistence outputs Cahn-Hilliard
+      double-well concentration roots (phi_Lo_eq = -1.193, phi_Ld_eq = +1.223), not geometric
+      Lo area fraction phi_Lo during cholesterol insertion (fig4b_phi_Lo_measured,
+      phi_Lo_{initial,peak}_p7); no gubbala2025 model predicts arnold2024's excess perimeter
+      L_ex (fig2c_Lex_vs_rho_measured, fig4b_Lex_measured, fig_s2_lex_range_*), DDM ISF /
+      image structure functions (fig3b_isf_*, figs3_*, relaxation_speedup_intro), tracer MSD
+      variance (fig4c_tracer_variance_measured, [length]^2, dim-mismatched), or sample counts.
+    (2) Direction B — arnold2024 (21 runnable models, 38 ports) vs gubbala2025 (16 origin:
+    measured datums; 608 pairs = 214 dim-matched [198 dimensionless + 10 [length] + 6 [time]] +
+    394 dim-mismatched): 0 valid CrossValidation entries.
+    - Passive coarsening scaling barrier: arnold2024/passive_coarsening_scaling (a ~ t^(1/3),
+      prefactor: unknown) declares output unit um ([length]), so it cannot be converted to
+      gubbala2025's 7 dimensionless normalized R(t)/R_0 coarsening measurements
+      (R_ratio_fig3_inset_no_actin_exp, R_ratio_fig3_exp_{low,high}, R_ratio_figS2_exp_{low,high},
+      R_ratio_{low,high}_exp_fig3_end; note gubbala2025's own cmp_powerlaw_fig3_inset_exp_curve
+      already tests (t/t_0)^(1/3) directly on the no-actin inset, yielding verdict close).
+      Against gubbala2025's sole dimensional domain-size scalar domain_size_no_actin
+      ('≈ 1 to 10' um over 'a few minutes'), no elapsed time t is specified and a single
+      approximate range datum leaves nothing to judge (no_verdict) for prefactor: unknown.
+    - Other [length] / [time] / dimensionless / mismatched ports: actin_buckling_force{_euler}
+      (F_b [pN]) has 0 force targets in gubbala2025 (gubbala2025/actin_filament_length_exp
+      '3 to 5' um is an input implying F_b = 0.079-0.219 pN vs 1.97 pN at L = 1 um, not a
+      measured force); domain_curvature_spline outputs single-ellipse scalar metrics
+      (kappa_mean, kappa_max, kappa_norm_min), not Fig. 4C boundary curvature probability
+      densities P_kappa_fig4c_exp_{no_actin,low,high}; excess_perimeter_eq3,
+      modified_laplace_young_eq4, effective_laplace_young, bundle_filament_count, ddm_*,
+      relaxation_speedup_ratio, ld_area_fraction, tracer_*, and structure-factor models have
+      0 corresponding measured targets in gubbala2025 (actin_density_figS1_exp gives only
+      normalized rho/rho_max without raw I_actin or A_Ld). See
+      arnold2024/q_gubbala2025_no_cross_validation for the companion audit.
+
+# ---------------------------------------------------------------------------
+# Cross-record SI error provenance & ModelAtlas audit with arnold2023 (2026-11-25)
+# ---------------------------------------------------------------------------
+- id: q_arnold2023_si_error_provenance
+  kind: possible_error
+  about:
+    - model_c_pde_2d_eq9_10
+    - adaptive_dt_tol
+    - guv_si_DPPC_pct
+    - guv_alt_DOPC_pct
+    - guv_alt_DPPC_pct
+    - guv_alt_DOTAP_pct
+    - structure_factor_domain_size_s1_s34
+    - q_experimental_discrepancies_main_vs_si
+    - q_si_methods_active_copy_paste
+    - q_eqS29_S31_phi2_kappa_typos
+    - q_audit_si_sec4_imex_prose_and_dt_exponent
+    - ref-8
+    - arnold2023/q_si_actin_lo_phase_misprint
+    - arnold2023/q_si_low_composition_missing_cholesterol
+    - arnold2023/q_adaptive_dt_formula_error
+    - arnold2023/q_sim_time_units_noise_and_sign_convention
+  citation:
+    page: 11
+    printed_page: "SI-2"
+    quote: "An additional set of vesicles was formed using"
+    where: "SI Sec. 1.2-1.5 (pp. 11-12 / SI-2 to SI-3), Sec. 2.2 (p. 12 / SI-3), & Sec. 4 (p. 16 / SI-7) vs arnold2023 SI Sec. II & IV (pp. 8, 14)"
+  text: >
+    Cross-record provenance audit between gubbala2025 and arnold2023 (Arnold, Gubbala & Takatori,
+    Phys. Rev. Lett. 131:128402, 2023; cited as ref-8 on p. 1, same lab) resolves
+    q_si_methods_active_copy_paste by establishing direct verbatim/structural copy-paste from
+    arnold2023's Supplemental Material into gubbala2025's ESI as the exact source of three major
+    shared SI errors (plus two additional SI notation/terminology carryovers):
+    (1) Shared SI Error 1 — F-actin adsorbs to "liquid-ordered" (Lo) phase instead of Ld:
+    arnold2023 SI Sec. II.E (PDF p. 8 / SI-2; arnold2023/q_si_actin_lo_phase_misprint) prints
+    "F-actin spontaneously adsorbed to the liquid-ordered phase of lipid bilayer via electrostatic
+    attraction to DOTAP [5]. Unbound actin was washed from the cover slip with A-buffer."
+    gubbala2025 SI Sec. 1.5 (PDF p. 12 / SI-3; q_experimental_discrepancies_main_vs_si) reproduces
+    this sentence word-for-word (even retaining the missing article "of lipid bilayer", renumbering
+    only [5] -> [4], both Schroer et al. PNAS 2020), directly contradicting both papers' main texts
+    where DOTAP and F-actin partition into the Ld phase (and contrasting with the intervening
+    arnold2024 Methods p. 2, which fixed the sentence to "sequesters into the Ld phase").
+    (2) Shared SI Error 2 — 86.0%-sum second GUV lipid recipe omitting cholesterol (and orphaned
+    active-matter methods text): arnold2023 SI Sec. II.C (PDF p. 8 / SI-2;
+    arnold2023/q_si_low_composition_missing_cholesterol) prints "An additional set of vesicles was
+    formed using 52.7% DOPC, 24.7% DPPC, 8% DOTAP, 0.3% DSPE-PEG2k-FITC, and 0.3% ATTO 647-DOPE,
+    to achieve the lowest area fraction sampled amongst the active samples." (summing to 86.0%,
+    omitting 15% cholesterol printed in arnold2023 Fig. S1 for its active phi_A = 0.21 sample).
+    gubbala2025 SI Sec. 1.3 (PDF p. 11 / SI-2; q_experimental_discrepancies_main_vs_si &
+    q_si_methods_active_copy_paste) copies this entire sentence verbatim — including the 86.0%
+    cholesterol-omitted recipe AND the phrase "amongst the active samples", even though gubbala2025
+    contains zero active myosin experiments. Likewise, gubbala2025 SI Sec. 1.3 retains arnold2023's
+    34.7% DPPC + 0.3% ATTO 647-DOPE in the primary recipe while updating only DOPC/DOTAP from
+    44.7%/5% to 45.7%/4% (causing the mismatch with gubbala2025 main text p. 4's 35% DPPC and no
+    ATTO 647-DOPE), and gubbala2025 SI Sec. 1.2 retains the orphaned heading "Actin and myosin
+    preparation" after deleting arnold2023's myosin II paragraph and SI Ref. [3] (Margossian &
+    Lowey 1982), which shifts arnold2023 SI Refs. [1]-[2], [4]-[6] verbatim into gubbala2025 SI
+    Refs. [1]-[5] in identical order.
+    (3) Shared SI Error 3 — Adaptive time-step formula dt_new = (tau / Delta)^(1/5) omitting dt_old
+    and applying a 4th-order 1/5 exponent to a 1st-order forward-Euler IMEX stepper: arnold2023 SI
+    Sec. IV (PDF p. 14 / SI-8; arnold2023/q_adaptive_dt_formula_error) prints
+    dt_new = [tol / (phi(t; dt) - phi(t; dt/2))]^(1/5) with tol = 10^-4 for its 1st-order forward-
+    difference IMEX Eq. (46). gubbala2025 SI Sec. 4 (PDF p. 16 / SI-7; q_eqS29_S31_phi2_kappa_typos
+    & q_audit_si_sec4_imex_prose_and_dt_exponent) generalizes the denominator to the scalarized
+    geometric mean Delta = (Delta_phi * Delta_Qxx * Delta_Qxy)^(1/3) with Delta_X = |X(t; dt_old) -
+    X(t; dt_old/2)| and tightens printed tau to 10^-6 (while released gubbala_code still defaults
+    to TOL = 1e-4, matching arnold2023's tol = 10^-4), yet preserves both the omitted multiplying
+    factor dt_old (dimensional inconsistency) and the mismatched 1/5 exponent (4th-order O(dt^5)
+    local error instead of 1st-order forward-Euler O(dt^2) exponent 1/2).
+    (4) Two additional SI notation/terminology carryovers from arnold2023: (a) gubbala2025 SI
+    Sec. 4 Eqs. (S29) and (S31) (p. 16 / SI-7) abruptly replace dimensionless line tension lambda
+    with the undefined symbol kappa (+kappa*k^2*phi_k and 1 + (gamma*kappa*k^4 + k^6)*dt), tracing
+    directly to arnold2023 SI Eq. (46)'s -M*kappa*k^4*phi_k; and (b) gubbala2025 SI Sec. 2.2
+    (p. 12 / SI-3) copies arnold2023 SI Sec. IV.A (p. 14 / SI-8)'s misnomer calling the cutoff
+    wavenumber k_cut the "cut-off wavelength" (k_cut = 50 x k_max vs. k_cut = 2*k_max).
+
+- id: q_arnold2023_modelatlas_and_pde_synthesis
+  kind: reading
+  about:
+    - cahn_hilliard_free_energy_eq2
+    - nondim_parameters_s32
+    - linear_stability_s24_s28_corrected
+    - model_c_pde_2d_eq9_10
+    - model_c_pde_2d_variational
+    - coarsening_power_law
+    - structure_factor_domain_size_s1_s34
+    - ref-8
+    - ref-54
+    - arnold2023/cahn_hilliard_2d_pde
+    - arnold2023/cahn_hilliard_scales_peclet
+    - arnold2023/cahn_hilliard_linear_shear_eq45
+    - arnold2023/structure_factor_first_moment_eq47
+    - arnold2023/domain_growth_power_law_scaling
+    - arnold2023/domain_growth_power_law_shift
+    - arnold2023/lifshitz_slyozov_2d_asymptotic_eq11
+  citation:
+    page: 1
+    printed_page: "6243"
+    quote: "motion of the actin filaments can accelerate the coarsening"
+    where: "Intro p. 1 (ref-8), Sec. 2.1 Eqs. (2), (8)-(9) (pp. 2-3), & SI Sec. 2.2, 3.2-3.3, 4 vs arnold2023"
+  text: >
+    Cross-record ModelAtlas synthesis between gubbala2025 (26 runnable models) and arnold2023 (16
+    scalar runnable models + 4 curve-port models + 1 non-runnable PIV model; same Takatori lab,
+    gubbala2025 cites arnold2023 as ref-8 on p. 1 and shares 11 bibliographic references including
+    Veatch & Keller 2003, Stanich et al. 2013, Bray & Emmott 1995 [ref-54 <-> ref-S8], and SI
+    Refs. [1]-[5] <-> [1]-[2],[4]-[6]). Seven proposed relations in gubbala2025/relations.yaml
+    connect the shared Cahn-Hilliard scaling, power-law, Ostwald-ripening, and linear-CH
+    submodels (6 verified, 1 diagnostic not_verified active-vs-hindered contrast), while four
+    structural/analytical links cannot be expressed as direct scalar ModelAtlas relations without
+    altering existing models:
+    (1) Exact passive Cahn-Hilliard PDE & free-energy reduction: gubbala2025 Eq. (2) / SI Eq. (S17)
+    uses the identical double-well potential f_phi = phi^4/4 - phi^2/2 + (lambda_tilde/2)|grad phi|^2
+    and conserved mobility equation d_t phi = M*grad^2(phi^3 - phi - lambda_tilde*grad^2 phi) as
+    arnold2023 Eq. (1) / SI Eq. (46) in the actin-free decoupled limit (Q = 0, alpha = 0) and
+    zero-flow limit (v = 0), with lambda_tilde <-> kappa (verified at the scale level via
+    rel_arnold2023_nondim_lc_scales_ch_lc and rel_arnold2023_nondim_tphi_scales_ch_tc, while
+    dimensionless ratios gamma = t_Q/t_phi = M/(lambda_tilde*Gamma) and Pe = t_c/t_flow =
+    gamma_dot*kappa/M are exact reciprocals under Gamma <-> gamma_dot). Direct ModelAtlas execution
+    between the two stochastic 2D PDE models (model_c_pde_2d_{eq9_10,variational} vs.
+    arnold2023/cahn_hilliard_2d_pde) is excluded because both hardcode incompatible solver settings
+    (N = 64, L_box = 62.5, dt = 0.4 with k^6 damping vs. N = 128, dt = 0.05, t_end = 50.0) and
+    taking beta -> inf to suppress |Q| = 1/sqrt(beta) -> 0 causes explicit-Euler blowup in
+    model_c_pde_2d_* at fixed dt = 0.4; arnold2023 also has no standalone scalar model for Eq. (2)'s
+    free-energy density f_phi.
+    (2) Exact passive linear-stability dispersion match: gubbala2025 SI Eq. (S27) diagonal decay
+    rate omega_phi = gamma*k^2*[2 + (1 + 3*chi/2)*kx^2 + (1 - chi/2)*ky^2] reduces at chi = 0,
+    gamma = 1 to omega_phi(k) = 2*k^2 + k^4, matching minus arnold2023 SI Eq. (42)'s linearized
+    passive growth rate [(1 - 3*phi_0^2)*k^2 - k^4] evaluated at the equilibrium binodal phi_0 =
+    +/- 1 (where 1 - 3*phi_0^2 = -2). Because arnold2023/cahn_hilliard_linear_shear_eq45 integrates
+    over all k to output a_rad(t) rather than exporting single-k dispersion omega(k), no direct
+    linear-dispersion relation exists between the two records.
+    (3) Structure-factor first-moment metric (curve-port boundary): gubbala2025 SI Eq. (S1)
+    R(t) = (int_0^{k_cut} S(k, t) dk)/(int_0^{k_cut} k S(k, t) dk) is mathematically identical in
+    functional form to arnold2023 SI Eq. (47) a(t) = (int_{k_min}^{2*k_max} S(k, t) dk)/(int k S dk)
+    (both using squared S(k) = <phi_k phi_{-k}> without arnold2024's 2*pi factor or unsquared
+    |FFT|), differing only in raising the high-k cutoff from k_cut = 2*k_max (arnold2023) to
+    k_cut = 50*k_max (gubbala2025) and normalizing S(k) by N^2*Var(phi) in Eq. (S33). Because
+    arnold2023/structure_factor_first_moment_eq47 takes a curve input port (S_k), ModelAtlas skips
+    direct testing against gubbala2025/structure_factor_domain_size_s1_s34 per record_guide.md.
+    (4) Opposing actin coarsening regimes on the same bilayer: active myosin II flows in arnold2023
+    accelerate coarsening above the shared t^(1/3) passive baseline to alpha = 2/3 (0.59-0.74 exp),
+    whereas passive nematic F-actin elasticity in gubbala2025 suppresses coarsening below t^(1/3)
+    to alpha <= 1/4 (quantified via rel_arnold2023_active_vs_gubbala_hindered_contrast).
+
+
+
+

@@ -1,0 +1,104 @@
+# 1D nonlinear active nematic PDE (Eqs. B1-B4) refinements: dt and N_grid
+- id: ref_pde1d_a_dt_rhomax
+  run: run_pde_1d_fig4s1_a
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: rho_max
+  tolerance: "1%"
+  tolerance_basis: "added: tight temporal convergence criterion for peak density rho_max in Fig. 4—figure supplement 1a"
+  tolerance_added: true
+
+- id: ref_pde1d_a_dt_sdiff
+  run: run_pde_1d_fig4s1_a
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: sigma_diff_peak_over_lam
+  tolerance: "2%"
+  tolerance_basis: "added: verifies temporal convergence of contractile tension excess (sigma_par - sigma_perp)/lambda in Fig. 4—figure supplement 1a"
+  tolerance_added: true
+
+- id: ref_pde1d_a_grid_rhomax
+  run: run_pde_1d_fig4s1_a
+  setting: N_grid
+  factors: [1, 2]
+  mode: multiply
+  output: rho_max
+  tolerance: "2%"
+  tolerance_basis: "added: verifies spatial grid convergence of peak density rho_max across N = 128, 256"
+  tolerance_added: true
+
+- id: ref_pde1d_a_grid_sdiff
+  run: run_pde_1d_fig4s1_a
+  setting: N_grid
+  factors: [1, 2]
+  mode: multiply
+  output: sigma_diff_peak_over_lam
+  tolerance: "5%"
+  tolerance_basis: "added: verifies spatial grid convergence of (sigma_par - sigma_perp)/lambda across N = 128, 256"
+  tolerance_added: true
+
+- id: ref_pde1d_c_dt_sdiff
+  run: run_pde_1d_fig4s1_c
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: sigma_diff_peak_over_lam
+  tolerance: "2%"
+  tolerance_basis: "added: verifies temporal convergence of emergent extensile tension difference (sigma_par - sigma_perp)/lambda < 0 at kappa = -0.8"
+  tolerance_added: true
+
+# 2D nonlinear active nematic PDE (Eqs. 1-8) refinements: dt and N_grid
+- id: ref_pde2d_fibrillar_dt_omega
+  run: run_pde_2d_fig2_fibrillar
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: omega
+  tolerance: "5%"
+  tolerance_basis: "added: verifies temporal convergence of 2D architectural order parameter omega < 0 (fibrillar regime, kappa = -0.2)"
+  tolerance_added: true
+
+- id: ref_pde2d_fibrillar_grid_omega
+  run: run_pde_2d_fig2_fibrillar
+  setting: N_grid
+  factors: [1, 1.5]
+  mode: multiply
+  output: omega
+  tolerance: "10%"
+  tolerance_basis: "added: verifies spatial convergence of 2D architectural order parameter omega between N = 32 and N = 48"
+  tolerance_added: true
+
+# Exact marginal stability grid-search refinement
+- id: ref_marginal_fig2_grid
+  run: run_marginal_fig2_kap_m02
+  setting: n_grid
+  factors: [1, 2]
+  mode: multiply
+  output: lambda_crit
+  tolerance: "0.01%"
+  tolerance_basis: "added: confirms exact minimization of Eq. (C8) is insensitive to initial log-grid search density"
+  tolerance_added: true
+
+# 1D periodic spatial profile PDE solver (active_nematic_pde_1d_profile_norm_lam) refinements
+- id: ref_pde1d_prof_a_grid_spar
+  run: run_pde_1d_profile_fig4s1_a_lam
+  setting: N_grid
+  factors: [1, 2]
+  mode: multiply
+  output: sigma_par
+  tolerance: "2%"
+  tolerance_basis: "added: verifies spatial grid convergence across N = 64, 128 for all 12 evaluated points of sigma_par(x) in Fig. 4—figure supplement 1(a)"
+  tolerance_added: true
+
+- id: ref_pde1d_prof_a_dt_spar
+  run: run_pde_1d_profile_fig4s1_a_lam
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: sigma_par
+  tolerance: "2%"
+  tolerance_basis: "added: verifies temporal step convergence across dt = 0.04, 0.02 for all 12 evaluated points of sigma_par(x) in Fig. 4—figure supplement 1(a)"
+  tolerance_added: true
+

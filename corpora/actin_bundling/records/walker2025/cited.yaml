@@ -1,0 +1,183 @@
+# ==============================================================================
+# Cross-record cited links from walker2025 values to partner records in the
+# actin_bundling corpus.
+#
+# Pairwise audit summary across all 9 related partners:
+# 1. chandrasekaran2024 (Nat. Commun. 15, 3139, 2024; cited as ref-18 & ref-S4,
+#    Methods S1 p. 42: "We started with the simulation framework in our previous
+#    work [S4,10]"):
+#    - 5 of the 6 datums in walker2025/data.yaml with `from_source: ref-S4` are
+#      linked below (omitting `from_source` so BoxGraph resolves via
+#      references.yaml ref-S4 -> chandrasekaran2024):
+#      * `sim_actin_steric_radius` (3.5 nm), `sim_actin_steric_stiffness`
+#        (1.0 pN/um), and `sim_minilpd_steric_stiffness` (1.0 pN/um) agree.
+#      * `sim_vasp_steric_stiffness` (10 pN/um) and
+#        `sim_monomer_actin_steric_stiffness` (10 pN/um) DIFFER 10-fold from
+#        `chandrasekaran2024/vasp_steric_stiffness` (1.0 pN/um): walker2025_code
+#        proves 10 pN/um is actually the attached crosslinker bond spring
+#        stiffness (`SingleProp::stiffness`), mislabelled as steric repulsion
+#        stiffness in walker2025 Table S1 while still citing [S4].
+#      * The 6th `from_source: ref-S4` datum (`sim_icosphere_target_monomers` =
+#        10) stays UNLINKED because chandrasekaran2024 p. 10 states triangle
+#        edge length comparable to the 100 nm filament segmentation length and
+#        never prints "10 actin monomers".
+#    - 19 additional inherited baseline CytoSim parameters from Table S1 &
+#      Methods S1 (without `from_source` in data.yaml) are linked below with
+#      `from_source: chandrasekaran2024`. Two capture key discrepancies:
+#      * `sim_viscosity_ratio_water` (500) vs `viscosity_ratio_water_printed`
+#        (50): walker2025 Table S1 silently fixes the 10-fold "50x water" error
+#        printed in both chandrasekaran2024 and graham2024.
+#      * `sim_icosphere_subdiv_printed` (3) vs `icosphere_subdivision_level`
+#        (4): walker2025 Methods S1 p. 43 misprints 3 subdivisions while citing
+#        [S4] and while walker2025_code actually runs f = 4.
+#    - Note: `sim_condensate_viscosity` (0.5, `ref-S1`), `sim_brownian_ratchet_force`
+#      (10, `ref-S2`), `sim_actin_flexural_rigidity` (0.075, `ref-S3`), and
+#      `sim_actin_unbinding_force` (10, `ref-S5`) already name their primary
+#      literature sources in data.yaml and are not overwritten here.
+# 2. graham2024 (PNAS 121, e2309152121, 2024; cited as ref-23 & ref-S10):
+#    - 1 direct link (`sim_tetramer_count_baseline` = 1000 -> `sim_vasp_tet_count`
+#      = 1000, since chandrasekaran2024/data.yaml records 0.40 uM rather than a
+#      separate 1000-molecule scalar datum). All other shared CytoSim parameters
+#      trace cleanly to chandrasekaran2024 (where graham2024/cited.yaml also
+#      points them).
+# 3. walker2025_code (Dynamic_multimerization, GitHub / Zenodo ref-walker-code):
+#    - 0 links added here. 52 datums in walker2025_code/data.yaml already link
+#      inline via `from_source: walker2025` + `from_datum`; adding reverse links
+#      back from walker2025 would create dependency cycles. Furthermore,
+#      walker2025_code/data.yaml contains no authored table datums for Fig. 4J,
+#      5D, S7D, or S7E CSV outputs (which are read live by software adapters);
+#      quantitative comparisons between walker2025's digitized Fig. 4J/5D curves
+#      and live walker2025_code adapters are documented in questions.yaml
+#      (`q_code_vs_paper_fig4j_fig5d_figs7d_and_dimerizer`).
+# 4. graham2023 (ref-13): 0 direct links (`sim_droplet_radius` and
+#    `sim_filament_seg_length` trace transitively via chandrasekaran2024 ->
+#    graham2023; `actin_persistence_length_reported` cites primary ref-17).
+# 5. chandrasekaran_source_data, graham2024_code, graham_code,
+#    graham_source_data, nastkolb2022: 0 copied datums (0 links).
+# ==============================================================================
+
+# --- 5 explicit `from_source: ref-S4` datums in walker2025/data.yaml ----------
+
+- datum: sim_actin_steric_radius
+  from_datum: actin_steric_radius
+  evidence: "Table S1 (p. 25) cites [S4] (Chandrasekaran et al., 2024) for actin steric repulsion radius 3.5 nm, matching chandrasekaran2024 Supplementary Table 2 (p. 18, actin_steric_radius = 3.5 nm)."
+
+- datum: sim_actin_steric_stiffness
+  from_datum: actin_steric_stiffness
+  evidence: "Table S1 (p. 25) cites [S4] (Chandrasekaran et al., 2024) for actin steric repulsion stiffness 1.0 pN/um, matching chandrasekaran2024 Supplementary Table 2 (p. 18, actin_steric_stiffness = 1.0 pN/um)."
+
+- datum: sim_minilpd_steric_stiffness
+  from_datum: vasp_steric_stiffness
+  evidence: "Table S1 (p. 26, Bivalent crosslinkers) cites [S4] ('as determined from a previous study on tetramers.[S4]') for mini-Lpd steric repulsion stiffness 1.0 pN/um, matching chandrasekaran2024 Supplementary Table 2 (p. 19, vasp_steric_stiffness = 1.0 pN/um)."
+
+- datum: sim_vasp_steric_stiffness
+  from_datum: vasp_steric_stiffness
+  evidence: "Table S1 (p. 26, Tetravalent crosslinkers) cites [S4] ('as determined from a previous study on tetramers.[S4]') while printing 10 pN/um, differing 10-fold from chandrasekaran2024 Supplementary Table 2 (p. 19, vasp_steric_stiffness = 1.0 pN/um) because walker2025 Table S1 inadvertently entered the attached crosslinker bond spring stiffness (10 pN/um) in the steric-repulsion row."
+
+- datum: sim_monomer_actin_steric_stiffness
+  from_datum: vasp_steric_stiffness
+  evidence: "Table S1 (p. 27, Monovalent actin binders) cites [S4] ('as determined from a previous study on tetramers.[S4]') while printing 10 pN/um, differing 10-fold from chandrasekaran2024 Supplementary Table 2 (p. 19, vasp_steric_stiffness = 1.0 pN/um) due to the same crosslinker bond stiffness vs global steric push stiffness mixup."
+
+# --- 19 inherited baseline CytoSim parameters from chandrasekaran2024 ---------
+
+- datum: sim_total_time
+  from_source: chandrasekaran2024
+  from_datum: t_sim_baseline
+  evidence: "Methods S1 (p. 42, 'We started with the simulation framework in our previous work [S4,10]') and Table S1 (p. 25) inherit the identical total simulation duration 600 s from chandrasekaran2024 (p. 3 & Supplementary Table 2 p. 17, t_sim_baseline = 600 s)."
+
+- datum: sim_time_step
+  from_source: chandrasekaran2024
+  from_datum: dt_langevin
+  evidence: "Table S1 (p. 25) inherits the identical Langevin integration time step 0.002 s from chandrasekaran2024 Supplementary Table 2 (p. 17, dt_langevin = 0.002 s)."
+
+- datum: sim_viscosity_ratio_water
+  from_source: chandrasekaran2024
+  from_datum: viscosity_ratio_water_printed
+  evidence: "Table S1 (p. 25) annotates condensate viscosity 0.5 pN*s/um^2 as '500x water', silently correcting the 10-fold '50x water' error printed in chandrasekaran2024 Supplementary Table 2 (p. 17, viscosity_ratio_water_printed = 50, also propagated into graham2024 Table S1)."
+
+- datum: sim_droplet_radius
+  from_source: chandrasekaran2024
+  from_datum: r_drop_baseline
+  evidence: "Table S1 (p. 25) and Methods S1 (p. 42) inherit the identical rigid spherical condensate radius R = 1 um from chandrasekaran2024 (p. 3 & Supplementary Table 2 p. 17, r_drop_baseline = 1 um)."
+
+- datum: sim_boundary_stiffness_actin
+  from_source: chandrasekaran2024
+  from_datum: boundary_stiffness_actin
+  evidence: "Table S1 (p. 25) inherits actin boundary repulsion stiffness 200 pN/um directly from chandrasekaran2024 Supplementary Table 2 (p. 17, boundary_stiffness_actin = 200 pN/um)."
+
+- datum: sim_boundary_stiffness_crosslinker
+  from_source: chandrasekaran2024
+  from_datum: boundary_stiffness_vasp
+  evidence: "Table S1 (p. 25) inherits crosslinker boundary repulsion stiffness 100 pN/um directly from chandrasekaran2024 Supplementary Table 2 (p. 17, boundary_stiffness_vasp = 100 pN/um)."
+
+- datum: sim_filament_count
+  from_source: chandrasekaran2024
+  from_datum: n_seed_filaments
+  evidence: "Methods S1 (p. 42) and Fig. 4I caption (p. 8) inherit the identical baseline count of 30 actin filaments per droplet from chandrasekaran2024 (p. 3, n_seed_filaments = 30)."
+
+- datum: sim_filament_initial_length
+  from_source: chandrasekaran2024
+  from_datum: l_seed_initial
+  evidence: "Methods S1 (p. 42) inherits the identical initial seed filament length 0.1 um from chandrasekaran2024 (p. 3, l_seed_initial = 0.1 um)."
+
+- datum: sim_filament_seg_length
+  from_source: chandrasekaran2024
+  from_datum: l_seg_actin
+  evidence: "Table S1 (p. 25) and Methods S1 (p. 42) inherit the identical F-actin segmentation length 0.1 um (100 nm) from chandrasekaran2024 Supplementary Table 2 (p. 17, l_seg_actin = 100 nm)."
+
+- datum: sim_polymerization_rate
+  from_source: chandrasekaran2024
+  from_datum: elongation_rate_baseline
+  evidence: "Table S1 (p. 25) and Methods S1 (p. 42) inherit the identical actin elongation rate 0.0103 um/s (calculated for final length 2*pi um at 600 s) from chandrasekaran2024 (p. 3, elongation_rate_baseline = 10.3 nm/s)."
+
+- datum: sim_crosslinker_radius
+  from_source: chandrasekaran2024
+  from_datum: vasp_radius
+  evidence: "Table S1 (pp. 25-27) and Methods S1 (p. 42) inherit the identical spherical crosslinker solid radius 30 nm from chandrasekaran2024 Supplementary Table 2 (p. 18, vasp_radius = 30 nm)."
+
+- datum: sim_crosslinker_diffusion_rate
+  from_source: chandrasekaran2024
+  from_datum: vasp_diffusion_rate
+  evidence: "Table S1 (pp. 25-27) inherits the identical nominal crosslinker diffusion rate 10 um^2/s from chandrasekaran2024 Supplementary Table 2 (p. 18, vasp_diffusion_rate = 10 um^2/s), carrying forward the same 673x-687x Stokes-Einstein / dead-Wrist discrepancy."
+
+- datum: sim_tetramer_conc_baseline
+  from_source: chandrasekaran2024
+  from_datum: vasp_tet_conc_baseline
+  evidence: "Table S1 (p. 26, Tetravalent crosslinkers) inherits the identical baseline VASP tetramer concentration 0.40 uM (1000 tetramers in R = 1 um) from chandrasekaran2024 (p. 3 & Supplementary Table 2 p. 18, vasp_tet_conc_baseline = 0.40 uM)."
+
+- datum: sim_actin_binding_distance
+  from_source: chandrasekaran2024
+  from_datum: vasp_binding_distance
+  evidence: "Table S1 (pp. 26-27) inherits the identical crosslinker-actin binding capture distance 30 nm from chandrasekaran2024 Supplementary Table 2 (p. 18, vasp_binding_distance = 30 nm)."
+
+- datum: sim_tetramer_actin_valency
+  from_source: chandrasekaran2024
+  from_datum: vasp_valency
+  evidence: "Table S1 (p. 26) inherits the identical tetravalent VASP actin-binding valency of 4 from chandrasekaran2024 Supplementary Table 2 (p. 18, vasp_valency = 4)."
+
+- datum: sim_actin_kbind_ring
+  from_source: chandrasekaran2024
+  from_datum: k_bind_ring_fig4
+  evidence: "Table S1 (pp. 26-27) inherits the ring-condition crosslinker-actin binding rate 10.0 /s from chandrasekaran2024 Fig. 4 (p. 5, k_bind_ring_fig4 = 10 /s)."
+
+- datum: sim_actin_kunbind_zero_force
+  from_source: chandrasekaran2024
+  from_datum: k_unbind_ring_fig4
+  evidence: "Table S1 (pp. 26-27) inherits the baseline zero-force actin unbinding rate 1.0 /s from chandrasekaran2024 Fig. 4 (p. 5, k_unbind_ring_fig4 = 1 /s)."
+
+- datum: sim_surface_threshold_dist
+  from_source: chandrasekaran2024
+  from_datum: surface_monomer_cutoff
+  evidence: "Methods S1 (p. 43, Actin-covered surface area calculation, citing [S4]) inherits the identical 100 nm droplet-surface threshold distance from chandrasekaran2024 Methods (p. 10, surface_monomer_cutoff = 100 nm)."
+
+- datum: sim_icosphere_subdiv_printed
+  from_source: chandrasekaran2024
+  from_datum: icosphere_subdivision_level
+  evidence: "Methods S1 (p. 43, Actin-covered surface area calculation, citing [S4]) prints 'dividing the initial eight triangles 3 more times' (subdivision level 3), differing from chandrasekaran2024 Methods (p. 10, icosphere_subdivision_level = 4, which walker2025_code Main_Analyze_Trajectory.py:711 actually runs as f = 4)."
+
+# --- 1 inherited baseline CytoSim parameter from graham2024 -------------------
+
+- datum: sim_tetramer_count_baseline
+  from_source: graham2024
+  from_datum: sim_vasp_tet_count
+  evidence: "Table S1 (p. 26, Tetravalent crosslinkers) and Methods S1 (p. 42, citing [S4,10]) inherit the explicit baseline VASP tetramer copy number 1000 molecules (0.40 uM in R = 1 um) from graham2024 Table S1 (p. 20, sim_vasp_tet_count = 1000)."

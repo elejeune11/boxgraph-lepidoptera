@@ -1,0 +1,661 @@
+# Cross-record ModelAtlas relations for walker2025_code (Walker et al., 2025 software/code record)
+# against the three 2024 Chandrasekaran et al. records:
+#   1. chandrasekaran2024 (Nat. Commun. 15, 3139, 2024)
+#   2. chandrasekaran_cytosim (upstream CytoSim C++ engine snapshot)
+#   3. chandrasekaran_source_data (41467_2024_46726_MOESM9_ESM.xlsx Source Data workbook)
+#
+# Non-runnable full 3D CytoSim simulation models (`cytosim_3d_static_crosslinker_sim`,
+# `cytosim_3d_dynamic_multimer_sim`) and walker2025-specific CSV/trajectory analysis adapters
+# (`icosphere_surface_density_adapter`, `notebook_fig4j_replicates_adapter`,
+# `notebook_fig5d_averaging_adapter`, `notebook_fig5d_averaging_last30`,
+# `trajectory_multimer_topology_adapter`, `trajectory_vaspprops_bug_adapter`) have no testable
+# analytical model relations with the 2024 records.
+# Likewise, Hookean confinement (`chandrasekaran_cytosim/cytosim_confinement_sphere_ellipse`) vs
+# dimerizer bond tension (`walker2025_code/cytosim_dimerizer_bond_mechanics`) is omitted as a
+# physically unrelated single-product Hooke's law form.
+
+# =============================================================================
+# 1. Relations with chandrasekaran2024 (12 proposed: 11 verified, 1 honest refutation)
+# =============================================================================
+- id: rel_chandra2024_stokes_einstein_solid_diffusion
+  kind: same_as
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: chandrasekaran2024/stokes_einstein_diffusion
+  mapping:
+    kBT: "1000 * kT"
+    eta: "eta"
+    r: "1000 * r_solid"
+  output_map:
+    D_SE: D_solid
+  regime:
+    eta: [0.001, 10.0]
+    r_solid: [0.005, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  provenance: proposed
+  reason: >
+    CytoSim Solid::setDragCoefficient() in walker2025_code (Source_Code/Cytosim/src/sim/solid.cc:854-943,
+    with Wrist::stepF() silently ignoring diffusion = 10.0) yields Stokes-Einstein diffusivity
+    D_solid = kT / (6*pi*eta*r_solid), symbolically identical to chandrasekaran2024/stokes_einstein_diffusion
+    and confirming the identical 673x discrepancy (0.01485 vs 10 um^2/s at R = 30 nm, eta = 0.5 Pa*s,
+    kT = 0.0042 pN*um) across both papers.
+
+- id: rel_chandra2024_brownian_noise_stddev_solid
+  kind: same_as
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: chandrasekaran2024/brownian_noise_stddev
+  mapping:
+    D: "kT / (6 * pi * eta * r_solid)"
+    dt: "dt"
+  output_map:
+    sigma_B: sigma_B
+  regime:
+    eta: [0.001, 10.0]
+    r_solid: [0.005, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  provenance: proposed
+  reason: >
+    The 1D Gaussian Brownian displacement standard deviation sigma_B = sqrt(2 * D_solid * dt) in
+    walker2025_code/cytosim_solid_stokes_diffusion is symbolically identical (after um <-> nm conversion)
+    to chandrasekaran2024/brownian_noise_stddev evaluated at the Stokes-Einstein diffusivity
+    D = kT / (6*pi*eta*r_solid).
+
+- id: rel_chandra2024_brownian_noise_mobility_solid
+  kind: same_as
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: chandrasekaran2024/brownian_noise_from_mobility
+  mapping:
+    mu: "1 / (6 * pi * eta * r_solid)"
+    kBT: "1000 * kT"
+    dt: "dt"
+  output_map:
+    sigma_B: sigma_B
+  regime:
+    eta: [0.001, 10.0]
+    r_solid: [0.005, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  provenance: proposed
+  reason: >
+    Substituting CytoSim Solid Stokes translational mobility mu = 1 / (6*pi*eta*r_solid) into
+    chandrasekaran2024/brownian_noise_from_mobility (sqrt(2*mu*kBT*dt)) reproduces
+    walker2025_code/cytosim_solid_stokes_diffusion/sigma_B identically.
+
+- id: rel_chandra2024_bell_unbinding_dimerizer_code
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k_unbind_0"
+    f: "2 * k_single * dx"
+    f_u: "2 * F_unbind"
+  output_map:
+    k_unbind: k_unbind_code
+  regime:
+    k_single: [1.0, 50.0]
+    dx: [0.001, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [2.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Custom C++ Dimerizer::testKramersDetachment() (dimerizer.h:121) implements Bell slip-bond
+    unbinding identically to chandrasekaran2024/bell_slip_bond_unbinding, but because
+    Wrist::setInteractions() (wrist.cc:131-135) adds two parallel springs (F_mech = 2*k_single*dx)
+    while Wrist::force() (wrist.cc:64) supplies only k_single*dx = F_mech/2, expressing the actual
+    code rate k_unbind_code in terms of true mechanical bond tension f = F_mech = 2*k_single*dx
+    requires a doubled effective unbinding force f_u = 2*F_unbind (20 pN vs nominal 10 pN).
+
+- id: rel_chandra2024_bell_unbinding_dimerizer_Fmech
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k_unbind_0"
+    f: "2 * k_single * dx"
+    f_u: "F_unbind"
+  output_map:
+    k_unbind: k_unbind_at_Fmech
+  regime:
+    k_single: [1.0, 50.0]
+    dx: [0.001, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [2.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    The reference rate k_unbind_at_Fmech = k_unbind_0 * exp(F_mech / F_unbind) evaluated at the true
+    doubled mechanical tension F_mech = 2*k_single*dx and nominal F_unbind is symbolically identical
+    to chandrasekaran2024/bell_slip_bond_unbinding/k_unbind.
+
+- id: rel_chandra2024_bell_unbinding_dimerizer_double_spring_discrepancy
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k_unbind_0"
+    f: "2 * k_single * dx"
+    f_u: "F_unbind"
+  output_map:
+    k_unbind: k_unbind_code
+  regime:
+    k_single: [2.0, 20.0]
+    dx: [0.01, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [5.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Honest refutation testing whether walker2025_code's actual Dimerizer detachment rate k_unbind_code
+    equals Bell's slip-bond law evaluated at the true doubled mechanical spring tension F_mech =
+    2*k_single*dx and nominal unbinding force F_unbind; refuted everywhere at dx > 0 because
+    Wrist::force() omits the second parallel Wrist link added by Wrist::setInteractions() (wrist.cc:64,134),
+    making k_unbind_code smaller by exp(-k_single * dx / F_unbind).
+
+- id: rel_chandra2024_icosphere_n_faces
+  kind: same_as
+  a: walker2025_code/icosphere_mesh_adapter
+  b: chandrasekaran2024/icosphere_subdivision_geometry
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+  output_map:
+    n_faces: n_faces
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.0]
+  provenance: proposed
+  reason: >
+    Live Analysis_Scripts/icosphere.py::icosphere(n_subdiv, R_drop) in walker2025_code starts from a
+    20-face regular icosahedron and recursively bisects each triangle into 4, yielding identical face
+    counts N_faces = 20 * 4^n to chandrasekaran2024/icosphere_subdivision_geometry across n = 0..5
+    (confirming walker2025_code inherits chandrasekaran2024's icosphere pipeline despite walker2025
+    Methods S1 misprinting '8 triangles').
+
+- id: rel_chandra2024_icosphere_median_edge
+  kind: same_as
+  a: walker2025_code/icosphere_mesh_adapter
+  b: chandrasekaran2024/icosphere_subdivision_geometry
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+  output_map:
+    median_edge: median_edge
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.0]
+  provenance: proposed
+  reason: >
+    Live Analysis_Scripts/icosphere.py in walker2025_code applies a rigid quaternion rotation to the
+    same unit icosahedron and performs identical midpoint projection onto the sphere of radius R_drop
+    as chandrasekaran2024/icosphere_subdivision_geometry, matching chordal median triangle edge length
+    to float64 precision across all radii and subdivisions n = 0..5.
+
+- id: rel_chandra2024_config_persistence_length
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: chandrasekaran2024/persistence_length_from_rigidity
+  mapping:
+    kappa: "rigidity"
+    kBT: "1000 * kT"
+  output_map:
+    l_p: L_p
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.01, 0.05]
+    R_drop: [0.5, 3.0]
+    rigidity: [0.01, 0.2]
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: >
+    Actin persistence length L_p = rigidity / kT computed from walker2025_code's .cym rigidity and
+    CytoSim default kT = 0.0042 pN*um matches chandrasekaran2024/persistence_length_from_rigidity
+    identically (yielding 17.86 um in both CytoSim setups vs 18.25 um at 4.11 pN*nm).
+
+- id: rel_chandra2024_config_filament_elongation
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: chandrasekaran2024/filament_elongation_length
+  mapping:
+    L0: "L0"
+    k_grow: "1000 * k_grow"
+    t: "n_steps * dt"
+  output_map:
+    L_fil: L_final
+  regime:
+    n_steps: [1000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.002]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.015]
+    L_max: [15.0, 30.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.01, 0.05]
+    R_drop: [0.5, 3.0]
+    rigidity: [0.05, 0.1]
+    kT: [0.004, 0.0045]
+  provenance: proposed
+  reason: >
+    In the uncapped elongation regime (L0 + k_grow * n_steps * dt <= L_max), final filament length
+    L_final = min(L0 + k_grow * T_sim, L_max) in walker2025_code/cytosim_config_derived_quantities
+    matches chandrasekaran2024/filament_elongation_length (L0 + k_grow * t) identically.
+
+- id: rel_chandra2024_config_sphere_concentration
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: chandrasekaran2024/final_actin_concentration
+  mapping:
+    N_fil: "N_blob"
+    L_fil: "0.0027"
+    dl: "2.7"
+    R_drop: "R_drop"
+  output_map:
+    C_actin: C_crosslinker
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.01, 0.05]
+    R_drop: [0.5, 5.0]
+    rigidity: [0.05, 0.1]
+    kT: [0.004, 0.0045]
+  provenance: proposed
+  reason: >
+    Both models convert discrete molecule count N inside a spherical droplet of radius R_drop to
+    micromolar concentration via N / (N_A * (4/3)*pi*R_drop^3) with SI 2019 Avogadro constant
+    6.02214076e23; evaluating chandrasekaran2024/final_actin_concentration at 1 monomer per particle
+    (L_fil / dl = 0.0027 um / 2.7 nm = 1) matches walker2025_code/cytosim_config_derived_quantities/C_crosslinker identically.
+
+- id: rel_chandra2024_config_sphere_volume_fraction
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: chandrasekaran2024/lammps_crowder_volume_fraction
+  mapping:
+    N_crowder: "N_blob"
+    r_crowder: "r_solid"
+    L_box: "((4 * pi / 3)**(1/3)) * R_drop"
+  output_map:
+    phi: phi_crosslinker
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.005, 0.05]
+    R_drop: [0.5, 5.0]
+    rigidity: [0.05, 0.1]
+    kT: [0.004, 0.0045]
+  provenance: proposed
+  reason: >
+    Hard-sphere crosslinker volume fraction phi_crosslinker = 100 * N_blob * (r_solid / R_drop)^3 (%)
+    in a spherical droplet equals chandrasekaran2024/lammps_crowder_volume_fraction
+    (100 * N * (4/3)*pi*r^3 / L_box^3) under the equal-container-volume mapping
+    L_box = ((4*pi/3)^(1/3)) * R_drop.
+
+# =============================================================================
+# 2. Relations with chandrasekaran_cytosim (10 proposed: all verified)
+# =============================================================================
+- id: rel_cyto_solid_stokes_diffusion_same
+  kind: same_as
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+  mapping:
+    radius: "1000 * r_solid"
+    viscosity: "eta"
+    kT: "kT"
+    dt: "dt"
+    D_prescribed: "10"
+  output_map:
+    D_stokes: D_solid
+  regime:
+    eta: [0.001, 10.0]
+    r_solid: [0.005, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  provenance: proposed
+  reason: >
+    Both CytoSim C++ codebases implement identical spherical Stokes drag 6*pi*eta*R in
+    Solid::setDragCoefficient() (walker2025_code solid.cc:854-943; chandrasekaran_cytosim
+    solid.cc:1289, sphere.cc:280-284) while silently ignoring diffusion on grafted Wrist singles
+    (wrist.cc '#if (0)'), yielding symbolically identical D_solid = D_stokes = kT / (6*pi*eta*R).
+
+- id: rel_cyto_solid_stokes_brownian_step_same
+  kind: same_as
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+  mapping:
+    radius: "1000 * r_solid"
+    viscosity: "eta"
+    kT: "kT"
+    dt: "dt"
+    D_prescribed: "10"
+  output_map:
+    sigma_gauss_stokes: sigma_B
+  regime:
+    eta: [0.001, 10.0]
+    r_solid: [0.005, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  provenance: proposed
+  reason: >
+    Per-axis Gaussian Brownian displacement standard deviation sqrt(2 * D_stokes * dt) in Meca::solve()
+    is symbolically identical (after um <-> nm unit conversion) between walker2025_code/cytosim_solid_stokes_diffusion
+    and chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion.
+
+- id: rel_cyto_fiber_drag_reduces_to_solid_stokes
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+  b: walker2025_code/cytosim_solid_stokes_diffusion
+  mapping:
+    eta: "viscosity"
+    r_solid: "drag_radius"
+    kT: "kT"
+    dt: "dt"
+  output_map:
+    D_solid: D_com
+  limit:
+    L: "0"
+  regime:
+    L: [0.05, 5.0]
+    segmentation: [0.05, 0.2]
+    viscosity: [0.001, 2.0]
+    viscosity_water: [0.001, 0.001]
+    drag_radius: [0.003, 0.015]
+    drag_length: [2.0, 10.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    In the short-fiber limit L -> 0 (below min_len = 2 * drag_radius * exp(0.68)),
+    Fiber::dragCoefficientCylinder() (shared verbatim in walker2025_code fiber.cc:594-608 and
+    chandrasekaran_cytosim fiber.cc:958-990) clamps cylindrical drag to spherical Stokes drag
+    6*pi*eta*drag_radius, reducing fiber center-of-mass diffusivity D_com to Solid Stokes diffusivity D_solid.
+
+- id: rel_cyto_hand_binding_prob_single
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+  mapping:
+    k_bind: "k_bind"
+    binding_range: "90"
+    k_unbind0: "k_unbind_0"
+    unbinding_force: "F_unbind"
+    force: "k_single * dx"
+    dt: "dt"
+    stiffness: "k_single"
+    kT: "0.0042"
+  output_map:
+    binding_prob: p_bind_single
+  regime:
+    k_single: [1.0, 50.0]
+    dx: [0.001, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [2.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Single-hand per-step attachment probability -expm1(-k_bind * dt) in HandProp::complete() is
+    symbolically identical between walker2025_code (hand_prop.cc:234) and chandrasekaran_cytosim
+    (hand_prop.cc:247).
+
+- id: rel_cyto_hand_binding_prob_pair_doubled
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+  mapping:
+    k_bind: "2 * k_bind"
+    binding_range: "90"
+    k_unbind0: "k_unbind_0"
+    unbinding_force: "F_unbind"
+    force: "k_single * dx"
+    dt: "dt"
+    stiffness: "k_single"
+    kT: "0.0042"
+  output_map:
+    binding_prob: p_bind_pair
+  regime:
+    k_single: [1.0, 50.0]
+    dx: [0.001, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [2.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Because walker2025_code's custom Dimerizer tests PointGrid::tryToAttach() on BOTH free dimerizer
+    Wrists of an in-range monomer pair per step via deferred tmphaHand, the pairwise attachment
+    probability p_bind_pair = 1 - (1 - p_bind_single)^2 = 1 - exp(-2*k_bind*dt) is symbolically
+    identical to upstream CytoSim's single-hand binding_prob evaluated at doubled rate 2*k_bind
+    (contrasting with upstream Couple::stepFF(), which halves first-binding probability via a 1/2 coin flip).
+
+- id: rel_cyto_hand_bell_unbinding_code
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+  mapping:
+    k_bind: "k_bind"
+    binding_range: "90"
+    k_unbind0: "k_unbind_0"
+    unbinding_force: "2 * F_unbind"
+    force: "2 * k_single * dx"
+    dt: "dt"
+    stiffness: "k_single"
+    kT: "0.0042"
+  output_map:
+    k_unbind_loaded: k_unbind_code
+  regime:
+    k_single: [1.0, 50.0]
+    dx: [0.001, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [2.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Dimerizer::testKramersDetachment() (walker2025_code dimerizer.h:121) reuses CytoSim's exact
+    Bell/Kramers exponential rate law from Hand::checkKramersDetachment() (chandrasekaran_cytosim
+    hand.h:297-299), with double-counted Wrist spring tension force = F_mech = 2*k_single*dx mapped to
+    effective unbinding_force = 2*F_unbind because Wrist::force() reports only k_single*dx = F_mech/2.
+
+- id: rel_cyto_hand_bell_unbinding_Fmech
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+  mapping:
+    k_bind: "k_bind"
+    binding_range: "90"
+    k_unbind0: "k_unbind_0"
+    unbinding_force: "F_unbind"
+    force: "2 * k_single * dx"
+    dt: "dt"
+    stiffness: "k_single"
+    kT: "0.0042"
+  output_map:
+    k_unbind_loaded: k_unbind_at_Fmech
+  regime:
+    k_single: [1.0, 50.0]
+    dx: [0.001, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [2.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    The reference mechanical-tension detachment rate k_unbind_at_Fmech in walker2025_code matches
+    upstream CytoSim Hand::checkKramersDetachment() (k_unbind_loaded) evaluated at true doubled
+    tension force = 2*k_single*dx and nominal unbinding_force = F_unbind.
+
+- id: rel_cyto_hand_gillespie_mc_approx_dimerizer
+  kind: approximated_by
+  a: chandrasekaran_cytosim/cytosim_hand_gillespie_mc
+  b: walker2025_code/cytosim_dimerizer_bond_mechanics
+  mapping:
+    k_single: "10"
+    dx: "force / 10"
+    k_bind: "1"
+    k_unbind_0: "k_unbind0"
+    F_unbind: "unbinding_force"
+    dt: "dt"
+  output_map:
+    k_unbind_code: k_unbind_mc
+  regime:
+    k_unbind0: [0.01, 1.0]
+    unbinding_force: [5.0, 20.0]
+    force: [0.1, 10.0]
+    dt: [0.0005, 0.002]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    At moderate loads and dt <= 0.002 s (k_off*dt << 1), CytoSim's discrete-step float32 Gillespie
+    Kramers countdown MC (chandrasekaran_cytosim/cytosim_hand_gillespie_mc, n_samples = 20,000,
+    also used in walker2025_code dimerizer.h:121 via nextDetach -= unbinding_rate_dt * exp(force/f_u))
+    agrees with continuum k_unbind_code within 2% (~3 sigma of 0.71% MC SE).
+
+- id: rel_cyto_fiber_persistence_length_same
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: chandrasekaran_cytosim/cytosim_fiber_bending_mechanics
+  mapping:
+    rigidity: "rigidity"
+    L: "6.2832"
+    segmentation: "0.1"
+    R_curve: "1.0"
+    kT: "kT"
+  output_map:
+    persistence_length: L_p
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.01, 0.05]
+    R_drop: [0.5, 3.0]
+    rigidity: [0.01, 0.2]
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: >
+    Both CytoSim forks define fiber thermal persistence length identically as rigidity / kT
+    (fiber_prop.h:59 in chandrasekaran_cytosim), evaluating to 0.075 / 0.0042 = 17.86 um under the
+    shared default kT = 0.0042 pN*um (simul_prop.cc).
+
+- id: rel_cyto_nucleation_depletion_reduces_to_config_Lfinal
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+  b: walker2025_code/cytosim_config_derived_quantities
+  mapping:
+    n_steps: "t_eval / 0.002"
+    nb_frames: "600"
+    dt: "0.002"
+    L0: "L_seed_init"
+    k_grow: "k_grow / 1000"
+    L_max: "L_max"
+    N_blob: "1000"
+    r_solid: "0.03"
+    R_drop: "R_drop"
+    rigidity: "0.075"
+    kT: "0.0042"
+  output_map:
+    L_final: L_seed_final
+  limit:
+    C_total_actin: "oo"
+  regime:
+    N_seed: [10.0, 50.0]
+    L_seed_init: [0.05, 0.2]
+    L_max: [0.5, 3.0]
+    L_nuc_init: [0.008, 0.05]
+    k_grow: [5.0, 20.0]
+    C_nucleator: [10.0, 150.0]
+    k_nuc: [0.05, 0.5]
+    k_unbind_nuc: [0.001, 0.02]
+    C_total_actin: [100.0, 1000.0]
+    R_drop: [0.8, 1.5]
+    dl_monomer: [2.5, 3.0]
+    t_eval: [10.0, 150.0]
+  provenance: proposed
+  reason: >
+    In the infinite actin monomer pool limit (C_total_actin -> oo, free_polymer -> 1), seed filament
+    length L_seed_final in chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim reduces
+    to the undepleted max_length-capped elongation formula L_final = min(L0 + k_grow * T_sim, L_max)
+    used in walker2025_code/cytosim_config_derived_quantities (both below and at the L_max cap).
+
+# =============================================================================
+# 3. Relations with chandrasekaran_source_data (2 proposed: all verified)
+# =============================================================================
+# Audit across all 20 x 12 = 240 model pairs between chandrasekaran_source_data and walker2025_code:
+# - 19 of 20 models in chandrasekaran_source_data read discrete experimental, CytoSim 3D, LAMMPS,
+#   PCA/silhouette, or Fig. 7F continuum-energy Excel tables specific to chandrasekaran2024 and share
+#   0 mathematical relations with walker2025_code.
+# - On the single shared computational pipeline (sheet 'FigureS2B', `figs2b_icosphere_reader`), live
+#   execution of walker2025_code/Analysis_Scripts/icosphere.py::icosphere(n, 1.0) reproduces ALL 4,262
+#   stored per-triangle area-equivalent equilateral side lengths sqrt(4 * A_i / sqrt(3)) across rows
+#   n = 0..5 to <= 2.22e-16 (IEEE-754 float64 machine precision) in exact face traversal order!
+
+- id: rel_source_data_figs2b_n_faces_expected
+  kind: same_as
+  a: walker2025_code/icosphere_mesh_adapter
+  b: chandrasekaran_source_data/figs2b_icosphere_reader
+  mapping:
+    n: "n_subdiv"
+  output_map:
+    n_faces_expected: n_faces
+  regime:
+    R_drop: [1.0, 1.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.7, 2.7]
+  provenance: proposed
+  reason: >
+    Live walker2025_code/Analysis_Scripts/icosphere.py::icosphere(n, 1.0) produces the exact expected
+    icosphere triangle face counts 20 * 4^n (20, 80, 320, 1280, 5120, 20480) recorded by
+    chandrasekaran_source_data/figs2b_icosphere_reader across all six subdivision levels n = 0..5 in
+    41467_2024_46726_MOESM9_ESM.xlsx sheet 'FigureS2B' (where rows n = 4, 5 are truncated in the
+    workbook to the first 1,281 faces in icosphere.py's exact traversal order).
+
+- id: rel_source_data_figs2b_eq_side_approx_median
+  kind: approximated_by
+  a: walker2025_code/icosphere_mesh_adapter
+  b: chandrasekaran_source_data/figs2b_icosphere_reader
+  mapping:
+    n: "n_subdiv"
+  output_map:
+    side_median: eq_side
+  regime:
+    R_drop: [1.0, 1.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.7, 2.7]
+  tolerance: 0.03
+  provenance: proposed
+  reason: >
+    Live walker2025_code/Analysis_Scripts/icosphere.py::icosphere(n, 1.0) reproduces every single one
+    of the 4,262 stored per-triangle equilateral side lengths sqrt(4 * A_i / sqrt(3)) in MOESM9 sheet
+    'FigureS2B' (n = 0..5) to <= 2.22e-16 in exact face traversal order. Summarizing the mesh via the
+    root-mean-area equilateral side eq_side = sqrt(4 * mean(A_i) / sqrt(3)) in icosphere_mesh_adapter
+    approximates the per-triangle median side_median in figs2b_icosphere_reader within 2.76% across
+    all n = 0..5 (0.00% at n=0, 2.26% at n=1, 2.75% at n=2, 2.40% at n=3, 2.43% at n=4, and 2.76% at
+    n=5, reflecting icosphere triangle-area skewness around the 12 pentavalent vertices plus a 0.32%
+    downward shift at n=5 from MOESM9's 1,281-column truncation).
+  assumptions:
+    - "Fixed unit-radius droplet R_drop = 1.0 um (matching MOESM9 sheet 'FigureS2B', which has no free R_drop port)."
+    - "Tolerance 0.03 bounds the 2.26-2.76% mean-area vs per-triangle-median skewness gap across n = 1..5 (whereas per-triangle values match to <= 2.22e-16)."

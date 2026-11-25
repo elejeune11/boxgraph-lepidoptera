@@ -1,0 +1,213 @@
+# ==============================================================================
+# 1. Actin filament buckling force (p. 5): printed pi vs. Euler pi^2
+# ==============================================================================
+
+- id: cmp_buckling_force_printed
+  purpose: reproduction
+  computed: Fb_printed_pred
+  printed: actin_buckling_force_printed
+  note: "Printed F_b = pi * EI / L^2 gives 0.6283 pN vs. printed '1 pN' (inside 1-digit rounding interval [0.5, 1.5], 37% below 1)."
+
+- id: cmp_buckling_force_euler
+  purpose: reproduction
+  computed: Fb_euler_pred
+  printed: actin_buckling_force_printed
+  note: "Standard pinned-pinned Euler F_b = pi^2 * EI / L^2 gives 1.9739 pN (~2 pN) vs. printed '1 pN' (close; 97% above 1)."
+
+# ==============================================================================
+# 2. Actin bundle filament count estimate (p. 5)
+# ==============================================================================
+
+- id: cmp_bundle_count_mid
+  purpose: reproduction
+  computed: N_fil_mid_pred
+  printed: actin_bundle_filament_count_printed
+  note: "Midpoint 1.5 um / 20 nm = 75 filaments vs. printed '≈ 50 to 100' (no verdict because of '≈')."
+
+- id: cmp_bundle_count_low
+  purpose: reproduction
+  computed: N_fil_low_pred
+  printed: actin_bundle_filament_count_printed
+  note: "Lower bound 1 um / 20 nm = 50 filaments matches lower end of '≈ 50 to 100'."
+
+- id: cmp_bundle_count_high
+  purpose: reproduction
+  computed: N_fil_high_pred
+  printed: actin_bundle_filament_count_printed
+  note: "Upper bound 2 um / 20 nm = 100 filaments matches upper end of '≈ 50 to 100'."
+
+# ==============================================================================
+# 3. DDM relaxation speedup ratio (pp. 1, 5, 6)
+# ==============================================================================
+
+- id: cmp_relaxation_speedup_fig3a
+  purpose: reproduction
+  computed: relaxation_speedup_pred
+  printed: relaxation_speedup_fig3a
+  note: "tau_Ld / tau_Lo+Ld = 4100 s / 1600 s = 2.5625 reproduces Fig. 3A caption '2.6x' ([2.55, 2.65])."
+
+- id: cmp_relaxation_speedup_p6
+  purpose: reproduction
+  computed: relaxation_speedup_pred
+  printed: relaxation_speedup_p6
+  note: "4100 / 1600 = 2.5625 vs. Results p. 6 '~2.6x'."
+
+- id: cmp_relaxation_speedup_intro
+  purpose: consistency
+  computed: relaxation_speedup_pred
+  printed: relaxation_speedup_intro
+  note: "4100 / 1600 = 2.5625 vs. Introduction p. 1 '~2.5x' (slight 2.5 vs. 2.6 discrepancy across sections)."
+
+# ==============================================================================
+# 4. DDM intermediate scattering function Eq. (2) boundary & half-life checks
+# ==============================================================================
+
+- id: cmp_ddm_isf_t0
+  purpose: reproduction
+  computed: ddm_F_t0_pred
+  printed: isf_t0_asymptote
+  note: "Eq. (2) at D(k, t=0) = B(k) reproduces F(k, t=0) = 1."
+
+- id: cmp_ddm_isf_tinf
+  purpose: reproduction
+  computed: ddm_F_tinf_pred
+  printed: isf_tinf_asymptote
+  note: "Eq. (2) at D(k, t->inf) = A(k) + B(k) reproduces F(k, t->inf) = 0."
+
+- id: cmp_ddm_isf_halflife
+  purpose: reproduction
+  computed: ddm_F_mid_pred
+  printed: isf_halflife_criterion
+  note: "Eq. (2) at midpoint D = (D_0 + D_inf)/2 reproduces F(k, tau) = 0.5."
+
+# ==============================================================================
+# 5. Fourier radial binning & Fig. S3 wave vectors (pp. 4, 13)
+# ==============================================================================
+
+- id: cmp_radial_bin_sqrt2
+  purpose: reproduction
+  computed: sf_diag_mode_bin_pred
+  printed: sf_example_diag_mode_binned
+  note: "Nearest-integer radial binning of n = sqrt(2) reproduces n = 1 (p. 4)."
+
+- id: cmp_wavevector_fig_s3
+  purpose: reproduction
+  computed: fig_s3_k_pred
+  printed: fig_s3_wavevectors
+  note: "k = 2*pi*n/L for n = 1, 2, 3, 4 with L = 6.9813 um reproduces Fig. S3 legend k = 0.9, 1.8, 2.7, 3.6 um^-1."
+
+# ==============================================================================
+# 6. Tracer time-lapse duration (p. 3, p. 6 Fig. 4C caption, p. 7, p. 10 SI)
+# ==============================================================================
+
+- id: cmp_tracer_duration_span_methods
+  purpose: reproduction
+  computed: tracer_T_span_pred
+  printed: tracer_timelapse_duration_methods
+  note: "(100 - 1) * 0.2 s = 19.8 s reproduces printed '20 s' ([19.5, 20.5]) on p. 3."
+
+- id: cmp_tracer_duration_total_methods
+  purpose: reproduction
+  computed: tracer_T_total_pred
+  printed: tracer_timelapse_duration_methods
+  note: "100 * 0.2 s = 20.0 s reproduces printed '20 s' on p. 3."
+
+- id: cmp_tracer_duration_p7
+  purpose: reproduction
+  computed: tracer_T_span_pred
+  printed: tracer_timelapse_duration_p7
+  note: "19.8 s reproduces p. 7 '20-s time-lapses'."
+
+- id: cmp_tracer_duration_si
+  purpose: reproduction
+  computed: tracer_T_span_pred
+  printed: tracer_tracking_period_si
+  note: "19.8 s vs. SI Video S3 '≈ 20 s'."
+
+- id: cmp_tracer_duration_fig4c_contradiction
+  purpose: consistency
+  computed: tracer_T_span_pred
+  printed: tracer_interval_fig4c_caption
+  note: "100 frames x 0.2 s = 19.8 s directly contradicts Fig. 4C caption 'Over short (<10 s) intervals' (no verdict because of '<', flagged as possible_error)."
+
+# ==============================================================================
+# 7. Cholesterol phase mixing accessible membrane area gain (p. 7)
+# ==============================================================================
+
+- id: cmp_area_gain_init_total
+  purpose: consistency
+  computed: delta_phi_tot_init_pred
+  printed: membrane_area_gain_after_mixing
+  note: "At initial phi_Lo ≈ 20% (p. 7 text), total membrane area gained upon mixing is 20% vs. printed 'additional ≈25%'."
+
+- id: cmp_area_gain_init_relative
+  purpose: consistency
+  computed: delta_phi_rel_init_pred
+  printed: membrane_area_gain_after_mixing
+  note: "Relative to initial 80% Ld area (phi_Lo ≈ 20%), gaining the Lo area is 20%/80% = +25% (matches '≈25%')."
+
+- id: cmp_area_gain_peak_total
+  purpose: consistency
+  computed: delta_phi_tot_peak_pred
+  printed: membrane_area_gain_after_mixing
+  note: "Relative to peak compressed state phi_Lo ≈ 50% (t = 11 min), full mixing frees 50% of the total membrane (twice the printed '≈25%')."
+
+# ==============================================================================
+# 8. GUV lipid composition conservation checks (p. 2 Methods, p. 4 Results)
+# ==============================================================================
+
+- id: cmp_lipid_sum_methods
+  purpose: consistency
+  computed: lipid_sum_methods_pred
+  printed: lipid_composition_target_100
+  note: "Methods p. 2 lipid recipe 45.7 + 35 + 15 + 4 + 0.3 = 100.0% exactly."
+
+- id: cmp_lipid_sum_results_no_fitc
+  purpose: consistency
+  computed: lipid_sum_results_no_fitc_pred
+  printed: lipid_composition_target_100
+  note: "Results p. 4 rounded recipe 46 + 35 + 15 + 4 = 100% (omitting 0.3% trace FITC dye)."
+
+- id: cmp_lipid_sum_results_with_fitc
+  purpose: consistency
+  computed: lipid_sum_results_with_fitc_pred
+  printed: lipid_composition_target_100
+  note: "Adding the 0.3% DSPE-PEG2k-FITC dye from Methods to the rounded Results percentages gives 100.3% (within [99.5, 100.5])."
+
+# ==============================================================================
+# 9. Internal cross-checks (Eq. 4 vs. simplified form, Eq. 5 vs. 2*pi/<k>)
+# ==============================================================================
+
+- id: cmp_laplace_young_eq4_vs_effective
+  purpose: consistency
+  computed: kappa_ly_comp_pred
+  printed: kappa_eff_comp_pred
+  note: "Verifies Eq. (4) with P_Ld^eff = P_Ld + sigma_el gives identical curvature to simplified P_Lo - P_Ld^eff = lambda * div(n)."
+
+- id: cmp_sf_pipeline_vs_wavelength_formula
+  purpose: consistency
+  computed: sf_wavelength_bench_pred
+  printed: wavelength_from_k_bench_pred
+  note: "Verifies 2D FFT Eq. (5) pipeline wavelength matches 2*pi/<k>."
+
+- id: cmp_ddm_eq1_printed_signal
+  purpose: consistency
+  computed: D_k0_ratio_printed_pred
+  printed: ddm_k0_ratio_expected_added
+  note: "Printed Eq. (1) FFT[|Delta I|^2] puts zero power at the signal mode k0 (ratio = 0.0 vs. expected 1.0), confirming the misplaced square/FFT order."
+
+- id: cmp_ddm_eq1_corrected_signal
+  purpose: consistency
+  computed: D_k0_ratio_corr_pred
+  printed: ddm_k0_ratio_expected_added
+  note: "Corrected DDM |FFT[Delta I]|^2 (matching SI Fig. S3 y-axis and Refs. 32-33) recovers exact normalized power ratio 1.0 at mode k0."
+
+# ==============================================================================
+# 10. Model validation against digitized figures (digitize:arnold2024)
+# ==============================================================================
+
+- id: cmp_passive_coarsening_fig3c
+  purpose: validation
+  computed: a_passive_fig3c_pred
+  printed: fig3c_domain_a_measured
+  note: "Judges shape of passive coarsening power law a ~ t^(1/3) (prefactor fitted across t > 0 points) against calibrated Fig. 3C Lo domain wavelength a(t) (2.68 um at t = 0 to 3.80 um at t = 4000 s). Expected not reproduced because actin-coupled domains start at finite size ~2.68 um and show sigmoidal/accelerating growth rather than a ~ t^(1/3) from 0 (matching the paper's contrast on p. 7)."

@@ -1,0 +1,129 @@
+# Cross-record validations of weirich2019 models against independent experimental
+# measurements in weirich2017 (same Gardel lab, same reconstituted 2.6 uM F-actin /
+# 1.5 mol % capping protein / filamin nematic tactoid system).
+#
+# Audit scope across all three paired records:
+# - weirich2017 + weirich2019: 2 validations below test weirich2019's bare bipolar
+#   tactoid equilibrium model (bipolar_tactoid_equilibrium_exact, SI Theory 1 & Eq. 6)
+#   out-of-sample against weirich2017's two scalar measured tactoid aspect ratios
+#   (aspect_ratio_2p5_filamin = "~3" and aspect_ratio_15_filamin = "~2"). Digitized
+#   aspect-ratio curves in weirich2017 (d_fig2a_aspect_ratio vs filamin_mole_fraction;
+#   d_fig3a_aspect_ratio_data vs elapsed_time) cannot be swept directly because
+#   bipolar_tactoid_equilibrium_exact takes (K, gamma, V) rather than filamin fraction
+#   or time; their exact point-by-point comparisons (showing 2.15x-5.6x overprediction
+#   and a strong downward AR(V) slope contradicting flat Fig. 3A) are recorded in
+#   q_weirich2017_cross_validation_summary in questions.yaml.
+# - bois2011 + weirich2019: 0 validations (bois2011 is pure theory with 0 measured or
+#   fitted datums, and studies 1D active-gel cortical patterning PDEs disjoint from
+#   passive nematic tactoids; see q_bois2011_no_cross_validation).
+# - hannezo2015 + weirich2019: 0 validations (physically disjoint systems: in vivo
+#   Drosophila tracheal epithelial active-gel cortical rings & FRAP vs reconstituted
+#   myosin-driven F-actin nematic tactoids; see q_hannezo2015_no_cross_validation).
+
+- id: val_bipolar_ar_vs_weirich2017_2p5pct
+  model: bipolar_tactoid_equilibrium_exact
+  inputs:
+    K: K_frank_si
+    gamma: "weirich2017/gamma_I_est_main"
+    V: V_tactoid_2p5pct_weirich2017_added
+  output: AR_eq
+  against: "weirich2017/aspect_ratio_2p5_filamin"
+  purpose: validation
+  quantities:
+    "weirich2017/interfacial_tension_isotropic": interfacial_tension
+    "weirich2017/tactoid_aspect_ratio": tactoid_aspect_ratio
+  conditions_ok: >
+    Both Weirich et al. (2017) and Weirich et al. (2019) study the same Gardel-lab
+    reconstituted nematic F-actin tactoids (2.6 uM F-actin, 1.5 mol % capping protein
+    giving ~180-200 nm filaments, cross-linked by filamin at ambient ~20 degC).
+    Weirich et al. (2019) SI Theory 1 (p. 9) & Eq. 6 (p. 11) apply the bare bipolar
+    tactoid equilibrium model (assuming infinitely strong tangential anchoring, with no
+    filamin-dependent anchoring parameter omega) using K ~ 1 pN (Oakes et al. 2007) and
+    gamma ~ 300 nN/m taken directly from Weirich et al. (2017) (weirich2017/gamma_I_est_main,
+    derived from 5-10 mol % filamin coalescence and FRAP) to all tactoids of size >= 5 um
+    (weirich2019 runs experiments at 10 mol % filamin). Here this uncalibrated bare
+    bipolar model is tested against Weirich et al. (2017)'s myosin-free 2.5 mol % filamin
+    aspect-ratio measurement (aspect_ratio_2p5_filamin = "~3", L ~ 5 um; digitized Fig. 2A:
+    2.938 [2.691, 3.191]) at the measured circular-arc volume V = 6.26 um^3 (L = 5 um,
+    L/r = 2.938).
+  basis: >
+    Weirich et al. (2019) SI Theory 1 (p. 9 / SI-3) justify treating L >= 5 um actin
+    tactoids as bipolar droplets governed by K and gamma from Weirich et al. (2017):
+    "For K ~ 1 pN and gamma ~ 300 nN/m estimated previously for actin tactoids (8, 15),
+    the crossover tactoid size is about a few um. In these experiments, we study tactoids
+    of size about 5 um or greater, justifying the use of the bipolar model in the rest of
+    this discussion." SI Theory 3 (p. 11 / SI-5, Eq. 6) specifies the bare equilibrium
+    shape by "explicitly minimizing F_el(alpha) + F_s(alpha) with respect to alpha with
+    constant V." Because none of (K, gamma, V) was fitted to Weirich et al. (2017)'s
+    aspect ratio, evaluating bipolar_tactoid_equilibrium_exact.AR_eq on Weirich et al.
+    (2017)'s L ~ 5 um tactoid directly tests the bipolar regime assumption out-of-sample.
+  note: >
+    Computes AR_eq = 6.450 (alpha_eq = 0.3076 rad, R_eq = 14.06 um, equilibrium bipolar
+    length L_bip = 8.52 um) vs printed "~3" (+3.450, 2.15x larger; formal BoxGraph verdict:
+    no verdict because printed "~3" carries an approximate tilde without precision).
+    Against Weirich et al. (2017)'s calibrated Fig. 2A digitization at 2.5 mol % filamin
+    (2.938 [2.691, 3.191]), AR_eq = 6.450 overshoots by +3.512 (2.20x larger, +14.0
+    error-bar half-widths above the mean). The >1.6x overprediction holds across all four
+    V_tactoid_2p5pct_weirich2017_added alternatives: V = 0.452 um^3 (self-consistent
+    L_bip = 5.0 um) -> AR_eq = 10.78 (3.59x); V = 6.00 um^3 (printed L = 5 um, AR = 3) ->
+    6.503 (2.17x); V = 16.3 um^3 (Table S1 L_eq = 6.04 um) -> 5.374 (1.79x); V = 27.5 um^3
+    (Weirich 2019 Fig. 2D L_D = 3.6 um) -> 4.868 (1.62x). Across K in [0.5, 2] pN and
+    gamma in [150, 600] nN/m at V = 6.26 um^3, AR_eq spans [3.01, 14.59], matching AR = 3.0
+    only if K/gamma is reduced 4.1x to 0.815 um or V is raised 66x to 410 um^3 (L_bip =
+    20.5 um). This confirms quantitatively (cf. q_weirich2017_cross_model_crossover_and_spacing)
+    that L ~ 5 um actin tactoids sit 5-6x below the exact homogeneous-to-bipolar crossover
+    (L_cross ~ 25-31 um) and are governed by finite homogeneous anchoring omega rather than
+    the bare strong-anchoring bipolar minimum.
+
+- id: val_bipolar_ar_vs_weirich2017_15pct
+  model: bipolar_tactoid_equilibrium_exact
+  inputs:
+    K: K_frank_si
+    gamma: "weirich2017/gamma_I_est_main"
+    V: V_tactoid_15pct_weirich2017_added
+  output: AR_eq
+  against: "weirich2017/aspect_ratio_15_filamin"
+  purpose: validation
+  quantities:
+    "weirich2017/interfacial_tension_isotropic": interfacial_tension
+    "weirich2017/tactoid_aspect_ratio": tactoid_aspect_ratio
+  conditions_ok: >
+    Same Gardel-lab reconstituted nematic F-actin tactoid assay (2.6 uM F-actin, 1.5 mol %
+    capping protein, ~180-200 nm filaments, ambient ~20 degC). Weirich et al. (2019) SI
+    Theory 1 (p. 9) & Eq. 6 (p. 11) apply the bare strong-anchoring bipolar equilibrium
+    model with K ~ 1 pN (Oakes et al. 2007) and gamma ~ 300 nN/m (weirich2017/gamma_I_est_main,
+    estimated at 5-10 mol % filamin) without a filamin-dependent anchoring term omega.
+    Here it is tested out-of-sample against Weirich et al. (2017)'s 15 mol % filamin
+    myosin-free tactoid aspect-ratio measurement (aspect_ratio_15_filamin = "~2", L ~ 5 um;
+    digitized Fig. 2A: 2.037 [1.750, 2.331]) at the measured circular-arc volume V =
+    13.45 um^3 (L = 5 um, L/r = 2.037). Note that higher filamin concentration (15 vs
+    5-10 mol %) may also increase gamma_I (Weirich 2017 Main p. 3 infers gamma_A/gamma_I
+    drops as isotropic cohesion grows); however, even doubling gamma to 600 nN/m still
+    yields AR_eq = 4.21 (2.1x too high).
+  basis: >
+    Weirich et al. (2019) SI Theory 1 (p. 9 / SI-3: "For K ~ 1 pN and gamma ~ 300 nN/m
+    estimated previously for actin tactoids (8, 15), the crossover tactoid size is about
+    a few um. In these experiments, we study tactoids of size about 5 um or greater,
+    justifying the use of the bipolar model") and SI Theory 3 (p. 11 / SI-5, Eq. 6:
+    "explicitly minimizing F_el(alpha) + F_s(alpha) with respect to alpha with constant V")
+    predict the bare equilibrium aspect ratio of L >= 5 um actin tactoids solely from
+    (K, gamma, V). Testing bipolar_tactoid_equilibrium_exact.AR_eq against Weirich et al.
+    (2017)'s 15 mol % filamin measurement tests both the bipolar regime assignment and
+    whether volume alone can reproduce the lower aspect ratio observed at high filamin.
+  note: >
+    Computes AR_eq = 5.571 (alpha_eq = 0.3552 rad, R_eq = 14.32 um, equilibrium bipolar
+    length L_bip = 9.96 um) vs printed "~2" (+3.571, 2.79x larger; formal BoxGraph verdict:
+    no verdict because printed "~2" carries an approximate tilde without precision).
+    Against Weirich et al. (2017)'s calibrated Fig. 2A digitization at 15 mol % filamin
+    (2.037 [1.750, 2.331]), AR_eq = 5.571 overshoots by +3.534 (2.73x larger, +12.1
+    error-bar half-widths above the mean). The >=2.0x overprediction holds across all four
+    V_tactoid_15pct_weirich2017_added alternatives: V = 0.452 um^3 (self-consistent
+    L_bip = 5.0 um) -> AR_eq = 10.78 (5.39x); V = 13.99 um^3 (printed L = 5 um, AR = 2) ->
+    5.530 (2.77x); V = 20 um^3 (V_tactoid_probe_added) -> 5.168 (2.58x); V = 78.3 um^3
+    (Weirich 2019 Fig. 2D largest droplet L_D = 5.1 um) -> 4.012 (2.01x). Across K in
+    [0.5, 2] pN and gamma in [150, 600] nN/m at V = 13.45 um^3, AR_eq spans [2.66, 12.54],
+    matching AR = 2.0 only if K/gamma is reduced 7.4x to 0.448 um (e.g., gamma = 2234 nN/m
+    at K = 1 pN) or V is raised 430x to 5777 um^3 (L_bip = 37.2 um). See
+    q_weirich2017_cross_validation_summary for the exact 10 mol % filamin comparison
+    (AR_eq = 5.988 vs Fig. 2A 2.438 [2.241, 2.640], 2.46x) and the 16-point Fig. 3A
+    coarsening test (AR_eq = 11.43 -> 6.15 vs flat observed 2.04-2.16).

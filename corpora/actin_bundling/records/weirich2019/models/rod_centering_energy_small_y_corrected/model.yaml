@@ -1,0 +1,40 @@
+id: rod_centering_energy_small_y_corrected
+name: small-y rod centering free-energy integral with factor of 2 from Eq. 2
+role: model
+variant_of: rod_centering_energy_small_y_printed
+corrections:
+  - equation: "SI Eq. 3 RHS"
+    change: "Include factor of 2 in the small-y integrand: Delta_F = f_0 * y_c * int_{x_c - L_M/2}^{x_c + L_M/2} dx 2*|x| / (L_D^2 - x^2)"
+    evidence: "Expanding SI Eq. 2 (sin(alpha_d) = 2*x*y / (4*y^2*L_D^2 + (L_D^2 - x^2 - y^2)^2)^(1/2)) to O(y) yields 2*x*y/(L_D^2 - x^2), and integrating 2*|x|/(L_D^2 - x^2) dx gives SI Eq. 4 exactly with F_0 = f_0*y_c (whereas Eq. 3 RHS without the factor of 2 equals half of Eq. 4)."
+stated:
+  page: 10
+  printed_page: "SI-4"
+  quote: "In the second step above, we used a small y approximation to derive"
+  where: "SI Theory 2, Eq. 3 RHS (corrected from Eqs. 2 and 4)"
+equation: "Delta_F = f_0 * y_c * int_{x_c - L_M/2}^{x_c + L_M/2} dx 2*|x| / (L_D^2 - x^2)"
+inputs:
+  f_0:
+    quantity: alignment_energy_per_length
+    unit: pN
+  x_c:
+    quantity: rod_center_axial_position
+    unit: um
+  y_c:
+    quantity: rod_center_transverse_position
+    unit: um
+  L_D:
+    quantity: tactoid_semi_major_axis
+    unit: um
+  L_M:
+    quantity: myosin_filament_length
+    unit: um
+outputs:
+  Delta_F:
+    quantity: centering_free_energy
+    unit: "pN*nm"
+  Delta_F_over_F0:
+    quantity: centering_free_energy_dimless
+    unit: dimensionless
+settings:
+  n_quad: 16
+stochastic: false

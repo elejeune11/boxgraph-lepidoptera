@@ -1,0 +1,463 @@
+# ============================================================================
+# 1. Pupal emergence rate and 2x2 Pearson chi-squared reproduction (SI p. 6)
+# ============================================================================
+
+- id: run_cytod_emergence_chi2
+  model: pupal_emergence_chi_squared
+  inputs:
+    n_treated_injected: cytod_pupae_injected_treated
+    n_control_injected: cytod_pupae_injected_control
+    n_treated_emerged: cytod_pupae_emerged_treated
+    n_control_emerged: cytod_pupae_emerged_control
+  settings:
+    yates_correction: false
+  outputs:
+    n_total_injected: cytod_total_injected_pred
+    emergence_rate: cytod_emergence_rate_pred
+    chi2: cytod_emergence_chi2_pred
+    p_value: cytod_emergence_p_pred
+  note: "Reproduces SI p. 6 total injected (76), overall emergence rate (69.74% -> 70%), chi2(1) = 0.02113 (printed 0.0211), and p = 0.8844 (printed 0.884) without Yates correction."
+
+# ============================================================================
+# 2. Adult H. sara approximate rectangular scale area A = L * W (p. 3, SI pp. 2, 5)
+# ============================================================================
+
+- id: run_area_blue_cover
+  model: scale_rectangular_area
+  inputs:
+    L: sem_length_blue_cover
+    W: sem_width_blue_cover
+  outputs:
+    A: area_blue_cover_pred
+  note: "Checks E[L]*E[W] = 91.7 * 29.5 = 2705.15 um^2 vs printed mean ± SE area 2700 ± 21 um^2."
+
+- id: run_area_blue_ground
+  model: scale_rectangular_area
+  inputs:
+    L: sem_length_blue_ground
+    W: sem_width_blue_ground
+  outputs:
+    A: area_blue_ground_pred
+  note: "Checks E[L]*E[W] = 86.6 * 42.9 = 3715.14 um^2 vs printed mean ± SE area 3708 ± 35 um^2."
+
+- id: run_area_black_cover
+  model: scale_rectangular_area
+  inputs:
+    L: sem_length_black_cover
+    W: sem_width_black_cover
+  outputs:
+    A: area_black_cover_pred
+  note: "Checks E[L]*E[W] = 97.4 * 31.3 = 3048.62 um^2 vs printed mean ± SE area 3044 ± 25 um^2."
+
+- id: run_area_black_ground
+  model: scale_rectangular_area
+  inputs:
+    L: sem_length_black_ground
+    W: sem_width_black_ground
+  outputs:
+    A: area_black_ground_pred
+  note: "Checks E[L]*E[W] = 86.4 * 47.8 = 4129.92 um^2 vs printed mean ± SE area 4123 ± 30 um^2."
+
+# ============================================================================
+# 3. Ridge spacing, ridge count, and 1:1 developing actin templating (p. 3, SI p. 5)
+# ============================================================================
+
+- id: run_ridge_spacing_illustrative
+  model: ridge_spacing_from_width_and_count
+  inputs:
+    W: sem_width_black_cover
+    N: adult_cover_ridge_number_illustrative_added
+  outputs:
+    s: ridge_spacing_illustrative_pred
+  note: "Exercises s = W / N (SI p. 5) on black cover scale width (31.3 um) with illustrative cover ridge count (33, alt 30/39) prior to figure digitization."
+
+- id: run_ridge_number_black_cover
+  model: ridge_number_from_width_and_spacing
+  inputs:
+    W: sem_width_black_cover
+    s: sem_ridge_spacing_black
+  outputs:
+    N: ridge_number_black_cover_pred
+  note: "Implied adult black cover ridge number N = 31.3 / 0.962 = 32.54 (matches developing black actin bundle count 32 ± 1.1 and Fig. 2L adult dashed line)."
+
+- id: run_ridge_number_blue_cover
+  model: ridge_number_from_width_and_spacing
+  inputs:
+    W: sem_width_blue_cover
+    s: sem_ridge_spacing_blue
+  outputs:
+    N: ridge_number_blue_cover_pred
+  note: "Implied adult blue cover ridge number using pooled blue spacing 0.804 um gives 36.69 (below developing blue actin bundle count 40 ± 1.8 because cover scales have smaller ridge spacing than ground scales, Tukey p < 0.001)."
+
+- id: run_actin_templated_spacing_black
+  model: actin_templated_ridge_spacing
+  inputs:
+    W: sem_width_black_cover
+    N_actin: actin_bundle_number_black
+  outputs:
+    s: actin_templated_spacing_black_pred
+  note: "1:1 actin-to-ridge templating predicts adult black cover ridge spacing s = 31.3 / 32 = 0.9781 um vs measured 0.962 ± 0.004 um."
+
+- id: run_actin_templated_spacing_blue
+  model: actin_templated_ridge_spacing
+  inputs:
+    W: sem_width_blue_cover
+    N_actin: actin_bundle_number_blue
+  outputs:
+    s: actin_templated_spacing_blue_pred
+  note: "1:1 actin-to-ridge templating predicts adult blue cover ridge spacing s = 29.5 / 40 = 0.7375 um (matching Fig. S5A blue cover median ~0.75 um, below cover+ground pooled 0.804 ± 0.007 um)."
+
+# ============================================================================
+# 4. Sampling design scale-count accounting & caption/text consistency (pp. 3, 11-13, SI pp. 5-6)
+# ============================================================================
+
+- id: run_sampling_hsara_total
+  model: sampling_scale_count_two_regions
+  inputs:
+    n_ind: sem_hsara_individual_count
+    n_regions: sem_wing_regions_count
+    n_cover: sem_hsara_cover_per_region
+    n_ground: sem_hsara_ground_per_region
+  outputs:
+    N_scales: hsara_total_scales_pred
+  note: "20 individuals x 2 regions x (10 cover + 10 ground) = 800 scales (matches p. 13 and Fig. S5, contradicts p. 3 '400 scales')."
+
+- id: run_sampling_hsara_ridge_width
+  model: sampling_scale_count_two_regions
+  inputs:
+    n_ind: sem_hsara_individual_count
+    n_regions: sem_wing_regions_count
+    n_cover: sem_hsara_rw_cover_per_region
+    n_ground: sem_hsara_rw_ground_per_region
+  outputs:
+    N_scales: hsara_rw_scales_pred
+  note: "20 individuals x 2 regions x (5 cover + 5 ground) = 400 scales for ridge width (SI p. 5; contradicts Fig. S5C caption 'n = 800')."
+
+- id: run_sampling_hedem_total
+  model: sampling_scale_count_two_regions
+  inputs:
+    n_ind: hedem_individual_count
+    n_regions: sem_wing_regions_count
+    n_cover: hedem_cover_per_region
+    n_ground: hedem_ground_per_region
+  outputs:
+    N_scales: hedem_total_scales_pred
+  note: "5 H. e. demophoon individuals x 2 regions x (5 cover + 5 ground) = 100 scales."
+
+- id: run_sampling_cytod_ridge_number
+  model: sampling_scale_count_per_group
+  inputs:
+    n_ind: cytod_sem_ind_per_group
+    n_scales_per_ind: cytod_rn_scales_per_ind
+  outputs:
+    N_scales: cytod_rn_scales_per_group_pred
+  note: "4 individuals x 5 scales = 20 scales per group (SI p. 6; matches 20 dots in Fig. 8N, contradicts Fig. 8N caption 'n = 12')."
+
+- id: run_sampling_cytod_curvature
+  model: sampling_scale_count_per_group
+  inputs:
+    n_ind: cytod_sem_ind_per_group
+    n_scales_per_ind: cytod_curv_scales_per_ind
+  outputs:
+    N_scales: cytod_curv_scales_per_group_pred
+  note: "4 individuals x 3 scales = 12 scales per group (SI p. 6; matches 12 dots in Fig. 8O, contradicts Fig. 8O caption 'n = 20')."
+
+# ============================================================================
+# 5. Cyto-D ridge curvature Welch two-sample t-test reproduction (p. 10, SI p. 6)
+# ============================================================================
+
+- id: run_cytod_curvature_welch_n12
+  model: welch_two_sample_t_test_summary
+  inputs:
+    mean_control: cytod_curvature_control
+    se_control: cytod_curvature_control_se
+    n_control: cytod_curv_scales_per_group_pred
+    mean_treated: cytod_curvature_treated
+    se_treated: cytod_curvature_treated_se
+    n_treated: cytod_curv_scales_per_group_pred
+  outputs:
+    t_stat: cytod_curv_welch_t_n12_pred
+    df: cytod_curv_welch_df_n12_pred
+    p_value: cytod_curv_welch_p_n12_pred
+  note: "Welch two-sample t-test from printed mean ± SE (control 0.0158 ± 0.0006, treated 0.0566 ± 0.0018) with n = 12 scales/group (SI p. 6); yields t = -21.50, df = 13.41 vs printed t = -2.78, df = 12."
+
+- id: run_cytod_curvature_welch_n20
+  model: welch_two_sample_t_test_summary
+  inputs:
+    mean_control: cytod_curvature_control
+    se_control: cytod_curvature_control_se
+    n_control: cytod_curvature_n_fig8O_caption
+    mean_treated: cytod_curvature_treated
+    se_treated: cytod_curvature_treated_se
+    n_treated: cytod_curvature_n_fig8O_caption
+  outputs:
+    t_stat: cytod_curv_welch_t_n20_pred
+    df: cytod_curv_welch_df_n20_pred
+    p_value: cytod_curv_welch_p_n20_pred
+  note: "Same Welch t-test using Fig. 8O caption's printed n = 20 scales/group; yields t = -21.50, df = 23.17 (further from printed df = 12)."
+
+# ============================================================================
+# 6. Exact t-test and LRT chi-squared p-value reproductions (pp. 3, 9-10, SI p. 2)
+# ============================================================================
+
+- id: run_pval_cytod_ridge_number
+  model: t_test_p_value_from_t_df
+  inputs:
+    t_stat: cytod_ridge_number_t
+    df: cytod_ridge_number_df
+  outputs:
+    p_value: cytod_ridge_number_p_pred
+  note: "Two-sided t-test p-value for t = -0.41, df = 5 -> 0.6988 vs printed 0.70."
+
+- id: run_pval_hedem_ridge_spacing
+  model: t_test_p_value_from_t_df
+  inputs:
+    t_stat: hedem_ridge_spacing_t
+    df: hedem_ridge_spacing_df
+  outputs:
+    p_value: hedem_ridge_spacing_p_pred
+  note: "Two-sided paired t-test p-value for t = 1.94, df = 4 -> 0.1244 (0.1233-0.1255 with input rounding on 1.94) vs printed 0.125."
+
+- id: run_pval_cytod_brightness
+  model: t_test_p_value_from_t_df
+  inputs:
+    t_stat: cytod_brightness_t
+    df: cytod_brightness_df
+  outputs:
+    p_value: cytod_brightness_p_pred
+  note: "Two-sided t-test p-value for t = 4.34, df = 33 -> 0.000127 vs printed < 0.001."
+
+- id: run_pval_cytod_curvature
+  model: t_test_p_value_from_t_df
+  inputs:
+    t_stat: cytod_curvature_t
+    df: cytod_curvature_df
+  outputs:
+    p_value: cytod_curvature_p_pred
+  note: "Two-sided t-test p-value for printed t = -2.78, df = 12 -> 0.01665 vs printed < 0.05."
+
+- id: run_pval_lrt_ridge_width_type
+  model: chi_squared_p_value_from_stat_df
+  inputs:
+    chi2: lrt_ridge_width_type_chi2
+    df: lrt_ridge_width_type_df
+  outputs:
+    p_value: lrt_ridge_width_type_p_pred
+  note: "Upper-tail chi2 p-value for chi2 = 0.24, df = 1 -> 0.6242 (0.6206-0.6278 with rounding on 0.24) vs printed 0.622."
+
+- id: run_pval_lrt_area
+  model: chi_squared_p_value_from_stat_df
+  inputs:
+    chi2: lrt_area_chi2
+    df: lrt_area_df
+  outputs:
+    p_value: lrt_area_p_pred
+
+- id: run_pval_lrt_width
+  model: chi_squared_p_value_from_stat_df
+  inputs:
+    chi2: lrt_width_chi2
+    df: lrt_width_df
+  outputs:
+    p_value: lrt_width_p_pred
+
+- id: run_pval_lrt_ridge_spacing_region
+  model: chi_squared_p_value_from_stat_df
+  inputs:
+    chi2: lrt_ridge_spacing_region_chi2
+    df: lrt_ridge_spacing_region_df
+  outputs:
+    p_value: lrt_ridge_spacing_region_p_pred
+
+- id: run_pval_lrt_ridge_spacing_type
+  model: chi_squared_p_value_from_stat_df
+  inputs:
+    chi2: lrt_ridge_spacing_type_chi2
+    df: lrt_ridge_spacing_type_df
+  outputs:
+    p_value: lrt_ridge_spacing_type_p_pred
+
+- id: run_pval_lrt_ridge_width_region
+  model: chi_squared_p_value_from_stat_df
+  inputs:
+    chi2: lrt_ridge_width_region_chi2
+    df: lrt_ridge_width_region_df
+  outputs:
+    p_value: lrt_ridge_width_region_p_pred
+
+- id: run_pval_lrt_actin_width
+  model: chi_squared_p_value_from_stat_df
+  inputs:
+    chi2: lrt_actin_width_chi2
+    df: lrt_actin_df_added
+  outputs:
+    p_value: lrt_actin_width_p_pred
+
+- id: run_pval_lrt_actin_spacing
+  model: chi_squared_p_value_from_stat_df
+  inputs:
+    chi2: lrt_actin_spacing_chi2
+    df: lrt_actin_df_added
+  outputs:
+    p_value: lrt_actin_spacing_p_pred
+
+- id: run_pval_lrt_actin_number
+  model: chi_squared_p_value_from_stat_df
+  inputs:
+    chi2: lrt_actin_number_chi2
+    df: lrt_actin_df_added
+  outputs:
+    p_value: lrt_actin_number_p_pred
+  note: "Demonstrates df = 1 gives p = 0.000911 (< 0.001 as printed), whereas alternative df = 2 gives p = 0.00409 (> 0.001)."
+
+# ============================================================================
+# 7. Pupal development time checkpoints (p. 12-13)
+# ============================================================================
+
+- id: run_hsara_confocal_times
+  model: pupal_development_time_from_percent
+  inputs:
+    T_pupal: pupal_duration_hsara
+  sweep:
+    p_dev: hsara_confocal_stage_sample_counts
+  outputs:
+    t_days: hsara_confocal_elapsed_days
+    t_hours: hsara_confocal_elapsed_hours
+  note: "Maps H. sara confocal percentages (25-62.5% of 8 d) to elapsed hours (48-120 h, half-day grid)."
+
+- id: run_hsara_tausted_times
+  model: pupal_development_time_from_percent
+  inputs:
+    T_pupal: pupal_duration_hsara
+  sweep:
+    p_dev: hsara_tausted_stage_sample_counts
+  outputs:
+    t_days: hsara_tausted_elapsed_days
+    t_hours: hsara_tausted_elapsed_hours
+  note: "Maps H. sara TauSTED percentages (44-81% of 8 d) to elapsed hours (84.5-155.5 h, rounded half-day checkpoints)."
+
+- id: run_mhelenor_tausted_times
+  model: pupal_development_time_from_percent
+  inputs:
+    T_pupal: pupal_duration_mhelenor
+  sweep:
+    p_dev: mhelenor_tausted_stage_sample_counts
+  outputs:
+    t_days: mhelenor_tausted_elapsed_days
+    t_hours: mhelenor_tausted_elapsed_hours
+  note: "Maps M. helenor TauSTED percentages (38-71% of 14 d) to elapsed days (5.3-9.9 d)."
+
+# ============================================================================
+# 8. Reconstructed Cytochalasin D DMSO vehicle stoichiometry check (p. 12)
+# ============================================================================
+
+- id: run_cytod_vehicle_dmso_check
+  model: cytod_vehicle_dmso_concentration
+  inputs:
+    rho_stock: cytod_stock_conc
+    MW_cytod: cytod_molar_mass_added
+    c_target: cytod_working_conc
+    c_neat_dmso: dmso_neat_molarity_added
+  outputs:
+    c_stock: cytod_stock_molarity_est
+    dilution_factor: cytod_dilution_factor_est
+    c_dmso_working: cytod_dmso_working_conc_est
+  note: "Reconstructed stoichiometric dilution of 5 mg/ml Cyto-D in neat DMSO to 20 uM yields ~28,588 uM (28.6 mM, 0.203% v/v) DMSO vs printed control '20 μm [uM] DMSO'."
+
+# ============================================================================
+# 9. Curve-port model runs on digitized X-ray correlation and AFM height profiles
+# ============================================================================
+
+- id: run_corr_peak_blue_ridge
+  model: correlation_peak_ridge_spacing
+  inputs:
+    corr_curve: d_figs1e_corr_blue_ridge
+  outputs:
+    s_ridge: xray_ridge_spacing_blue_from_curve
+  note: "Extracts first non-zero correlation peak of digitized SI Fig. 1E G_z(y) curve (909.57 nm vs printed 910.36 nm, -0.09%)."
+
+- id: run_corr_peak_black_ridge
+  model: correlation_peak_ridge_spacing
+  inputs:
+    corr_curve: d_figs1f_corr_black_ridge
+  outputs:
+    s_ridge: xray_ridge_spacing_black_from_curve
+  note: "Extracts first non-zero correlation peak of digitized SI Fig. 1F G_z(y) curve (949.66 nm vs printed 948.37 nm, +0.14%)."
+
+- id: run_corr_peak_blue_crossrib
+  model: correlation_peak_crossrib_spacing
+  inputs:
+    corr_curve: d_figs1g_corr_blue_crossrib
+  outputs:
+    s_crossrib: xray_crossrib_spacing_blue_from_curve
+  note: "Extracts first non-zero correlation peak of digitized SI Fig. 1G G_x(z) curve (484.40 nm vs printed 483.76 nm, +0.13%)."
+
+- id: run_corr_peak_black_crossrib
+  model: correlation_peak_crossrib_spacing
+  inputs:
+    corr_curve: d_figs1h_corr_black_crossrib
+  outputs:
+    s_crossrib: xray_crossrib_spacing_black_from_curve
+  note: "Extracts first non-zero correlation peak of digitized SI Fig. 1H G_x(z) curve (605.62 nm vs printed 606.81 nm, -0.20%)."
+
+- id: run_afm_height_treated_p4
+  model: afm_ridge_height_from_profile
+  inputs:
+    profile: d_figs12a_afm_treated_profile4
+  outputs:
+    H_mean: afm_height_treated_p4_mean
+    H_max: afm_height_treated_p4_max
+  note: "Extracts mean (0.7553 um) and max (0.9000 um) ridge height above profile minimum from digitized SI Fig. 12A Profile 4 (treated scale, confirming SI Fig. 12C values 907-1395 are in nm, not um)."
+
+- id: run_afm_height_control_p4
+  model: afm_ridge_height_from_profile
+  inputs:
+    profile: d_figs12b_afm_control_profile4
+  outputs:
+    H_mean: afm_height_control_p4_mean
+    H_max: afm_height_control_p4_max
+  note: "Extracts mean (1.1006 um) and max (1.3167 um) ridge height above profile minimum from digitized SI Fig. 12B Profile 4 (control scale, confirming SI Fig. 12C values 1092-1516 are in nm, not um)."
+
+# ============================================================================
+# 10. Sweeps of N = W / s over digitized Fig. 2D and SI Fig. 6C regression curves
+# ============================================================================
+
+- id: run_fig2d_ridge_num_blue_sweep
+  model: ridge_number_from_width_and_spacing
+  inputs:
+    s: sem_ridge_spacing_blue
+  sweep:
+    W: d_fig2d_reg_blue
+  outputs:
+    N: fig2d_ridge_num_blue_pred
+  note: "Sweeps N = W / s (using pooled blue spacing 0.804 um) over the scale-width x-grid of Fig. 2D blue OLS regression."
+
+- id: run_fig2d_ridge_num_black_sweep
+  model: ridge_number_from_width_and_spacing
+  inputs:
+    s: sem_ridge_spacing_black
+  sweep:
+    W: d_fig2d_reg_black
+  outputs:
+    N: fig2d_ridge_num_black_pred
+  note: "Sweeps N = W / s (using black spacing 0.962 um) over the scale-width x-grid of Fig. 2D black OLS regression."
+
+- id: run_figs6c_ridge_num_proximal_sweep
+  model: ridge_number_from_width_and_spacing
+  inputs:
+    s: hedem_ridge_spacing_proximal
+  sweep:
+    W: d_figs6c_reg_proximal
+  outputs:
+    N: figs6c_ridge_num_proximal_pred
+  note: "Sweeps N = W / s (using H. e. demophoon proximal spacing 0.906 um) over the scale-width x-grid of SI Fig. 6C proximal OLS regression."
+
+- id: run_figs6c_ridge_num_distal_sweep
+  model: ridge_number_from_width_and_spacing
+  inputs:
+    s: hedem_ridge_spacing_distal
+  sweep:
+    W: d_figs6c_reg_distal
+  outputs:
+    N: figs6c_ridge_num_distal_pred
+  note: "Sweeps N = W / s (using H. e. demophoon distal spacing 0.956 um) over the scale-width x-grid of SI Fig. 6C distal OLS regression."

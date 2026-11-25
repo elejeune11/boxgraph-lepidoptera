@@ -1,0 +1,40 @@
+id: cytosim_3d_dynamic_multimer_sim
+name: Custom 3D CytoSim Brownian dynamics with dynamic dimerization/multimerization (activity = dimerizer)
+role: model
+runnable: false
+not_runnable_reason: >
+  Full 3D multi-agent custom CytoSim simulation (30 growing F-actin fibers and 2,000 diffusing
+  Solid monomers carrying 1 actin-binding Wrist + 1 or 2 custom Dimerizer Wrists over 300,000
+  steps = 600 s across 375 .cym configs in Figure_5 and Figure_S7) requires compiling and running
+  the custom-modified C++ CytoSim engine in Source_Code/Cytosim/.
+stated:
+  file: Inputfile_Templates/inputTemplate-DynamicDimer/config.cym
+  lines: "44-105"
+  quote: "activity = dimerizer"
+  where: "Inputfile_Templates/inputTemplate-DynamicDimer/config.cym, inputTemplate-DynamicMultimer/config.cym, Figure_5, Figure_S7, Source_Code/Cytosim/src/sim/hands/dimerizer.h"
+equation: "Custom C++ CytoSim Dimerizer engine: PointGrid::tryToAttach() binds free dimerizer Wrists within |anchor_1 - center_2| < 0.09 um, Wrist::setInteractions() adds two parallel stiffness=5 pN/um springs (k_eff=10 pN/um), and Dimerizer::testKramersDetachment() detaches both hands using F_bell = 5*d"
+inputs:
+  R_drop: {quantity: droplet_radius, unit: um}
+  dt: {quantity: time, unit: s}
+  eta: {quantity: dynamic_viscosity, unit: pN*s/um^2}
+  k_steric: {quantity: spring_stiffness, unit: pN/um}
+  N_fil: {quantity: filament_count, unit: dimensionless}
+  N_monomer: {quantity: crosslinker_count, unit: dimensionless}
+  r_blob: {quantity: particle_radius, unit: um}
+  k_bond_actin: {quantity: spring_stiffness, unit: pN/um}
+  k_bond_dimer: {quantity: spring_stiffness, unit: pN/um}
+  k_bind_actin: {quantity: rate, unit: 1/s}
+  r_bind_actin: {quantity: binding_distance, unit: um}
+  k_unbind_actin: {quantity: rate, unit: 1/s}
+  k_bind_dimer: {quantity: rate, unit: 1/s}
+  r_bind_dimer: {quantity: binding_distance, unit: um}
+  k_unbind_dimer: {quantity: rate, unit: 1/s}
+  F_unbind: {quantity: force, unit: pN}
+outputs:
+  frac_occupied: {quantity: surface_area_fraction, unit: dimensionless}
+  frac_dimer_2: {quantity: fraction, unit: dimensionless}
+settings:
+  n_steps: 300000
+  nb_frames: 600
+  seed: 0
+stochastic: true

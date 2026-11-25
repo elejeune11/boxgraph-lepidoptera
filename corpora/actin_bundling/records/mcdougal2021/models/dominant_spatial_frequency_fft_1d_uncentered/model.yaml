@@ -1,0 +1,39 @@
+id: dominant_spatial_frequency_fft_1d_uncentered
+name: uncentered zero-padded 1D FFT dominant spatial frequency and ridge spacing (SI p. 11, Fig. S10D variant)
+role: processing
+from_words: true
+variant_of: dominant_spatial_frequency_fft_1d
+corrections:
+  - equation: "SI p. 11 & Fig. S10D 1D FFT"
+    change: "Compute uncentered abs(rfft(h, n=n_fft)) without subtracting mean(h), using n_uniform = 79 (dx = 88.5 nm)"
+    evidence: "SI Fig. S10D (p. 23) shows a large nonzero DC peak of 4.38 x 10^3 nm at f = 0, a dominant peak magnitude of 1.28 x 10^3 nm at f = 0.684 um^-1, and terminates at Nyquist 5.65 um^-1 (dx = 88.5 nm, N = 79 samples). Subtracting mean(h) zeros DC, raises peak magnitude to 1.52 x 10^3 nm, and shifts the peak frequency down to 0.660 um^-1 (-3.6%)."
+stated:
+  page: 11
+  printed_page: "SI 3"
+  quote: "find the dominant spatial frequency of the profile, using a zero-padded profile"
+  where: "SI Detailed Methods (Image analysis) & SI Fig. S10D (p. 23)"
+equation: "freq = argmax_{f >= f_min} |FFT_N(h)|; s = 1 / freq"
+built_from:
+  - spacing_from_spatial_frequency
+inputs:
+  h:
+    quantity: surface_height
+    unit: nm
+    curve:
+      quantity: lateral_distance
+      unit: um
+    description: Flattened nonnegative 1D surface height profile h(x) in nm versus lateral distance x in um.
+outputs:
+  freq:
+    quantity: dominant_spatial_frequency
+    unit: 1/um
+    description: Dominant spatial frequency peak (um^-1) above the low-frequency cutoff f_min.
+  s:
+    quantity: ridge_or_actin_spacing
+    unit: um
+    description: Corresponding ridge periodic spacing s = 1 / freq (um).
+settings:
+  n_fft: 4096
+  f_min: 0.45
+  n_uniform: 79
+stochastic: false

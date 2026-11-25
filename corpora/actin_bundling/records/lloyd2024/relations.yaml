@@ -1,0 +1,155 @@
+# ==============================================================================
+# Cross-record ModelAtlas relations for lloyd2024
+# ==============================================================================
+#
+# 1. Pair: lloyd2024 + mcdougal2021
+#    (McDougal et al., PNAS 118(49), e2112009118, 2021; neither paper cites the
+#    other: lloyd2024 ref-2 is McDougal et al. 2019 J. Opt., and mcdougal2021
+#    ref-19 is Lloyd & Nadeau 2021; 0 stated relations; 0 cited.yaml links).
+#    Three proposed geometric/spacing relations connect the two butterfly wing
+#    scale morphogenesis records:
+#    - rel_mcdougal2021_bounding_box_surface_scales_rectangular_area (scales_as):
+#      3D cuboid bounding-box surface area S = 2*(L*W + L*T + W*T) scales with
+#      2D SEM rectangular area A = L*W in the thin flattened-lamina regime
+#      T << W < L (S -> 2*A, factor of 2 for two-sided vs one-sided area; breaks
+#      down in thick developing pupal scales T = 4.31-6.27 um).
+#    - rel_mcdougal2021_ridge_spacing_same_as_spatial_frequency (same_as,
+#      too_plain) & rel_mcdougal2021_actin_templated_spacing_same_as_spatial_frequency
+#      (same_as, too_plain): real-space count spacing s = W/N (and s = W/N_actin)
+#      equals Fourier reciprocal spacing s = 1/freq under mean spatial density
+#      freq = N/W (or N_actin/W).
+#    Excluded non-equivalences (documented in q_mcdougal2021_modelatlas_timing_profiles_and_area):
+#    - Pupal timing: lloyd2024/pupal_development_time_from_percent (t = (p_dev/100)*T_pupal)
+#      is an algebraic inverse of mcdougal2021/pupal_development_percent (p_dev = 100*t/T_pupal)
+#      and pupal_duration_from_checkpoint (T_pupal = 100*t/p_dev) (distinct output dimension
+#      or opposite scaling exponents +1 vs -1; no helper model added without a stated relation).
+#    - Curve-port profile analyzers (untestable in ModelAtlas): afm_ridge_height_from_profile
+#      vs mcdougal2021/profile_slope_rotation_and_peaks (and scalar ridge_peak_height_baseline),
+#      and correlation_peak_ridge_spacing vs dominant_spatial_frequency_fft_1d.
+#    - Optical/phase microscopy models in mcdougal2021 and statistics/stoichiometry models in
+#      lloyd2024 are disjoint.
+
+- id: rel_mcdougal2021_bounding_box_surface_scales_rectangular_area
+  kind: scales_as
+  a: mcdougal2021/scale_bounding_box_geometry
+  b: lloyd2024/scale_rectangular_area
+  mapping:
+    L: "L"
+    W: "W"
+  output_map:
+    A: S
+  regime:
+    L: [85.0, 180.0]
+    W: [30.0, 60.0]
+    T: [0.05, 0.20]
+  provenance: proposed
+  reason: >
+    Both papers approximate butterfly wing scale area using a rectangular envelope parameterized
+    by scale length L and width W: mcdougal2021 computes the closed 3D cuboid bounding-box
+    surface area S = 2*(L*W + L*T + W*T) (dorsal + ventral faces plus four lateral walls),
+    whereas lloyd2024 computes the single-sided 2D projected planar area A = L*W from top-down
+    SEM micrographs. In the thin flattened-lamina regime (T << W < L, anchored at mcdougal2021's
+    mature lower-lamina thickness ~100 nm = 0.1 um with adult H. sara and V. cardui L in
+    [85, 180] um and W in [30, 60] um), lateral-wall area 2*T*(L+W) is < 0.9% of 2*L*W, so S
+    scales identically as L^1 * W^1 with A (partial log-slopes match to < 0.007 < 0.01). Recorded
+    as scales_as rather than reduces_to or same_as because S -> 2*A (differing by the exact
+    factor of 2 between two-sided 3D surface area and one-sided 2D footprint area). Note that
+    in mcdougal2021's developing pupal scale regime (T = 4.31-6.27 um, W = 8.58-46.14 um,
+    Fig. 5C-E), lateral walls contribute 12.4%-87.9% of 2*L*W and break pure L*W scaling
+    (d ln S / d ln W = 0.61-0.92).
+  assumptions:
+    - "Thin flattened-scale limit T << W < L (T in [0.05, 0.20] um around mcdougal2021's ~100 nm mature lower lamina thickness, p. 4; adult scale L in [85, 180] um, W in [30, 60] um)."
+    - "Scaling comparison ignores the constant topological factor of 2 between two-sided 3D cuboid surface area S -> 2*L*W and one-sided 2D SEM projected area A = L*W."
+    - "Does not hold for thick developing pupal scales in mcdougal2021 Fig. 5C-E (T = 4.31-6.27 um) or for volume V = L*W*T when thickness T(t) varies during scale flattening."
+
+- id: rel_mcdougal2021_ridge_spacing_same_as_spatial_frequency
+  kind: same_as
+  a: lloyd2024/ridge_spacing_from_width_and_count
+  b: mcdougal2021/spacing_from_spatial_frequency
+  mapping:
+    freq: "N / W"
+  output_map:
+    s: s
+  regime:
+    W: [25.0, 60.0]
+    N: [20.0, 65.0]
+  provenance: proposed
+  reason: >
+    Exact real-space-counting vs Fourier-frequency duality for longitudinal butterfly wing-scale
+    ridge spacing s (um): lloyd2024 computes average ridge spacing from SEM scale width divided
+    by total ridge count (s = W / N, SI p. 5), whereas mcdougal2021 computes periodic ridge
+    spacing from the reciprocal of the dominant 1D/2D FFT spatial frequency (s = 1 / freq,
+    SI Figs. S10D & S11B). Identifying spatial frequency with mean ridge linear density
+    freq = N / W (ridges per um) makes both expressions symbolically identical (flagged too_plain
+    by ModelAtlas's <= 2-op threshold so it does not form a non-trivial algebraic family).
+  assumptions:
+    - "Uniform periodic ridge spacing across the scale width so that the dominant FFT spatial frequency equals the global mean ridge linear density freq = N / W."
+    - "Regime W in [25, 60] um and N in [20, 65] spans H. sara adult cover/ground scales (W = 29.5-47.8 um, s = 0.75-0.96 um) and V. cardui scales (W ~ 46 um, s = 1.46-1.85 um)."
+
+- id: rel_mcdougal2021_actin_templated_spacing_same_as_spatial_frequency
+  kind: same_as
+  a: lloyd2024/actin_templated_ridge_spacing
+  b: mcdougal2021/spacing_from_spatial_frequency
+  mapping:
+    freq: "N_actin / W"
+  output_map:
+    s: s
+  regime:
+    W: [25.0, 60.0]
+    N_actin: [20.0, 65.0]
+  provenance: proposed
+  reason: >
+    Exact duality between lloyd2024's 1:1 developing F-actin bundle templating predictor
+    (s = W / N_actin, p. 3 & SI p. 5) and mcdougal2021's reciprocal spatial-frequency formula
+    for developing actin-bundle / ridge spacing (s = 1 / freq, Fig. 5G & SI Fig. S11B) when
+    dominant spatial frequency equals the linear actin-bundle density freq = N_actin / W
+    (flagged too_plain by ModelAtlas's <= 2-op threshold so it does not join a non-trivial
+    algebraic family).
+  assumptions:
+    - "1:1 correspondence between developing longitudinal F-actin bundles and adult longitudinal cuticle ridges across scale width W, with uniform periodicity freq = N_actin / W."
+    - "Regime W in [25, 60] um and N_actin in [20, 65] spans H. sara developing cover scales (N_actin = 32-40, adult W = 29.5-31.3 um) and V. cardui developing scales (W ~ 46 um, s ~ 1.8 um)."
+
+# ==============================================================================
+# 2. Pair: lloyd2024 + sekine2024
+#    (Sekine et al., Nat. Commun. 15, 464, 2024; neither paper cites the other;
+#    0 stated relations; 0 proposed relations; 0 cited.yaml links).
+#    Full audit across all 23 lloyd2024 models and all 32 sekine2024 models finds
+#    no non-trivial model-to-model relations:
+#    - Rejected automated shape match: lloyd2024/xray_tomography_correlation_analysis
+#      vs sekine2024/cgmd_2d_network ('length from energy, length') is a pure
+#      dimensional coincidence (11 keV synchrotron X-ray photon energy vs k_B*T
+#      thermal energy; both non-runnable and physically disjoint).
+#    - Excluded 1-2 op trivial quotients across unrelated organisms/organs as
+#      too_plain (matching sekine2024's own convention in sekine2024+gov2018):
+#      ridge_spacing_from_width_and_count (W/N) & actin_templated_ridge_spacing
+#      (W/N_actin) vs structure_factor_interval (1/(mu/(2*pi))) &
+#      structure_factor_interval_wavenumber (2*pi/mu); pseudo_image_discretization
+#      (L_box/N_grid, simulation pixel pitch) and fusion_duration_time (N_frames*dt)
+#      measure physically distinct quantities.
+#    - lloyd2024 contains no polymer mechanics, Langevin/CGMD, hydrodynamic drag,
+#      motor kinetics, or Gaussian Fourier structure-factor models.
+#    See q_sekine2024_no_model_relations_and_actin_patterning_contrast in
+#    lloyd2024/questions.yaml.
+#
+# 3. Pair: lloyd2024 + totz2024
+#    (Totz et al., Cell Reports Physical Science 5, 102063, 2024; co-published
+#    in 2024; neither paper cites the other; 0 stated relations; 0 proposed
+#    relations; 0 cited.yaml links).
+#    Full audit across all 23 lloyd2024 models and all 34 totz2024 models finds
+#    the two records mathematically complementary with 0 formal model relations:
+#    - lloyd2024 invokes Ghiradella's (1974) stress-buckling hypothesis and
+#      cytoplasmic pressure only qualitatively (p. 12, non-runnable
+#      multilayer_ridge_bragg_optics) and prints zero Foppl-von-Karman buckling
+#      or elasticity equations; totz2024 has 29 FvK thin-plate buckling / Hooke
+#      elasticity models and 5 local processing helpers, with zero morphometric
+#      area, pupal-timing, stoichiometry, or statistical-test models.
+#    - Curve-port ridge-height analyzers (untestable in ModelAtlas):
+#      lloyd2024/afm_ridge_height_from_profile (adult AFM global-minimum peak
+#      height, ~1.0-1.5 um) vs totz2024/fit_cosine_amplitude (early 39.6-41.0%
+#      single-ridge OLS cosine projection, ~24-64 nm).
+#    - Spacing models: actin_templated_ridge_spacing (W/N_actin) vs
+#      rayleigh_ritz_width_eq3_corrected (FvK buckling balance) share zero input
+#      variables; totz2024/scale_bundle_spacing (L = m*L_0) is a 1-op Fig. 2E
+#      parameter multiplier (too_plain).
+#    See q_totz2024_no_model_relations_and_buckling_synthesis in
+#    lloyd2024/questions.yaml.

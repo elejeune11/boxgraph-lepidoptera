@@ -1,0 +1,190 @@
+- id: rel_laplace_young_eq4_same_as_effective
+  kind: same_as
+  a: arnold2024/modified_laplace_young_eq4
+  b: arnold2024/effective_laplace_young
+  mapping:
+    P_Lo: "P_Lo"
+    P_Ld_eff: "P_Ld + sigma_el"
+    lam: "lam"
+  output_map:
+    kappa: kappa
+  regime:
+    P_Lo: [5.0, 20.0]
+    P_Ld: [1.0, 5.0]
+    sigma_el: [0.0, 4.0]
+    lam: [1.0, 10.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "26574"
+    quote: "into an effective outside pressure, Peff"
+    where: "Eq. 4 & p. 5 text"
+  assumptions:
+    - "Identifies the undefined symbol P_out in the text definition P_Ld^eff = sigma_el + P_out with P_Ld in Eq. (4)."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with nastkolb2022
+# (Nast-Kolb, Bleicher, Payr & Bausch, Mol. Biol. Cell 33:ar91, 2022)
+# Neither paper cites the other (0 stated relations, 0 cited.yaml links; 2
+# shared bibliographic entries across 45 x 66 references: Honigmann et al.,
+# eLife 2014 [ref-10 <-> ref-honigmann2014] and Spudich & Watt, JBC 1971
+# [ref-24 <-> ref-spudich1971]). Across all 21 runnable arnold2024 x 17
+# nastkolb2022 (11 runnable, 6 non-runnable) = 357 model pairs, exactly one
+# genuine equation-level identity exists: the 2D single-layer ribbon filament
+# count N = 1000 * W / d_spacing applied to ~1-2 um F-actin bundles on fluid
+# supported lipid bilayers (flagged too_plain by ModelAtlas's <= 2-op family
+# threshold). All other model pairs are physically/structurally disjoint (see
+# arnold2024/questions.yaml: q_nastkolb2022_2d_slb_bundle_packing_and_dynamics_contrast).
+# ==============================================================================
+
+- id: rel_nastkolb2022_bundle_filament_count_same
+  kind: same_as
+  a: arnold2024/bundle_filament_count
+  b: nastkolb2022/bundle_filament_count_2d_spacing
+  mapping:
+    W: "w_bundle"
+    d_spacing: "d_spacing"
+  output_map:
+    n_f: N_fil
+  regime:
+    w_bundle: [0.5, 2.5]
+    d_spacing: [15.0, 70.0]
+  provenance: proposed
+  reason: >
+    Exact symbolic identity (N = 1000*W/d_spacing, with bundle width in um, interfilament spacing
+    in nm, and dimensionless filament count; flagged too_plain by ModelAtlas's <= 2-op threshold so
+    it does not merge into an algebraic family). Both papers independently model ~1-2 um-wide 2D
+    F-actin bundles adsorbed on fluid supported lipid bilayers as single-layer parallel ribbons:
+    Nast-Kolb et al. (2022, p. 11) apply N_f = W/d_spacing to His-VASP-polymerized bundles on
+    DOGS-Ni-NTA SLBs using VASP diameter spacing 28-70 nm (predicting 14-35.7 vs. printed 14-40
+    filaments per 1 um width, while fluorescence intensity extrapolation measures 45 +/- 12
+    filaments/um, implying effective spacing 22.2 nm via inverse nastkolb2022/bundle_effective_spacing);
+    Arnold & Takatori (2024, p. 5) apply the identical N_fil = w_bundle/d_spacing to
+    electrostatically DOTAP-adsorbed bundles on cushioned SLBs using ~20 nm spacing (Heath et al.,
+    Ref. 29; predicting 50-100 filaments per 1-2 um width). Despite completely different tethering
+    and bundling mechanisms (processive VASP polymerization + LLPS vs. electrostatic adsorption +
+    Lo-domain confinement), both SLB bundle systems converge to ~45-50 filaments/um (~20-22 nm
+    effective spacing).
+  assumptions:
+    - "Single-layer 2D ribbon packing of parallel F-actin filaments across the bundle width W (ignoring out-of-plane multilayer stacking, which both papers note may occur in thicker bundles)."
+    - "Direct identity mapping of bundle width (w_bundle <-> W [um]) and interfilament center-to-center spacing (d_spacing <-> d_spacing [nm])."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with arnold2023
+# (Arnold, Gubbala & Takatori, Phys. Rev. Lett. 131, 128402, 2023; cited in
+# arnold2024 as ref-7 on pp. 1 and 4)
+# Same laboratory (D. P. Arnold and S. C. Takatori co-author both studies).
+# arnold2024 cites arnold2023 qualitatively on p. 1 for active myosin-driven
+# coarsening acceleration ("2x compared to thermal coarsening") and on pp. 1, 4
+# for Ld actin partitioning, without stating explicit equation-to-equation
+# mappings; therefore all ModelAtlas relations below are provenance: proposed.
+# Note: arnold2023/structure_factor_first_moment_eq47 takes a curve input port
+# (S_k), so per ModelAtlas rules it cannot be directly linked in relations.yaml;
+# the exact comparison between arnold2023 SI Eq. (47) and arnold2024 p. 4 / Eq. (5)
+# (structure_factor_eq5_pipeline & mean_wavelength_from_k) is documented in
+# arnold2024/questions.yaml (q_arnold2023_structure_factor_and_coarsening_audit).
+# ==============================================================================
+
+- id: rel_arnold2023_passive_coarsening_power_law_scales
+  kind: scales_as
+  a: arnold2023/domain_growth_power_law_scaling
+  b: arnold2024/passive_coarsening_scaling
+  mapping:
+    t: "t"
+  output_map:
+    a: a_norm
+  regime:
+    t: [10.0, 4000.0]
+    alpha: [0.3333333333333333, 0.3333333333333333]
+  provenance: proposed
+  reason: >
+    Both studies from the Takatori lab adopt classical passive thermal lipid membrane domain
+    coarsening a ~ t^(1/3) as the actin-free / passive baseline on cushioned DOPC/DPPC/cholesterol/DOTAP
+    supported lipid bilayers: Arnold, Gubbala & Takatori (2023, p. 1, Fig. 2) model normalized
+    domain size a/a_0 ~ t^alpha with passive alpha = 1/3 (arnold2023/domain_growth_power_law_scaling,
+    dimensionless output, prefactor unknown), and Arnold & Takatori (2024, p. 7) state passive
+    domains grow as a ~= t^(1/3) (arnold2024/passive_coarsening_scaling, output in um, prefactor
+    unknown). At alpha = 1/3 over Arnold 2024's experimental coarsening window t in [10, 4000] s,
+    both share the exact +1/3 temporal log-slope to machine precision (scales_as rather than
+    same_as because a_norm is dimensionless whereas arnold2024's a carries unit um).
+  assumptions:
+    - "Passive thermal coarsening limit (alpha = 1/3) over t in [10, 4000] s; unstated multiplicative prefactors (including a_0 and dimensional length scale) drop out in scales_as."
+
+- id: rel_arnold2023_active_coarsening_vs_passive_contrast
+  kind: scales_as
+  a: arnold2023/domain_growth_power_law_scaling
+  b: arnold2024/passive_coarsening_scaling
+  mapping:
+    t: "t"
+  output_map:
+    a: a_norm
+  regime:
+    t: [10.0, 4000.0]
+    alpha: [0.6666666666666666, 0.6666666666666666]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast testing the core active-vs-passive shift cited by Arnold &
+    Takatori (2024, p. 1, ref-7): arnold2023 introduces ATP-powered myosin II motors into the
+    actin cortex to drive active shear coalescence scaling as a ~ t^(2/3) (experimentally alpha =
+    0.59-0.74, a 2x increase in the growth exponent over thermal t^(1/3)), whereas arnold2024
+    removes myosin II and ATP (using HMM strictly as passive substrate cushioning) to study
+    passive viscoelastic coupling against the thermal a ~= t^(1/3) baseline. Honestly
+    not_verified with an exact temporal log-slope discrepancy of 2/3 - 1/3 = 1/3 = 0.3333.
+  assumptions:
+    - "Evaluates arnold2023/domain_growth_power_law_scaling at the active shear-coalescence exponent alpha = 2/3 against arnold2024's thermal a ~= t^(1/3) baseline over t in [10, 4000] s."
+
+- id: rel_arnold2023_ls2d_asymptotic_scales_passive
+  kind: scales_as
+  a: arnold2023/lifshitz_slyozov_2d_asymptotic_eq11
+  b: arnold2024/passive_coarsening_scaling
+  mapping:
+    t: "t"
+  output_map:
+    a: a
+  regime:
+    sigma: [0.1, 2.0]
+    t: [10.0, 4000.0]
+  provenance: proposed
+  reason: >
+    Connects Arnold, Gubbala & Takatori's (2023, SI Sec. III.A Eq. 11) explicit 2D Ostwald-ripening
+    asymptotic law a = ((9/2)*sigma*t)^(1/3) (arnold2023/lifshitz_slyozov_2d_asymptotic_eq11,
+    dimensionless Cahn-Hilliard units) directly to Arnold & Takatori's (2024, p. 7) invocation of
+    early-time Ostwald ripening a ~= t^(1/3) (arnold2024/passive_coarsening_scaling). Across all
+    dimensionless line tensions sigma in [0.1, 2.0] and times t in [10, 4000], both share the
+    exact +1/3 temporal log-slope to machine precision (constant prefactor (9*sigma/2)^(1/3) and
+    unit scales drop out in scales_as).
+  assumptions:
+    - "Maps dimensionless simulation time t proportionally to experimental elapsed time t [s]; constant factor (9*sigma/2)^(1/3) and dimensional length/time conversion cancel in scales_as."
+
+- id: rel_arnold2023_smol_passive_corr_scales_passive
+  kind: scales_as
+  a: arnold2023/smoluchowski_passive_approx_eq28_corrected
+  b: arnold2024/passive_coarsening_scaling
+  mapping:
+    t: "t"
+  output_map:
+    a: a
+  regime:
+    T: [293.0, 310.0]
+    eta: [0.0008, 0.0012]
+    phi_A: [0.2, 0.45]
+    L: [10.0, 50.0]
+    a_0: [0.01, 0.04]
+    epsilon: [0.05, 0.3]
+    t: [200.0, 4000.0]
+  provenance: proposed
+  reason: >
+    Connects Arnold, Gubbala & Takatori's (2023, SI Sec. III.B.1 Eq. 28 corrected) passive 2D
+    Brownian Smoluchowski coalescence law a(t) = (k*t + b*a_0^3)^(1/3) [um] to Arnold & Takatori's
+    (2024, p. 7) passive coarsening scaling a ~= t^(1/3) [um] in the late-time asymptotic regime
+    where k*t >> b*a_0^3 (small initial seed radius a_0 in [0.01, 0.04] um, t in [200, 4000] s,
+    aqueous viscosity eta ~ 1e-3 Pa*s, room temperature T ~ 298 K, Lo area fraction phi_A in
+    [0.2, 0.45]). Both models output dimensional domain size in um and share the +1/3 temporal
+    log-slope to < 1e-3 (scales_as rather than same_as because arnold2024/passive_coarsening_scaling
+    has prefactor: unknown with code prefactor 1, whereas Smoluchowski predicts explicit rate
+    k = 9*k_B*T*phi_A / [16*eta*(3*epsilon + 1)]).
+  assumptions:
+    - "Uses arnold2023's evidenced corrected variant smoluchowski_passive_approx_eq28_corrected (fixing printed Eq. 28's negative denominator 3*ln(1/2) + 3*epsilon + 1 < 0; see arnold2023/q_smol_eq28_negative_k)."
+    - "Late-time asymptotic coarsening regime k*t >> b*a_0^3 (a_0 in [0.01, 0.04] um, t in [200, 4000] s) so initial-size transient b*a_0^3 is negligible (< 1e-3)."
+
+

@@ -1,0 +1,790 @@
+- id: q_eq1_ddm_fft_square_order
+  kind: possible_error
+  about: [ddm_image_structure_function_eq1, ddm_image_structure_function_eq1_fourier_sq, run_ddm_eq1_printed, run_ddm_eq1_corrected]
+  citation:
+    page: 4
+    printed_page: "26573"
+    quote: "D(k , t ) = FFT[|I(x , t ) I(x , 0)|2 ]"
+    where: "Eq. 1"
+  text: >
+    Eq. (1) prints D(k, t) = FFT[|I(x, t) - I(x, 0)|^2] (taking the FFT of the squared real-space
+    difference) rather than the standard DDM definition D(k, t) = |FFT[I(x, t) - I(x, 0)]|^2
+    (Refs. 32-33). On a deterministic single-mode cosine wave at Fourier mode n0, printed Eq. (1)
+    produces zero signal at the true wave vector k0 (D_k0_ratio = 0) and moves power into DC and 2*k0
+    with complex/sign-flipping values, whereas the paper's own SI Fig. S3 y-axis (p. 13) labels
+    D(k, t) as <|Delta I_hat(k, t)^2|> with strictly positive real values up to 2.5e10. In addition,
+    p. 4 line 13 prints 'k = k' without absolute value bars (corrected to 'k = |k|' on p. 6), and
+    Fig. S3 prints ensemble brackets <...> despite p. 4 stating no ensemble average is taken.
+
+- id: q_buckling_force_missing_pi_square
+  kind: possible_error
+  about: [actin_buckling_force, actin_buckling_force_euler, actin_buckling_force_printed, cmp_buckling_force_printed, cmp_buckling_force_euler]
+  citation:
+    page: 5
+    printed_page: "26574"
+    quote: "of length L = 1 μm is Fb = π EI/L2 = 1 pN"
+    where: text
+  text: >
+    Page 5 prints the actin filament buckling force as F_b = pi * EI / L^2 = 1 pN for
+    EI = 2 x 10^-25 N*m^2 (Ref. 36) and L = 1 um. The standard Euler critical buckling force for an
+    elastic rod carries pi^2, not pi (pinned-pinned: pi^2 * EI / L^2; cantilever: pi^2 * EI / (4 L^2);
+    fixed-fixed: 4 pi^2 * EI / L^2). Numerically, the printed formula gives 0.628 pN (37% below 1 pN,
+    inside the 1-digit rounding interval [0.5, 1.5]), whereas pinned-pinned Euler pi^2 * EI / L^2 gives
+    1.974 pN (~2 pN, verdict 'close'), and cantilever pi^2 * EI / (4 L^2) gives 0.493 pN. Using the
+    exact '=' sign with '1 pN' does not match either 0.63 pN or 1.97 pN closely.
+
+- id: q_excess_perimeter_triangle_vs_fig2c
+  kind: unexplained_difference
+  about: [excess_perimeter_eq3, run_excess_perimeter_circle, run_excess_perimeter_triangle, fig_s2_lex_range_without_outliers]
+  citation:
+    page: 4
+    printed_page: "26573"
+    quote: "difference between the domain perimeter and the minimum"
+    where: "Eq. 3 & Fig. 2B-C"
+  text: >
+    By Eq. (3), L_ex = L / (2*sqrt(pi*A)) - 1 equals 0 for a circle, 0.128 for a square, and only
+    sqrt(3*sqrt(3)/pi) - 1 = 0.286 for an equilateral triangle (an ellipse requires a ~10:1 aspect ratio
+    to reach L_ex = 1.0). Yet Fig. 2C (p. 3) plots L_ex ≈ 0.20-0.25 at rho/rho_0 -> 0 (where Fig. 2B
+    panel 1 domains are nearly circular), L_ex ≈ 1.0-1.2 at rho/rho_0 = 1 (where Fig. 2B panel 4 shows
+    moderately triangular domains), and Fig. 4B reaches L_ex ≈ 1.6 (and Fig. S2C 'without outliers'
+    assigns L_ex up to ~0.8-1.0 to modest oval/bean domains). Possible causes include pixel-staircase
+    perimeter inflation (a 4-connected pixel circle has L/L_0 = 4/pi -> L_ex = 0.273), noisy binarized
+    edges, an undocumented formula such as isoperimetric excess L^2/(4*pi*A) - 1 (0.654 for an
+    equilateral triangle), or residual merged domains. Quantitative curve digitization is deferred to
+    digitize:arnold2024.
+
+- id: q_tracer_interval_10s_vs_20s
+  kind: possible_error
+  about: [tracer_interval_fig4c_caption, tracer_timelapse_duration_methods, tracer_timelapse_duration_p7, tracer_tracking_period_si, cmp_tracer_duration_fig4c_contradiction]
+  citation:
+    page: 6
+    printed_page: "26575"
+    quote: "Over short (<10 s) intervals, the variance in tracer positions"
+    where: "Fig. 4C caption"
+  text: >
+    Fig. 4C caption (p. 6) states tracer position variance is measured 'Over short (<10 s) intervals',
+    contradicting Methods (p. 3: '100 total images, 0.2 s between images ... over the 20 s time lapse',
+    giving 19.8-20.0 s), Results (p. 7: 'over short, 20-s time-lapses'), and SI Video S3 (p. 10:
+    'tracked over a period of ≈ 20 s').
+
+- id: q_si_video_s3_wrong_figure_ref
+  kind: possible_error
+  about: [tracer_tracking_period_si, tracer_filament_length_si]
+  citation:
+    page: 10
+    printed_page: "SI-1"
+    quote: "variance plotted in Fig. 3C of the main text"
+    where: "SI Video S3"
+  text: >
+    SI Video S3 caption (p. 10) states that the tracer filament variance is 'plotted in Fig. 3C of the
+    main text'. Fig. 3C plots domain and actin mean wavelengths a, xi vs. time; tracer position variance
+    is actually plotted in Fig. 4C (p. 6).
+
+- id: q_tracer_variance_formula_scalar_vs_vector
+  kind: reading
+  about: [tracer_position_variance, run_tracer_variance_bench]
+  citation:
+    page: 6
+    printed_page: "26575"
+    quote: "variance in tracer positions ⟨|Δx|2⟩ − ⟨|Δx|⟩2 is tracked"
+    where: "Fig. 4C caption & p. 7"
+  text: >
+    Fig. 4C and p. 7 print the tracer position variance as <|Delta x|^2> - <|Delta x|>^2 (taking the
+    norm inside the average before squaring), which is the variance of the scalar radial displacement
+    r = |Delta x| rather than the standard 2D vector positional variance <|Delta x|^2> - |<Delta x>|^2.
+    For a zero-mean isotropic 2D Gaussian displacement with MSD = <|Delta x|^2>, the printed scalar
+    formula equals (1 - pi/4) * MSD = 0.2146 * MSD (nearly 4.7x smaller than the vector variance MSD).
+    Furthermore, Delta x itself is never defined (displacement from t=0, from trajectory mean, or
+    frame-to-frame step).
+
+- id: q_structure_factor_unsquared_fft
+  kind: choice
+  about: [structure_factor_eq5_pipeline, run_sf_eq5_pipeline_bench]
+  citation:
+    page: 4
+    printed_page: "26573"
+    quote: "Fourier coefficients to be S(n) = |FFT(n)| where n = 0"
+    where: text
+  text: >
+    Page 4 explicitly defines the static structure factor as the unsquared modulus S(n) = |FFT(n)|
+    rather than the standard power spectrum S(n) = |FFT(n)|^2. Compared to |FFT|^2, using |FFT| gives
+    much greater weight to high-k tails up to the 5-pixel wavelength cutoff, which shifts <k> upward
+    and compresses the inferred wavelength a, xi = 2*pi/<k> (contributing to Fig. 3C showing only a
+    ~2.65 to 3.8 um change despite a larger visual domain coarsening in Fig. 3A).
+
+- id: q_ddm_1phase_no_plateau_fig_s3
+  kind: numerics
+  about: [ddm_isf_eq2, tau_Ld_measured, relaxation_speedup_fig3a]
+  citation:
+    page: 13
+    printed_page: "SI-4"
+    quote: "image structure function of actin D(k, t), defined in Eq. 1"
+    where: "Fig. S3 right panel & p. 4"
+  text: >
+    Page 4 determines D(k, t -> inf) = A(k) + B(k) by 'averaging the first and last few data points that
+    qualitatively display asymptotic behavior'. However, SI Fig. S3 (right panel, p. 13) shows that for
+    the 1-phase Ld bilayer, D(k, t) is still rising steeply up to the end of the recording (~6000-7000 s)
+    with no visible plateau, and in Fig. 3B (p. 5) F(<k>, t) for the Ld-only curve drops below zero
+    (down to ~-0.15) at late times. Thus tau_Ld ≈ 4100 s and the speedup ratio 2.6x depend sensitively
+    on how the unreached long-time asymptote D(k, t -> inf) was truncated. Additionally, for a single
+    non-ergodic trajectory starting at t = 0, D(k, 0) = 0 identically (so B(k) is actually estimated
+    from small positive lag times rather than literally t = 0).
+
+- id: q_single_phase_lipid_composition_unstated
+  kind: unstated_input
+  about: [tau_Ld_measured, guv_dopc_pct_methods]
+  citation:
+    page: 6
+    printed_page: "26575"
+    quote: "Actin network evolves slowly on a single-phase, Ld-only"
+    where: text
+  text: >
+    Experimental Methods (p. 2) states only the two-phase GUV lipid composition (45.7% DOPC, 35% DPPC,
+    15% cholesterol, 4% DOTAP, 0.3% DSPE-PEG2k-FITC). The lipid composition of the single-phase Ld-only
+    membrane used in Fig. 3A-B, Fig. S3, and Video S1 is never stated anywhere in the article or SI.
+
+- id: q_mean_wavevectors_fig3b_unstated
+  kind: unstated_input
+  about: [delta_k_mean_single_vs_two, tau_Ld_measured, tau_LoLd_measured]
+  citation:
+    page: 6
+    printed_page: "26575"
+    quote: "While ⟨k⟩ is ≈1"
+    where: text
+  text: >
+    Page 6 states that F(<k>, t) in Fig. 3B is evaluated at each sample's mean wave vector <k> and notes
+    that <k> is ≈1 um^-1 smaller in the single-phase system, but neither <k>_Ld nor <k>_(Lo+Ld) is
+    reported numerically (nor is the time point at which the fixed <k> for F(<k>, t) was evaluated
+    during coarsening, when <k>(t) itself changes in Fig. 3C).
+
+- id: q_fft_image_width_L_unstated
+  kind: unstated_input
+  about: [fig_s3_wavevectors, image_width_fig_s3_fundamental_added, wavevector_mode_conversion]
+  citation:
+    page: 4
+    printed_page: "26573"
+    quote: "converted to wave vectors using the transformation k = 2πn/L"
+    where: text
+  text: >
+    Page 4 converts Fourier modes via k = 2*pi*n/L for square cropped images of width L, and Fig. S3
+    plots k = 0.9, 1.8, 2.7, 3.6 um^-1, but neither the physical image width L nor pixel size (um/px)
+    is stated. The spacing Delta k = 0.9 um^-1 implies L = 6.98 um (if n = 1,2,3,4), 13.96 um (if
+    n = 2,4,6,8), or 20.94 um (if n = 3,6,9,12).
+
+- id: q_actin_density_mean_vs_total_intensity
+  kind: reading
+  about: [actin_density, run_actin_density_bench]
+  citation:
+    page: 3
+    printed_page: "26572"
+    quote: "divide it by the available area: ρ = Iactin/Aactin"
+    where: text
+  text: >
+    Page 3 ('Actin Density') and Fig. 2C caption define rho = I_actin / A_actin where I_actin is the
+    'average' / 'mean' fluorescence intensity of actin and A_actin = A_total - A_Lo is the available Ld
+    area. Dividing mean intensity by A_actin (rather than dividing total integrated intensity by A_actin,
+    or mean intensity by area fraction 1 - phi_Lo) yields a quantity that scales inversely with total
+    image area A_total and is intensive only if all n = 270 analyzed crops had identical A_total.
+
+- id: q_laplace_young_p_out_notation
+  kind: reading
+  about: [modified_laplace_young_eq4, effective_laplace_young, rel_laplace_young_eq4_same_as_effective]
+  citation:
+    page: 5
+    printed_page: "26574"
+    quote: "Thus, we combine σel and Pout"
+    where: text
+  text: >
+    Eq. (4) writes P_Lo - P_Ld = lambda * div(n) + sigma_el, but two sentences later the text defines
+    P_Ld^eff = sigma_el + P_out using the undefined symbol P_out in place of P_Ld. Identifying
+    P_out = P_Ld makes the simplified form P_Lo - P_Ld^eff = lambda * div(n) algebraically exact.
+
+- id: q_domain_curvature_formula_unspecified
+  kind: unstated_model
+  about: [domain_curvature_spline, run_curvature_circle, run_curvature_deformed]
+  citation:
+    page: 3
+    printed_page: "26572"
+    quote: "find the curvature ∇ · n using central finite differences"
+    where: text
+  text: >
+    Page 3 ('Domain Curvature') states that a parametric smoothing spline (x(t), y(t)) is fit in MATLAB
+    with 5x edge-pixel oversampling, the unit normal n is computed, and curvature div(n) is found via
+    central finite differences, but omits the spline smoothing parameter, the exact discrete formula
+    relating div(n) to derivatives along the 1D curve parameter t (e.g., (dn/ds) . T_hat), and the
+    absolute normalization value |div(n)|_max in Fig. 2D.
+
+- id: q_area_gain_25pct_vs_20_to_50pct
+  kind: unexplained_difference
+  about: [phi_Lo_initial_p7, phi_Lo_peak_p7, membrane_area_gain_after_mixing, cmp_area_gain_init_total, cmp_area_gain_init_relative, cmp_area_gain_peak_total]
+  citation:
+    page: 7
+    printed_page: "26576"
+    quote: "gain access to an additional ≈25% of the"
+    where: text
+  text: >
+    Page 7 left column states that during cholesterol insertion phi_Lo increases from 'approximately 20%
+    to almost 50%' (whereas Fig. 4B top panel starts visually near phi_Lo ≈ 0.25 at t = 0 and reaches
+    ≈ 0.48 at t = 11 min). Page 7 right column then states that after phase mixing tracers 'gain access
+    to an additional ≈25% of the membrane'. This ≈25% matches either (a) the initial Lo fraction
+    visible in Fig. 4B (~25% of total membrane, relative to t = 0) or (b) the relative gain
+    phi_Lo/(1 - phi_Lo) = 20%/80% = 25% over the initial Ld area, but NOT the ~50% of membrane freed
+    relative to the peak compressed state at t = 11 min.
+
+- id: q_n_tracers_212_vs_212_254
+  kind: reading
+  about: [n_tracers_fig4c_caption, n_tracers_p7]
+  citation:
+    page: 6
+    printed_page: "26575"
+    quote: "The mean of n = 212 tracer variances"
+    where: "Fig. 4C caption & p. 7"
+  text: >
+    Fig. 4C caption (p. 6) reports 'n = 212 tracer variances', whereas Results (p. 7) reports
+    'n = 212-254 tracer filaments' (varying across time-lapse points).
+
+- id: q_relaxation_speedup_2p5_vs_2p6
+  kind: reading
+  about: [relaxation_speedup_intro, relaxation_speedup_fig3a, relaxation_speedup_p6, cmp_relaxation_speedup_intro]
+  citation:
+    page: 1
+    printed_page: "26570"
+    quote: "relaxation time τ by ∼2.5×"
+    where: "p. 1 vs. pp. 5-6"
+  text: >
+    Introduction (p. 1) quotes '~2.5x' decrease in relaxation time, whereas Fig. 3A caption, Fig. 3B
+    plot annotation, and Results (p. 6) quote '2.6x' / '~2.6x'; the ratio of reported relaxation times
+    4100 s / 1600 s = 2.5625 rounds to 2.6.
+
+- id: q_chol_mbcd_10_to_1_ratio_and_methods_slips
+  kind: reading
+  about: [chol_mbcd_ratio, mbcd_working_conc, guv_dopc_pct_methods, guv_dopc_pct_results]
+  citation:
+    page: 3
+    printed_page: "26572"
+    quote: "combined in a 10:1 (chol:mβCD) ratio in Milli-Q water"
+    where: "Experimental Methods (pp. 2-3)"
+  text: >
+    Several minor protocol ambiguities/slips appear in Experimental Methods: (1) p. 3 specifies a
+    '10:1 (chol:mβCD) ratio' without stating molar vs. mass basis (mβCD-cholesterol loading is more
+    commonly prepared with excess mβCD, e.g. 1:10 chol:mβCD, unless excess solid cholesterol is
+    saturated in aqueous mβCD); (2) p. 2 writes 'GUVs in Milli-Q water are added to the actin/HMM-coated
+    coverslip surface', even though coverslips were coated with HMM and PLL-g-PEG and actin is only
+    adsorbed afterward onto the bilayer; (3) the next section is titled 'Assembling Actomyosin Cortex on
+    a Lipid Bilayer' despite p. 2 emphasizing HMM is passive cushioning with no ATP; (4) p. 2 Methods
+    lists 45.7% DOPC + 0.3% DSPE-PEG2k-FITC (sum 100.0%) whereas p. 4 Results rounds to 46% DOPC +
+    trace FITC; and (5) room temperature during imaging is never specified numerically.
+
+- id: q_room_temperature_unstated
+  kind: unstated_input
+  about: [bilayer_rupture_temp, f_actin_incubation_temp]
+  citation:
+    page: 2
+    printed_page: "26571"
+    quote: "The membrane is then cooled to room"
+    where: text
+  text: >
+    Bilayer phase separation, domain morphology imaging, DDM relaxation, and cholesterol insertion are
+    all performed at 'room temperature', whose exact numeric temperature (e.g., 20-25 degC) is never
+    stated despite the sensitivity of DOPC/DPPC/cholesterol phase boundaries and line tension to T.
+
+- id: q_audit_fig_s3_mode_indices_and_L
+  kind: reading
+  about: [fig_s3_wavevectors, image_width_fig_s3_fundamental_added, run_wavevector_fig_s3_sweep, cmp_wavevector_fig_s3, sf_test_image_width_added]
+  citation:
+    page: 13
+    printed_page: "SI-4"
+    quote: "across a family of wave vectors for two-phase (left) and single-phase"
+    where: "Fig. S3 legend"
+  text: >
+    Audit disagreement with first-reader encoding: Fig. S3 (p. 13) prints only the four wave vectors
+    k = 0.9, 1.8, 2.7, 3.6 um^-1 and never prints Fourier mode indices n = 1, 2, 3, 4. Placing
+    index: ["1", "2", "3", "4"] in data.yaml (fig_s3_wavevectors) embeds an unprinted assumption in
+    data.yaml, and back-solving L = 2*pi/0.9 = 6.9813 um in image_width_fig_s3_fundamental_added makes
+    cmp_wavevector_fig_s3 circular at n = 1 (non-circularly testing only the equal 1:2:3:4 harmonic
+    spacing). Moreover, L = 6.98 um is far smaller than the ~15-20 um micrographs in Fig. 3A (2.5 um
+    scale bar, with domain wavelengths a reaching 3.8 um in Fig. 3C) and conflicts with the first
+    reader's own sf_test_image_width_added = 14.0 um (which corresponds to stride n = 2, 4, 6, 8 at
+    L = 13.96 um or n = 3, 6, 9, 12 at L = 20.94 um).
+
+- id: q_audit_thresholding_adaptive_vs_graythresh
+  kind: possible_error
+  about: [excess_perimeter_eq3, min_domain_pixels_split, fig_s2_lex_range_with_outliers, fig_s2_lex_range_without_outliers]
+  citation:
+    page: 12
+    printed_page: "SI-3"
+    quote: "raw image is binarized using the graythresh method in MATLAB"
+    where: "Fig. S2B caption & p. 3"
+  text: >
+    Experimental Methods (p. 3, 'Domain Perimeter') states 'Domains are binarized using adaptive
+    thresholding', whereas SI Fig. S2B caption (p. 12) states 'The raw image is binarized using the
+    graythresh method in MATLAB'. In MATLAB's Image Processing Toolbox, graythresh computes a single
+    global Otsu threshold rather than a locally adaptive threshold (adaptthresh). Additionally, neither
+    p. 3 nor Fig. S2C states the Grubbs test significance level alpha or the MATLAB regionprops
+    perimeter estimator (chain-code/Crofton pixel perimeter, relevant to q_excess_perimeter_triangle_vs_fig2c).
+
+- id: q_audit_fig3_duration_4000s_vs_fig3b_s3_6000s
+  kind: possible_error
+  about: [timelapse_duration_fig3, tau_Ld_measured, tau_LoLd_measured, actin_unbinding_time_singlephase]
+  citation:
+    page: 5
+    printed_page: "26574"
+    quote: "single-phase liquid-disordered (Ld) membrane during a 4000 s time-lapse"
+    where: "Fig. 3A caption, Fig. 3B & Fig. S3"
+  text: >
+    Fig. 3A caption (p. 5) states that both the single-phase Ld membrane and the two-phase Lo/Ld
+    membrane were imaged during a '4000 s time-lapse' / 'imaged for 4000 s' (matching Fig. 3C's
+    0-4000 s axis). However, Fig. 3B (p. 5) and SI Fig. S3 (p. 13) both plot DDM data extending to
+    ~6000-7000 s, and p. 6 reports tau_Ld ≈ 4100 s (exceeding the stated 4000 s imaging duration).
+    Furthermore, in SI Fig. S3 left panel (2-phase bilayer), the lowest wave vector k = 0.9 um^-1 also
+    continues rising through ~6000 s without reaching a plateau (complementing q_ddm_1phase_no_plateau_fig_s3).
+
+- id: q_audit_fig4_separate_samples_incomparable_time
+  kind: reading
+  about: [phi_Lo_initial_p7, phi_Lo_peak_p7, membrane_area_gain_after_mixing, n_tracers_p7, chol_binodal_crossing_time]
+  citation:
+    page: 10
+    printed_page: "SI-1"
+    quote: "exact time values in Fig. 4C of the main text should not be directly compared"
+    where: "SI Note 1 & Fig. 4 (pp. 6-7)"
+  text: >
+    Supporting Note 1 (p. 10) discloses that Fig. 4A-B (AF 555 bulk actin + FITC Lo domains) and
+    Fig. 4C (AF 405 bulk actin + AF 555 tracers) were collected on two separate samples and warns that
+    due to variability in cholesterol insertion rate between samples, 'the exact time values in Fig. 4C
+    of the main text should not be directly compared to those in Fig. 4A-B'. This caveat is not stated
+    in Fig. 4's caption (p. 6) or main-text Results (p. 7): in Fig. 4B phi_Lo peaks at t = 11 min and
+    mixing occurs around ~15 min, whereas in Fig. 4C tracer variance bottoms out at t = 6 min and jumps
+    by t = 14 min; p. 7 also cites 'an additional ≈25% of the membrane' directly to Fig. 4C even though
+    phi_Lo was measured in the separate Fig. 4A-B sample.
+
+- id: q_audit_fig4b_error_bars_unstated
+  kind: unstated_input
+  about: [domain_undefined_after_fig4b, excess_perimeter_eq3]
+  citation:
+    page: 6
+    printed_page: "26575"
+    quote: "domain excess perimeter Lex are plotted as a function of time"
+    where: "Fig. 4B caption"
+  text: >
+    Fig. 4B bottom panel (p. 6) plots error bars on every L_ex measurement (t = 0 to 11 min), but
+    neither the caption nor the text specifies what the error bars represent (SEM, SD, CI, or range)
+    or how many domains/samples n were averaged (unlike Fig. 4C, which specifies SEM and n = 212).
+
+- id: q_audit_fig4c_inset_6s_vs_4s
+  kind: possible_error
+  about: [tracer_inset_duration_fig4c]
+  citation:
+    page: 6
+    printed_page: "26575"
+    quote: "Inset shows the position of a tracer among the actin network over a period of 6 s"
+    where: "Fig. 4C caption & inset"
+  text: >
+    Fig. 4C caption (p. 6) states that the inset shows a tracer position 'over a period of 6 s',
+    whereas the inset micrograph itself labels only three positions at 0s, 2s, and 4s (a 4 s span,
+    with no 6s label shown).
+
+- id: q_audit_guv_lipid_pct_basis_unstated
+  kind: unstated_input
+  about: [guv_dopc_pct_methods, guv_dppc_pct_methods, guv_chol_pct_methods, guv_dotap_pct_methods, guv_fitc_pct_methods, g_actin_storage_sucrose]
+  citation:
+    page: 2
+    printed_page: "26571"
+    quote: "lipids are mixed with the following composition"
+    where: "Experimental Methods (p. 2) & Results (p. 4)"
+  text: >
+    Neither Experimental Methods (p. 2) nor Results (p. 4) explicitly states whether the GUV lipid
+    mixture percentages (45.7% DOPC, 35% DPPC, 15% cholesterol, 4% DOTAP, 0.3% DSPE-PEG2k-FITC) are
+    mole percent (mol%) or weight percent (wt%) — unlike p. 3, which explicitly specifies '0.5% mol
+    G-actin-555'. Likewise, '6% sucrose' (p. 2) does not state w/v vs. w/w.
+
+- id: q_digitize_fig4c_yaxis_label_drift
+  kind: possible_error
+  about: [fig4c_tracer_variance, fig4c_tracer_variance_measured]
+  citation:
+    page: 6
+    printed_page: "26575"
+    quote: "The mean of n = 212 tracer variances"
+    where: "Fig. 4C y-axis"
+  text: >
+    High-resolution (1200 dpi) calibration of Fig. 4C reveals a typesetting misalignment between the
+    y-axis tick marks and the printed digit labels '3', '2', and '1'. The five MATLAB axis tick marks
+    lie at exact 452.5 px intervals (rows 268.0, 720.5, 1173.0, 1625.5, 2078.0; 0.00 px linear
+    residual) corresponding to 4, 3, 2, 1, 0 (x 10^-3 um^2). However, the manually re-typeset digit
+    labels '4', '3', '2', '1' are spaced at ~500 px intervals (centers 286.0, 787.5, 1287.0, 1787.0,
+    with '0' at 2077.5), shifting '3', '2', and '1' downward below their actual ticks by 67 px
+    (0.15e-3 um^2), 114 px (0.25e-3 um^2), and 161.5 px (0.36e-3 um^2), respectively. Calibrating
+    against the true tick marks yields variances [1.38, 0.89, 0.75, 1.03, 3.30] x 10^-3 um^2 at
+    t = 0, 3, 6, 10, 14 min (significantly lower at t = 0-10 min than eye readings aligned to the
+    drifted digit labels).
+
+- id: q_digitize_fig4b_red_ticks_and_phi0
+  kind: reading
+  about: [fig4b_phi_Lo, fig4b_phi_Lo_measured, fig4b_actin_xi, fig4b_actin_xi_measured, fig4b_Lex, fig4b_Lex_measured, phi_Lo_initial_p7, phi_Lo_peak_p7, membrane_area_gain_after_mixing]
+  citation:
+    page: 6
+    printed_page: "26575"
+    quote: "The Lo domain area fraction ϕLo, actin mean"
+    where: "Fig. 4B & p. 7"
+  text: >
+    Calibrated 2400 dpi digitization of Fig. 4B settles q_area_gain_25pct_vs_20_to_50pct and uncovers
+    minor axis-assembly artifacts: (1) phi_Lo begins at 0.2599 [0.2595, 0.2602] (26.0%) at t = 0 min
+    and reaches 0.4841 [0.4837, 0.4845] (48.4%) at t = 11 min, showing that p. 7 text ('approximately
+    20% to almost 50%') understates the actual initial Lo fraction in Fig. 4B by ~6 percentage points
+    while p. 7's later 'additional ≈25% of the membrane' matches Fig. 4B's actual t = 0 Lo fraction
+    (26.0%); (2) on the top-right red y-axis (Actin size xi), the two unlabelled minor ticks (2.95 and
+    2.75 um) have different lengths (57 and 64 px vs. 51 px) and are displaced ~10-13 px (~0.002-0.003
+    um) from uniform spacing (propagated into the reading interval); and (3) the bottom L_ex panel is
+    shifted ~7 px (~0.035 min) left relative to the top panel's x-axis ticks.
+
+- id: q_digitize_figs3_k18_vs_k09_correction
+  kind: reading
+  about: [figs3_2phase_k09, figs3_2phase_k18, figs3_2phase_k27, figs3_2phase_k36, fig3b_isf_LoLd, fig3b_isf_Ld, tau_Ld_measured, tau_LoLd_measured]
+  citation:
+    page: 13
+    printed_page: "SI-4"
+    quote: "The image structure function of actin D(k, t), defined in Eq. 1"
+    where: "Fig. S3 & Fig. 3B"
+  text: >
+    Calibrated 900 dpi RGB separation of SI Fig. S3 from its legend colors corrects the low-resolution
+    attribution in q_audit_fig3_duration_4000s_vs_fig3b_s3_6000s (without altering that question): in
+    the 2-phase panel (Fig. S3 left), the curve climbing steeply to 2.33-2.5 x 10^10 at t = 6000 s
+    without plateauing is k = 1.8 um^-1 (royal blue, RGB [51, 89, 174]; Eq. 2 half-life ~1631 s when
+    truncated at 5000-6000 s, matching tau_Lo+Ld ≈ 1600 s and Fig. 3C <k> = 2*pi/xi ≈ 1.9-2.3 um^-1),
+    NOT k = 0.9 um^-1. Instead, k = 0.9 um^-1 (darkest navy, RGB [41, 55, 128]) plateaus near 0.70e10
+    over 2500-4500 s and then dips non-monotonically to 0.41-0.46e10 at 5000-6000 s. In addition,
+    digitized Fig. 3B shows Lo+Ld terminates at ~4100 s (F = 0.5 crossing at 1519 s, dashed line at
+    1574 s) while Ld-only extends to ~6900 s (F = 0.5 crossing at 3924 s, dashed line at 4054 s;
+    speedup 2.58x matching 2.6x), whereas both Fig. S3 panels extend to ~6300 s and all four 1-phase
+    curves remain steeply rising at 6000 s with no plateau (Eq. 2 truncated half-lives 3634-3984 s).
+
+- id: q_nastkolb2022_2d_slb_bundle_packing_and_dynamics_contrast
+  kind: choice
+  about:
+    - bundle_filament_count
+    - ddm_isf_eq2
+    - relaxation_speedup_ratio
+    - actin_bundle_width
+    - actin_filament_spacing_ref29
+    - actin_bundle_filament_count_printed
+    - tau_Ld_measured
+    - tau_LoLd_measured
+    - nastkolb2022/bundle_filament_count_2d_spacing
+    - nastkolb2022/bundle_effective_spacing
+    - nastkolb2022/frap_recovery_fit
+    - nastkolb2022/frap_recovery_by_half_time
+    - nastkolb2022/frap_mobility_ratio
+  citation:
+    page: 5
+    printed_page: "26574"
+    quote: "Assuming ∼20 nm spacing between"
+    where: "Results p. 5 & Methods p. 4 vs nastkolb2022 p. 11"
+  text: >
+    Cross-record ModelAtlas audit and 2D-SLB biophysical contrast with nastkolb2022 (Nast-Kolb,
+    Bleicher, Payr & Bausch, Mol. Biol. Cell 33:ar91, 2022). Neither paper cites the other (0
+    stated relations, 0 cited.yaml data links; 2 shared bibliographic references across 45 x 66
+    entries: Honigmann et al., eLife 2014 [ref-10 <-> ref-honigmann2014] and Spudich & Watt, JBC
+    1971 [ref-24 <-> ref-spudich1971]).
+    (1) Shared 2D ribbon packing identity: across all 21 runnable arnold2024 x 17 nastkolb2022 (11
+    runnable, 6 non-runnable) models, arnold2024/bundle_filament_count and
+    nastkolb2022/bundle_filament_count_2d_spacing verify symbolically as the exact same 2D
+    single-layer packing formula N = 1000*W/d_spacing (rel_nastkolb2022_bundle_filament_count_same,
+    flagged too_plain at 2 ops; nastkolb2022/bundle_effective_spacing is its exact algebraic
+    inverse). Both fluid-SLB systems yield closely comparable linear densities (~50 filaments/um at
+    ~20 nm electrostatic spacing in arnold2024 p. 5 vs. 45 +/- 12 filaments/um intensity-extrapolated
+    implying 22.2 nm effective spacing in nastkolb2022 p. 11, despite nastkolb2022's wider 28-70 nm
+    VASP diameter estimate).
+    (2) Disjoint dynamics and excluded trivial coincidences: nastkolb2022's only two non-too_plain
+    runnable models are single-exponential FRAP recovery fits (frap_recovery_fit,
+    frap_recovery_by_half_time, measuring fast VASP lateral diffusion t_1/2 = 6.1 s on SLB vs. 23.9 s
+    on ML), whereas arnold2024 explicitly rejects exponential fits for its non-ergodic DDM
+    intermediate scattering function (p. 4: 'our relaxation data is markedly nonexponential'),
+    provides only static affine normalization ddm_isf_eq2 without a time variable, and measures
+    whole-network structural relaxation two orders of magnitude slower (tau_Lo+Ld ~= 1600 s,
+    tau_Ld ~= 4100 s). Generic 1-op ratio pairs (relaxation_speedup_ratio tau_Ld/tau_LoLd vs.
+    frap_mobility_ratio t_half_ml/t_half_slb) and 0-op scaling (bundle_width_vasp_scaling W ~ c_vasp)
+    are excluded as physically distinct coincidences; arnold2024's domain curvature, excess
+    perimeter, modified Laplace-Young, Euler buckling, structure-factor, and cholesterol-mixing
+    models have no counterparts in nastkolb2022's single-phase egg-PC/Ni-NTA bilayer assay.
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with gubbala2025 (2026-11-25)
+# ---------------------------------------------------------------------------
+- id: q_gubbala2025_no_cross_validation
+  kind: unstated_model
+  about:
+    - passive_coarsening_scaling
+    - actin_buckling_force
+    - actin_buckling_force_euler
+    - bundle_filament_count
+    - domain_curvature_spline
+    - excess_perimeter_eq3
+    - modified_laplace_young_eq4
+    - effective_laplace_young
+    - actin_density
+    - ld_area_fraction
+    - ddm_image_structure_function_eq1
+    - ddm_image_structure_function_eq1_fourier_sq
+    - ddm_isf_eq2
+    - relaxation_speedup_ratio
+    - structure_factor_eq5_pipeline
+    - mean_wavelength_from_k
+    - wavevector_mode_conversion
+    - radial_mode_binning
+    - tracer_position_variance
+    - tracer_timelapse_duration
+    - lipid_composition_sum
+    - fig3c_domain_a_measured
+    - fig3c_actin_xi_measured
+    - fig2c_Lex_vs_rho_measured
+    - fig4b_phi_Lo_measured
+    - fig4b_actin_xi_measured
+    - fig4b_Lex_measured
+    - fig4c_tracer_variance_measured
+    - fig3b_isf_LoLd_measured
+    - fig3b_isf_Ld_measured
+    - tau_Ld_measured
+    - tau_LoLd_measured
+    - delta_k_mean_single_vs_two
+    - gubbala2025/coarsening_power_law
+    - gubbala2025/model_c_pde_2d_eq9_10
+    - gubbala2025/model_c_pde_2d_variational
+    - gubbala2025/boundary_curvature_s2
+    - gubbala2025/boundary_curvature_s2_corrected
+    - gubbala2025/nondim_parameters_s32
+    - gubbala2025/coupled_binodal_coexistence
+    - gubbala2025/elastic_free_energy_eq5
+    - gubbala2025/anchoring_elastic_crossover
+    - gubbala2025/R_ratio_fig3_exp_low
+    - gubbala2025/R_ratio_fig3_exp_high
+    - gubbala2025/R_ratio_fig3_inset_no_actin_exp
+    - gubbala2025/R_ratio_figS2_exp_low
+    - gubbala2025/R_ratio_figS2_exp_high
+    - gubbala2025/R_ratio_low_exp_fig3_end
+    - gubbala2025/R_ratio_high_exp_fig3_end
+    - gubbala2025/P_kappa_fig4c_exp_no_actin
+    - gubbala2025/P_kappa_fig4c_exp_low
+    - gubbala2025/P_kappa_fig4c_exp_high
+    - gubbala2025/actin_density_figS1_exp
+    - gubbala2025/domain_size_no_actin
+    - gubbala2025/actin_filament_length_exp
+    - gubbala2025/q_arnold2024_no_cross_validation
+  citation:
+    page: 7
+    printed_page: "26576"
+    quote: "grow according to a power law a ≈ t1/3 with sublinear"
+    where: "Results p. 7 (bidirectional cross-validation audit with gubbala2025)"
+  text: >
+    No direct cross-record CrossValidation entries are entered in validations.yaml between
+    arnold2024 (21 runnable models [38 output ports] and 41 origin: measured datums out of
+    153 total data [25 scalars + 16 digitized figures]) and gubbala2025 (26 runnable models
+    [82 output ports] and 16 origin: measured datums out of 121 total data [7 scalars + 9
+    digitized figures]): 0 valid executable CrossValidation entries exist across all
+    608 + 3,362 = 3,970 port-datum pairs (214 + 1,651 = 1,865 Pint dimension-matched,
+    394 + 1,711 = 2,105 dimension-mismatched). Although gubbala2025 (same Takatori lab, same
+    45.7% DOPC / 35% DPPC / 15% chol / 4% DOTAP / 0.3% FITC cushioned SLB system; citing
+    arnold2024 as ref-9 and ref-S6) explicitly develops a 2D Model C phase-field theory to
+    interpret arnold2024's experiments, three structural and observable barriers prevent
+    direct out-of-the-box cross-validation without altering existing models or data:
+    (1) Coarsening normalization & dimensionality barrier (both directions):
+    arnold2024/passive_coarsening_scaling (a ~ t^(1/3), prefactor: unknown) outputs
+    dimensional structure_factor_wavelength in um ([length]), whereas all 7 coarsening growth
+    measurements in gubbala2025 (R_ratio_fig3_inset_no_actin_exp, R_ratio_fig3_exp_{low,high},
+    R_ratio_figS2_exp_{low,high}, R_ratio_{low,high}_exp_fig3_end) record dimensionless
+    normalized ratios R(t)/R_0 (dimensionless vs [length] fails Pint unit conversion; the sole
+    dimensional domain-size measurement gubbala2025/domain_size_no_actin '≈ 1 to 10' um lacks
+    a specified time t ['over the course of a few minutes'] and as a single approximate range
+    leaves nothing to judge for prefactor: unknown). Symmetrically, gubbala2025/coarsening_power_law
+    (R(t)/R_0 = (t/t_0)^alpha) and model_c_pde_2d_{eq9_10,variational} (alpha_fit, R_final,
+    R_growth_ratio, Q_max_final) output only dimensionless ratios/exponents/simulation-unit
+    lengths (with unstated dimensional scales l_c, t_c), whereas arnold2024/fig3c_domain_a_measured
+    records unnormalized dimensional wavelength a(t) = 2*pi/<k> in um (2.684 um at t = 0 to
+    3.800 um at t = 4000 s; arnold2024 never reports a normalized ratio curve or fitted alpha).
+    Notably, an off-line diagnostic normalization of arnold2024/fig3c_domain_a_measured at
+    t_0 = 800 s (nearest digitized point to gubbala2025's t_0 = 720 s) gives
+    a(4000 s)/a(800 s) = 3.8004/2.8401 = 1.3381 — virtually identical to gubbala2025's
+    fig3_exp_low (1.3385 [1.3267, 1.3504] at 4000 s) and close to fig3_exp_high (1.3882
+    [1.3610, 1.4160]) — with effective log-log slope alpha = 0.1881 over 800-4000 s (0.1822
+    over 600-4000 s, 0.1644 over 1400-4000 s), strictly below both interface-driven alpha = 1/4
+    ((4000/800)^(1/4) = 1.495) and passive alpha = 1/3 ((4000/800)^(1/3) = 1.710), quantitatively
+    confirming suppressed coarsening across both papers despite the S(n) = |FFT| vs S(k) = <|phi_k|^2>
+    structure-factor shift.
+    (2) Domain-shape & boundary-curvature observable mismatch: arnold2024 measures domain
+    deformation via 1D excess perimeter L_ex (fig2c_Lex_vs_rho_measured, fig4b_Lex_measured,
+    fig_s2_lex_range_{with,without}_outliers) and plots Fig. 2D curvature only as uncalibrated
+    2D pixel heatmaps (0 measured curvature datums), whereas gubbala2025 measures 1D normalized
+    curvature probability density functions P(kappa) (P_kappa_fig4c_exp_{no_actin,low,high})
+    and 0 L_ex datums. Neither paper's runnable models output the other's shape observable:
+    arnold2024/domain_curvature_spline outputs scalar single-ellipse metrics (kappa_mean,
+    kappa_max, kappa_norm_min), not P(kappa) PDFs; gubbala2025/boundary_curvature_s2{_corrected}
+    evaluates only circles and has no L_ex output (its 1/[length] kappa_mean port is physically
+    disjoint from arnold2024's Fourier wave-vector shift delta_k_mean_single_vs_two '≈ 1' um^-1).
+    (3) Disjoint dynamics, mechanics & unmeasured continuum inputs: arnold2024's buckling-force
+    (actin_buckling_force{_euler}, F_b [pN]), bundle packing (bundle_filament_count), modified
+    Laplace-Young (modified_laplace_young_eq4, effective_laplace_young), DDM (ddm_*,
+    relaxation_speedup_ratio), cholesterol area-fraction (ld_area_fraction), and tracer
+    (tracer_position_variance, tracer_timelapse_duration) models have 0 corresponding measured
+    targets in gubbala2025 (gubbala2025/actin_filament_length_exp '3 to 5' um is an input rather
+    than output to actin_buckling_force_euler — implying F_b = 0.079-0.219 pN vs. 1.97 pN at
+    Arnold's L = 1 um — with no measured force to test against; actin_density_figS1_exp reports
+    dimensionless normalized rho/rho_max without raw I_actin or A_Ld; GUV lipid percentages in
+    gubbala2025 are origin: reported preparation recipes, not measured totals). Conversely,
+    gubbala2025's nondim_parameters_s32 lacks all 6 dimensional PDE coefficients (M, Gamma,
+    lambda_tilde, alpha, L_1, L_3) in both papers (and microscopic t_Q ~ 0.24 s / l_c are
+    disjoint from arnold2024's DDM relaxation times tau_LoLd ≈ 1600 s, tau_Ld ≈ 4100 s and
+    wavelengths a, xi); coupled_binodal_coexistence outputs Cahn-Hilliard bulk order-parameter
+    roots (phi_Lo_eq = -1.193, phi_Ld_eq = +1.223), not geometric Lo area fraction phi_Lo during
+    cholesterol addition (fig4b_phi_Lo_measured); and none of gubbala2025's free-energy,
+    Q-tensor, Frank-constant, stability, or crossover models predicts arnold2024's DDM, tracer,
+    or excess-perimeter measurements. See gubbala2025/q_arnold2024_no_cross_validation for the
+    companion audit.
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audit with nastkolb2022 (2026-11-25)
+# ---------------------------------------------------------------------------
+- id: q_nastkolb2022_cross_validation_audit
+  kind: choice
+  about:
+    - bundle_filament_count
+    - actin_filament_spacing_ref29
+    - actin_bundle_filament_count_printed
+    - actin_bundle_width
+    - ddm_isf_eq2
+    - relaxation_speedup_ratio
+    - fig3b_isf_LoLd_measured
+    - fig3b_isf_Ld_measured
+    - tau_Ld_measured
+    - tau_LoLd_measured
+    - nastkolb2022/filament_count_1um_intensity_measured
+    - nastkolb2022/bundle_width_ref_1um
+    - nastkolb2022/vasp_diameter_min
+    - nastkolb2022/vasp_diameter_max
+    - nastkolb2022/bundle_filament_count_2d_spacing
+    - nastkolb2022/bundle_effective_spacing
+    - nastkolb2022/bundle_width_vasp_scaling
+    - nastkolb2022/frap_recovery_fit
+    - nastkolb2022/frap_recovery_by_half_time
+  citation:
+    page: 5
+    printed_page: "26574"
+    quote: "Assuming ∼20 nm spacing between"
+    where: "Results p. 5 vs nastkolb2022 Data analysis p. 11 (cross-validation audit)"
+  text: >
+    Bidirectional cross-record validation audit between arnold2024 (21 runnable models [38
+    output ports], 41 origin: measured datums out of 153 total) and nastkolb2022 (11 runnable
+    models [11 ports] + 6 non-runnable, 66 origin: measured datums out of 119 total; 2,508 +
+    451 = 2,959 runnable port-datum pairs). Exactly 1 genuine CrossValidation applies and is
+    entered in arnold2024/validations.yaml:
+    (1) Validated pair (Direction A — arnold2024 -> nastkolb2022):
+    val_bundle_filament_count_vs_nastkolb_1um tests arnold2024/bundle_filament_count
+    (N_fil = w_bundle / d_spacing) with Nast-Kolb's 1 um reference width
+    (nastkolb2022/bundle_width_ref_1um) and Arnold's own 2D SLB electrostatic spacing
+    (actin_filament_spacing_ref29 = '~20' nm, Heath et al. 2013 Ref. 29) against Nast-Kolb's
+    independent TIRF intensity-extrapolated filament count
+    (nastkolb2022/filament_count_1um_intensity_measured = '45 +/- 12' per 1 um). Output
+    N_fil = 50.0 vs. 45 +/- 12 ([33, 57], +11.1%, +0.42 uncertainty units) -> verdict
+    reproduced with 0 added inputs. Open physical nuance: Arnold's electrostatic DOTAP-SLB
+    spacing (~20 nm) reproduces Nast-Kolb's VASP-SLB intensity-calibrated count (implied
+    spacing 22.2 nm, range 17.5-30.3 nm) more closely than Nast-Kolb's own geometric VASP
+    diameter range (28-70 nm -> 35.7-14.3 filaments) or Graham et al.'s 15 nm 3D droplet
+    spacing (graham2023/val_ring_filament_count_vs_nastkolb_1um -> 66.67, close), either
+    because membrane-adsorbed F-actin bundles pack near ~20-25 nm regardless of tethering
+    chemistry or because partial out-of-plane multilayer stacking boosts TIRF intensity above
+    strictly single-layer VASP-spaced ribbons (an open possibility noted by both papers).
+    (2) Excluded Direction A pairs (remaining 2,507 pairs): all other 20 arnold2024 models
+    concern 2-phase Lo/Ld lipid domain mechanics (excess_perimeter_eq3, domain_curvature_spline,
+    modified_laplace_young_eq4, effective_laplace_young, passive_coarsening_scaling,
+    ld_area_fraction, lipid_composition_sum), Euler buckling (actin_buckling_force{_euler},
+    0 force measurements in nastkolb2022), DDM / static structure factors (ddm_*,
+    relaxation_speedup_ratio, structure_factor_eq5_pipeline, mean_wavelength_from_k,
+    wavevector_mode_conversion, radial_mode_binning), or gelsolin-truncated tracer tracking
+    (tracer_position_variance, tracer_timelapse_duration), none of which predicts nastkolb2022's
+    single-phase egg-PC/Ni-NTA VASP-SLB bundle-width, pore-area, TIRF polymerization kinetics,
+    FRAP recovery, colocalization, or lipid-depletion observables.
+    (3) Excluded Direction B pairs (all 451 runnable pairs, nastkolb2022 -> arnold2024):
+    0 valid CrossValidation entries. Crucially, nastkolb2022/bundle_filament_count_2d_spacing
+    and bundle_effective_spacing have NO origin: measured target in arnold2024 because
+    arnold2024 never experimentally measured bundle filament count, width, or spacing
+    (actin_bundle_filament_count_printed '≈ 50 to 100' has origin: predicted;
+    actin_bundle_width '~1 to 2' um has origin: estimated; actin_filament_spacing_ref29 '~20'
+    nm has origin: reported from Ref. 29). Nast-Kolb's 6 FRAP models (frap_recovery_fit,
+    frap_recovery_by_half_time, frap_half_time, frap_tau_from_half_time,
+    frap_mobile_fraction_plateau, frap_mobility_ratio) do not apply because arnold2024 runs
+    0 FRAP assays and explicitly states its DDM intermediate scattering function F(k, t)
+    (decaying 1 -> 0 over thousands of seconds, vs. rising 0 -> a VASP diffusion recovery over
+    seconds) is 'markedly nonexponential' (p. 4); bundle_width_vasp_scaling, cp_to_actin_ratio,
+    and actin_concentration_fold_change do not apply (arnold2024 uses 0 VASP, 0 CP, and a
+    single 1 uM F-actin concentration).
+
+# ---------------------------------------------------------------------------
+# Cross-record ModelAtlas & citation audit with arnold2023 (2026-11-25)
+# ---------------------------------------------------------------------------
+- id: q_arnold2023_structure_factor_and_coarsening_audit
+  kind: choice
+  about:
+    - structure_factor_eq5_pipeline
+    - mean_wavelength_from_k
+    - passive_coarsening_scaling
+    - active_coarsening_acceleration_ref7
+    - lipid_composition_sum
+    - ref-7
+    - arnold2023/structure_factor_first_moment_eq47
+    - arnold2023/domain_growth_power_law_scaling
+    - arnold2023/lifshitz_slyozov_2d_asymptotic_eq11
+    - arnold2023/smoluchowski_passive_approx_eq28_corrected
+    - arnold2023/alpha_passive_theory
+    - arnold2023/alpha_active_smoluchowski_theory
+    - arnold2023/q_si_actin_lo_phase_misprint
+    - arnold2023/q_si_low_composition_missing_cholesterol
+  citation:
+    page: 4
+    printed_page: "26573"
+    quote: "using the mean wave vector of the static structure factor"
+    where: "Methods p. 4, Eq. 5 (p. 6), Results p. 7, & Intro p. 1 (ref-7) vs arnold2023 SI Sec. IV.A Eq. (47)"
+  text: >
+    Cross-record ModelAtlas, citation, and methods audit with arnold2023 (Arnold, Gubbala &
+    Takatori, Phys. Rev. Lett. 131:128402, 2023; cited in arnold2024 as ref-7 on pp. 1 and 4;
+    same laboratory, sharing 7 distinct bibliographic references including Veatch & Keller 2003,
+    Camley & Brown 2011, Angelova & Dimitrov 1986, Spudich & Watt 1971, Schroer et al. 2020, and
+    Tian et al. 2007).
+    (1) Static structure-factor domain-size metric shift (and curve-port ModelAtlas boundary):
+    arnold2023/structure_factor_first_moment_eq47 (SI Sec. IV.A Eq. 47, p. 14) takes a whole-curve
+    input port S_k, so per ModelAtlas rules (record_guide.md & boxgraph/atlas.py) it cannot be
+    tested directly against arnold2024/structure_factor_eq5_pipeline or mean_wavelength_from_k
+    without producing an unverifiable status. Comparing their printed equations directly reveals
+    three consecutive methodological shifts within the same lab: (a) length-scale factor of 2*pi —
+    arnold2023 Eq. (47) defines inverse first moment a(t) = (int S(k) dk)/(int k S(k) dk) = 1/<k>
+    (no 2*pi factor), whereas arnold2024 Eq. (5) & Fig. 3C define mean wavelength a, xi = 2*pi/<k>
+    (6.283x larger in absolute units, cancelling in normalized ratios a/a_0); (b) squared vs.
+    unsquared FFT magnitude — arnold2023 uses standard power spectrum S(k, t) = <|phi_k(t)|^2>,
+    whereas arnold2024 p. 4 explicitly prints unsquared S(n) = |FFT(n)| (upweighting high-k tails;
+    see arnold2024/q_structure_factor_unsquared_fft); and (c) high-k integration cutoff —
+    arnold2023 truncates dynamically at k_cut = 2*k_max (tracking the shifting spectral peak),
+    whereas arnold2024 discards n = 0 and wavelengths 2*pi/k < 5 px (fixed spatial pixel cutoff).
+    (2) Coarsening scaling & active-vs-passive regime shift: 4 proposed ModelAtlas relations in
+    arnold2024/relations.yaml verify that arnold2024/passive_coarsening_scaling (a ~= t^(1/3))
+    shares exact +1/3 temporal scaling with arnold2023's passive power-law baseline
+    (domain_growth_power_law_scaling at alpha = 1/3), 2D Ostwald ripening
+    (lifshitz_slyozov_2d_asymptotic_eq11), and corrected late-time Brownian coalescence
+    (smoluchowski_passive_approx_eq28_corrected), while honestly failing (not_verified, log-slope
+    gap 1/3) against arnold2023's active myosin-driven shear coalescence (alpha = 2/3). All other
+    arnold2024 models (DDM non-ergodic ISF, Euler buckling, 2D bundle ribbon packing, modified
+    Laplace-Young, spline curvature, excess perimeter, cholesterol tracer tracking, lipid sum)
+    have no equation counterparts in arnold2023.
+    (3) Citation precision and cited.yaml audit for active_coarsening_acceleration_ref7: arnold2024
+    p. 1 (citing ref-7) writes "accelerate domain coarsening by 2x compared to thermal coarsening",
+    loosely omitting "in the growth exponent" from arnold2023 p. 1 ("grow as ~t^(2/3), a 2x
+    acceleration in the growth exponent compared to passive ~t^(1/3) growth" — doubling a power-law
+    exponent rather than a linear coarsening rate). Because arnold2023/data.yaml records
+    alpha_passive_theory (1/3) and alpha_active_smoluchowski_theory (2/3) separately rather than a
+    standalone scalar datum "2", active_coarsening_acceleration_ref7 remains unlinked in
+    arnold2024/cited.yaml.
+    (4) Experimental protocol evolution: arnold2024 Methods (p. 2) cleans up two SI protocol errors
+    present in arnold2023 SI Sec. II (p. 8) — fixing F-actin adsorption to the Ld phase (removing
+    arnold2023/q_si_actin_lo_phase_misprint) and reporting a 100.0%-sum primary GUV recipe without
+    arnold2023's 86.0% cholesterol-omitted recipe (arnold2023/q_si_low_composition_missing_cholesterol)
+    — while retaining the inherited subheading "Assembling Actomyosin Cortex on a Lipid Bilayer"
+    despite removing myosin II and ATP (by contrast, gubbala2025 SI later re-copied both errors
+    verbatim from arnold2023 SI).
+
+
+

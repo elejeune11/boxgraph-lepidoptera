@@ -1,0 +1,473 @@
+- id: q_fig5d_s7e_all_snapshots_averaging_bug
+  kind: possible_error
+  about: [notebook_fig5d_averaging_adapter, notebook_fig5d_averaging_last30, cmp_nb_fig5d_nsnaps_as_written_vs_paper, nb_last_snaps_length_code]
+  text: >
+    Figures.ipynb Cells 13 (Fig. 5D, line 1708), 40 (Fig. S7E, line 7090), and 46 (Fig. S7G, line 7826)
+    compute `startpos = int(0.95*len(Row1))` where `Row1` is the outer list of replicates (length 1..5),
+    not the 601-element snapshot time series. Consequently, `Row1temp[startpos:endpos]` slices
+    `[repid:repid+1]`, averaging ALL 601 snapshots (t = 0..600 s, including t = 0 all-zero rows) instead
+    of the last 30 snapshots (5%, t = 571..600 s) claimed in the captions of Fig. 5D and Fig. S7E.
+    Visual comparison with published Fig. 5D (walker2025 p. 9) and Fig. S7E (p. 40) confirms the paper
+    figures plot the buggy all-trajectory means (e.g., at R_22 k_form=10, k_split=0.1: Dimer_2 = 0.3461
+    vs true last-30 = 0.6145; at R_21 k_form=10, k_split=0.01: Dimer_2 = 0.3818 vs true last-30 = 0.6762;
+    in Fig. S7E R_21: BM2 = 0.7165 vs true last-30 = 0.9170), also creating the unusually large vertical
+    standard-deviation error bars across transient growth. By contrast, Cells 40 & 46 slice
+    `length_monomers.iloc[:, -30:]` correctly for the multimer-length violins (Fig. S7F-G).
+  citation:
+    file: Figures.ipynb
+    lines: "1708"
+    quote: "startpos = int(0.95*len(Row1))"
+    where: "Figures.ipynb Cells 13, 40, and 46"
+
+- id: q_fig4j_s6f_only_5_replicates_plotted
+  kind: possible_error
+  about: [notebook_fig4j_replicates_adapter, cmp_nb_fig4j_replicates_vs_paper, paper_replicates_bivalent]
+  text: >
+    Figures.ipynb Cell 4 (Fig. 4J, line 529) and Cell 31 (Fig. S6F, line 4720) place
+    `for diriter in range(0, 2):` outside the (kbind, kunbind) loops, appending the 5-replicate means
+    from `outputfiles/` at Meanlist[0..8] (or [0..24]) and the 5-replicate means from `outputfiles_2/`
+    at Meanlist[9..17] (or [25..49]). Cells 8 and 35 then plot ONLY Meanlist[0..8] and Meanlist[0..24],
+    discarding the second 5 replicates entirely even though Fig. 4J and Fig. S6F captions state
+    '10 replicates are considered per condition'. At R_22 (k_bind=10, k_unbind=0.1), the plotted
+    first-5-replicate mean at t=600 s is 0.1986 (matching published Fig. 4J) versus 0.1608 pooled across
+    all 10 replicates (second 5 = 0.1229). Cells 6 and 33 (Fig. 4K and Fig. S6G) place `diriter` inside
+    `crossplothelper()` and correctly pool all 10 replicates. Additionally, Cells 11 (line 1483) and 38
+    (line 6711) reference `'FO_Output'` while the actual directories in Figure_5 and Figure_S7B-F are
+    lowercase `'FO_output'`, causing FileNotFoundError on case-sensitive filesystems.
+  citation:
+    file: Figures.ipynb
+    lines: "529-546"
+    quote: "for diriter in range(0, 2):"
+    where: "Figures.ipynb Cells 4, 8, 31, and 35"
+
+- id: q_figs7d_reversed_legend_bug
+  kind: possible_error
+  about: [cytosim_3d_dynamic_multimer_sim]
+  text: >
+    In Figures.ipynb Cell 38 (Fig. S7D Data), `Rval = koniter*len(kunbindvec) + koffiter` loads FO time
+    series in ascending `k_multimer_split` order {0.001, 0.01, 0.1, 1.0, 10.0} (e.g., at k_form=0.01:
+    R_5 k_split=0.001 gives ring FO=0.1675 [blue], R_6 k_split=0.01 gives FO=0.2344 [red], while R_7..R_9
+    k_split=0.1..10.0 give shell FO~0.48-0.49). However, Cell 42 (line 7278) sets
+    `labelvec = ['10.0', '1.0', '0.1', '0.01', '0.001']` (descending) for Panel E (where Cell 40 reversed
+    `4 - kunbinditer`) and reuses that same reversed `labelvec` for Panel D's legend (line 7349), inverting
+    the published legend of Figure S7D (walker2025 p. 40) so ring curves are mislabelled 10.0/1.0 and shell
+    curves are mislabelled 0.01/0.001.
+  citation:
+    file: Figures.ipynb
+    lines: "7278"
+    quote: "labelvec = ['10.0', '1.0', '0.1', '0.01', '0.001']"
+    where: "Figures.ipynb Cell 38 & Cell 42"
+
+- id: q_table_s1_steric_vs_bond_stiffness_mixup
+  kind: possible_error
+  about: [cym_steric_push_global, cym_minilpd_bond_stiffness, cym_vasp_bond_stiffness, cym_monomer_actin_bond_stiffness, cym_monomer_dimer_bond_stiffness]
+  text: >
+    Settles walker2025 q_steric_stiffness_difference: all 874 .cym configs set ONE global CytoSim steric
+    push stiffness `steric = 1, 1` (`steric_stiffness_push[0] = 1.0 pN/um`, simul_prop.cc:79,
+    simul_solve.cc:191) shared by all species (actin, mini-Lpd, VASP, and monomers). The values `10.0`
+    (mini-Lpd `graftedcrosslinker`, `VASPcrosslinker`, `actincrosslinker`) and `5.0` (dimerizer
+    `graftedcrosslinker`) are actually `SingleProp::stiffness` — harmonic spring stiffnesses of attached
+    crosslinker/dimerizer bonds, which Table S1 (pp. 25-27) completely omits as bond stiffnesses and
+    instead mislabels as 'steric repulsion Stiffness' (while also misreporting bivalent mini-Lpd's
+    10.0 pN/um bond stiffness as 1.0 pN/um).
+  citation:
+    file: Inputfile_Templates/inputTemplate-miniLpd/config.cym
+    lines: "16"
+    quote: "steric = 1, 1"
+    where: "All 874 .cym configs & Source_Code/Cytosim/src/sim/simul_prop.cc:79"
+
+- id: q_dead_wrist_diffusion_stokes_einstein_settled
+  kind: unexplained_difference
+  about: [cym_single_diffusion_dead, cytosim_solid_stokes_diffusion, cmp_solid_stokes_D_vs_paper, cpp_default_kT]
+  text: >
+    Settles walker2025 q_stokes_einstein_vs_prescribed_D and q_brownian_step_exceeds_binding_radius:
+    all 874 .cym configs write `diffusion = 10.0` on grafted `Single` Wrists attached to 30 nm `Solid`
+    blobs. In Source_Code/Cytosim/src/sim/singles/wrist.cc (lines 17-20, 68-83), the `diffusion > 0`
+    error check is `#if (0)` disabled and `Wrist::stepF()` never calls `diffuse()`, making
+    `diffusion = 10.0` a silent no-op. Actual blob diffusion is governed exclusively by
+    `Solid::setDragCoefficient()` (`6*pi*eta*R`, solid.cc:854-943) with hidden default `kT = 0.0042 pN*um`
+    (simul_prop.cc:24), giving actual `D_solid = 0.01485 um^2/s` (673x slower than Table S1's claimed
+    10 um^2/s) and actual 1D Brownian step `sigma_B = 7.71 nm` (rather than 200 nm).
+  citation:
+    file: Source_Code/Cytosim/src/sim/singles/wrist.cc
+    lines: "17-20"
+    quote: "if ( p->diffusion > 0 )"
+    where: "Source_Code/Cytosim/src/sim/singles/wrist.cc & solid.cc:854-943"
+
+- id: q_dimerizer_double_counted_stiffness_and_binding
+  kind: possible_error
+  about: [cytosim_dimerizer_bond_mechanics, cmp_dimer_keff_vs_nominal_stiffness, cym_monomer_dimer_bond_stiffness, cym_dimerizer_binding_distance]
+  text: >
+    Three undocumented quirks in the custom C++ Dimerizer implementation:
+    (1) Double-counted bond stiffness & halved Bell detachment force: in `Simul::setAllInteractions()`
+    (simul_solve.cc:238-239), `singles.firstA()` visits BOTH attached dimerizer Wrists, and
+    `Wrist::setInteractions()` (wrist.cc:131-135) calls `anchor.addLink(meca, wrist2->mecapoint(), prop->stiffness)`
+    for BOTH, creating two parallel 5.0 pN/um springs = effective mechanical stiffness 10.0 pN/um;
+    meanwhile `Wrist::force()` (wrist.cc:64) returns `5.0 * d = F_mech / 2` to `Dimerizer::testKramersDetachment()`,
+    effectively doubling `F_unbind` from 10 pN to 20 pN relative to true spring tension.
+    (2) Pairwise double-attempt binding rate: `SingleSet::step()` calls `PointGrid::tryToAttach()` on every
+    free dimerizer Wrist per step using deferred `tmphaHand`, so each unordered pair of in-range monomers
+    tests attachment twice per step (`p_pair = 1 - (1 - p_1)^2`, ~2x nominal `k_dimer_form` in DynamicDimer
+    and up to 4x in DynamicMultimer), while `testKramersDetachment()` uses `hasbeentossed`/`marktodetach`
+    to test unbinding only once per pair.
+    (3) Anchor-to-center distance test: `PointGrid::tryToAttach()` (point_grid.cc:127-132) tests
+    `|anchor_1 - center_2| < 0.09 um` (distance from surface site at r=30 nm on Solid 1 to center of
+    Solid 2), not center-to-center distance `2*R_solid < d < 3*R_solid` as stated in Methods S1 p. 43.
+  citation:
+    file: Source_Code/Cytosim/src/sim/singles/wrist.cc
+    lines: "131-135"
+    quote: "anchor.addLink(meca, wrist2->mecapoint(), prop->stiffness);"
+    where: "wrist.cc:56-65,127-138; point_grid.cc:81-159; dimerizer.h:86-143"
+
+- id: q_icosphere_code_vs_paper_and_bugs
+  kind: possible_error
+  about: [ico_init_triangles_code, ico_subdiv_code, ico_monomer_rise_code, ico_plane_dthreshold_code, icosphere_mesh_adapter, icosphere_surface_density_adapter, cmp_icosphere_f4_monomers_vs_paper]
+  text: >
+    Settles walker2025 q_icosphere_eight_triangles_misprint and uncovers hidden choices/bugs in
+    `icosphere.py` and `Main_Analyze_Trajectory.py`:
+    (1) `icosphere.py:40-44` starts from a 20-face regular icosahedron (not 8 triangles) and
+    `Main_Analyze_Trajectory.py:711-713` subdivides `f = 4` times (not 3), producing 5,120 triangles
+    (s_eq = 75.24 nm, median edge 75.46 nm = 27.9 actin monomers at `icosphere.py:160`'s hidden 2.7 nm
+    spacing, still ~2.8x coarser than Methods S1's stated '~10 actin monomers').
+    (2) Hidden `dthreshold = 0.2 um` (200 nm triangle-plane distance cutoff, lines 190 & 223), hardcoded
+    `dthreshold_4m_center = 0.9*0.9` (does not scale with `radius != 1.0`), and hardcoded orientation
+    quaternion on line 36 (with misleading comment `# rescale the size to radius of 0.5` on line 33).
+    (3) `interpolateallmonomers()` (lines 160-170) loops `range(1, nmonomers-1)` (skipping `mid = nmonomers-1`
+    on each segment) and appends both endpoints of every segment, duplicating every interior bead vertex.
+    (4) `Main_Analyze_Trajectory.py:192` calls `ic.generatedensityfield(meshvar, unitnormal, filcoord, False, ic.SearchAlgoType.LISTEDSEARCH, Nlists)`
+    with an extra `False` argument, passing `False` as `searchType` and silently bypassing `LISTEDSEARCH`
+    to fall back to brute-force `ORIGINAL` search.
+  citation:
+    file: Analysis_Scripts/Main_Analyze_Trajectory.py
+    lines: "711-713"
+    quote: "f=4"
+    where: "Main_Analyze_Trajectory.py:192,711-713 & icosphere.py:26-59,152-225"
+
+- id: q_shipped_main_analyze_vaspprops_broken
+  kind: possible_error
+  about: [trajectory_vaspprops_bug_adapter, cmp_vaspprops_bug_2fil_count]
+  text: >
+    The committed `Analysis_Scripts/Main_Analyze_Trajectory.py` cannot reproduce the bundled
+    `CrosslinkOutput` CSVs for static crosslinkers due to fatal bugs in both `getvaspprops()` and
+    `getvasppropsLpdVASP()`:
+    (1) Line 242 (`getvaspprops`): `for ublobid in enumerate(unique):` yields `(index, blob_id)` tuples,
+    making `crossboundblobid == ublobid` evaluate to scalar `False`, so `lval = 0` and
+    `countermat[lval - 1]` puts 100% of bound crosslinkers into `countermat[3]` (`Mean_Nfpc_4_fil`)
+    instead of 1- or 2-filament buckets.
+    (2) Lines 347-371 (`getvasppropsLpdVASP`): `for ublobid in enumerate(unique): if ublobid <= int(ratio1):`
+    raises `TypeError` comparing tuple and int, and lines 354/367 assign
+    `unique_fid = np.unique(filid_solid, return_counts=True)` without unpacking so `len(unique_fid)` is
+    always 2.
+    (3) `get_nsolids.sh:12` has missing space syntax error `[ "$endlB" -gt 0]` and hardcodes `var=5` lines
+    per solid; `Main_Analyze_Trajectory.py:228,333,466,603` use `SREF <= nsnaplocal` (off-by-one); and
+    line 195 indexes `fvec[1][SREF]` instead of a step counter (breaking for `deltasnap > 1`).
+    Because the bundled CSVs in `Figure_4-S6E-G/outputfiles/` and `Figure_S6A-D/outputfiles/` have
+    properly populated 1-, 2-, 3-, and 4-filament counts, they were generated by a different working
+    version of the script prior to commit.
+  citation:
+    file: Analysis_Scripts/Main_Analyze_Trajectory.py
+    lines: "242-252"
+    quote: "for ublobid in enumerate(unique):"
+    where: "Main_Analyze_Trajectory.py (getvaspprops & getvasppropsLpdVASP) & get_nsolids.sh:12"
+
+- id: q_hidden_cytosim_defaults_and_site_geometry
+  kind: unstated_input
+  about: [cpp_default_kT, cpp_default_fiber_drag_radius, cym_minilpd_site_separation, cym_vasp_dimer_site_separation, cym_site_deviation, cym_viscosity_s5a_min, cym_viscosity_s5a_max]
+  text: >
+    Multiple consequential parameters present in the released `.cym` configs and CytoSim C++ source are
+    absent from `walker2025` Table S1 and Methods S1:
+    (1) Thermal energy `kT = 0.0042 pN*um` (`4.2 pN*nm`, ~304.2 K; simul_prop.cc:24), giving actin
+    persistence length `L_p = 0.075 / 0.0042 = 17.86 um` (settling `walker2025` `q_unstated_temperature`).
+    (2) Fiber hydrodynamic `drag_radius = 0.0125 um` (microtubule default, fiber_prop.cc:264), never
+    overridden to actin's 3.5 nm steric radius, plus cylinder drag offset `0.32` (fiber.cc:604).
+    (3) Solid binding-site geometry: `deviation = 0.001 um` (1 nm) everywhere, `separation = 0.06 um`
+    (antipodal 2*R) on bivalent mini-Lpd `blob`, and `separation = 0.054 um` (1.8*R) on tetravalent
+    `VASPblob`, `DynamicDimer`, and `DynamicMultimer`.
+    (4) Complete Figure_S5A viscosity grid `{0.001, 0.01, 0.1, 0.5, 1.0, 10.0, 100.0, 1000.0}` pN*s/um^2
+    and `max_length = 6.2832 um` (4-decimal rounding of 2*pi).
+  citation:
+    file: Source_Code/Cytosim/src/sim/fiber_prop.cc
+    lines: "264"
+    quote: "drag_radius         = 0.0125;  // radius of a Microtubule"
+    where: "Source_Code/Cytosim/src/sim/simul_prop.cc:24, fiber_prop.cc:264, & Inputfile_Templates/*/config.cym"
+
+- id: q_cytosim_full_3d_not_compiled
+  kind: unstated_model
+  about: [cytosim_3d_static_crosslinker_sim, cytosim_3d_dynamic_multimer_sim]
+  text: >
+    The full 3D CytoSim multi-agent simulations (874 `.cym` input files spanning Figs. 4I-K, 5B-D, S5,
+    S6, and S7) are marked `runnable: false` because the bundled C++ CytoSim engine in
+    `Source_Code/Cytosim/` is not compiled or executed inside BoxGraph (each trajectory runs 300,000 to
+    1,200,000 Brownian dynamics steps). Instead, all C++ mechanics (Solid Stokes drag, Wrist no-op
+    diffusion, global steric stiffness, and custom Dimerizer double-link/binding kinetics) are audited
+    directly from the C++ source and modeled in fast closed-form ports, while all Python analysis and
+    plotting pipelines (`icosphere.py`, `Main_Analyze_Trajectory.py`, `Figures.ipynb`) are executed live
+    as `software: true` adapters on the bundled code and output CSVs.
+  citation:
+    file: Inputfile_Templates/inputTemplate-DynamicDimer/config.cym
+    lines: "102-105"
+    quote: "run 300000 system"
+    where: "Inputfile_Templates/*/config.cym & Source_Code/Cytosim/"
+
+- id: q_icosphere_shared_with_chandrasekaran2024_figs2b
+  kind: reading
+  about:
+    - icosphere_mesh_adapter
+    - ico_init_triangles_code
+    - ico_subdiv_code
+    - chandrasekaran2024/icosphere_subdivision_geometry
+    - chandrasekaran_source_data/figs2b_icosphere_reader
+  text: >
+    Cross-record execution proves that walker2025_code's `Analysis_Scripts/icosphere.py::icosphere(n, 1.0)`
+    reproduces every single one of the 4,262 stored per-triangle area-equivalent equilateral side lengths
+    `sqrt(4 * A_i / sqrt(3))` in `chandrasekaran_source_data` (`41467_2024_46726_MOESM9_ESM.xlsx`, sheet
+    `FigureS2B`, rows `n = 0..5`) to IEEE-754 float64 machine precision (`<= 2.22e-16` at `n = 0`,
+    `<= 1.11e-16` at `n = 1`, `<= 5.55e-17` at `n = 2`, `<= 2.78e-17` at `n = 3, 4`, and `<= 2.08e-17`
+    at `n = 5`) in exact face traversal order. This establishes direct code reuse from Chandrasekaran et al.
+    (2024) (`chandrasekaran2024`, which accurately reported 20 base triangles and `n = 4` subdivisions),
+    further confirming that `walker2025` Methods S1's "8 triangles" and "3 times" are text transcription
+    errors, and showing that MOESM9's 1,281-column truncation on rows `n = 4` (1,281/5,120 faces) and
+    `n = 5` (1,281/20,480 faces) retains the exact first 1,281 faces generated by `icosphere.py` (where face
+    index 1280 = `5 * 256` at `n = 4` and `1 * 1024 + 256` at `n = 5` has the same symmetry-equivalent
+    area as face 0, shifting the `n = 5` median from 36.719 nm to 36.600 nm).
+  citation:
+    file: Analysis_Scripts/icosphere.py
+    lines: "26-59"
+    quote: "def icosphere(subdiv,radius):"
+    where: "Analysis_Scripts/icosphere.py vs 41467_2024_46726_MOESM9_ESM.xlsx sheet 'FigureS2B'"
+
+- id: q_chandrasekaran_cytosim_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_3d_static_crosslinker_sim
+    - cytosim_3d_dynamic_multimer_sim
+    - cytosim_config_derived_quantities
+    - cytosim_dimerizer_bond_mechanics
+    - cytosim_solid_stokes_diffusion
+    - icosphere_mesh_adapter
+    - icosphere_surface_density_adapter
+    - notebook_fig4j_replicates_adapter
+    - notebook_fig5d_averaging_adapter
+    - notebook_fig5d_averaging_last30
+    - trajectory_multimer_topology_adapter
+    - trajectory_vaspprops_bug_adapter
+    - cpp_default_kT
+    - cpp_default_fiber_drag_radius
+    - cpp_cylinder_drag_const
+    - rel_cyto_solid_stokes_diffusion_same
+    - rel_cyto_hand_bell_unbinding_code
+    - chandrasekaran_cytosim/cytosim_confinement_sphere_ellipse
+    - chandrasekaran_cytosim/cytosim_fiber_bending_mechanics
+    - chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+    - chandrasekaran_cytosim/cytosim_hand_binding_unbinding
+    - chandrasekaran_cytosim/cytosim_hand_gillespie_mc
+    - chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+    - chandrasekaran_cytosim/cytosim_polymerization_ratchet_depletion
+    - chandrasekaran_cytosim/cytosim_semi_implicit_langevin_1d
+    - chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+    - chandrasekaran_cytosim/cytosim_steric_repulsion
+    - chandrasekaran_cytosim/paper_figs6b_nuc50_curve
+    - chandrasekaran_cytosim/paper_figs6b_nuc150_curve
+    - chandrasekaran_cytosim/paper_figs6c_max_length_curve
+    - chandrasekaran_cytosim/paper_time_to_2R
+    - chandrasekaran_cytosim/paper_viscosity_ratio_water
+  text: >
+    No cross-record validations are entered in validations.yaml between walker2025_code and
+    chandrasekaran_cytosim (0 entries in both directions): BOTH records are `kind: software` engine
+    audits containing ZERO `origin: measured` empirical datums (and neither has a `figures.yaml`).
+    (1) Forward direction — walker2025_code models (12 models: 2 non-runnable 3D CytoSim specs, 3
+    closed-form C++/config ports, 7 live `software: true` Python analysis/notebook adapters) vs
+    chandrasekaran_cytosim/data.yaml (55 total datums): 0 `origin: measured`; all 55 datums are
+    non-empirical (`50 origin: reported` = 23 upstream CytoSim C++ built-in defaults/constants `cyto_*`
+    + 27 simulation input parameters `paper_*` copied from `chandrasekaran2024`; `2 origin: derived`
+    = `paper_time_to_2R = 184.47 s`, `paper_viscosity_ratio_water = 50`; `3 origin: run` = digitized
+    CytoSim nucleator/monomer-depletion curves `paper_figs6b_nuc50_curve`, `paper_figs6b_nuc150_curve`,
+    `paper_figs6c_max_length_curve` copied from `chandrasekaran2024`, for which `walker2025_code` has
+    no nucleator or monomer-depletion model).
+    (2) Reverse direction — chandrasekaran_cytosim models (10 runnable single-mechanism C++ physics
+    ports) vs walker2025_code/data.yaml (73 total datums): 0 `origin: measured`; all 73 datums are
+    non-empirical (`68 origin: reported` = 45 `.cym` config parameters, 3 inherited C++ defaults,
+    12 Python/notebook constants, and 8 reported simulation specs copied from `walker2025`;
+    `4 origin: derived` = `paper_filament_max_length`, `paper_dimer_conc_baseline`,
+    `paper_monomer_conc_baseline`, `paper_vol_frac_table`; `1 origin: estimated` =
+    `paper_icosphere_target_monomers = 10`).
+    (3) Both pair nominations (`ref-cytosim` fork inheritance and the shared Hooke's-law signature
+    between `chandrasekaran_cytosim/cytosim_confinement_sphere_ellipse` [droplet wall confinement]
+    and `walker2025_code/cytosim_dimerizer_bond_mechanics` [monomer-monomer dimerizer spring tension],
+    which are physically unrelated with no empirical force data) are non-empirical code relationships:
+    cross-fork constant agreement is already tracked in `walker2025_code/cited.yaml` (3 links:
+    `cpp_default_kT`, `cpp_default_fiber_drag_radius`, `cpp_cylinder_drag_const`), and cross-fork
+    mathematical equivalences/reductions/approximations are already checked via 10 verified ModelAtlas
+    relations (`rel_cyto_*`) in `walker2025_code/relations.yaml` (automatically cross-checked by
+    Synthesis against each record's own `comparisons.yaml`).
+  citation:
+    file: README.md
+    lines: "2-3"
+    quote: "This repository has all the source code, input files, analysis scripts, and sample data"
+    where: "README.md & Source_Code/Cytosim/ vs chandrasekaran_cytosim"
+
+- id: q_chandrasekaran_source_data_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_3d_static_crosslinker_sim
+    - cytosim_3d_dynamic_multimer_sim
+    - cytosim_config_derived_quantities
+    - cytosim_dimerizer_bond_mechanics
+    - cytosim_solid_stokes_diffusion
+    - icosphere_mesh_adapter
+    - icosphere_surface_density_adapter
+    - notebook_fig4j_replicates_adapter
+    - notebook_fig5d_averaging_adapter
+    - notebook_fig5d_averaging_last30
+    - trajectory_multimer_topology_adapter
+    - trajectory_vaspprops_bug_adapter
+    - rel_source_data_figs2b_n_faces_expected
+    - rel_source_data_figs2b_eq_side_approx_median
+    - q_icosphere_shared_with_chandrasekaran2024_figs2b
+    - chandrasekaran_source_data/paper_exp_gabmut_ring_1_7p5
+    - chandrasekaran_source_data/paper_exp_gabmut_shell_1_7p5
+    - chandrasekaran_source_data/paper_exp_gabmut_disk_1_7p5
+    - chandrasekaran_source_data/wb_f6d_1_7p5_shell_mean
+    - chandrasekaran_source_data/wb_f6d_1_7p5_ring_mean
+    - chandrasekaran_source_data/wb_f6d_1_7p5_disk_mean
+    - chandrasekaran_source_data/wb_f3b_10_1_t600_mean
+    - chandrasekaran_source_data/wb_s2c_1_10_mean
+    - chandrasekaran_source_data/wb_s10e_nuc25_mean
+    - chandrasekaran_source_data/fig6d_gabmut_experiment_reader
+    - chandrasekaran_source_data/figs2b_icosphere_reader
+  text: >
+    No cross-record validations are entered in validations.yaml between walker2025_code and
+    chandrasekaran_source_data (0 entries in both directions):
+    (1) Forward direction — walker2025_code models (12 models: 2 non-runnable 3D CytoSim specs, 3
+    closed-form C++/config ports, 7 live `software: true` Python adapters) vs
+    chandrasekaran_source_data/data.yaml (77 total datums, no `figures.yaml`): ONLY 3 datums carry
+    `origin: measured`, all from confocal microscopy experiments on VASP-GABmut droplets at
+    Actin:VASP = 1:7.5 in sheet `Figure6D` (N = 3 replicates, 240 droplets at 1:7.5 out of 655 total,
+    copied from `chandrasekaran2024` p. 7) — namely `paper_exp_gabmut_ring_1_7p5` (`ring_abundance`
+    = 53 +/- 6%), `paper_exp_gabmut_shell_1_7p5` (`shell_abundance` = 37 +/- 4%), and
+    `paper_exp_gabmut_disk_1_7p5` (`disk_abundance` < 10%, an inequality bound yielding no verdict).
+    None of walker2025_code's 12 models takes an experimental Actin:VASP molar ratio or VASP-GABmut
+    binding/unbinding kinetics, runs the full 3D CytoSim simulation (`cytosim_3d_static_crosslinker_sim`
+    and `cytosim_3d_dynamic_multimer_sim` are `runnable: false` and output surface area fraction /
+    crosslinker fractions rather than droplet morphology abundances), or predicts experimental ring,
+    shell, or deformed-disk droplet percentages (`trajectory_multimer_topology_adapter/rings_found`
+    counts cyclic molecular protein oligomers, not actin-ring droplet morphologies;
+    `notebook_fig4j_replicates_adapter` and `notebook_fig5d_averaging_*` read Walker et al. 2025
+    bivalent mini-Lpd / dynamic-dimer simulation CSVs; `icosphere_mesh_adapter` and
+    `icosphere_surface_density_adapter` compute spherical mesh geometry / synthetic-arc occupancy;
+    `cytosim_config_derived_quantities`, `cytosim_dimerizer_bond_mechanics`, and
+    `cytosim_solid_stokes_diffusion` compute single-mechanism config/bond/Stokes quantities). The 6
+    accompanying `Figure6D` workbook summary datums with `origin: derived` (`wb_f6d_1_7p5_shell_mean`,
+    `wb_f6d_1_7p5_ring_mean`, `wb_f6d_1_7p5_disk_mean`, `wb_f6d_1_7p5_shell_sd`,
+    `wb_f6d_1_7p5_ring_sd`, `wb_f6d_1_7p5_ring_sem_stored_buggy`) are excluded for the exact same
+    reason. All remaining 68 datums in `chandrasekaran_source_data/data.yaml` are non-empirical
+    (`37 origin: reported` = 35 workbook query coordinates `q_*`, `paper_exp_replicates = 3`,
+    `paper_n_seed_filaments = 30`; `8 origin: run` = 4 PCA cumulative variances and 4 Supp. Table 3
+    CytoSim cluster abundances; `23 origin: derived` = tetrameric-VASP CytoSim, LAMMPS, 2D continuum,
+    and silhouette simulation summaries, including `wb_f3b_10_1_t600_mean`, `wb_s2c_1_10_mean`,
+    `wb_s10e_nuc25_mean` which are non-empirical tetrameric-VASP CytoSim surface-area-fraction
+    summaries unrelated to walker2025_code's bivalent mini-Lpd CSVs or single-arc synthetic probe).
+    Note specifically on `icosphere_mesh_adapter` vs sheet `FigureS2B`: `chandrasekaran_source_data/data.yaml`
+    contains NO `triangle_edge_length` datum (only `origin: reported` subdivision indices `q_sub_1`,
+    `q_sub_4`, `q_sub_5`), and `FigureS2B` is deterministic icosphere mesh geometry rather than an
+    empirical measurement; exact IEEE-754 float64 reproduction of all 4,262 stored `FigureS2B`
+    per-triangle side lengths by live `Analysis_Scripts/icosphere.py` is already captured as two
+    verified model-to-model relations (`rel_source_data_figs2b_n_faces_expected`,
+    `rel_source_data_figs2b_eq_side_approx_median` in `walker2025_code/relations.yaml`) and documented
+    in `q_icosphere_shared_with_chandrasekaran2024_figs2b`.
+    (2) Reverse direction — `chandrasekaran_source_data` models (20 `role: processing`,
+    `software: true` Excel workbook readers over `41467_2024_46726_MOESM9_ESM.xlsx`) vs
+    `walker2025_code/data.yaml` (73 total datums, no `figures.yaml`): `walker2025_code` contains
+    0 `origin: measured` datums (`68 origin: reported`, `4 origin: derived`, `1 origin: estimated`),
+    and the 20 workbook readers are data-extraction adapters specific to `chandrasekaran2024`'s
+    MOESM9 spreadsheet rather than predictive physical models.
+  citation:
+    file: README.md
+    lines: "2-4"
+    quote: "This repository has all the source code, input files, analysis scripts, and sample data"
+    where: "README.md & Analysis_Scripts/icosphere.py vs 41467_2024_46726_MOESM9_ESM.xlsx (37 sheets)"
+
+- id: q_chandrasekaran2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - cytosim_3d_static_crosslinker_sim
+    - cytosim_3d_dynamic_multimer_sim
+    - cytosim_config_derived_quantities
+    - cytosim_dimerizer_bond_mechanics
+    - cytosim_solid_stokes_diffusion
+    - icosphere_mesh_adapter
+    - icosphere_surface_density_adapter
+    - notebook_fig4j_replicates_adapter
+    - notebook_fig5d_averaging_adapter
+    - notebook_fig5d_averaging_last30
+    - trajectory_multimer_topology_adapter
+    - trajectory_vaspprops_bug_adapter
+    - ref-chandrasekaran2024
+    - rel_chandra2024_stokes_einstein_solid_diffusion
+    - rel_chandra2024_bell_unbinding_dimerizer_code
+    - rel_chandra2024_icosphere_n_faces
+    - rel_chandra2024_icosphere_median_edge
+    - q_icosphere_shared_with_chandrasekaran2024_figs2b
+    - chandrasekaran2024/exp_wt_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_disk_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_ring_pct_1_7p5
+    - chandrasekaran2024/exp_gabmut_shell_pct_1_7p5
+    - chandrasekaran2024/fig6d_wt_shell_fig
+    - chandrasekaran2024/fig6d_wt_ring_fig
+    - chandrasekaran2024/fig6d_wt_disk_fig
+    - chandrasekaran2024/fig6d_gabmut_shell_fig
+    - chandrasekaran2024/fig6d_gabmut_ring_fig
+    - chandrasekaran2024/fig6d_gabmut_disk_fig
+    - chandrasekaran2024/figs2b_icosphere_edge_fig
+    - chandrasekaran2024/bell_slip_bond_unbinding
+    - chandrasekaran2024/icosphere_subdivision_geometry
+    - chandrasekaran2024/stokes_einstein_diffusion
+  text: >
+    No cross-record validations are entered in validations.yaml between walker2025_code and
+    chandrasekaran2024 (0 entries in both directions):
+    (1) Forward direction — walker2025_code's 10 runnable models (48 output ports: 33 dimensionless)
+    and 2 non-runnable 3D CytoSim specs (`cytosim_3d_static_crosslinker_sim`,
+    `cytosim_3d_dynamic_multimer_sim`) vs chandrasekaran2024/data.yaml (224 total datums, 106
+    figures.yaml entries): ONLY 10 datums carry `origin: measured`, all from Fig. 6D (p. 7)
+    confocal microscopy droplet morphology abundances (shell, ring, and disk %) for WT VASP
+    (replotted from Graham et al. 2023 `ref-15`) and VASP-GABmut across Actin:VASP = 1:20, 1:10,
+    and 1:7.5 — specifically 4 text scalars at 1:7.5 (`exp_wt_disk_pct_1_7p5` = 70 +/- 13%,
+    `exp_gabmut_disk_pct_1_7p5` < 10%, `exp_gabmut_ring_pct_1_7p5` = 53 +/- 6%,
+    `exp_gabmut_shell_pct_1_7p5` = 37 +/- 4%) and 6 digitized stacked-bar series
+    (`fig6d_{wt,gabmut}_{shell,ring,disk}_fig`). Across all 480 runnable port-datum pairs (330
+    dimensionless dimension-matching pairs), 0 models in walker2025_code take VASP WT/GABmut
+    variant or Actin:VASP molar ratio as inputs, simulate a deformable droplet, or predict
+    experimental shell, ring, or deformed-disk morphology percentages:
+    `trajectory_multimer_topology_adapter/rings_found` counts cyclic molecular protein oligomers
+    rather than actin-ring droplets; `notebook_fig4j_replicates_adapter` and
+    `notebook_fig5d_averaging_{adapter,last30}` read Walker et al. (2025) bivalent mini-Lpd /
+    dynamic-dimer CytoSim CSVs; `trajectory_vaspprops_bug_adapter` audits a Python `enumerate()`
+    bug; `icosphere_mesh_adapter` and `icosphere_surface_density_adapter` compute spherical mesh
+    geometry and synthetic-arc occupancy; `cytosim_dimerizer_bond_mechanics`,
+    `cytosim_solid_stokes_diffusion`, and `cytosim_config_derived_quantities` compute
+    single-mechanism C++/config quantities; and both 3D CytoSim specs are `runnable: false`
+    rigid-sphere models outputting surface area / crosslinker fractions. All remaining 214 datums
+    in chandrasekaran2024 are non-empirical (`88 reported`, `107 run`, `15 derived`, `3 predicted`,
+    `1 assumed`), including deterministic mesh geometry `figs2b_icosphere_edge_fig` (`origin:
+    derived`), whose exact correspondence with live `Analysis_Scripts/icosphere.py` is already
+    captured via `rel_chandra2024_icosphere_n_faces` and `rel_chandra2024_icosphere_median_edge`
+    in `walker2025_code/relations.yaml` and `q_icosphere_shared_with_chandrasekaran2024_figs2b`.
+    (2) Reverse direction — chandrasekaran2024's 46 models (42 runnable + 4 non-runnable) vs
+    walker2025_code/data.yaml (73 total datums, no `figures.yaml`): `walker2025_code` is a `kind:
+    software` record containing 0 `origin: measured` empirical datums (`68 reported`, `4 derived`,
+    `1 estimated` — all `.cym` config parameters, inherited CytoSim C++ defaults, Python/notebook
+    constants, or Walker et al. 2025 simulation targets). Both pair nominations
+    (`ref-chandrasekaran2024` codebase citation and the shared `(rate from force, rate)` signature
+    between `chandrasekaran2024/bell_slip_bond_unbinding` and
+    `walker2025_code/cytosim_dimerizer_bond_mechanics`, which has no empirical force-unbinding
+    measurement in either record) represent analytical/code correspondences already fully verified
+    by 12 ModelAtlas relations (`rel_chandra2024_*`, 11 verified + 1 honest refutation) in
+    `walker2025_code/relations.yaml`.
+  citation:
+    file: README.md
+    lines: "2-4"
+    quote: "This repository has all the source code, input files, analysis scripts, and sample data"
+    where: "README.md, Source_Code/Cytosim/, & Analysis_Scripts/icosphere.py vs chandrasekaran2024"
+
+
+

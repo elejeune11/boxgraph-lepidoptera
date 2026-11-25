@@ -1,0 +1,9 @@
+"""Calibrated reader for Fig. 4F (0 nM Arp2/3): Shell, Ring, Disc abundance %."""
+from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _fig4f
+
+def read(image, at):
+    return _fig4f.read_panel(image, 0, "0nM_Arp2/3")

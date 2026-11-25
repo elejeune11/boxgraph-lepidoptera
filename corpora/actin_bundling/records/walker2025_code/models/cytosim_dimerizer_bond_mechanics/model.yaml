@@ -1,0 +1,26 @@
+id: cytosim_dimerizer_bond_mechanics
+name: Custom CytoSim Dimerizer bond stiffness double-counting, Bell detachment, and pairwise binding probability (wrist.cc, dimerizer.h, hand_prop.cc, point_grid.cc)
+role: model
+stated:
+  file: Source_Code/Cytosim/src/sim/singles/wrist.cc
+  lines: "127-138"
+  quote: "anchor.addLink(meca, wrist2->mecapoint(), prop->stiffness);"
+  where: "Wrist::setInteractions() (wrist.cc:127-138), Wrist::force() (wrist.cc:56-65), Dimerizer::testKramersDetachment() (dimerizer.h:86-143), HandProp::complete() (hand_prop.cc:234,273), PointGrid::tryToAttach() (point_grid.cc:81-159)"
+equation: "k_eff = 2 * k_single; F_mech = 2 * k_single * dx; F_bell = k_single * dx; k_unbind_code = k_unbind_0 * exp(F_bell / F_unbind); k_unbind_true_Fmech = k_unbind_0 * exp(F_mech / F_unbind); p_bind_1 = 1 - exp(-k_bind * dt); p_bind_pair = 1 - (1 - p_bind_1)^2"
+inputs:
+  k_single: {quantity: spring_stiffness, unit: pN/um}
+  dx: {quantity: displacement, unit: um}
+  k_bind: {quantity: rate, unit: 1/s}
+  k_unbind_0: {quantity: rate, unit: 1/s}
+  F_unbind: {quantity: force, unit: pN}
+  dt: {quantity: time, unit: s}
+outputs:
+  k_eff: {quantity: spring_stiffness, unit: pN/um}
+  F_mech: {quantity: force, unit: pN}
+  F_bell: {quantity: force, unit: pN}
+  k_unbind_code: {quantity: rate, unit: 1/s}
+  k_unbind_at_Fmech: {quantity: rate, unit: 1/s}
+  p_bind_single: {quantity: probability, unit: dimensionless}
+  p_bind_pair: {quantity: probability, unit: dimensionless}
+settings: {}
+stochastic: false

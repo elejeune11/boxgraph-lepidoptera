@@ -1,0 +1,1498 @@
+- id: rel_eq3_reduces_to_eq2_printed
+  kind: reduces_to
+  a: graham2024/actin_vca_competition_ode_eq3_printed
+  b: graham2024/actin_polymerization_ode_eq2_printed
+  limit:
+    C_vca: "0"
+  mapping:
+    k_grow: k_grow
+    N_fil: N_fil
+    F_0: F_0
+    T_actin: T_actin
+    t_end: t_end
+  output_map:
+    F_end: F_end
+  regime:
+    k_grow: [0.005, 0.02]
+    N_fil: [10, 50]
+    F_0: [0.2, 1.0]
+    T_actin: [100.0, 200.0]
+    t_end: [100.0, 600.0]
+    k_bind: [1.0, 5.0]
+    N_VCA: [1000.0, 5000.0]
+    C_vca: [0.0, 5.0]
+    factor_Gmax: [2.0, 10.0]
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "using an ODE model solving Eqs. (1)-(3) such that"
+    where: "SI Methods (Modeling role of VCA)"
+  assumptions:
+    - "At [VCA] = 0, [G_max] = factor_Gmax * [VCA] = 0 so [VCA-actin](t) = 0 and Eq. (3) decouples from Eq. (2)."
+  tolerance: 1e-4
+
+- id: rel_eq3_reduces_to_eq2_converted
+  kind: reduces_to
+  a: graham2024/actin_vca_competition_ode_eq3_converted
+  b: graham2024/actin_polymerization_ode_eq2_converted
+  limit:
+    C_vca: "0"
+  mapping:
+    k_grow: k_grow
+    N_fil: N_fil
+    F_0: F_0
+    T_actin: T_actin
+    t_end: t_end
+    R_drop: R_drop
+    l_mono: l_mono
+  output_map:
+    F_end: F_end
+  regime:
+    k_grow: [0.005, 0.02]
+    N_fil: [10, 50]
+    F_0: [0.2, 1.0]
+    T_actin: [100.0, 200.0]
+    t_end: [100.0, 600.0]
+    k_bind: [1.0, 5.0]
+    N_VCA: [1000.0, 5000.0]
+    C_vca: [0.0, 5.0]
+    factor_Gmax: [2.0, 10.0]
+    R_drop: [0.8, 1.5]
+    l_mono: [2.5, 3.0]
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "using an ODE model solving Eqs. (1)-(3) such that"
+    where: "SI Methods (Modeling role of VCA)"
+  assumptions:
+    - "At [VCA] = 0, [G_max] = 0 so the coupled length-converted Eqs. (1)-(3) reduce to Eq. (2)."
+  tolerance: 1e-4
+
+# ==============================================================================
+# Cross-record ModelAtlas relations for all 10 pairs sharing graham2024.
+#
+# Audit summary of the 5 zero-relation pairs (honest 0 relations, 0 cited links):
+# - graham_code (VASPDroplet_simulate.ipynb, Graham et al. 2023): all 8 models
+#   implement 2D continuum SLSQP droplet-ring deformation mechanics (wetting
+#   tension, Gauss-Kummer perimeter energy, Bathe bundle rigidity, critical
+#   ring thickness), disjoint from graham2024's rigid-sphere 3D CytoSim ODEs
+#   and trajectory analyses (the shape-flagged pair langevin_overdamped_1d vs
+#   notebook_droplet_ring_slsqp is a spurious dimensional coincidence).
+# - graham_source_data (MOESM12-22_ESM.xlsx, Graham et al. 2023): all 11 models
+#   are fixed-spreadsheet Excel readers over 2023 microscopy tables.
+# - nastkolb2022 (MBoC 33, ar91, 2022; cited qualitatively as ref-61 on p. 10):
+#   its runnable models cover exponential FRAP recovery fits (graham2024 models
+#   only two-sample Student t-tests on FRAP summary statistics, not recovery
+#   curves), planar-SLB 2D bundle spacing W/d_spacing, and simple 1-2 op ratios
+#   of unrelated species (CP/actin, ML/SLB mobility).
+# - chandrasekaran_source_data (MOESM9_ESM.xlsx, Chandrasekaran et al. 2024):
+#   all 20 models are fixed-workbook Excel readers over 2024 sheets (sharing
+#   only the Rangamani-lab notebook processing fingerprint on FigureS10B/C/F
+#   already audited in graham2024_code, not analytical equations).
+# - feigeles2025 (Soft Matter 2025; cites graham2024 qualitatively as ref-33 on
+#   p. 6): all 34 models concern axisymmetric Young-Laplace unduloid capillary
+#   pressure, droplet coalescence viscocapillary scaling, and Gaussian FWHM
+#   bundle widths, sharing no equations with graham2024.
+# ==============================================================================
+
+# ==============================================================================
+# 1. Relations with graham2024_code (CytoSim_VASP_Arp_VCA, GitHub ref-63)
+# ==============================================================================
+
+- id: rel_code_actin_ode_eq2_converted
+  kind: same_as
+  a: graham2024_code/notebook_actin_ode
+  b: graham2024/actin_polymerization_ode_eq2_converted
+  mapping:
+    k_grow: "k_grow_plus"
+    N_fil: "N_fil"
+    F_0: "N_fil * L0_per_fil / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    T_actin: "TFactin / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    t_end: "600"
+    R_drop: "R_drop"
+    l_mono: "1000 * l_mono"
+  output_map:
+    F_end: F_actin_conc
+  regime:
+    N_fil: [10.0, 50.0]
+    TFactin: [500.0, 1500.0]
+    k_grow_plus: [0.005, 0.02]
+    L0_per_fil: [0.05, 0.5]
+    R_drop: [0.8, 1.5]
+    l_mono: [0.0025, 0.003]
+  tolerance: 1.0e-4
+  provenance: stated
+  citation:
+    page: 22
+    printed_page: "SI-10"
+    quote: "Solving this numerically in Python using scipy.integrate, we find"
+    where: "SI Methods Eqs. (1)-(2) & Data Availability (p. 11, ref-63)"
+  assumptions:
+    - "Live Cell 21 model() integrates dL/dt = N_fil * k_grow_plus * (1 - L/TFactin) in length space (um) over t in [0, 600] s and converts to molar concentration via 1/(l_mono * N_A * (4/3)*pi*R_drop^3), agreeing identically with graham2024's length-converted SI Eq. (2) variant (relative diff ~7e-10)."
+
+- id: rel_code_actin_ode_eq2_printed_unit_mismatch
+  kind: same_as
+  a: graham2024_code/notebook_actin_ode
+  b: graham2024/actin_polymerization_ode_eq2_printed
+  mapping:
+    k_grow: "k_grow_plus"
+    N_fil: "N_fil"
+    F_0: "N_fil * L0_per_fil / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    T_actin: "TFactin / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    t_end: "600"
+  output_map:
+    F_end: F_actin_conc
+  regime:
+    N_fil: [10.0, 50.0]
+    TFactin: [500.0, 1500.0]
+    k_grow_plus: [0.005, 0.02]
+    L0_per_fil: [0.05, 0.5]
+    R_drop: [0.8, 1.5]
+    l_mono: [0.0025, 0.003]
+  provenance: stated
+  citation:
+    page: 22
+    printed_page: "SI-10"
+    quote: "Solving this numerically in Python using scipy.integrate, we find"
+    where: "SI Methods Eq. (2) vs CytoSimanalyze_VASP_Arp_VCA.ipynb Cell 21"
+  assumptions:
+    - "Honest refutation testing the literal printed SI Eq. (2) (which omits the length-to-concentration factor 1/(l_mono * V_drop * N_A) = 1/6.8109 uM/um) against live Cell 21 model(): refuted across the entire regime (102.25 uM vs 25.07 uM at baseline), confirming q_eq2_unit_mismatch_and_bc_inconsistency."
+
+- id: rel_code_vca_ode_kunbind0_approx_eq3_converted
+  kind: approximated_by
+  a: graham2024_code/notebook_vca_competition_ode
+  b: graham2024/actin_vca_competition_ode_eq3_converted
+  mapping:
+    k_grow: "k_grow_plus"
+    N_fil: "N_fil"
+    F_0: "N_fil * L0_per_fil / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    T_actin: "TFactin / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    t_end: "600"
+    k_bind: "k_bind_vca"
+    N_VCA: "N_vca"
+    C_vca: "N_vca / (602.214076 * (4 / 3) * pi * R_drop**3)"
+    factor_Gmax: "5"
+    R_drop: "R_drop"
+    l_mono: "1000 * l_mono"
+  output_map:
+    F_end: F_actin_conc
+  regime:
+    N_fil: [15.0, 45.0]
+    TFactin: [700.0, 1200.0]
+    k_grow_plus: [0.005, 0.015]
+    k_bind_vca: [1.0, 5.0]
+    k_unbind_vca: [0.0, 0.0]
+    N_vca: [1000.0, 25220.0]
+    L0_per_fil: [0.05, 0.2]
+    R_drop: [0.8, 1.3]
+    l_mono: [0.0027, 0.0027]
+  tolerance: 0.003
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "using an ODE model solving Eqs. (1)-(3) such that"
+    where: "SI Methods Eq. (3) vs CytoSimanalyze_VASP_Arp_VCA.ipynb Cell 23 (kunbind = 0)"
+  assumptions:
+    - "Cell 23 model_VCA() hardcodes Lmax = Nvca_free * 0.0027 * 5 (fixing l_mono = 0.0027 um and factor_Gmax = 5) and compares L[4] + DNvca_boundt >= Lmax without multiplying by dt (implicitly dt = 1 s), producing a ~1 s / 600 s relaxation offset (< 0.15% relative error) against exact continuous SI Eq. (3) when k_unbind_vca = 0 (matching all 200 VCA .cym configs)."
+
+- id: rel_code_vca_ode_kunbind2p7_vs_eq3_converted
+  kind: same_as
+  a: graham2024_code/notebook_vca_competition_ode
+  b: graham2024/actin_vca_competition_ode_eq3_converted
+  mapping:
+    k_grow: "k_grow_plus"
+    N_fil: "N_fil"
+    F_0: "N_fil * L0_per_fil / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    T_actin: "TFactin / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    t_end: "600"
+    k_bind: "k_bind_vca"
+    N_VCA: "N_vca"
+    C_vca: "N_vca / (602.214076 * (4 / 3) * pi * R_drop**3)"
+    factor_Gmax: "5"
+    R_drop: "R_drop"
+    l_mono: "1000 * l_mono"
+  output_map:
+    delta_F: delta_F_actin
+  regime:
+    N_fil: [25.0, 35.0]
+    TFactin: [900.0, 1000.0]
+    k_grow_plus: [0.009, 0.012]
+    k_bind_vca: [3.44, 3.44]
+    k_unbind_vca: [2.7, 2.7]
+    N_vca: [12610.0, 25220.0]
+    L0_per_fil: [0.08, 0.12]
+    R_drop: [1.0, 1.0]
+    l_mono: [0.0027, 0.0027]
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "In this study, we use kbind = 3. 44um/s"
+    where: "SI Methods Eq. (3) vs CytoSimanalyze_VASP_Arp_VCA.ipynb Cell 25 (kunbind = 2.7)"
+  assumptions:
+    - "Honest refutation contrasting Cell 25's actual VCA calibration (kunbind = 2.7 um/s, kbind = 3.44 um/s) against SI Eq. (3) and all 200 VCA .cym configs (which omit kunbind / set growing_off_speed = 0, 0). Across [VCA] = 5-10 uM (N_vca = 12,610-25,220), kunbind = 2.7 stalls sequestration at free_polymer = 2.7/3.44 = 0.785 (delta_F = 3.18-3.26 uM), whereas SI Eq. (3) / kunbind = 0 saturates L_Gmax completely (delta_F = 4.46-8.93 uM; 29%-63% divergence)."
+
+- id: rel_code_vca_ode_eq3_printed_unit_mismatch
+  kind: same_as
+  a: graham2024_code/notebook_vca_competition_ode
+  b: graham2024/actin_vca_competition_ode_eq3_printed
+  mapping:
+    k_grow: "k_grow_plus"
+    N_fil: "N_fil"
+    F_0: "N_fil * L0_per_fil / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    T_actin: "TFactin / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    t_end: "600"
+    k_bind: "k_bind_vca"
+    N_VCA: "N_vca"
+    C_vca: "N_vca / (602.214076 * (4 / 3) * pi * R_drop**3)"
+    factor_Gmax: "5"
+  output_map:
+    F_end: F_actin_conc
+  regime:
+    N_fil: [15.0, 45.0]
+    TFactin: [700.0, 1200.0]
+    k_grow_plus: [0.005, 0.015]
+    k_bind_vca: [1.0, 5.0]
+    k_unbind_vca: [0.0, 0.0]
+    N_vca: [1000.0, 10000.0]
+    L0_per_fil: [0.05, 0.2]
+    R_drop: [0.8, 1.3]
+    l_mono: [0.0027, 0.0027]
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "using an ODE model solving Eqs. (1)-(3) such that"
+    where: "SI Methods Eq. (3) vs CytoSimanalyze_VASP_Arp_VCA.ipynb Cell 23"
+  assumptions:
+    - "Honest refutation testing literal printed SI Eqs. (1)-(3) (omitting the um-to-uM conversion factor) against live Cell 23 model_VCA()."
+
+- id: rel_code_vca_ode_reduces_to_eq2_converted
+  kind: reduces_to
+  a: graham2024_code/notebook_vca_competition_ode
+  b: graham2024/actin_polymerization_ode_eq2_converted
+  mapping:
+    k_grow: "k_grow_plus"
+    N_fil: "N_fil"
+    F_0: "N_fil * L0_per_fil / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    T_actin: "TFactin / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    t_end: "600"
+    R_drop: "R_drop"
+    l_mono: "1000 * l_mono"
+  output_map:
+    F_end: F_actin_conc
+  limit:
+    N_vca: "0"
+  regime:
+    N_fil: [10.0, 50.0]
+    TFactin: [500.0, 1500.0]
+    k_grow_plus: [0.005, 0.02]
+    k_bind_vca: [1.0, 5.0]
+    k_unbind_vca: [0.0, 3.0]
+    N_vca: [100.0, 5000.0]
+    L0_per_fil: [0.05, 0.5]
+    R_drop: [0.8, 1.5]
+    l_mono: [0.0025, 0.003]
+  tolerance: 1.0e-4
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "using an ODE model solving Eqs. (1)-(3) such that"
+    where: "SI Methods Eqs. (1)-(3)"
+  assumptions:
+    - "At N_vca -> 0, VCA sequestration vanishes for any k_unbind_vca and live Cell 23 model_VCA() reduces identically to length-converted SI Eq. (2)."
+
+- id: rel_code_arp23_count_approx
+  kind: approximated_by
+  a: graham2024_code/notebook_arp23_molecule_count
+  b: graham2024/arp23_molecule_count
+  mapping:
+    C: "C_Arp"
+    R_drop: "1"
+  output_map:
+    N: N_arp
+  regime:
+    C_Arp: [10.0, 150.0]
+  tolerance: 0.04
+  provenance: stated
+  citation:
+    page: 20
+    printed_page: "SI-8"
+    quote: "{0, 25, 63, 126, 189, 252, 315, 378 } molecules"
+    where: "Table S1 vs CytoSimanalyze_VASP_Arp_VCA.ipynb Cell 15"
+  assumptions:
+    - "Live Cell 15 applies .astype(int) floor truncation at hardcoded R_drop = 1 um, agreeing with continuous arp23_molecule_count to within < 1/26 = 3.85% across [10, 150] nM (confirming q_molecule_count_truncation_vs_rounding)."
+
+- id: rel_code_arp23_count_reduces_to
+  kind: reduces_to
+  a: graham2024_code/notebook_arp23_molecule_count
+  b: graham2024/arp23_molecule_count
+  mapping:
+    C: "C_Arp"
+    R_drop: "1"
+  output_map:
+    N: N_arp
+  limit:
+    C_Arp: "oo"
+  regime:
+    C_Arp: [10.0, 150.0]
+  provenance: stated
+  citation:
+    page: 20
+    printed_page: "SI-8"
+    quote: "{0, 25, 63, 126, 189, 252, 315, 378 } molecules"
+    where: "Table S1 vs CytoSimanalyze_VASP_Arp_VCA.ipynb Cell 15"
+  assumptions:
+    - "As C_Arp -> oo, O(1) integer truncation in Cell 15 vanishes and N_arp converges identically to continuous N = C * (4/3)*pi*R^3 * N_A at R_drop = 1 um."
+
+- id: rel_code_vca_fiber_kbind
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: graham2024/vca_fiber_parameters
+  mapping:
+    k_bind: "k_bind_vca"
+    N_VCA: "N_vca"
+    l_mono: "1000 * l_mono"
+    factor_Gmax: "gmax_factor"
+  output_map:
+    k_bind_fiber: k_bind_fiber
+  regime:
+    N_fil: [10.0, 50.0]
+    R_drop: [0.5, 2.0]
+    L0_per_fil: [0.05, 0.5]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [100.0, 30000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [1.0, 10.0]
+    r_blob: [0.01, 0.05]
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "kbind NVCA = 8675. 68um/s Assuming each actin"
+    where: "SI Methods (VCA sample calculation) vs Cell 17"
+  assumptions:
+    - "Cell 17 vca_growingspeedvec = k_bind * N_vca matches graham2024/vca_fiber_parameters identically."
+
+- id: rel_code_vca_fiber_lgmax
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: graham2024/vca_fiber_parameters
+  mapping:
+    k_bind: "k_bind_vca"
+    N_VCA: "N_vca"
+    l_mono: "1000 * l_mono"
+    factor_Gmax: "gmax_factor"
+  output_map:
+    L_Gmax: L_Gmax
+  regime:
+    N_fil: [10.0, 50.0]
+    R_drop: [0.5, 2.0]
+    L0_per_fil: [0.05, 0.5]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [100.0, 30000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [1.0, 10.0]
+    r_blob: [0.01, 0.05]
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "0. 0027 x 5 x NVCA = 34. 047 um."
+    where: "SI Methods (VCA sample calculation) vs Cell 17"
+  assumptions:
+    - "Cell 17 vca_max_lengthvec = l_mono * gmax_factor * N_vca matches graham2024/vca_fiber_parameters identically after nm <-> um conversion."
+
+- id: rel_code_config_t_actin_5x_circ
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: graham2024/concentration_from_total_polymer
+  mapping:
+    L_total: "5 * 2 * pi * N_fil * R_drop"
+    l_mono: "1000 * l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C_T: T_actin_conc
+  regime:
+    N_fil: [10.0, 50.0]
+    R_drop: [0.5, 2.0]
+    L0_per_fil: [0.05, 0.5]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [100.0, 30000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [1.0, 10.0]
+    r_blob: [0.01, 0.05]
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "total_polymer = 942.4777960769379"
+    where: "SI Methods (CytoSim VCA fiber config) vs Cell 17"
+  assumptions:
+    - "Cell 17 hardcodes total_polymer = 5 * 2*pi*N_fil*R_drop (= 300*pi = 942.4778 um -> 138.38 uM) directly rather than inverting SI Eq. (2) for [F-actin](600) = 27.68 uM."
+
+- id: rel_code_config_f_actin_init
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: graham2024/filament_polymer_to_concentration
+  mapping:
+    N_fil: "N_fil"
+    L_fil: "L0_per_fil"
+    l_mono: "1000 * l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C_F: F_actin_init_conc
+  regime:
+    N_fil: [10.0, 50.0]
+    R_drop: [0.5, 2.0]
+    L0_per_fil: [0.05, 6.5]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [100.0, 30000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [1.0, 10.0]
+    r_blob: [0.01, 0.05]
+  provenance: stated
+  citation:
+    page: 22
+    printed_page: "SI-10"
+    quote: "t = 0, Nfil = 30, [F - actin](0) = 0. 44 uM"
+    where: "SI Methods Eqs. (1)-(2)"
+  assumptions:
+    - "Identical spherical-droplet polymer-length-to-concentration conversion (N_fil * L0 / l_mono) / (N_A * (4/3)*pi*R^3)."
+
+- id: rel_code_config_lmax_circumference
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: graham2024/max_filament_length_circumference
+  mapping:
+    R_drop: "R_drop"
+    L_seg: "0.1"
+  output_map:
+    L_max: L_max_fil
+  regime:
+    N_fil: [10.0, 50.0]
+    R_drop: [0.5, 2.0]
+    L0_per_fil: [0.05, 0.5]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [100.0, 30000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [1.0, 10.0]
+    r_blob: [0.01, 0.05]
+  provenance: stated
+  citation:
+    page: 19
+    printed_page: "SI-7"
+    quote: "Maximum length 2πRdrop μm Rdrop is radius of droplet"
+    where: "Table S1 vs Arp23_concsweep_steric/R_0_r_0/config0.cym"
+  assumptions:
+    - "Per-filament maximum length equals one equatorial droplet circumference 2*pi*R_drop = 6.283185 um at R_drop = 1 um."
+
+- id: rel_code_config_stokes_einstein
+  kind: same_as
+  a: graham2024_code/config_parameter_audit
+  b: graham2024/stokes_einstein_sphere_diffusion
+  mapping:
+    eta: "0.5"
+    r: "0.03"
+    kBT: "1000 * kT"
+  output_map:
+    D: vasp_stokes_D
+  regime:
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: >
+    Live config_parameter_audit reads viscosity = 0.5 pN*s/um^2 and VASP sphere radius r = 0.03 um
+    directly from Arp23_concsweep_steric/R_0_r_0/config0.cym and evaluates CytoSim's actual Solid
+    Stokes-Einstein diffusivity D = kT / (6*pi*eta*r) (because CytoSim Wrist ignores diffusion = 10.0
+    on graftedcrosslinker), matching graham2024/stokes_einstein_sphere_diffusion identically and
+    explaining q_vasp_diffusion_stokes_einstein_mismatch (0.01485 um^2/s at CytoSim default
+    kT = 0.0042 pN*um = 673x slower than Table S1's 10 um^2/s; 0.01455 um^2/s = 687x at 298.15 K).
+  assumptions:
+    - "Fixed config0.cym droplet viscosity eta = 0.5 pN*s/um^2 and VASP blob radius r = 0.03 um."
+    - "Thermal energy conversion kBT [pN*nm] = 1000 * kT [pN*um]."
+
+- id: rel_code_radial_density_outer_corrected
+  kind: same_as
+  a: graham2024_code/notebook_monomer_interpolator
+  b: graham2024/radial_density_ratio_corrected
+  mapping:
+    N_shell: "1 - (39 / 40)**3"
+    r: "R_drop"
+    delta_r: "R_drop / 40"
+    N_total: "1"
+    R_drop: "R_drop"
+  output_map:
+    density_ratio: uniform_rho_ratio_outer
+  regime:
+    L_fil: [1.0, 6.0]
+    L_seg: [0.1, 0.1]
+    l_mono: [0.0027, 0.0027]
+    R_drop: [0.5, 2.0]
+  provenance: stated
+  citation:
+    page: 23
+    printed_page: "SI-11"
+    quote: "local density within shells and the bulk density as"
+    where: "SI Methods (Analysis of trajectories) vs Cell 27 & Cell 39"
+  assumptions:
+    - "For a homogeneous sphere discretized into 40 shells of width dR = R_drop/40, Cell 39 evaluates (N_shell / (r_hi^2 * dR)) / (3 * N_total / R_drop^3) at right bin edge r_hi = R_drop (= 0.9752), matching radial_density_ratio_corrected identically and confirming that the analysis code included the 1/3 geometric factor omitted in print."
+
+- id: rel_code_radial_density_outer_printed_factor3
+  kind: same_as
+  a: graham2024_code/notebook_monomer_interpolator
+  b: graham2024/radial_density_ratio_printed
+  mapping:
+    N_shell: "1 - (39 / 40)**3"
+    r: "R_drop"
+    delta_r: "R_drop / 40"
+    N_total: "1"
+    R_drop: "R_drop"
+  output_map:
+    density_ratio: uniform_rho_ratio_outer
+  regime:
+    L_fil: [1.0, 6.0]
+    L_seg: [0.1, 0.1]
+    l_mono: [0.0027, 0.0027]
+    R_drop: [0.5, 2.0]
+  provenance: stated
+  citation:
+    page: 23
+    printed_page: "SI-11"
+    quote: "local density within shells and the bulk density as"
+    where: "SI Methods (Analysis of trajectories) vs Cell 39"
+  assumptions:
+    - "Honest contrast exposing the exact factor-of-3 mismatch (a = (1/3)*b) between Cell 39's live bulkfactor = 3*Nmax/Rmax^3 and SI p. 23's literal printed formula omitting the 1/3 spherical shell-to-sphere volume ratio (settling q_radial_density_missing_one_third)."
+
+- id: rel_code_rae_argmax_count_vs_paper_density
+  kind: same_as
+  a: graham2024_code/csv_radial_density_and_rae
+  b: graham2024_code/csv_radial_density_rae_paper_def
+  mapping:
+    C_Arp: "C_Arp"
+    C_VCA: "C_VCA"
+    r_core_min: "r_core_min"
+    r_cutoff: "r_cutoff"
+  output_map:
+    rae_mean: rae_mean
+  regime:
+    C_Arp: [150.0, 150.0]
+    C_VCA: [0.0, 0.0]
+    r_core_min: [0.15, 0.30]
+    r_cutoff: [0.45, 0.70]
+  provenance: stated
+  citation:
+    page: 23
+    printed_page: "SI-11"
+    quote: "The subvolume (of thickness 25nm) with maximum density in the"
+    where: "SI Methods (Analysis of trajectories, pp. 23-24) vs Cell 39"
+  assumptions:
+    - "Honest refutation directly on live PLOTCSVFILES/Density_Arp23_concsweep_stericR_7_r_{0..4}.csv (150 nM Arp2/3): Cell 39 maximizes raw monomer count N(r) ~ r^2*rho(r) before dividing by r^2 (yielding R.A.E. = 0.5674 +/- 0.0470 at [0.2, 0.6), matching digitized Fig. 5C's 0.571), whereas graham2024's printed SI pp. 23-24 definition maximizes density rho(r) directly (yielding 0.8482 +/- 0.0927, disagreeing by 14%-39% across all sampled core/periphery cutoffs)."
+
+- id: rel_code_csv_arp0_approx_eq2_converted
+  kind: approximated_by
+  a: graham2024_code/csv_arp23_filament_stats
+  b: graham2024/actin_polymerization_ode_eq2_converted
+  mapping:
+    k_grow: "0.0103"
+    N_fil: "30"
+    F_0: "3 / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    T_actin: "300 * pi / (602.214076 * (4 / 3) * pi * R_drop**3 * l_mono)"
+    t_end: "600"
+    R_drop: "R_drop"
+    l_mono: "1000 * l_mono"
+  output_map:
+    F_end: F_actin_conc_600
+  regime:
+    C_Arp: [0.0, 0.0]
+    R_drop: [0.5, 2.0]
+    l_mono: [0.0025, 0.003]
+  tolerance: 0.04
+  provenance: stated
+  citation:
+    page: 22
+    printed_page: "SI-10"
+    quote: "filament extension is modeled as a deterministic force-sensitive process"
+    where: "SI Methods Eq. (2) vs PLOTCSVFILES/Fillength_Arp23_concsweep_stericR_0.csv"
+  assumptions:
+    - "At [Arp2/3] = 0 nM, live 3D CytoSim CSV trajectories reach L_sum(600) = 165.765 um (24.338 uM at R = 1 um), 2.93% below zero-force length-converted SI Eq. (2) (170.768 um = 25.073 uM) due to the 10 pN Brownian ratchet stall force at the rigid spherical boundary (within tolerance 0.04 across all R_drop and l_mono)."
+
+# ==============================================================================
+# 2. Relations with graham2023 (Graham et al., Nat. Phys. 19, 574-585, 2023; ref-10)
+# ==============================================================================
+
+- id: rel_graham2023_circumference
+  kind: same_as
+  a: graham2024/max_filament_length_circumference
+  b: graham2023/circular_ring_contour_length
+  mapping:
+    R: "R_drop"
+  output_map:
+    L: L_max
+  regime:
+    R_drop: [0.5, 4.0]
+    L_seg: [0.05, 0.2]
+  provenance: proposed
+  reason: >
+    Both companion papers define the equatorial droplet circumference L = 2*pi*R as the reference
+    actin contour length inside a spherical VASP condensate of radius R: graham2023 (SI Section 2.9,
+    p. 43) sets ring contour length L = 2*pi*R for Eq. S25 thickness scaling, and graham2024
+    (Table S1 p. 19, SI Methods p. 22) caps individual CytoSim filament length at L_max = 2*pi*R_drop
+    = 2*pi um at R_drop = 1 um (flagged too_plain by ModelAtlas because b is a 2-op product).
+
+- id: rel_graham2023_vca_ode_reduces_to_linear_bundle
+  kind: reduces_to
+  a: graham2024/cytosim_vca_ode_filament_length
+  b: graham2023/linear_bundle_elongation
+  mapping:
+    v: "k_grow"
+    t: "t_end"
+  output_map:
+    y: L_fil
+  limit:
+    L_total: "oo"
+    L_0: "0"
+  regime:
+    k_grow: [0.005, 0.03]
+    N_fil: [10.0, 50.0]
+    L_0: [0.05, 0.3]
+    L_total: [500.0, 2000.0]
+    t_end: [50.0, 600.0]
+    k_bind: [1.0, 5.0]
+    C_vca: [0.0, 0.0]
+    factor_Gmax: [5.0, 5.0]
+    R_drop: [0.8, 1.5]
+    l_mono: [2.7, 2.7]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the zero-VCA (C_vca = 0), undepleted-monomer (L_total -> oo), and negligible-seed-length
+    (L_0 -> 0) limit, graham2024's CytoSim monomer-depletion filament elongation ODE reduces
+    identically to graham2023 Fig. 5h's through-origin linear bundle elongation law y(t) = v*t
+    (mirroring graham2024_code/rel_graham2023_ode_length_reduces_to_linear_bundle and
+    chandrasekaran2024/rel_graham2023_linear_elongation_limit; note graham2024's baseline CytoSim
+    speed 10.3 nm/s is 2.20x slower than graham2023 Fig. 5h's measured 22.7 nm/s).
+  assumptions:
+    - "Zero VCA competitor (C_vca = 0) and joint undepleted-pool (L_total -> oo) and zero-seed (L_0 -> 0) limit."
+
+# ==============================================================================
+# 3. Relations with chandrasekaran2024 (Nat. Commun. 15, 3139, 2024; ref-SI3)
+# ==============================================================================
+
+- id: rel_chandra2024_stokes_einstein_diffusion
+  kind: same_as
+  a: graham2024/stokes_einstein_sphere_diffusion
+  b: chandrasekaran2024/stokes_einstein_diffusion
+  mapping:
+    kBT: "kBT"
+    eta: "eta"
+    r: "1000 * r"
+  output_map:
+    D_SE: D
+  regime:
+    eta: [0.001, 5.0]
+    r: [0.005, 0.1]
+    kBT: [3.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both reconstructed hydrodynamic checks evaluate the identical Stokes-Einstein sphere diffusivity
+    D = k_B T / (6*pi*eta*r) (converting r between um and nm), exposing the exact same 673x-687x
+    mismatch between VASP's printed diffusion rate (10 um^2/s) and its actual Stokes drag in
+    eta = 0.5 pN*s/um^2 at r = 30 nm (0.01455-0.01485 um^2/s) and uniting graham2024 into the
+    unified Stokes-Einstein ModelAtlas family.
+  assumptions:
+    - "Radius unit conversion r [nm] = 1000 * r [um]."
+
+- id: rel_chandra2024_langevin_overdamped_1d
+  kind: approximated_by
+  a: graham2024/langevin_overdamped_1d
+  b: chandrasekaran2024/langevin_overdamped_1d
+  mapping:
+    mu: "mu"
+    kBT: "kBT"
+    f: "f"
+  output_map:
+    D_eff: D_eff
+  regime:
+    mu: [0.1, 20.0]
+    kBT: [3.5, 5.0]
+    f: [0.0, 5.0]
+  tolerance: 0.05
+  provenance: stated
+  citation:
+    page: 23
+    printed_page: "SI-11"
+    quote: "Cytosim through a Langevin equation framework."
+    where: "SI Methods (Position evolution) vs chandrasekaran2024 Methods Eq. (1)"
+  assumptions:
+    - "Both records integrate the identical overdamped 1D Langevin SDE dx = mu*f*dt + dB with dB ~ N(0, sqrt(2*mu*k_B T*dt)) (and share the identical misprint calling mobility mu 'the viscosity of solvent'); tolerance 0.05 bounds the 1.02% fixed-seed Monte Carlo realization offset between n_particles = 2000 (dt = 0.001 s, t = 0.2 s) and n_particles = 4000 (dt = 0.002 s, t = 1.0 s)."
+
+- id: rel_chandra2024_einstein_mobility
+  kind: same_as
+  a: graham2024/einstein_diffusion_relation
+  b: chandrasekaran2024/mobility_from_diffusion
+  mapping:
+    D: "D"
+    kBT: "kBT"
+  output_map:
+    mu: mu
+  regime:
+    D: [0.01, 20.0]
+    kBT: [3.5, 5.0]
+  provenance: stated
+  citation:
+    page: 23
+    printed_page: "SI-11"
+    quote: "where the diffusion coefficient is given by"
+    where: "SI Methods (Position evolution) vs chandrasekaran2024 Methods Eq. (1)"
+  assumptions:
+    - "Identical Einstein fluctuation-dissipation inverse mu = D / (k_B T) in um/(pN*s) from D [um^2/s] and kBT [pN*nm]."
+
+- id: rel_chandra2024_arp23_nucleator_count
+  kind: same_as
+  a: graham2024/arp23_molecule_count
+  b: chandrasekaran2024/molecule_count_from_concentration
+  mapping:
+    C: "C"
+    R_drop: "R_drop"
+  output_map:
+    N: N
+  regime:
+    C: [1.0, 200.0]
+    R_drop: [0.5, 3.0]
+  provenance: proposed
+  reason: >
+    graham2024 Table S1 (p. 20) and chandrasekaran2024 Supplementary Table 4 (p. 20) use the
+    exact same spherical-droplet concentration-to-copy-number formula N = C * (4/3)*pi*R_drop^3 * N_A
+    with exact SI 2019 Avogadro constant, producing the identical 8-point table {0, 10, 25, 50, 75,
+    100, 125, 150} nM -> {0, 25, 63, 126, 189, 252, 315, 378} molecules at R_drop = 1 um.
+
+- id: rel_chandra2024_vasp_tet_count
+  kind: same_as
+  a: graham2024/vasp_tet_molecule_count
+  b: chandrasekaran2024/molecule_count_from_concentration
+  mapping:
+    C: "1000 * C"
+    R_drop: "R_drop"
+  output_map:
+    N: N
+  regime:
+    C: [0.1, 5.0]
+    R_drop: [0.5, 3.0]
+  provenance: proposed
+  reason: >
+    Converting VASP tetramer concentration from uM to nM (1000 * C) maps graham2024/vasp_tet_molecule_count
+    identically onto chandrasekaran2024/molecule_count_from_concentration (giving 1009 ~ 1000 VASP
+    tetramers at 0.4 uM in an R = 1 um droplet in both papers).
+
+- id: rel_chandra2024_filament_polymer_to_conc
+  kind: same_as
+  a: graham2024/filament_polymer_to_concentration
+  b: chandrasekaran2024/final_actin_concentration
+  mapping:
+    N_fil: "N_fil"
+    L_fil: "L_fil"
+    dl: "l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C_actin: C_F
+  regime:
+    N_fil: [5.0, 100.0]
+    L_fil: [0.1, 10.0]
+    l_mono: [2.5, 3.0]
+    R_drop: [0.5, 3.0]
+  provenance: proposed
+  reason: >
+    Both papers convert filamentous actin length inside a spherical droplet to molar concentration
+    via the identical formula [F-actin] = (N_fil * L_fil / l_mono) / (N_A * (4/3)*pi*R_drop^3),
+    giving 27.68 uM for 30 filaments of length 2*pi um in an R = 1 um sphere.
+
+- id: rel_chandra2024_total_polymer_to_conc
+  kind: same_as
+  a: graham2024/concentration_from_total_polymer
+  b: chandrasekaran2024/final_actin_concentration
+  mapping:
+    N_fil: "1"
+    L_fil: "L_total"
+    dl: "l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C_actin: C_T
+  regime:
+    L_total: [10.0, 2000.0]
+    l_mono: [2.5, 3.0]
+    R_drop: [0.5, 3.0]
+  provenance: proposed
+  reason: >
+    Evaluating chandrasekaran2024/final_actin_concentration for a single summed polymer contour
+    (N_fil = 1, L_fil = L_total) matches graham2024/concentration_from_total_polymer identically
+    (yielding [T-actin] = 138.38 uM from total_polymer = 942.48 um = 300*pi um in both papers).
+
+- id: rel_chandra2024_persistence_length
+  kind: same_as
+  a: graham2024/actin_persistence_length_from_rigidity
+  b: chandrasekaran2024/persistence_length_from_rigidity
+  mapping:
+    kappa: "K_bend"
+    kBT: "1380649 * T / 100000000"
+  output_map:
+    l_p: L_p
+  regime:
+    K_bend: [0.02, 0.2]
+    T: [290.0, 315.0]
+  provenance: proposed
+  reason: >
+    Both papers compute F-actin persistence length L_p = kappa / (k_B T) (~17-18 um for
+    kappa = 0.075 pN*um^2) using exact CODATA 2018 Boltzmann constant k_B = 0.01380649 pN*nm/K.
+
+- id: rel_chandra2024_boundary_harmonic_force
+  kind: same_as
+  a: graham2024/boundary_harmonic_force
+  b: chandrasekaran2024/harmonic_repulsion_force
+  mapping:
+    k_spring: "k_boundary"
+    delta: "1000 * d"
+  output_map:
+    F: F_boundary
+  regime:
+    k_boundary: [10.0, 500.0]
+    d: [0.001, 0.1]
+  provenance: stated
+  citation:
+    page: 19
+    printed_page: "SI-7"
+    quote: "This spring stiffness acts on points if they move"
+    where: "Table S1 (p. 19) vs chandrasekaran2024 Supplementary Table 2 (p. 17)"
+  assumptions:
+    - "Both CytoSim droplet models confine actin (200 pN/um) and VASP (100 pN/um) with the identical linear restoring force F = k_boundary * d for outward boundary excursions d > 0 (converting um to nm via delta = 1000 * d)."
+
+- id: rel_chandra2024_max_length_circumference
+  kind: same_as
+  a: graham2024/max_filament_length_circumference
+  b: chandrasekaran2024/droplet_characteristic_lengths
+  mapping:
+    R_drop: "R_drop"
+  output_map:
+    L_circ: L_max
+  regime:
+    R_drop: [0.5, 3.0]
+    L_seg: [0.05, 0.2]
+  provenance: proposed
+  reason: >
+    Both papers set the maximum actin filament length in the R = 1 um droplet to one equatorial
+    circumference L_max = L_circ = 2*pi*R_drop = 6.283 um.
+
+- id: rel_chandra2024_vasp_tetramer_conc
+  kind: same_as
+  a: graham2024/vasp_tetramer_from_monomer
+  b: chandrasekaran2024/vasp_tetramer_concentration
+  mapping:
+    C_vasp_mon: "C_mono"
+    valency: "valency"
+  output_map:
+    C_vasp_tet: C_tet
+  regime:
+    C_mono: [1.0, 30.0]
+    valency: [4.0, 4.0]
+  provenance: proposed
+  reason: >
+    Both papers convert VASP monomer concentration to tetramer concentration via [VASP-tet] =
+    [VASP-mon] / 4 (20 uM monomer -> 5 uM tetramer; flagged too_plain as a 1-op quotient).
+
+- id: rel_chandra2024_viscosity_water_ratio
+  kind: same_as
+  a: graham2024/droplet_viscosity_water_ratio
+  b: chandrasekaran2024/droplet_viscosity_ratio_water
+  mapping:
+    eta_drop: "eta_droplet"
+    eta_water: "eta_water"
+  output_map:
+    alpha_visc: ratio
+  regime:
+    eta_droplet: [0.05, 2.0]
+    eta_water: [0.0007, 0.0011]
+  provenance: proposed
+  reason: >
+    Both papers compute the droplet-to-water viscosity ratio eta_droplet / eta_water and share
+    the identical 10-fold error calling 0.5 pN*s/um^2 '50x water' instead of ~500x water
+    (flagged too_plain as a 1-op quotient).
+
+- id: rel_chandra2024_ode_eq2_reduces_to_undepleted_conc
+  kind: reduces_to
+  a: graham2024/actin_polymerization_ode_eq2_converted
+  b: chandrasekaran2024/final_actin_concentration
+  mapping:
+    N_fil: "N_fil"
+    L_fil: "F_0 * (4 / 3) * pi * R_drop**3 * 602.214076 * l_mono / (1000 * N_fil) + k_grow * t_end"
+    dl: "l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C_actin: F_end
+  limit:
+    T_actin: "oo"
+  regime:
+    k_grow: [0.005, 0.02]
+    N_fil: [10.0, 50.0]
+    F_0: [0.2, 1.0]
+    T_actin: [100.0, 200.0]
+    t_end: [100.0, 600.0]
+    R_drop: [0.8, 1.5]
+    l_mono: [2.5, 3.0]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the infinite monomer-reservoir limit T_actin -> oo, graham2024's length-converted monomer
+    depletion ODE (SI Eq. 2) reduces identically to chandrasekaran2024/final_actin_concentration
+    evaluated at undepleted linear filament length L_0 + k_grow * t_end (27.68 uM at baseline).
+
+- id: rel_chandra2024_vca_ode_reduces_to_linear_elongation
+  kind: reduces_to
+  a: graham2024/cytosim_vca_ode_filament_length
+  b: chandrasekaran2024/filament_elongation_length
+  mapping:
+    L0: "L_0"
+    k_grow: "1000 * k_grow"
+    t: "t_end"
+  output_map:
+    L_fil: L_fil
+  limit:
+    L_total: "oo"
+  regime:
+    k_grow: [0.005, 0.02]
+    N_fil: [10.0, 50.0]
+    L_0: [0.05, 0.3]
+    L_total: [500.0, 2000.0]
+    t_end: [50.0, 600.0]
+    k_bind: [1.0, 5.0]
+    C_vca: [0.0, 0.0]
+    factor_Gmax: [5.0, 5.0]
+    R_drop: [0.8, 1.5]
+    l_mono: [2.7, 2.7]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    At C_vca = 0 in the undepleted-pool limit L_total -> oo, graham2024's CytoSim monomer-depletion
+    ODE reduces identically to chandrasekaran2024's constant-velocity filament elongation law
+    L_fil(t) = L0 + k_grow * t (both using baseline k_grow = 10.3 nm/s, L0 = 0.1 um).
+
+- id: rel_chandra2024_eq1_scales_monomer_depletion
+  kind: scales_as
+  a: graham2024/actin_conservation_eq1
+  b: chandrasekaran2024/monomer_depletion_elongation_rate
+  mapping:
+    k_grow: "0.0103"
+    N_fil: "30"
+    F_actin: "F_actin"
+    T_actin: "T_actin"
+  output_map:
+    v_elong: free_fraction
+  regime:
+    T_actin: [100.0, 200.0]
+    F_actin: [5.0, 80.0]
+  provenance: proposed
+  reason: >
+    chandrasekaran2024 Supplementary Table 4's monomer-depletion elongation rate
+    v_elong = k_grow * N_fil * (1 - [F-actin]/[T-actin]) (citing Graham et al. 2024 as ref-SI8)
+    is proportional to graham2024 SI Eq. (1)'s free monomer fraction 1 - [F-actin]/[T-actin],
+    sharing identical nonlinear log-slopes -F/(T - F) in F_actin and +F/(T - F) in T_actin.
+
+- id: rel_chandra2024_radial_density_scales_lammps_shell
+  kind: scales_as
+  a: graham2024/radial_density_ratio_corrected
+  b: chandrasekaran2024/lammps_radial_number_density
+  mapping:
+    N: "N_shell"
+    r: "r"
+    dr: "delta_r"
+  output_map:
+    rho: density_ratio
+  regime:
+    N_shell: [10.0, 5000.0]
+    r: [0.1, 1.0]
+    delta_r: [0.01, 0.1]
+    N_total: [50000.0, 80000.0]
+    R_drop: [0.8, 1.5]
+  provenance: proposed
+  reason: >
+    Both models compute thin-spherical-shell radial number density rho(r) = N / (4*pi*r^2*dr)
+    (normalized by bulk spherical density in graham2024 SI p. 23 corrected, unnormalized in
+    chandrasekaran2024 LAMMPS Supplementary Fig. 1B), sharing exact log-slopes (+1, -2, -1) in
+    (N_shell, r, delta_r).
+
+# ==============================================================================
+# 4. Relations with chandrasekaran_cytosim (CytoSim C++ source, ref-cytosim)
+# ==============================================================================
+
+- id: rel_cyto_stokes_einstein_diffusion
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+  b: graham2024/stokes_einstein_sphere_diffusion
+  mapping:
+    eta: "viscosity"
+    r: "radius / 1000"
+    kBT: "1000 * kT"
+  output_map:
+    D: D_stokes
+  regime:
+    radius: [5.0, 100.0]
+    viscosity: [0.001, 2.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+    D_prescribed: [0.01, 20.0]
+  provenance: proposed
+  reason: >
+    CytoSim Solid::setDragCoefficient() (solid.cc:1289, sphere.cc:275-284) computes spherical
+    Stokes drag 6*pi*eta*R and diffusivity D_stokes = kT / (6*pi*eta*R) while Wrist::stepF()
+    silently ignores diffusion = 10.0 on graftedcrosslinker, matching
+    graham2024/stokes_einstein_sphere_diffusion identically and explaining the 673x-687x VASP
+    diffusivity mismatch (q_vasp_diffusion_stokes_einstein_mismatch).
+
+- id: rel_cyto_einstein_mobility
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_sphere_solid_bead_diffusion
+  b: graham2024/einstein_diffusion_relation
+  mapping:
+    D: "kT / (6 * pi * viscosity * radius / 1000)"
+    kBT: "1000 * kT"
+  output_map:
+    mu: mobility_stokes
+  regime:
+    radius: [5.0, 100.0]
+    viscosity: [0.001, 2.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+    D_prescribed: [0.01, 20.0]
+  provenance: stated
+  citation:
+    page: 23
+    printed_page: "SI-11"
+    quote: "where the diffusion coefficient is given by"
+    where: "SI Methods (Position evolution) vs CytoSim Solid/Sphere mobility"
+  assumptions:
+    - "CytoSim translational mobility mobility_stokes = 1 / (6*pi*viscosity*R) obeys the Einstein relation mu = D_stokes / kT identically."
+
+- id: rel_cyto_persistence_length
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_fiber_bending_mechanics
+  b: graham2024/actin_persistence_length_from_rigidity
+  mapping:
+    K_bend: "rigidity"
+    T: "100000000000 * kT / 1380649"
+  output_map:
+    L_p: persistence_length
+  regime:
+    rigidity: [0.02, 0.2]
+    L: [1.0, 10.0]
+    segmentation: [0.05, 0.2]
+    R_curve: [0.5, 5.0]
+    kT: [0.0035, 0.005]
+  provenance: stated
+  citation:
+    page: 22
+    printed_page: "SI-10"
+    quote: "CytoSim computes bending energy of the fiber based on the flexural rigidity"
+    where: "SI Methods (Representation of actin filaments) vs CytoSim fiber_prop.h:59"
+  assumptions:
+    - "CytoSim defines fiber persistence length as persistence_length = rigidity / kT (src/sim/fiber_prop.h:59), matching K_bend / (k_B * T) with exact SI 2019 k_B = 1.380649e-5 pN*um/K."
+
+- id: rel_cyto_sphere_confinement_force
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_confinement_sphere_ellipse
+  b: graham2024/boundary_harmonic_force
+  mapping:
+    k_boundary: "stiff"
+    d: "excursion / 1000"
+  output_map:
+    F_boundary: F_sphere
+  regime:
+    R_sphere: [0.5, 3.0]
+    a_z: [1.1, 4.0]
+    b_xy: [0.3, 1.0]
+    excursion: [1.0, 100.0]
+    stiff: [10.0, 500.0]
+  provenance: stated
+  citation:
+    page: 19
+    printed_page: "SI-7"
+    quote: "This spring stiffness acts on points if they move"
+    where: "Table S1 (p. 19) vs CytoSim SpaceSphere::setConfinement()"
+  assumptions:
+    - "CytoSim SpaceSphere::setConfinement() / Meca::addSphereClamp() applies linear restoring force F = stiff * excursion for outward excursions > 0."
+
+- id: rel_cyto_steric_repulsion_sign_discrepancy
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_steric_repulsion
+  b: graham2024/steric_repulsion_force
+  mapping:
+    k_steric: "k_push"
+    d: "d / 1000"
+    r: "(r1 + r2) / 1000"
+  output_map:
+    F_steric: F_repulsive
+  regime:
+    r1: [3.0, 35.0]
+    r2: [3.0, 35.0]
+    d: [1.0, 5.0]
+    k_push: [0.5, 10.0]
+    kT: [0.0035, 0.005]
+  provenance: stated
+  citation:
+    page: 16
+    printed_page: "SI-4"
+    quote: "Steric repulsion potentials prevent spatial"
+    where: "Supplemental Fig. S4d vs CytoSim LocusGrid::below() / Meca::addLongLink1()"
+  assumptions:
+    - "Honest contrast exposing the exact sign difference (a = -1 * b) between CytoSim's repulsive steric force magnitude F_repulsive = k_push * (r1 + r2 - d) > 0 (meca_inter.cc:2106) and graham2024 Fig. S4d's literal printed expression F_steric = k_steric * (d - r) < 0 when overlapping (d < r = r1 + r2; see q_steric_force_sign_and_cutoff)."
+
+- id: rel_cyto_meca_free_langevin
+  kind: approximated_by
+  a: chandrasekaran_cytosim/cytosim_semi_implicit_langevin_1d
+  b: graham2024/langevin_overdamped_1d
+  mapping:
+    mu: "mu"
+    kBT: "1000 * kT"
+    f: "0"
+  output_map:
+    D_eff: D_eff_meca_free
+  regime:
+    mu: [0.1, 20.0]
+    kT: [0.0035, 0.005]
+    k_trap: [10.0, 200.0]
+    D_couple: [0.1, 20.0]
+  tolerance: 0.05
+  provenance: stated
+  citation:
+    page: 23
+    printed_page: "SI-11"
+    quote: "Cytosim through a Langevin equation framework."
+    where: "SI Methods (Position evolution) vs CytoSim Meca::solve()"
+  assumptions:
+    - "Free-particle (f = 0) diffusivity in CytoSim Meca::solve() (n_particles = 4000, dt = 0.002 s, t = 1 s) agrees with graham2024's explicit 1D Langevin integrator (n_particles = 2000, dt = 0.001 s, t = 0.2 s) within tolerance 0.05 (2.87% fixed-seed MC sampling difference)."
+
+- id: rel_cyto_free_polymer_eq1
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_polymerization_ratchet_depletion
+  b: graham2024/actin_conservation_eq1
+  mapping:
+    T_actin: "total_polymer"
+    F_actin: "used_polymer"
+  output_map:
+    free_fraction: free_polymer
+  regime:
+    growing_speed: [5.0, 20.0]
+    growing_force: [5.0, 15.0]
+    projected_force: [-5.0, 5.0]
+    used_polymer: [10.0, 400.0]
+    total_polymer: [500.0, 2000.0]
+    n_filaments: [10.0, 100.0]
+    L0: [0.05, 0.2]
+    R_drop: [0.5, 2.0]
+  provenance: stated
+  citation:
+    page: 25
+    printed_page: "SI-13"
+    quote: "fp->free_polymer = 1.0 - fp->used_polymer / fp->total_polymer;"
+    where: "SI Methods (fiber_set.cc) & Eq. (1) vs CytoSim FiberSet::steps()"
+  assumptions:
+    - "CytoSim FiberSet::steps() (fiber_set.cc:239-248) computes dimensionless free monomer fraction 1 - used_polymer/total_polymer, identical to graham2024 SI Eq. (1)'s 1 - [F-actin]/[T-actin] when used_polymer < total_polymer."
+
+- id: rel_cyto_total_polymer_from_conc
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+  b: graham2024/total_polymer_from_concentration
+  mapping:
+    C_T: "C_total_actin"
+    l_mono: "dl_monomer"
+    R_drop: "R_drop"
+  output_map:
+    L_total: total_polymer_length
+  regime:
+    N_seed: [10.0, 50.0]
+    L_seed_init: [0.05, 0.2]
+    L_max: [5.0, 10.0]
+    L_nuc_init: [0.005, 0.05]
+    k_grow: [5.0, 20.0]
+    C_nucleator: [10.0, 150.0]
+    k_nuc: [0.05, 0.5]
+    k_unbind_nuc: [0.001, 0.02]
+    C_total_actin: [50.0, 200.0]
+    R_drop: [0.8, 1.5]
+    dl_monomer: [2.5, 3.0]
+    t_eval: [1.0, 5.0]
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-12"
+    quote: "total_polymer = 942.4777960769379"
+    where: "SI Methods (CytoSim VCA fiber config) vs CytoSim FiberSet::steps()"
+  assumptions:
+    - "Identical conversion of molar reservoir concentration C_T to CytoSim total_polymer length L_total = C_T * (4/3)*pi*R_drop^3 * N_A * l_mono."
+
+- id: rel_cyto_nucleator_count_approx
+  kind: approximated_by
+  a: chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+  b: graham2024/arp23_molecule_count
+  mapping:
+    C: "C_nucleator"
+    R_drop: "R_drop"
+  output_map:
+    N: N_nuc_molecules
+  regime:
+    N_seed: [10.0, 50.0]
+    L_seed_init: [0.05, 0.2]
+    L_max: [5.0, 10.0]
+    L_nuc_init: [0.005, 0.05]
+    k_grow: [5.0, 20.0]
+    C_nucleator: [10.0, 150.0]
+    k_nuc: [0.05, 0.5]
+    k_unbind_nuc: [0.001, 0.02]
+    C_total_actin: [50.0, 200.0]
+    R_drop: [1.0, 2.0]
+    dl_monomer: [2.5, 3.0]
+    t_eval: [1.0, 5.0]
+  tolerance: 0.03
+  provenance: proposed
+  reason: >
+    chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim rounds C * (4/3)*pi*R_drop^3 * N_A
+    to the nearest integer molecule count (max rounding error <= 0.5/25 = 2% over C >= 10 nM,
+    R_drop >= 1 um), approximating graham2024's continuous spherical copy-number formula within 3%.
+
+- id: rel_cyto_nucleation_sim_reduces_to_vca_ode
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_nucleation_monomer_depletion_sim
+  b: graham2024/cytosim_vca_ode_filament_length
+  mapping:
+    k_grow: "k_grow / 1000"
+    N_fil: "N_seed"
+    L_0: "L_seed_init"
+    L_total: "C_total_actin * (4 / 3) * pi * R_drop**3 * 602.214076 * dl_monomer / 1000"
+    t_end: "t_eval"
+    k_bind: "3.44"
+    C_vca: "0"
+    factor_Gmax: "5"
+    R_drop: "R_drop"
+    l_mono: "dl_monomer"
+  output_map:
+    L_fil: L_seed_final
+  limit:
+    C_nucleator: "0"
+  regime:
+    N_seed: [10.0, 50.0]
+    L_seed_init: [0.05, 0.2]
+    L_max: [20.0, 50.0]
+    L_nuc_init: [0.005, 0.05]
+    k_grow: [5.0, 20.0]
+    C_nucleator: [10.0, 100.0]
+    k_nuc: [0.05, 0.5]
+    k_unbind_nuc: [0.001, 0.02]
+    C_total_actin: [100.0, 200.0]
+    R_drop: [0.8, 1.5]
+    dl_monomer: [2.5, 3.0]
+    t_eval: [10.0, 150.0]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the zero-nucleator limit (C_nucleator -> 0) with uncapped filament length (L_max > L_seed_final),
+    CytoSim's coupled FiberSet::steps() + GrowingFiber::step() monomer-depletion loop reduces
+    identically (relative diff ~3e-6) to graham2024's zero-VCA monomer-depletion ODE
+    (cytosim_vca_ode_filament_length at C_vca = 0).
+
+- id: rel_cyto_fiber_drag_reduces_to_stokes
+  kind: reduces_to
+  a: chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+  b: graham2024/stokes_einstein_sphere_diffusion
+  mapping:
+    eta: "viscosity"
+    r: "drag_radius"
+    kBT: "1000 * kT"
+  output_map:
+    D: D_com
+  limit:
+    L: "0"
+  regime:
+    L: [0.05, 5.0]
+    segmentation: [0.05, 0.2]
+    viscosity: [0.001, 2.0]
+    viscosity_water: [0.001, 0.001]
+    drag_radius: [0.003, 0.015]
+    drag_length: [2.0, 10.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    In the short-filament limit L -> 0 (below CytoSim's min_len = 2*drag_radius*exp(0.68)),
+    Fiber::dragCoefficientCylinder() clamps cylindrical drag to spherical Stokes drag
+    6*pi*viscosity*drag_radius, reducing fiber center-of-mass diffusivity D_com identically to
+    graham2024/stokes_einstein_sphere_diffusion.
+
+- id: rel_cyto_fiber_drag_viscosity_ratio
+  kind: same_as
+  a: chandrasekaran_cytosim/cytosim_fiber_drag_and_brownian
+  b: graham2024/droplet_viscosity_water_ratio
+  mapping:
+    eta_droplet: "viscosity"
+    eta_water: "viscosity_water"
+  output_map:
+    ratio: viscosity_ratio_water
+  regime:
+    L: [0.5, 5.0]
+    segmentation: [0.05, 0.2]
+    viscosity: [0.05, 2.0]
+    viscosity_water: [0.0008, 0.0011]
+    drag_radius: [0.0035, 0.0125]
+    drag_length: [2.0, 10.0]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Both models compute the droplet-to-water viscosity ratio eta / eta_water = 500x at
+    eta = 0.5 pN*s/um^2 and CytoSim's documented water viscosity 0.001 pN*s/um^2
+    (flagged too_plain as a 1-op quotient).
+
+# ==============================================================================
+# 5. Relations with walker2025_code (Dynamic_multimerization CytoSim, 2025)
+# ==============================================================================
+
+- id: rel_walker2025_code_stokes_einstein_diffusion
+  kind: same_as
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: graham2024/stokes_einstein_sphere_diffusion
+  mapping:
+    eta: "eta"
+    r: "r_solid"
+    kBT: "1000 * kT"
+  output_map:
+    D: D_solid
+  regime:
+    eta: [0.001, 10.0]
+    r_solid: [0.005, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  provenance: proposed
+  reason: >
+    Walker et al. (2025)'s Rangamani-lab CytoSim fork inherits Solid::setDragCoefficient()
+    (solid.cc:854-943) with Wrist::stepF() ignoring diffusion = 10.0 on grafted crosslinkers,
+    giving Stokes-Einstein diffusivity D_solid = kT / (6*pi*eta*r_solid) symbolically identical
+    to graham2024/stokes_einstein_sphere_diffusion and confirming the identical 673x-687x VASP
+    diffusivity discrepancy across all three Rangamani-lab CytoSim droplet studies.
+
+- id: rel_walker2025_code_stokes_approx_langevin1d
+  kind: approximated_by
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: graham2024/langevin_overdamped_1d
+  mapping:
+    mu: "1 / (6 * pi * eta * r_solid)"
+    kBT: "1000 * kT"
+    f: "0"
+  output_map:
+    D_eff: D_solid
+  regime:
+    eta: [0.05, 5.0]
+    r_solid: [0.01, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  tolerance: 0.05
+  provenance: proposed
+  reason: >
+    Verifies directly that graham2024's stochastic 1D overdamped Langevin solver (f = 0,
+    n_particles = 2000, dt = 0.001 s, t = 0.2 s, seed = 42) reproduces walker2025_code's exact
+    CytoSim Solid Stokes diffusivity D_solid = kT / (6*pi*eta*r_solid) under mobility
+    mu = 1 / (6*pi*eta*r_solid) within tolerance 0.05 (3.53% fixed-seed MC sampling offset).
+
+- id: rel_walker2025_code_persistence_length
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: graham2024/actin_persistence_length_from_rigidity
+  mapping:
+    K_bend: "rigidity"
+    T: "100000000000 * kT / 1380649"
+  output_map:
+    L_p: L_p
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.01, 0.05]
+    R_drop: [0.5, 3.0]
+    rigidity: [0.02, 0.2]
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: >
+    Both Rangamani-lab CytoSim setups compute F-actin thermal persistence length L_p = rigidity / kT
+    (~17.86 um at shared rigidity = 0.075 pN*um^2 and CytoSim default kT = 0.0042 pN*um) via the
+    exact same law after converting kT to temperature T = kT / k_B with CODATA 2018 k_B.
+
+- id: rel_walker2025_code_crosslinker_conc
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: graham2024/concentration_from_total_polymer
+  mapping:
+    L_total: "0.0027 * N_blob"
+    l_mono: "2.7"
+    R_drop: "R_drop"
+  output_map:
+    C_T: C_crosslinker
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.01, 0.05]
+    R_drop: [0.5, 3.0]
+    rigidity: [0.05, 0.1]
+    kT: [0.004, 0.0045]
+  provenance: proposed
+  reason: >
+    Both models convert discrete molecule count N inside a spherical droplet of radius R_drop to
+    micromolar concentration via N / (N_A * (4/3)*pi*R_drop^3) with exact SI 2019 Avogadro constant
+    (evaluating concentration_from_total_polymer at 1 monomer per particle, L_total / l_mono = N_blob).
+
+- id: rel_walker2025_code_vca_ode_reduces_to_config_Lfinal
+  kind: reduces_to
+  a: graham2024/cytosim_vca_ode_filament_length
+  b: walker2025_code/cytosim_config_derived_quantities
+  mapping:
+    n_steps: "t_end / 0.001"
+    nb_frames: "600"
+    dt: "0.001"
+    L0: "L_0"
+    k_grow: "k_grow"
+    L_max: "50"
+    N_blob: "1000"
+    r_solid: "0.03"
+    R_drop: "R_drop"
+    rigidity: "0.075"
+    kT: "0.0042"
+  output_map:
+    L_final: L_fil
+  limit:
+    L_total: "oo"
+  regime:
+    k_grow: [0.005, 0.02]
+    N_fil: [10.0, 50.0]
+    L_0: [0.05, 0.2]
+    L_total: [500.0, 2000.0]
+    t_end: [50.0, 600.0]
+    k_bind: [1.0, 5.0]
+    C_vca: [0.0, 0.0]
+    factor_Gmax: [5.0, 5.0]
+    R_drop: [0.8, 1.5]
+    l_mono: [2.7, 2.7]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the zero-VCA (C_vca = 0), infinite monomer-reservoir limit (L_total -> oo) below L_max,
+    graham2024's CytoSim monomer-depletion ODE reduces identically to walker2025_code's undepleted
+    static-crosslinker filament elongation length L_final = L0 + k_grow * T_sim (both sharing
+    k_grow = 0.0103 um/s, L0 = 0.1 um, R_drop = 1 um, and L_max = 2*pi um in their CytoSim configs).
+

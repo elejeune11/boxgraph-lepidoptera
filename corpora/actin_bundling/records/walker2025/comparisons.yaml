@@ -1,0 +1,242 @@
+# =============================================================================
+# 1. Reproduction checks of every derived quantity printed in the paper & SI
+# =============================================================================
+- id: cmp_droplet_circumference
+  purpose: reproduction
+  computed: sim_L_max_computed
+  printed: sim_filament_max_length_circumference
+  note: "Checks 2*pi*R = 6.283185 um for R = 1 um (Table S1 p. 25)."
+
+- id: cmp_elongation_rate_with_L0
+  purpose: reproduction
+  computed: sim_k_grow_computed
+  printed: sim_polymerization_rate
+  note: "Checks k_grow = (2*pi*R - 0.1 um) / 600 s = 0.010305 um/s against printed 0.0103 um/s (Table S1 p. 25, Methods S1 p. 42)."
+
+- id: cmp_elongation_rate_zero_L0
+  purpose: consistency
+  computed: sim_k_grow_zero_L0_computed
+  printed: sim_polymerization_rate
+  note: "Shows omitting L0 = 0.1 um gives 2*pi / 600 = 0.010472 um/s, confirming Table S1 subtracted the 0.1 um initial filament length."
+
+- id: cmp_final_length_600s_vs_2pi
+  purpose: consistency
+  computed: sim_L_final_600s_computed
+  printed: sim_filament_max_length_circumference
+  note: "Chained check: L0 + 0.0103*600 = 6.280 um vs 2*pi = 6.283185 um (0.05% rounding difference from 3-sig-fig k_grow)."
+
+- id: cmp_final_length_2400s_capped
+  purpose: consistency
+  computed: sim_L_final_2400s_computed
+  printed: sim_filament_max_length_circumference
+  note: "Confirms filament length in extended 2400 s high-viscosity run (Fig. S5B) saturates at the 2*pi*R ceiling."
+
+- id: cmp_dimer_concentration
+  purpose: reproduction
+  computed: sim_dimer_conc_computed
+  printed: sim_dimer_conc_baseline
+  note: "Checks 1,000 bivalent mini-Lpd dimers in R = 1 um sphere (0.3964 uM) against printed 0.40 uM (Table S1 p. 26)."
+
+- id: cmp_tetramer_concentration
+  purpose: reproduction
+  computed: sim_tetramer_conc_computed
+  printed: sim_tetramer_conc_baseline
+  note: "Checks 1,000 tetravalent VASP tetramers in R = 1 um sphere (0.3964 uM) against printed 0.40 uM (Table S1 p. 26)."
+
+- id: cmp_monomer_concentration
+  purpose: reproduction
+  computed: sim_monomer_conc_computed
+  printed: sim_monomer_conc_baseline
+  note: "Checks 2,000 diffusing mini-Lpd monomers in R = 1 um sphere (0.7929 uM) against printed 0.79 uM (Table S1 p. 27)."
+
+- id: cmp_dynamic_dimer_max_count
+  purpose: reproduction
+  computed: sim_dynamic_dimer_max_computed
+  printed: sim_dynamic_dimer_max_count
+  note: "Checks maximum 1,000 dimers from 2,000 monomers (Fig. 5B caption, p. 10)."
+
+- id: cmp_crosslinker_vol_frac_table
+  purpose: reproduction
+  computed: sim_vol_frac_curve_computed
+  printed: sim_crosslinker_vol_frac_table
+  note: "Checks spherical packing volume fractions 2.7% (N=1,000) and 54% (N=20,000) for r_solid = 30 nm in R = 1 um droplet (p. 10)."
+
+- id: cmp_monomer_binding_distance_max
+  purpose: reproduction
+  computed: sim_monomer_dmax_computed
+  printed: sim_monomer_monomer_binding_distance
+  note: "Checks 3 * R_solid = 3 * 30 nm = 90 nm (Table S1 p. 27)."
+
+- id: cmp_viscosity_ratio_water
+  purpose: reproduction
+  computed: sim_viscosity_ratio_computed
+  printed: sim_viscosity_ratio_water
+  note: "Checks 0.5 pN*s/um^2 (= 0.5 Pa*s) / 0.001 Pa*s = 500x water (Table S1 p. 25), fixing the 50x typo in chandrasekaran2024."
+
+- id: cmp_binary_stoich_vasp_3to1
+  purpose: reproduction
+  computed: exp_vasp_at_3to1_computed
+  printed: exp_vasp_conc_at_3to1
+  conditions_ok: "Both sides evaluate 30 uM total protein at 3:1 mini-Lpd:VASP in 150 mM NaCl without PEG."
+  note: "Checks 30 uM / (1 + 3) = 7.5 uM VASP (Results p. 4)."
+
+- id: cmp_binary_stoich_vasp_1to3
+  purpose: reproduction
+  computed: exp_vasp_at_1to3_computed
+  printed: exp_vasp_conc_at_1to3
+  conditions_ok: "Both sides evaluate 30 uM total protein at 1:3 mini-Lpd:VASP in 150 mM NaCl without PEG."
+  note: "Checks 30 uM / (1 + 1/3) = 22.5 uM VASP (Results p. 4)."
+
+# =============================================================================
+# 2. Internal physical consistency & variant comparisons
+# =============================================================================
+- id: cmp_persistence_length_vs_rigidity
+  purpose: consistency
+  computed: actin_Lp_computed
+  printed: actin_persistence_length_reported
+  note: "Reconstructed WLC check: L_p = 0.075 pN*um^2 / (4.114 pN*nm) = 18.23 um lies inside the reported 10-20 um range (pp. 2, 15, 25)."
+
+- id: cmp_einstein_roundtrip_D
+  purpose: consistency
+  computed: crosslinker_D_einstein_roundtrip
+  printed: sim_crosslinker_diffusion_rate
+  note: "Verifies exact algebraic round-trip D = (D / k_B T) * k_B T = 10 um^2/s."
+
+- id: cmp_langevin_D_consistency
+  purpose: consistency
+  computed: langevin_D_eff_computed
+  printed: sim_crosslinker_diffusion_rate
+  note: "Checks that 1D overdamped Langevin integration at dt = 0.002 s recovers the prescribed crosslinker diffusion rate D = 10 um^2/s."
+
+- id: cmp_stokes_einstein_vs_prescribed_D
+  purpose: consistency
+  computed: crosslinker_D_SE_computed
+  printed: sim_crosslinker_diffusion_rate
+  note: "Reconstructed Stokes-Einstein check: a 30 nm sphere in eta = 0.5 pN*s/um^2 has D_SE = 0.01455 um^2/s, 687x smaller than the Table S1 prescribed diffusion rate 10 um^2/s (pp. 25-27)."
+
+- id: cmp_bell_zero_force
+  purpose: consistency
+  computed: bell_kunbind_zero_F_computed
+  printed: sim_actin_kunbind_zero_force
+  note: "Checks Bell slip-bond unbinding recovers k_unbind^0 = 1.0 s^-1 at F = 0 pN (Methods S1 p. 43)."
+
+- id: cmp_mesoscopic_cyl_roundtrip
+  purpose: consistency
+  computed: k_bind_cyl_roundtrip_computed
+  printed: sim_actin_kbind_ring
+  note: "Checks cylindrical binding-volume conversion round-trip k_bind <-> k_{bind,2} recovers 10.0 s^-1 (Methods S1 p. 42)."
+
+- id: cmp_mesoscopic_sph_roundtrip
+  purpose: consistency
+  computed: k_bind_sph_roundtrip_computed
+  printed: sim_actin_kbind_ring
+  note: "Checks spherical binding-volume conversion round-trip k_bind <-> k_{bind,2} recovers 10.0 s^-1 (Methods S1 p. 43)."
+
+- id: cmp_harmonic_boundary_vs_ratchet
+  purpose: consistency
+  computed: boundary_force_actin_50nm_computed
+  printed: sim_brownian_ratchet_force
+  note: "Shows a 50 nm radial excursion of an actin filament tip outside R = 1 um generates 10 pN boundary repulsion, equal to the 10 pN Brownian ratchet stall force."
+
+- id: cmp_icosphere_printed_monomers
+  purpose: reproduction
+  computed: ico_printed_n_monomers
+  printed: sim_icosphere_target_monomers
+  note: "Tests Methods S1 p. 43 literally (8 initial triangles subdivided 3 times -> 512 faces, s_eq = 238.1 nm -> 88.2 actin monomers at 2.7 nm rise vs stated ~10 actin monomers)."
+
+- id: cmp_icosphere_variant_n3_monomers
+  purpose: reproduction
+  computed: ico_var_n3_n_monomers
+  printed: sim_icosphere_target_monomers
+  note: "Corrected icosahedron variant (20 faces) at printed n = 3 subdivisions -> 1,280 faces, s_eq = 150.6 nm -> 55.8 actin monomers at 2.7 nm rise vs stated ~10."
+
+- id: cmp_icosphere_variant_n4_s4_monomers
+  purpose: reproduction
+  computed: ico_var_n4_n_monomers
+  printed: sim_icosphere_target_monomers
+  note: "Corrected icosahedron variant (20 faces) at [S4] n = 4 subdivisions -> 5,120 faces, s_eq = 75.3 nm -> 27.9 monomers at 2.7 nm rise (or 13.7 monomers at 5.5 nm globular diameter)."
+
+- id: cmp_ar_threshold_example
+  purpose: consistency
+  computed: test_ar_threshold_computed
+  printed: exp_elongated_ar_threshold
+  note: "Verifies condensate_aspect_ratio L_long / L_short = 2.4 / 2.0 = 1.2 matches the elongated-droplet threshold."
+
+- id: cmp_guv_lipid_closure
+  purpose: consistency
+  computed: exp_guv_lipid_sum_computed
+  printed: guv_lipid_closure_target_added
+  note: "Checks closure of Fig. S1E GUV lipid mole percentages (84% + 15% + 1% + 0.1% = 100.1% vs 100.0%)."
+
+# =============================================================================
+# 3. Well-mixed 5-state ODE approximation vs 3D CytoSim Fig. 5D state fractions
+# =============================================================================
+- id: cmp_fig5d_kf10_free_monomer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf10_Mf_computed
+  printed: sim_fig5d_kf10_free_monomer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10, 1, 0.1, 0.01, 0.001} s^-1 at k_dimer_form = 10 s^-1 (well-mixed ODE vs 3D spatial CytoSim)."
+  note: "Well-mixed ODE predicts near-complete actin depletion of free monomers (<=1.2%) vs 1.0%-52.4% in 3D CytoSim Fig. 5D (see q_ode_vs_fig5d_spatial_and_cactin)."
+
+- id: cmp_fig5d_kf10_bound_monomer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf10_Mb_computed
+  printed: sim_fig5d_kf10_bound_monomer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10..0.001} s^-1 at k_dimer_form = 10 s^-1."
+  note: "Well-mixed ODE overpredicts actin-bound monomer fraction (~2x at k_split = 10 s^-1) due to uniform-accessibility C_actin = 27.67 uM overcounting vs spatial filaments."
+
+- id: cmp_fig5d_kf10_free_dimer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf10_D0_computed
+  printed: sim_fig5d_kf10_free_dimer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10..0.001} s^-1 at k_dimer_form = 10 s^-1."
+  note: "Well-mixed ODE predicts ~0% free dimers whereas 3D CytoSim retains 8.3%-38.9% free dimers in the filament-free droplet interior."
+
+- id: cmp_fig5d_kf10_singly_bound_dimer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf10_D1_computed
+  printed: sim_fig5d_kf10_singly_bound_dimer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10..0.001} s^-1 at k_dimer_form = 10 s^-1."
+  note: "Well-mixed ODE predicts 1.8%-4.0% singly bound dimers vs 6.4%-20.2% in 3D CytoSim Fig. 5D."
+
+- id: cmp_fig5d_kf10_doubly_bound_dimer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf10_D2_computed
+  printed: sim_fig5d_kf10_doubly_bound_dimer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10..0.001} s^-1 at k_dimer_form = 10 s^-1."
+  note: "Well-mixed ODE predicts 42.8%-95.1% doubly bound dimers vs 7.3%-39.5% in 3D CytoSim Fig. 5D."
+
+- id: cmp_fig5d_kf1_free_monomer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf1_Mf_computed
+  printed: sim_fig5d_kf1_free_monomer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10..0.001} s^-1 at k_dimer_form = 1.0 s^-1."
+  note: "Well-mixed ODE predicts <=1.8% free monomers vs 4.8%-65.5% in 3D CytoSim Fig. 5D bottom panel."
+
+- id: cmp_fig5d_kf1_bound_monomer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf1_Mb_computed
+  printed: sim_fig5d_kf1_bound_monomer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10..0.001} s^-1 at k_dimer_form = 1.0 s^-1."
+  note: "Well-mixed ODE predicts 2.5%-86.8% actin-bound monomers vs 1.3%-31.3% in 3D CytoSim Fig. 5D bottom panel."
+
+- id: cmp_fig5d_kf1_free_dimer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf1_D0_computed
+  printed: sim_fig5d_kf1_free_dimer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10..0.001} s^-1 at k_dimer_form = 1.0 s^-1."
+  note: "Well-mixed ODE predicts ~0% free dimers vs 1.3%-36.2% in 3D CytoSim Fig. 5D bottom panel."
+
+- id: cmp_fig5d_kf1_singly_bound_dimer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf1_D1_computed
+  printed: sim_fig5d_kf1_singly_bound_dimer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10..0.001} s^-1 at k_dimer_form = 1.0 s^-1."
+  note: "Well-mixed ODE predicts 0.5%-4.0% singly bound dimers vs 1.1%-19.0% in 3D CytoSim Fig. 5D bottom panel."
+
+- id: cmp_fig5d_kf1_doubly_bound_dimer_ode
+  purpose: approximation
+  computed: ode_fig5d_kf1_D2_computed
+  printed: sim_fig5d_kf1_doubly_bound_dimer
+  conditions_ok: "Both evaluate dynamic dimerization across k_dimer_split = {10..0.001} s^-1 at k_dimer_form = 1.0 s^-1."
+  note: "Well-mixed ODE predicts 10.9%-93.4% doubly bound dimers vs 0.8%-38.9% in 3D CytoSim Fig. 5D bottom panel."

@@ -1,0 +1,1135 @@
+# ==============================================================================
+# 1. Characteristic scales, nondimensionalization & thermodynamic bounds
+# ==============================================================================
+- id: run_damkohler_ref
+  model: damkohler_length
+  inputs:
+    D: D_ref
+    k_d: k_d_ref
+  outputs:
+    ell_D: ell_D_ref_calc
+
+- id: run_diffusion_timescale_ref
+  model: diffusion_timescale
+  inputs:
+    ell_s: ell_s_ref
+    D: D_ref
+  outputs:
+    t_0: t_0_ref_calc
+
+- id: run_nondim_fig2
+  model: nondimensional_groups_appendix_b
+  inputs:
+    eta: eta_ref
+    ell_s: ell_s_ref
+    D: D_ref
+    k_d: k_d_ref
+    eta_rot_ratio: eta_rot_over_eta_ref
+    beta_ratio: beta_over_eta_ref
+    a_over_eta_rot: a_over_eta_rot_ref
+    b_over_eta_rot: b_over_eta_rot_ref
+    lambda_o_bar: lambda_o_bar_default
+    L: L_frank_probe_added
+  outputs:
+    gamma: gamma_ref_calc
+    t_0: t_0_nondim_calc
+    k_bar_d: kd_bar_fig2_calc
+    a_bar: a_bar_fig2_calc
+    b_bar: b_bar_fig2_calc
+    c_bar_0: c0_bar_fig2_calc
+    L_bar: L_bar_fig2_calc
+    eta_rot: eta_rot_ref_calc
+    beta: beta_ref_calc
+    a: a_ref_calc
+    b: b_ref_calc
+    c_0: c_0_ref_calc
+    rho_lam_o: rho_lam_o_ref_calc
+
+- id: run_hydrodynamic_length_check
+  model: hydrodynamic_length
+  inputs:
+    eta: eta_ref
+    gamma: gamma_ref_calc
+  outputs:
+    ell_s: ell_s_roundtrip_calc
+
+- id: run_nematic_length_time_ref
+  model: nematic_length_and_time
+  inputs:
+    L: L_frank_probe_added
+    a: a_ref_calc
+    rho_lam_o: rho_lam_o_ref_calc
+    eta_rot: eta_rot_ref_calc
+  outputs:
+    ell_q: ell_q_ref_calc
+    t_q: t_q_ref_calc
+
+- id: run_nondim_fig4aIII
+  model: nondimensional_groups_appendix_b
+  inputs:
+    eta: eta_ref
+    ell_s: ell_s_ref
+    D: D_ref
+    k_d: k_d_ref
+    eta_rot_ratio: eta_rot_over_eta_ref
+    beta_ratio: beta_over_eta_ref
+    a_over_eta_rot: a_over_eta_rot_ref
+    b_over_eta_rot: b_over_eta_rot_ref
+    lambda_o_bar: lambda_o_bar_fig4aIII
+    L: L_frank_probe_added
+  outputs:
+    c_bar_0: c0_bar_fig4aIII_calc
+
+- id: run_friction_fig3c
+  model: friction_rescaling_increase
+  inputs:
+    k_bar_d_ref: kd_bar_fig2
+    c_bar_0_ref: c0_bar_fig2
+    b_bar_ref: b_bar_fig2
+    lambda_o_bar_ref: lambda_o_bar_fig3
+    f_gamma: gamma_scale_fig3c_added
+  outputs:
+    k_bar_d: kd_bar_fig3c_calc
+    c_bar_0: c0_bar_fig3c_calc
+    b_bar: b_bar_fig3c_calc
+    lambda_o_bar: lambda_o_bar_fig3c_calc
+
+- id: run_friction_fig4cI
+  model: friction_rescaling_reduction
+  inputs:
+    k_bar_d_ref: kd_bar_fig2
+    c_bar_0_ref: c0_bar_fig2
+    b_bar_ref: b_bar_fig2
+    lambda_o_bar_ref: lambda_o_bar_default
+    R_gamma: friction_reduction_factor_fig4cI
+  outputs:
+    k_bar_d: kd_bar_fig4cI_calc
+    c_bar_0: c0_bar_fig4cI_calc
+    b_bar: b_bar_fig4cI_calc
+    lambda_o_bar: lambda_o_bar_fig4cI_calc
+
+- id: run_turnover_fig4cII
+  model: turnover_rescaling_fig4c
+  inputs:
+    k_bar_d_ref: kd_bar_fig2
+    M: turnover_increase_factor_fig4cII
+  outputs:
+    k_bar_d: kd_bar_fig4cII_calc
+
+- id: run_turnover_fig4cIII
+  model: turnover_rescaling_fig4c
+  inputs:
+    k_bar_d_ref: kd_bar_fig2
+    M: turnover_increase_factor_fig4cIII
+  outputs:
+    k_bar_d: kd_bar_fig4cIII_calc
+
+- id: run_entropy_2d_fig3b
+  model: entropy_production_bound_2d
+  inputs:
+    eta_bar_rot: eta_rot_bar_default
+    beta_bar: beta_bar_fig3b
+  outputs:
+    margin: entropy_margin_2d_fig3b
+    beta_bar_min: beta_bar_min_2d_calc
+
+- id: run_entropy_1d_printed
+  model: entropy_production_bound_1d_printed
+  inputs:
+    eta_bar_rot: eta_rot_bar_default
+    beta_bar: beta_bar_default
+  outputs:
+    margin: entropy_margin_1d_printed
+    beta_bar_min: beta_bar_min_1d_printed
+
+- id: run_entropy_1d_corrected
+  model: entropy_production_bound_1d_corrected
+  inputs:
+    eta_bar_rot: eta_rot_bar_default
+    beta_bar: beta_bar_default
+  outputs:
+    margin: entropy_margin_1d_corrected
+    beta_bar_min: beta_bar_min_1d_corrected
+
+# ==============================================================================
+# 2. Equilibrium order, Landau free energy & static active tension
+# ==============================================================================
+- id: run_eq_order_fig2
+  model: equilibrium_nematic_order
+  inputs:
+    c_bar_0: c0_bar_fig2
+    b_bar: b_bar_fig2
+  outputs:
+    S_0: S0_fig2_calc
+    q_0_pos: q0_fig2_calc
+
+- id: run_eq_order_fig4aIII
+  model: equilibrium_nematic_order
+  inputs:
+    c_bar_0: c0_bar_fig4aIII
+    b_bar: b_bar_fig2
+  outputs:
+    S_0: S0_fig4aIII_calc
+    q_0_pos: q0_pos_fig4aIII_calc
+    q_0_neg: q0_neg_fig4aIII_calc
+
+- id: run_landau_free_energy_ref
+  model: landau_free_energy_eq3
+  inputs:
+    a: a_ref_calc
+    b: b_ref_calc
+    L: L_frank_probe_added
+    S: S_probe_added
+    grad_q: grad_q_probe_added
+  outputs:
+    f: f_landau_ref_calc
+
+- id: run_static_tension_fig5d
+  model: static_active_tensions_eq11
+  inputs:
+    rho: rho_A_2x
+    rho_ref: rho_A_1x
+    lam: discrete_lambda_probe_added
+    kappa: kappa_discrete_fit
+    S: S_probe_added
+  outputs:
+    sigma_par: sigma_par_static_calc
+    sigma_perp: sigma_perp_static_calc
+    sigma_bar: sigma_bar_static_calc
+    sigma_bar_norm: sigma_bar_norm_calc
+    norm_slope: norm_mean_tension_slope_calc
+    xi: xi_static_calc
+
+# ==============================================================================
+# 3. 1D Linear stability analysis (Eqs. 9-10, Appendix C Eqs. C1-C25)
+# ==============================================================================
+- id: run_iso_dimless_fig2
+  model: isotropic_threshold_dimless
+  inputs:
+    k_d: kd_bar_fig2
+  outputs:
+    nu_crit_0_sq: nu_crit0_sq_dimless_fig2
+    nu_crit_0: nu_crit0_dimless_fig2
+    lambda_crit_0: lam_crit0_dimless_fig2
+    ell_pattern_0: ell_pat0_dimless_fig2
+
+- id: run_iso_dimensional_ref
+  model: isotropic_threshold_dimensional_eq9
+  inputs:
+    gamma: gamma_ref_calc
+    D: D_ref
+    k_d: k_d_ref
+    eta: eta_ref
+  outputs:
+    lambda_crit_0: lam_crit0_dim_exact
+    nu_crit_0_sq: nu_crit0_sq_dim_exact
+    nu_crit_0: nu_crit0_dim_exact
+    ell_pattern_0: ell_pat0_dim_exact
+
+- id: run_iso_lengths_printed_ref
+  model: isotropic_threshold_lengths_printed
+  inputs:
+    gamma: gamma_ref_calc
+    D: D_ref
+    ell_s: ell_s_ref
+    ell_D: ell_D_ref_calc
+  outputs:
+    lambda_crit_0: lam_crit0_lengths_printed
+    nu_crit_0_sq: nu_crit0_sq_lengths_printed
+
+- id: run_iso_lengths_corrected_ref
+  model: isotropic_threshold_lengths_corrected
+  inputs:
+    gamma: gamma_ref_calc
+    D: D_ref
+    ell_s: ell_s_ref
+    ell_D: ell_D_ref_calc
+  outputs:
+    lambda_crit_0: lam_crit0_lengths_corrected
+    nu_crit_0_sq: nu_crit0_sq_lengths_corrected
+
+- id: run_marginal_fig2_kap_m02
+  model: marginal_stability_eqC8
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bI
+    q_0: q0_fig2_calc
+  outputs:
+    lambda_crit: lam_crit_exact_fig2_m02
+    nu_crit_sq: nu_crit_sq_exact_fig2_m02
+    nu_crit: nu_crit_exact_fig2_m02
+    ell_pattern: ell_pat_exact_fig2_m02
+
+- id: run_marginal_fig2_kap_m08
+  model: marginal_stability_eqC8
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bII
+    q_0: q0_fig2_calc
+  outputs:
+    lambda_crit: lam_crit_exact_fig2_m08
+    nu_crit_sq: nu_crit_sq_exact_fig2_m08
+    nu_crit: nu_crit_exact_fig2_m08
+    ell_pattern: ell_pat_exact_fig2_m08
+
+- id: run_marginal_fig4aIII_qneg
+  model: marginal_stability_eqC8
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig4aIII
+    b: b_bar_fig2
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_fig4aIII
+    kappa: kappa_fig4bI
+    q_0: q0_neg_fig4aIII_calc
+  outputs:
+    lambda_crit: lam_crit_exact_fig4aIII_qneg
+    nu_crit_sq: nu_crit_sq_exact_fig4aIII_qneg
+    nu_crit: nu_crit_exact_fig4aIII_qneg
+    ell_pattern: ell_pat_exact_fig4aIII_qneg
+
+- id: run_marginal_fig4cIII
+  model: marginal_stability_eqC8
+  inputs:
+    k_d: kd_bar_fig4cIII
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bI
+    q_0: q0_fig2_calc
+  outputs:
+    lambda_crit: lam_crit_exact_fig4cIII
+    nu_crit_sq: nu_crit_sq_exact_fig4cIII
+    nu_crit: nu_crit_exact_fig4cIII
+    ell_pattern: ell_pat_exact_fig4cIII
+
+- id: run_marginal_caseB_probe
+  model: marginal_stability_eqC8
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_caseB_probe_added
+    b: b_bar_fig2
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bI
+    q_0: q0_fig2_calc
+  outputs:
+    lambda_crit: lam_crit_exact_caseB_probe
+    nu_crit_sq: nu_crit_sq_exact_caseB_probe
+
+- id: run_dispersion_fig2_marginal
+  model: dispersion_1d_eqC7
+  inputs:
+    nu: nu_probe_dimless_added
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bI
+    lam: lam_crit_exact_fig2_m02
+    q_0: q0_fig2_calc
+  outputs:
+    alpha_plus: alpha_plus_fig2_marginal
+    alpha_minus: alpha_minus_fig2_marginal
+
+- id: run_fastest_mode_fig2s1_130pct
+  model: fastest_growing_mode_eqC7
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig2s1_added
+    q_0: q0_fig2_calc
+    activity_ratio: activity_ratio_default
+  outputs:
+    nu_max: nu_max_fig2s1_130pct
+    alpha_max: alpha_max_fig2s1_130pct
+    wavelength_ratio: wavelength_ratio_lin_130pct
+
+- id: run_fastest_mode_fig2s1_110pct
+  model: fastest_growing_mode_eqC7
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig2s1_added
+    q_0: q0_fig2_calc
+    activity_ratio: activity_ratio_fig2s1_near_onset
+  outputs:
+    nu_max: nu_max_fig2s1_110pct
+    alpha_max: alpha_max_fig2s1_110pct
+    wavelength_ratio: wavelength_ratio_lin_110pct
+
+- id: run_repeats_fig2s1_110pct
+  model: domain_pattern_repeats
+  inputs:
+    domain_in_wavelengths: domain_size_wavelengths
+    wavelength_ratio: wavelength_ratio_lin_110pct
+  outputs:
+    n_repeats: repeats_lin_110pct
+
+- id: run_caseA_L0_fig2_m02
+  model: caseA_critical_L0_eqC13
+  inputs:
+    k_d: kd_bar_fig2
+    c_0: c0_bar_fig2
+    beta: beta_bar_default
+    kappa: kappa_fig4bI
+  outputs:
+    delta: delta_caseA_fig2_m02
+    nu_crit_sq: nu_crit_sq_caseA_L0_m02
+    lambda_crit: lam_crit_caseA_L0_m02
+
+- id: run_caseA_taylor_fig2_m02
+  model: caseA_critical_taylor_eqC14_C15
+  inputs:
+    k_d: kd_bar_fig2
+    c_0: c0_bar_fig2
+    beta: beta_bar_default
+    kappa: kappa_fig4bI
+  outputs:
+    nu_crit_sq: nu_crit_sq_caseA_taylor_m02
+    lambda_crit: lam_crit_caseA_taylor_m02
+
+- id: run_caseA_taylor_fig4cIII
+  model: caseA_critical_taylor_eqC14_C15
+  inputs:
+    k_d: kd_bar_fig4cIII
+    c_0: c0_bar_fig2
+    beta: beta_bar_default
+    kappa: kappa_fig4bI
+  outputs:
+    nu_crit_sq: nu_crit_sq_caseA_taylor_fig4cIII
+    lambda_crit: lam_crit_caseA_taylor_fig4cIII
+
+- id: run_caseA_dimensional_ref
+  model: caseA_critical_dimensional_eq9_10
+  inputs:
+    gamma: gamma_ref_calc
+    D: D_ref
+    k_d: k_d_ref
+    eta: eta_ref
+    kappa: kappa_fig4bI
+    beta: beta_ref_calc
+    c_0: c_0_ref_calc
+  outputs:
+    delta: delta_caseA_dim_ref
+    lambda_crit: lam_crit_dim_ref
+    nu_crit_sq: nu_crit_sq_dim_ref
+    nu_crit: nu_crit_dim_ref
+    ell_pattern: ell_pat_dim_ref
+
+- id: run_caseB_delta_dim_printed
+  model: caseB_delta_dimensional_printed
+  inputs:
+    gamma: gamma_ref_calc
+    D: D_ref
+    kappa: kappa_fig4bI
+    beta: beta_ref_calc
+    eta: eta_ref
+    L: L_frank_probe_added
+  outputs:
+    delta_printed: delta_caseB_dim_printed_val
+
+- id: run_caseB_delta_dim_corrected
+  model: caseB_delta_dimensional_corrected
+  inputs:
+    D: D_ref
+    kappa: kappa_fig4bI
+    beta: beta_ref_calc
+    L: L_frank_probe_added
+  outputs:
+    delta: delta_caseB_dim_corrected_val
+
+- id: run_caseB_exact_fig2
+  model: caseB_critical_eqC18
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    beta: beta_bar_default
+    kappa: kappa_fig4bI
+  outputs:
+    delta: delta_caseB_dimless
+    nu_crit_sq: nu_crit_sq_caseB_exact
+    lambda_crit: lam_crit_caseB_exact
+
+- id: run_caseB_taylor_fig2
+  model: caseB_critical_taylor_eqC19_C20
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    beta: beta_bar_default
+    kappa: kappa_fig4bI
+  outputs:
+    nu_crit_sq: nu_crit_sq_caseB_taylor
+    lambda_crit: lam_crit_caseB_taylor
+
+- id: run_caseC_exact_fig4aIII
+  model: caseC_critical_eqC23
+  inputs:
+    k_d: kd_bar_fig2
+    b: b_bar_fig2
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_fig4aIII
+    kappa: kappa_fig4bI
+    q_0: q0_neg_fig4aIII_calc
+  outputs:
+    delta: delta_caseC_fig4aIII
+    tau: tau_caseC_fig4aIII
+    nu_crit_sq: nu_crit_sq_caseC_exact
+    lambda_crit: lam_crit_caseC_exact
+
+- id: run_caseC_taylor_fig4aIII
+  model: caseC_critical_taylor_eqC24_C25
+  inputs:
+    k_d: kd_bar_fig2
+    b: b_bar_fig2
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_fig4aIII
+    kappa: kappa_fig4bI
+    q_0: q0_neg_fig4aIII_calc
+  outputs:
+    nu_crit_sq: nu_crit_sq_caseC_taylor
+    lambda_crit: lam_crit_caseC_taylor
+
+# ==============================================================================
+# 4. Nonlinear Continuum PDE Solvers (1D Eqs. B1-B4 & 2D Eqs. 1-8)
+# ==============================================================================
+- id: run_pde_1d_fig4s1_a
+  model: active_nematic_pde_1d_eqB1_B4
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bI
+    activity_ratio: activity_ratio_default
+    L_domain: L_1d_fig4s1_added
+  settings:
+    N_grid: 128
+    dt: 0.02
+    t_max: 120.0
+    init_mode: 4
+    seed: 42
+  outputs:
+    rho_max: pde1d_a_rho_max
+    rho_min: pde1d_a_rho_min
+    S_max: pde1d_a_S_max
+    sigma_par_peak_over_lam: pde1d_a_spar_lam
+    sigma_perp_peak_over_lam: pde1d_a_sperp_lam
+    sigma_diff_peak_over_lam: pde1d_a_sdiff_lam
+    sigma_par_peak_over_lamc: pde1d_a_spar_lamc
+    sigma_perp_peak_over_lamc: pde1d_a_sperp_lamc
+    wavelength_ratio: pde1d_a_wratio
+  note: "4-bundle 1D steady state for Fig. 4—figure supplement 1a (kappa = -0.2); confirms contractile bundle tension sigma_par > sigma_perp and matches plotted curves when normalized by lambda = 1.3*lambda_crit."
+
+- id: run_pde_1d_fig4s1_b
+  model: active_nematic_pde_1d_eqB1_B4
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4_video2_mid
+    activity_ratio: activity_ratio_default
+    L_domain: L_1d_fig4s1_added
+  settings:
+    N_grid: 128
+    dt: 0.02
+    t_max: 120.0
+    init_mode: 4
+    seed: 42
+  outputs:
+    rho_max: pde1d_b_rho_max
+    sigma_par_peak_over_lam: pde1d_b_spar_lam
+    sigma_perp_peak_over_lam: pde1d_b_sperp_lam
+    sigma_diff_peak_over_lam: pde1d_b_sdiff_lam
+  note: "1D steady state for Fig. 4—figure supplement 1b (kappa = -0.5); confirms near-exact contractile-to-extensile crossover sigma_par ≈ sigma_perp."
+
+- id: run_pde_1d_fig4s1_c
+  model: active_nematic_pde_1d_eqB1_B4
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bII
+    activity_ratio: activity_ratio_default
+    L_domain: L_1d_fig4s1_added
+  settings:
+    N_grid: 128
+    dt: 0.02
+    t_max: 120.0
+    init_mode: 4
+    seed: 42
+  outputs:
+    rho_max: pde1d_c_rho_max
+    sigma_par_peak_over_lam: pde1d_c_spar_lam
+    sigma_perp_peak_over_lam: pde1d_c_sperp_lam
+    sigma_diff_peak_over_lam: pde1d_c_sdiff_lam
+  note: "1D steady state for Fig. 4—figure supplement 1c (kappa = -0.8); confirms emergent extensile bundle tension sigma_par < sigma_perp."
+
+- id: run_pde_2d_fig2_fibrillar
+  model: active_nematic_pde_2d_eq1_8
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bI
+    activity_ratio: activity_ratio_default
+  settings:
+    N_grid: 32
+    dt: 0.04
+    t_max: 75.0
+    L_mult: 2.0
+    pcg_maxiter: 4
+    seed: 1
+  outputs:
+    omega: pde2d_fibrillar_omega
+    rho_max: pde2d_fibrillar_rho_max
+    rho_min: pde2d_fibrillar_rho_min
+    S_max: pde2d_fibrillar_S_max
+  note: "2D periodic PDE for Fig. 2 fibrillar regime (kappa = -0.2); uses added domain L_mult = 2*ell_pattern (vs paper's 8*ell_pattern) and N_grid = 32 to run in <15 s on CPU (see q_2d_pde_domain_choice)."
+
+- id: run_pde_2d_fig2_banded
+  model: active_nematic_pde_2d_eq1_8
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig3_video1_bottom
+    activity_ratio: activity_ratio_default
+  settings:
+    N_grid: 32
+    dt: 0.04
+    t_max: 75.0
+    L_mult: 2.0
+    pcg_maxiter: 4
+    seed: 1
+  outputs:
+    omega: pde2d_banded_omega
+    rho_max: pde2d_banded_rho_max
+    S_max: pde2d_banded_S_max
+  note: "2D periodic PDE for Fig. 2 banded regime (kappa = +0.2); confirms sign flip from omega < 0 (fibrillar) to omega > 0 (banded)."
+
+# ==============================================================================
+# 5. Discrete Network (CytoSim) Equations & Protocol Checks
+# ==============================================================================
+- id: run_cytosim_protocol_fig5c_start
+  model: cytosim_protocol_relations
+  inputs:
+    rho_A: rho_A_1x
+    ell: ell_rve_cytosim
+    ell_A: ell_A_cytosim
+    dt: dt_cytosim_ms
+    stride: output_stride_cytosim
+    r_A: r_A_cytosim
+    t_eval: t_measure_start_tension
+    kT: kT_room_cytosim
+    k_B: k_boltzmann
+  outputs:
+    N_A: N_A_1x_calc
+    rho_A_2x: rho_A_2x_calc
+    rho_A_3x: rho_A_3x_calc
+    f_out: output_freq_calc
+    tau_A: tau_A_cytosim_calc
+    t_norm: t_norm_fig5c_start_calc
+    T: T_room_cytosim_calc
+
+- id: run_cytosim_protocol_fig5c_end
+  model: cytosim_protocol_relations
+  inputs:
+    rho_A: rho_A_2x
+    ell: ell_rve_cytosim
+    ell_A: ell_A_cytosim
+    dt: dt_cytosim_ms
+    stride: output_stride_cytosim
+    r_A: r_A_cytosim
+    t_eval: t_measure_end_tension
+    kT: kT_room_cytosim
+    k_B: k_boltzmann
+  outputs:
+    N_A: N_A_2x_calc
+    t_norm: t_norm_fig5c_end_calc
+
+- id: run_cytosim_protocol_fig5f_end
+  model: cytosim_protocol_relations
+  inputs:
+    rho_A: rho_A_3x
+    ell: ell_rve_cytosim
+    ell_A: ell_A_cytosim
+    dt: dt_cytosim_ms
+    stride: output_stride_cytosim
+    r_A: r_A_cytosim
+    t_eval: t_active_order
+    kT: kT_room_cytosim
+    k_B: k_boltzmann
+  outputs:
+    N_A: N_A_3x_calc
+    t_norm: t_norm_fig5f_end_calc
+
+- id: run_cytosim_turnover_printed
+  model: cytosim_turnover_rate_printed
+  inputs:
+    N_t: N_t_turnover_probe_added
+    N_s: N_s_turnover_probe_added
+    N_A: N_A_2x_calc
+  outputs:
+    r_A_per_step: r_A_per_step_printed_calc
+
+- id: run_cytosim_turnover_corrected
+  model: cytosim_turnover_rate_corrected
+  inputs:
+    N_t: N_t_turnover_probe_added
+    N_s: N_s_turnover_probe_added
+    dt: dt_cytosim_ms
+    N_A: N_A_2x_calc
+  outputs:
+    r_A: r_A_corrected_calc
+
+- id: run_cytosim_restraining_check
+  model: cytosim_nematic_restraining_eqE2_E7
+  inputs:
+    K_S: K_S_energy_added
+    S_0: S0_relax_probe_added
+    s_A: s_A_cytosim
+  outputs:
+    E_S_isotropic: E_S_iso_calc
+    f_head_mag: f_head_restraining_calc
+    grad_fd_error: f_head_grad_err_calc
+
+- id: run_cytosim_spring_crosslinker
+  model: cytosim_spring_force_eqE8
+  inputs:
+    K: K_X_cytosim
+    u: spring_elongation_probe_added
+    ell: ell_X_cytosim
+  outputs:
+    f: f_crosslinker_probe_calc
+
+- id: run_cytosim_bell_unbinding_probe
+  model: cytosim_bell_unbinding_eqE9
+  inputs:
+    r_u0: r_X_unbind0_cytosim
+    f: load_magnitude_probe_added
+    f_u: unbinding_force_probe_added
+  outputs:
+    r_u: r_u_bell_probe_calc
+
+- id: run_cytosim_motor_speed_probe
+  model: cytosim_motor_speed_eqE10
+  inputs:
+    v_M_max: v_M_max_cytosim
+    f: motor_load_probe_added
+    f_M_stall: f_M_stall_cytosim
+  outputs:
+    v_M: v_M_half_stall_calc
+
+- id: run_cytosim_boundary_tension_probe
+  model: cytosim_boundary_tension_eqE11_E12
+  inputs:
+    F_top: boundary_force_top_probe_added
+    F_bot: boundary_force_bottom_probe_added
+    F_right: boundary_force_top_probe_added
+    F_left: boundary_force_bottom_probe_added
+    L: ell_rve_cytosim
+  outputs:
+    sigma_par: sigma_par_boundary_calc
+    sigma_perp: sigma_perp_boundary_calc
+    sigma_bar: sigma_bar_boundary_calc
+    xi: xi_boundary_calc
+
+- id: run_nematic_relaxation_eq12
+  model: nematic_relaxation_eq12
+  inputs:
+    S_0: S0_relax_probe_added
+    K_S: K_S_energy_added
+    eta_rot: eta_rot_discrete_fit
+    t: t_relax_probe_added
+  outputs:
+    S_t: S_relax_t02_calc
+    S_over_S0: S_frac_t02_calc
+    tau_relax: tau_relax_eq12_calc
+
+- id: run_nematic_ordering_rate_eq12
+  model: nematic_ordering_rate_eq12
+  inputs:
+    S_0: S0_relax_probe_added
+    c_eff_energy: c_eff_order_probe_added
+    eta_rot: eta_rot_discrete_fit
+    r_A: r_A_cytosim
+  outputs:
+    S_dot: S_dot_eq12_probe_calc
+    S_dot_norm: S_dot_norm_eq12_probe_calc
+
+- id: run_relaxation_printed_units_check
+  model: relaxation_rate_printed_units_check
+  inputs:
+    K_S_printed: K_S_printed
+    eta_rot: eta_rot_discrete_fit
+  outputs:
+    ratio: KS_over_etarot_printed_units
+
+# ==============================================================================
+# 6. Calibrated Figure Curve Runs: Fig. 4—figure supplement 1(a-c)
+# ==============================================================================
+- id: run_pde_1d_profile_fig4s1_a_lamc
+  model: active_nematic_pde_1d_profile_eqB1_B4
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bI
+    activity_ratio: activity_ratio_default
+    L_period: L_period_fig4s1_added
+    rho_ref: rho_fig4s1_a
+    vis_ref: vis_par_fig4s1_a
+  settings:
+    N_grid: 64
+    dt: 0.04
+    t_max: 120.0
+    steady_tol: 1.0e-7
+  outputs:
+    rho: pde1d_prof_a_rho
+    sigma_par: pde1d_prof_a_spar_lamc
+    sigma_perp: pde1d_prof_a_sperp_lamc
+    sigma_act_par: pde1d_prof_a_actpar_lamc
+    sigma_act_perp: pde1d_prof_a_actperp_lamc
+    sigma_vis_par: pde1d_prof_a_vispar_lamc
+    sigma_vis_perp: pde1d_prof_a_visperp_lamc
+  note: "1D periodic steady-state spatial profiles for Fig. 4—figure supplement 1(a) (kappa = -0.2), with stresses normalized by lambda_crit as printed on y-axes."
+
+- id: run_pde_1d_profile_fig4s1_a_lam
+  model: active_nematic_pde_1d_profile_norm_lam
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bI
+    activity_ratio: activity_ratio_default
+    L_period: L_period_fig4s1_added
+    rho_ref: rho_fig4s1_a
+    vis_ref: vis_par_fig4s1_a
+  settings:
+    N_grid: 64
+    dt: 0.04
+    t_max: 120.0
+    steady_tol: 1.0e-7
+  outputs:
+    sigma_par: pde1d_prof_a_spar_lam
+    sigma_perp: pde1d_prof_a_sperp_lam
+    sigma_act_par: pde1d_prof_a_actpar_lam
+    sigma_act_perp: pde1d_prof_a_actperp_lam
+    sigma_vis_par: pde1d_prof_a_vispar_lam
+    sigma_vis_perp: pde1d_prof_a_visperp_lam
+  note: "Corrected-normalization variant (divided by applied lambda = 1.3*lambda_crit) for Fig. 4—figure supplement 1(a) (kappa = -0.2)."
+
+- id: run_pde_1d_profile_fig4s1_b_lamc
+  model: active_nematic_pde_1d_profile_eqB1_B4
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4_video2_mid
+    activity_ratio: activity_ratio_default
+    L_period: L_period_fig4s1_added
+    rho_ref: rho_fig4s1_b
+    vis_ref: vis_par_fig4s1_b
+  settings:
+    N_grid: 64
+    dt: 0.04
+    t_max: 120.0
+    steady_tol: 1.0e-7
+  outputs:
+    rho: pde1d_prof_b_rho
+    sigma_par: pde1d_prof_b_spar_lamc
+    sigma_perp: pde1d_prof_b_sperp_lamc
+    sigma_act_par: pde1d_prof_b_actpar_lamc
+    sigma_act_perp: pde1d_prof_b_actperp_lamc
+    sigma_vis_par: pde1d_prof_b_vispar_lamc
+    sigma_vis_perp: pde1d_prof_b_visperp_lamc
+  note: "1D periodic steady-state spatial profiles for Fig. 4—figure supplement 1(b) (kappa = -0.5), normalized by printed lambda_crit."
+
+- id: run_pde_1d_profile_fig4s1_b_lam
+  model: active_nematic_pde_1d_profile_norm_lam
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4_video2_mid
+    activity_ratio: activity_ratio_default
+    L_period: L_period_fig4s1_added
+    rho_ref: rho_fig4s1_b
+    vis_ref: vis_par_fig4s1_b
+  settings:
+    N_grid: 64
+    dt: 0.04
+    t_max: 120.0
+    steady_tol: 1.0e-7
+  outputs:
+    sigma_par: pde1d_prof_b_spar_lam
+    sigma_perp: pde1d_prof_b_sperp_lam
+    sigma_act_par: pde1d_prof_b_actpar_lam
+    sigma_act_perp: pde1d_prof_b_actperp_lam
+    sigma_vis_par: pde1d_prof_b_vispar_lam
+    sigma_vis_perp: pde1d_prof_b_visperp_lam
+  note: "Corrected-normalization variant (divided by applied lambda = 1.3*lambda_crit) for Fig. 4—figure supplement 1(b) (kappa = -0.5)."
+
+- id: run_pde_1d_profile_fig4s1_c_lamc
+  model: active_nematic_pde_1d_profile_eqB1_B4
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bII
+    activity_ratio: activity_ratio_default
+    L_period: L_period_fig4s1_added
+    rho_ref: rho_fig4s1_c
+    vis_ref: vis_par_fig4s1_c
+  settings:
+    N_grid: 64
+    dt: 0.04
+    t_max: 120.0
+    steady_tol: 1.0e-7
+  outputs:
+    rho: pde1d_prof_c_rho
+    sigma_par: pde1d_prof_c_spar_lamc
+    sigma_perp: pde1d_prof_c_sperp_lamc
+    sigma_act_par: pde1d_prof_c_actpar_lamc
+    sigma_act_perp: pde1d_prof_c_actperp_lamc
+    sigma_vis_par: pde1d_prof_c_vispar_lamc
+    sigma_vis_perp: pde1d_prof_c_visperp_lamc
+  note: "1D periodic steady-state spatial profiles for Fig. 4—figure supplement 1(c) (kappa = -0.8), normalized by printed lambda_crit."
+
+- id: run_pde_1d_profile_fig4s1_c_lam
+  model: active_nematic_pde_1d_profile_norm_lam
+  inputs:
+    k_d: kd_bar_fig2
+    L: L_bar_default
+    c_0: c0_bar_fig2
+    b: b_bar_fig2
+    eta_rot: eta_rot_bar_default
+    beta: beta_bar_default
+    lambda_o: lambda_o_bar_default
+    kappa: kappa_fig4bII
+    activity_ratio: activity_ratio_default
+    L_period: L_period_fig4s1_added
+    rho_ref: rho_fig4s1_c
+    vis_ref: vis_par_fig4s1_c
+  settings:
+    N_grid: 64
+    dt: 0.04
+    t_max: 120.0
+    steady_tol: 1.0e-7
+  outputs:
+    sigma_par: pde1d_prof_c_spar_lam
+    sigma_perp: pde1d_prof_c_sperp_lam
+    sigma_act_par: pde1d_prof_c_actpar_lam
+    sigma_act_perp: pde1d_prof_c_actperp_lam
+    sigma_vis_par: pde1d_prof_c_vispar_lam
+    sigma_vis_perp: pde1d_prof_c_visperp_lam
+  note: "Corrected-normalization variant (divided by applied lambda = 1.3*lambda_crit) for Fig. 4—figure supplement 1(c) (kappa = -0.8)."
+
+# ==============================================================================
+# 7. Calibrated Figure Sweeps: Fig. 5(c)-(e) & Fig. 5—figure supplement 1 III(e)
+# ==============================================================================
+- id: run_fig5c_S0_0
+  model: static_tension_components_norm_eq11
+  inputs:
+    kappa: kappa_discrete_fit
+    S: S0_cytosim_0p0
+  sweep:
+    t_norm: sigma_par_fig5c_S0_0
+  outputs:
+    sigma_par_norm: sigma_par_fig5c_S0_0_calc
+    sigma_perp_norm: sigma_perp_fig5c_S0_0_calc
+
+- id: run_fig5c_S0_0p3
+  model: static_tension_components_norm_eq11
+  inputs:
+    kappa: kappa_discrete_fit
+    S: S0_cytosim_0p3
+  sweep:
+    t_norm: sigma_par_fig5c_S0_0p3
+  outputs:
+    sigma_par_norm: sigma_par_fig5c_S0_0p3_calc
+    sigma_perp_norm: sigma_perp_fig5c_S0_0p3_calc
+
+- id: run_fig5d_theory
+  model: static_tension_norm_density_eq11
+  inputs: {}
+  sweep:
+    rho_rel: sigma_bar_fig5d_theory_line
+  outputs:
+    sigma_bar_norm: sigma_bar_fig5d_theory_calc
+
+- id: run_fig5d_S0_0p1
+  model: static_tension_norm_density_eq11
+  inputs: {}
+  sweep:
+    rho_rel: sigma_bar_fig5d_S0_0p1
+  outputs:
+    sigma_bar_norm: sigma_bar_fig5d_S0_0p1_calc
+
+- id: run_fig5d_S0_0p3
+  model: static_tension_norm_density_eq11
+  inputs: {}
+  sweep:
+    rho_rel: sigma_bar_fig5d_S0_0p3
+  outputs:
+    sigma_bar_norm: sigma_bar_fig5d_S0_0p3_calc
+
+- id: run_fig5e_fit_line
+  model: static_active_tensions_eq11
+  inputs:
+    rho: rho_A_2x
+    rho_ref: rho_A_1x
+    lam: discrete_lambda_probe_added
+    kappa: kappa_discrete_fit
+  sweep:
+    S: xi_fig5e_fit_line
+  outputs:
+    xi: xi_fig5e_fit_line_calc
+
+- id: run_fig5e_rho_1x
+  model: static_active_tensions_eq11
+  inputs:
+    rho: rho_A_1x
+    rho_ref: rho_A_1x
+    lam: discrete_lambda_probe_added
+    kappa: kappa_discrete_fit
+  sweep:
+    S: xi_fig5e_rho_1x
+  outputs:
+    xi: xi_fig5e_rho_1x_calc
+
+- id: run_fig5e_rho_2x
+  model: static_active_tensions_eq11
+  inputs:
+    rho: rho_A_2x
+    rho_ref: rho_A_1x
+    lam: discrete_lambda_probe_added
+    kappa: kappa_discrete_fit
+  sweep:
+    S: xi_fig5e_rho_2x
+  outputs:
+    xi: xi_fig5e_rho_2x_calc
+
+- id: run_fig5e_rho_3x
+  model: static_active_tensions_eq11
+  inputs:
+    rho: rho_A_3x
+    rho_ref: rho_A_1x
+    lam: discrete_lambda_probe_added
+    kappa: kappa_discrete_fit
+  sweep:
+    S: xi_fig5e_rho_3x
+  outputs:
+    xi: xi_fig5e_rho_3x_calc
+
+- id: run_fig5s1e_S0_0p1
+  model: nematic_relaxation_eq12
+  inputs:
+    S_0: S0_cytosim_0p1
+    K_S: K_S_energy_added
+    eta_rot: eta_rot_discrete_fit
+  sweep:
+    t: S_relax_fit_S0_0p1
+  outputs:
+    S_t: S_relax_S0_0p1_calc
+
+- id: run_fig5s1e_S0_0p2
+  model: nematic_relaxation_eq12
+  inputs:
+    S_0: S0_cytosim_0p2
+    K_S: K_S_energy_added
+    eta_rot: eta_rot_discrete_fit
+  sweep:
+    t: S_relax_fit_S0_0p2
+  outputs:
+    S_t: S_relax_S0_0p2_calc
+
+- id: run_fig5s1e_S0_0p3
+  model: nematic_relaxation_eq12
+  inputs:
+    S_0: S0_cytosim_0p3
+    K_S: K_S_energy_added
+    eta_rot: eta_rot_discrete_fit
+  sweep:
+    t: S_relax_fit_S0_0p3
+  outputs:
+    S_t: S_relax_S0_0p3_calc
+
+- id: run_fig5s1e_S0_0p4
+  model: nematic_relaxation_eq12
+  inputs:
+    S_0: S0_cytosim_0p4
+    K_S: K_S_energy_added
+    eta_rot: eta_rot_discrete_fit
+  sweep:
+    t: S_relax_fit_S0_0p4
+  outputs:
+    S_t: S_relax_S0_0p4_calc
+

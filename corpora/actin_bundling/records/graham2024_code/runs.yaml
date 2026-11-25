@@ -1,0 +1,450 @@
+# ==============================================================================
+# 1. Config-generator formulas & live .cym config audit
+# ==============================================================================
+
+- id: run_arp23_count_sweep
+  model: notebook_arp23_molecule_count
+  inputs: {}
+  sweep: {C_Arp: paper_arp23_count_vs_conc}
+  settings: {}
+  outputs: {N_arp: nb_arp23_count_curve}
+
+- id: run_vca_config_params_1uM
+  model: notebook_vca_config_params
+  inputs:
+    N_fil: init_n_fil_code
+    R_drop: droplet_radius_code
+    L0_per_fil: init_fil_length_code
+    k_bind_vca: vca_k_bind_nb_code
+    N_vca: vca_count_1uM_nb_code
+    l_mono: vca_min_length_code
+    gmax_factor: vca_gmax_factor_nb_code
+    r_blob: vasp_blob_radius_code
+  settings: {}
+  outputs:
+    total_polymer: nb_total_polymer_pred
+    L_max_fil: nb_L_max_fil_pred
+    L_max_total: nb_L_max_total_pred
+    T_actin_conc: nb_T_actin_conc_pred
+    F_actin_init_conc: nb_F_actin_init_pred
+    k_bind_fiber: nb_vca_k_bind_fiber_1uM_pred
+    L_Gmax: nb_vca_L_Gmax_1uM_pred
+    site_separation: nb_site_separation_pred
+
+- id: run_config_parameter_audit
+  model: config_parameter_audit
+  inputs:
+    kT: kT_cytosim_default_added
+  settings: {}
+  outputs:
+    branching_angle_deg: audit_branching_angle_deg
+    vasp_tet_conc: audit_vasp_tet_conc
+    vasp_stokes_D: audit_vasp_stokes_D
+    arp23_config_replicates: audit_arp23_config_reps
+    vca_config_replicates: audit_vca_config_reps
+
+# ==============================================================================
+# 2. Live notebook ODE models (Cell 21 model() & Cell 23/25 model_VCA())
+# ==============================================================================
+
+- id: run_ode_cell21
+  model: notebook_actin_ode
+  inputs:
+    N_fil: init_n_fil_code
+    TFactin: total_polymer_code
+    k_grow_plus: actin_growing_speed_plus_code
+    L0_per_fil: init_fil_length_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {k_grow_minus: 0.0, k_shrink_plus: 0.0, k_shrink_minus: 0.0, t_grid_max: 1200.0, n_grid: 1200, eval_index: 600, rtol: 1.0e-8, atol: 1.0e-8}
+  outputs:
+    L_total: ode_cell21_L600
+    F_actin_conc: ode_cell21_F600
+    dP_dt: ode_cell21_dPdt600
+    treadmilling_rate: ode_cell21_treadmilling
+  note: "Reproduces Cell 21's exact linspace(0, 1200, 1200) grid where index 600 evaluates at t = 600.5004 s."
+
+- id: run_ode_cell25
+  model: notebook_actin_ode
+  inputs:
+    N_fil: init_n_fil_code
+    TFactin: total_polymer_code
+    k_grow_plus: actin_growing_speed_plus_code
+    L0_per_fil: init_fil_length_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {k_grow_minus: 0.0, k_shrink_plus: 0.0, k_shrink_minus: 0.0, t_grid_max: 600.0, n_grid: 601, eval_index: 600, rtol: 1.0e-8, atol: 1.0e-8}
+  outputs:
+    L_total: ode_cell25_L600
+    F_actin_conc: ode_cell25_F600
+    dP_dt: ode_cell25_dPdt600
+    treadmilling_rate: ode_cell25_treadmilling
+  note: "Evaluates Cell 21 model() on Cell 25's exact linspace(0, 600, 601) grid at true t = 600.0 s."
+
+- id: run_vca_ode_cell23_sweep
+  model: notebook_vca_competition_ode
+  inputs:
+    N_fil: init_n_fil_code
+    TFactin: total_polymer_code
+    k_grow_plus: actin_growing_speed_plus_code
+    k_bind_vca: vca_k_bind_cell23_code
+    k_unbind_vca: vca_k_unbind_cell23_code
+    L0_per_fil: init_fil_length_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  sweep: {N_vca: nb_cell23_vca_remaining_table}
+  settings: {t_grid_max: 1200.0, n_grid: 1200, eval_index: 600, rtol: 1.0e-8, atol: 1.0e-8}
+  outputs:
+    L_total: ode_cell23_L_curve
+    L_vca: ode_cell23_Lvca_curve
+    F_actin_conc: ode_cell23_F_curve
+    delta_F_actin: ode_cell23_dF_curve
+    frac_F_actin_reduction: ode_cell23_frac_red_curve
+    frac_F_actin_remaining: ode_cell23_frac_rem_curve
+
+- id: run_vca_ode_cell25_sweep
+  model: notebook_vca_competition_ode
+  inputs:
+    N_fil: init_n_fil_code
+    TFactin: total_polymer_code
+    k_grow_plus: actin_growing_speed_plus_code
+    k_bind_vca: vca_k_bind_nb_code
+    k_unbind_vca: vca_k_unbind_calib_nb_code
+    L0_per_fil: init_fil_length_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  sweep: {N_vca: nb_cell25_vca_reduction_table}
+  settings: {t_grid_max: 600.0, n_grid: 601, eval_index: 600, rtol: 1.0e-8, atol: 1.0e-8}
+  outputs:
+    L_total: ode_cell25_vca_L_curve
+    L_vca: ode_cell25_vca_Lvca_curve
+    F_actin_conc: ode_cell25_vca_F_curve
+    delta_F_actin: ode_cell25_vca_dF_curve
+    frac_F_actin_reduction: ode_cell25_vca_frac_red_curve
+    frac_F_actin_remaining: ode_cell25_vca_frac_rem_curve
+
+- id: run_vca_ode_1uM_kunbind2p7
+  model: notebook_vca_competition_ode
+  inputs:
+    N_fil: init_n_fil_code
+    TFactin: total_polymer_code
+    k_grow_plus: actin_growing_speed_plus_code
+    k_bind_vca: vca_k_bind_nb_code
+    k_unbind_vca: vca_k_unbind_calib_nb_code
+    N_vca: vca_count_1uM_nb_code
+    L0_per_fil: init_fil_length_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {t_grid_max: 600.0, n_grid: 601, eval_index: 600, rtol: 1.0e-8, atol: 1.0e-8}
+  outputs:
+    L_total: ode_vca1_ku2p7_L
+    L_vca: ode_vca1_ku2p7_Lvca
+    F_actin_conc: ode_vca1_ku2p7_F
+    delta_F_actin: ode_vca1_ku2p7_dF
+    frac_F_actin_reduction: ode_vca1_ku2p7_red
+    frac_F_actin_remaining: ode_vca1_ku2p7_rem
+
+- id: run_vca_ode_1uM_kunbind0
+  model: notebook_vca_competition_ode
+  inputs:
+    N_fil: init_n_fil_code
+    TFactin: total_polymer_code
+    k_grow_plus: actin_growing_speed_plus_code
+    k_bind_vca: vca_k_bind_nb_code
+    k_unbind_vca: vca_k_unbind_zero_nb_code
+    N_vca: vca_count_1uM_nb_code
+    L0_per_fil: init_fil_length_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {t_grid_max: 600.0, n_grid: 601, eval_index: 600, rtol: 1.0e-8, atol: 1.0e-8}
+  outputs:
+    L_total: ode_vca1_ku0_L
+    L_vca: ode_vca1_ku0_Lvca
+    F_actin_conc: ode_vca1_ku0_F
+    delta_F_actin: ode_vca1_ku0_dF
+    frac_F_actin_reduction: ode_vca1_ku0_red
+    frac_F_actin_remaining: ode_vca1_ku0_rem
+
+- id: run_vca_ode_sweep_kunbind0
+  model: notebook_vca_competition_ode
+  inputs:
+    N_fil: init_n_fil_code
+    TFactin: total_polymer_code
+    k_grow_plus: actin_growing_speed_plus_code
+    k_bind_vca: vca_k_bind_nb_code
+    k_unbind_vca: vca_k_unbind_zero_nb_code
+    L0_per_fil: init_fil_length_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  sweep: {N_vca: nb_cell25_vca_reduction_table}
+  settings: {t_grid_max: 600.0, n_grid: 601, eval_index: 600, rtol: 1.0e-8, atol: 1.0e-8}
+  outputs:
+    L_total: ode_ku0_L_curve
+    L_vca: ode_ku0_Lvca_curve
+    F_actin_conc: ode_ku0_F_curve
+    delta_F_actin: ode_ku0_dF_curve
+    frac_F_actin_reduction: ode_ku0_frac_red_curve
+    frac_F_actin_remaining: ode_ku0_frac_rem_curve
+  note: "Contrast sweep with kunbind = 0 matching the actual .cym configs (growing_off_speed = 0, 0), showing divergence from Cell 25 (kunbind = 2.7) at [VCA] = 5 and 10 uM."
+
+# ==============================================================================
+# 3. Live notebook monomer interpolation & radial-bin normalization audit
+# ==============================================================================
+
+- id: run_monomer_interpolator_audit
+  model: notebook_monomer_interpolator
+  inputs:
+    L_fil: probe_n_seg_straight_fil
+    L_seg: actin_segmentation_code
+    l_mono: monomer_rise_interp_code
+    R_drop: droplet_radius_code
+  settings: {}
+  outputs:
+    interpolated_monomers: interp_monomers_5p5
+    monomer_count_ratio: interp_count_ratio_5p5
+    uniform_rho_ratio_outer: interp_uniform_rho_outer
+    uniform_rho_ratio_mid: interp_uniform_rho_mid
+    uniform_rho_ratio_r01: interp_uniform_rho_r01
+
+# ==============================================================================
+# 4. Live PLOTCSVFILES filament-stats & radial-density / R.A.E. readers
+# ==============================================================================
+
+- id: run_csv_arp23_0nM
+  model: csv_arp23_filament_stats
+  inputs:
+    C_Arp: arp23_conc_0nM_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {}
+  outputs:
+    N_fil_600: csv_arp0_Nfil600
+    N_fil_fold: csv_arp0_fold
+    L_fil_mean_600: csv_arp0_Lfil600
+    L_sum_600: csv_arp0_Lsum600
+    F_actin_conc_600: csv_arp0_F600
+    L_fil_median_cdf: csv_arp0_Lmed
+
+- id: run_csv_arp23_50nM
+  model: csv_arp23_filament_stats
+  inputs:
+    C_Arp: arp23_conc_50nM_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {}
+  outputs:
+    N_fil_600: csv_arp50_Nfil600
+    N_fil_fold: csv_arp50_fold
+    L_fil_mean_600: csv_arp50_Lfil600
+    L_sum_600: csv_arp50_Lsum600
+    F_actin_conc_600: csv_arp50_F600
+    L_fil_median_cdf: csv_arp50_Lmed
+
+- id: run_csv_arp23_150nM
+  model: csv_arp23_filament_stats
+  inputs:
+    C_Arp: arp23_conc_150nM_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {}
+  outputs:
+    N_fil_600: csv_arp150_Nfil600
+    N_fil_fold: csv_arp150_fold
+    L_fil_mean_600: csv_arp150_Lfil600
+    L_sum_600: csv_arp150_Lsum600
+    F_actin_conc_600: csv_arp150_F600
+    L_fil_median_cdf: csv_arp150_Lmed
+
+- id: run_csv_vca_arp0_vca0
+  model: csv_vca_filament_stats
+  inputs:
+    C_Arp: arp23_conc_0nM_code
+    C_VCA: vca_conc_0uM_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {}
+  outputs:
+    N_fil_600: csv_vca_a0_v0_Nfil
+    N_fil_fold: csv_vca_a0_v0_fold
+    L_fil_mean_600: csv_vca_a0_v0_Lfil
+    L_sum_600: csv_vca_a0_v0_Lsum
+    F_actin_conc_600: csv_vca_a0_v0_F
+    delta_F_actin_600: csv_vca_a0_v0_dF
+    inferred_csv_replicates: csv_vca_inferred_reps
+
+- id: run_csv_vca_arp0_vca1
+  model: csv_vca_filament_stats
+  inputs:
+    C_Arp: arp23_conc_0nM_code
+    C_VCA: vca_conc_1uM_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {}
+  outputs:
+    N_fil_600: csv_vca_a0_v1_Nfil
+    N_fil_fold: csv_vca_a0_v1_fold
+    L_fil_mean_600: csv_vca_a0_v1_Lfil
+    L_sum_600: csv_vca_a0_v1_Lsum
+    F_actin_conc_600: csv_vca_a0_v1_F
+    delta_F_actin_600: csv_vca_a0_v1_dF
+    inferred_csv_replicates: csv_vca_a0_v1_reps
+
+- id: run_csv_vca_arp0_vca5
+  model: csv_vca_filament_stats
+  inputs:
+    C_Arp: arp23_conc_0nM_code
+    C_VCA: vca_conc_5uM_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {}
+  outputs:
+    N_fil_600: csv_vca_a0_v5_Nfil
+    N_fil_fold: csv_vca_a0_v5_fold
+    L_fil_mean_600: csv_vca_a0_v5_Lfil
+    L_sum_600: csv_vca_a0_v5_Lsum
+    F_actin_conc_600: csv_vca_a0_v5_F
+    delta_F_actin_600: csv_vca_a0_v5_dF
+    inferred_csv_replicates: csv_vca_a0_v5_reps
+
+- id: run_csv_vca_arp0_vca10
+  model: csv_vca_filament_stats
+  inputs:
+    C_Arp: arp23_conc_0nM_code
+    C_VCA: vca_conc_10uM_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {}
+  outputs:
+    N_fil_600: csv_vca_a0_v10_Nfil
+    N_fil_fold: csv_vca_a0_v10_fold
+    L_fil_mean_600: csv_vca_a0_v10_Lfil
+    L_sum_600: csv_vca_a0_v10_Lsum
+    F_actin_conc_600: csv_vca_a0_v10_F
+    delta_F_actin_600: csv_vca_a0_v10_dF
+    inferred_csv_replicates: csv_vca_a0_v10_reps
+
+- id: run_csv_vca_arp50_vca0
+  model: csv_vca_filament_stats
+  inputs:
+    C_Arp: arp23_conc_50nM_code
+    C_VCA: vca_conc_0uM_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {}
+  outputs:
+    N_fil_600: csv_vca_a50_v0_Nfil
+    N_fil_fold: csv_vca_a50_v0_fold
+    L_fil_mean_600: csv_vca_a50_v0_Lfil
+    L_sum_600: csv_vca_a50_v0_Lsum
+    F_actin_conc_600: csv_vca_a50_v0_F
+    delta_F_actin_600: csv_vca_a50_v0_dF
+    inferred_csv_replicates: csv_vca_a50_v0_reps
+
+- id: run_csv_vca_arp150_vca0
+  model: csv_vca_filament_stats
+  inputs:
+    C_Arp: arp23_conc_150nM_code
+    C_VCA: vca_conc_0uM_code
+    R_drop: droplet_radius_code
+    l_mono: vca_min_length_code
+  settings: {}
+  outputs:
+    N_fil_600: csv_vca_a150_v0_Nfil
+    N_fil_fold: csv_vca_a150_v0_fold
+    L_fil_mean_600: csv_vca_a150_v0_Lfil
+    L_sum_600: csv_vca_a150_v0_Lsum
+    F_actin_conc_600: csv_vca_a150_v0_F
+    delta_F_actin_600: csv_vca_a150_v0_dF
+    inferred_csv_replicates: csv_vca_a150_v0_reps
+  note: "Exposes getfillengthprops() bug at R=35 where r_1 terminates at t=590 s, leaving 1 surviving replicate and halving Lsum_mean to 431.09 um vs Arp23 sweep's 857.91 um."
+
+- id: run_csv_rae_arp23_sweep_code
+  model: csv_radial_density_and_rae
+  inputs:
+    C_VCA: vca_conc_0uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_arp23_code
+  sweep: {C_Arp: paper_arp23_count_vs_conc}
+  settings: {dataset: arp23, n_tail_frames: 10}
+  outputs:
+    rae_mean: csv_rae_arp_code_curve
+    rae_sd: csv_rae_arp_code_sd_curve
+    rho_ratio_peak: csv_rho_peak_arp_curve
+    n_reps_found: csv_rae_arp_nreps_curve
+    min_final_time: csv_rae_arp_mint_curve
+
+- id: run_csv_rae_arp23_sweep_paper_def
+  model: csv_radial_density_rae_paper_def
+  inputs:
+    C_VCA: vca_conc_0uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_arp23_code
+  sweep: {C_Arp: paper_arp23_count_vs_conc}
+  settings: {dataset: arp23, n_tail_frames: 10}
+  outputs:
+    rae_mean: csv_rae_arp_paper_curve
+    rae_sd: csv_rae_arp_paper_sd_curve
+    rho_ratio_peak: csv_rho_peak_arp_paper_curve
+    n_reps_found: csv_rae_arp_paper_nreps_curve
+    min_final_time: csv_rae_arp_paper_mint_curve
+
+- id: run_csv_rae_arp150_code
+  model: csv_radial_density_and_rae
+  inputs:
+    C_Arp: arp23_conc_150nM_code
+    C_VCA: vca_conc_0uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_arp23_code
+  settings: {dataset: arp23, n_tail_frames: 10}
+  outputs:
+    rae_mean: csv_rae_arp150_code_mean
+    rae_sd: csv_rae_arp150_code_sd
+    rho_ratio_peak: csv_rho_peak_arp150
+    n_reps_found: csv_rae_arp150_nreps
+    min_final_time: csv_rae_arp150_mint
+
+- id: run_csv_rae_arp150_paper_def
+  model: csv_radial_density_rae_paper_def
+  inputs:
+    C_Arp: arp23_conc_150nM_code
+    C_VCA: vca_conc_0uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_arp23_code
+  settings: {dataset: arp23, n_tail_frames: 10}
+  outputs:
+    rae_mean: csv_rae_arp150_paper_mean
+    rae_sd: csv_rae_arp150_paper_sd
+    rho_ratio_peak: csv_rho_peak_arp150_paper
+    n_reps_found: csv_rae_arp150_paper_nreps
+    min_final_time: csv_rae_arp150_paper_mint
+
+- id: run_csv_rae_vca_arp150_vca1
+  model: csv_radial_density_and_rae
+  inputs:
+    C_Arp: arp23_conc_150nM_code
+    C_VCA: vca_conc_1uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_vca_code
+  settings: {dataset: vca, n_tail_frames: 10}
+  outputs:
+    rae_mean: csv_rae_vca_a150_v1_mean
+    rae_sd: csv_rae_vca_a150_v1_sd
+    rho_ratio_peak: csv_rho_peak_vca_a150_v1
+    n_reps_found: csv_rae_vca_a150_v1_nreps
+    min_final_time: csv_rae_vca_a150_v1_mint
+  note: "Worst early-termination case in Density_VCA CSVs (R=36: r_0=600 s, r_1=543 s, r_2=434 s)."
+
+- id: run_csv_rae_vca_arp150_vca10
+  model: csv_radial_density_and_rae
+  inputs:
+    C_Arp: arp23_conc_150nM_code
+    C_VCA: vca_conc_10uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_vca_code
+  settings: {dataset: vca, n_tail_frames: 10}
+  outputs:
+    rae_mean: csv_rae_vca_a150_v10_mean
+    rae_sd: csv_rae_vca_a150_v10_sd
+    rho_ratio_peak: csv_rho_peak_vca_a150_v10
+    n_reps_found: csv_rae_vca_a150_v10_nreps
+    min_final_time: csv_rae_vca_a150_v10_mint

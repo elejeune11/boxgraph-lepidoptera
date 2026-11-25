@@ -1,0 +1,19 @@
+id: trajectory_vaspprops_bug_adapter
+name: live adapter for Main_Analyze_Trajectory.getvaspprops() enumerate-tuple bug audit (Analysis_Scripts/Main_Analyze_Trajectory.py)
+role: processing
+software: true
+stated:
+  file: Analysis_Scripts/Main_Analyze_Trajectory.py
+  lines: "198-297"
+  quote: "for ublobid in enumerate(unique):"
+  where: "Analysis_Scripts/Main_Analyze_Trajectory.py (getvaspprops, lines 242-253)"
+equation: "getvaspprops() counts unique filaments per bound crosslinker; enumerate(unique) yields tuple ublobid so argwhere(crossboundblobid==ublobid) is empty (lval=0 -> countermat[-1] = 4-filament bucket)"
+inputs:
+  n_crosslinkers: {quantity: crosslinker_count, unit: dimensionless}
+outputs:
+  mean_nfpc_2_fil: {quantity: crosslinker_count, unit: dimensionless}
+  mean_nfpc_4_fil: {quantity: crosslinker_count, unit: dimensionless}
+  frac_misclassified_to_4fil: {quantity: fraction, unit: dimensionless}
+settings:
+  n_snaps: 20
+stochastic: false

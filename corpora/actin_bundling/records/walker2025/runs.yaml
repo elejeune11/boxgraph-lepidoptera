@@ -1,0 +1,483 @@
+# =============================================================================
+# 1. Filament elongation, circumference, concentration & volume fractions
+# =============================================================================
+- id: run_droplet_circumference
+  model: droplet_circumference
+  inputs:
+    R_drop: sim_droplet_radius
+  outputs:
+    L_max: sim_L_max_computed
+
+- id: run_elongation_rate_with_L0
+  model: filament_elongation_rate
+  inputs:
+    R_drop: sim_droplet_radius
+    L0: sim_filament_initial_length
+    t_sim: sim_total_time
+  outputs:
+    k_grow: sim_k_grow_computed
+
+- id: run_elongation_rate_zero_L0
+  model: filament_elongation_rate
+  inputs:
+    R_drop: sim_droplet_radius
+    L0: zero_init_length_added
+    t_sim: sim_total_time
+  outputs:
+    k_grow: sim_k_grow_zero_L0_computed
+  note: "Tests whether Table S1 k_grow = 0.0103 um/s includes subtraction of initial length L0 = 0.1 um."
+
+- id: run_filament_final_length_600s
+  model: filament_final_length
+  inputs:
+    L0: sim_filament_initial_length
+    k_grow: sim_polymerization_rate
+    t_sim: sim_total_time
+    L_max: sim_L_max_computed
+  outputs:
+    L_final: sim_L_final_600s_computed
+
+- id: run_filament_final_length_2400s
+  model: filament_final_length
+  inputs:
+    L0: sim_filament_initial_length
+    k_grow: sim_polymerization_rate
+    t_sim: sim_total_time_high_visc
+    L_max: sim_L_max_computed
+  outputs:
+    L_final: sim_L_final_2400s_computed
+  note: "Verifies filament length remains capped at 2*pi*R during extended 2400 s high-viscosity run (Fig. S5B)."
+
+- id: run_conc_dimers
+  model: concentration_from_copy_number
+  inputs:
+    N: sim_dimer_count_baseline
+    R_drop: sim_droplet_radius
+  outputs:
+    C: sim_dimer_conc_computed
+    V_drop: sim_droplet_vol_computed
+
+- id: run_conc_tetramers
+  model: concentration_from_copy_number
+  inputs:
+    N: sim_tetramer_count_baseline
+    R_drop: sim_droplet_radius
+  outputs:
+    C: sim_tetramer_conc_computed
+    V_drop: sim_droplet_vol_tet_computed
+
+- id: run_conc_monomers
+  model: concentration_from_copy_number
+  inputs:
+    N: sim_monomer_count_baseline
+    R_drop: sim_droplet_radius
+  outputs:
+    C: sim_monomer_conc_computed
+    V_drop: sim_droplet_vol_mon_computed
+
+- id: run_vol_frac_sweep
+  model: crosslinker_volume_fraction
+  inputs:
+    r_solid: sim_crosslinker_radius
+    R_drop: sim_droplet_radius
+  sweep:
+    N: sim_crosslinker_vol_frac_table
+  outputs:
+    phi: sim_vol_frac_curve_computed
+
+- id: run_vol_frac_monomers
+  model: crosslinker_volume_fraction
+  inputs:
+    N: sim_monomer_count_baseline
+    r_solid: sim_crosslinker_radius
+    R_drop: sim_droplet_radius
+  outputs:
+    phi: sim_vol_frac_monomers_computed
+
+- id: run_monomer_binding_bounds
+  model: monomer_monomer_binding_distance_bounds
+  inputs:
+    R_solid: sim_crosslinker_radius
+  outputs:
+    d_min: sim_monomer_dmin_computed
+    d_max: sim_monomer_dmax_computed
+
+- id: run_dynamic_dimer_max
+  model: dynamic_dimer_max_count
+  inputs:
+    N_monomer: sim_monomer_count_baseline
+  outputs:
+    N_dimer_max: sim_dynamic_dimer_max_computed
+
+# =============================================================================
+# 2. Viscosity, persistence length, diffusion, mobility & Langevin dynamics
+# =============================================================================
+- id: run_viscosity_ratio
+  model: condensate_viscosity_ratio
+  inputs:
+    eta_cond: sim_condensate_viscosity
+    eta_water: eta_water_added
+  outputs:
+    ratio: sim_viscosity_ratio_computed
+
+- id: run_persistence_length
+  model: persistence_length_from_rigidity
+  inputs:
+    k_bend: sim_actin_flexural_rigidity
+    kBT: kBT_added
+  outputs:
+    L_p: actin_Lp_computed
+
+- id: run_mobility_from_D
+  model: mobility_from_diffusion
+  inputs:
+    D: sim_crosslinker_diffusion_rate
+    kBT: kBT_added
+  outputs:
+    mu: crosslinker_mu_from_D_computed
+
+- id: run_einstein_roundtrip
+  model: einstein_diffusion_relation
+  inputs:
+    mu: crosslinker_mu_from_D_computed
+    kBT: kBT_added
+  outputs:
+    D: crosslinker_D_einstein_roundtrip
+
+- id: run_stokes_einstein
+  model: stokes_einstein_diffusion
+  inputs:
+    eta: sim_condensate_viscosity
+    r: sim_crosslinker_radius
+    kBT: kBT_added
+  outputs:
+    mu: crosslinker_mu_SE_computed
+    D: crosslinker_D_SE_computed
+
+- id: run_brownian_step_prescribed_D
+  model: brownian_noise_stddev
+  inputs:
+    D: sim_crosslinker_diffusion_rate
+    dt: sim_time_step
+  outputs:
+    sigma_B: sigma_B_prescribed_D_computed
+  note: "Single-step 1D Brownian jump at Table S1 D = 10 um^2/s and dt = 0.002 s equals 200 nm (exceeding r_bind = 30 nm and 90 nm)."
+
+- id: run_brownian_step_SE_D
+  model: brownian_noise_stddev
+  inputs:
+    D: crosslinker_D_SE_computed
+    dt: sim_time_step
+  outputs:
+    sigma_B: sigma_B_SE_D_computed
+  note: "Single-step 1D Brownian jump at Stokes-Einstein D_SE = 0.01455 um^2/s and dt = 0.002 s (~7.6 nm)."
+
+- id: run_langevin_1d_crosslinker
+  model: langevin_overdamped_1d
+  inputs:
+    mu: crosslinker_mu_from_D_computed
+    kBT: kBT_added
+    f: zero_force_added
+  settings:
+    dt: 0.002
+    t_sim: 1.0
+    n_particles: 4000
+    seed: 42
+  replicates: 5
+  outputs:
+    D_eff: langevin_D_eff_computed
+    mean_dx: langevin_mean_dx_computed
+  note: "1D Langevin trajectory test at paper dt = 0.002 s; t_sim = 1.0 s and n_particles = 4000 are added numerical choices for fast ensemble estimation."
+
+# =============================================================================
+# 3. Binding/unbinding kinetics, Bell slip bond, boundary repulsion & Fig. 5A ODE
+# =============================================================================
+- id: run_bell_zero_force
+  model: bell_slip_bond_unbinding
+  inputs:
+    k_unbind_0: sim_actin_kunbind_zero_force
+    F: zero_force_added
+    F_unbind: sim_actin_unbinding_force
+  outputs:
+    k_unbind: bell_kunbind_zero_F_computed
+
+- id: run_bell_at_F_unbind
+  model: bell_slip_bond_unbinding
+  inputs:
+    k_unbind_0: sim_actin_kunbind_zero_force
+    F: sim_actin_unbinding_force
+    F_unbind: sim_actin_unbinding_force
+  outputs:
+    k_unbind: bell_kunbind_at_Fu_computed
+
+- id: run_harmonic_boundary_actin
+  model: harmonic_boundary_repulsion_force
+  inputs:
+    k_bound: sim_boundary_stiffness_actin
+    r: test_boundary_r_added
+    R_drop: sim_droplet_radius
+  outputs:
+    F_rep: boundary_force_actin_50nm_computed
+
+- id: run_k_bind_2_cyl_ring
+  model: second_order_binding_rate_cylinder
+  inputs:
+    k_bind: sim_actin_kbind_ring
+    r_bind: sim_actin_binding_distance
+    L_seg: sim_filament_seg_length
+  outputs:
+    k_bind_2: k_bind_2_actin_ring_computed
+    V_bind: V_bind_cyl_computed
+
+- id: run_k_bind_2_cyl_shell
+  model: second_order_binding_rate_cylinder
+  inputs:
+    k_bind: sim_actin_kbind_shell
+    r_bind: sim_actin_binding_distance
+    L_seg: sim_filament_seg_length
+  outputs:
+    k_bind_2: k_bind_2_actin_shell_computed
+    V_bind: V_bind_cyl_shell_computed
+
+- id: run_mesoscopic_cyl_roundtrip
+  model: mesoscopic_binding_rate_cylinder
+  inputs:
+    k_bind_2: k_bind_2_actin_ring_computed
+    r_bind: sim_actin_binding_distance
+    L_seg: sim_filament_seg_length
+  outputs:
+    k_bind: k_bind_cyl_roundtrip_computed
+    V_bind: V_bind_cyl_rt_computed
+
+- id: run_k_bind_2_sph_ring
+  model: second_order_binding_rate_sphere
+  inputs:
+    k_bind: sim_actin_kbind_ring
+    r_bind: sim_monomer_monomer_binding_distance
+  outputs:
+    k_bind_2: k_bind_2_monomer_10s_computed
+    V_bind: V_bind_sph_computed
+
+- id: run_mesoscopic_sph_roundtrip
+  model: mesoscopic_binding_rate_sphere
+  inputs:
+    k_bind_2: k_bind_2_monomer_10s_computed
+    r_bind: sim_monomer_monomer_binding_distance
+  outputs:
+    k_bind: k_bind_sph_roundtrip_computed
+    V_bind: V_bind_sph_rt_computed
+
+- id: run_binding_affinity_printed_ring
+  model: binding_affinity_printed
+  inputs:
+    k_unbind: sim_actin_kunbind_zero_force
+    k_bind: sim_actin_kbind_ring
+  outputs:
+    K_d_ratio: K_d_ratio_ring_printed_computed
+
+- id: run_binding_affinity_molar_ring
+  model: binding_affinity_molar
+  inputs:
+    k_unbind: sim_actin_kunbind_zero_force
+    k_bind_2: k_bind_2_actin_ring_computed
+  outputs:
+    K_d: K_d_molar_actin_ring_computed
+
+- id: run_binding_affinity_molar_shell
+  model: binding_affinity_molar
+  inputs:
+    k_unbind: sim_actin_kunbind_zero_force
+    k_bind_2: k_bind_2_actin_shell_computed
+  outputs:
+    K_d: K_d_molar_actin_shell_computed
+
+- id: run_binding_affinity_molar_dimer
+  model: binding_affinity_molar
+  inputs:
+    k_unbind: ode_k_dimer_split_ring_added
+    k_bind_2: k_bind_2_monomer_10s_computed
+  outputs:
+    K_d: K_d_molar_dimer_ring_computed
+
+- id: run_well_mixed_dimer_ode_ring
+  model: well_mixed_dynamic_dimerization_ode
+  inputs:
+    C_tot: sim_monomer_conc_baseline
+    C_actin: ode_actin_binding_site_conc_added
+    k_bind: sim_actin_kbind_ring
+    k_unbind: sim_actin_kunbind_zero_force
+    r_bind_actin: sim_actin_binding_distance
+    L_seg: sim_filament_seg_length
+    k_dimer_form: sim_actin_kbind_ring
+    k_dimer_split: ode_k_dimer_split_ring_added
+    r_bind_monomer: sim_monomer_monomer_binding_distance
+  settings:
+    dt: 0.002
+    t_end: 10.0
+  outputs:
+    f_free_monomer: ode_ring_f_Mf
+    f_bound_monomer: ode_ring_f_Mb
+    f_free_dimer: ode_ring_f_D0
+    f_singly_bound_dimer: ode_ring_f_D1
+    f_doubly_bound_dimer: ode_ring_f_D2
+  note: "Reconstructed 5-state ODE at ring-forming dynamic dimerization kinetics (k_form = 10 s^-1, k_split = 0.1 s^-1)."
+
+# =============================================================================
+# 4. Icosphere discretization, snapshot sampling & experimental processing
+# =============================================================================
+- id: run_icosphere_printed
+  model: icosphere_subdivision_geometry_printed
+  inputs:
+    R_drop: sim_droplet_radius
+    n_subdiv: sim_icosphere_subdiv_printed
+    d_mon: actin_monomer_rise_added
+  outputs:
+    n_faces: ico_printed_n_faces
+    median_edge: ico_printed_median_edge
+    eq_side: ico_printed_eq_side
+    n_monomers: ico_printed_n_monomers
+
+- id: run_icosphere_variant_n3
+  model: icosphere_subdivision_geometry_icosahedron
+  inputs:
+    R_drop: sim_droplet_radius
+    n_subdiv: sim_icosphere_subdiv_printed
+    d_mon: actin_monomer_rise_added
+  outputs:
+    n_faces: ico_var_n3_n_faces
+    median_edge: ico_var_n3_median_edge
+    eq_side: ico_var_n3_eq_side
+    n_monomers: ico_var_n3_n_monomers
+
+- id: run_icosphere_variant_n4_s4
+  model: icosphere_subdivision_geometry_icosahedron
+  inputs:
+    R_drop: sim_droplet_radius
+    n_subdiv: icosphere_subdiv_s4_added
+    d_mon: actin_monomer_rise_added
+  outputs:
+    n_faces: ico_var_n4_n_faces
+    median_edge: ico_var_n4_median_edge
+    eq_side: ico_var_n4_eq_side
+    n_monomers: ico_var_n4_n_monomers
+
+- id: run_snapshot_sampling
+  model: snapshot_count_from_fraction
+  inputs:
+    N_last: sim_last_snapshots_count
+    f_last: sim_last_snapshots_fraction
+    t_sim: sim_total_time
+  outputs:
+    N_total: sim_total_snapshots_computed
+    dt_snap: sim_snapshot_interval_computed
+
+- id: run_binary_stoich_3to1
+  model: binary_condensate_stoichiometry
+  inputs:
+    C_tot: exp_minilpd_vasp_total_conc
+    r_Lpd_VASP: exp_minilpd_vasp_ratio_high
+  outputs:
+    C_VASP: exp_vasp_at_3to1_computed
+    C_Lpd: exp_lpd_at_3to1_computed
+
+- id: run_binary_stoich_1to3
+  model: binary_condensate_stoichiometry
+  inputs:
+    C_tot: exp_minilpd_vasp_total_conc
+    r_Lpd_VASP: exp_minilpd_vasp_ratio_low
+  outputs:
+    C_VASP: exp_vasp_at_1to3_computed
+    C_Lpd: exp_lpd_at_1to3_computed
+
+- id: run_oligomer_fig3_minilpd
+  model: protein_oligomer_concentration
+  inputs:
+    C_mon: exp_fig3_minilpd_monomer_conc
+    n_subunits: sim_dimer_actin_valency
+  outputs:
+    C_olig: exp_fig3_minilpd_dimer_conc_computed
+
+- id: run_oligomer_fig3_vasp
+  model: protein_oligomer_concentration
+  inputs:
+    C_mon: exp_fig3_vasp_monomer_conc
+    n_subunits: sim_tetramer_actin_valency
+  outputs:
+    C_olig: exp_fig3_vasp_tetramer_conc_computed
+
+- id: run_partition_example
+  model: partition_coefficient_ratio
+  inputs:
+    I_in: test_intensity_in_added
+    I_out: test_intensity_out_added
+  outputs:
+    P: test_partition_ratio_computed
+
+- id: run_aspect_ratio_threshold_example
+  model: condensate_aspect_ratio
+  inputs:
+    L_long: test_long_axis_added
+    L_short: test_short_axis_added
+  outputs:
+    AR: test_ar_threshold_computed
+
+- id: run_guv_lipid_sum
+  model: guv_lipid_composition_sum
+  inputs:
+    pct_DOPC: exp_guv_lipid_dopc_pct
+    pct_NiNTA: exp_guv_lipid_ninta_pct
+    pct_biotin: exp_guv_lipid_biotin_pct
+    pct_TR: exp_guv_lipid_texasred_pct
+  outputs:
+    pct_total: exp_guv_lipid_sum_computed
+
+# =============================================================================
+# 5. Fig. 5D dynamic dimerization sweeps (reconstructed well-mixed 5-state ODE)
+# =============================================================================
+- id: run_well_mixed_dimer_ode_kform10_sweep
+  model: well_mixed_dynamic_dimerization_ode
+  inputs:
+    C_tot: sim_monomer_conc_baseline
+    C_actin: ode_actin_binding_site_conc_added
+    k_bind: sim_actin_kbind_ring
+    k_unbind: sim_actin_kunbind_zero_force
+    r_bind_actin: sim_actin_binding_distance
+    L_seg: sim_filament_seg_length
+    k_dimer_form: sim_actin_kbind_ring
+    r_bind_monomer: sim_monomer_monomer_binding_distance
+  sweep:
+    k_dimer_split: sim_fig5d_kf10_free_monomer
+  settings:
+    dt: 0.01
+    t_end: 100.0
+  outputs:
+    f_free_monomer: ode_fig5d_kf10_Mf_computed
+    f_bound_monomer: ode_fig5d_kf10_Mb_computed
+    f_free_dimer: ode_fig5d_kf10_D0_computed
+    f_singly_bound_dimer: ode_fig5d_kf10_D1_computed
+    f_doubly_bound_dimer: ode_fig5d_kf10_D2_computed
+  note: "Sweeps k_dimer_split over Fig. 5D top panel (k_dimer_form = 10 s^-1) using reconstructed 5-state ODE integrated to steady state (t_end = 100 s, dt = 0.01 s)."
+
+- id: run_well_mixed_dimer_ode_kform1_sweep
+  model: well_mixed_dynamic_dimerization_ode
+  inputs:
+    C_tot: sim_monomer_conc_baseline
+    C_actin: ode_actin_binding_site_conc_added
+    k_bind: sim_actin_kbind_ring
+    k_unbind: sim_actin_kunbind_zero_force
+    r_bind_actin: sim_actin_binding_distance
+    L_seg: sim_filament_seg_length
+    k_dimer_form: sim_figs5_kbind_fixed
+    r_bind_monomer: sim_monomer_monomer_binding_distance
+  sweep:
+    k_dimer_split: sim_fig5d_kf1_free_monomer
+  settings:
+    dt: 0.01
+    t_end: 100.0
+  outputs:
+    f_free_monomer: ode_fig5d_kf1_Mf_computed
+    f_bound_monomer: ode_fig5d_kf1_Mb_computed
+    f_free_dimer: ode_fig5d_kf1_D0_computed
+    f_singly_bound_dimer: ode_fig5d_kf1_D1_computed
+    f_doubly_bound_dimer: ode_fig5d_kf1_D2_computed
+  note: "Sweeps k_dimer_split over Fig. 5D bottom panel (k_dimer_form = 1.0 s^-1) using reconstructed 5-state ODE integrated to steady state (t_end = 100 s, dt = 0.01 s)."

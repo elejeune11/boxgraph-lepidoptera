@@ -1,0 +1,47 @@
+# Cross-record provenance links from totz2024 values to mcdougal2021
+# (McDougal et al., PNAS 118(49), e2112009118, 2021; ref-35 / SI ref-S1).
+#
+# Notes on scope & audit of all 4 `from_source: ref-35` datums in totz2024/data.yaml
+# (plus unattributed optical specs on p. 11):
+# 1. `totz2024/references.yaml` does not yet set `source: mcdougal2021` on `ref-35`
+#    (and `references.yaml` / `data.yaml` are read-only during relate jobs), while
+#    `boxgraph/validate.py` forbids setting a different `from_source` on a CitedLink
+#    whose datum already declares `from_source: ref-35`. Accordingly, the 3 linked
+#    `ref-35` datums below (`lateral_resolution_p4`, `lateral_resolution_p11`,
+#    `axial_resolution_p11`) omit `from_source` (inheriting `ref-35` from data.yaml)
+#    and will resolve automatically to `mcdougal2021` in BoxGraph Synthesis once
+#    `ref-35` is bound with `source: mcdougal2021`. Note that totz2024 rounds
+#    McDougal's theoretical 490 nm to '~500 nm' (+2.0%) and 1.03 um to '~1 um' (-2.9%).
+# 2. `height_sensitivity_p11` ('~10 nm', p. 11 Experimental Procedures) appears in
+#    the same sentence describing speckle-correlation reflection phase microscopy
+#    "as previously described^35" without an inline `from_source` in data.yaml, so
+#    it is linked directly with `from_source: mcdougal2021` to
+#    `mcdougal2021/phase_height_sensitivity` ('~10 nm', p. 2). (The parallel p. 4
+#    datum `height_sensitivity_p4` declares `from_source: ref-36`, Kang et al. 2023,
+#    which is not in the corpus.)
+# 3. `L_Vcardui_p8` ('1.6 um', p. 8, `from_source: ref-35`) is intentionally left
+#    unlinked because mcdougal2021 never prints '1.6 um' anywhere in its text,
+#    captions, or tables: mcdougal2021 prints '~1.8 um' (`actin_bundle_spacing_plateau`,
+#    p. 5, Fig. 5G second pupa; matching totz2024's `L_fig2E = 1.8 um`), '1.4618 um'
+#    (SI Fig. S10D, 41% dev, first pupa), and '1.85 um' (SI Fig. S11B, 61% dev, second
+#    pupa), while its digitized Fig. 5H spacings at 39.6-41.0% span 1.255-1.628 um
+#    (mean 1.47 um, peaking at 1.624-1.628 um at 40.3-40.7%). See
+#    `q_mcdougal2021_cited_values_and_L_1p6_unprinted` in questions.yaml.
+# 4. mcdougal2021/data.yaml has 0 datums citing the later 2024 paper totz2024.
+
+- datum: lateral_resolution_p4
+  from_datum: lateral_resolution_theoretical
+  evidence: "Main text Results (p. 4 / printed p. 3, citing ref-35 McDougal et al. 2021) reports a lateral resolution of '~500 nm' for speckle-correlation reflection phase microscopy, rounding mcdougal2021's printed theoretical lateral resolution of 490 nm (pp. 2, 6, SI p. 10; itself corroborated in Choi et al. 2014, ref-37)."
+
+- datum: lateral_resolution_p11
+  from_datum: lateral_resolution_theoretical
+  evidence: "Experimental Procedures (p. 11 / printed p. 10, citing ref-35 McDougal et al. 2021) reports a lateral resolution of '~500 nm' for speckle-correlation reflection phase microscopy, rounding mcdougal2021's printed theoretical lateral resolution of 490 nm (pp. 2, 6, SI p. 10)."
+
+- datum: axial_resolution_p11
+  from_datum: axial_resolution_theoretical
+  evidence: "Experimental Procedures (p. 11 / printed p. 10, citing ref-35 McDougal et al. 2021) reports an axial resolution of '~1 um' for speckle-correlation reflection phase microscopy, rounding mcdougal2021's printed theoretical axial resolution of 1.03 um (pp. 2, 6, SI p. 10; itself corroborated in Choi et al. 2014, ref-37)."
+
+- datum: height_sensitivity_p11
+  from_source: mcdougal2021
+  from_datum: phase_height_sensitivity
+  evidence: "Experimental Procedures (p. 11 / printed p. 10, 'imaged with speckle-correlation reflection phase microscopy, as previously described^35 ... notably, the phase data quantify surface height variation with a sensitivity of ~10 nm') carries over the '~10 nm' surface height sensitivity reported in mcdougal2021 (p. 2: 'on the ~10-nm scale, providing quantitative insights into ridge')."

@@ -1,0 +1,102 @@
+id: mirza2025_code
+kind: software
+title: "actin_bundles: C++ HiperLife 2D continuum active-nematic finite-element simulation code (Mirza et al., 2025)"
+authors:
+  - Waleed Ahmad Mirza
+year: 2025
+file: corpus/actin_bundling/code/mirza2025_code
+url: https://github.com/waleedmirzaPhD/actin_bundles
+version: "sha256:749901399a1f589bfab0f958639a58f8008a0017c369e502afb52ccc8e02894f"
+licence: MIT
+language: C++
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "careful_v3"
+  date: "2026-11-25"
+notes: >
+  Full line-by-line code audit and faithful Python port verification of `corpus/actin_bundling/code/mirza2025_code`
+  (GitHub `waleedmirzaPhD/actin_bundles`, commit `ce647f4`, MIT Licence, tree digest
+  `sha256:749901399a1f589bfab0f958639a58f8008a0017c369e502afb52ccc8e02894f`), the C++ HiperLife v4.3.0
+  continuum active-nematic finite-element simulation code released alongside Mirza, De Corato, Pensalfini,
+  Vilanova, Torres-Sánchez & Arroyo, eLife 13:RP93097 (2024; Version of Record 2025) (`mirza2025`).
+  Repository files audited: `LICENSE` (22 lines, MIT), `README.md` (78 lines, citing Fig. 2b(I) of `mirza2025`
+  and HiperLife v4.3.0), `src/CMakeLists.txt` (33 lines), `src/config` (68 lines, single parameter file for
+  Fig. 2b(I)/Fig. 2c(I) at `kappa = -0.2`), `src/AuxCortexNematic2D.h` (56 lines, helper declarations and
+  unseeded `fRand`), `src/CortexNematic2D.cpp` (644 lines, MPI/Trilinos/HiperLife `main()` driver, config
+  parser, periodic square `testCase = 3` mesh generator, AztecOO GMRES + Newton-Raphson time loop), and
+  `src/AuxCortexNematic2D.cpp` (1253 lines, initial/boundary conditions `setCircle{Nem,Thi,Vel}BC_square`,
+  element assembly `LS_CortexNematic_2D` implementing the coupled 5-DOF `[h, q1, q2, vx, vy]` Onsager
+  Rayleighian weak form `Bk` and analytical tangent `Ak`, and border traction post-processor
+  `LS_CortexNematic_Border`).
+
+  Record contents: 49 quantities, 60 data (29 `src/config` parameters, 17 active hardcoded/fallback C++
+  constants, and 14 copied reference parameters/results from `mirza2025`, with 18 cross-links verified via
+  `from_source: mirza2025` + `from_datum`), 11 added probe inputs with alternatives, 8 models (7 faithful
+  runnable line-by-line Python ports — `code_parameter_mapping`, `code_constitutive_and_stress`,
+  `code_linear_stability`, `code_time_stepper_logic`, `code_fem_q1_element_check`, `code_q1_fem_1d_solver`,
+  and `code_2d_pde_continuum_port` — plus 1 non-runnable full MPI/Trilinos/HiperLife 400x400 C++ driver
+  `hiperlife_2d_fem_driver`), 13 runs, 21 comparisons (14 reproduction: 13 reproduced, 1 no verdict on `< 2 %`
+  inequality with computed `0.838%`; plus 5 consistency and 2 approximation audits), 5 converged numerical
+  refinements (5/5 `settles: True`, `belongs_to: model`), 6 open questions, and 2 references.
+
+  What the code reproduces from `mirza2025`:
+  (1) Exact Onsager variational equivalence to `mirza2025` Eqs. (1)-(8): our exact 2D Q1 element port
+  (`code_fem_q1_element_check`) verifies that at `k_lim = 0` and `L_bar = frank/2 = 1`, the Rayleighian
+  weak-form residual `Bk` reproduces both the nematic balance Eq. (8) (`6.78e-18`) and momentum balance
+  Eqs. (2),(5)-(7) (`3.47e-17`) to machine precision — automatically generating both the symmetric Ericksen
+  stress `-L*rho*grad_i q_kl*grad_j q_kl` and the antisymmetric nematic stress while canceling local Landau
+  susceptibility terms — and that all 400 entries of the 20x20 analytical tangent `Ak` match finite differences
+  to `2.36e-9` (well below HiperLife's `1e-7` `ConsistencyCheckTolerance`).
+  (2) Exact 16-digit parameter provenance of `src/config`: mapping `visc = 0.1 -> k_bar_d`, `cvisc = -0.2 ->
+  beta_bar`, `rvisc = 1 -> eta_bar_rot`, `frank/2 = 1 -> L_bar`, `sus20 = 5 -> a_bar`, `sus40 = 20 -> b_bar`,
+  `-lambda_rot = 6 -> lambda_bar_o` (`c_bar_0 = 2*5 - 6 = 4`), and `(lambda_aniso - crossLinker)/lambda_iso =
+  -0.2 -> kappa` reproduces every Appendix 4—table 1 parameter, reproduces `AuxCortexNematic2D.cpp:160`
+  equilibrium `S_0 = 0.05` at Fig. 4a(III) (`c_bar_0 = -0.05`), and confirms `config`'s `lambda_iso =
+  3.46008684795435584664` equals `1.3 * lambda_crit(L=1, kappa=-0.2)` to 16 digits (`act_ratio_bare = 1.3000000000000005`).
+  (3) Domain size, onset accuracy, pattern spacing, and 2D architectural transition: `r_out = 127` equals
+  `ceil(8 * ell_pattern) = 8.043 * ell_pattern` (reproducing `8`); linear stability of the code's equations
+  yields `nu_crit/nu_max = 0.8566` and our exact 1D Q1 FEM Newton-Raphson port on `r_out = 127` yields 9 peaks
+  (`wavelength_ratio = 0.8937`, reproduced against `0.87 +/- 0.02` once input rounding is carried) and a
+  nonlinear instability threshold within `0.838%` of linear stability (satisfying `< 2%`). Our 2D continuum
+  PDE port of the code reproduces the fibrillar (`omega = -0.0110 < 0`, `rho_max = 3.55`, `S_max = 0.727` at
+  `config`'s `kappa = -0.2`) to banded (`omega = +0.00235 > 0`, `rho_max = 4.78`, `S_max = 0.940` upon swapping
+  `lambda_aniso` and `crossLinker` to `kappa = +0.2`) architectural transition of Fig. 2(b-c).
+
+  What the code does NOT reproduce, hidden choices, and every difference/bug vs `mirza2025` (6 questions):
+  (1) Hidden logarithmic barrier and extra-`h` momentum bug (`q_hidden_log_barrier_and_extra_h_bug`):
+  `AuxCortexNematic2D.cpp:1123-1150` adds an undocumented barrier free energy `f_lim = -k_lim*log(0.999 - S^2)`
+  (`k_lim = 1e-4`) absent from Eq. (3), AND line 1140 writes `Bk(all,range(3,4)) += jac*h*f_lim*dvh_` with an
+  extraneous factor of `h` (breaking cancellation with the q-EOM and injecting a spurious force `-h*grad[(h-1)*f_lim]`,
+  `1.11e-6` in our weak check). At Fig. 2b(I) (`S_max ~ 0.61`), the barrier shifts `c_bar_0` by `+0.010%`
+  (`4.0004`) and 1D Q1 FEM `S_max` / `omega` by `< 0.02%` (`0.61369` vs `0.61373`), so it is benign in the
+  published regime, but becomes non-negligible as `S -> 1`.
+  (2) Misleading variable names, factor-of-2 `frank`, opposite-sign `lambda_rot`, lagged `q0`, and dead config
+  keys (`q_frank_factor_of_two_and_naming_mismatches`): `visc = 0.1` is actually turnover `k_bar_d` (while
+  `kp = 1`, `kd = 1`, `fric = 1.`, `t_stall = -10.0`, `r_in = 2.0`, `totalTimeSteps = 1000000` are dead/unused
+  and `eta_bar = D_bar = gamma_bar = 1` are hardcoded via `c = 2.`); `frank = 2` equals `2*L_bar` due to
+  `DqDq = 0.5*(|grad q1|^2+|grad q2|^2)` (making C++ fallback `frank = 1.0` correspond to `L_bar = 0.5`);
+  `lambda_rot = -6` has opposite sign to `lambda_bar_o = +6`; active stress uses a 3-term form
+  `lambda_iso*(1-S)*I + lambda_aniso*Snn + crossLinker*Snn_` evaluated at explicit lagged `q0` (as is
+  `lambda_rot` at lines 1086-1087).
+  (3) Post-processing stress and global-integral bugs (`q_postprocessing_stress_and_globinteg_bugs`):
+  `LS_CortexNematic_2D` line 1109 `Ten_sym` uses `4*rodt_` instead of `2*(rodt_ + tr(rodt_)*I)` (2x shear error,
+  missing bulk coupling) AND divides Frank stress by `deltat` (`5x` too large at `deltat = 0.4`), yielding
+  `-20.1%` error in `sigma_xx` and `+113%` in `sigma_xy` at our bundle probe (`cmp_Ten_sym_xx_bug_vs_exact`,
+  `cmp_Ten_sym_xy_bug_vs_exact`); `LS_CortexNematic_Border` line 1241 uses `1*rodt` and `frank = 2*L_bar`
+  (`+24.0%` in `sigma_xx`, `-56.5%` in `sigma_xy`); `CortexNematic2D.cpp:593` outputs unnormalized `biLinear`,
+  divides area integrals `sigma_xx,yy` by `r_out` instead of `r_out^2`, and queries unregistered names
+  `"fric_xx"`/`"fric_yy"` instead of `"fric_x"`/`"fric_y"`.
+  (4) Adaptive time-stepper, hardcoded solver, and dead-code bugs (`q_time_stepper_and_dead_code_bugs`):
+  line 518 sets `nIter = userNum->iparam[1]` (= `testCase = 3`, never updated by `nonlinSolver`), making the
+  step-shrink branch unreachable; line 538 executes `time += deltat` AFTER clamping `deltat` (`0.8 -> 0.4`),
+  introducing a permanent `-0.4` timestamp offset (`4.0` vs `4.4` after 10 steps); lines 609-625 write
+  `timeStep == 1000` velocity noise to `nodeDOFs`, immediately overwritten by `nodeDOFs0` at line 511; lines
+  445-446 & 482-483 hardcode GMRES tol `1e-10`, maxiter `7000`, and NR tols `1e-8` ignoring `config`'s `linTol`
+  and `linImax`; `setCircleNemBC_square:160,167` prints `-nan` 160,000 times for `c_bar_0 > 0`.
+  (5) Previously unstated numerics & initial conditions (`q_hidden_numerics_and_initial_conditions`): 400x400
+  bilinear Q1 mesh (`bfOrder = 1`, 4-pt Gauss, `dx = 0.3175`), `r_out = 127`, `deltat = 0.8 -> maxDelt = 0.4`,
+  `t_max = 100000`, unseeded `std::rand()` (default seed 1), and biased positive initial density noise
+  `h = 1 + 1e-4*U[0, 1]`.
+  (6) Incomplete release scope (`q_readme_fig2bI_and_unreleased_postproc`): only the single Fig. 2b(I) config
+  (`kappa = -0.2`) is shipped; sweep configs for Figs. 2-4 and post-processing/plotting scripts are absent.

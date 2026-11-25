@@ -1,0 +1,34 @@
+id: dominant_spatial_frequency_fft_1d
+name: zero-padded 1D FFT dominant spatial frequency and ridge spacing (SI p. 11, Fig. S10D)
+role: processing
+from_words: true
+stated:
+  page: 11
+  printed_page: "SI 3"
+  quote: "find the dominant spatial frequency of the profile, using a zero-padded profile"
+  where: "SI Detailed Methods (Image analysis, also p. 7 and SI Fig. S10D p. 23)"
+equation: "freq = argmax_{f >= f_min} |FFT_N(h - mean(h))|; s = 1 / freq"
+built_from:
+  - spacing_from_spatial_frequency
+inputs:
+  h:
+    quantity: surface_height
+    unit: nm
+    curve:
+      quantity: lateral_distance
+      unit: um
+    description: Flattened 1D surface height profile h(x) in nm versus lateral distance x in um.
+outputs:
+  freq:
+    quantity: dominant_spatial_frequency
+    unit: 1/um
+    description: Dominant spatial frequency peak (um^-1) above the low-frequency cutoff f_min.
+  s:
+    quantity: ridge_or_actin_spacing
+    unit: um
+    description: Corresponding ridge periodic spacing s = 1 / freq (um).
+settings:
+  n_fft: 4096
+  f_min: 0.3
+  n_uniform: 256
+stochastic: false

@@ -1,0 +1,140 @@
+# Cross-record validations of graham2024_code live PLOTCSVFILES analyzers against
+# experimental measurements in graham2024 (Fig. 4D, origin: measured).
+#
+# Both csv_radial_density_and_rae (code argmax(N(r)) definition reproducing Fig. 5C
+# and Fig. S5d) and csv_radial_density_rae_paper_def (literal SI pp. 23-24
+# argmax(rho(r)) definition) are swept across graham2024/fig4d_relative_enrichment_fig
+# (experimental R.A.E. at [Arp2/3] = 0, 100, 150 nM with 0, 4, 6 uM VCA) at both
+# VCA = 0 uM (dataset: arp23, r_cutoff = 0.6 um) and VCA = 5 uM (dataset: vca,
+# r_cutoff = 0.4 um, bracketing experimental 4-6 uM VCA), with zero added inputs.
+
+- id: val_csv_rae_code_arp23_vs_graham2024_fig4d
+  model: csv_radial_density_and_rae
+  inputs:
+    C_VCA: vca_conc_0uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_arp23_code
+  sweep:
+    C_Arp: "graham2024/fig4d_relative_enrichment_fig"
+  settings:
+    dataset: arp23
+    n_tail_frames: 10
+  output: rae_mean
+  against: "graham2024/fig4d_relative_enrichment_fig"
+  purpose: validation
+  quantities:
+    "graham2024/arp23_concentration": arp23_concentration
+    "graham2024/relative_actin_enrichment": relative_actin_enrichment
+  conditions_ok: >
+    graham2024 Fig. 4D measures experimental Relative Actin Enrichment (R.A.E. = I_core / I_periphery)
+    in VASP droplets (15 uM VASP monomer, 2 uM actin) at [Arp2/3] = 0, 100, 150 nM (with 0, 4, 6 uM
+    VCA). graham2024_code/csv_radial_density_and_rae computes the CytoSim R.A.E. curve from
+    Density_Arp23_*.csv (dataset: arp23, VCA = 0 uM, r_cutoff = 0.6 um) using Cell 39's raw-count
+    argmax(N(r)) definition (which reproduces Fig. 5C). Graham et al. (2024, Main pp. 6-7) directly
+    compare the Fig. 5C CytoSim R.A.E. trend against the Fig. 4D experimental trend.
+  basis: >
+    Graham et al. (2024, Main pp. 6-7 & Figs. 4D, 5C) invoke the CytoSim Arp2/3 concentration sweep
+    (Density_Arp23_*.csv analyzed by CytoSimanalyze_VASP_Arp_VCA.ipynb Cell 39) to explain the
+    experimental rise in core relative actin enrichment from 0 to 150 nM Arp2/3 in Fig. 4D.
+    Sweeping csv_radial_density_and_rae directly over graham2024/fig4d_relative_enrichment_fig tests
+    quantitative simulation-vs-experiment agreement with zero added inputs.
+  note: >
+    Predicts [0.0000, 0.4560, 0.5674] vs experimental [0.0924 +/- 0.0025, 0.2831 +/- 0.1002,
+    0.3079 +/- 0.0636] at [0, 100, 150] nM Arp2/3 (0/3 inside 1-SD): misses the finite 0 nM
+    experimental interior fluorescence baseline and overshoots by +61% at 100 nM (+1.73 SD) and
+    +84% at 150 nM (+4.08 SD).
+
+- id: val_csv_rae_paper_def_arp23_vs_graham2024_fig4d
+  model: csv_radial_density_rae_paper_def
+  inputs:
+    C_VCA: vca_conc_0uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_arp23_code
+  sweep:
+    C_Arp: "graham2024/fig4d_relative_enrichment_fig"
+  settings:
+    dataset: arp23
+    n_tail_frames: 10
+  output: rae_mean
+  against: "graham2024/fig4d_relative_enrichment_fig"
+  purpose: validation
+  quantities:
+    "graham2024/arp23_concentration": arp23_concentration
+    "graham2024/relative_actin_enrichment": relative_actin_enrichment
+  conditions_ok: >
+    Same experimental Fig. 4D R.A.E. target and Density_Arp23_*.csv dataset (VCA = 0 uM,
+    r_cutoff = 0.6 um), but using csv_radial_density_rae_paper_def (literal SI pp. 23-24 density
+    definition maximizing normalized radial density rho(r) rather than raw bead count N(r)).
+  basis: >
+    Graham et al. (2024, SI pp. 23-24) define R.A.E. as the ratio of maximum normalized actin
+    density in the core (r < 0.6 um) to maximum normalized actin density at the periphery. Sweeping
+    csv_radial_density_rae_paper_def against graham2024/fig4d_relative_enrichment_fig quantifies
+    how much the paper's printed density definition widens the simulation-experiment discrepancy
+    relative to the notebook's raw-count argmax(N(r)) implementation.
+  note: >
+    Predicts [0.0000, 0.7245, 0.8482] vs experimental [0.0924 +/- 0.0025, 0.2831 +/- 0.1002,
+    0.3079 +/- 0.0636] (0/3 inside 1-SD): overshoots experimental R.A.E. by 2.56x (+4.41 SD) at
+    100 nM and 2.75x (+8.50 SD) at 150 nM, demonstrating that Cell 39's raw-count argmax(N(r))
+    bug inadvertently brought Fig. 5C closer to Fig. 4D.
+
+- id: val_csv_rae_code_vca5_vs_graham2024_fig4d
+  model: csv_radial_density_and_rae
+  inputs:
+    C_VCA: vca_conc_5uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_vca_code
+  sweep:
+    C_Arp: "graham2024/fig4d_relative_enrichment_fig"
+  settings:
+    dataset: vca
+    n_tail_frames: 10
+  output: rae_mean
+  against: "graham2024/fig4d_relative_enrichment_fig"
+  purpose: validation
+  quantities:
+    "graham2024/arp23_concentration": arp23_concentration
+    "graham2024/relative_actin_enrichment": relative_actin_enrichment
+  conditions_ok: >
+    graham2024 Fig. 4D uses 4 uM VCA at 100 nM Arp2/3 and 6 uM VCA at 150 nM Arp2/3 (0 uM at 0 nM).
+    Among the simulated VCA grid {0, 1, 2, 5, 10} uM in Density_VCA_*.csv (dataset: vca,
+    r_cutoff = 0.4 um), C_VCA = 5 uM directly brackets the experimental 4-6 uM VCA regime (with
+    the caveat documented in graham2024_code/q_vca_incomplete_replicates that VCA simulations
+    average truncated trajectories with kunbind = 0).
+  basis: >
+    Graham et al. (2024, Main p. 7 & Fig. S5d) introduce VCA monomer competition into CytoSim to
+    match the VCA-activated experimental conditions of Fig. 4D. Sweeping csv_radial_density_and_rae
+    at C_VCA = 5 uM tests the VCA-including CytoSim R.A.E. prediction against Fig. 4D with zero
+    added inputs.
+  note: >
+    Predicts [0.0000, 0.4309, 0.3698] vs experimental [0.0924 +/- 0.0025, 0.2831 +/- 0.1002,
+    0.3079 +/- 0.0636]: 150 nM Arp2/3 lands inside the experimental 1-SD band ([0.2443, 0.3714],
+    +0.97 SD), 100 nM overshoots by +1.48 SD, and 0 nM remains at 0.0000 (overall curve verdict:
+    not reproduced due to 0 nM and 100 nM).
+
+- id: val_csv_rae_paper_def_vca5_vs_graham2024_fig4d
+  model: csv_radial_density_rae_paper_def
+  inputs:
+    C_VCA: vca_conc_5uM_code
+    r_core_min: rae_core_min_code
+    r_cutoff: rae_cutoff_vca_code
+  sweep:
+    C_Arp: "graham2024/fig4d_relative_enrichment_fig"
+  settings:
+    dataset: vca
+    n_tail_frames: 10
+  output: rae_mean
+  against: "graham2024/fig4d_relative_enrichment_fig"
+  purpose: validation
+  quantities:
+    "graham2024/arp23_concentration": arp23_concentration
+    "graham2024/relative_actin_enrichment": relative_actin_enrichment
+  conditions_ok: >
+    Same VCA = 5 uM CytoSim ensemble (Density_VCA_*.csv, r_cutoff = 0.4 um) bracketing Fig. 4D's
+    4-6 uM VCA experiments, evaluated with the literal SI pp. 23-24 density definition argmax(rho(r)).
+  basis: >
+    Tests whether the literal SI pp. 23-24 R.A.E. definition reproduces Fig. 4D once 5 uM VCA
+    competition is included.
+  note: >
+    Predicts [0.0000, 0.5341, 0.4653] vs experimental [0.0924 +/- 0.0025, 0.2831 +/- 0.1002,
+    0.3079 +/- 0.0636] (0/3 inside 1-SD: +2.50 SD at 100 nM, +2.47 SD at 150 nM), confirming
+    overshoot persists under the printed density definition even with VCA competition.

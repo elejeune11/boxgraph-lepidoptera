@@ -1,0 +1,10 @@
+"""Calibrated reader for Fig. 4-S1(d) col 3: active perpendicular tension (Reduce gamma by 200-fold)."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _fig4s1 import read_col3_active
+
+
+def read(image, at):
+    return read_col3_active(image, at, 'd', "perp")

@@ -1,0 +1,35 @@
+id: code_fem_q1_element_check
+name: "Exact 2D Q1 quadrilateral element residual Bk, Jacobian Ak, and Onsager weak-form audit (AuxCortexNematic2D.cpp:241-1162)"
+role: model
+stated:
+  file: src/AuxCortexNematic2D.cpp
+  lines: "241-244"
+  quote: "void LS_CortexNematic_2D(Teuchos::RCP<hiperlife::FillStructure> fillStr)"
+  where: "AuxCortexNematic2D.cpp:241-1162 (LS_CortexNematic_2D) & CortexNematic2D.cpp:394-395 (ConsistencyCheck)"
+equation: "Bk(20) and Ak(20x20) on a 4-node Q1 square element (4-pt Gauss quadrature, 5 DOFs [h, q1, q2, vx, vy]); checks max|Ak - Ak_fd| against HiperLife ConsistencyCheckTolerance (1e-7), exact weak-form match to mirza2025 Eqs. (2)-(8) at k_lim = 0, and uncompensated line-1140 extra-h barrier force error"
+inputs:
+  visc: {quantity: turnover_rate_dimless, unit: dimensionless}
+  cvisc: {quantity: flow_alignment_dimless, unit: dimensionless}
+  rvisc: {quantity: rotational_viscosity_dimless, unit: dimensionless}
+  frank: {quantity: code_frank_parameter, unit: dimensionless}
+  sus20: {quantity: susceptibility_a_dimless, unit: dimensionless}
+  sus40: {quantity: susceptibility_b_dimless, unit: dimensionless}
+  lambda_rot: {quantity: code_lambda_rot_parameter, unit: dimensionless}
+  lambda_iso: {quantity: active_tension_dimless, unit: dimensionless}
+  lambda_aniso: {quantity: parallel_active_tension_dimless, unit: dimensionless}
+  crossLinker: {quantity: transverse_active_tension_dimless, unit: dimensionless}
+  heqb: {quantity: relative_density, unit: dimensionless}
+  k_lim: {quantity: barrier_stiffness_dimless, unit: dimensionless}
+  S2_max: {quantity: barrier_S2_cutoff, unit: dimensionless}
+  deltat: {quantity: time_dimless, unit: dimensionless}
+  dx_elem: {quantity: position_dimless, unit: dimensionless}
+  ccheck_delta: {quantity: solver_tolerance, unit: dimensionless}
+outputs:
+  jacobian_fd_max_err: {quantity: residual_norm, unit: dimensionless}
+  weak_q1_vs_paper_err: {quantity: residual_norm, unit: dimensionless}
+  weak_vx_onsager_vs_paper_err: {quantity: residual_norm, unit: dimensionless}
+  barrier_extra_h_force_err: {quantity: residual_norm, unit: dimensionless}
+settings:
+  n_spectral_check: 24
+  seed: 7
+stochastic: false

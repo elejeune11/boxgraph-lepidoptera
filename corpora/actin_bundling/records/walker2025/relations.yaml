@@ -1,0 +1,1347 @@
+- id: rel_mesoscopic_sphere_same_as_cylinder
+  kind: same_as
+  a: walker2025/mesoscopic_binding_rate_sphere
+  b: walker2025/mesoscopic_binding_rate_cylinder
+  mapping:
+    k_bind_2: "k_bind_2"
+    r_bind: "r_bind"
+    L_seg: "(4/3) * r_bind / 1000"
+  output_map:
+    k_bind: k_bind
+  regime:
+    k_bind_2: [0.001, 100.0]
+    r_bind: [10.0, 200.0]
+  provenance: stated
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "The binding and unbinding reactions are modeled similarly to Actin-droplet interactions. The corresponding binding volume is given by a sphere"
+    where: "Methods S1 (Dynamic dimerization and dynamic multimerization models)"
+  assumptions:
+    - "Equating spherical binding volume (4/3)*pi*r_bind^3 to cylindrical binding volume pi*r_bind^2*L_seg gives L_seg = (4/3)*r_bind."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations for all 9 pairs sharing walker2025.
+#
+# Audit summary of the 3 zero-relation pairs (honest 0 relations, 0 cited links):
+# - graham_code (VASPDroplet_simulate.ipynb, Graham et al. 2023): all 8 models
+#   implement 2D continuum SLSQP droplet-ring elastic deformation mechanics
+#   (Bathe bundle bending rigidity, Gauss-Kummer ellipse surface energy,
+#   hyperbolic-tangent wetting tension, critical ring thickness), disjoint from
+#   walker2025's rigid-sphere 3D CytoSim framework (the shape-flagged pair
+#   notebook_droplet_ring_slsqp vs langevin_overdamped_1d is a spurious
+#   dimensional coincidence).
+# - graham_source_data (MOESM12-22_ESM.xlsx, Graham et al. 2023): all 11 models
+#   are fixed-workbook Excel readers over 2023 VASP microscopy spreadsheets,
+#   sharing no analytical equations or copied parameters with walker2025.
+# - nastkolb2022 (MBoC 33, ar91, 2022; not cited by walker2025): its 11 runnable
+#   models cover exponential FRAP recovery fits (walker2025 has no FRAP fit
+#   model, only digitized experimental FRAP curves), 2D SLB bundle spacing
+#   W/d_spacing, and 1-op concentration/mobility ratios of unrelated species
+#   (capping protein / actin, monolayer / SLB).
+#
+# Non-runnable 3D CytoSim agent-based models (`cytosim_bivalent_tetravalent_droplet`,
+# `cytosim_dynamic_multimerization_droplet`, `walker2025_code/cytosim_3d_*`,
+# `chandrasekaran2024/cytosim_actin_vasp_droplet`, `graham2024/cytosim_actin_vasp_arp23_vca`,
+# `graham2024_code/cytosim_arp23_vca_config`) are untestable in ModelAtlas.
+# ==============================================================================
+
+# ==============================================================================
+# 1. Relations with walker2025_code (Dynamic_multimerization CytoSim & scripts)
+# ==============================================================================
+
+- id: rel_wcode_icosphere_ico_n_faces
+  kind: same_as
+  a: walker2025_code/icosphere_mesh_adapter
+  b: walker2025/icosphere_subdivision_geometry_icosahedron
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+    d_mon: "d_mon"
+  output_map:
+    n_faces: n_faces
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.5]
+  provenance: proposed
+  reason: >
+    Live Analysis_Scripts/icosphere.py::icosphere(n_subdiv, R_drop) in walker2025_code starts from a
+    20-triangle regular icosahedron and recursively bisects each face into 4, yielding identical face
+    counts N_faces = 20 * 4^n to walker2025's corrected icosahedron variant across n = 0..5.
+
+- id: rel_wcode_icosphere_ico_median_edge
+  kind: same_as
+  a: walker2025_code/icosphere_mesh_adapter
+  b: walker2025/icosphere_subdivision_geometry_icosahedron
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+    d_mon: "d_mon"
+  output_map:
+    median_edge: median_edge
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.5]
+  provenance: proposed
+  reason: >
+    Live Analysis_Scripts/icosphere.py applies a rigid quaternion rotation to the unit icosahedron and
+    projects edge midpoints onto radius R_drop, matching walker2025/icosphere_subdivision_geometry_icosahedron's
+    chordal median edge length to <= 6e-16 relative difference across all radii and subdivisions n = 0..5.
+
+- id: rel_wcode_icosphere_ico_eq_side_approx
+  kind: approximated_by
+  a: walker2025_code/icosphere_mesh_adapter
+  b: walker2025/icosphere_subdivision_geometry_icosahedron
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+    d_mon: "d_mon"
+  output_map:
+    eq_side: eq_side
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [3.0, 5.0]
+    d_mon: [2.0, 5.5]
+  tolerance: 0.003
+  provenance: proposed
+  reason: >
+    walker2025_code/icosphere_mesh_adapter computes area-equivalent equilateral triangle side eq_side
+    from the mean planar chordal triangle area (mean(0.5*|e1 x e2|)), whereas walker2025's icosahedron
+    model uses spherical area per face 4*pi*R^2 / N_faces; at subdivision levels n = 3..5 relevant to the
+    paper and code (n = 3 printed, n = 4 executed), the two definitions agree within 0.24% (0.060% at n = 4).
+
+- id: rel_wcode_icosphere_printed_n_faces_mismatch
+  kind: same_as
+  a: walker2025_code/icosphere_mesh_adapter
+  b: walker2025/icosphere_subdivision_geometry_printed
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+    d_mon: "d_mon"
+  output_map:
+    n_faces: n_faces
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.5]
+  provenance: stated
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "The icosphere was generated by dividing the initial eight triangles 3 more times"
+    where: "Methods S1 (Actin-covered surface area calculation) vs Analysis_Scripts/icosphere.py"
+  assumptions:
+    - "Honest refutation/not_verified test of Methods S1's literal 8-triangle octahedron text against live icosphere.py (20-triangle icosahedron): face counts differ everywhere by the constant factor 20/8 = 2.5x."
+
+- id: rel_wcode_icosphere_printed_median_edge_mismatch
+  kind: same_as
+  a: walker2025_code/icosphere_mesh_adapter
+  b: walker2025/icosphere_subdivision_geometry_printed
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+    d_mon: "d_mon"
+  output_map:
+    median_edge: median_edge
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.5]
+  provenance: stated
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "The icosphere was generated by dividing the initial eight triangles 3 more times"
+    where: "Methods S1 (Actin-covered surface area calculation) vs Analysis_Scripts/icosphere.py"
+  assumptions:
+    - "Honest refutation: chordal median triangle edge lengths of the 20-face icosphere in live icosphere.py disagree everywhere with the 8-face octahedron literally described in Methods S1."
+
+- id: rel_wcode_bell_unbinding_code_doubled_fu
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: walker2025/bell_slip_bond_unbinding
+  mapping:
+    k_unbind_0: "k_unbind_0"
+    F: "2 * k_single * dx"
+    F_unbind: "2 * F_unbind"
+  output_map:
+    k_unbind: k_unbind_code
+  regime:
+    k_single: [1.0, 50.0]
+    dx: [0.001, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [2.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Custom C++ Dimerizer::testKramersDetachment() (dimerizer.h:121) implements Bell's slip-bond law
+    symbolically identically to walker2025/bell_slip_bond_unbinding, but because Wrist::setInteractions()
+    (wrist.cc:131-135) adds two parallel springs (F_mech = 2*k_single*dx) while Wrist::force() (wrist.cc:64)
+    passes only k_single*dx = F_mech/2, expressing the actual code detachment rate k_unbind_code in terms
+    of true mechanical bond tension F = 2*k_single*dx requires a doubled effective unbinding force
+    F_unbind_eff = 2*F_unbind (20 pN vs Table S1's nominal 10 pN).
+
+- id: rel_wcode_bell_unbinding_Fmech
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: walker2025/bell_slip_bond_unbinding
+  mapping:
+    k_unbind_0: "k_unbind_0"
+    F: "2 * k_single * dx"
+    F_unbind: "F_unbind"
+  output_map:
+    k_unbind: k_unbind_at_Fmech
+  regime:
+    k_single: [1.0, 50.0]
+    dx: [0.001, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [2.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    The reference mechanical-tension Bell rate k_unbind_at_Fmech = k_unbind_0 * exp(F_mech / F_unbind)
+    in walker2025_code/cytosim_dimerizer_bond_mechanics is symbolically identical to
+    walker2025/bell_slip_bond_unbinding evaluated at true doubled spring tension F = 2*k_single*dx.
+
+- id: rel_wcode_bell_unbinding_double_spring_discrepancy
+  kind: same_as
+  a: walker2025_code/cytosim_dimerizer_bond_mechanics
+  b: walker2025/bell_slip_bond_unbinding
+  mapping:
+    k_unbind_0: "k_unbind_0"
+    F: "2 * k_single * dx"
+    F_unbind: "F_unbind"
+  output_map:
+    k_unbind: k_unbind_code
+  regime:
+    k_single: [2.0, 20.0]
+    dx: [0.01, 0.1]
+    k_bind: [0.001, 10.0]
+    k_unbind_0: [0.001, 10.0]
+    F_unbind: [5.0, 20.0]
+    dt: [0.0005, 0.005]
+  provenance: stated
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "The binding and unbinding reactions are modeled similarly to Actin-droplet interactions."
+    where: "Methods S1 (Dynamic dimerization and dynamic multimerization models) vs wrist.cc:64,131-135"
+  assumptions:
+    - "Honest refutation testing whether walker2025_code's actual Dimerizer detachment rate k_unbind_code obeys Methods S1's Bell slip-bond equation at true mechanical bond tension F = 2*k_single*dx and nominal F_unbind; refuted across all dx > 0 because Wrist::force() omits the second parallel spring added by Wrist::setInteractions(), suppressing detachment by exp(-k_single * dx / F_unbind)."
+
+- id: rel_wcode_stokes_einstein_diffusion
+  kind: same_as
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: walker2025/stokes_einstein_diffusion
+  mapping:
+    eta: "eta"
+    r: "1000 * r_solid"
+    kBT: "1000 * kT"
+  output_map:
+    D: D_solid
+  regime:
+    eta: [0.001, 10.0]
+    r_solid: [0.005, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  provenance: proposed
+  reason: >
+    CytoSim Solid::setDragCoefficient() (solid.cc:854-943, with Wrist::stepF() silently ignoring
+    diffusion = 10.0) implements spherical Stokes-Einstein diffusivity D_solid = kT / (6*pi*eta*r_solid),
+    symbolically identical to walker2025/stokes_einstein_diffusion and settling q_stokes_einstein_vs_prescribed_D
+    (actual D_solid = 0.01485 um^2/s at CytoSim default kT = 0.0042 pN*um vs Table S1's 10 um^2/s).
+
+- id: rel_wcode_brownian_noise_stddev
+  kind: same_as
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: walker2025/brownian_noise_stddev
+  mapping:
+    D: "kT / (6 * pi * eta * r_solid)"
+    dt: "dt"
+  output_map:
+    sigma_B: sigma_B
+  regime:
+    eta: [0.001, 10.0]
+    r_solid: [0.005, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  provenance: proposed
+  reason: >
+    Per-axis 1D Brownian displacement standard deviation sigma_B = sqrt(2 * D_solid * dt) in
+    walker2025_code/cytosim_solid_stokes_diffusion is symbolically identical to walker2025/brownian_noise_stddev
+    evaluated at Stokes-Einstein diffusivity D_solid (giving 7.71 nm vs 200 nm at dead D = 10 um^2/s).
+
+- id: rel_wcode_stokes_approx_langevin1d
+  kind: approximated_by
+  a: walker2025_code/cytosim_solid_stokes_diffusion
+  b: walker2025/langevin_overdamped_1d
+  mapping:
+    mu: "1 / (6 * pi * eta * r_solid)"
+    kBT: "1000 * kT"
+    f: "0"
+  output_map:
+    D_eff: D_solid
+  regime:
+    eta: [0.05, 5.0]
+    r_solid: [0.01, 0.1]
+    kT: [0.0035, 0.005]
+    dt: [0.0005, 0.01]
+  tolerance: 0.05
+  provenance: proposed
+  reason: >
+    walker2025's stochastic 1D overdamped Langevin solver (f = 0, n_particles = 4000, dt = 0.002 s,
+    t = 1.0 s, seed = 42) reproduces walker2025_code's exact CytoSim Solid Stokes diffusivity D_solid
+    under mobility mu = 1 / (6*pi*eta*r_solid) within Monte Carlo sampling tolerance 0.05.
+
+- id: rel_wcode_config_persistence_length
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: walker2025/persistence_length_from_rigidity
+  mapping:
+    k_bend: "rigidity"
+    kBT: "1000 * kT"
+  output_map:
+    L_p: L_p
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.01, 0.05]
+    R_drop: [0.5, 3.0]
+    rigidity: [0.01, 0.2]
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: >
+    F-actin persistence length L_p = rigidity / kT computed from walker2025_code's .cym rigidity and
+    CytoSim default kT = 0.0042 pN*um (17.86 um) matches walker2025/persistence_length_from_rigidity identically.
+
+- id: rel_wcode_config_concentration
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: walker2025/concentration_from_copy_number
+  mapping:
+    N: "N_blob"
+    R_drop: "R_drop"
+  output_map:
+    C: C_crosslinker
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.01, 0.05]
+    R_drop: [0.5, 5.0]
+    rigidity: [0.05, 0.1]
+    kT: [0.004, 0.0045]
+  provenance: proposed
+  reason: >
+    Both models convert spherical-droplet crosslinker copy number N_blob to micromolar concentration via
+    N_blob / (N_A * (4/3)*pi*R_drop^3) using the exact SI 2019 Avogadro constant (0.3965 uM for 1000 dimers,
+    0.7931 uM for 2000 monomers at R_drop = 1 um).
+
+- id: rel_wcode_config_volume_fraction
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: walker2025/crosslinker_volume_fraction
+  mapping:
+    N: "N_blob"
+    r_solid: "1000 * r_solid"
+    R_drop: "R_drop"
+  output_map:
+    phi: phi_crosslinker
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [100.0, 20000.0]
+    r_solid: [0.005, 0.05]
+    R_drop: [0.5, 5.0]
+    rigidity: [0.05, 0.1]
+    kT: [0.004, 0.0045]
+  provenance: proposed
+  reason: >
+    Hard-sphere crosslinker volume fraction phi = 100 * N_blob * (r_solid / R_drop)^3 (%) in
+    walker2025_code/cytosim_config_derived_quantities matches walker2025/crosslinker_volume_fraction
+    identically across the full copy-number sweep (2.7% at 1,000 to 54% at 20,000 crosslinkers).
+
+- id: rel_wcode_config_filament_final_length
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: walker2025/filament_final_length
+  mapping:
+    L0: "L0"
+    k_grow: "k_grow"
+    t_sim: "n_steps * dt"
+    L_max: "L_max"
+  output_map:
+    L_final: L_final
+  regime:
+    n_steps: [10000.0, 400000.0]
+    nb_frames: [100.0, 600.0]
+    dt: [0.001, 0.003]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [3.0, 10.0]
+    N_blob: [1000.0, 2000.0]
+    r_solid: [0.03, 0.03]
+    R_drop: [1.0, 1.0]
+    rigidity: [0.075, 0.075]
+    kT: [0.0042, 0.0042]
+  provenance: proposed
+  reason: >
+    Both models compute capped filament length L_final = min(L0 + k_grow * T_sim, L_max) identically
+    across both uncapped and max_length-capped regimes (6.280 um at 600 s, capped at 6.2832 um at 2400 s).
+
+- id: rel_wcode_config_snapshot_interval
+  kind: same_as
+  a: walker2025_code/cytosim_config_derived_quantities
+  b: walker2025/snapshot_count_from_fraction
+  mapping:
+    N_last: "0.05 * nb_frames"
+    f_last: "5"
+    t_sim: "n_steps * dt"
+  output_map:
+    dt_snap: dt_frame
+  regime:
+    n_steps: [10000.0, 300000.0]
+    nb_frames: [100.0, 2400.0]
+    dt: [0.001, 0.005]
+    L0: [0.05, 0.2]
+    k_grow: [0.005, 0.02]
+    L_max: [5.0, 10.0]
+    N_blob: [1000.0, 2000.0]
+    r_solid: [0.03, 0.03]
+    R_drop: [1.0, 1.0]
+    rigidity: [0.075, 0.075]
+    kT: [0.0042, 0.0042]
+  provenance: proposed
+  reason: >
+    The frame output interval dt_frame = (n_steps * dt) / nb_frames in .cym configs (1.0 s for 600 frames
+    over 600 s) is identical to dt_snap = t_sim / (N_last / f_last) in walker2025/snapshot_count_from_fraction
+    when the 5% tail window contains N_last = 0.05 * nb_frames (30 snapshots).
+
+- id: rel_wcode_fig5d_as_written_averages_all_snaps
+  kind: approximated_by
+  a: walker2025_code/notebook_fig5d_averaging_adapter
+  b: walker2025/snapshot_count_from_fraction
+  mapping:
+    N_last: "30"
+    f_last: "5"
+    t_sim: "600"
+  output_map:
+    N_total: n_snapshots_per_rep
+  regime:
+    r_index: [20.0, 24.0]
+    n_reps: [5.0, 5.0]
+    n_monomers_total: [2000.0, 2000.0]
+  tolerance: 0.002
+  provenance: proposed
+  reason: >
+    Because Figures.ipynb Cell 13 computes startpos = int(0.95*len(Row1)) on the outer replicate list
+    instead of the snapshot axis, live notebook_fig5d_averaging_adapter averages ALL 601 snapshots per
+    replicate (t = 0..600 s), matching walker2025/snapshot_count_from_fraction's full trajectory count
+    N_total = 30 / 0.05 = 600 within 1/601 = 0.166% (off by +1 initial t = 0 frame) rather than the
+    claimed 30-snapshot tail.
+
+- id: rel_wcode_fig5d_as_written_vs_claimed_30
+  kind: same_as
+  a: walker2025_code/notebook_fig5d_averaging_adapter
+  b: walker2025/snapshot_count_from_fraction
+  mapping:
+    N_last: "30"
+    f_last: "100"
+    t_sim: "600"
+  output_map:
+    N_total: n_snapshots_per_rep
+  regime:
+    r_index: [20.0, 24.0]
+    n_reps: [5.0, 5.0]
+    n_monomers_total: [2000.0, 2000.0]
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "1556"
+    quote: "the data were obtained from the last 30 snapshots (5%) of each replicate"
+    where: "Fig. 4K caption & Fig. 5D / Fig. S7E averaging window vs Figures.ipynb Cell 13"
+  assumptions:
+    - "Honest not_verified test comparing the actual snapshot count averaged per replicate by Figures.ipynb Cell 13 (601) against the claimed 30-snapshot window (evaluated as 100% of N_last = 30): differs everywhere by a factor of 601/30 = 20.033x."
+
+- id: rel_wcode_fig5d_last30_matches_claimed_30
+  kind: same_as
+  a: walker2025_code/notebook_fig5d_averaging_last30
+  b: walker2025/snapshot_count_from_fraction
+  mapping:
+    N_last: "30"
+    f_last: "100"
+    t_sim: "600"
+  output_map:
+    N_total: n_snapshots_per_rep
+  regime:
+    r_index: [20.0, 24.0]
+    n_reps: [5.0, 5.0]
+    n_monomers_total: [2000.0, 2000.0]
+  provenance: proposed
+  reason: >
+    The corrected variant walker2025_code/notebook_fig5d_averaging_last30 slices rows[-30:] per replicate,
+    matching the claimed 30-snapshot averaging window identically (30 == 30 across all Fig. 5D conditions).
+
+# ==============================================================================
+# 2. Relations with chandrasekaran2024 (Nat. Commun. 15, 3139, 2024; ref-18/S4)
+# ==============================================================================
+
+- id: rel_chandra2024_bell_slip_bond
+  kind: same_as
+  a: walker2025/bell_slip_bond_unbinding
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k_unbind_0"
+    f: "F"
+    f_u: "F_unbind"
+  output_map:
+    k_unbind: k_unbind
+  regime:
+    k_unbind_0: [0.001, 10.0]
+    F: [0.0, 30.0]
+    F_unbind: [2.0, 20.0]
+  provenance: stated
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Methods S1 (Actin-droplet kinetics p. 43) vs chandrasekaran2024 Methods Eq. (2)"
+  assumptions:
+    - "Both papers apply the identical Bell slip-bond exponential unbinding rate k_unbind = k_unbind^0 * exp(F / F_unbind) with nominal F_unbind = 10 pN."
+
+- id: rel_chandra2024_langevin_overdamped_1d
+  kind: approximated_by
+  a: walker2025/langevin_overdamped_1d
+  b: chandrasekaran2024/langevin_overdamped_1d
+  mapping:
+    mu: "mu"
+    kBT: "kBT"
+    f: "f"
+  output_map:
+    D_eff: D_eff
+  regime:
+    mu: [0.1, 20.0]
+    kBT: [3.5, 5.0]
+    f: [0.0, 5.0]
+  tolerance: 0.05
+  provenance: stated
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Methods S1 (Position evolution) vs chandrasekaran2024 Methods Eq. (1)"
+  assumptions:
+    - "Both records integrate the identical 1D overdamped Langevin SDE dx = mu*f*dt + dB with dB ~ N(0, sqrt(2*mu*k_B T*dt)) and share the identical text misprint defining mobility mu as 'the viscosity of the solvent'."
+
+- id: rel_chandra2024_einstein_diffusion
+  kind: same_as
+  a: walker2025/einstein_diffusion_relation
+  b: chandrasekaran2024/einstein_diffusion_relation
+  mapping:
+    mu: "mu"
+    kBT: "kBT"
+  output_map:
+    D: D
+  regime:
+    mu: [0.01, 20.0]
+    kBT: [3.5, 5.0]
+  provenance: stated
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Methods S1 (Position evolution) vs chandrasekaran2024 Methods"
+  assumptions:
+    - "Both papers state the identical Einstein relation D = mu * k_B T (flagged too_plain as a 2-op product)."
+
+- id: rel_chandra2024_mobility_from_diffusion
+  kind: same_as
+  a: walker2025/mobility_from_diffusion
+  b: chandrasekaran2024/mobility_from_diffusion
+  mapping:
+    D: "D"
+    kBT: "kBT"
+  output_map:
+    mu: mu
+  regime:
+    D: [0.01, 20.0]
+    kBT: [3.5, 5.0]
+  provenance: stated
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Methods S1 (Position evolution) vs chandrasekaran2024 Methods"
+  assumptions:
+    - "Inverse Einstein relation mu = D / (k_B T) shared identically across both CytoSim papers."
+
+- id: rel_chandra2024_brownian_noise_stddev
+  kind: same_as
+  a: walker2025/brownian_noise_stddev
+  b: chandrasekaran2024/brownian_noise_stddev
+  mapping:
+    D: "D"
+    dt: "dt"
+  output_map:
+    sigma_B: sigma_B
+  regime:
+    D: [0.01, 20.0]
+    dt: [0.0005, 0.01]
+  provenance: stated
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Methods S1 (Position evolution) vs chandrasekaran2024 Methods"
+  assumptions:
+    - "Identical 1D Brownian displacement standard deviation sqrt(2*D*dt) (converted automatically between nm in walker2025 and um in chandrasekaran2024; yields 200 nm at prescribed D = 10 um^2/s and dt = 0.002 s in both papers)."
+
+- id: rel_chandra2024_brownian_noise_from_mobility
+  kind: same_as
+  a: chandrasekaran2024/brownian_noise_from_mobility
+  b: walker2025/brownian_noise_stddev
+  mapping:
+    D: "mu * kBT / 1000"
+    dt: "dt"
+  output_map:
+    sigma_B: sigma_B
+  regime:
+    mu: [0.01, 20.0]
+    kBT: [3.5, 5.0]
+    dt: [0.0005, 0.01]
+  provenance: proposed
+  reason: >
+    Substituting the Einstein relation D = mu * k_B T into walker2025/brownian_noise_stddev reproduces
+    chandrasekaran2024/brownian_noise_from_mobility (sqrt(2 * mu * k_B T * dt)) symbolically identically.
+
+- id: rel_chandra2024_stokes_einstein_diffusion
+  kind: same_as
+  a: walker2025/stokes_einstein_diffusion
+  b: chandrasekaran2024/stokes_einstein_diffusion
+  mapping:
+    kBT: "kBT"
+    eta: "eta"
+    r: "r"
+  output_map:
+    D_SE: D
+  regime:
+    eta: [0.001, 10.0]
+    r: [5.0, 100.0]
+    kBT: [3.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both reconstructed Stokes-Einstein checks compute D = k_B T / (6*pi*eta*r) identically, exposing the
+    same 687x discrepancy (0.01455 um^2/s at 298 K vs Table S1's prescribed 10 um^2/s at eta = 0.5 Pa*s,
+    r = 30 nm) across both papers.
+
+- id: rel_chandra2024_harmonic_boundary_force
+  kind: same_as
+  a: walker2025/harmonic_boundary_repulsion_force
+  b: chandrasekaran2024/harmonic_repulsion_force
+  mapping:
+    k_spring: "k_bound"
+    delta: "1000 * (r - R_drop)"
+  output_map:
+    F: F_rep
+  regime:
+    k_bound: [50.0, 500.0]
+    r: [0.8, 2.0]
+    R_drop: [0.5, 1.2]
+  provenance: stated
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Table S1 (p. 25, Boundary repulsion stiffness) vs chandrasekaran2024 Supplementary Table 2"
+  assumptions:
+    - "Both models apply linear one-sided harmonic restoring force F = k * max(0, r - R_drop) outside the rigid spherical droplet boundary (with identical k = 200 pN/um for actin and 100 pN/um for crosslinkers)."
+
+- id: rel_chandra2024_icosphere_ico_n_faces
+  kind: same_as
+  a: walker2025/icosphere_subdivision_geometry_icosahedron
+  b: chandrasekaran2024/icosphere_subdivision_geometry
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+  output_map:
+    n_faces: n_faces
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.5]
+  provenance: proposed
+  reason: >
+    walker2025's corrected 20-face icosahedron subdivision variant matches chandrasekaran2024/icosphere_subdivision_geometry
+    face counts N_faces = 20 * 4^n identically across n = 0..5.
+
+- id: rel_chandra2024_icosphere_ico_median_edge
+  kind: same_as
+  a: walker2025/icosphere_subdivision_geometry_icosahedron
+  b: chandrasekaran2024/icosphere_subdivision_geometry
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+  output_map:
+    median_edge: median_edge
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.5]
+  provenance: proposed
+  reason: >
+    Both models recursively bisect a unit regular icosahedron and project midpoints onto radius R_drop,
+    yielding identical chordal median triangle edge lengths across all radii and subdivisions n = 0..5.
+
+- id: rel_chandra2024_icosphere_printed_n_faces_mismatch
+  kind: same_as
+  a: walker2025/icosphere_subdivision_geometry_printed
+  b: chandrasekaran2024/icosphere_subdivision_geometry
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+  output_map:
+    n_faces: n_faces
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.5]
+  provenance: stated
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "The icosphere was generated by dividing the initial eight triangles 3 more times"
+    where: "Methods S1 (citing [S4] = chandrasekaran2024)"
+  assumptions:
+    - "Honest not_verified test of walker2025 Methods S1's stated citation to [S4] (chandrasekaran2024): walker2025 misprints 8 initial triangles (octahedron) vs chandrasekaran2024's 20-triangle icosahedron, differing everywhere by a factor of 8/20 = 0.4x."
+
+- id: rel_chandra2024_icosphere_printed_median_edge_mismatch
+  kind: same_as
+  a: walker2025/icosphere_subdivision_geometry_printed
+  b: chandrasekaran2024/icosphere_subdivision_geometry
+  mapping:
+    R_drop: "R_drop"
+    n_subdiv: "n_subdiv"
+  output_map:
+    median_edge: median_edge
+  regime:
+    R_drop: [0.5, 5.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.0, 5.5]
+  provenance: stated
+  citation:
+    page: 43
+    printed_page: "SI-20"
+    quote: "The icosphere was generated by dividing the initial eight triangles 3 more times"
+    where: "Methods S1 (citing [S4] = chandrasekaran2024)"
+  assumptions:
+    - "Honest refutation: chordal median triangle edge lengths of the 8-triangle octahedron literally described in walker2025 Methods S1 disagree everywhere with the 20-triangle icosphere in cited source [S4] (chandrasekaran2024)."
+
+- id: rel_chandra2024_elongation_rate
+  kind: same_as
+  a: walker2025/filament_elongation_rate
+  b: chandrasekaran2024/elongation_rate_from_growth_time
+  mapping:
+    L_target: "2 * pi * R_drop"
+    L0: "L0"
+    T_grow: "t_sim"
+  output_map:
+    k_grow: k_grow
+  regime:
+    R_drop: [0.5, 5.0]
+    L0: [0.05, 0.5]
+    t_sim: [60.0, 2400.0]
+  provenance: proposed
+  reason: >
+    Both papers derive the baseline actin filament elongation rate k_grow = (2*pi*R_drop - L0) / t_sim
+    (= 0.0103 um/s = 10.3 nm/s at R_drop = 1 um, L0 = 0.1 um, t_sim = 600 s) from the identical linear
+    circumference-growth formula (converted automatically between um/s and nm/s).
+
+- id: rel_chandra2024_filament_final_reduces_to_elongation
+  kind: reduces_to
+  a: walker2025/filament_final_length
+  b: chandrasekaran2024/filament_elongation_length
+  mapping:
+    L0: "L0"
+    k_grow: "1000 * k_grow"
+    t: "t_sim"
+  output_map:
+    L_fil: L_final
+  limit:
+    L_max: "oo"
+  regime:
+    L0: [0.05, 0.5]
+    k_grow: [0.005, 0.02]
+    t_sim: [50.0, 600.0]
+    L_max: [5.0, 15.0]
+  provenance: proposed
+  reason: >
+    In the uncapped limit L_max -> oo, walker2025's capped filament final length min(L0 + k_grow*t_sim, L_max)
+    reduces identically to chandrasekaran2024/filament_elongation_length (L0 + k_grow * t).
+
+- id: rel_chandra2024_droplet_circumference
+  kind: same_as
+  a: walker2025/droplet_circumference
+  b: chandrasekaran2024/droplet_characteristic_lengths
+  mapping:
+    R_drop: "R_drop"
+  output_map:
+    L_circ: L_max
+  regime:
+    R_drop: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both models set the maximum actin filament length to the droplet circumference 2*pi*R_drop (6.283 um
+    at R_drop = 1 um; flagged too_plain as a 2-op product).
+
+- id: rel_chandra2024_copy_number_concentration
+  kind: same_as
+  a: walker2025/concentration_from_copy_number
+  b: chandrasekaran2024/final_actin_concentration
+  mapping:
+    N_fil: "N"
+    L_fil: "0.0027"
+    dl: "2.7"
+    R_drop: "R_drop"
+  output_map:
+    C_actin: C
+  regime:
+    N: [100.0, 20000.0]
+    R_drop: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both models convert discrete molecule copy number in a spherical droplet of radius R_drop to micromolar
+    concentration via N / (N_A * (4/3)*pi*R_drop^3) with SI 2019 N_A = 6.02214076e23 (evaluating
+    final_actin_concentration at 1 monomer per molecule, L_fil / dl = 0.0027 um / 2.7 nm = 1).
+
+- id: rel_chandra2024_crosslinker_volume_fraction
+  kind: same_as
+  a: walker2025/crosslinker_volume_fraction
+  b: chandrasekaran2024/lammps_crowder_volume_fraction
+  mapping:
+    N_crowder: "N"
+    r_crowder: "r_solid / 1000"
+    L_box: "((4 * pi / 3)**(1/3)) * R_drop"
+  output_map:
+    phi: phi
+  regime:
+    N: [100.0, 20000.0]
+    r_solid: [5.0, 50.0]
+    R_drop: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Hard-sphere crosslinker volume fraction phi = 100 * N * (r_solid / R_drop)^3 (%) inside a spherical
+    droplet equals chandrasekaran2024/lammps_crowder_volume_fraction (100 * N * (4/3)*pi*r^3 / L_box^3)
+    under the equal-container-volume mapping L_box = ((4*pi/3)^(1/3)) * R_drop.
+
+- id: rel_chandra2024_persistence_length
+  kind: same_as
+  a: walker2025/persistence_length_from_rigidity
+  b: chandrasekaran2024/persistence_length_from_rigidity
+  mapping:
+    kappa: "k_bend"
+    kBT: "kBT"
+  output_map:
+    l_p: L_p
+  regime:
+    k_bend: [0.01, 0.2]
+    kBT: [3.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both reconstructed models compute F-actin thermal persistence length L_p = k_bend / (k_B T)
+    identically (yielding 18.23-18.25 um at k_bend = 0.075 pN*um^2 and 298 K, or 17.86 um at CytoSim
+    default kT = 4.2 pN*nm).
+
+- id: rel_chandra2024_viscosity_ratio
+  kind: same_as
+  a: walker2025/condensate_viscosity_ratio
+  b: chandrasekaran2024/droplet_viscosity_ratio_water
+  mapping:
+    eta_drop: "eta_cond"
+    eta_water: "eta_water"
+  output_map:
+    alpha_visc: ratio
+  regime:
+    eta_cond: [0.001, 10.0]
+    eta_water: [0.0005, 0.002]
+  provenance: proposed
+  reason: >
+    Both models compute the condensate-to-water viscosity ratio eta_cond / eta_water = 500 at
+    eta_cond = 0.5 Pa*s and eta_water = 0.001 Pa*s, directly highlighting that walker2025 Table S1
+    ('500x water') corrects chandrasekaran2024 Supplementary Table 2's 10-fold error ('50x water';
+    flagged too_plain as a 1-op quotient).
+
+- id: rel_chandra2024_oligomer_concentration
+  kind: same_as
+  a: walker2025/protein_oligomer_concentration
+  b: chandrasekaran2024/vasp_tetramer_concentration
+  mapping:
+    C_vasp_mon: "C_mon"
+    valency: "n_subunits"
+  output_map:
+    C_vasp_tet: C_olig
+  regime:
+    C_mon: [0.1, 50.0]
+    n_subunits: [2.0, 4.0]
+  provenance: proposed
+  reason: >
+    Both models convert monomer subunit concentration to oligomer concentration via C_olig = C_mon / n_subunits
+    (e.g., VASP tetramer concentration = C_mon / 4; flagged too_plain as a 1-op quotient).
+
+# ==============================================================================
+# 3. Relations with chandrasekaran_source_data (MOESM9_ESM.xlsx, 2024)
+# ==============================================================================
+# Audit across all 20 x 31 runnable model pairs: 19 of 20 models read discrete
+# chandrasekaran2024-specific microscopy/CytoSim/LAMMPS/PCA Excel sheets and share
+# 0 mathematical relations with walker2025. Only sheet 'FigureS2B'
+# (`figs2b_icosphere_reader`) directly tests the shared icosphere discretization.
+
+- id: rel_chandra_sdata_figs2b_ico_n_faces
+  kind: same_as
+  a: walker2025/icosphere_subdivision_geometry_icosahedron
+  b: chandrasekaran_source_data/figs2b_icosphere_reader
+  mapping:
+    n: "n_subdiv"
+  output_map:
+    n_faces_expected: n_faces
+  regime:
+    R_drop: [1.0, 1.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.7, 2.7]
+  provenance: proposed
+  reason: >
+    walker2025's corrected 20-face icosahedron subdivision model matches the exact expected face counts
+    20 * 4^n (20, 80, 320, 1280, 5120, 20480) recorded by chandrasekaran_source_data/figs2b_icosphere_reader
+    across all six rows n = 0..5 of 41467_2024_46726_MOESM9_ESM.xlsx sheet 'FigureS2B'.
+
+- id: rel_chandra_sdata_figs2b_ico_eq_side_approx
+  kind: approximated_by
+  a: walker2025/icosphere_subdivision_geometry_icosahedron
+  b: chandrasekaran_source_data/figs2b_icosphere_reader
+  mapping:
+    n: "n_subdiv"
+  output_map:
+    side_median: eq_side
+  regime:
+    R_drop: [1.0, 1.0]
+    n_subdiv: [3.0, 5.0]
+    d_mon: [2.7, 2.7]
+  tolerance: 0.03
+  provenance: proposed
+  reason: >
+    At subdivision levels n = 3..5 on a unit-radius droplet (R_drop = 1.0 um), walker2025/icosphere_subdivision_geometry_icosahedron's
+    spherical-area equilateral side eq_side = sqrt(4*(4*pi*R^2/N_faces)/sqrt(3)) approximates MOESM9 sheet
+    'FigureS2B's per-triangle planar median equilateral side side_median within 2.77% (2.63% at n=3,
+    2.49% at n=4, 2.77% at n=5, reflecting icosphere triangle-area skewness plus MOESM9's 1,281-column truncation).
+  assumptions:
+    - "Fixed R_drop = 1.0 um matching MOESM9 sheet 'FigureS2B', evaluated at high-subdivision levels n = 3..5 where spherical vs planar triangle curvature difference is <= 0.24%."
+
+- id: rel_chandra_sdata_figs2b_printed_n_faces_mismatch
+  kind: same_as
+  a: walker2025/icosphere_subdivision_geometry_printed
+  b: chandrasekaran_source_data/figs2b_icosphere_reader
+  mapping:
+    n: "n_subdiv"
+  output_map:
+    n_faces_expected: n_faces
+  regime:
+    R_drop: [1.0, 1.0]
+    n_subdiv: [0.0, 5.0]
+    d_mon: [2.7, 2.7]
+  provenance: proposed
+  reason: >
+    Honest not_verified test contrasting walker2025 Methods S1's literally printed 8-triangle octahedron
+    (8 * 4^n faces) against the 20 * 4^n icosphere recorded in MOESM9 sheet 'FigureS2B' from cited source
+    [S4] (chandrasekaran_source_data): differs everywhere by a constant factor of 8/20 = 0.4x.
+
+# ==============================================================================
+# 4. Relations with graham2023 (Nat. Phys. 19, 574-585, 2023; ref-13)
+# ==============================================================================
+# Note: graham2023's remaining 29 models describe 2D continuum elastic droplet-ring
+# deformation (SLSQP minimization, Gauss-Kummer ellipse perimeter, wetting tension,
+# Bathe bundle bending rigidity, equipartition ring amplitude), disjoint from
+# walker2025's rigid-sphere 3D CytoSim framework. The shape-flagged pair
+# graham2023/droplet_ring_minimization_corrected vs walker2025/langevin_overdamped_1d
+# is a spurious dimensional coincidence and is omitted.
+
+- id: rel_graham2023_droplet_circumference
+  kind: same_as
+  a: walker2025/droplet_circumference
+  b: graham2023/circular_ring_contour_length
+  mapping:
+    R: "R_drop"
+  output_map:
+    L: L_max
+  regime:
+    R_drop: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both models define the circular droplet perimeter / actin ring contour length as 2*pi*R (flagged
+    too_plain as a 2-op product; graham2023 ref-13 established the VASP droplet actin-ring geometry
+    adopted in walker2025's CytoSim target length L_max = 2*pi*R).
+
+- id: rel_graham2023_filament_final_reduces_to_linear
+  kind: reduces_to
+  a: walker2025/filament_final_length
+  b: graham2023/linear_bundle_elongation
+  mapping:
+    v: "k_grow"
+    t: "t_sim"
+  output_map:
+    y: L_final
+  limit:
+    L0: "0"
+    L_max: "oo"
+  regime:
+    L0: [0.05, 0.5]
+    k_grow: [0.005, 0.05]
+    t_sim: [10.0, 600.0]
+    L_max: [5.0, 20.0]
+  provenance: proposed
+  reason: >
+    In the zero-seed-length (L0 -> 0) and uncapped (L_max -> oo) limit, walker2025's capped linear
+    filament elongation min(L0 + k_grow * t_sim, L_max) reduces identically to graham2023/linear_bundle_elongation
+    (y = v * t).
+
+# ==============================================================================
+# 5. Relations with graham2024 (PNAS 121, e2309152121, 2024; ref-23/S10)
+# ==============================================================================
+
+- id: rel_graham2024_langevin_overdamped_1d
+  kind: approximated_by
+  a: walker2025/langevin_overdamped_1d
+  b: graham2024/langevin_overdamped_1d
+  mapping:
+    mu: "mu"
+    kBT: "kBT"
+    f: "f"
+  output_map:
+    D_eff: D_eff
+  regime:
+    mu: [0.1, 20.0]
+    kBT: [3.5, 5.0]
+    f: [0.0, 5.0]
+  tolerance: 0.05
+  provenance: stated
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Methods S1 (Position evolution) vs graham2024 SI Methods (p. 23)"
+  assumptions:
+    - "Both records integrate the identical 1D overdamped Langevin SDE dx = mu*f*dt + dB and share the identical text misprint calling mobility mu 'the viscosity of the solvent'; tolerance 0.05 bounds the fixed-seed MC sampling difference between n_particles = 4000 (dt = 0.002 s, t = 1.0 s) and n_particles = 2000 (dt = 0.001 s, t = 0.2 s)."
+
+- id: rel_graham2024_einstein_mobility
+  kind: same_as
+  a: walker2025/mobility_from_diffusion
+  b: graham2024/einstein_diffusion_relation
+  mapping:
+    D: "D"
+    kBT: "kBT"
+  output_map:
+    mu: mu
+  regime:
+    D: [0.01, 20.0]
+    kBT: [3.5, 5.0]
+  provenance: stated
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Methods S1 (Position evolution) vs graham2024 SI Methods (p. 23)"
+  assumptions:
+    - "Both models evaluate hydrodynamic mobility from the Einstein relation via mu = D / (k_B T)."
+
+- id: rel_graham2024_stokes_einstein_diffusion
+  kind: same_as
+  a: walker2025/stokes_einstein_diffusion
+  b: graham2024/stokes_einstein_sphere_diffusion
+  mapping:
+    eta: "eta"
+    r: "r / 1000"
+    kBT: "kBT"
+  output_map:
+    D: D
+  regime:
+    eta: [0.001, 10.0]
+    r: [5.0, 100.0]
+    kBT: [3.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both reconstructed Stokes-Einstein checks compute D = k_B T / (6*pi*eta*r) identically (after nm <-> um
+    radius conversion), exposing the identical 687x discrepancy (0.01455 vs 10 um^2/s) across all three
+    Rangamani-lab CytoSim droplet papers.
+
+- id: rel_graham2024_harmonic_boundary_force
+  kind: same_as
+  a: walker2025/harmonic_boundary_repulsion_force
+  b: graham2024/boundary_harmonic_force
+  mapping:
+    k_boundary: "k_bound"
+    d: "r - R_drop"
+  output_map:
+    F_boundary: F_rep
+  regime:
+    k_bound: [50.0, 500.0]
+    r: [0.8, 2.0]
+    R_drop: [0.5, 1.2]
+  provenance: stated
+  citation:
+    page: 42
+    printed_page: "SI-19"
+    quote: "We started with the simulation framework in our previous work [S4,10]."
+    where: "Table S1 (p. 25) vs graham2024 Table S1 (p. 19)"
+  assumptions:
+    - "Identical one-sided harmonic spherical-boundary confinement force F = k_bound * max(0, r - R_drop) with identical stiffnesses 200 pN/um (actin) and 100 pN/um (crosslinkers)."
+
+- id: rel_graham2024_droplet_circumference
+  kind: same_as
+  a: walker2025/droplet_circumference
+  b: graham2024/max_filament_length_circumference
+  mapping:
+    R_drop: "R_drop"
+    L_seg: "0.1"
+  output_map:
+    L_max: L_max
+  regime:
+    R_drop: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both models define the maximum filament length as the droplet circumference 2*pi*R_drop (6.283 um at
+    R_drop = 1 um; flagged too_plain as a 2-op product).
+
+- id: rel_graham2024_persistence_length
+  kind: same_as
+  a: walker2025/persistence_length_from_rigidity
+  b: graham2024/actin_persistence_length_from_rigidity
+  mapping:
+    K_bend: "k_bend"
+    T: "100000000 * kBT / 1380649"
+  output_map:
+    L_p: L_p
+  regime:
+    k_bend: [0.01, 0.2]
+    kBT: [3.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both models compute F-actin thermal persistence length L_p = k_bend / (k_B T) identically after
+    converting kBT (pN*nm) to temperature T = kBT / k_B (K) with exact SI 2019 Boltzmann constant
+    k_B = 1.380649e-2 pN*nm/K.
+
+- id: rel_graham2024_copy_number_concentration
+  kind: same_as
+  a: walker2025/concentration_from_copy_number
+  b: graham2024/concentration_from_total_polymer
+  mapping:
+    L_total: "0.0027 * N"
+    l_mono: "2.7"
+    R_drop: "R_drop"
+  output_map:
+    C_T: C
+  regime:
+    N: [100.0, 20000.0]
+    R_drop: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Both models convert discrete molecule copy number in a spherical droplet of radius R_drop to micromolar
+    concentration via N / (N_A * (4/3)*pi*R_drop^3) with SI 2019 Avogadro constant (evaluating
+    concentration_from_total_polymer at 1 monomer per molecule, L_total / l_mono = N).
+
+- id: rel_graham2024_viscosity_ratio
+  kind: same_as
+  a: walker2025/condensate_viscosity_ratio
+  b: graham2024/droplet_viscosity_water_ratio
+  mapping:
+    eta_droplet: "eta_cond"
+    eta_water: "eta_water"
+  output_map:
+    ratio: ratio
+  regime:
+    eta_cond: [0.001, 10.0]
+    eta_water: [0.0005, 0.002]
+  provenance: proposed
+  reason: >
+    Both models compute the condensate-to-water viscosity ratio eta_cond / eta_water = 500 at 0.5 Pa*s
+    vs 0.001 Pa*s, showing that walker2025 Table S1 ('500x water') fixes the 10-fold error ('50x water')
+    carried over into graham2024 Table S1 (flagged too_plain as a 1-op quotient).
+
+- id: rel_graham2024_oligomer_concentration
+  kind: same_as
+  a: walker2025/protein_oligomer_concentration
+  b: graham2024/vasp_tetramer_from_monomer
+  mapping:
+    C_mono: "C_mon"
+    valency: "n_subunits"
+  output_map:
+    C_tet: C_olig
+  regime:
+    C_mon: [0.1, 50.0]
+    n_subunits: [2.0, 4.0]
+  provenance: proposed
+  reason: >
+    Both models convert monomer subunit concentration to oligomer concentration via C_olig = C_mon / n_subunits
+    (flagged too_plain as a 1-op quotient).
+
+- id: rel_graham2024_vca_ode_reduces_to_filament_final
+  kind: reduces_to
+  a: graham2024/cytosim_vca_ode_filament_length
+  b: walker2025/filament_final_length
+  mapping:
+    L0: "L_0"
+    k_grow: "k_grow"
+    t_sim: "t_end"
+    L_max: "50"
+  output_map:
+    L_final: L_fil
+  limit:
+    L_total: "oo"
+  regime:
+    k_grow: [0.005, 0.02]
+    N_fil: [10.0, 50.0]
+    L_0: [0.05, 0.2]
+    L_total: [500.0, 2000.0]
+    t_end: [50.0, 600.0]
+    k_bind: [1.0, 5.0]
+    C_vca: [0.0, 0.0]
+    factor_Gmax: [5.0, 5.0]
+    R_drop: [0.8, 1.5]
+    l_mono: [2.7, 2.7]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the zero-VCA (C_vca = 0), infinite monomer-pool limit (L_total -> oo) below the circumference cap
+    L_max, graham2024's CytoSim monomer-depletion ODE reduces identically to walker2025's undepleted
+    filament final length L_final = L0 + k_grow * t_sim.
+
+# ==============================================================================
+# 6. Relations with graham2024_code (CytoSim_VASP_Arp_VCA, GitHub)
+# ==============================================================================
+# Note: graham2024_code's remaining models read Arp2/3 and VCA CSV outputs,
+# compute radial density / R.A.E. enrichment, or are non-runnable 3D CytoSim
+# configs (the shape-flagged pair cytosim_arp23_vca_config vs brownian_noise_stddev
+# is non-runnable and a spurious dimensional coincidence).
+
+- id: rel_graham2024_code_stokes_einstein
+  kind: same_as
+  a: graham2024_code/config_parameter_audit
+  b: walker2025/stokes_einstein_diffusion
+  mapping:
+    eta: "0.5"
+    r: "30"
+    kBT: "1000 * kT"
+  output_map:
+    D: vasp_stokes_D
+  regime:
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: >
+    graham2024_code/config_parameter_audit reads eta = 0.5 pN*s/um^2 and r_blob = 0.03 um = 30 nm directly
+    from released CytoSim config0.cym and evaluates Stokes-Einstein diffusivity kT / (6*pi*eta*r_blob),
+    matching walker2025/stokes_einstein_diffusion identically and confirming the identical 673x-687x
+    diffusivity discrepancy across both Rangamani-lab codebases.
+
+- id: rel_graham2024_code_config_vasp_conc
+  kind: same_as
+  a: graham2024_code/config_parameter_audit
+  b: walker2025/concentration_from_copy_number
+  mapping:
+    N: "1000"
+    R_drop: "1.0"
+  output_map:
+    C: vasp_tet_conc
+  regime:
+    kT: [0.0035, 0.005]
+  provenance: proposed
+  reason: >
+    graham2024_code/config_parameter_audit parses n_blob = 1000 and R_drop = 1.0 um from released
+    config0.cym and computes [VASP-tet] = 0.3965 uM via the exact same spherical copy-number formula as
+    walker2025/concentration_from_copy_number (matching walker2025's baseline 1000 crosslinkers = 0.40 uM).
+
+- id: rel_graham2024_code_vca_config_circumference
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: walker2025/droplet_circumference
+  mapping:
+    R_drop: "R_drop"
+  output_map:
+    L_max: L_max_fil
+  regime:
+    N_fil: [10.0, 50.0]
+    R_drop: [0.5, 5.0]
+    L0_per_fil: [0.05, 0.2]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [1000.0, 10000.0]
+    l_mono: [0.0027, 0.0027]
+    gmax_factor: [5.0, 5.0]
+    r_blob: [0.03, 0.03]
+  provenance: proposed
+  reason: >
+    graham2024_code's CytoSim config generator sets single-filament max length L_max_fil = 2*pi*R_drop,
+    matching walker2025/droplet_circumference identically (flagged too_plain as a 2-op product).
+
+- id: rel_graham2024_code_vca_config_init_conc
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: walker2025/concentration_from_copy_number
+  mapping:
+    N: "N_fil * L0_per_fil / l_mono"
+    R_drop: "R_drop"
+  output_map:
+    C: F_actin_init_conc
+  regime:
+    N_fil: [10.0, 50.0]
+    R_drop: [0.5, 5.0]
+    L0_per_fil: [0.05, 0.2]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [1000.0, 10000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [5.0, 5.0]
+    r_blob: [0.03, 0.03]
+  provenance: proposed
+  reason: >
+    graham2024_code/notebook_vca_config_params converts initial F-actin monomer copy number
+    N = N_fil * L0_per_fil / l_mono in a spherical droplet of radius R_drop to micromolar concentration
+    using the exact same formula and SI 2019 Avogadro constant as walker2025/concentration_from_copy_number.
+
+- id: rel_graham2024_code_actin_ode_reduces_to_filament_final
+  kind: reduces_to
+  a: graham2024_code/notebook_actin_ode
+  b: walker2025/filament_final_length
+  mapping:
+    L0: "N_fil * L0_per_fil"
+    k_grow: "N_fil * k_grow_plus"
+    t_sim: "600"
+    L_max: "100000"
+  output_map:
+    L_final: L_total
+  limit:
+    TFactin: "oo"
+  regime:
+    N_fil: [10.0, 50.0]
+    TFactin: [500.0, 2000.0]
+    k_grow_plus: [0.005, 0.02]
+    L0_per_fil: [0.05, 0.2]
+    R_drop: [0.8, 1.5]
+    l_mono: [0.0027, 0.0027]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the infinite total-actin-pool limit (TFactin -> oo, no monomer depletion), live Cell 21 model() in
+    graham2024_code/notebook_actin_ode integrates dL/dt = N_fil * k_grow_plus over 600 s and reduces
+    identically to walker2025's uncapped linear elongation formula N_fil * (L0_per_fil + 600 * k_grow_plus).

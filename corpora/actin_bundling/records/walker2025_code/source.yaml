@@ -1,0 +1,140 @@
+id: walker2025_code
+kind: software
+title: "Dynamic_multimerization: Custom CytoSim C++ engine, simulation configs, analysis scripts, and plotting notebook (Walker et al., 2025)"
+authors:
+  - Aravind Chandrasekaran
+  - Daniel Mansour
+  - Padmini Rangamani
+  - Caleb Walker
+  - Kristin Graham
+  - Jeanne C. Stachowiak
+year: 2025
+doi: "10.5281/zenodo.14522973"
+url: "https://github.com/RangamaniLabUCSD/Dynamic_multimerization"
+file: corpus/actin_bundling/code/walker2025_code
+version: "sha256:c002c15fe9371b3984c6c91098450ed4c37b8aae2467c567bc2c995323a79929"
+licence: GPL-3.0-only
+language: "C++, Python, CytoSim"
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1"
+  date: "2026-11-25"
+notes: >
+  Full source-code, configuration, and output-pipeline audit of
+  `corpus/actin_bundling/code/walker2025_code` (GitHub
+  https://github.com/RangamaniLabUCSD/Dynamic_multimerization commit 2c37844 / Zenodo
+  10.5281/zenodo.14522973; tree digest
+  sha256:c002c15fe9371b3984c6c91098450ed4c37b8aae2467c567bc2c995323a79929), the released simulation
+  and analysis repository accompanying Walker et al., Developmental Cell 60, 1550-1567 (2025)
+  (`walker2025`). The repository carries `Source_Code/Cytosim/LICENSE.txt` (GNU GPL v3.0 for the
+  forked CytoSim C++ engine by Francois Nedelec et al., with no separate top-level LICENSE file for
+  the custom `.cym` configs and Python scripts).
+
+  Repository contents and entry points:
+  (1) `Source_Code/Cytosim/`: modified C++ CytoSim engine adding custom dynamic dimerization/multimerization
+  (`src/sim/hands/dimerizer.h/.cc`, `dimerizer_prop.h/.cc`, `src/sim/point_grid.cc:81-159`,
+  `src/sim/singles/wrist.cc:102-138`, `src/sim/hand.cc:205-268,343`, `src/sim/single_set.cc:50-75`,
+  `src/sim/simul_step.cc:168-174`).
+  (2) 874 non-Source_Code CytoSim `.cym` configuration files across 4 templates (`Inputfile_Templates/`:
+  `inputTemplate-miniLpd`, `inputTemplate-miniLpd-VASP`, `inputTemplate-DynamicDimer`,
+  `inputTemplate-DynamicMultimer`) and 9 figure sweep directories (`Figure_4-S6E-G/inputfiles` &
+  `inputfiles_2` [250 configs], `Figure_5/inputfiles` [125], `Figure_S5/Figure_S5A` [40], `Figure_S5B`
+  [5], `Figure_S5C-E` [125], `Figure_S6A-D/inputfiles` [75], `Figure_S7/Figure_S7B-F` [125],
+  `Figure_S7/Figure_S7G` [125, omitting `new 30 filament` for no-actin control]).
+  (3) `Analysis_Scripts/`: `icosphere.py` (314 lines: `icosphere`, `generateunitnormals`,
+  `generateNeighborList`, `interpolateallmonomers`, `generatedensityfield`),
+  `Main_Analyze_Trajectory.py` (801 lines: `readcytosimtraj`, `getfracoccupiedtimeseries`,
+  `getvaspprops`, `getvasppropsLpdVASP`, `getDynamicDimerprops`, `find_chains_rings_and_doubles`,
+  `getDynamicMultimerprops`, `analyzetrajectory`, and 5 `frontend_*` entry points), 5 CLI wrapper
+  scripts (`analyze*_scriptcall_eachrun.py`), and `get_nsolids.sh`.
+  (4) Precomputed trajectory analysis CSVs (`FO_Output`/`FO_output` and `CrosslinkOutput`, including
+  `Length_Freq_*.csv`) and `Figures.ipynb` (49 cells regenerating Figs. 4J-K, 5C-D, S5E, S6B-D,
+  S6F-G, and S7D-G).
+
+  Record inventory: 36 quantities, 72 data (59 parameters/indices cited directly from `.cym`, C++,
+  Python, and `Figures.ipynb` + 13 paper target values copied from `walker2025`; 51 cross-linked to
+  `walker2025` via `from_source` / `from_datum`), 11 added probe inputs, 12 models (7 live
+  `software: true` adapters executing unmodified `icosphere.py`, `Main_Analyze_Trajectory.py`, and
+  `Figures.ipynb` via `$BOXGRAPH_SOURCE` with in-memory `pandas` shims, including 1 corrected
+  `variant_of` last-30-snapshot model; 3 closed-form C++/config ports; 2 non-runnable full 3D CytoSim
+  models), 17 runs, 19 comparisons (11 reproduced, 8 not reproduced), and 10 open questions.
+
+  What the code reproduces from `walker2025` (11/19 comparisons reproduced):
+  - All core `.cym` geometric and kinetic inputs match Table S1/S2: `time_step = 0.002 s`,
+    `viscosity = 0.5 pN*s/um^2` (and `5` in Fig. S5B), `radius = 1.0 um`, `rigidity = 0.075 pN*um^2`,
+    `segmentation = 0.1 um`, `confine = 200` (actin) / `100` (crosslinkers) `pN/um`,
+    `growing_speed = 0.0103 um/s`, `growing_force = 10.0 pN`, actin steric radius `0.0035 um` (3.5 nm),
+    crosslinker radius `0.03 um` (30 nm), `binding` capture distances `0.03 um` (actin) and `0.09 um`
+    (dimerizer), `unbinding` force `10.0 pN`, copy numbers `1000` (dimers/mixtures), `2000` (monomers),
+    `1000..20000` (Fig. S5C-E), `30` filaments (`length = 0.1 um`), and 5-decade rate sweeps
+    `0.001..10.0 s^-1`.
+  - Config-derived quantities reproduce `walker2025`: `300,000 * 0.002 = 600 s`
+    (`cmp_cfg_total_time_baseline`), `1,200,000 * 0.002 = 2,400 s` (`cmp_cfg_total_time_high_visc`),
+    `L_final = 6.280 um` at 600 s (`cmp_cfg_final_length_baseline`), `0.3964 uM` for 1,000 dimers
+    (`cmp_cfg_dimer_conc_baseline`), `0.7929 uM` for 2,000 monomers (`cmp_cfg_monomer_conc_baseline`),
+    volume fractions `2.7%` and `54%` (`cmp_cfg_vol_frac_sweep`), and persistence length
+    `L_p = 0.075 / 0.0042 = 17.86 um` inside the reported `10-20 um` range (`cmp_cfg_actin_Lp_cytosim`).
+  - Live `icosphere.py` reproduces the `100 nm` radial surface shell cutoff (`R - 0.9 = 100 nm`,
+    `cmp_icosphere_shell_thickness_vs_paper`) and assigns `0.0` occupancy to interior filaments at
+    `r = 0.85 um` (`cmp_icosphere_interior_zero_occupancy`).
+  - Live `Main_Analyze_Trajectory.find_chains_rings_and_doubles()` accurately classifies chains, rings,
+    and double-bonded dimers while conserving all monomers (`cmp_multimer_topology_monomer_conservation`).
+
+  What the code does NOT reproduce and every discrepancy / hidden choice found vs `walker2025`
+  (8/19 comparisons not reproduced; 10 open questions):
+  (1) Major plotting bug in `Figures.ipynb` Cells 13, 40, and 46 (Fig. 5D, Fig. S7E, Fig. S7G):
+    `startpos = int(0.95*len(Row1))` indexes the outer replicate list (len 1..5) instead of the
+    601-snapshot array, averaging ALL 601 snapshots (`t = 0..600 s`, including all-zero `t = 0`) instead
+    of the claimed last 30 snapshots (5%) (`cmp_nb_fig5d_nsnaps_as_written_vs_paper` not reproduced:
+    601 vs 30; corrected variant `cmp_nb_fig5d_nsnaps_last30_vs_paper` reproduced). Visual inspection
+    of published Fig. 5D (p. 9) and Fig. S7E (p. 40) confirms the paper plots the buggy all-trajectory
+    averages (at R_22 k_form=10, k_split=0.1: Dimer_2 = 0.3461 vs true last-30 = 0.6145; at R_21:
+    Dimer_2 = 0.3818 vs 0.6762; in Fig. S7E R_21: BM2 = 0.7165 vs 0.9170) and their inflated error bars.
+  (2) Major replicate-dropping bug in `Figures.ipynb` Cells 4, 8, 31, and 35 (Fig. 4J & Fig. S6F):
+    `for diriter in range(0, 2):` wraps the outer loop, appending `outputfiles/` (reps 0..4) and
+    `outputfiles_2/` (reps 5..9) separately; plotting cells index only the first half, plotting 5
+    replicates instead of the claimed 10 (`cmp_nb_fig4j_replicates_vs_paper` not reproduced: 5 vs 10;
+    at R_22 t=600 s, plotted FO = 0.1986 matches published Fig. 4J vs pooled 10-rep FO = 0.1608).
+    Cells 11 & 38 also fail on case-sensitive filesystems (`'FO_Output'` vs actual `'FO_output'`).
+  (3) Reversed legend in published Fig. S7D: Cell 38 loads FO time series in ascending `k_multimer_split`
+    order {0.001..10.0} (e.g., at k_form=0.01: R_5 k_split=0.001 ring FO=0.1675, R_9 k_split=10.0 shell
+    FO=0.4800), but Cell 42 reuses Panel E's descending `labelvec = ['10.0', '1.0', '0.1', '0.01', '0.001']`
+    for Panel D's legend, inverting every curve label in published Fig. S7D (p. 40).
+  (4) Table S1 steric vs bond stiffness mix-up (settles `walker2025` `q_steric_stiffness_difference`):
+    all 874 `.cym` files set ONE global steric push stiffness `steric = 1, 1` (`1.0 pN/um` for every
+    species). Table S1's `10 pN/um` (VASP, monomer-actin) and `5.0 pN/um` (monomer-monomer) are actually
+    `SingleProp::stiffness` bond spring stiffnesses mislabelled as steric stiffness, and bivalent mini-Lpd
+    actually uses `stiffness = 10.0 pN/um` (not `1.0`, failing cross-link check `10.0 vs 1.0`).
+  (5) Dead `Wrist` diffusion settles `walker2025` `q_stokes_einstein_vs_prescribed_D` and
+    `q_brownian_step_exceeds_binding_radius`: `diffusion = 10.0` on grafted Wrists is silently ignored
+    (`wrist.cc:17-20,68-83`). Actual `Solid` Stokes drag (`solid.cc:854-943`) with hidden default
+    `kT = 0.0042 pN*um` (`simul_prop.cc:24`) yields `D_solid = 0.01485 um^2/s` (673x smaller than
+    `10 um^2/s`, `cmp_solid_stokes_D_vs_paper` not reproduced) and `sigma_B = 7.71 nm` (not 200 nm).
+  (6) Custom C++ `Dimerizer` quirks: `Wrist::setInteractions()` (`wrist.cc:131-135`) adds
+    `anchor.addLink(..., prop->stiffness)` for BOTH attached dimerizer Wrists, doubling effective
+    mechanical stiffness to `10.0 pN/um` (`cmp_dimer_keff_vs_nominal_stiffness` not reproduced: 10 vs 5)
+    while `Wrist::force()` feeds only `5.0 * d = F_mech / 2` to Bell detachment; both free dimerizers
+    attempt attachment per step via `PointGrid::tryToAttach()` (~2x pairwise binding rate); and
+    `point_grid.cc:127-132` tests anchor-to-center distance `< 90 nm` rather than center-to-center
+    `2*R_solid < d < 3*R_solid`.
+  (7) Icosphere discrepancies & bugs (settles `walker2025` `q_icosphere_eight_triangles_misprint`):
+    `icosphere.py` starts from a 20-face icosahedron (not 8, cross-link `20 vs 8` not reproduced) and
+    `Main_Analyze_Trajectory.py:711` subdivides `f = 4` times (not 3, cross-link `4 vs 3` close), giving
+    5,120 triangles (`s_eq = 75.24 nm` = `27.9` actin monomers at `icosphere.py:160`'s hidden `2.7 nm`
+    spacing, failing `cmp_icosphere_f4_monomers_vs_paper` and `cmp_icosphere_n3_monomers_vs_paper` vs
+    Methods S1's `~10` monomers). Additional hidden choices/bugs: plane cutoff `dthreshold = 0.2 um`,
+    hardcoded `0.9*0.9` shell cutoff, `interpolateallmonomers()` `range(1, nmonomers-1)` off-by-one +
+    interior-vertex duplication, and shifted-argument `False` in `Main_Analyze_Trajectory.py:192`
+    silently bypassing `LISTEDSEARCH`.
+  (8) Broken shipped `Main_Analyze_Trajectory.py`: `getvaspprops()` line 242 `for ublobid in enumerate(unique):`
+    misclassifies 100% of bound crosslinkers into `Mean_Nfpc_4_fil` (`cmp_vaspprops_bug_2fil_count` not
+    reproduced: 0 vs 100), `getvasppropsLpdVASP()` crashes with `TypeError` (and never unpacks
+    `np.unique(..., return_counts=True)`), and `get_nsolids.sh:12` has a syntax typo `[ "$endlB" -gt 0]`,
+    proving the bundled CSVs were produced by a different working script prior to commit.
+  (9) Other hidden parameters: `kT = 0.0042 pN*um` (`simul_prop.cc:24`), microtubule default
+    `drag_radius = 0.0125 um` (`fiber_prop.cc:264`), cylinder drag offset `0.32` (`fiber.cc:604`),
+    solid binding-site `deviation = 0.001 um` and `separation = 0.06` (mini-Lpd) vs `0.054 um`
+    (VASP, DynamicDimer, DynamicMultimer), Figure_S5A viscosity sweep `0.001..1000.0 pN*s/um^2`, and
+    4-decimal `max_length = 6.2832 um` (+0.00024% vs exact `2*pi = 6.283185 um`, causing
+    `cmp_cfg_final_length_high_visc` and cross-link `cym_actin_max_length` to flag not reproduced).

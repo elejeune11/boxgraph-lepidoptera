@@ -1,0 +1,231 @@
+# ==============================================================================
+# 1. Config-generator formulas & .cym parameter audit vs graham2024
+# ==============================================================================
+
+- id: cmp_arp23_molecule_counts
+  purpose: reproduction
+  computed: nb_arp23_count_curve
+  printed: paper_arp23_count_vs_conc
+  note: "Live Cell 15 .astype(int) formula reproduces all 8/8 Arp2/3 molecule counts in graham2024 Table S1."
+
+- id: cmp_total_polymer_vs_paper
+  purpose: reproduction
+  computed: nb_total_polymer_pred
+  printed: paper_cytosim_total_polymer
+
+- id: cmp_t_actin_conc_vs_paper
+  purpose: reproduction
+  computed: nb_T_actin_conc_pred
+  printed: paper_ode_t_actin_solved
+
+- id: cmp_f_actin_init_vs_paper
+  purpose: reproduction
+  computed: nb_F_actin_init_pred
+  printed: paper_ode_f_actin_initial
+
+- id: cmp_vca_k_bind_fiber_1uM
+  purpose: reproduction
+  computed: nb_vca_k_bind_fiber_1uM_pred
+  printed: paper_vca_k_bind_fiber_1uM
+
+- id: cmp_vca_l_gmax_1uM
+  purpose: reproduction
+  computed: nb_vca_L_Gmax_1uM_pred
+  printed: paper_vca_l_gmax_1uM
+
+- id: cmp_site_separation_internal
+  purpose: consistency
+  computed: nb_site_separation_pred
+  printed: vasp_site_separation_code
+
+- id: cmp_branching_angle_code_vs_paper
+  purpose: reproduction
+  computed: audit_branching_angle_deg
+  printed: paper_arp23_branching_angle
+  note: "All 240 .cym configs set angle = 1.344 rad = 77.01 deg (commenting out 1.22 rad = 70 deg), contradicting graham2024 Table S1 / Fig. S4f / SI p. 23 (70 deg)."
+
+- id: cmp_vasp_tet_conc_vs_tableS1
+  purpose: reproduction
+  computed: audit_vasp_tet_conc
+  printed: paper_vasp_tet_conc_tableS1
+  note: "new 1000 blob in R = 1.0 um implies [VASP-tet] = 0.3964 uM, matching Table S1 (0.4 uM)."
+
+- id: cmp_vasp_tet_conc_vs_fig5a
+  purpose: reproduction
+  computed: audit_vasp_tet_conc
+  printed: paper_vasp_tet_conc_fig5
+  note: "new 1000 blob implies 0.3964 uM, contradicting Fig. 5A and Fig. S6 captions (0.2 uM) by 2x and settling graham2024 q_vasp_tet_conc_contradiction_02_vs_04."
+
+- id: cmp_vasp_stokes_D_vs_paper
+  purpose: consistency
+  computed: audit_vasp_stokes_D
+  printed: paper_vasp_diffusion_rate
+  note: "Because CytoSim Wrist ignores diffusion = 10.0 on graftedcrosslinker, solid blob diffuses by Stokes drag at D = 0.01485 um^2/s (673x slower than Table S1's 10 um^2/s)."
+
+- id: cmp_arp23_replicates_vs_methods
+  purpose: reproduction
+  computed: audit_arp23_config_reps
+  printed: paper_replicates_methods
+
+- id: cmp_arp23_replicates_vs_fig5c
+  purpose: reproduction
+  computed: csv_rae_arp150_nreps
+  printed: paper_replicates_fig5c
+  note: "Cell 39 (Nreps = 5) and PLOTCSVFILES (5 replicates r_0..r_4) refute Fig. 5C caption's 'six replicates', settling graham2024 q_replicate_count_5_vs_6."
+
+- id: cmp_vca_density_replicates_vs_figs5
+  purpose: reproduction
+  computed: csv_rae_vca_a150_v1_nreps
+  printed: paper_replicates_figs5
+
+- id: cmp_vca_fillength_replicates_vs_figs5
+  purpose: reproduction
+  computed: csv_vca_inferred_reps
+  printed: paper_replicates_figs5
+  note: "All 40 Fillength_VCA CSVs have Nfil_mean fractional parts exclusively in {0.0, 0.5}, proving only 2 replicates (r_0, r_1) were averaged for Fig. S5a-b despite the caption stating 'Data from 3 replicates'."
+
+# ==============================================================================
+# 2. Live notebook ODE reproductions (self-checks + vs graham2024 targets)
+# ==============================================================================
+
+- id: cmp_cell21_L600_self
+  purpose: reproduction
+  computed: ode_cell21_L600
+  printed: nb_cell21_L600_out
+
+- id: cmp_cell21_Lmax_self
+  purpose: reproduction
+  computed: nb_L_max_total_pred
+  printed: nb_cell21_Lmax_out
+
+- id: cmp_cell21_dPdt600_self
+  purpose: reproduction
+  computed: ode_cell21_dPdt600
+  printed: nb_cell21_dPdt600_out
+
+- id: cmp_cell21_treadmilling_self
+  purpose: reproduction
+  computed: ode_cell21_treadmilling
+  printed: nb_cell21_treadmilling_out
+
+- id: cmp_cell25_no_vca_len_self
+  purpose: reproduction
+  computed: ode_cell25_L600
+  printed: nb_cell25_no_vca_len
+
+- id: cmp_ode_cell21_F600_vs_paper
+  purpose: reproduction
+  computed: ode_cell21_F600
+  printed: paper_ode_f_actin_600s
+  note: "Live Cell 21 ODE gives [F-actin](600.5 s) = 25.091 uM (170.895 um), failing to reproduce SI p. 22's stated boundary condition 27.68 uM (188.50 um)."
+
+- id: cmp_ode_cell25_F600_vs_paper
+  purpose: reproduction
+  computed: ode_cell25_F600
+  printed: paper_ode_f_actin_600s
+  note: "Live ODE at true t = 600.0 s gives 25.073 uM (170.768 um), 9.4% below SI p. 22's 27.68 uM (masked only by 1-sig-fig R = 1.0 volume rounding)."
+
+- id: cmp_ode_cell25_L600_vs_Lmax
+  purpose: consistency
+  computed: ode_cell25_L600
+  printed: nb_cell21_Lmax_out
+  note: "Direct length-space check (independent of R^3 rounding): live ODE reaches 170.768 um at t = 600 s, failing to reach target Lmax = 30 * 2*pi = 188.496 um by -9.4%."
+
+- id: cmp_csv_arp0_L600_vs_Lmax
+  purpose: consistency
+  computed: csv_arp0_Lsum600
+  printed: nb_cell21_Lmax_out
+  note: "Actual CytoSim 0 nM Arp2/3 reaches Lsum(600) = 165.765 um, failing to reach target Lmax = 188.496 um by -12.1%."
+
+- id: cmp_cell23_vca_remaining_self
+  purpose: reproduction
+  computed: ode_cell23_frac_rem_curve
+  printed: nb_cell23_vca_remaining_table
+
+- id: cmp_cell25_vca_reduction_self
+  purpose: reproduction
+  computed: ode_cell25_vca_frac_red_curve
+  printed: nb_cell25_vca_reduction_table
+
+- id: cmp_vca_ode_ku0_vs_cell25_table
+  purpose: consistency
+  computed: ode_ku0_frac_red_curve
+  printed: nb_cell25_vca_reduction_table
+  note: "Setting kunbind = 0 (as in all 200 VCA .cym configs) matches Cell 25 at [VCA] = 0, 1, 2 uM (saturated at L_Gmax) but diverges sharply at 5 uM (0.1778 vs 0.1266) and 10 uM (0.3555 vs 0.1302)."
+
+- id: cmp_vca_ode_1uM_ku2p7_vs_paper
+  purpose: reproduction
+  computed: ode_vca1_ku2p7_dF
+  printed: paper_vca_f_actin_reduction_target
+  note: "Gives delta_[F-actin] = 0.8913 uM (within 1-sig-fig precision of printed '1 uM', 10.9% below 1.00 uM because baseline is 25.07 uM instead of 27.68 uM)."
+
+- id: cmp_vca_ode_1uM_ku0_vs_paper
+  purpose: reproduction
+  computed: ode_vca1_ku0_dF
+  printed: paper_vca_f_actin_reduction_target
+
+# ==============================================================================
+# 3. Live PLOTCSVFILES CytoSim outputs vs graham2024 & notebook outputs
+# ==============================================================================
+
+- id: cmp_csv_arp0_F600_vs_paper
+  purpose: reproduction
+  computed: csv_arp0_F600
+  printed: paper_ode_f_actin_600s
+  note: "Actual CytoSim trajectories at 0 nM Arp2/3 reach Lsum(600) = 165.765 um ([F-actin] = 24.338 uM), 12.1% below SI p. 22's 27.68 uM due to both the ODE shortfall and Brownian ratchet stall force."
+
+- id: cmp_csv_arp50_fold_vs_paper
+  purpose: reproduction
+  computed: csv_arp50_fold
+  printed: paper_arp23_nucleation_fold_50nM
+  note: "Actual CytoSim Arp23_concsweep_steric R_3 gives 296.0 / 30.0 = 9.867x filament increase at 50 nM Arp2/3, reproducing Table S1's '10x increase'."
+
+- id: cmp_csv_vca_arp50_fold_vs_paper
+  purpose: reproduction
+  computed: csv_vca_a50_v0_fold
+  printed: paper_arp23_nucleation_fold_50nM
+  note: "VCA=0 sweep at 50 nM Arp2/3 (R_15) gives 294.5 / 30.0 = 9.817x."
+
+- id: cmp_csv_vca0_lsum_self
+  purpose: reproduction
+  computed: csv_vca_a0_v0_Lsum
+  printed: nb_cell37_lsum_600_vca0
+
+- id: cmp_csv_vca1_lsum_self
+  purpose: reproduction
+  computed: csv_vca_a0_v1_Lsum
+  printed: nb_cell37_lsum_600_vca1
+
+- id: cmp_csv_vca1_dF_vs_paper
+  purpose: reproduction
+  computed: csv_vca_a0_v1_dF
+  printed: paper_vca_f_actin_reduction_target
+  note: "Actual CytoSim VCA=1 uM vs VCA=0 uM at 0 nM Arp2/3 reduces [F-actin](600) by 0.870 uM (within 1-sig-fig of printed '1 uM', 13.0% below 1.00 uM)."
+
+- id: cmp_csv_arp150_final_time_vs_paper
+  purpose: reproduction
+  computed: csv_rae_arp150_mint
+  printed: paper_sim_total_time
+  note: "All 40 Density_Arp23 CSVs reach full t = 600 s (601 frames)."
+
+- id: cmp_csv_vca_arp150_vca1_final_time_vs_paper
+  purpose: reproduction
+  computed: csv_rae_vca_a150_v1_mint
+  printed: paper_sim_total_time
+  note: "In Density_VCA CSVs (24/40 conditions truncated), R=36 replicate r_2 terminates at t = 434 s (435 frames) and r_1 at t = 543 s instead of 600 s."
+
+# ==============================================================================
+# 4. Live radial-bin normalization check (settling factor-of-3 + right-edge bias)
+# ==============================================================================
+
+- id: cmp_uniform_sphere_outer_bin
+  purpose: consistency
+  computed: interp_uniform_rho_outer
+  printed: uniform_sphere_expected_ratio
+  note: "Cell 39's bulkfactor = 3*Nmax/Rmax^3 yields 0.9752 (close to 1.0, settling graham2024 q_radial_density_missing_one_third); residual -2.5% is due to right-bin-edge Radialbincenter = r_hi."
+
+- id: cmp_uniform_sphere_r01_bin
+  purpose: consistency
+  computed: interp_uniform_rho_r01
+  printed: uniform_sphere_expected_ratio
+  note: "At r = 0.1 um (bin [0.075, 0.100]), evaluating 1/(r_hi^2*dR) at the right bin edge instead of shell volume underestimates a homogeneous sphere by 22.9% (0.7708 vs 1.0)."

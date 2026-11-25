@@ -1,0 +1,44 @@
+id: code_constitutive_and_stress
+name: "Constitutive free energy, 3-term active stress, and post-processing Ten_sym / Border stress audit (AuxCortexNematic2D.cpp:403-420,514-565,1108-1140,1239-1248)"
+role: model
+stated:
+  file: src/AuxCortexNematic2D.cpp
+  lines: "1109"
+  quote: "tensor<double,2> Ten_sym =  jac*h*( 4*rodt_  + lambda_iso*(1-S)*id2d_ + lambda_aniso*_Snn  +  crossLinker*_Snn_  + cvisc*Jq_ - frank*product(Dq_,Dq_,{{0,0},{1,1}} ));"
+  where: "AuxCortexNematic2D.cpp:403-420, 514-565, 1108-1140 (LS_CortexNematic_2D) & 1239-1248 (LS_CortexNematic_Border)"
+equation: "sigma_act_code = h*(lambda_iso*(1-S)*I + lambda_aniso*Snn + crossLinker*Snn_); f_code = (sus20/2)*S^2 + (sus40/8)*S^4 + (frank/2)*(grad_q^2) - k_lim*ln(S2_max - S^2); Ten_sym_bulk = h*(4*d + sigma_act/h - (frank/deltat)*2*grad_q^2*e_x outer e_x); Ten_sym_border = h*(d + sigma_act/h - frank*2*grad_q^2*e_x outer e_x); sigma_paper = h*(2*(d + (tr d)*I) + lambda_iso*(I + kappa*q) - (frank/2)*2*grad_q^2*e_x outer e_x)"
+inputs:
+  h: {quantity: relative_density, unit: dimensionless}
+  q1: {quantity: nematic_tensor_1d, unit: dimensionless}
+  q2: {quantity: nematic_tensor_1d, unit: dimensionless}
+  grad_q1x: {quantity: nematic_gradient_dimless, unit: dimensionless}
+  d11: {quantity: velocity_gradient_dimless, unit: dimensionless}
+  d22: {quantity: velocity_gradient_dimless, unit: dimensionless}
+  d12: {quantity: velocity_gradient_dimless, unit: dimensionless}
+  c_visc: {quantity: viscous_prefactor_dimless, unit: dimensionless}
+  frank: {quantity: code_frank_parameter, unit: dimensionless}
+  sus20: {quantity: susceptibility_a_dimless, unit: dimensionless}
+  sus40: {quantity: susceptibility_b_dimless, unit: dimensionless}
+  lambda_iso: {quantity: active_tension_dimless, unit: dimensionless}
+  lambda_aniso: {quantity: parallel_active_tension_dimless, unit: dimensionless}
+  crossLinker: {quantity: transverse_active_tension_dimless, unit: dimensionless}
+  k_lim: {quantity: barrier_stiffness_dimless, unit: dimensionless}
+  S2_max: {quantity: barrier_S2_cutoff, unit: dimensionless}
+  deltat: {quantity: time_dimless, unit: dimensionless}
+outputs:
+  S: {quantity: nematic_order_parameter, unit: dimensionless}
+  f_paper: {quantity: free_energy_density_dimless, unit: dimensionless}
+  f_code_with_barrier: {quantity: free_energy_density_dimless, unit: dimensionless}
+  sigma_act_xx_code: {quantity: stress_dimless, unit: dimensionless}
+  sigma_act_xx_paper: {quantity: stress_dimless, unit: dimensionless}
+  sigma_act_xy_code: {quantity: stress_dimless, unit: dimensionless}
+  sigma_act_mean_slope: {quantity: normalized_mean_tension_slope, unit: dimensionless}
+  sigma_xx_paper_exact: {quantity: stress_dimless, unit: dimensionless}
+  sigma_xx_Ten_sym_bug: {quantity: stress_dimless, unit: dimensionless}
+  sigma_xx_border_bug: {quantity: stress_dimless, unit: dimensionless}
+  sigma_xy_paper_exact: {quantity: stress_dimless, unit: dimensionless}
+  sigma_xy_Ten_sym_bug: {quantity: stress_dimless, unit: dimensionless}
+  sigma_xy_border_bug: {quantity: stress_dimless, unit: dimensionless}
+  Ten_sym_frank_ratio: {quantity: relative_discrepancy, unit: dimensionless}
+settings: {}
+stochastic: false

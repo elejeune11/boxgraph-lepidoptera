@@ -1,0 +1,27 @@
+id: hiperlife_2d_fem_driver
+name: "Full MPI/Trilinos/HiperLife 400x400 2D Q1 FEM driver (CortexNematic2D.cpp:33-641; AuxCortexNematic2D.cpp:129-1251)"
+role: model
+stated:
+  file: src/CortexNematic2D.cpp
+  lines: "33-34"
+  quote: "int main ( int argc, char *argv[]  )"
+  where: "src/CortexNematic2D.cpp:33-641, src/AuxCortexNematic2D.cpp:129-1251, src/CMakeLists.txt"
+equation: "Coupled 5-DOF (h, q1, q2, vx, vy) bilinear Q1 finite-element Newton-Raphson solver on a 400x400 periodic square (r_out = 127, 800,000 DOFs) using AztecOO GMRES + ILUT domain decomposition to time = 100000"
+inputs:
+  nx: {quantity: mesh_element_count, unit: dimensionless}
+  ny: {quantity: mesh_element_count, unit: dimensionless}
+  r_out: {quantity: position_dimless, unit: dimensionless}
+  visc: {quantity: turnover_rate_dimless, unit: dimensionless}
+  lambda_iso: {quantity: active_tension_dimless, unit: dimensionless}
+outputs:
+  omega: {quantity: architecture_order_parameter, unit: dimensionless}
+  wavelength_ratio: {quantity: wavelength_ratio, unit: dimensionless}
+settings:
+  bfOrder: 1
+  gauss_pts: 4
+  maxIter: 8
+  deltat: 0.8
+  maxDelt: 0.4
+runnable: false
+not_runnable_reason: "C++ MPI application requiring external Trilinos (Teuchos, AztecOO, Amesos2) and HiperLife v4.3.0 libraries not installed in the Python runtime, integrating 800,000 DOFs on a 400x400 mesh to t_bar = 100000. All element equations (Bk, Ak), constitutive terms, time-stepper logic, 1D Q1 FEM Newton-Raphson solver, and 2D continuum PDEs are faithfully ported and executed in the companion Python models."
+stochastic: false

@@ -1,0 +1,768 @@
+# ==============================================================================
+# Analytical estimates, scales, and fit-identity checks
+# ==============================================================================
+- id: run_molecular_peclet
+  model: molecular_peclet_estimate
+  inputs:
+    v: surface_flow_velocity_est
+    l: lipid_size_est
+    D_lip: lipid_diffusivity_lit
+  settings: {}
+  outputs:
+    Pe_mol: Pe_mol_pred
+
+- id: run_ch_scales_fig3
+  model: cahn_hilliard_scales_peclet
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+  settings: {}
+  outputs:
+    l_c: l_c_fig3_pred
+    t_c: t_c_fig3_pred
+    Pe: Pe_fig3_pred
+
+- id: run_ch_scales_piv
+  model: cahn_hilliard_scales_peclet
+  inputs:
+    M: M_sim_piv
+    kappa: kappa_sim_piv
+    gamma_dot: gamma_dot_sim_fig3
+  settings: {}
+  outputs:
+    l_c: l_c_piv_pred
+    t_c: t_c_piv_pred
+    Pe: Pe_piv_ref_pred
+
+- id: run_saffman_delbruck_exp
+  model: saffman_delbruck_diffusivity_peclet
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    a: domain_radius_exp_added
+    gamma_dot: shear_rate_exp_added
+  settings: {}
+  outputs:
+    D_c: D_c_exp_pred
+    Pe_c: Pe_c_exp_pred
+
+- id: run_power_law_shift_check
+  model: domain_growth_power_law_shift
+  inputs:
+    A: fit_A_added
+    B: fit_B_added
+    alpha: alpha_passive_theory
+    t: t_fit_eval_added
+  settings: {}
+  outputs:
+    a: a_shift_pred
+    a_0: a0_shift_pred
+    t_plot: t_plot_shift_pred
+    alpha_recovered: alpha_shift_recovered
+
+# ==============================================================================
+# 2D Lifshitz-Slyozov Ostwald ripening (SI Sec. III.A Eqs. 4-11)
+# ==============================================================================
+- id: run_ls_asymptotic_eq11
+  model: lifshitz_slyozov_2d_asymptotic_eq11
+  inputs:
+    sigma: sigma_ls_added
+    t: t_ls_eval_added
+  settings: {}
+  outputs:
+    a: a_ls_eq11_pred
+    alpha: alpha_ls_eq11_pred
+
+- id: run_ls_exact_ode_eq6
+  model: lifshitz_slyozov_2d_ode_eq6
+  inputs:
+    sigma: sigma_ls_added
+    L: L_ls_added
+    a_0: a0_ls_added
+    t: t_ls_eval_added
+  settings:
+    root_tol: 1.0e-10
+  outputs:
+    a: a_ls_eq6_pred
+    da_dt: dadt_ls_eq6_pred
+    alpha_eff: alpha_ls_eq6_pred
+    epsilon_mid: eps_mid_ls_pred
+
+# ==============================================================================
+# Smoluchowski coalescence: passive & simple shear (Main Eq. 4, SI Eqs. 22-39)
+# ==============================================================================
+- id: run_smoluchowski_keff_exp
+  model: smoluchowski_keff_eq4
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    a: domain_radius_exp_added
+    L: L_smol_added
+    gamma_dot: shear_rate_exp_added
+    C: C_matching_added
+    n: n_domain_added
+  settings: {}
+  outputs:
+    k_eff: keff_exp_pred
+    J: J_exp_pred
+    Pe_c: Pe_c_keff_pred
+    g_norm_mid: g_mid_exp_pred
+
+- id: run_smoluchowski_passive_ode
+  model: smoluchowski_passive_ode_eq25
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    phi_A: phi_A_low_active
+    L: L_smol_added
+    a_0: a0_smol_added
+    t: t_smol_passive_added
+  settings:
+    root_tol: 1.0e-10
+  outputs:
+    a: a_smol_eq25_pred
+    da_dt: dadt_smol_eq25_pred
+    alpha_eff: alpha_smol_eq25_pred
+
+- id: run_smoluchowski_eq28_printed
+  model: smoluchowski_passive_approx_eq28
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    phi_A: phi_A_low_active
+    L: L_smol_added
+    a_0: a0_smol_tiny_added
+    epsilon: epsilon_smol_added
+    t: t_smol_passive_added
+  settings: {}
+  outputs:
+    k: k_eq28_printed_pred
+    b: b_eq28_printed_pred
+    a: a_eq28_printed_pred
+    da_dt: dadt_eq28_printed_pred
+    alpha_eff: alpha_eq28_printed_pred
+
+- id: run_smoluchowski_eq28_corrected
+  model: smoluchowski_passive_approx_eq28_corrected
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    phi_A: phi_A_low_active
+    L: L_smol_added
+    a_0: a0_smol_tiny_added
+    epsilon: epsilon_smol_added
+    t: t_smol_passive_added
+  settings: {}
+  outputs:
+    k: k_eq28_corr_pred
+    b: b_eq28_corr_pred
+    a: a_eq28_corr_pred
+    da_dt: dadt_eq28_corr_pred
+    alpha_eff: alpha_eq28_corr_pred
+
+- id: run_smoluchowski_shear_printed_low
+  model: smoluchowski_shear_eq35_37
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    gamma_dot: gamma_dot_smol_low_added
+    C: C_matching_added
+    epsilon: epsilon_smol_added
+    a_0: a0_smol_added
+    t: t_smol_asymp_added
+  settings:
+    root_tol: 1.0e-11
+  outputs:
+    m: m_shear_printed_low_pred
+    a: a_shear_printed_low_pred
+    da_dt: dadt_shear_printed_low_pred
+    C1_a_three_halves: u_shear_printed_low_pred
+    alpha_eff: alpha_shear_printed_low_pred
+
+- id: run_smoluchowski_shear_printed_high
+  model: smoluchowski_shear_eq35_37
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    gamma_dot: gamma_dot_smol_high_added
+    C: C_matching_added
+    epsilon: epsilon_smol_added
+    a_0: a0_smol_added
+    t: t_smol_asymp_added
+  settings:
+    root_tol: 1.0e-11
+  outputs:
+    m: m_shear_printed_high_pred
+    a: a_shear_printed_high_pred
+    da_dt: dadt_shear_printed_high_pred
+    C1_a_three_halves: u_shear_printed_high_pred
+    alpha_eff: alpha_shear_printed_high_pred
+
+- id: run_smoluchowski_shear_corr_low
+  model: smoluchowski_shear_eq35_37_corrected
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    phi_A: phi_A_low_active
+    gamma_dot: gamma_dot_smol_low_added
+    C: C_matching_added
+    epsilon: epsilon_smol_added
+    a_0: a0_smol_added
+    t: t_smol_asymp_added
+  settings:
+    root_tol: 1.0e-11
+  outputs:
+    m: m_shear_corr_low_pred
+    a: a_shear_corr_low_pred
+    da_dt: dadt_shear_corr_low_pred
+    C1_a_three_halves: u_shear_corr_low_pred
+    alpha_eff: alpha_shear_corr_low_pred
+
+- id: run_smoluchowski_shear_corr_high
+  model: smoluchowski_shear_eq35_37_corrected
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    phi_A: phi_A_low_active
+    gamma_dot: gamma_dot_smol_high_added
+    C: C_matching_added
+    epsilon: epsilon_smol_added
+    a_0: a0_smol_added
+    t: t_smol_asymp_added
+  settings:
+    root_tol: 1.0e-11
+  outputs:
+    m: m_shear_corr_high_pred
+    a: a_shear_corr_high_pred
+    da_dt: dadt_shear_corr_high_pred
+    C1_a_three_halves: u_shear_corr_high_pred
+    alpha_eff: alpha_shear_corr_high_pred
+
+- id: run_smoluchowski_shear_corr_exp
+  model: smoluchowski_shear_eq35_37_corrected
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    phi_A: phi_A_low_active
+    gamma_dot: shear_rate_exp_added
+    C: C_matching_added
+    epsilon: epsilon_smol_added
+    a_0: a0_smol_added
+    t: t_smol_shear_added
+  settings:
+    root_tol: 1.0e-11
+  outputs:
+    m: m_shear_corr_exp_pred
+    a: a_shear_corr_exp_pred
+    da_dt: dadt_shear_corr_exp_pred
+    C1_a_three_halves: u_shear_corr_exp_pred
+    alpha_eff: alpha_shear_corr_exp_pred
+
+# ==============================================================================
+# Linearized Cahn-Hilliard perturbation analysis (SI Sec. III.B.3 Eqs. 42-45)
+# ==============================================================================
+- id: run_ch_linear_shear_spinodal_edge
+  model: cahn_hilliard_linear_shear_eq45
+  inputs:
+    phi_0: phi0_spinodal_edge_added
+    Pe: Pe_lin_ch_added
+    t: t_lin_ch_added
+  settings:
+    n_k: 2000
+    d_ln_t: 0.01
+  outputs:
+    a_rad: a_lin_ch_pred
+    alpha_passive: alpha_lin_ch_passive_pred
+    alpha_shear_ray_correction: alpha_lin_ch_shear_pred
+    delta_a_rad_O_Pe: da_lin_ch_rad_pred
+
+# ==============================================================================
+# 2D Pseudospectral Convective Cahn-Hilliard PDE (Main Eq. 1, SI Sec. IV)
+# ==============================================================================
+- id: run_ch_pde_passive
+  model: cahn_hilliard_2d_pde
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_zero_added
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+  settings:
+    flow_type: "passive"
+    N: 128
+    dt: 0.1
+    t_start_fit: 50.0
+    t_end: 250.0
+    sample_dt: 12.5
+    seed: 0
+  replicates: 3
+  outputs:
+    alpha_sf: alpha_ch_pde_passive_sf_pred
+    alpha_ap: alpha_ch_pde_passive_ap_pred
+    mean_phi_final: mean_phi_passive_pred
+    k_max_final: kmax_passive_pred
+  note: "Added numerical choice: N=128 grid with dt=0.1 (vs paper's N=512 adaptive dt) to stay <25s on CPU; refined over dt in refinements.yaml. Fit window t in [50, 250] matches t/t_c in [200, 1000] of Fig. S5."
+
+- id: run_ch_pde_shear
+  model: cahn_hilliard_2d_pde
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+  settings:
+    flow_type: "shear"
+    N: 128
+    dt: 0.05
+    t_start_fit: 20.0
+    t_end: 50.0
+    sample_dt: 2.5
+    seed: 0
+  replicates: 3
+  outputs:
+    alpha_sf: alpha_ch_pde_shear_sf_pred
+    alpha_ap: alpha_ch_pde_shear_ap_pred
+    mean_phi_final: mean_phi_shear_pred
+    k_max_final: kmax_shear_pred
+  note: "Added numerical choice: N=128 grid with dt=0.05 (vs paper's N=512 adaptive dt) for fast CPU execution; refined over dt in refinements.yaml. Fit window t in [20, 50] matches Fig. 3(d)."
+
+- id: run_ch_pde_rotational
+  model: cahn_hilliard_2d_pde
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+  settings:
+    flow_type: "rotational"
+    N: 128
+    dt: 0.05
+    t_start_fit: 20.0
+    t_end: 50.0
+    sample_dt: 2.5
+    seed: 0
+  replicates: 3
+  outputs:
+    alpha_sf: alpha_ch_pde_rot_sf_pred
+    alpha_ap: alpha_ch_pde_rot_ap_pred
+    mean_phi_final: mean_phi_rot_pred
+    k_max_final: kmax_rot_pred
+  note: "Added numerical choice: N=128 grid with dt=0.05 (vs paper's N=512 adaptive dt). Fit window t in [20, 50] matches Fig. 3(d)."
+
+- id: run_ch_pde_extensional
+  model: cahn_hilliard_2d_pde
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+  settings:
+    flow_type: "extensional"
+    N: 128
+    dt: 0.05
+    t_start_fit: 20.0
+    t_end: 50.0
+    sample_dt: 2.5
+    seed: 0
+  replicates: 3
+  outputs:
+    alpha_sf: alpha_ch_pde_ext_sf_pred
+    alpha_ap: alpha_ch_pde_ext_ap_pred
+    mean_phi_final: mean_phi_ext_pred
+    k_max_final: kmax_ext_pred
+  note: "Added numerical choice: N=128 grid with dt=0.05 (vs paper's N=512 adaptive dt). Pure extensional velocity v_x = gamma_dot * y, v_y = gamma_dot * x over t in [20, 50]."
+
+# ==============================================================================
+# Figure-digitization sweeps, curve evaluations, and validations (Figs. 2, 3c-d, S1, S3B, S4, S5, S6)
+# ==============================================================================
+- id: run_smol_passive_figS1_sweep
+  model: smoluchowski_passive_ode_eq25
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    L: L_smol_added
+    a_0: a0_smol_added
+    t: t_smol_passive_added
+  sweep:
+    phi_A: figS1_passive_fig
+  settings:
+    root_tol: 1.0e-10
+  outputs:
+    alpha_eff: alpha_smol_passive_figS1_pred
+
+- id: run_smol_shear_corr_figS1_sweep
+  model: smoluchowski_shear_eq35_37_corrected
+  inputs:
+    T: T_room_added
+    eta: eta_water_added
+    gamma_dot: shear_rate_exp_added
+    C: C_matching_added
+    epsilon: epsilon_smol_added
+    a_0: a0_smol_added
+    t: t_smol_shear_added
+  sweep:
+    phi_A: figS1_active_fig
+  settings:
+    root_tol: 1.0e-11
+  outputs:
+    alpha_eff: alpha_smol_shear_figS1_pred
+
+# Direct SI Eq. (47) evaluation on digitized Fig. 3(c) structure factor curves
+- id: run_eq47_fig3c_t20
+  model: structure_factor_first_moment_eq47
+  inputs:
+    S_k: fig3c_Sk_t20_fig
+  settings: {}
+  outputs:
+    a_sf: a_eq47_from_fig3c_t20
+    k_max: kmax_from_fig3c_t20
+
+- id: run_eq47_fig3c_t30
+  model: structure_factor_first_moment_eq47
+  inputs:
+    S_k: fig3c_Sk_t30_fig
+  settings: {}
+  outputs:
+    a_sf: a_eq47_from_fig3c_t30
+    k_max: kmax_from_fig3c_t30
+
+- id: run_eq47_fig3c_t50
+  model: structure_factor_first_moment_eq47
+  inputs:
+    S_k: fig3c_Sk_t50_fig
+  settings: {}
+  outputs:
+    a_sf: a_eq47_from_fig3c_t50
+    k_max: kmax_from_fig3c_t50
+
+# Full-curve 2D Cahn-Hilliard PDE evaluations for Figs. 3(c), 3(d), and S6(B)-(C)
+- id: run_ch_pde_sk_fig3c_t20
+  model: cahn_hilliard_2d_pde_sk_curve
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+    ref_Sk: fig3c_Sk_t20_fig
+  settings:
+    flow_type: "shear"
+    N: 128
+    dt: 0.05
+    t_eval: 20.0
+    n_ensemble: 1
+    seed: 0
+  replicates: 1
+  outputs:
+    Sk: Sk_ch_pde_t20_pred
+    k_max: kmax_ch_pde_t20_pred
+
+- id: run_ch_pde_sk_fig3c_t30
+  model: cahn_hilliard_2d_pde_sk_curve
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+    ref_Sk: fig3c_Sk_t30_fig
+  settings:
+    flow_type: "shear"
+    N: 128
+    dt: 0.05
+    t_eval: 30.0
+    n_ensemble: 1
+    seed: 0
+  replicates: 1
+  outputs:
+    Sk: Sk_ch_pde_t30_pred
+    k_max: kmax_ch_pde_t30_pred
+
+- id: run_ch_pde_sk_fig3c_t50
+  model: cahn_hilliard_2d_pde_sk_curve
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+    ref_Sk: fig3c_Sk_t50_fig
+  settings:
+    flow_type: "shear"
+    N: 128
+    dt: 0.05
+    t_eval: 50.0
+    n_ensemble: 1
+    seed: 0
+  replicates: 1
+  outputs:
+    Sk: Sk_ch_pde_t50_pred
+    k_max: kmax_ch_pde_t50_pred
+
+- id: run_ch_pde_at_fig3d_shear
+  model: cahn_hilliard_2d_pde_at_curve
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+    ref_a: fig3d_shear_fig
+  settings:
+    flow_type: "shear"
+    N: 128
+    dt: 0.05
+    n_ensemble: 1
+    seed: 0
+  replicates: 1
+  outputs:
+    a_sf: a_ch_pde_fig3d_shear_pred
+    a_sf_final: a_final_ch_pde_shear_pred
+
+- id: run_ch_pde_at_fig3d_rotational
+  model: cahn_hilliard_2d_pde_at_curve
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+    ref_a: fig3d_rotational_fig
+  settings:
+    flow_type: "rotational"
+    N: 128
+    dt: 0.05
+    n_ensemble: 1
+    seed: 0
+  replicates: 1
+  outputs:
+    a_sf: a_ch_pde_fig3d_rot_pred
+    a_sf_final: a_final_ch_pde_rot_pred
+
+- id: run_ch_pde_mass_figS6b_rot
+  model: cahn_hilliard_2d_pde_mass_curve
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+    ref_mass: figS6b_mass_rot_fig
+  settings:
+    flow_type: "rotational"
+    N: 128
+    dt: 0.05
+    seed: 0
+  replicates: 1
+  outputs:
+    mass: mass_ch_pde_figS6b_pred
+    mean_phi_final: mean_phi_figS6b_pred
+
+- id: run_ch_pde_mass_figS6c_shear
+  model: cahn_hilliard_2d_pde_mass_curve
+  inputs:
+    M: M_sim_fig3
+    kappa: kappa_sim_fig3
+    gamma_dot: gamma_dot_sim_fig3
+    L: box_L_sim
+    phi_avg: phi_avg_sim
+    noise_amp: noise_amp_sim
+    ref_mass: figS6c_mass_shear_fig
+  settings:
+    flow_type: "shear"
+    N: 128
+    dt: 0.05
+    seed: 0
+  replicates: 1
+  outputs:
+    mass: mass_ch_pde_figS6c_pred
+    mean_phi_final: mean_phi_figS6c_pred
+
+# Power-law scaling shape checks across Fig. 2, Fig. 3(d), Fig. S3(B), Fig. S4, and Fig. S5
+- id: run_scaling_fig2_passive_ref
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_passive_theory}
+  sweep: {t: fig2_passive_ref_line_fig}
+  outputs: {a_norm: a_scaling_fig2_passive_ref_pred}
+
+- id: run_scaling_fig2_sim_passive
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_passive_theory}
+  sweep: {t: fig2_sim_passive_fig}
+  outputs: {a_norm: a_scaling_fig2_sim_passive_pred}
+
+- id: run_scaling_fig2_exp_passive
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_passive_theory}
+  sweep: {t: fig2_exp_passive_band_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_passive_pred}
+
+- id: run_scaling_fig2_piv_pe1e2
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_ch_piv_pe1e2}
+  sweep: {t: fig2_sim_piv_pe1e2_fig}
+  outputs: {a_norm: a_scaling_fig2_piv_pe1e2_pred}
+
+- id: run_scaling_fig2_piv_pe5e3
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_ch_piv_pe5e3}
+  sweep: {t: fig2_sim_piv_pe5e3_fig}
+  outputs: {a_norm: a_scaling_fig2_piv_pe5e3_pred}
+
+- id: run_scaling_fig2_piv_pe1e4
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_ch_piv_pe1e4}
+  sweep: {t: fig2_sim_piv_pe1e4_fig}
+  outputs: {a_norm: a_scaling_fig2_piv_pe1e4_pred}
+
+- id: run_scaling_fig2_exp_059_fit
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_exp_active_1}
+  sweep: {t: fig2_exp_active_059_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_059_fit_pred}
+
+- id: run_scaling_fig2_exp_059_theory
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_active_smoluchowski_theory}
+  sweep: {t: fig2_exp_active_059_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_059_theory_pred}
+
+- id: run_scaling_fig2_exp_065_fit
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_exp_active_2}
+  sweep: {t: fig2_exp_active_065_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_065_fit_pred}
+
+- id: run_scaling_fig2_exp_065_theory
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_active_smoluchowski_theory}
+  sweep: {t: fig2_exp_active_065_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_065_theory_pred}
+
+- id: run_scaling_fig2_exp_066_fit
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_exp_active_3}
+  sweep: {t: fig2_exp_active_066_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_066_fit_pred}
+
+- id: run_scaling_fig2_exp_066_theory
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_active_smoluchowski_theory}
+  sweep: {t: fig2_exp_active_066_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_066_theory_pred}
+
+- id: run_scaling_fig2_exp_069_fit
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_exp_active_4}
+  sweep: {t: fig2_exp_active_069_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_069_fit_pred}
+
+- id: run_scaling_fig2_exp_069_theory
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_active_smoluchowski_theory}
+  sweep: {t: fig2_exp_active_069_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_069_theory_pred}
+
+- id: run_scaling_fig2_exp_074_fit
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_exp_active_5}
+  sweep: {t: fig2_exp_active_074_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_074_fit_pred}
+
+- id: run_scaling_fig2_exp_074_theory
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_active_smoluchowski_theory}
+  sweep: {t: fig2_exp_active_074_fig}
+  outputs: {a_norm: a_scaling_fig2_exp_074_theory_pred}
+
+- id: run_scaling_fig3d_shear
+  model: domain_growth_power_law_scaling_sim
+  inputs: {alpha: alpha_ch_shear_pe1e2}
+  sweep: {t: fig3d_shear_fig}
+  outputs: {a_sim: a_scaling_fig3d_shear_pred}
+
+- id: run_scaling_fig3d_rotational
+  model: domain_growth_power_law_scaling_sim
+  inputs: {alpha: alpha_ch_rotational_pe1e2}
+  sweep: {t: fig3d_rotational_fig}
+  outputs: {a_sim: a_scaling_fig3d_rot_pred}
+
+- id: run_scaling_figS3b_fast_fit
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_exp_quench_atp_fast}
+  sweep: {t: figS3b_fast_fig}
+  outputs: {a_norm: a_scaling_figS3b_fast_fit_pred}
+
+- id: run_scaling_figS3b_fast_theory
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_active_smoluchowski_theory}
+  sweep: {t: figS3b_fast_fig}
+  outputs: {a_norm: a_scaling_figS3b_fast_theory_pred}
+
+- id: run_scaling_figS3b_slow_fit
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_exp_quench_atp_slow}
+  sweep: {t: figS3b_slow_fig}
+  outputs: {a_norm: a_scaling_figS3b_slow_fit_pred}
+
+- id: run_scaling_figS3b_slow_theory
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_passive_theory}
+  sweep: {t: figS3b_slow_fig}
+  outputs: {a_norm: a_scaling_figS3b_slow_theory_pred}
+
+- id: run_scaling_figS4_early_fit
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_exp_nearcrit_early}
+  sweep: {t: figS4_early_fig}
+  outputs: {a_norm: a_scaling_figS4_early_fit_pred}
+
+- id: run_scaling_figS4_late_fit
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_exp_nearcrit_late}
+  sweep: {t: figS4_late_fig}
+  outputs: {a_norm: a_scaling_figS4_late_fit_pred}
+
+- id: run_scaling_figS4_late_theory
+  model: domain_growth_power_law_scaling
+  inputs: {alpha: alpha_passive_theory}
+  sweep: {t: figS4_late_fig}
+  outputs: {a_norm: a_scaling_figS4_late_theory_pred}
+
+- id: run_scaling_figS5_ap_printed
+  model: domain_growth_power_law_scaling_sim
+  inputs: {alpha: alpha_ch_passive_figS5_ap}
+  sweep: {t: figS5_ap_fig}
+  outputs: {a_norm: a_scaling_figS5_ap_printed_pred}
+
+- id: run_scaling_figS5_sf_printed
+  model: domain_growth_power_law_scaling_sim
+  inputs: {alpha: alpha_ch_passive_figS5_sf}
+  sweep: {t: figS5_sf_fig}
+  outputs: {a_norm: a_scaling_figS5_sf_printed_pred}
+
+- id: run_scaling_figS5_ap_swapped
+  model: domain_growth_power_law_scaling_sim
+  inputs: {alpha: alpha_ch_passive_figS5_sf}
+  sweep: {t: figS5_ap_fig}
+  outputs: {a_norm: a_scaling_figS5_ap_swapped_pred}
+
+- id: run_scaling_figS5_sf_swapped
+  model: domain_growth_power_law_scaling_sim
+  inputs: {alpha: alpha_ch_passive_figS5_ap}
+  sweep: {t: figS5_sf_fig}
+  outputs: {a_norm: a_scaling_figS5_sf_swapped_pred}

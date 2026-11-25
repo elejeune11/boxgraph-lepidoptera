@@ -1,0 +1,29 @@
+- id: ref_langevin_dt
+  run: run_langevin_1d_crosslinker
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: D_eff
+  tolerance: "5%"
+  tolerance_basis: "added: 1D Brownian ensemble variance at n_particles = 4000 across 5 replicates has ~1.5% sampling SE; 5% verifies that dt = 0.002 s introduces no time-discretization bias in free diffusivity D_eff."
+  tolerance_added: true
+
+- id: ref_langevin_n_particles
+  run: run_langevin_1d_crosslinker
+  setting: n_particles
+  factors: [1, 2, 4, 8]
+  mode: multiply
+  output: D_eff
+  tolerance: "5%"
+  tolerance_basis: "added: verifies Monte Carlo ensemble convergence of effective diffusivity D_eff as particle count increases from 4,000 to 32,000."
+  tolerance_added: true
+
+- id: ref_dimer_ode_dt
+  run: run_well_mixed_dimer_ode_ring
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: f_doubly_bound_dimer
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies 4th-order Runge-Kutta step-size convergence of the reconstructed 5-state dynamic dimerization ODE from paper dt = 0.002 s down to 0.00025 s."
+  tolerance_added: true

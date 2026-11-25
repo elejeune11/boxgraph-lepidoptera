@@ -1,0 +1,398 @@
+# ==============================================================================
+# Derived Peclet number & scale reproductions
+# ==============================================================================
+- id: cmp_molecular_peclet
+  purpose: reproduction
+  computed: Pe_mol_pred
+  printed: Pe_molecular_est
+  note: "Checks v*l/D_lip against the literature molecular Peclet range 10^-4 to 10^-3 (p. 3)."
+
+- id: cmp_fig3_peclet
+  purpose: reproduction
+  computed: Pe_fig3_pred
+  printed: Pe_fig3_derived
+  note: "Checks Pe = gamma_dot * kappa / M = 0.04 * 0.25 / 1 = 0.01 against Fig. 3 caption Pe = 10^-2."
+
+- id: cmp_colloidal_peclet
+  purpose: reproduction
+  computed: Pe_c_exp_pred
+  printed: Pe_colloidal_est
+  note: "Checks Pe_c = 16*gamma_dot*eta*a^3/(k_B*T) with added room-temperature experimental inputs against printed Pe_c ≈ 10 (p. 5)."
+
+- id: cmp_power_law_shift_identity
+  purpose: consistency
+  computed: alpha_shift_recovered
+  printed: alpha_passive_theory
+  note: "Verifies exact recovery of alpha under SI Eq. (1) time-shift rescaling t_plot = t + B/A."
+
+# ==============================================================================
+# Lifshitz-Slyozov Ostwald ripening (SI Eqs. 6-11)
+# ==============================================================================
+- id: cmp_ls_eq11_alpha
+  purpose: reproduction
+  computed: alpha_ls_eq11_pred
+  printed: alpha_passive_theory
+  note: "Exact reproduction of alpha = 1/3 from SI Eq. (11) a^3 = (9/2)*sigma*t."
+
+- id: cmp_ls_eq6_exact_alpha
+  purpose: approximation
+  computed: alpha_ls_eq6_pred
+  printed: alpha_passive_theory
+  note: "Compares exact implicit 2D Lifshitz-Slyozov ODE SI Eq. (6)/(7) (retaining ln(L/a)) against leading-order alpha = 1/3."
+
+# ==============================================================================
+# Smoluchowski coalescence: passive & shear (printed vs corrected variants)
+# ==============================================================================
+- id: cmp_smol_passive_ode_alpha
+  purpose: approximation
+  computed: alpha_smol_eq25_pred
+  printed: alpha_passive_theory
+  note: "Compares exact implicit passive Smoluchowski solution SI Eq. (25)-(26) (with finite a_0 and ln(L/(2a))) against asymptotic alpha = 1/3."
+
+- id: cmp_smol_eq28_printed_alpha
+  purpose: reproduction
+  computed: alpha_eq28_printed_pred
+  printed: alpha_passive_theory
+  note: "Tests printed SI Eq. (28) as written: negative denominator 3*ln(1/2) + 3*eps + 1 < 0 yields k < 0 and unphysical shrinking domains (negative alpha)."
+
+- id: cmp_smol_eq28_corrected_alpha
+  purpose: reproduction
+  computed: alpha_eq28_corr_pred
+  printed: alpha_passive_theory
+  note: "Corrected variant of SI Eq. (28) (physical contact limit L/(2a) = 1 + eps and consistent division of b) reproduces alpha = 1/3."
+
+- id: cmp_smol_shear_printed_low_alpha
+  purpose: reproduction
+  computed: alpha_shear_printed_low_pred
+  printed: alpha_passive_theory
+  note: "Tests printed SI Eqs. (35)-(37) in the low-shear limit: negative m < 0 causes finite-time domain collapse rather than t^(1/3) growth."
+
+- id: cmp_smol_shear_printed_high_alpha
+  purpose: reproduction
+  computed: alpha_shear_printed_high_pred
+  printed: alpha_active_smoluchowski_theory
+  note: "Tests printed SI Eqs. (35)-(37) in the high-shear limit: negative m < 0 causes finite-time collapse rather than t^(2/3) growth."
+
+- id: cmp_smol_shear_corr_low_alpha
+  purpose: reproduction
+  computed: alpha_shear_corr_low_pred
+  printed: alpha_passive_theory
+  note: "Corrected variant of SI Eqs. (35)-(37) in the C_1*a^(3/2) << 1 limit reproduces passive alpha = 1/3 (SI Eq. 38)."
+
+- id: cmp_smol_shear_corr_high_alpha
+  purpose: reproduction
+  computed: alpha_shear_corr_high_pred
+  printed: alpha_active_smoluchowski_theory
+  note: "Corrected variant of SI Eqs. (35)-(37) in the C_1*a^(3/2) >> 1 limit reproduces shear-enhanced alpha = 2/3 (SI Eq. 39)."
+
+- id: cmp_smol_shear_corr_exp_validation
+  purpose: validation
+  computed: alpha_shear_corr_exp_pred
+  printed: alpha_exp_active_range
+  note: "Validates corrected Smoluchowski shear model at experimental room-temperature inputs (gamma_dot = 0.8 s^-1, t = 10 s) against measured active range alpha = 0.59 to 0.74."
+
+# ==============================================================================
+# Linearized Cahn-Hilliard shear perturbation (SI Sec. III.B.3 Eqs. 42-45)
+# ==============================================================================
+- id: cmp_ch_linear_passive
+  purpose: reproduction
+  computed: alpha_lin_ch_passive_pred
+  printed: alpha_ch_linear_passive
+  note: "Reproduces passive linearized Cahn-Hilliard scaling alpha = 1/4 = 0.25 at the spinodal edge phi_0 = 1/sqrt(3) (p. 5, SI p. 8)."
+
+- id: cmp_ch_linear_shear_ray
+  purpose: reproduction
+  computed: alpha_lin_ch_shear_pred
+  printed: alpha_ch_linear_shear_correction
+  note: "Reproduces the O(Pe * t^(5/4)) time exponent 5/4 = 1.25 along a single diagonal wavevector ray (while the 2D angular average vanishes identically at O(Pe))."
+
+# ==============================================================================
+# 2D Pseudospectral Convective Cahn-Hilliard PDE (Main Figs. 2-3, SI Figs. S5-S6)
+# ==============================================================================
+- id: cmp_ch_pde_passive_main
+  purpose: reproduction
+  computed: alpha_ch_pde_passive_sf_pred
+  printed: alpha_ch_passive_main
+  note: "Compares passive 2D pseudospectral Cahn-Hilliard structure-factor exponent against printed alpha = 1/3 (Fig. 2, p. 3)."
+
+- id: cmp_ch_pde_passive_figS5_ap
+  purpose: reproduction
+  computed: alpha_ch_pde_passive_ap_pred
+  printed: alpha_ch_passive_figS5_ap
+  note: "Compares passive 2D Cahn-Hilliard area/perimeter exponent against Fig. S5 printed label alpha = 0.30 at (M, kappa) = (1, 0.25)."
+
+- id: cmp_ch_pde_passive_figS5_sf
+  purpose: reproduction
+  computed: alpha_ch_pde_passive_sf_pred
+  printed: alpha_ch_passive_figS5_sf
+  note: "Compares passive 2D Cahn-Hilliard structure-factor exponent against Fig. S5 printed label alpha = 0.34 at (M, kappa) = (1, 0.25)."
+
+- id: cmp_ch_pde_mass_conservation
+  purpose: consistency
+  computed: mean_phi_shear_pred
+  printed: phi_avg_sim
+  note: "Verifies exact spatial mass conservation <phi>(t_end) = phi_avg = 0.3 under periodic pseudospectral linear shear (Fig. S6C)."
+
+- id: cmp_ch_pde_mass_conservation_rotational
+  purpose: consistency
+  computed: mean_phi_rot_pred
+  printed: phi_avg_sim
+  note: "Verifies exact spatial mass conservation <phi>(t_end) = phi_avg = 0.3 under periodic pseudospectral rotational flow (Fig. S6B, p. 19 / SI-13)."
+
+- id: cmp_ch_pde_shear_fig3d
+  purpose: reproduction
+  computed: alpha_ch_pde_shear_sf_pred
+  printed: alpha_ch_shear_pe1e2
+  conditions_ok: "run uses printed (M, kappa, gamma_dot) = (1, 0.25, 0.04) corresponding to Pe = 10^-2"
+  note: "Compares 2D Cahn-Hilliard shear-flow structure-factor exponent over t in [20, 50] against printed alpha = 0.73 (Fig. 3d, p. 4)."
+
+- id: cmp_ch_pde_rotational_fig3d
+  purpose: reproduction
+  computed: alpha_ch_pde_rot_sf_pred
+  printed: alpha_ch_rotational_pe1e2
+  conditions_ok: "run uses printed (M, kappa, gamma_dot) = (1, 0.25, 0.04) corresponding to Pe = 10^-2"
+  note: "Compares 2D Cahn-Hilliard rotational-flow structure-factor exponent over t in [20, 50] against printed alpha = 0.28 (Fig. 3d, p. 4)."
+
+- id: cmp_ch_pde_extensional_p5
+  purpose: reproduction
+  computed: alpha_ch_pde_ext_sf_pred
+  printed: alpha_ch_extensional_pe1e2
+  conditions_ok: "run uses printed (M, kappa, gamma_dot) = (1, 0.25, 0.04) corresponding to Pe = 10^-2"
+  note: "Compares 2D Cahn-Hilliard extensional-flow structure-factor exponent over t in [20, 50] against printed alpha ≈ 0.73 (p. 5)."
+
+# ==============================================================================
+# Calibrated figure comparisons (Figs. 2, 3c-d, S1, S3B, S4, S5, S6)
+# ==============================================================================
+- id: cmp_figS1_passive_smol_validation
+  purpose: validation
+  computed: alpha_smol_passive_figS1_pred
+  printed: figS1_passive_fig
+  note: "Validates exact passive Smoluchowski ODE (SI Eqs. 25-26) swept over the 5 measured area fractions phi_A in Fig. S1 against measured passive exponents alpha."
+
+- id: cmp_figS1_active_smol_shear_validation
+  purpose: validation
+  computed: alpha_smol_shear_figS1_pred
+  printed: figS1_active_fig
+  note: "Validates corrected shear Smoluchowski model (SI Eqs. 35-37) swept over the 5 measured area fractions phi_A in Fig. S1 against measured active exponents alpha."
+
+- id: cmp_fig3c_Sk_t20_pde
+  purpose: reproduction
+  computed: Sk_ch_pde_t20_pred
+  printed: fig3c_Sk_t20_fig
+  note: "Compares 2D pseudospectral Cahn-Hilliard shear-flow <S(k)> at t = 20 (N = 128, Parseval normalization) against digitized Fig. 3(c) open circles."
+
+- id: cmp_fig3c_Sk_t30_pde
+  purpose: reproduction
+  computed: Sk_ch_pde_t30_pred
+  printed: fig3c_Sk_t30_fig
+  note: "Compares 2D pseudospectral Cahn-Hilliard shear-flow <S(k)> at t = 30 (N = 128, Parseval normalization) against digitized Fig. 3(c) open squares."
+
+- id: cmp_fig3c_Sk_t50_pde
+  purpose: reproduction
+  computed: Sk_ch_pde_t50_pred
+  printed: fig3c_Sk_t50_fig
+  note: "Compares 2D pseudospectral Cahn-Hilliard shear-flow <S(k)> at t = 50 (N = 128, Parseval normalization) against digitized Fig. 3(c) open diamonds."
+
+- id: cmp_fig3c_kmax_t50_consistency
+  purpose: consistency
+  computed: kmax_ch_pde_t50_pred
+  printed: kmax_from_fig3c_t50
+  note: "Checks whether 2D Cahn-Hilliard shear-flow peak wave vector k_max(t = 50) matches the peak k_max = 0.50 read directly from Fig. 3(c)."
+
+- id: cmp_fig3d_shear_pde
+  purpose: reproduction
+  computed: a_ch_pde_fig3d_shear_pred
+  printed: fig3d_shear_fig
+  note: "Compares 2D Cahn-Hilliard SI Eq. (47) domain size a(t) under shear flow directly against digitized Fig. 3(d) shear curve (10.5-20.0 scale discrepancy and slope logged in q_shear_pde_alpha_difference)."
+
+- id: cmp_fig3d_rotational_pde
+  purpose: reproduction
+  computed: a_ch_pde_fig3d_rot_pred
+  printed: fig3d_rotational_fig
+  note: "Compares 2D Cahn-Hilliard SI Eq. (47) domain size a(t) under rotational flow directly against digitized Fig. 3(d) rotational curve."
+
+- id: cmp_figS6b_mass_rot_pde
+  purpose: reproduction
+  computed: mass_ch_pde_figS6b_pred
+  printed: figS6b_mass_rot_fig
+  note: "Compares 2D Cahn-Hilliard mass <phi>(t) initialized at stated phi_avg = 0.3 (SI Sec. IV) against digitized Fig. S6(B) curve at 0.350, quantitatively confirming q_phi_avg_discrepancy_figS6."
+
+- id: cmp_figS6c_mass_shear_pde
+  purpose: reproduction
+  computed: mass_ch_pde_figS6c_pred
+  printed: figS6c_mass_shear_fig
+  note: "Compares 2D Cahn-Hilliard mass <phi>(t) initialized at stated phi_avg = 0.3 (SI Sec. IV) against digitized Fig. S6(C) curve at 0.350, quantitatively confirming q_phi_avg_discrepancy_figS6."
+
+- id: cmp_fig2_passive_ref_line_scaling
+  purpose: reproduction
+  computed: a_scaling_fig2_passive_ref_pred
+  printed: fig2_passive_ref_line_fig
+  note: "Verifies the Fig. 2 black dashed reference line follows exact a/a_0 ~ t^(1/3) scaling."
+
+- id: cmp_fig2_sim_passive_scaling
+  purpose: reproduction
+  computed: a_scaling_fig2_sim_passive_pred
+  printed: fig2_sim_passive_fig
+  note: "Checks Fig. 2 green closed-circle passive Cahn-Hilliard theory curve against classical passive scaling a/a_0 ~ t^(1/3)."
+
+- id: cmp_fig2_exp_passive_validation
+  purpose: validation
+  computed: a_scaling_fig2_exp_passive_pred
+  printed: fig2_exp_passive_band_fig
+  note: "Validates passive scaling a/a_0 ~ t^(1/3) against the digitized Fig. 2 passive experimental band."
+
+- id: cmp_fig2_piv_pe1e2_consistency
+  purpose: consistency
+  computed: a_scaling_fig2_piv_pe1e2_pred
+  printed: fig2_sim_piv_pe1e2_fig
+  note: "Checks shape consistency between Fig. 2 PIV Pe = 10^-2 green curve and its printed slope alpha = 0.93."
+
+- id: cmp_fig2_piv_pe5e3_consistency
+  purpose: consistency
+  computed: a_scaling_fig2_piv_pe5e3_pred
+  printed: fig2_sim_piv_pe5e3_fig
+  note: "Checks shape consistency between Fig. 2 PIV Pe = 5 x 10^-3 green curve and its printed slope alpha = 0.78."
+
+- id: cmp_fig2_piv_pe1e4_consistency
+  purpose: consistency
+  computed: a_scaling_fig2_piv_pe1e4_pred
+  printed: fig2_sim_piv_pe1e4_fig
+  note: "Checks shape consistency between Fig. 2 PIV Pe = 10^-4 green curve and its printed slope alpha = 0.34."
+
+- id: cmp_fig2_exp_059_fit
+  purpose: fit_quality
+  computed: a_scaling_fig2_exp_059_fit_pred
+  printed: fig2_exp_active_059_fig
+  note: "Checks fit quality of printed alpha = 0.59 against digitized Fig. 2 active open-diamond dataset."
+
+- id: cmp_fig2_exp_059_validation
+  purpose: validation
+  computed: a_scaling_fig2_exp_059_theory_pred
+  printed: fig2_exp_active_059_fig
+  note: "Validates Smoluchowski active shear scaling a ~ t^(2/3) against Fig. 2 active open-diamond dataset (alpha = 0.59)."
+
+- id: cmp_fig2_exp_065_fit
+  purpose: fit_quality
+  computed: a_scaling_fig2_exp_065_fit_pred
+  printed: fig2_exp_active_065_fig
+  note: "Checks fit quality of printed alpha = 0.65 against digitized Fig. 2 active open-hexagon dataset."
+
+- id: cmp_fig2_exp_065_validation
+  purpose: validation
+  computed: a_scaling_fig2_exp_065_theory_pred
+  printed: fig2_exp_active_065_fig
+  note: "Validates Smoluchowski active shear scaling a ~ t^(2/3) against Fig. 2 active open-hexagon dataset (alpha = 0.65)."
+
+- id: cmp_fig2_exp_066_fit
+  purpose: fit_quality
+  computed: a_scaling_fig2_exp_066_fit_pred
+  printed: fig2_exp_active_066_fig
+  note: "Checks fit quality of printed alpha = 0.66 against digitized Fig. 2 active open-circle dataset."
+
+- id: cmp_fig2_exp_066_validation
+  purpose: validation
+  computed: a_scaling_fig2_exp_066_theory_pred
+  printed: fig2_exp_active_066_fig
+  note: "Validates Smoluchowski active shear scaling a ~ t^(2/3) against Fig. 2 active open-circle dataset (alpha = 0.66)."
+
+- id: cmp_fig2_exp_069_fit
+  purpose: fit_quality
+  computed: a_scaling_fig2_exp_069_fit_pred
+  printed: fig2_exp_active_069_fig
+  note: "Checks fit quality of printed alpha = 0.69 against digitized Fig. 2 active open-square dataset."
+
+- id: cmp_fig2_exp_069_validation
+  purpose: validation
+  computed: a_scaling_fig2_exp_069_theory_pred
+  printed: fig2_exp_active_069_fig
+  note: "Validates Smoluchowski active shear scaling a ~ t^(2/3) against Fig. 2 active open-square dataset (alpha = 0.69)."
+
+- id: cmp_fig2_exp_074_fit
+  purpose: fit_quality
+  computed: a_scaling_fig2_exp_074_fit_pred
+  printed: fig2_exp_active_074_fig
+  note: "Checks fit quality of printed alpha = 0.74 against digitized Fig. 2 active open-triangle dataset."
+
+- id: cmp_fig2_exp_074_validation
+  purpose: validation
+  computed: a_scaling_fig2_exp_074_theory_pred
+  printed: fig2_exp_active_074_fig
+  note: "Validates Smoluchowski active shear scaling a ~ t^(2/3) against Fig. 2 active open-triangle dataset (alpha = 0.74)."
+
+- id: cmp_fig3d_shear_scaling_consistency
+  purpose: consistency
+  computed: a_scaling_fig3d_shear_pred
+  printed: fig3d_shear_fig
+  note: "Checks shape consistency between digitized Fig. 3(d) shear curve and its printed exponent alpha = 0.73."
+
+- id: cmp_fig3d_rotational_scaling_consistency
+  purpose: consistency
+  computed: a_scaling_fig3d_rot_pred
+  printed: fig3d_rotational_fig
+  note: "Checks shape consistency between digitized Fig. 3(d) rotational curve and its printed exponent alpha = 0.28."
+
+- id: cmp_figS3b_fast_fit
+  purpose: fit_quality
+  computed: a_scaling_figS3b_fast_fit_pred
+  printed: figS3b_fast_fig
+  note: "Checks fit quality of printed alpha = 0.59 against digitized Fig. S3(B) 'Fast' region curve."
+
+- id: cmp_figS3b_fast_validation
+  purpose: validation
+  computed: a_scaling_figS3b_fast_theory_pred
+  printed: figS3b_fast_fig
+  note: "Validates active shear scaling a ~ t^(2/3) against digitized Fig. S3(B) 'Fast' region curve."
+
+- id: cmp_figS3b_slow_fit
+  purpose: fit_quality
+  computed: a_scaling_figS3b_slow_fit_pred
+  printed: figS3b_slow_fig
+  note: "Checks fit quality of printed alpha = 0.28 against digitized Fig. S3(B) 'Slow' region curve."
+
+- id: cmp_figS3b_slow_validation
+  purpose: validation
+  computed: a_scaling_figS3b_slow_theory_pred
+  printed: figS3b_slow_fig
+  note: "Validates passive scaling a ~ t^(1/3) against digitized Fig. S3(B) 'Slow' region curve."
+
+- id: cmp_figS4_early_fit
+  purpose: fit_quality
+  computed: a_scaling_figS4_early_fit_pred
+  printed: figS4_early_fig
+  note: "Checks fit quality of printed alpha = 0.53 against digitized Fig. S4 early-time near-critical curve."
+
+- id: cmp_figS4_late_fit
+  purpose: fit_quality
+  computed: a_scaling_figS4_late_fit_pred
+  printed: figS4_late_fig
+  note: "Checks fit quality of printed alpha = 0.30 against digitized Fig. S4 late-time near-critical curve."
+
+- id: cmp_figS4_late_validation
+  purpose: validation
+  computed: a_scaling_figS4_late_theory_pred
+  printed: figS4_late_fig
+  note: "Validates passive scaling a ~ t^(1/3) against digitized Fig. S4 late-time near-critical curve."
+
+- id: cmp_figS5_ap_printed_label
+  purpose: consistency
+  computed: a_scaling_figS5_ap_printed_pred
+  printed: figS5_ap_fig
+  note: "Tests Fig. S5 red Area/perimeter curve against its printed label alpha = 0.30 (diverges because the red curve's true log-log slope is 0.34, swapped with the black curve label)."
+
+- id: cmp_figS5_sf_printed_label
+  purpose: consistency
+  computed: a_scaling_figS5_sf_printed_pred
+  printed: figS5_sf_fig
+  note: "Tests Fig. S5 black Structure factor curve against its printed label alpha = 0.34 (diverges because the black curve's true log-log slope is 0.29-0.30, swapped with the red curve label)."
+
+- id: cmp_figS5_ap_swapped_label
+  purpose: consistency
+  computed: a_scaling_figS5_ap_swapped_pred
+  printed: figS5_ap_fig
+  note: "Cross-checks Fig. S5 red Area/perimeter curve against the swapped label alpha = 0.34, confirming exact shape match."
+
+- id: cmp_figS5_sf_swapped_label
+  purpose: consistency
+  computed: a_scaling_figS5_sf_swapped_pred
+  printed: figS5_sf_fig
+  note: "Cross-checks Fig. S5 black Structure factor curve against the swapped label alpha = 0.30, confirming exact shape match."

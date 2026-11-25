@@ -1,0 +1,246 @@
+# Dimensionless continuum active-nematic parameters and observables
+- id: turnover_rate_dimless
+  name: dimensionless cytoskeletal turnover rate
+  dimension: dimensionless
+  description: "Dimensionless depolymerization/turnover rate k_bar_d = ell_s^2 / ell_D^2 in mass balance (coded as variable 'visc' in src/config:9 and AuxCortexNematic2D.cpp:524)."
+
+- id: flow_alignment_dimless
+  name: dimensionless flow-alignment coupling
+  dimension: dimensionless
+  description: "Dimensionless Onsager flow-alignment viscosity beta_bar = beta / eta (coded as 'cvisc' in src/config:11)."
+
+- id: rotational_viscosity_dimless
+  name: dimensionless rotational viscosity
+  dimension: dimensionless
+  description: "Dimensionless nematic rotational viscosity eta_bar_rot = eta_rot / eta (coded as 'rvisc' in src/config:13)."
+
+- id: frank_constant_dimless
+  name: dimensionless Frank elastic constant
+  dimension: dimensionless
+  description: "Paper dimensionless Frank constant L_bar = L / (eta * D); equals frank / 2 in the C++ code because DqDq = 0.5*(|grad q1|^2 + |grad q2|^2) = (1/4)|grad q|^2."
+
+- id: code_frank_parameter
+  name: code Frank elasticity parameter
+  dimension: dimensionless
+  description: "Raw 'frank' parameter written in src/config:15 and CortexNematic2D.cpp:89; equals 2*L_bar in the residual equations (and is used without the 1/2 factor in post-processing Ten_sym)."
+
+- id: viscous_prefactor_dimless
+  name: dimensionless shear-bulk viscosity prefactor
+  dimension: dimensionless
+  description: "Hardcoded prefactor c = 2*eta_bar = 2.0 multiplying rate-of-deformation and divergence dissipation in AuxCortexNematic2D.cpp:265,514-518."
+
+- id: active_tension_dimless
+  name: dimensionless isotropic active tension parameter
+  dimension: dimensionless
+  description: "Dimensionless master isotropic active tension lambda_bar = lambda / (gamma * D) (coded as 'lambda_iso' in src/config:18)."
+
+- id: parallel_active_tension_dimless
+  name: dimensionless parallel active tension parameter
+  dimension: dimensionless
+  description: "Code parameter 'lambda_aniso' multiplying S*(n outer n) in AuxCortexNematic2D.cpp:564-565; equals lambda_bar*(1 + kappa/2) when isotropic S-dependence cancels."
+
+- id: transverse_active_tension_dimless
+  name: dimensionless transverse active tension parameter
+  dimension: dimensionless
+  description: "Code parameter 'crossLinker' (also 'lambda_trans' in LS_CortexNematic_Border) multiplying S*(n_perp outer n_perp) in AuxCortexNematic2D.cpp:561-562; equals lambda_bar*(1 - kappa/2)."
+
+- id: active_tension_anisotropy
+  name: active tension anisotropy parameter
+  dimension: dimensionless
+  description: "Dimensionless deviatoric tension ratio kappa = (lambda_aniso - crossLinker) / lambda_iso matching mirza2025 Eq. (7)."
+
+- id: isotropic_tension_S_excess
+  name: residual isotropic S-dependent active tension coefficient
+  dimension: dimensionless
+  description: "Dimensionless coefficient (lambda_aniso + crossLinker)/(2*lambda_iso) - 1 of S*I in the code's 3-parameter active stress (vanishes identically in config)."
+
+- id: nematic_activity_dimless
+  name: dimensionless nematic ordering activity
+  dimension: dimensionless
+  description: "Paper dimensionless orientational activity lambda_bar_o = rho_0 * lambda_o / (gamma * D) >= 0 (equals -lambda_rot in the code)."
+
+- id: code_lambda_rot_parameter
+  name: code active orientational forcing parameter
+  dimension: dimensionless
+  description: "Raw 'lambda_rot' parameter written in src/config:27 and AuxCortexNematic2D.cpp:1086-1087 (opposite sign to paper's lambda_bar_o: lambda_rot = -lambda_bar_o)."
+
+- id: susceptibility_a_dimless
+  name: dimensionless quadratic Landau susceptibility
+  dimension: dimensionless
+  description: "Dimensionless quadratic susceptibility a_bar = a / (gamma * D) (coded as 'sus20' in src/config:35 and divided by 2 into dparam[1] in CortexNematic2D.cpp:226)."
+
+- id: susceptibility_b_dimless
+  name: dimensionless quartic Landau susceptibility
+  dimension: dimensionless
+  description: "Dimensionless quartic susceptibility b_bar = b / (gamma * D) (coded as 'sus40' in src/config:37 and divided by 8 into dparam[2] in CortexNematic2D.cpp:227)."
+
+- id: effective_susceptibility_c0_dimless
+  name: dimensionless effective linear nematic susceptibility
+  dimension: dimensionless
+  description: "Effective susceptibility c_bar_0 = 2*a_bar - lambda_bar_o (or with barrier shift + 4*k_lim / S2_max) governing isotropic vs ordered uniform steady state."
+
+- id: relative_density
+  name: dimensionless areal cytoskeletal density
+  dimension: dimensionless
+  description: "Normalized cytoskeletal density/thickness h = rho / rho_0 (equilibrium value 'heqb' = 1 in src/config:65)."
+
+- id: nematic_order_parameter
+  name: scalar nematic order parameter
+  dimension: dimensionless
+  description: "Scalar nematic order S = sqrt(2*q:q) = sqrt(4*(q1^2 + q2^2)) in [0, 1)."
+
+- id: nematic_tensor_1d
+  name: nematic order tensor component
+  dimension: dimensionless
+  description: "Independent traceless symmetric nematic component q1 = q_11 = -q_22 or q2 = q_12 = q_21 (|q| = S/2)."
+
+- id: barrier_stiffness_dimless
+  name: hidden logarithmic barrier stiffness
+  dimension: dimensionless
+  description: "Hardcoded logarithmic barrier coefficient k_lim = 1e-4 in f_lim = -k_lim*ln(0.999 - S^2) (AuxCortexNematic2D.cpp:1130-1132, absent from mirza2025)."
+
+- id: barrier_S2_cutoff
+  name: hidden logarithmic barrier S^2 upper cutoff
+  dimension: dimensionless
+  description: "Hardcoded upper cutoff 0.999 on S^2 in d = 0.999 - S2 (AuxCortexNematic2D.cpp:1123, absent from mirza2025)."
+
+- id: position_dimless
+  name: dimensionless spatial length or coordinate
+  dimension: dimensionless
+  description: "Dimensionless length in units of hydrodynamic length ell_s (domain edge r_out, inner radius r_in, element spacing dx = r_out / nx)."
+
+- id: time_dimless
+  name: dimensionless simulation time or time step
+  dimension: dimensionless
+  description: "Dimensionless time t_bar = t / t_0 (time step deltat, maxDelt, cumulative time offset, end time 100000)."
+
+- id: velocity_gradient_dimless
+  name: dimensionless velocity gradient component
+  dimension: dimensionless
+  description: "Dimensionless strain rate component d_ij = (1/2)*(d_j v_i + d_i v_j) in units of 1/t_0."
+
+- id: nematic_gradient_dimless
+  name: dimensionless nematic tensor spatial gradient
+  dimension: dimensionless
+  description: "Dimensionless spatial gradient component d_k q_c in units of 1/ell_s."
+
+- id: free_energy_density_dimless
+  name: dimensionless nematic free-energy density
+  dimension: dimensionless
+  description: "Dimensionless Landau-de Gennes plus barrier free-energy density f_bar(q, grad q)."
+
+- id: stress_dimless
+  name: dimensionless stress tensor component
+  dimension: dimensionless
+  description: "Dimensionless stress tensor component sigma_bar_ij = sigma_ij / (rho_0 * gamma * D)."
+
+- id: normalized_tension
+  name: normalized active or total tension
+  dimension: dimensionless
+  description: "Tension component normalized by applied activity lambda or critical activity lambda_crit."
+
+- id: normalized_tension_difference
+  name: normalized parallel-minus-perpendicular tension difference
+  dimension: dimensionless
+  description: "Dimensionless stress anisotropy (sigma_par - sigma_perp) / lambda."
+
+- id: normalized_mean_tension_slope
+  name: normalized mean tension vs density slope
+  dimension: dimensionless
+  description: "Slope of normalized mean active tension vs normalized density (mirza2025 Eq. 11 / Fig. 5d)."
+
+- id: activity_supercritical_ratio
+  name: supercritical activity ratio
+  dimension: dimensionless
+  description: "Ratio lambda_iso / lambda_crit of applied isotropic active tension to linear stability threshold."
+
+- id: domain_size_in_wavelengths
+  name: computational domain size in pattern wavelengths
+  dimension: dimensionless
+  description: "Ratio r_out / ell_pattern = r_out * nu_crit / (2*pi)."
+
+- id: wavenumber_dimless
+  name: dimensionless perturbation wavenumber
+  dimension: dimensionless
+  description: "Dimensionless Fourier wavenumber nu_bar = nu * ell_s."
+
+- id: pattern_wavelength_dimless
+  name: dimensionless pattern wavelength
+  dimension: dimensionless
+  description: "Dimensionless linear pattern lengthscale ell_bar_pattern = 2*pi / nu_bar_crit."
+
+- id: wavelength_ratio
+  name: nonlinear-to-linear pattern lengthscale ratio
+  dimension: dimensionless
+  description: "Ratio ell_pattern^sim / ell_pattern (or ell_max / ell_pattern) comparing supercritical spacing to marginal linear onset spacing."
+
+- id: threshold_relative_error
+  name: relative error of linear instability threshold
+  dimension: dimensionless
+  description: "Percentage relative difference |lambda_crit^sim - lambda_crit^lin| / lambda_crit^lin."
+
+- id: architecture_order_parameter
+  name: pattern architecture order parameter
+  dimension: dimensionless
+  description: "Area-normalized bilinear order parameter omega = (1/|A|) * integral(grad h . q . grad h dS) = biLinear / r_out^2."
+
+- id: entropy_production_margin_dimless
+  name: dimensionless 2D entropy production margin
+  dimension: dimensionless
+  description: "2D dissipation positivity discriminant 2*rvisc - cvisc^2 = 2*eta_bar_rot - beta_bar^2 >= 0."
+
+# Numerical, mesh, solver, and diagnostic quantities
+- id: mesh_element_count
+  name: finite-element mesh subdivision count
+  dimension: dimensionless
+  description: "Number of structured quadrilateral elements along a coordinate axis (nx, ny)."
+
+- id: fem_order
+  name: finite-element basis polynomial order
+  dimension: dimensionless
+  description: "Lagrangian basis function order (bfOrder = 1 for bilinear Q1 elements)."
+
+- id: quadrature_point_count
+  name: Gauss quadrature point count per element
+  dimension: dimensionless
+  description: "Number of Gauss integration points per bulk (4) or border (2) element."
+
+- id: solver_tolerance
+  name: numerical solver or consistency check tolerance
+  dimension: dimensionless
+  description: "Convergence tolerance or finite-difference step for linear GMRES, Newton-Raphson, or ConsistencyCheck."
+
+- id: iteration_count
+  name: solver iteration or time-step count
+  dimension: dimensionless
+  description: "Maximum iterations, output stride, or time-step index (maxIter, linImax, nPrint, totalTimeSteps, timeStep)."
+
+- id: step_adapt_factor
+  name: adaptive time-step scaling factor
+  dimension: dimensionless
+  description: "Multiplicative/divisive factor 'adaptiveStepTime' used to adjust deltat after Newton-Raphson solves."
+
+- id: perturbation_amplitude
+  name: initial random perturbation amplitude
+  dimension: dimensionless
+  description: "Amplitude 'noiseStrength' scaling uniform random initial noise on h and q."
+
+- id: test_case_index
+  name: domain geometry selector index
+  dimension: dimensionless
+  description: "Integer flag 'testCase' selecting geometry: 1 = annulus, 2 = full circle VTK, 3 = periodic square (default)."
+
+- id: residual_norm
+  name: finite-element residual or Jacobian discrepancy norm
+  dimension: dimensionless
+  description: "Maximum absolute difference in weak-form residual or Jacobian ConsistencyCheck entries."
+
+- id: relative_discrepancy
+  name: relative numerical or post-processing discrepancy
+  dimension: dimensionless
+  description: "Dimensionless relative discrepancy or error ratio quantifying code-vs-paper or post-processing bugs."
+
+- id: unused_code_parameter
+  name: dead or unused code parameter
+  dimension: dimensionless
+  description: "Parameter parsed from config or initialized in CortexNematic2D.cpp that is never used in the active periodic square Q1 FEM equations."

@@ -1,0 +1,662 @@
+# ==============================================================================
+# 1. Parameters written in src/config (Figure 2b(I) / Fig. 2c(I), kappa = -0.2)
+# ==============================================================================
+- id: cfg_nx
+  quantity: mesh_element_count
+  unit: dimensionless
+  origin: reported
+  printed: "400"
+  citation:
+    file: src/config
+    lines: "1"
+    quote: "nx = 400"
+  note: "Structured square Q1 mesh element count along x; not reported in mirza2025."
+
+- id: cfg_ny
+  quantity: mesh_element_count
+  unit: dimensionless
+  origin: reported
+  printed: "400"
+  citation:
+    file: src/config
+    lines: "3"
+    quote: "ny = 400"
+  note: "Structured square Q1 mesh element count along y (400 x 400 = 160,000 elements, 800,000 DOFs); not reported in mirza2025."
+
+- id: cfg_visc
+  quantity: turnover_rate_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: src/config
+    lines: "9"
+    quote: "visc      = 0.1"
+  from_source: mirza2025
+  from_datum: kd_bar_fig2
+  note: "Despite the name 'visc', AuxCortexNematic2D.cpp:524 uses dparam[10] as the dimensionless depolymerization/turnover rate k_bar_d in -visc*(heqb - h), matching mirza2025 Appendix 4—table 1 (k_bar_d = 0.1)."
+
+- id: cfg_cvisc
+  quantity: flow_alignment_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "-0.2"
+  citation:
+    file: src/config
+    lines: "11"
+    quote: "cvisc     = -0.2"
+  from_source: mirza2025
+  from_datum: beta_bar_default
+  note: "Dimensionless flow-alignment coupling viscosity beta_bar = -0.2 (AuxCortexNematic2D.cpp:547-550), matching mirza2025 Appendix 4—table 1."
+
+- id: cfg_rvisc
+  quantity: rotational_viscosity_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/config
+    lines: "13"
+    quote: "rvisc = 1"
+  from_source: mirza2025
+  from_datum: eta_rot_bar_default
+  note: "Dimensionless rotational viscosity eta_bar_rot = 1 (AuxCortexNematic2D.cpp:540-543), matching mirza2025 Appendix 4—table 1."
+
+- id: cfg_frank
+  quantity: code_frank_parameter
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    file: src/config
+    lines: "15"
+    quote: "frank   = 2"
+  note: "Raw code Frank parameter frank = 2; because AuxCortexNematic2D.cpp:420 defines DqDq = 0.5*(|grad q1|^2 + |grad q2|^2) = (1/4)|grad q|^2, the effective paper Frank constant is L_bar = frank/2 = 1 (matching mirza2025/L_bar_default)."
+
+- id: cfg_lambda_iso
+  quantity: active_tension_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "3.46008684795435584664"
+  citation:
+    file: src/config
+    lines: "18"
+    quote: "lambda_iso   = 3.46008684795435584664"
+  note: "Isotropic active tension parameter lambda_bar = 1.3 * lambda_crit(L=1, kappa=-0.2) to 16 significant digits (2.661605267657197 * 1.3 = 3.460086847954356)."
+
+- id: cfg_lambda_aniso
+  quantity: parallel_active_tension_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "3.11407816315892026"
+  citation:
+    file: src/config
+    lines: "20"
+    quote: "lambda_aniso  =   3.11407816315892026"
+  note: "Parallel active tension coefficient multiplying S*(n outer n); equals 0.9 * lambda_iso = (1 + kappa/2)*lambda_iso for kappa = -0.2."
+
+- id: cfg_crossLinker
+  quantity: transverse_active_tension_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "3.80609553274979143"
+  citation:
+    file: src/config
+    lines: "24"
+    quote: "crossLinker = 3.80609553274979143"
+  note: "Transverse active tension coefficient multiplying S*(n_perp outer n_perp); equals 1.1 * lambda_iso = (1 - kappa/2)*lambda_iso for kappa = -0.2."
+
+- id: cfg_lambda_rot
+  quantity: code_lambda_rot_parameter
+  unit: dimensionless
+  origin: reported
+  printed: "-6"
+  citation:
+    file: src/config
+    lines: "27"
+    quote: "lambda_rot   = -6."
+  note: "Code active orientational forcing parameter lambda_rot = -6 (opposite sign to mirza2025 Appendix 4—table 1's lambda_bar_o = +6 because AuxCortexNematic2D.cpp:1086 writes +h*lambda_rot*q0)."
+
+- id: cfg_kp
+  quantity: unused_code_parameter
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/config
+    lines: "29"
+    quote: "kp           = 1"
+  note: "Stored in dparam[4] (CortexNematic2D.cpp:230) but NEVER read or used in AuxCortexNematic2D.cpp."
+
+- id: cfg_kd
+  quantity: unused_code_parameter
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/config
+    lines: "31"
+    quote: "kd           = 1"
+  note: "Stored in dparam[5] (CortexNematic2D.cpp:231) but NEVER read or used in AuxCortexNematic2D.cpp; actual turnover rate k_bar_d is passed via 'visc' (dparam[10])."
+
+- id: cfg_fric
+  quantity: unused_code_parameter
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/config
+    lines: "33"
+    quote: "fric    = 1."
+  note: "Read into local variable 'fric' (AuxCortexNematic2D.cpp:253) but NEVER multiplied into the friction residual (lines 532-533 hardcode unit dimensionless friction bar_gamma = 1)."
+
+- id: cfg_sus20
+  quantity: susceptibility_a_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "5"
+  citation:
+    file: src/config
+    lines: "35"
+    quote: "sus20    = 5"
+  note: "Dimensionless quadratic Landau susceptibility a_bar = 5 (divided by 2 into dparam[1] at CortexNematic2D.cpp:226); with lambda_rot = -6 yields c_bar_0 = 2*5 - 6 = 4 (mirza2025 Appendix 4—table 1)."
+
+- id: cfg_sus40
+  quantity: susceptibility_b_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "20"
+  citation:
+    file: src/config
+    lines: "37"
+    quote: "sus40    = 20"
+  from_source: mirza2025
+  from_datum: b_bar_fig2
+  note: "Dimensionless quartic Landau susceptibility b_bar = 20 (divided by 8 into dparam[2] at CortexNematic2D.cpp:227), matching mirza2025 Appendix 4—table 1."
+
+- id: cfg_deltat
+  quantity: time_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "0.8"
+  citation:
+    file: src/config
+    lines: "39"
+    quote: "deltat  = 0.8"
+  note: "Initial dimensionless time step (exceeds maxDelt = 0.4, so step 0 runs at dt = 0.8 before immediate clamping to 0.4); not reported in mirza2025."
+
+- id: cfg_linTol
+  quantity: solver_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-8"
+  citation:
+    file: src/config
+    lines: "41"
+    quote: "linTol = 1e-8"
+  note: "Read as string in CortexNematic2D.cpp:124-125 but IGNORED; line 445 hardcodes linSolver->setTolerance(1e-10)."
+
+- id: cfg_resTol
+  quantity: solver_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-8"
+  citation:
+    file: src/config
+    lines: "43"
+    quote: "resTol = 1e-8"
+  note: "Stored in userNum->dparam[1] (CortexNematic2D.cpp:263) but IGNORED by nonlinSolver, which hardcodes 1E-8 at line 482."
+
+- id: cfg_solTol
+  quantity: solver_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-8"
+  citation:
+    file: src/config
+    lines: "45"
+    quote: "solTol = 1e-8"
+  note: "Stored in userNum->dparam[0] (CortexNematic2D.cpp:262) but IGNORED by nonlinSolver, which hardcodes 1E-8 at line 483."
+
+- id: cfg_maxIter
+  quantity: iteration_count
+  unit: dimensionless
+  origin: reported
+  printed: "8"
+  citation:
+    file: src/config
+    lines: "47"
+    quote: "maxIter = 8"
+  note: "Maximum Newton-Raphson iterations per time step (CortexNematic2D.cpp:481); not reported in mirza2025."
+
+- id: cfg_r_in
+  quantity: position_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "2.0"
+  citation:
+    file: src/config
+    lines: "49"
+    quote: "r_in = 2.0"
+  note: "Unused in testCase = 3 periodic square domain (and even testCase = 1 hardcodes 6.0 and 25.0 at CortexNematic2D.cpp:284)."
+
+- id: cfg_linImax
+  quantity: iteration_count
+  unit: dimensionless
+  origin: reported
+  printed: "10000"
+  citation:
+    file: src/config
+    lines: "51"
+    quote: "linImax = 10000"
+  note: "Read as string in CortexNematic2D.cpp:136-137 but IGNORED; line 446 hardcodes linSolver->setMaxNumIterations(7000)."
+
+- id: cfg_maxDelt
+  quantity: time_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "0.4"
+  citation:
+    file: src/config
+    lines: "53"
+    quote: "maxDelt = 0.4"
+  note: "Maximum adaptive dimensionless time step (CortexNematic2D.cpp:533-534); not reported in mirza2025."
+
+- id: cfg_adaptiveStepTime
+  quantity: step_adapt_factor
+  unit: dimensionless
+  origin: reported
+  printed: "0.8"
+  citation:
+    file: src/config
+    lines: "55"
+    quote: "adaptiveStepTime = 0.8"
+  note: "Time-step growth/shrink factor (CortexNematic2D.cpp:530,532,603); not reported in mirza2025."
+
+- id: cfg_nPrint
+  quantity: iteration_count
+  unit: dimensionless
+  origin: reported
+  printed: "10"
+  citation:
+    file: src/config
+    lines: "57"
+    quote: "nPrint = 10"
+  note: "Output stride in time steps for VTK snapshots and bilinear.csv logging (CortexNematic2D.cpp:545)."
+
+- id: cfg_t_stall
+  quantity: unused_code_parameter
+  unit: dimensionless
+  origin: reported
+  printed: "-10.0"
+  citation:
+    file: src/config
+    lines: "59"
+    quote: "t_stall = -10.0"
+  note: "Stored in dparam[19] (CortexNematic2D.cpp:248) but NEVER used anywhere in AuxCortexNematic2D.cpp."
+
+- id: cfg_r_out
+  quantity: position_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "127"
+  citation:
+    file: src/config
+    lines: "63"
+    quote: "r_out = 127"
+  note: "Periodic square domain edge length in units of ell_s (CortexNematic2D.cpp:317); equals ceil(8 * ell_pattern) = ceil(126.316) = 127 (+0.54% above 8*ell_pattern)."
+
+- id: cfg_heqb
+  quantity: relative_density
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/config
+    lines: "65"
+    quote: "heqb = 1"
+  note: "Dimensionless steady-state equilibrium density rho_bar_0 = 1 (AuxCortexNematic2D.cpp:198,524)."
+
+- id: cfg_noiseStrength
+  quantity: perturbation_amplitude
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-4"
+  citation:
+    file: src/config
+    lines: "67"
+    quote: "noiseStrength=1E-4"
+  note: "Initial random perturbation amplitude: h = heqb + noiseStrength*U[0,1] (strictly positive mean shift +5e-5) and q1, q2 = noiseStrength*U[-1,1] (AuxCortexNematic2D.cpp:162-163,202); not reported in mirza2025."
+
+# ==============================================================================
+# 2. Hardcoded constants and active C++ defaults in CortexNematic2D.cpp & AuxCortexNematic2D.cpp
+# ==============================================================================
+- id: cpp_c_visc
+  quantity: viscous_prefactor_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    file: src/AuxCortexNematic2D.cpp
+    lines: "265"
+    quote: "double c = 2.;"
+  note: "Hardcoded prefactor 2*eta_bar = 2 multiplying shear and bulk viscous dissipation in AuxCortexNematic2D.cpp:514-518 (enforcing dimensionless eta_bar = 1)."
+
+- id: cpp_k_lim
+  quantity: barrier_stiffness_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-4"
+  citation:
+    file: src/AuxCortexNematic2D.cpp
+    lines: "1130"
+    quote: "double k_lim =1E-4/deltat;"
+  note: "HIDDEN logarithmic barrier stiffness k_lim = 1e-4 (scaled by 1/deltat inside LS_CortexNematic_2D) in f_lim = -k_lim*log(0.999 - S2); completely absent from mirza2025."
+
+- id: cpp_S2_max
+  quantity: barrier_S2_cutoff
+  unit: dimensionless
+  origin: reported
+  printed: "0.999"
+  citation:
+    file: src/AuxCortexNematic2D.cpp
+    lines: "1123"
+    quote: "double d = (0.999-S2);"
+  note: "HIDDEN upper cutoff S^2 < 0.999 (S < 0.9995) enforcing nematic order realizability via f_lim = -k_lim*log(0.999 - S2); absent from mirza2025."
+
+- id: cpp_testCase_default
+  quantity: test_case_index
+  unit: dimensionless
+  origin: reported
+  printed: "3"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "144"
+    quote: "int testCase = 3;"
+  note: "Active C++ fallback default (not present in src/config): selects periodic square domain (testCase = 3), and is ALSO accidentally read as nIter at line 518 (userNum->iparam[1])."
+
+- id: cpp_bfOrder
+  quantity: fem_order
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "215"
+    quote: "int bfOrder = 1;"
+  note: "Hardcoded bilinear Q1 Lagrangian finite-element order (not stated in mirza2025)."
+
+- id: cpp_gauss_pts_bulk
+  quantity: quadrature_point_count
+  unit: dimensionless
+  origin: reported
+  printed: "4"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "410"
+    quote: "hiperProbl->setCubatureGauss(\"Integ\", 4);"
+  note: "Hardcoded 2x2 (4-point) Gauss quadrature per square Q1 element."
+
+- id: cpp_gauss_pts_border
+  quantity: quadrature_point_count
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "403"
+    quote: "hiperProbl->setCubatureBorderGauss(\"BorderInteg\",2);"
+  note: "Hardcoded 2-point border Gauss quadrature for LS_CortexNematic_Border."
+
+- id: cpp_linSolver_tol
+  quantity: solver_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-10"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "445"
+    quote: "linSolver->setTolerance(1e-10);"
+  note: "Hardcoded AztecOO GMRES linear solver tolerance; silently overrides src/config's linTol = 1e-8."
+
+- id: cpp_linSolver_maxiter
+  quantity: iteration_count
+  unit: dimensionless
+  origin: reported
+  printed: "7000"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "446"
+    quote: "linSolver->setMaxNumIterations(7000);"
+  note: "Hardcoded AztecOO GMRES max iterations; silently overrides src/config's linImax = 10000."
+
+- id: cpp_nr_res_tol
+  quantity: solver_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-8"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "482"
+    quote: "nonlinSolver->setResTolerance(1E-8);"
+  note: "Hardcoded Newton-Raphson absolute residual tolerance (setConvRelTolerance(false) at line 486)."
+
+- id: cpp_nr_sol_tol
+  quantity: solver_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-8"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "483"
+    quote: "nonlinSolver->setSolTolerance(1E-8);"
+  note: "Hardcoded Newton-Raphson absolute solution increment tolerance."
+
+- id: cpp_ccheck_tol
+  quantity: solver_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-7"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "394"
+    quote: "hiperProbl->setConsistencyCheckTolerance(1.E-7);"
+  note: "HiperLife finite-difference Jacobian consistency check tolerance (disabled in src/config:61 via cCheck = false)."
+
+- id: cpp_ccheck_delta
+  quantity: solver_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-7"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "395"
+    quote: "hiperProbl->setConsistencyCheckDelta(1.E-7);"
+  note: "HiperLife finite-difference Jacobian step size."
+
+- id: cpp_t_end
+  quantity: time_dimless
+  unit: dimensionless
+  origin: reported
+  printed: "100000"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "491"
+    quote: "while (time<100000)"
+  note: "Hardcoded dimensionless simulation stop time t_bar = 100000 (while totalTimeSteps = 1000000 at line 150 is unused); not stated in mirza2025."
+
+- id: cpp_noise_step
+  quantity: iteration_count
+  unit: dimensionless
+  origin: reported
+  printed: "1000"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "609"
+    quote: "if (timeStep==1000)"
+  note: "Dead-code velocity noise re-injection at timeStep == 1000: modifies nodeDOFs (lines 618-619) instead of nodeDOFs0, which is immediately overwritten by line 511 at the start of step 1001."
+
+- id: cpp_default_frank
+  quantity: code_frank_parameter
+  unit: dimensionless
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "89"
+    quote: "double frank   = 1.0;"
+  note: "C++ fallback default frank = 1.0 (which corresponds to L_bar = 0.5, overridden by src/config's frank = 2)."
+
+- id: cpp_default_totalTimeSteps
+  quantity: unused_code_parameter
+  unit: dimensionless
+  origin: reported
+  printed: "1000000"
+  citation:
+    file: src/CortexNematic2D.cpp
+    lines: "150"
+    quote: "int totalTimeSteps{1000000};"
+  note: "Parsed from config (line 151) but NEVER used in the time loop (line 491 uses hardcoded while (time<100000))."
+
+# ==============================================================================
+# 3. Reference parameters and printed predictions copied from mirza2025
+# ==============================================================================
+- id: paper_L_bar_default
+  quantity: frank_constant_dimless
+  unit: dimensionless
+  origin: assumed
+  printed: "1"
+  citation:
+    none: "Copied dimensionless Frank constant L = 1 from mirza2025/L_bar_default (Appendix 4—table 1, p. 27)."
+  from_source: mirza2025
+  from_datum: L_bar_default
+
+- id: paper_c0_bar_fig2
+  quantity: effective_susceptibility_c0_dimless
+  unit: dimensionless
+  origin: derived
+  printed: "4"
+  citation:
+    none: "Copied effective linear susceptibility c_bar_0 = 4 from mirza2025/c0_bar_fig2 (Appendix 4—table 1, p. 27)."
+  from_source: mirza2025
+  from_datum: c0_bar_fig2
+
+- id: paper_lambda_o_bar_default
+  quantity: nematic_activity_dimless
+  unit: dimensionless
+  origin: assumed
+  printed: "6"
+  citation:
+    none: "Copied nematic activity lambda_bar_o = 6 from mirza2025/lambda_o_bar_default (Appendix 4—table 1, p. 27)."
+  from_source: mirza2025
+  from_datum: lambda_o_bar_default
+
+- id: paper_kappa_fig4bI
+  quantity: active_tension_anisotropy
+  unit: dimensionless
+  origin: reported
+  printed: "-0.2"
+  citation:
+    none: "Copied reference active tension anisotropy kappa = -0.2 (Fig. 2b(I) & Fig. 4b(I)) from mirza2025/kappa_fig4bI (p. 10)."
+  from_source: mirza2025
+  from_datum: kappa_fig4bI
+
+- id: paper_kappa_fig3_video1_bottom
+  quantity: active_tension_anisotropy
+  unit: dimensionless
+  origin: reported
+  printed: "0.2"
+  citation:
+    none: "Copied positive active tension anisotropy kappa = 0.2 (banded regime) from mirza2025/kappa_fig3_video1_bottom (Appendix 4—table 2, p. 27)."
+  from_source: mirza2025
+  from_datum: kappa_fig3_video1_bottom
+
+- id: paper_activity_ratio_default
+  quantity: activity_supercritical_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "1.3"
+  citation:
+    none: "Copied supercritical activity ratio lambda / lambda_crit = 1.3 from mirza2025/activity_ratio_default (p. 8 & Appendix 4—table 1)."
+  from_source: mirza2025
+  from_datum: activity_ratio_default
+
+- id: paper_domain_size_wavelengths
+  quantity: domain_size_in_wavelengths
+  unit: dimensionless
+  origin: reported
+  printed: "8"
+  citation:
+    none: "Copied periodic square domain size 8 * ell_pattern from mirza2025/domain_size_wavelengths (p. 7 & Appendix 4—table 1)."
+  from_source: mirza2025
+  from_datum: domain_size_wavelengths
+
+- id: paper_wavelength_ratio_fig2s1
+  quantity: wavelength_ratio
+  unit: dimensionless
+  origin: run
+  printed: "0.87 ± 0.02"
+  citation:
+    none: "Copied nonlinear simulation pattern lengthscale ratio ell_pattern^sim / ell_pattern = 0.87 ± 0.02 at lambda = 1.3*lambda_crit from mirza2025/wavelength_ratio_fig2s1 (Fig. 2—figure supplement 1, p. 37)."
+  from_source: mirza2025
+  from_datum: wavelength_ratio_fig2s1
+
+- id: paper_linear_threshold_accuracy
+  quantity: threshold_relative_error
+  unit: percent
+  origin: run
+  printed: "< 2"
+  citation:
+    none: "Copied nonlinear vs linear activity threshold accuracy claim (< 2%) from mirza2025/linear_threshold_accuracy_claim (p. 8)."
+  from_source: mirza2025
+  from_datum: linear_threshold_accuracy_claim
+
+- id: paper_c0_bar_fig4aIII
+  quantity: effective_susceptibility_c0_dimless
+  unit: dimensionless
+  origin: derived
+  printed: "-0.05"
+  citation:
+    none: "Copied pre-aligned Fig. 4a(III) susceptibility c_bar_0 = -0.05 from mirza2025/c0_bar_fig4aIII (Appendix 4—table 1, p. 27)."
+  from_source: mirza2025
+  from_datum: c0_bar_fig4aIII
+
+- id: paper_lambda_o_bar_fig4aIII
+  quantity: nematic_activity_dimless
+  unit: dimensionless
+  origin: assumed
+  printed: "10.05"
+  citation:
+    none: "Copied pre-aligned Fig. 4a(III) nematic activity lambda_bar_o = 10.05 from mirza2025/lambda_o_bar_fig4aIII (Appendix 4—table 1, p. 27)."
+  from_source: mirza2025
+  from_datum: lambda_o_bar_fig4aIII
+
+- id: paper_S0_fig4aIII
+  quantity: nematic_order_parameter
+  unit: dimensionless
+  origin: derived
+  printed: "0.05"
+  citation:
+    none: "Copied pre-aligned equilibrium nematic order S_0 = 0.05 from mirza2025/S0_fig4aIII (Fig. 4a caption, p. 11)."
+  from_source: mirza2025
+  from_datum: S0_fig4aIII
+
+- id: paper_norm_mean_tension_slope_fig5d
+  quantity: normalized_mean_tension_slope
+  unit: dimensionless
+  origin: predicted
+  printed: "1"
+  citation:
+    none: "Copied predicted normalized mean active tension vs density slope = 1 from mirza2025/norm_mean_tension_slope_fig5d (Fig. 5d caption, p. 13)."
+  from_source: mirza2025
+  from_datum: norm_mean_tension_slope_fig5d
+
+- id: paper_beta_bar_fig3b
+  quantity: flow_alignment_dimless
+  unit: dimensionless
+  origin: derived
+  printed: "-1.41421356"
+  citation:
+    none: "Copied 2D entropy-production limit beta_bar = -sqrt(2) from mirza2025/beta_bar_fig3b (Appendix 4—table 1, p. 27)."
+  from_source: mirza2025
+  from_datum: beta_bar_fig3b

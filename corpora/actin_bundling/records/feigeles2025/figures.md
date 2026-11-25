@@ -1,0 +1,93 @@
+# Figure Inventory and Digitization Log — `feigeles2025`
+
+Complete panel-by-panel inventory of `corpus/actin_bundling/2025_Feigeles.pdf` (16 PDF pages: pp. 1–9 main *Soft Matter* article, pp. 7872–7880; pp. 10–16 Supplementary Information, pp. SI-1–SI-7). All 19 quantitative figure readings across all 11 quantitative plot panels were implemented as high-resolution `mode: code` readers (900–1500 dpi; plot box ≥ 1500 px on the shorter side) under `figures/`, verified via `boxgraph figure check`, visually inspected via their magenta overlay PNGs in `figwork/`, and saved to `readings.json`.
+
+## Page 1 (printed p. 7872)
+- No figures (Title, Abstract, and Introduction text only).
+
+## Page 2 (printed p. 7873) — Figure 1: FUS condensates and actin filaments colocalize in bundles
+- **Fig. 1A**: Left out — cartoon schematic of the passivated glass slide, crowded actin filaments, and added FUS condensates; no numeric axes or values.
+- **Fig. 1B**: Left out — fluorescence micrograph of entangled actin network (`2.64 uM`, `20 um` scale bar); qualitative morphology image with no quantitative plot axes.
+- **Fig. 1C**: Left out — fluorescence micrograph of FUS condensates (`4 uM`, `20 um` scale bar); qualitative microscopy image.
+- **Fig. 1D**: Left out — time-lapse fluorescence micrographs (`0, 20, 40, 200, 920, 1820 s`; FUS grey and FUS/actin merged; `10 um` scale bar); qualitative microscopy sequence.
+- **Fig. 1E (transverse fluorescence intensity profiles across an actin–FUS bundle)**: Read at `1200 dpi`, calibrated on left/right spines (`0, 10 um`) + 4 top inward ticks (`2, 4, 6, 8 um`) and top/bottom spines (`800, 200`) + 5 left inward ticks (`300..700`), calibration misfit `cal_res = (1.18, 1.72) px`:
+  - `fig1e_fus_intensity` (`d_fig1e_fus_intensity`, origin `measured`): cyan/blue FUS intensity curve sampled at 29 positions (`x = 0.5..9.5 um`, 0.1 um step across the peak `4.6..5.6 um`); baseline ~282 a.u., peak `699 a.u.` near `x = 5.05 um`.
+  - `fig1e_actin_intensity` (`d_fig1e_actin_intensity`, origin `measured`): green TMR-actin intensity curve sampled at the same 29 positions; baseline ~336 a.u., peak `579 a.u.` near `x = 5.05 um`.
+  - **Quantitative cross-check (Eq. 1 Gaussian fit, logged in `q_digitized_fig5b_pixel_geometry_and_fig1e_fwhm`)**: Fitting Eq. (1) confirms FUS/actin peak colocalization within `0.02 um` (`x_0 = 5.044 um` for FUS, `5.063 um` for actin), with actin `delta = 0.236 um`, `FWHM = 0.556 um` (`R^2 = 0.950`) and FUS `delta = 0.278 um`, `FWHM = 0.654 um` (`R^2 = 0.995`) — `2.4x` wider than p. 3's 30-bundle average thickness `0.23 ± 0.10 um` (though comparable to `delta = 0.236 um` and HWHM `0.278 um`).
+
+## Page 3 (printed p. 7874) — Figure 2: FUS condensates adsorb on actin bundles and form barrel-shaped drops
+- **Fig. 2A**: Left out — 5 fluorescence time-lapse micrographs (`0, 15, 30, 45, 60 s`; `5 um` scale bar) of a condensate adsorbing and spreading on a bundle.
+- **Fig. 2B (droplet aspect ratio $2R_{\max}/l$ vs time during spreading)**: Read at `1200 dpi`, calibrated on spines (`0, 80 s`; `0.6, 1.1`) + 7 bottom x-ticks (`10..70 s`) + 4 right y-ticks (`0.7..1.0`), `cal_res = (1.73, 2.36) px` (cropped micrographs at `10, 40, 50 s` and inset cartoon left out):
+  - `fig2b_aspect_ratio_data` (`d_fig2b_aspect_ratio_data`, origin `measured`): all 64 blue filled circles (`t = 0.35..66.0 s`, 1 fps acquisition; initial spherical plateau `~1.00`, spreading drop from `t = 20 s` to equilibrium `~0.70`, resolved via FFT circular-disk matching pursuit + XOR refinement).
+  - `fig2b_aspect_ratio_fit` (`d_fig2b_aspect_ratio_fit`, origin `fitted`): 13 samples along the red solid exponential fit curve (`t = 21..70 s`, smoothly bridging columns occluded by blue dots via local quadratic regression).
+  - **Model comparisons**: `cmp_fig2b_tau_extracted` (`spreading_decay_time_from_curve`) yields `tau = 5.86 s` (`no verdict` vs printed `~5.8 s`) and `cmp_fig2b_ar_eq_extracted` yields equilibrium plateau `0.711` (`no verdict` vs printed `~0.7`).
+- **Fig. 2C (contact angle $\theta$ vs rescaled droplet radius $R_{\max}/R_f$, $n = 28$)**: Read at `1500 dpi`, calibrated on spines (`2, 12`; `0, 80 deg`) + 4 bottom x-ticks (`4, 6, 8, 10`) + 3 left y-ticks (`20, 40, 60 deg`), `cal_res = (1.12, 2.00) px` (inset schematic left out):
+  - `fig2c_contact_angle` (`d_fig2c_contact_angle`, origin `measured`): all **28/28** blue filled circles (`R_max/R_f = 2.55..11.76`, `theta = 13.5..55.0 deg`, cleanly splitting the overlapping triplet near `n = 6.64–6.79`).
+  - **Model comparison**: `cmp_fig2c_theta_mean` (`contact_angle_mean_fig2c`) is **`reproduced`** — mean `39.503 deg` (population SD `8.98 deg`, sample SD `9.15 deg`) vs printed `39.5 ± 9.01 deg`.
+- **Fig. 2D (dimensionless capillary pressure $P^*$ vs rescaled droplet radius $R_{\max}/R_f$)**: Read at `1200 dpi`, calibrated on spines (`2, 12`; `0.1, 0.7`) + 4 bottom x-ticks (`4, 6, 8, 10`) + 5 left y-ticks (`0.2..0.6`), `cal_res = (0.90, 1.14) px`:
+  - `fig2d_dimensionless_pressure` (`d_fig2d_dimensionless_pressure`, origin `derived`): **27** visually resolved blue filled circles spanning `R_max/R_f = 2.55..11.76`, `P* = 0.630..0.162` (two condensates from Fig. 2C at `n = 6.64, theta = 49.0 deg` and `n = 6.68, theta = 51.4 deg` both evaluate to `P* = 0.277` and sit only ~7 px apart, overlapping into one marker at `(6.65, 0.278)`).
+  - **Model comparisons**: `cmp_fig2d_pstar_from_fig2c` (`dimensionless_capillary_pressure_from_fig2c`, evaluating $2(n_i - \cos\theta_i)/(n_i^2 - 1)$ point-by-point from digitized Fig. 2C) is **`reproduced` (`27/27 reproduced`)**; `cmp_fig2d_pstar_avg_theta` (sweeping `dimensionless_capillary_pressure_rescaled` at mean `theta = 39.5 deg`) is **`not reproduced` (`23 reproduced, 3 close, 1 not reproduced`)**, confirming that per-droplet contact angles are required. Across all 28 Fig. 2C condensates, $R_{\text{FUS}}/R_f = 1/P^*$ spans `1.59..6.17` (3 points below `2.3` and 2 above `5.4`), settling `q_groove_meniscus_range_narrower_than_fig2cd` (logged in `q_digitized_figS5_figS7_bin_edges_and_groove_range_settled`).
+- **Fig. 2E**: Left out — 3 schematic cross-sections `(i, ii, iii)` of potential condensate–filament wetting geometries; no numeric axes.
+
+## Page 4 (printed p. 7875) — Figure 3: FUS condensates coalesce on filaments and bundles
+- **Fig. 3A**: Left out — 5 fluorescence micrographs (`0, 20, 40, 45, 50 s`; `2 um` scale bar) of a free droplet merging with a barrel-shaped droplet on a bundle.
+- **Fig. 3B**: Left out — 5 fluorescence micrographs (`0, 40, 80, 120, 160 s`; `5 um` scale bar) of two adsorbed droplets coalescing along a bundle.
+- **Fig. 3C (major-axis length $l$ vs time during coalescence on a bundle)**: Read at `1200 dpi`, calibrated on left spine (`0 s`) + 8 bottom x-ticks (`10..80 s`; right spine sits at `82.0 s`) and spines (`9.0, 5.5 um`) + 6 right y-ticks (`6.0..8.5 um`), `cal_res = (1.86, 2.26) px` (inset cartoon left out):
+  - `fig3c_coalescence_length_data` (`d_fig3c_coalescence_length_data`, origin `measured`): 81 black filled circles (`t = 0.5..80.8 s`, 1 fps, `L = 8.75` decaying to `5.75 um`).
+  - `fig3c_coalescence_length_fit` (`d_fig3c_coalescence_length_fit`, origin `fitted`): 12 samples along the red solid exponential fit curve (`t = 3..80 s`, `L = 8.698..5.726 um`).
+  - **Model comparisons**: `cmp_fig3c_data_tau_extracted` (`coalescence_decay_time_from_curve` on `d_fig3c_coalescence_length_data`) is **`reproduced`** (`14.37 s` vs printed `14.4 s`), and `cmp_fig3c_tau_extracted` (on the 12-point `d_fig3c_coalescence_length_fit`) is **`close`** (`14.33 s` vs `14.4 s`, within 0.45%; `L_f = 5.71 um`).
+
+## Page 5 (printed p. 7876) — Figure 4: FUS condensates bundle and remodel actin networks via capillary bridges
+- **Fig. 4A**: Left out — 5 fluorescence micrographs (`0, 3, 6, 9, 13 min`; `5 um` scale bar) of capillary bridging at bundle intersections.
+- **Fig. 4B**: Left out — cartoon schematic of capillary bridging between two green actin filaments.
+- **Fig. 4C**: Left out — 5 magnified fluorescence micrographs (`0, 20, 40, 270, 290 s`; `2 um` scale bar) from Fig. 1D.
+- **Fig. 4D**: Left out — 2 maximum-intensity projection micrographs (`0–60 s`, `60–290 s`; `10 um` scale bar).
+
+## Page 6 (printed p. 7877)
+- No figures (Discussion and Methods text only).
+
+## Page 7 (printed p. 7878) — Figure 5: Contact angle measurement
+- **Fig. 5A**: Left out — geometric schematic defining axisymmetric unduloid coordinates (`x, y, R_f, R_b, theta, theta_b, r_1, r_2, gamma`); no numeric scale.
+- **Fig. 5B**: Left out of `figures.yaml` — fluorescence micrograph with overlaid green experimental contour circles and red unduloidal fit curve, carrying **no coordinate axes or scale bar** (caption gives `R_f = 1.2 um, R_b = 6.5 um, theta_b = 77 deg, theta = 31 deg`).
+  - **Scale-free pixel-geometry check (logged in `q_digitized_fig5b_pixel_geometry_and_fig1e_fwhm`)**: High-resolution (`1200 dpi`) autocorrelation of the background micrograph confirms an exact square `32.00 x 32.00 px` camera-pixel grid. Measuring from the fiber fluorescence centerline (`row 1467–1468`, midpoint of upper/lower contact lines), the vertical radius ratio `R_b/R_f = 965/179 = 5.39` matches the caption's `6.5/1.2 = 5.42` (`0.217 um/camera pixel`). However, the plotted red contour spans horizontal extent `x_b/R_f = 8.28` (`9.94 um`) with peak inflection slope `40.6 deg`, whereas exact Eq. (3) LHS for `(1.2, 6.5, 77 deg, 31 deg)` spans only `x_b/R_f = 6.11` (`7.33 um`, peak slope `48.6 deg`; `x_apex/R_f = 7.80` at the apex) and misprinted Eq. (3) RHS gives `x_b/R_f = 9.18` (`11.01 um`, contact angle `22.2 deg` vs plotted `~34.5 deg`).
+
+## Pages 8–10 (printed pp. 7879, 7880, SI-1)
+- No figures (Equations 2–5, References, and SI cover page only).
+
+## Page 11 (printed p. SI-2) — Figure S1
+- **Fig. S1**: Left out — 3-column time-lapse fluorescence micrographs (FUS, actin, merged; `0–1820 s`; `10 um` scale bar); no quantitative plot axes.
+
+## Page 12 (printed p. SI-3) — Figure S2: Bundle stiffness / straightness
+- **Fig. S2 (bundle straightness ratio vs contour length $L_c$, caption $n = 50$)**: Read at `900 dpi`, calibrated on spines (`0, 50 um`; `0.5, 3.0`) + 4 bottom x-ticks (`10..40 um`) + 4 right y-ticks (`1.0..2.5`), `cal_res = (0.30, 0.48) px` (inset bundle schematic left out):
+  - `figS2_bundle_straightness` (`d_figS2_bundle_straightness`, origin `measured`): **47** visually resolved black filled circles (`L_c = 2.09..45.53 um`, `y = 0.976..2.598`; 3 of the caption's `n = 50` bundles coincide inside dense `y ~ 1.0` clusters). Confirms that all plotted values represent `L_c/epsilon >= 1` (inverted from the y-axis label `epsilon/L_c`) and that the lone point above `40 um` lies at `(45.53 um, 2.598)` while the three points near `38–40 um` lie at `(38.22, 1.245), (38.69, 1.103), (39.66, 1.380)`.
+
+## Page 13 (printed p. SI-4) — Figures S3 and S4
+- **Fig. S3 (condensate spreading aspect ratio $2R_{\max}/l$ vs time for 3 initial sizes $R_i$)**: Read at `900 dpi`, calibrated on 7 bottom x-ticks (`0..60 s`; left spine sits at `-5 s`) + right spine (`70 s`) and 5 right y-ticks (`1.1..0.7`; `1.1` tick sits 8 px below top spine) + bottom spine (`0.6`), `cal_res = (1.78, 1.30) px` (inset cartoon and legend box left out). Markers separated by color and shape using empirical isolated-marker templates + FFT matching pursuit + XOR refinement:
+  - `figS3_Ri_1p4` (`d_figS3_Ri_1p4`, origin `measured`, `R_i = 1.4 um`): 49 red `X` markers (`t = 0.95..49.92 s`, `AR = 1.078` down to `0.687..0.72`).
+  - `figS3_Ri_2p2` (`d_figS3_Ri_2p2`, origin `measured`, `R_i = 2.2 um`): 48 visible black filled circles (`t = -0.02..50.99 s`, `AR = 1.077` down to `0.693..0.77`; one circle near `t = 37 s, AR = 0.74` is almost entirely occluded underneath a blue diamond).
+  - `figS3_Ri_2p4` (`d_figS3_Ri_2p4`, origin `measured`, `R_i = 2.4 um`): 62 blue filled diamonds (`t = -0.01..62.90 s`, `AR = 0.996` down to `0.71..0.78`).
+- **Fig. S4 (contact angle $\theta$ vs droplet maximum radius $R_{\max}$, $n = 28$)**: Read at `900 dpi`, calibrated on spines (`2, 7 um`; `10, 60 deg`) + 4 bottom x-ticks (`3..6 um`) + 4 left y-ticks (`20..50 deg`), `cal_res = (0.23, 1.73) px`:
+  - `figS4_contact_angle_vs_Rmax` (`d_figS4_contact_angle_vs_Rmax`, origin `measured`): all **28/28** black filled circles (`R_max = 2.30..6.78 um`, `theta = 13.6..55.0 deg`, splitting the touching pair at `R_max = 2.54, 2.56 um`).
+  - **Model comparison & cross-check**: `cmp_figS4_theta_mean` is **`reproduced`** — mean `39.499 deg` (population SD `9.01 deg`) vs printed `39.5 ± 9.01 deg`. Sorted contact angles match Fig. 2C 1-to-1 to `0.038 deg` mean (`0.111 deg` max), enabling exact pairing of all 28 droplets to recover `R_f = R_max / (R_max/R_f) in [0.345, 1.388] um`, `Delta P_column in [64.8, 261.0] N/m^2` (vs printed `~65 to 260`), and `Delta P_condensate in [24.4, 68.7] N/m^2` (vs printed `~20 to 70`).
+
+## Page 14 (printed p. SI-5) — Figures S5 and S6
+- **Fig. S5 (histogram of rescaled droplet radius $R_{\max}/R_f$, $n = 28$)**: Read at `900 dpi`, calibrated on spines (`0, 12`; `0, 14`) + 5 top x-ticks (`2..10`; bottom ticks are covered by the bars) + 6 right y-ticks (`2..12`), `cal_res = (1.64, 2.39) px` (note: printed y-axis text labels drift slightly upward in a multiline text box relative to the exact tick marks):
+  - `figS5_rescaled_radius_hist` (`d_figS5_rescaled_radius_hist`, origin `measured`, `error_bars: sd`): 5 black bars at `x = 2.00, 3.98, 6.00, 7.99, 10.00` with frequencies `4.03, 10.05, 8.05, 4.03, 2.04` (exact counts `4, 10, 8, 4, 2`; sum `28`) and red upper Poisson SD ($\sqrt{N}$) error bars `+1.98, +3.11, +2.76, +1.99, +1.37` (lower ends hidden behind the solid black bars and mirrored downward).
+  - **Model comparison (settles `q_audit_reading_disagreements_fwhm_figS5_and_notes`)**: `cmp_figS5_hist_from_fig2c` (`rescaled_radius_histogram_from_fig2c`) bins the 28 Fig. 2C `R_max/R_f` values on left-edge intervals `[2,4)..[10,12)` and is **`reproduced` (`5/5 reproduced`)** bar-for-bar (`[4, 10, 8, 4, 2]`).
+- **Fig. S6A**: Left out — 4 fluorescence time-lapse micrographs (`0, 1.2, 2.4, 3.6 s`; unlabelled white scale bar) of two free condensates coalescing.
+- **Fig. S6B (free-solution coalescence length $L$ vs time)**: Read at `900 dpi`, calibrated on left spine (`0.1 s`) + 7 evenly spaced top x-ticks (`0.2..0.8 s`; `0.8` tick sits 9.5 px inside right spine; bottom x-ticks are slightly stretched in the graphic) and spines (`7.5, 4.5 um`) + 5 right y-ticks (`5.0..7.0 um`), `cal_res = (0.36, 0.43) px` (inset cartoon and equation text left out):
+  - `figS6b_coalescence_data` (`d_figS6b_coalescence_data`, origin `measured`): all **12/12** black closed circles landing on exact `0.050 s` frames (`t = 0.1497..0.6999 s`, `L = 7.143..4.708 um`).
+  - `figS6b_coalescence_fit` (`d_figS6b_coalescence_fit`, origin `fitted`): 11 samples along the red solid exponential fit curve (`t = 0.15..0.70 s`, `L = 7.133..4.611 um`).
+  - **Model comparisons (settles `q_figS6B_equation_and_tau_errors` & `q_figS6_missing_t0_and_coupled_10x_tension`)**: `cmp_figS6b_printed_vs_fit` (`coalescence_exponential_decay_figS6B_printed`, rising above `7.2 um`, **`not reproduced`: `10 not reproduced, 1 close`**), `cmp_figS6b_corrected_vs_fit` (**`11/11 not reproduced`**), and `cmp_figS6b_corrected_vs_data` (**`12/12 not reproduced`**) all fail at printed `tau = 0.6 s`; `cmp_figS6b_fit_tau_repro` (`coalescence_decay_time_from_curve`) is **`not reproduced`** (`tau = 0.0724 s` vs printed `0.6 s`, **8.3× faster**; `cmp_figS6b_data_tau_validation` on the 12 dots is also **`not reproduced`** at `0.0681 s`; logged in `q_digitized_figS6_misaligned_labels_6pt_fit_and_tau_settled`).
+- **Fig. S6C (coalescence length change $\Delta L = L_i - L_f$ vs decay time $\tau$)**: Read at `900 dpi`, calibrated on left spine (`0.1 s`) + 5 evenly spaced top x-ticks (`0.2..0.6 s`; `0.6` tick sits 12 px inside right spine) and spines (`2.8, 1.2 um`) + 7 evenly spaced right y-ticks (`1.4..2.6 um` in exact `0.2 um` steps; printed text labels `2.8, 2.4, 2, 1.6, 1.2` sit in a misaligned multiline text block at 410 px spacing vs 478 px per `0.4 um`), `cal_res = (0.30, 1.44) px`:
+  - `figS6c_coalescence_data` (`d_figS6c_coalescence_data`, origin `measured`): all **6** visible black closed circles (`(0.113, 1.247), (0.151, 1.463), (0.295, 1.897), (0.313, 1.842), (0.384, 2.225), (0.564, 2.672)`; caption states `n = 10`).
+  - `figS6c_coalescence_fit` (`d_figS6c_coalescence_fit`, origin `fitted`): 6 samples along the red linear regression line (`tau = 0.12..0.56 s`, `Delta L = 1.317..2.692 um`).
+  - **Model comparisons (settles `q_figS6C_slope_inversion_10x_and_n10`)**: OLS of ONLY the 6 visible dots (`slope = 3.1153 um/s, intercept = 0.9460 um`) matches the red line (`slope = 3.1158 um/s, intercept = 0.9455 um`) to **0.02%**, showing no 4 off-scale points entered the fit. `cmp_figS6c_fit_gamma_vs_si` (`3.75 uN/m`) and `cmp_figS6c_data_gamma_vs_si` (`3.74 uN/m`) give `no verdict` against approximate `~40 uN/m` (`10.7x` lower), `cmp_figS6c_fit_gamma_vs_main` is **`not reproduced`** (`3.75` vs `90 uN/m`, `24x` lower), and `cmp_figS6c_deltaL_vs_fit_40` (**`6/6 not reproduced`**) / `cmp_figS6c_deltaL_vs_data_40` (**`6/6 not reproduced`**) confirm that `Delta L = (gamma/eta)*tau` at `40 uN/m` overshoots the plotted line and points by ~10×.
+
+## Page 15 (printed p. SI-6) — Figure S7: Capillary pressure histogram
+- **Fig. S7 (histogram of condensate capillary pressure $\Delta P_{\text{condensate}}$, $n = 28$)**: Read at `900 dpi`, calibrated on spines (`10, 70 N/m^2`; `0, 12`) + 5 top x-ticks (`20..60 N/m^2`) + 5 right y-ticks (`2..10`), `cal_res = (0.36, 0.00) px`:
+  - `figS7_capillary_pressure_hist` (`d_figS7_capillary_pressure_hist`, origin `derived`, `error_bars: sd`): 5 black bars at `x = 20.00, 30.00, 39.99, 50.00, 60.00 N/m^2` with frequencies `8.02, 5.98, 3.00, 5.00, 5.98` (exact counts `8, 6, 3, 5, 6`; sum `28`) and red upper Poisson SD ($\sqrt{N}$) error bars `+2.79, +2.47, +1.74, +2.25, +2.47` (lower ends hidden behind the solid black bars and mirrored downward).
+  - **Model comparison (settles Fig. S7 bin edges)**: `cmp_figS7_hist_from_fig2c_figS4` (`capillary_pressure_histogram_from_fig2c_figS4`) pairs the 28 Fig. 2C and Fig. S4 droplets at `sigma = 90 uN/m` and bins $\Delta P_{\text{condensate}}$ on left-edge intervals `[20,30)..[60,70)`, yielding **`reproduced` (`5/5 reproduced`)** bar-for-bar (`[8, 6, 3, 5, 6]`).
+
+## Pages 15–16 (printed pp. SI-6–SI-7) — Movies S1–S5
+- **Movies S1–S5 captions**: Left out — text descriptions of time-lapse fluorescence microscopy videos; no embedded plots or figures.

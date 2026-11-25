@@ -1,0 +1,85 @@
+# Cross-record ModelAtlas relations and exhaustive pair audits for graham2024_code
+# (CytoSim_VASP_Arp_VCA, accompanying Graham et al., PNAS 121(3), e2309152121, 2024).
+#
+# Pairwise audit summary:
+# - graham2023 (11 x 31 = 341 pairs): 2 verified proposed relations below
+#   (`rel_graham2023_lmax_same_as_ring_circumference` and
+#   `rel_graham2023_ode_length_reduces_to_linear_bundle`). All other graham2023 models
+#   concern 2D elastic-ring buckling, wetting tension, Bathe bundle stiffness, or thermal
+#   ring-fluctuation scaling, disjoint from graham2024_code's 3D CytoSim actin-Arp2/3-VCA
+#   polymerization ODEs and trajectory CSV analyzers.
+# - chandrasekaran2024 (11 x 46 = 506 pairs): 11 verified proposed relations live in
+#   chandrasekaran2024/relations.yaml (the later 2024 article citing Graham et al. 2024 as
+#   ref-SI8).
+# - chandrasekaran_source_data (11 x 20 = 220 pairs): 0 ModelAtlas equation relations.
+#   All 20 chandrasekaran_source_data models are `role: processing`, `software: true` Excel
+#   workbook readers over fixed MOESM9 sheets (the 3 linear-nucleator sheets FigureS10B/C/F
+#   tabulate an independent bulk-nucleator CytoSim ensemble on discrete concentrations, not
+#   continuous analytical equations; see q_chandrasekaran_source_data_nucleator_pipeline_fingerprint
+#   for the shared Cell 27/35/39 right-edge grid fingerprint and 0 nM baseline match).
+# - graham_code (11 x 8 = 88 pairs): 0 ModelAtlas equation relations.
+#   graham_code (VASPDroplet_simulate.ipynb) implements 2D SLSQP droplet-ring deformation
+#   mechanics (wetting tension, Gauss-Kummer perimeter energy, Bathe bundle bending, ring
+#   discretization, critical thickness), sharing no equations, code, or data with
+#   graham2024_code.
+# - graham_source_data (11 x 11 = 121 pairs): 0 ModelAtlas equation relations.
+#   All 11 graham_source_data models are `role: processing`, `software: true` Excel workbook
+#   readers summarizing fixed experimental microscopy spreadsheets (MOESM12-22 of Graham et al.
+#   2023), sharing no equations or data with graham2024_code.
+
+- id: rel_graham2023_lmax_same_as_ring_circumference
+  kind: same_as
+  a: graham2024_code/notebook_vca_config_params
+  b: graham2023/circular_ring_contour_length
+  mapping:
+    R: "R_drop"
+  output_map:
+    L: L_max_fil
+  regime:
+    N_fil: [10.0, 100.0]
+    R_drop: [0.5, 2.0]
+    L0_per_fil: [0.05, 6.5]
+    k_bind_vca: [1.0, 5.0]
+    N_vca: [0.0, 25000.0]
+    l_mono: [0.0025, 0.003]
+    gmax_factor: [1.0, 10.0]
+    r_blob: [0.01, 0.05]
+  provenance: proposed
+  reason: >
+    graham2024_code/notebook_vca_config_params sets the maximum actin filament length in all
+    240 CytoSim configs to one equatorial droplet circumference L_max_fil = 2*pi*R_drop
+    (6.283185 um at R_drop = 1 um), identically matching graham2023/circular_ring_contour_length
+    (L = 2*pi*R for an actin ring wrapped around a spherical VASP droplet of radius R; flagged
+    too_plain by ModelAtlas as a 2-op product).
+
+- id: rel_graham2023_ode_length_reduces_to_linear_bundle
+  kind: reduces_to
+  a: graham2024_code/notebook_actin_ode
+  b: graham2023/linear_bundle_elongation
+  mapping:
+    v: "k_grow_plus"
+    t: "600"
+  output_map:
+    y: L_total
+  limit:
+    TFactin: "oo"
+    L0_per_fil: "0"
+  regime:
+    N_fil: [1.0, 1.0]
+    TFactin: [500.0, 1500.0]
+    k_grow_plus: [0.005, 0.02]
+    L0_per_fil: [0.05, 0.5]
+    R_drop: [0.5, 2.0]
+    l_mono: [0.0025, 0.003]
+  provenance: proposed
+  reason: >
+    For a single filament (N_fil = 1) in the joint undepleted-monomer (TFactin -> oo) and
+    negligible-seed (L0_per_fil -> 0) limit, live Cell 21 model()'s integrated length L_total
+    at t = 600 s reduces identically to graham2023/linear_bundle_elongation (Fig. 5h's
+    through-origin linear elongation law y(t) = v*t; difference falls to 3.1e-9), mirroring
+    chandrasekaran2024/rel_graham2023_linear_elongation_limit. Note that CytoSim's single-filament
+    baseline elongation rate (0.0103 um/s = 10.3 nm/s) is 2.20x slower than Graham et al. (2023)
+    Fig. 5h's measured bundle elongation speed (22.7 nm/s).
+  assumptions:
+    - "Single filament N_fil = 1 at default Cell 21 horizon t = 600 s with zero shrinking/minus-end rates."
+    - "Joint undepleted reservoir (TFactin -> oo) and negligible initial seed length (L0_per_fil -> 0) limit."

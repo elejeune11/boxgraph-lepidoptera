@@ -1,0 +1,906 @@
+- id: q_smol_eq28_negative_k
+  kind: possible_error
+  about:
+    - smoluchowski_passive_approx_eq28
+    - smoluchowski_passive_approx_eq28_corrected
+    - cmp_smol_eq28_printed_alpha
+  text: >
+    In SI Sec. III.B.1 Eqs. (27)-(28) (p. 12 / SI-6), the authors substitute L/a = 1 + epsilon
+    (epsilon << 1) into ln(L/(2a)) = ln(1/2) + epsilon + O(epsilon^2). Because contact occurs at
+    r = 2a, setting L/a = 1 + epsilon implies 2a > L (contact diameter larger than the box),
+    making the denominator 3*ln(1/2) + 3*epsilon + 1 ≈ -1.079 + 3*epsilon strictly negative for
+    small epsilon. Consequently, printed k = 9*k_B*T*phi_A / [16*eta*(3*ln(1/2) + 3*epsilon + 1)]
+    is negative, predicting unphysical domain shrinkage instead of t^(1/3) growth. In addition,
+    passing from Eq. (27) to Eq. (28) divides the t term by that bracket to form k but omits the
+    same factor in b = 3*ln(L/(2*a_0)) + 1. Expanding around the physical contact limit
+    L/(2a) = 1 + epsilon and dividing b consistently (smoluchowski_passive_approx_eq28_corrected)
+    restores k > 0 and reproduces alpha = 1/3.
+  citation:
+    page: 12
+    printed_page: "SI-6"
+    quote: "Thus domains grow approximately as"
+    where: "SI Eqs. (27)-(28)"
+
+- id: q_smol_eq35_36_dropped_phiA_and_sign
+  kind: possible_error
+  about:
+    - smoluchowski_shear_eq35_37
+    - smoluchowski_shear_eq35_37_corrected
+    - cmp_smol_shear_printed_low_alpha
+    - cmp_smol_shear_printed_high_alpha
+  text: >
+    In SI Sec. III.B.2 Eq. (35) (p. 13 / SI-7), substituting constant area fraction
+    phi_A = n*pi*a^2 into Eq. (34) and dn/dt = -J yields da/dt = [k_B*T*phi_A / (16*eta*a^2*ln(L/(2a)))]
+    *(1 + C*Pe_c^(1/2)), consistent with passive SI Eq. (25) at Pe_c = 0. Instead, printed Eq. (35)
+    retains the pi*k_B*T/(8*eta) prefactor of k^eff and omits phi_A/(2*pi) (a factor of 2*pi/phi_A
+    discrepancy). Furthermore, Eq. (36) again uses ln(L/(2a)) ≈ ln(1/2) + epsilon ≈ -0.693 < 0,
+    rendering m < 0 and causing Eq. (37) to collapse a(t) to 0 in finite time. Restoring
+    phi_A/(2*pi) and expanding around the physical contact bound L/(2a) = 1 + epsilon
+    (smoluchowski_shear_eq35_37_corrected) yields m > 0 and reproduces both alpha = 1/3 (low shear)
+    and alpha = 2/3 (high shear).
+  citation:
+    page: 13
+    printed_page: "SI-7"
+    quote: "assuming constant area fraction ϕA = nπa2 , as in the previous section gives"
+    where: "SI Eqs. (35)-(36)"
+
+- id: q_smol_eq39_dimensional_and_regime
+  kind: possible_error
+  about:
+    - smoluchowski_shear_eq35_37
+    - alpha_active_smoluchowski_theory
+  text: >
+    In SI Eq. (39) (p. 13 / SI-7), expanding (2/(3*C_1^2))*[C_1*a^(3/2) - ln(1 + C_1*a^(3/2))]
+    for large C_1*a^(3/2) yields (2/3)*[a^(3/2)/C_1 - ln(C_1*a^(3/2))/C_1^2 + O((C_1*a^(3/2))^-1 / C_1^2)];
+    printed Eq. (39) writes ln(C_1*a^(3/2))/C_1 (missing the square on C_1, which is dimensionally
+    inconsistent with a^(3/2)/C_1 and m*t), and SI Eq. (38) similarly omits 1/C_1^2 from the
+    O((C_1*a^(3/2))^3) remainder. Conceptually, Eq. (39) also takes the C_1*a^(3/2) = C*Pe_c^(1/2) >> 1
+    limit of Eq. (37) even though Eq. (34) (1 + C*Pe_c^(1/2)) was derived strictly for Pe_c << 1;
+    validating both inequalities simultaneously would require C >> 1, whereas C is never evaluated
+    (and at experimental Pe_c ≈ 10, large-Pe_c shear collision theory scales linearly in Pe_c rather
+    than Pe_c^(1/2)).
+  citation:
+    page: 13
+    printed_page: "SI-7"
+    quote: "The a3/2 term dominates the log terms in the expansion"
+    where: "SI Eqs. (38)-(39)"
+
+- id: q_smol_eq30_33_radial_flow_and_g0_typo
+  kind: possible_error
+  about:
+    - smoluchowski_keff_eq4
+    - smoluchowski_shear_eq35_37
+  text: >
+    In SI Sec. III.B.2 Eqs. (30)-(31) (p. 12 / SI-6), the imposed simple shear flow is written as
+    a compressible radial flow U = gamma_dot * r * e_r (div U = 2*gamma_dot != 0) rather than
+    incompressible 2D simple shear U = gamma_dot * y * e_x. In SI Eq. (33) (p. 13 / SI-7), the
+    O(Pe_c) bracket prints g_0 * grad_r(V)/(k_B*T) instead of g_1 * grad_r(V)/(k_B*T) (though
+    V = 0 for hard circles).
+  citation:
+    page: 12
+    printed_page: "SI-6"
+    quote: "convective flux due to an imposed shear flow, U = γ̇rer"
+    where: "SI Eqs. (30), (31), (33)"
+
+- id: q_ls_eq5_flux_sign_and_limit
+  kind: possible_error
+  about:
+    - lifshitz_slyozov_2d_ode_eq6
+    - lifshitz_slyozov_2d_asymptotic_eq11
+  text: >
+    In SI Sec. III.A Eqs. (4)-(6) (p. 10 / SI-4), the Gibbs-Thomson condition epsilon(a) = sigma/(2a) > 0
+    with epsilon(L) = 0 produces an outward diffusive flux j = -2*grad(epsilon)|_{r=a} > 0, which by
+    solute conservation shrinks an isolated phi = +1 droplet (Delta_phi * da/dt = -j < 0); Eq. (5)
+    instead equates j = +Delta_phi * da/dt so da/dt > 0, and Eqs. (8)-(11) then take the single-droplet
+    box-filling limit a -> L (L/a = 1 + epsilon) to eliminate the 2D ln(L/a) factor and obtain
+    a^3 = (9/2)*sigma*t.
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "Performing a flux balance at the interface gives"
+    where: "SI Eqs. (4)-(11)"
+
+- id: q_lin_ch_eq41_44_45_symmetry_and_phi0
+  kind: possible_error
+  about:
+    - cahn_hilliard_linear_shear_eq45
+    - cmp_ch_linear_passive
+    - cmp_ch_linear_shear_ray
+  text: >
+    Four subtle issues appear in the linearized Cahn-Hilliard shear perturbation derivation in
+    SI Sec. III.B.3 (p. 14 / SI-8): (1) Eq. (41) swaps indices in the Fourier convective term,
+    printing -G_ij*(delta_ij*phi_k + k_j*d(phi_k)/dk_i) instead of the exact -G_ij*(delta_ij*phi_k
+    + k_i*d(phi_k)/dk_j) (which leaves Eq. (45) unchanged only because omega(k) is isotropic);
+    (2) Eq. (44) includes a redundant factor of Pe inside phi_k1 despite defining phi_k = phi_k0
+    + phi_k1*Pe; (3) the O(Pe) perturbation in S(k, t) = <phi_k phi_{-k}> is proportional to
+    k_x*k_y = (k^2/2)*sin(2*theta), whose 2D angular average vanishes identically (reflecting
+    symmetry under shear reversal Pe -> -Pe), so the claimed O(Pe * t^(5/4)) term in a(t) only
+    arises along an anisotropic single ray k_x*k_y != 0 rather than the isotropic structure factor;
+    and (4) passive t^(1/4) scaling requires 1 - 3*phi_0^2 = 0 (phi_0 = 1/sqrt(3) ≈ 0.57735),
+    whereas at the simulation composition phi_avg = 0.3 (1 - 3*phi_0^2 = 0.73 > 0) linearized
+    evolution amplifies a fixed fastest-growing wavenumber k_* = sqrt(0.73/2).
+  citation:
+    page: 14
+    printed_page: "SI-8"
+    quote: "The final expression for ϕk is"
+    where: "SI Eqs. (41)-(45)"
+
+- id: q_adaptive_dt_formula_error
+  kind: possible_error
+  about:
+    - cahn_hilliard_2d_pde
+    - tol_sim
+  text: >
+    The adaptive time-stepping formula printed in SI Sec. IV (p. 14 / SI-8),
+    dt_new = [tol / (phi(t; dt) - phi(t; dt/2))]^(1/5), omits the multiplying factor dt (making it
+    dimensionally inconsistent with dt_new) and omits a scalar norm/absolute value around the 2D
+    field difference phi(t; dt) - phi(t; dt/2). Furthermore, the exponent 1/5 corresponds to a
+    4th-order stepper (local error O(dt^5)), whereas the immediately preceding text states that
+    Eq. (46) is integrated with 1st-order forward difference (implicit nabla^4), whose local error
+    is O(dt^2) (exponent 1/2).
+  citation:
+    page: 14
+    printed_page: "SI-8"
+    quote: "The time step is controlled with adaptive time stepping"
+    where: "SI Sec. IV"
+
+- id: q_phi_avg_discrepancy_figS6
+  kind: possible_error
+  about:
+    - phi_avg_sim
+    - cahn_hilliard_2d_pde
+    - cmp_ch_pde_mass_conservation
+  text: >
+    SI Sec. IV (p. 14 / SI-8) states "For the main text figures, the average concentration is
+    phi_avg = 0.3", whereas SI Fig. S6 (p. 19 / SI-13) plots <phi>(t) = 0.35 in all three panels
+    (experimental velocity Pe = 10^-4, rotational flow, and shear flow). The Fig. S6 caption also
+    defines <phi>(t) = int dx phi(x, t) without dividing by the simulation box area L^2 = (32*pi)^2.
+  citation:
+    page: 19
+    printed_page: "SI-13"
+    quote: "of the simulated phase field is plotted as a function of time t"
+    where: "Fig. S6"
+
+- id: q_si_actin_lo_phase_misprint
+  kind: possible_error
+  about:
+    - conc_f_actin
+  text: >
+    SI Sec. II.E (p. 8 / SI-2) states "F-actin spontaneously adsorbed to the liquid-ordered phase
+    of lipid bilayer via electrostatic attraction to DOTAP [5]", directly contradicting the main
+    text (p. 1 Fig. 1c caption: "actin is bound to the Ld phase, avoiding the Lo phase"; p. 2:
+    "positively charged DOTAP enriched in the Ld phase... actin is sequestered into the Ld phase").
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "F-actin spontaneously adsorbed to the liquid-ordered phase of lipid bilayer"
+    where: "SI Sec. II.E"
+
+- id: q_si_low_composition_missing_cholesterol
+  kind: possible_error
+  about:
+    - mol_pct_dopc_si_low
+    - mol_pct_dppc_si_low
+    - mol_pct_dotap_si_low
+    - mol_pct_dopc_figS1_low
+  text: >
+    SI Sec. II.C (p. 8 / SI-2) prints the low-area-fraction vesicle composition as 52.7% DOPC,
+    24.7% DPPC, 8% DOTAP, 0.3% DSPE-PEG2k-FITC, and 0.3% ATTO 647-DOPE, omitting cholesterol and
+    summing to 86.0%. Fig. S1 caption (p. 15 / SI-9) gives 52% DOPC, 25% DPPC, 15% cholesterol,
+    and 8% DOTAP (100%); adding 15% cholesterol to the SI Sec. II.C values gives 101.0% (likely
+    51.7% DOPC was intended instead of 52.7%, paralleling 44.7%/34.7% for the standard 45%/35% mix).
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "formed using 52.7% DOPC, 24.7% DPPC, 8% DOTAP"
+    where: "SI Sec. II.C"
+
+- id: q_duplicate_and_mismatched_refs
+  kind: possible_error
+  about:
+    - ref-5
+    - ref-34
+    - ref-S13
+  text: >
+    Main text references [5] and [34] (p. 5) are identical duplicates of B. A. Camley and
+    F. L. H. Brown, J. Chem. Phys. 135, 225106 (2011). In addition, SI Sec. III.B.1 (p. 12 / SI-6)
+    cites SI Ref. [13] (Stanich et al., 2013) for the a >> L_SD Saffman-Delbruck diffusivity
+    D_c = k_B*T/(16*eta*a), whereas main text p. 4 cites Ref. [38] (Saffman & Delbruck, 1975).
+  citation:
+    page: 5
+    printed_page: "128402-5"
+    quote: "[34] B. A. Camley and F. L. H. Brown, J. Chem. Phys. 135,"
+    where: "References"
+
+- id: q_shear_pde_alpha_difference
+  kind: unexplained_difference
+  about:
+    - cahn_hilliard_2d_pde
+    - run_ch_pde_shear
+    - cmp_ch_pde_shear_fig3d
+    - alpha_ch_shear_pe1e2
+  text: >
+    Pseudospectral IMEX integration of SI Eq. (46) at (M, kappa, gamma_dot) = (1, 0.25, 0.04),
+    L = 32*pi, phi_avg = 0.3 matches the Fig. 3(c) shear structure-factor peak locations k_max(t)
+    at t = 20, 30, 50 (~0.9, 0.7, 0.5) and reproduces passive Fig. S5 (alpha_ap ≈ 0.30) and
+    rotational Fig. 3(d) (alpha_sf ≈ 0.28), but yields alpha_sf ≈ 0.44-0.50 over raw t in [20, 50]
+    rather than printed alpha = 0.73 in Fig. 3(d) (whereas 1/k_max gives ~0.65, late window
+    t in [40, 100] gives ~0.75, and pure extensional flow gives ~0.69-0.78). Several implementation
+    details of Fig. 3 are unstated: how the non-periodic linear flow v = G*x is handled at box
+    boundaries (raw periodic wrap vs Lees-Edwards), the exact interior crop region used to avoid
+    boundary artifacts (p. 3), why a(t) in Fig. 3(d) spans 10 to 20 (vs ~1 to 2 in Eq. 47 units),
+    whether a time shift t_plot = t + B/A (SI Eq. 1) was applied to Fig. 3(d), and the exact
+    normalization of G for rotational and extensional flows.
+  citation:
+    page: 4
+    printed_page: "128402-4"
+    quote: "accelerates domain growth (α ¼ 0.73), while rotational"
+    where: "Fig. 3(d)"
+
+- id: q_piv_field_unreleased
+  kind: unstated_input
+  about:
+    - cahn_hilliard_piv_flow
+    - alpha_ch_piv_pe1e4
+    - alpha_ch_piv_pe5e3
+    - alpha_ch_piv_pe1e2
+  text: >
+    The experimental 2D actomyosin PIV velocity field v_PIV(x, t) used to drive the Cahn-Hilliard
+    simulations at (M, kappa) = (300, 16) and Pe = 10^-4, 5 x 10^-3, and 10^-2 (Fig. 2, Movie S4)
+    is not provided in the paper or Supplemental Material, so those three predicted scaling
+    exponents (alpha = 0.34, 0.78, 0.93) cannot be independently reproduced.
+  citation:
+    page: 3
+    printed_page: "128402-3"
+    quote: "results, we impose the surface flow field obtained by PIV"
+    where: "text / Fig. 2 / Movie S4"
+
+- id: q_unstated_experimental_pec_inputs
+  kind: unstated_input
+  about:
+    - saffman_delbruck_diffusivity_peclet
+    - Pe_colloidal_est
+    - T_room_added
+    - eta_water_added
+    - domain_radius_exp_added
+    - shear_rate_exp_added
+    - L_smol_added
+    - C_matching_added
+  text: >
+    The paper states Pe_c = gamma_dot * a^2 / D_c ≈ 10 (p. 5) and develops Smoluchowski coalescence
+    formulas containing T, eta, a, L, gamma_dot, a_0, and matching constant C, as well as the
+    empirical fit a = (A*t + B)^alpha (SI Eq. 1), without printing numerical values for any of
+    these quantities. Standard room-temperature aqueous values and experimental length/velocity
+    scales are supplied in added.yaml with plausible alternatives.
+  citation:
+    page: 5
+    printed_page: "128402-5"
+    quote: "large colloidal Péclet number Pec ≡ γ̇a2 =Dc ≈ 10"
+    where: "text"
+
+- id: q_pde_grid_choice
+  kind: choice
+  about:
+    - cahn_hilliard_2d_pde
+    - run_ch_pde_passive
+    - run_ch_pde_shear
+    - run_ch_pde_rotational
+    - run_ch_pde_extensional
+  text: >
+    SI Sec. IV (p. 14 / SI-8) specifies a 512^2 spatial grid with adaptive time stepping. Running
+    multiple replicates and temporal refinements at N = 512 on CPU would exceed practical build
+    budgets, so cahn_hilliard_2d_pde uses N = 128 with fixed IMEX steps dt = 0.1 (passive t_end = 250)
+    and dt = 0.05 (linear flows t_end = 50), refined by halving dt in refinements.yaml. Spot checks
+    at N = 256 confirmed closely matching structure-factor peak locations k_max and coarsening
+    exponents alpha.
+  citation:
+    page: 14
+    printed_page: "SI-8"
+    quote: "The system is a 5122 grid of length 32π."
+    where: "SI Sec. IV"
+
+- id: q_main_eq3_potential_sign_and_smol_prefactor
+  kind: possible_error
+  about:
+    - smoluchowski_keff_eq4
+    - smoluchowski_passive_ode_eq25
+    - smoluchowski_shear_eq35_37
+  text: >
+    Several derivation sign, factor, and typography issues occur in the Smoluchowski sections
+    beyond those already logged: (1) Main text Eq. (3) (p. 3 / 128402-3) prints
+    J = -(D_c/a)*n^2 * oint n . (Pe_c*v - grad_r ln g + grad_r V) g dl, giving opposite signs to
+    -grad_r ln g and +grad_r V (implying equilibrium g ~ exp(+V/k_B*T) instead of exp(-V/k_B*T)),
+    contradicting SI Eqs. (14), (15), (20), (30), and (31) (pp. 11-12) where grad_r g and
+    +g*grad_r V/(k_B*T) carry the same sign (harmless for hard circles V = 0); (2) SI Eqs. (14)-(15)
+    (p. 11 / SI-5) use single-domain diffusivity D_c rather than relative pair diffusivity 2*D_c for
+    two identical diffusing domains in j_rel = j_1 - j_2, reducing J, k^eff, and da/dt by a factor
+    of 2 relative to standard Smoluchowski pair coagulation (Russel et al., ref-32 / ref-S9);
+    (3) SI Eq. (16) writes n(t) = int g(r, t) dr despite the far-field BC g(r = L) = n^2 in Eq. (21)
+    giving g dimensions of [length]^-4, and SI Eqs. (17)-(18) omit the inward-normal sign flip on
+    r = 2a which is silently reversed in Eq. (23); (4) SI Eq. (33) (p. 13 / SI-7) annotates
+    div_r(grad_r g_0) as 1/r ~ 0 (it is identically 0 for g_0 = ln(r/2a)/ln(L/2a) in 2D) and
+    div_r(r*g_0) as r*ln(r/2a)/ln(L/2a) ~ inf (it is (2*ln(r/2a) + 1)/ln(L/2a), growing only
+    logarithmically; the two errors cancel to yield the same Pe_c*r^2 ~ 1 boundary-layer balance);
+    and (5) cross-reference typos appear on p. 12 ("solution to Eq. 24" before Eq. 26, meaning Eq. 25)
+    and p. 13 ("approximate Eq. 36" before Eq. 36, meaning Eq. 35).
+  citation:
+    page: 3
+    printed_page: "128402-3"
+    quote: "where J is a sink that captures the merging of singlet"
+    where: "Main Eq. (3) and SI Eqs. (14)-(18), (23), (26), (33), (36)"
+
+- id: q_extensional_pde_dt_refinement_and_passive_grid
+  kind: numerics
+  about:
+    - cahn_hilliard_2d_pde
+    - run_ch_pde_extensional
+    - run_ch_pde_passive
+    - ref_ch_pde_extensional_dt
+    - cmp_ch_pde_passive_main
+    - cmp_ch_pde_extensional_p5
+  text: >
+    In ref_ch_pde_extensional_dt, halving the IMEX time step from dt = 0.05 to dt = 0.025 shifts
+    the extensional-flow structure-factor exponent alpha_sf from 0.805 to 0.752 (6.5% change,
+    exceeding the 5% tolerance so the refinement does not settle and belongs to numerics), while
+    alpha_ap is only 0.134 because raw periodic wrapping of v_x = gamma_dot*y, v_y = gamma_dot*x
+    creates velocity discontinuities along all four box boundaries that stretch domains into thin
+    filaments. In addition, passive Cahn-Hilliard run_ch_pde_passive at N = 128 yields
+    alpha_sf = 0.273 +/- 0.057 (2 SE), which does not reproduce printed alpha = 1/3
+    (cmp_ch_pde_passive_main) and is only close to Fig. S5 alpha = 0.34, with no spatial grid
+    refinement over N = 128 -> 256 -> 512 in refinements.yaml.
+  citation:
+    page: 14
+    printed_page: "SI-8"
+    quote: "The system is a 5122 grid of length 32π."
+    where: "SI Sec. IV (and Main pp. 3-5)"
+
+- id: q_sim_time_units_noise_and_sign_convention
+  kind: unstated_input
+  about:
+    - cahn_hilliard_2d_pde
+    - noise_amp_sim
+    - phi_avg_sim
+    - phi_pure_lo
+    - phi_pure_ld
+  text: >
+    Several unstated or inconsistent simulation conventions appear across the text and figures:
+    (1) Main text p. 3 states initial state phi_0 with "uniform noise", whereas SI Sec. IV (p. 14)
+    writes "phi = phi_avg + 0.1 x (white noise)" without stating whether noise is uniform or
+    Gaussian (cahn_hilliard_2d_pde uses Gaussian standard_normal); (2) SI Sec. I (p. 7) states that
+    Movies S3-S6 nondimensionalize time by t_c = kappa/M (= 0.25 for (M, kappa) = (1, 0.25)), yet
+    Fig. 3(c)-(d) (p. 4) and Fig. S6(B)-(C) (p. 19, where the axis is labeled "t [s]") match raw
+    Eq. (46) time t = 20, 30, 50 rather than t/t_c, whereas Fig. S5 (p. 18) plots t up to 10^3;
+    (3) SI Sec. III.A (p. 9) defines domains as phi = +1 in bulk phi = -1, whereas Fig. 3(a)-(b)
+    (p. 4) and phi_avg = +0.3 / <phi> = +0.35 (pp. 14, 19) have minority domains at phi = -1 (blue)
+    in bulk phi = +1 (red); and (4) SI Sec. IV.A (p. 14) calls k_cut = 2*k_max "the cut-off
+    wavelength" instead of cut-off wavenumber, and Fig. S4 caption (p. 18) prints "a^alpha" where
+    "t^alpha" is intended.
+  citation:
+    page: 3
+    printed_page: "128402-3"
+    quote: "starting from an initial state ϕ0 with uniform noise."
+    where: "Main p. 3, Fig. 3 (p. 4), SI Sec. I (p. 7), III.A (p. 9), IV (p. 14), Figs. S4-S6 (pp. 18-19)"
+
+- id: q_reading_piv_scales_run_gamma_dot
+  kind: reading
+  about:
+    - run_ch_scales_piv
+    - M_sim_piv
+    - kappa_sim_piv
+    - gamma_dot_sim_fig3
+  text: >
+    Audit reading disagreement: run_ch_scales_piv pairs Movie S4's PIV simulation parameters
+    (M, kappa) = (300, 16) (p. 7 / SI-1) with Fig. 3 / Movies S5-S6's shear rate
+    gamma_dot_sim_fig3 = 0.04 (p. 4), yielding Pe_piv_ref_pred = 0.002133. The paper never reports
+    a scalar rate of strain gamma_dot for Movie S4, instead fixing Pe = 10^-4, 5 x 10^-3, and 10^-2
+    directly; only l_c = 4 and t_c = 16/300 follow from the stated Movie S4 parameters.
+  citation:
+    page: 7
+    printed_page: "SI-1"
+    quote: "The model parameters are (M , κ)=(300, 16)."
+    where: "SI Sec. I, Movie S4"
+
+- id: q_reading_figS2_actin_density_correlation_tension
+  kind: reading
+  about:
+    - alpha_exp_active_range
+    - alpha_exp_active_1
+    - alpha_exp_active_5
+  text: >
+    Audit reading note: Main text p. 2 states "without observing a strong correlation between
+    coarsening rate and composition (Supplemental Material [9], Fig. S1) or actin density
+    (Fig. S2 [9]) over the range tested", whereas SI Fig. S2 caption (p. 16 / SI-10) states
+    "There may be a correlation between actin density and growth rate of lipid domains." Also,
+    Fig. 2 caption (p. 2) describes the three passive experimental datasets as "circles and
+    triangles" while the Fig. 2 legend plots three closed symbols (squares, circles, triangles).
+  citation:
+    page: 16
+    printed_page: "SI-10"
+    quote: "correlation between actin density and growth rate of lipid domains"
+    where: "Fig. S2 caption (vs. Main p. 2)"
+
+- id: q_reading_approx_range_and_fraction_encoding
+  kind: reading
+  about:
+    - Pe_molecular_est
+    - Pe_ch_range_summary
+    - alpha_passive_theory
+    - alpha_active_smoluchowski_theory
+    - alpha_ch_passive_main
+    - cmp_molecular_peclet
+  text: >
+    Audit reading note: Pe_molecular_est (p. 3) and Pe_ch_range_summary (p. 5) are printed with
+    approximate markers ("≈ 10^-4-10^-3" and "≈ 10^-4-10^-2"), but are entered without "≈" as
+    "1 x 10^-4 to 1 x 10^-3" and "1 x 10^-4 to 1 x 10^-2" because boxgraph.precision.parse does
+    not parse approximate scientific-notation ranges; for Pe_molecular_est this turns an
+    approximate order-of-magnitude range (normally no verdict) into a bounded range verdict
+    (reproduced in cmp_molecular_peclet). Similarly, exact printed fractions 1/3 and 2/3
+    (alpha_passive_theory, alpha_ch_passive_main, alpha_active_smoluchowski_theory) are encoded
+    as 6-digit decimals ("0.333333", "0.666667") because fractions are not parsed directly.
+  citation:
+    page: 3
+    printed_page: "128402-3"
+    quote: "rature values, ≈10−4 –10−3 , using ≈1 nm lipids with dif-"
+    where: "Main p. 3 (also pp. 1, 4, 5)"
+
+- id: q_digitize_figS5_swapped_alpha_labels
+  kind: possible_error
+  about:
+    - figS5_ap_fig
+    - figS5_sf_fig
+    - alpha_ch_passive_figS5_ap
+    - alpha_ch_passive_figS5_sf
+    - cmp_figS5_ap_printed_label
+    - cmp_figS5_sf_printed_label
+    - cmp_figS5_ap_swapped_label
+    - cmp_figS5_sf_swapped_label
+  text: >
+    Calibrated digitization of Fig. S5 (p. 18 / SI-12) reveals that the two printed power-law
+    slope labels (alpha = 0.30 and alpha = 0.34) are swapped between the red Area/perimeter and
+    black Structure factor curves. The upper red Area/perimeter curve rises from a/a_0 = 3.595 at
+    t = 45 to 9.915 at t = 900 (log-log slope 0.3395 +/- 0.0038, R^2 = 0.9988), visibly diverging
+    upward from the black curve; it fails against its printed label alpha = 0.30
+    (cmp_figS5_ap_printed_label: not reproduced) and matches the swapped label alpha = 0.34
+    (cmp_figS5_ap_swapped_label: close, 11/12 points reproduced). Conversely, the lower black
+    Structure factor curve rises from 3.147 at t = 45 to 7.548 at t = 900 (log-log slope
+    0.2958 +/- 0.0023, R^2 = 0.9994), failing against its printed label alpha = 0.34
+    (cmp_figS5_sf_printed_label: not reproduced) and matching the swapped label alpha = 0.30
+    (cmp_figS5_sf_swapped_label: close, 11/12 points reproduced).
+  citation:
+    page: 18
+    printed_page: "SI-12"
+    quote: "Comparison of area/perimeter and structure factor as metrics for domain size for passive coarsening."
+    where: "Fig. S5"
+
+- id: q_digitize_fig3c_eq47_vs_fig3d_scale_and_slope
+  kind: unexplained_difference
+  about:
+    - fig3c_Sk_t20_fig
+    - fig3c_Sk_t30_fig
+    - fig3c_Sk_t50_fig
+    - fig3d_shear_fig
+    - fig3d_rotational_fig
+    - structure_factor_first_moment_eq47
+    - run_eq47_fig3c_t20
+    - run_eq47_fig3c_t30
+    - run_eq47_fig3c_t50
+    - cmp_fig3c_Sk_t20_pde
+    - cmp_fig3c_Sk_t30_pde
+    - cmp_fig3c_Sk_t50_pde
+    - cmp_fig3d_shear_pde
+    - cmp_fig3d_rotational_pde
+  text: >
+    Evaluating the paper's printed first-moment domain-size definition SI Eq. (47)
+    (structure_factor_first_moment_eq47) directly on the calibrated Fig. 3(c) shear-flow static
+    structure factor curves yields a_sf = 1.053 (k_max = 0.90, t = 20), 1.283 (k_max = 0.70,
+    t = 30), and 1.682 (k_max = 0.50, t = 50). These match our 2D pseudospectral Cahn-Hilliard
+    PDE (a_ch_pde_fig3d_shear_pred = 1.274 at t = 23.5 to 1.770 at t = 48) and give an internal
+    log-log slope of 0.512 over t in [20, 50] (consistent with run_ch_pde_shear alpha_sf = 0.456),
+    rather than Fig. 3(d)'s printed shear curve which spans a(t) = 11.79 (t = 23.5) to 19.60
+    (t = 48) with slope 0.730 +/- 0.020. Because the ratio a_fig3d(t) / a_eq47(t) itself grows
+    from ~10.1 (t = 20) to ~11.9 (t = 50), Fig. 3(d) cannot be a constant rescaling of SI Eq. (47)
+    applied to Fig. 3(c), sharpening q_shear_pde_alpha_difference by isolating both the ~10-12x
+    scale factor and ~0.22 exponent gap as internal to Fig. 3(c) vs. Fig. 3(d). Additionally,
+    Fig. 3(c)'s Fourier normalization and ensemble count are unstated, so Parseval-normalized
+    cmp_fig3c_Sk_t20/t30/t50_pde are not reproduced pointwise despite matching the peak shift
+    k_max = 0.9 -> 0.7 -> 0.5 and order-of-magnitude peak heights.
+  citation:
+    page: 4
+    printed_page: "128402-4"
+    quote: "structure factor for domains under shear flow. (d) Shear flow"
+    where: "Fig. 3(c)-(d) and SI Eq. (47)"
+
+- id: q_digitize_figS1_passive_count_and_smol_offset
+  kind: unexplained_difference
+  about:
+    - figS1_passive_fig
+    - figS1_active_fig
+    - cmp_figS1_passive_smol_validation
+    - cmp_figS1_active_smol_shear_validation
+  text: >
+    Calibrated digitization of Fig. S1 (p. 15 / SI-9) recovers 5 active points
+    (phi_A, alpha) = (0.210, 0.650), (0.260, 0.660), (0.270, 0.590), (0.410, 0.740), (0.440, 0.690)
+    (reproducing all 5 printed Fig. 2 exponents to 0.001; Pearson r = 0.696, p = 0.192) and 5
+    passive points (0.120, 0.300), (0.240, 0.320), (0.260, 0.320), (0.310, 0.290), (0.340, 0.300)
+    (mean 0.306, all below 1/3, whereas Fig. 2 plots only 3 passive datasets whose combined band
+    has slope 0.335 +/- 0.002). Sweeping the exact passive Smoluchowski ODE (SI Eqs. 25-26,
+    cmp_figS1_passive_smol_validation) over Fig. S1's 5 phi_A values yields alpha_eff = 0.352-0.371
+    (not reproduced on 5/5 points because the finite-box ln(L/(2a)) factor pushes alpha_eff above
+    1/3 while all 5 measured passive exponents sit below 1/3). Sweeping the corrected shear
+    Smoluchowski model (cmp_figS1_active_smol_shear_validation) gives a nearly flat
+    alpha_eff = 0.627-0.643, not reproduced against the realization-to-realization scatter
+    (0.59-0.74) in Fig. S1.
+  citation:
+    page: 15
+    printed_page: "SI-9"
+    quote: "is plotted as a function of domain area fraction ϕA for both passive and active experiments."
+    where: "Fig. S1"
+
+- id: q_digitize_figS2_actin_correlation_quantified
+  kind: reading
+  about:
+    - figS2_active_fig
+    - q_reading_figS2_actin_density_correlation_tension
+  text: >
+    Calibrated digitization of Fig. S2 (p. 16 / SI-10) recovers all 5 open-circle centroids
+    (I/I_max, alpha) = (0.246, 0.590), (0.289, 0.690), (0.389, 0.660), (0.582, 0.650),
+    (1.000, 0.740), matching Fig. 2's 5 active exponents to 0.001. Across the 5 points,
+    Pearson r = 0.747 (p = 0.147) and Spearman rho = 0.600 (p = 0.285): the middle three points
+    actually decrease slightly (0.69 -> 0.66 -> 0.65) as normalized actin intensity doubles
+    (0.289 -> 0.582), while the two extreme endpoints (0.246 -> 0.59, 1.000 -> 0.74) create a
+    positive visual trend that is not statistically significant at n = 5, quantitatively explaining
+    the interpretative tension noted in q_reading_figS2_actin_density_correlation_tension.
+  citation:
+    page: 16
+    printed_page: "SI-10"
+    quote: "FIG. S2. Domain growth exponents α are plotted as a function of mean actin fluorescence intensities I"
+    where: "Fig. S2"
+
+- id: q_digitize_fig3c_kmax_dt_bin_quantization
+  kind: numerics
+  about:
+    - cahn_hilliard_2d_pde_sk_curve
+    - run_ch_pde_sk_fig3c_t50
+    - ref_ch_pde_sk_fig3c_dt
+  text: >
+    In ref_ch_pde_sk_fig3c_dt, halving the IMEX time step from dt = 0.05 to dt = 0.025 shifts the
+    shear-flow peak wave vector k_max(t = 50) from 0.5 to 0.4 (a 25% step exceeding the 5%
+    tolerance, so the refinement does not settle and belongs to numerics). Because
+    cahn_hilliard_2d_pde_sk_curve evaluates k_max = argmax(<S(k)>) on Fig. 3(c)'s discrete dk = 0.1
+    grid for a single realization (n_ensemble = 1, seed = 0) whose peak lies near k ≈ 0.45, a small
+    continuous shift in the binned spectrum flips the discrete argmax by one dk = 0.1 bin.
+  citation:
+    page: 4
+    printed_page: "128402-4"
+    quote: "structure factor for domains under shear flow. (d) Shear flow"
+    where: "Fig. 3(c) and SI Sec. IV"
+
+# ---------------------------------------------------------------------------
+# Cross-record ModelAtlas audit with weirich2017 (2026-11-25)
+# ---------------------------------------------------------------------------
+- id: q_weirich2017_modelatlas_audit
+  kind: reading
+  about:
+    - saffman_delbruck_diffusivity_peclet
+    - domain_growth_power_law_scaling
+    - ref-17
+    - ref-S1
+    - weirich2017/stokes_einstein_ellipsoid_diffusion
+    - weirich2017/tactoid_coarsening_power_law
+    - weirich2017/ref-39
+  citation:
+    page: 4
+    printed_page: "128402-4"
+    quote: "shear flows"
+    where: "Main text p. 4, SI Sec. III.B.1 (p. 12), & Fig. 2 vs weirich2017 p. 3 & SI p. 2"
+  text: >
+    Cross-record ModelAtlas and citation audit with weirich2017 (Weirich, Banerjee, Dasbiswas,
+    Witten, Vaikuntanathan & Gardel, Proc. Natl. Acad. Sci. USA 114:2131-2136, 2017). Neither
+    paper cites the other (0 stated relations, 0 cited.yaml data links; 1 shared bibliographic
+    reference across 55 x 49 entries: Spudich & Watt, JBC 1971 [ref-17/ref-S1 <-> ref-39]).
+    Across all 16 scalar runnable arnold2023 models and 52 weirich2017 models, the two studies are
+    physically disjoint on 50 of Weirich's 52 models (3D filamin-crosslinked nematic F-actin
+    tactoid Wulff minimization, circular-arc geometry, anchoring/aspect-ratio scaling, capillary
+    instability, exponential coalescence shape relaxation, FRAP scaling, and filamin stoichiometry
+    have no counterparts in arnold2023's 2D phase-separated lipid bilayer coarsening models).
+    Four proposed scales_as relations in arnold2023/relations.yaml test the only two genuine
+    shared physical touchpoints (2 verified, 2 diagnostic not_verified):
+    (1) Stokes-Einstein low-Re translational diffusivity (shape-match pair):
+    arnold2023/saffman_delbruck_diffusivity_peclet (D_c = k_B*T / (16*eta*a), 2D circular membrane
+    domain of radius a >> L_SD dragged by 3D bounding water of viscosity eta) and
+    weirich2017/stokes_einstein_ellipsoid_diffusion (D = k_B*T*ln(2L/r) / (6*pi*eta*L), 3D slender
+    actin rod diffusing inside a nematic tactoid of internal viscosity eta) share exact
+    (+1, -1, -1) Stokes-Einstein scaling under isotropic rescaling at fixed filament aspect ratio
+    L/r = 28.57 (rel_weirich2017_stokes_einstein_fixed_aspect_scales, differing by constant drag
+    ratio 16*ln(2L/r)/(6*pi) = 3.434), but honestly diverge at Weirich's physical fixed actin
+    radius r = 3.5 nm due to the 3D slender-rod logarithm ln(2L/r) (log-slope shift up to +0.30;
+    rel_weirich2017_stokes_einstein_fixed_radius_contrast).
+    (2) Power-law droplet coarsening: arnold2023/domain_growth_power_law_scaling and
+    weirich2017/tactoid_coarsening_power_law share the identical power-law form at common exponent
+    (rel_weirich2017_coarsening_power_law_scales, t [min] = t [s]/60), while contrasting 2D
+    passive lipid coarsening (alpha = 1/3) and active 2D shear coalescence (alpha = 2/3) against
+    3D passive tactoid coalescence (alpha = 1/2, measured 0.47 +/- 0.01; exact gap 1/6 in
+    rel_weirich2017_coarsening_passive_2d_vs_3d_contrast).
+
+# ---------------------------------------------------------------------------
+# Cross-record ModelAtlas audit with zwicker2015 (2026-11-25)
+# ---------------------------------------------------------------------------
+- id: q_zwicker2015_modelatlas_and_2d_3d_coarsening_audit
+  kind: reading
+  about:
+    - lifshitz_slyozov_2d_asymptotic_eq11
+    - lifshitz_slyozov_2d_ode_eq6
+    - smoluchowski_passive_approx_eq28
+    - smoluchowski_passive_approx_eq28_corrected
+    - smoluchowski_shear_eq35_37_corrected
+    - cahn_hilliard_scales_peclet
+    - q_smol_eq28_negative_k
+    - q_ls_eq5_flux_sign_and_limit
+    - ref-11
+    - ref-S10
+    - zwicker2015/lifshitz_slyozov_scaling_corrected
+    - zwicker2015/lifshitz_slyozov_scaling_printed
+    - zwicker2015/binary_droplet_growth_eq13
+    - zwicker2015/gibbs_thomson_eq6
+    - zwicker2015/interface_width_w
+    - zwicker2015/interface_diffusion_rate_k0
+    - zwicker2015/passive_coarsening_rate_eq18
+    - zwicker2015/ref-12
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "Performing a flux balance at the interface gives"
+    where: "Main p. 1, SI Sec. III.A Eqs. (4)-(11), Sec. III.B Eqs. (28)-(39), & Sec. III.B.3 vs zwicker2015"
+  text: >
+    Cross-record ModelAtlas and physics synthesis with zwicker2015 (Zwicker, Hyman & Julicher,
+    Phys. Rev. E 92:012317, 2015). Neither paper cites the other (0 stated relations, 0 cited.yaml
+    data links; 1 shared bibliographic reference across 55 x 46 entries: E. D. Siggia, Phys. Rev.
+    A 20:595, 1979 [ref-11/ref-S10 <-> ref-12]). Ten proposed scales_as relations in
+    arnold2023/relations.yaml (6 verified, 4 diagnostic not_verified) establish four core
+    cross-paper findings:
+    (1) Opposite non-equilibrium departures from a shared passive Cahn-Hilliard / Lifshitz-Slyozov
+    baseline: both papers begin from passive t^(1/3) Ostwald ripening driven by Gibbs-Thomson
+    curvature shifts (verified via rel_zwicker2015_ls2d_asymptotic_scales_ls3d_corrected,
+    rel_zwicker2015_gibbs_thomson_scales_ls2d_epsilon, and
+    rel_zwicker2015_ch_interface_width_scales_lc; note also arnold2023's Cahn-Hilliard timescale
+    t_c = kappa/M is the exact reciprocal of zwicker2015's interface diffusion rate k_0 = D_B/w^2
+    under D_B = m_B*b and w = 2*sqrt(kappa/b)). Both papers also share passive t^(1/3) growth
+    between 2D Brownian Smoluchowski coalescence and 3D Ostwald ripening
+    (rel_zwicker2015_smol_passive_corr_scales_ls_corrected and
+    rel_zwicker2015_smol_shear_low_scales_ls_corrected). Out of equilibrium, however, they act in
+    diametrically opposite directions: zwicker2015's nonequilibrium chemical reactions suppress
+    and arrest Ostwald ripening at stable finite droplet radii (binary/ternary/autocatalytic
+    emulsions), whereas arnold2023's active actomyosin shear flows accelerate coarsening above
+    t^(1/3) to t^(2/3) (rel_zwicker2015_smol_shear_high_vs_ls_corrected, not_verified with +1/3
+    log-slope excess).
+    (2) Mutual cross-paper corroboration of printed misprints in BOTH records: testing
+    arnold2023/lifshitz_slyozov_2d_asymptotic_eq11 against printed
+    zwicker2015/lifshitz_slyozov_scaling_printed yields an exact 1.0 log-slope discrepancy in
+    sigma <-> w (+1/3 vs. -2/3; rel_zwicker2015_ls2d_asymptotic_vs_ls3d_printed), corroborating
+    zwicker2015's missing-w dimensional misprint; conversely, testing printed
+    arnold2023/smoluchowski_passive_approx_eq28 against zwicker2015/lifshitz_slyozov_scaling_corrected
+    in the pre-collapse regime yields negative log-slopes from k < 0
+    (rel_zwicker2015_smol_passive_printed_vs_ls_corrected), corroborating
+    arnold2023/q_smol_eq28_negative_k.
+    (3) 2D logarithmic screening & Eq. (5) flux-sign corroboration: comparing zwicker2015 Eq. (13)
+    in the passive unsaturated limit (k_b = 0, phi_0^B = 0 -> dR/dt = -D_B*gamma*beta/R^2 < 0)
+    against arnold2023 SI Eq. (6) (da/dt = +sigma/(2*a^2*ln(L/a)) > 0) verifies identical
+    (+1, -2) magnitude scaling at fixed box ratio L/a = 10
+    (rel_zwicker2015_eq13_fixed_ratio_scales_ls2d_ode_rate) while highlighting both the opposite
+    flux sign (corroborating arnold2023/q_ls_eq5_flux_sign_and_limit) and the 2D logarithmic
+    screening shift -2 + 1/ln(L/a) at fixed box size L = 100
+    (rel_zwicker2015_eq13_vs_ls2d_ode_fixed_box_log_contrast, gap up to 0.62).
+    (4) Disjoint models: all of zwicker2015's chemical-reaction, autocatalytic core, binary/ternary
+    multidroplet stability, and 1D/axisymmetric reactive PDE models have no counterparts in
+    arnold2023's chemically passive, hydrodynamically sheared lipid bilayer.
+
+# ---------------------------------------------------------------------------
+# Cross-record validation audits (2026-11-25)
+# ---------------------------------------------------------------------------
+- id: q_arnold2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - domain_growth_power_law_scaling
+    - lifshitz_slyozov_2d_asymptotic_eq11
+    - lifshitz_slyozov_2d_ode_eq6
+    - smoluchowski_passive_ode_eq25
+    - smoluchowski_passive_approx_eq28
+    - smoluchowski_passive_approx_eq28_corrected
+    - fig2_exp_passive_band_fig
+    - figS1_passive_fig
+    - arnold2024/fig3c_domain_a_measured
+    - arnold2024/passive_coarsening_scaling
+  text: >
+    Bidirectional cross-record validation audit between arnold2023 (20 runnable models [62 output
+    ports], 24 origin: measured datums — all 24 strictly dimensionless) and arnold2024 (21 runnable
+    models [38 output ports], 41 origin: measured datums; 2,542 + 912 = 3,454 port-datum pairs):
+    0 valid CrossValidation entries exist in either direction despite sharing the same Takatori lab
+    and cushioned DOPC/DPPC/cholesterol/DOTAP Lo/Ld membrane system.
+    (1) Direction A — arnold2023 models vs. arnold2024 measured datums (2,542 pairs; 965
+    dimension-matched across [length] and dimensionless):
+    (a) Strict dimensionality barrier on scaling and Lifshitz-Slyozov models:
+    arnold2023/domain_growth_power_law_scaling outputs dimensionless normalized_domain_size (a/a_0)
+    and lifshitz_slyozov_2d_{asymptotic_eq11,ode_eq6} take dimensionless time_sim and output
+    dimensionless domain_size_sim, none of which can cross onto arnold2024/fig3c_domain_a_measured
+    (structure_factor_wavelength [um], dimension [length]).
+    (b) Fixed-prefactor quantity, regime, and unstated-input barrier on dimensional Smoluchowski
+    models (smoluchowski_passive_ode_eq25, smoluchowski_passive_approx_eq28[_corrected],
+    smoluchowski_shear_eq35_37[_corrected], outputting domain_size [um]) vs.
+    arnold2024/fig3c_domain_a_measured (2.684 to 3.800 um over t = 0..4000 s):
+    First, arnold2023 SI Eqs. (25)-(28) define a strictly as the circular hard-disk domain radius
+    (phi_A = pi*a^2*n, contact distance r = 2a, D_c = k_B*T/(16*eta*a)) with fixed absolute
+    dimensional prefactors, whereas arnold2024 Fig. 3C defines a = 2*pi/<k> as the structure-factor
+    mean wavelength (interdomain center-to-center spacing, ~3-4x larger than the physical Lo domain
+    radius ~0.5-1.5 um visible in Fig. 3A and 2*pi = 6.283x larger than arnold2023's 1/<k> metric;
+    see arnold2024/q_arnold2023_structure_factor_and_coarsening_audit). Conflating radius with
+    wavelength alters the cubic Smoluchowski rate da^3/dt by (lambda/a)^3 ~ 27-64x and violates
+    quantity identity. Second, arnold2023's passive Smoluchowski models describe freely diffusing
+    Brownian coalescence on an actin-free membrane, whereas arnold2024 Fig. 3C measures Lo domains
+    trapped inside a dense passive viscoelastic F-actin network where "domains cannot pass under
+    actin filaments" and coarsen primarily via Ostwald ripening (arnold2024 pp. 5, 7); arnold2024
+    reports no actin-free control curve. Third, arnold2024 states none of the 5 Smoluchowski inputs
+    (T, eta, phi_A, L, a_0) for Fig. 3C (phi_Lo_initial_p7 ≈ 20% is for Fig. 4B's cholesterol-
+    insertion experiment, and taking a_0 = 2.684 um reads the target curve itself). Diagnostically,
+    evaluating smoluchowski_passive_ode_eq25 at room-temperature aqueous conditions (T = 298 K,
+    eta = 1e-3 Pa*s, phi_A = 0.20-0.21, L = 50 um) predicts a(4000 s) = 7.59-7.74 um from
+    a_0 = 2.684 um (or radius 7.38-7.50 um -> wavelength ~28 um from physical radius a_0 ~ 0.7 um),
+    confirming passive viscoelastic actin suppresses coarsening by ~2-7x relative to actin-free
+    Brownian coalescence, while smoluchowski_passive_approx_eq28_corrected breaks down at t = 0
+    (jumping instantaneously to 5.06 um at t = 0 and 12.21 um at t = 4000 s because its
+    L/(2a) = 1 + epsilon expansion fails when a_0 << L/2).
+    (c) All remaining 40 arnold2024 measured datums (actin network wavelength xi, GUV splatter size
+    >100 um, DDM ISF/structure functions, relaxation times, excess perimeter L_ex, cholesterol-
+    insertion phi_Lo, and tracer variance) have no predicted counterpart in arnold2023.
+    (2) Direction B — arnold2024 models vs. arnold2023 measured datums (912 pairs; 432
+    dimension-matched, all dimensionless): arnold2024/passive_coarsening_scaling (a ≈ t^(1/3))
+    outputs structure_factor_wavelength [um] ([length]), which cannot cross onto ANY of
+    arnold2023's 24 measured datums — all 24 are strictly dimensionless (10 normalized_domain_size
+    curves including fig2_exp_passive_band_fig, figS3b_slow_fig, figS4_late_fig; 13
+    coarsening_exponent datums including figS1_passive_fig indexed by phi_A rather than time;
+    1 domain_area_fraction phi_A_low_active = 0.21). None of arnold2024's dimensionless outputs
+    (bundle filament count, DDM functions, excess perimeter, normalized curvature, relaxation
+    speedup, lipid percentages) predicts a coarsening exponent or normalized domain size ratio.
+
+- id: q_gubbala2025_cross_validation_audit
+  kind: choice
+  about:
+    - domain_growth_power_law_scaling
+    - alpha_passive_theory
+    - alpha_active_smoluchowski_theory
+    - smoluchowski_passive_ode_eq25
+    - fig2_exp_passive_band_fig
+    - figS3b_slow_fig
+    - figS4_late_fig
+    - gubbala2025/R_ratio_fig3_inset_no_actin_exp
+    - gubbala2025/R_ratio_fig3_exp_low
+    - gubbala2025/R_ratio_fig3_exp_high
+    - gubbala2025/R_ratio_figS2_exp_low
+    - gubbala2025/R_ratio_figS2_exp_high
+    - gubbala2025/coarsening_power_law
+  text: >
+    Bidirectional cross-record validation audit between arnold2023 (20 runnable models [62 output
+    ports], 24 origin: measured datums) and gubbala2025 (26 runnable models [82 output ports],
+    16 origin: measured datums; 992 + 1,968 = 2,960 port-datum pairs; same Takatori lab, with
+    gubbala2025 explicitly citing arnold2023 as ref-8 on p. 1 and in the Fig. 3 caption on p. 6).
+    (1) Included validations in arnold2023/validations.yaml (Direction A, 3 entries, zero added
+    inputs): arnold2023/domain_growth_power_law_scaling (a/a_0 ~ t^alpha, prefactor: unknown)
+    evaluated at theoretical alpha = alpha_passive_theory (1/3) against all three gubbala2025
+    Fig. 3 digitized normalized domain-coarsening curves (matching gubbala2025/domain_size_ratio =
+    arnold2023/normalized_domain_size and gubbala2025/time = arnold2023/time):
+    (a) val_powerlaw_passive_vs_gubbala_fig3_no_actin vs. gubbala2025/R_ratio_fig3_inset_no_actin_exp
+    (exact matched actin-free passive control citing ref-8, t = 12..90 s, n = 11): verdict close
+    (6/11 reproduced, 5/11 close, 0/11 not reproduced; fitted C = 0.44098 s^(-1/3) implying
+    t_0 = 11.66 s; mean rel err 1.63%, max 4.27%, OLS slope 0.3124);
+    (b) val_powerlaw_passive_vs_gubbala_fig3_low_actin vs. gubbala2025/R_ratio_fig3_exp_low
+    (passive low-actin membrane, t = 800..7000 s, n = 11): verdict not reproduced (1/11 reproduced,
+    3/11 close, 7/11 not reproduced; C = 0.09166 s^(-1/3), monotonic residual drift -0.1540 to
+    +0.1820, mean rel err 7.17%, OLS slope 0.2150);
+    (c) val_powerlaw_passive_vs_gubbala_fig3_high_actin vs. gubbala2025/R_ratio_fig3_exp_high
+    (passive high-actin membrane, t = 800..7000 s, n = 11): verdict not reproduced (2/11 reproduced,
+    2/11 close, 7/11 not reproduced; C = 0.09201 s^(-1/3), monotonic residual drift -0.1449 to
+    +0.2384, mean rel err 7.41%, OLS slope 0.2082).
+    (2) Excluded Direction A pairs: (a) alpha_active_smoluchowski_theory (2/3) is excluded because
+    gubbala2025 has no myosin II or ATP (purely passive actin); (b) gubbala2025/R_ratio_figS2_exp_{low,high}
+    re-plot the same 3 low-actin and 2 high-actin samples across the full 3-regime slow/fast/slow
+    window (t = 40/60..6000 s, OLS slopes 0.088 and 0.096, mean rel err ~30% vs. t^(1/3)) where
+    gubbala2025 p. 5 explicitly states single-power-law scaling does not apply; (c) scalar endpoints
+    R_ratio_{low,high}_exp_fig3_end ('~1.55') always yield no_verdict for a prefactor: unknown model
+    (and carry approximate tildes); (d) domain_size_no_actin ('≈ 1 to 10' um) lacks t, a_0, phi_A,
+    and L and carries '≈'; (e) curvature PDFs P(kappa), relative actin densities rho/rho_max,
+    actin filament lengths, and observation/unbinding timescales have no arnold2023 model counterpart;
+    and (f) gubbala2025 has 0 origin: measured coarsening_exponent datums.
+    (3) Direction B — gubbala2025 models vs. arnold2023 measured datums (1,968 pairs; 1,848
+    dimension-matched): 0 out-of-sample CrossValidations exist because gubbala2025/coarsening_power_law
+    (R(t)/R_0 = (t/t_0)^alpha, prefactor: stated = 1) requires a printed normalization time t_0
+    where R(t_0)/R_0 = 1, whereas arnold2023's Fig. 2 curves (e.g., fig2_exp_passive_band_fig,
+    y = 0.344..0.920 over t = 5..92 s, implied t_0 = 120.3 s outside the plotted window) are
+    arbitrarily rescaled vertically by unprinted dataset factors a_0 and shifted horizontally by
+    unprinted SI Eq. (1) offsets B/A (likewise in Figs. S3B and S4); supplying a fitted t_0 would
+    calibrate to the target curve itself rather than validate out-of-sample. All other gubbala2025
+    models (2D nematic Model C PDE without active flows, Frank constants, LdG/CH free energies,
+    LSA bounds, boundary curvature) do not predict arnold2023's actomyosin-driven exponents or
+    actin-free normalized curves (and gubbala2025 records no passive no-actin PDE run matching
+    arnold2023's active shear conditions).
+
+- id: q_weirich2017_no_cross_validation
+  kind: unstated_model
+  about:
+    - domain_growth_power_law_scaling
+    - smoluchowski_passive_ode_eq25
+    - saffman_delbruck_diffusivity_peclet
+    - fig2_exp_passive_band_fig
+    - weirich2017/d_fig3a_length_data
+    - weirich2017/tactoid_coarsening_power_law
+    - weirich2017/stokes_einstein_ellipsoid_diffusion
+  text: >
+    Bidirectional cross-record validation audit between arnold2023 (20 runnable models [62 output
+    ports], 24 origin: measured datums — all strictly dimensionless) and weirich2017 (52 runnable
+    models [81 output ports], 35 origin: measured datums; 2,170 + 1,944 = 4,114 port-datum pairs):
+    0 valid CrossValidation entries exist in either direction (neither paper cites the other).
+    (1) Direction A — arnold2023 models vs. weirich2017 measured datums (2,170 pairs; 950
+    dimension-matched across [length] and dimensionless):
+    (a) Dimensional coarsening (arnold2023's 5 Smoluchowski [length] models outputting 2D circular
+    lipid-membrane domain radius a [um] vs. weirich2017/d_fig3a_length_data [tactoid_major_axis,
+    um, 1.461 to 4.237 um over t = 10..85 min] and scalar tactoid/filament/bundle lengths):
+    physically and geometrically disjoint systems — 2D circular lipid domains diffusing in a fluid
+    bilayer with area fraction phi_A and outer cutoff L (a ~ t^(1/3) passive, t^(2/3) active shear)
+    vs. 3D prolate nematic F-actin tactoids (aspect ratio L/r ~ 2.3) coalescing hydrodynamically
+    in dilute 3D aqueous buffer (L ~ t^(1/2), fitted alpha = 0.47 +/- 0.01; no 2D area fraction
+    phi_A or membrane Saffman-Delbruck drag applies).
+    (b) Dimensionless scaling (arnold2023/domain_growth_power_law_scaling outputting dimensionless
+    a/a_0 vs. weirich2017/d_fig3a_length_data [um]): strict dimension mismatch; weirich2017's
+    dimensionless d_fig4c_*_data (L(t)/L_i) are exponentially contracting actin bundles decaying
+    from 1 via capillary instability rather than coarsening droplets, and
+    coarsening_exponent_measured = 0.47 +/- 0.01 is origin: fitted (not measured) for 3D
+    hydrodynamic coalescence.
+    (c) Diffusivity (arnold2023/saffman_delbruck_diffusivity_peclet.D_c [um^2/s]): weirich2017 has
+    0 origin: measured diffusivity datums (internal tactoid diffusivity is derived from FRAP
+    recovery time tau_R for 3D slender actin rods, not 2D membrane domains).
+    (2) Direction B — weirich2017 models vs. arnold2023 measured datums (1,944 pairs; 648
+    dimension-matched, all dimensionless): weirich2017/tactoid_coarsening_power_law outputs
+    dimensional tactoid_major_axis [um] ([length]), which cannot cross onto any of arnold2023's
+    24 strictly dimensionless measured datums (normalized_domain_size, coarsening_exponent,
+    domain_area_fraction). None of weirich2017's dimensionless outputs (tactoid aspect ratios,
+    anchoring strength omega, director crossover chi, contractile strain, rescaled exponential
+    bundle contraction, capillary wavenumbers, monomer counts) matches any arnold2023 measurement.
+
+- id: q_zwicker2015_no_cross_validation
+  kind: unstated_model
+  about:
+    - domain_growth_power_law_scaling
+    - lifshitz_slyozov_2d_asymptotic_eq11
+    - smoluchowski_passive_approx_eq28_corrected
+    - fig2_exp_passive_band_fig
+    - figS1_passive_fig
+    - zwicker2015/lifshitz_slyozov_scaling_corrected
+    - zwicker2015/lifshitz_slyozov_scaling_printed
+  text: >
+    Bidirectional cross-record validation audit between arnold2023 (20 runnable models [62 output
+    ports], 24 origin: measured datums — all strictly dimensionless) and zwicker2015 (81 runnable
+    models [204 output ports], 0 origin: measured datums out of 108 total data; 0 + 4,896 = 4,896
+    port-datum pairs): 0 valid CrossValidation entries exist in either direction (neither paper cites
+    the other).
+    (1) Direction A — arnold2023 models vs. zwicker2015 measured datums: zwicker2015 is a purely
+    theoretical and numerical continuum study (56 predicted, 30 assumed, 11 run, 5 derived,
+    4 reported, 2 fitted) containing 0 origin: measured experimental datums, leaving 0 candidate
+    targets.
+    (2) Direction B — zwicker2015 models vs. arnold2023 measured datums (4,896 pairs; 2,568
+    dimension-matched, all dimensionless):
+    (a) Strict dimensionality barrier on zwicker2015/lifshitz_slyozov_scaling_corrected
+    (<R> ~ (t*D_B*w)^(1/3), prefactor: unknown) and zwicker2015/lifshitz_slyozov_scaling_printed:
+    both declare output port R_mean: droplet_radius [m] (dimension [length]), whereas all 24
+    origin: measured datums in arnold2023 (including passive Fig. 2 fig2_exp_passive_band_fig,
+    figS3b_slow_fig, figS4_late_fig [normalized_domain_size], and figS1_passive_fig
+    [coarsening_exponent vs. phi_A]) are strictly dimensionless. Pint unit checking forbids
+    converting [m] to dimensionless, and zwicker2015's 3D bulk Ostwald-ripening prefactor
+    (D_B*w)^(1/3) also differs physically from 2D lipid-membrane coarsening (where arnold2023
+    reports no interface width w or binary bulk diffusivity D_B; note figS1_passive_fig plots
+    exponent alpha vs. phi_A rather than R vs. t).
+    (b) All dimensionless output ports in zwicker2015 (steady-state chemically-arrested droplet
+    radii R_bar/w, R_crit/w, R_*/w, normalized volumes V/w^3, volume fractions phi_B / phi_0^B,
+    normalized perturbation stability rates lambda/k_0, droplet/fixed-point counts, stability
+    number chi, and reaction-rate ratios) describe chemically reactive 3D emulsions with nonzero
+    reaction rates k_f, k_b and are physically disjoint from arnold2023's passive/active 2D
+    lipid-membrane coarsening ratios a(t)/a_0, exponents alpha, and Lo area fraction phi_A.
+
+

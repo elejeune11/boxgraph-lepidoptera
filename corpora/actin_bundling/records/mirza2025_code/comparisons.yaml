@@ -1,0 +1,131 @@
+# ==============================================================================
+# 1. Reproduction comparisons of mirza2025_code ports against mirza2025 printed values
+# ==============================================================================
+- id: cmp_L_bar_eff_vs_paper
+  purpose: reproduction
+  computed: L_bar_eff_config
+  printed: paper_L_bar_default
+  note: "Effective Frank constant L_bar = frank/2 = 2/2 = 1 from DqDq = 0.5*(|grad q1|^2+|grad q2|^2) reproduces mirza2025 Appendix 4—table 1 (L = 1)."
+
+- id: cmp_c0_bar_bare_vs_paper
+  purpose: reproduction
+  computed: c0_bar_bare_config
+  printed: paper_c0_bar_fig2
+  note: "Effective linear susceptibility c_bar_0 = 2*sus20 + lambda_rot*heqb = 2*5 - 6 = 4 reproduces mirza2025 Appendix 4—table 1 (c_bar_0 = 4)."
+
+- id: cmp_c0_bar_barrier_vs_paper
+  purpose: reproduction
+  computed: c0_bar_barrier_config
+  printed: paper_c0_bar_fig2
+  note: "Including AuxCortexNematic2D.cpp:1123-1139's hidden log barrier shifts c_bar_0 from 4 to 4.0004004 (+0.010%), still reproducing printed '4'."
+
+- id: cmp_lambda_o_bar_vs_paper
+  purpose: reproduction
+  computed: lambda_o_bar_config
+  printed: paper_lambda_o_bar_default
+  note: "Negating code's lambda_rot = -6 recovers mirza2025 Appendix 4—table 1's lambda_bar_o = 6."
+
+- id: cmp_kappa_eff_vs_paper
+  purpose: reproduction
+  computed: kappa_eff_config
+  printed: paper_kappa_fig4bI
+  note: "Effective anisotropy kappa = (lambda_aniso - crossLinker)/lambda_iso = (3.114078 - 3.806096)/3.460087 = -0.2000000000000000 reproduces mirza2025 reference kappa = -0.2 (Fig. 2b(I), Fig. 4b(I))."
+
+- id: cmp_beta_bar_min_2d_vs_paper
+  purpose: reproduction
+  computed: beta_bar_min_2d_config
+  printed: paper_beta_bar_fig3b
+  note: "2D dissipation positivity bound beta_bar_min = -sqrt(2*rvisc) = -1.41421356 reproduces mirza2025 Appendix 4—table 1 Fig. 3b-c (-sqrt(2))."
+
+- id: cmp_c0_bar_fig4aIII_vs_paper
+  purpose: reproduction
+  computed: c0_bar_fig4aIII_calc
+  printed: paper_c0_bar_fig4aIII
+  note: "Code susceptibility formula 2*sus20 + lambda_rot*heqb = 10 - 10.05 = -0.05 reproduces mirza2025 Appendix 4—table 1 Fig. 4a(III)."
+
+- id: cmp_S0_fig4aIII_vs_paper
+  purpose: reproduction
+  computed: S_0_fig4aIII_calc
+  printed: paper_S0_fig4aIII
+  note: "Equilibrium order S_0 = 2*|q_int| from AuxCortexNematic2D.cpp:160 reproduces mirza2025 Fig. 4a(III) S_0 = 0.05 identically."
+
+- id: cmp_activity_ratio_bare_vs_paper
+  purpose: reproduction
+  computed: act_ratio_bare
+  printed: paper_activity_ratio_default
+  note: "config lambda_iso / lambda_crit(L_eff=1, k_lim=0) = 3.4600868479543558 / 2.661605267657197 = 1.300000000000000 reproduces mirza2025 lambda/lambda_crit = 1.3 to 16 significant digits."
+
+- id: cmp_domain_wavelengths_vs_paper
+  purpose: reproduction
+  computed: dom_wl_bare
+  printed: paper_domain_size_wavelengths
+  note: "config r_out / ell_pattern = 127 / 15.789504 = 8.0433 reproduces mirza2025's 8*ell_pattern domain size (integer ceiling of 126.316, +0.54%)."
+
+- id: cmp_wavelength_ratio_lin_vs_fig2s1
+  purpose: reproduction
+  computed: w_ratio_lin_barrier
+  printed: paper_wavelength_ratio_fig2s1
+  note: "Fastest-growing linear mode ratio nu_crit / nu_max(lambda_iso) = 0.8566 from code's linearized equations reproduces mirza2025 Fig. 2—figure supplement 1 (0.87 +/- 0.02)."
+
+- id: cmp_wavelength_ratio_fem1d_vs_fig2s1
+  purpose: reproduction
+  computed: fem1d_w_ratio
+  printed: paper_wavelength_ratio_fig2s1
+  note: "Exact 1D Q1 FEM Newton-Raphson port on r_out = 127 selects 9 bundles (127/9 / 15.7895 = 0.8937) vs mirza2025 Fig. 2—figure supplement 1 (0.87 +/- 0.02; within 1.19 SD)."
+
+- id: cmp_threshold_err_fem1d_vs_paper
+  purpose: reproduction
+  computed: fem1d_thresh_err_pct
+  printed: paper_linear_threshold_accuracy
+  note: "1D Q1 FEM nonlinear instability threshold relative error (0.84%) against linear stability reproduces mirza2025 p. 8 (< 2%)."
+
+- id: cmp_mean_tension_slope_vs_fig5d
+  purpose: reproduction
+  computed: sigma_act_mean_slope_val
+  printed: paper_norm_mean_tension_slope_fig5d
+  note: "Normalized mean active tension vs density slope from the code's 3-term active stress equals 1 identically, matching mirza2025 Eq. (11) / Fig. 5d."
+
+# ==============================================================================
+# 2. Consistency & approximation checks exposing code bugs and barrier sensitivity
+# ==============================================================================
+- id: cmp_active_stress_code_vs_paper
+  purpose: consistency
+  computed: sigma_act_xx_code_val
+  printed: sigma_act_xx_paper_val
+  note: "Code's 3-term active stress h*(lambda_iso*(1-S)*I + lambda_aniso*Snn + crossLinker*Snn_) equals mirza2025 Eq. (7) h*lambda*(I + kappa*q) identically when lambda_aniso + crossLinker = 2*lambda_iso."
+
+- id: cmp_Ten_sym_xx_bug_vs_exact
+  purpose: consistency
+  computed: sigma_xx_Ten_sym_bug_val
+  printed: sigma_xx_paper_exact_val
+  note: "Quantifies post-processing Ten_sym bugs in AuxCortexNematic2D.cpp:1109 (4*rodt_ missing bulk 2*d_22 coupling, plus frank/deltat = 5*L_eff at deltat = 0.4): -20.1% error in sigma_xx at probe state."
+
+- id: cmp_Ten_sym_xy_bug_vs_exact
+  purpose: consistency
+  computed: sigma_xy_Ten_sym_bug_val
+  printed: sigma_xy_paper_exact_val
+  note: "Quantifies shear stress bug in AuxCortexNematic2D.cpp:1109 (4*rodt_ gives 2x shear viscosity vs Paper Eq. 6's 2*rodt_): +113% error in sigma_xy at probe state."
+
+- id: cmp_border_xx_bug_vs_exact
+  purpose: consistency
+  computed: sigma_xx_border_bug_val
+  printed: sigma_xx_paper_exact_val
+  note: "Quantifies LS_CortexNematic_Border Ten_sym bugs in AuxCortexNematic2D.cpp:1241 (1*rodt missing 2x shear & bulk tr(d)*I, plus frank = 2*L_eff): +24.0% error in sigma_xx at probe state."
+
+- id: cmp_time_logged_vs_true
+  purpose: consistency
+  computed: time_logged_10_val
+  printed: time_true_10_val
+  note: "Quantifies post-update time += deltat bug in CortexNematic2D.cpp:529-538: after 10 converged steps from deltat = 0.8 (maxDelt = 0.4), logged time = 4.0 vs true integrated time = 4.4 (-0.4 offset)."
+
+- id: cmp_fem1d_barrier_vs_nobarrier_Smax
+  purpose: approximation
+  computed: fem1d_S_max
+  printed: fem1d_nobar_S_max
+  note: "Quantifies impact of the hidden log barrier (k_lim = 1e-4, S2_max = 0.999) + line-1140 extra-h bug on peak nematic order S_max in 1D Q1 FEM at config Fig. 2b(I) parameters (< 0.01% shift)."
+
+- id: cmp_fem1d_barrier_vs_nobarrier_omega
+  purpose: approximation
+  computed: fem1d_omega
+  printed: fem1d_nobar_omega
+  note: "Quantifies impact of the hidden log barrier + line-1140 extra-h bug on architectural order parameter omega in 1D Q1 FEM at config Fig. 2b(I) parameters (< 0.05% shift)."

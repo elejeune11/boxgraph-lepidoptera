@@ -1,0 +1,338 @@
+# ============================================================================
+# 1. Direct FFT spatial-frequency to spacing reproductions (SI Figs. S10D, S11B)
+# ============================================================================
+
+- id: run_figS10_spacing
+  model: spacing_from_spatial_frequency
+  inputs:
+    freq: figS10_dominant_freq
+  outputs:
+    s: figS10_spacing_pred
+  note: "Reproduces SI Fig. S10D (p. 23, 41% dev): s = 1 / 0.684 um^-1 = 1.46199 um vs printed 1.4618 um."
+
+- id: run_figS11_spacing
+  model: spacing_from_spatial_frequency
+  inputs:
+    freq: figS11_dominant_freq
+  outputs:
+    s: figS11_spacing_pred
+  note: "Reproduces SI Fig. S11B (p. 24, 61% dev): s = 1 / 0.540 um^-1 = 1.85185 um vs printed 1.85 um."
+
+# ============================================================================
+# 2. Pupal developmental timing & generation duration consistency (pp. 2, 3, 5, 6)
+# ============================================================================
+
+- id: run_fig2G_dev_pct_typical
+  model: pupal_development_percent
+  inputs:
+    t: fig2G_elapsed_time
+    T_pupal: pupal_duration_typical
+  outputs:
+    p_dev: fig2G_dev_pct_from_10d
+  note: "Evaluates 8.12 d against the typical ~10 d pupal duration (gives 81.2% vs specimen-normalized 83%)."
+
+- id: run_fig2G_implied_duration
+  model: pupal_duration_from_checkpoint
+  inputs:
+    t: fig2G_elapsed_time
+    p_dev: fig2G_dev_fraction
+  outputs:
+    T_pupal: fig2G_implied_T_pupal
+  note: "Implied generation pupal duration for the Fig. 2G specimen: 8.12 d / 0.83 = 9.783 d (inside 10 +/- 2 d)."
+
+- id: run_fig5_implied_duration_35pct
+  model: pupal_duration_from_checkpoint
+  inputs:
+    t: fig5_key_window_start_time
+    p_dev: fig5_key_window_start_pct
+  outputs:
+    T_pupal: fig5_implied_T_pupal_35
+  note: "Implied generation pupal duration for the Fig. 5 specimen from 100 h at 35%: 285.7 h = 11.90 d."
+
+- id: run_fig5_implied_duration_40pct
+  model: pupal_duration_from_checkpoint
+  inputs:
+    t: fig5_key_window_end_time
+    p_dev: fig5_key_window_end_pct
+  outputs:
+    T_pupal: fig5_implied_T_pupal_40
+  note: "Implied generation pupal duration for the Fig. 5 specimen from 114 h at 40%: 285.0 h = 11.88 d."
+
+- id: run_fig5_end_pct_chained
+  model: pupal_development_percent
+  inputs:
+    t: fig5_key_window_end_time
+    T_pupal: fig5_implied_T_pupal_35
+  outputs:
+    p_dev: fig5_end_pct_chained
+  note: "Chained check: 114 h using T_pupal implied by (100 h, 35%) predicts 39.90% vs printed roughly 40%."
+
+# ============================================================================
+# 3. Optical, phase-imaging, and axial scan step checks (pp. 2, 6, 7; SI pp. 10-15)
+# ============================================================================
+
+- id: run_rayleigh_lateral_resolution
+  model: rayleigh_lateral_resolution
+  inputs:
+    lambda_0: laser_wavelength_center
+    NA: objective_na
+  outputs:
+    r_lat: rayleigh_lat_res_pred
+  note: "Reconstructed Rayleigh resolution 0.61 * 800 nm / 1.0 = 488.0 nm vs printed 490 nm (ref-37)."
+
+- id: run_phase_height_one_wrap
+  model: reflection_phase_to_height
+  inputs:
+    phi: phase_wrap_period_2pi
+    lambda_0: laser_wavelength_center
+    n: fluid_refractive_index_si
+  outputs:
+    h: height_per_2pi_wrap_pred
+  note: "Reconstructed double-pass reflection height per 2*pi phase wrap: 800 nm / (2 * 1.35) = 296.3 nm."
+
+- id: run_phase_wrapping_eq1_eq2
+  model: phase_wrapping_eq1_eq2
+  inputs:
+    phi_unwrapped: phi_unwrapped_test_added
+  outputs:
+    phi_wrapped: phi_wrapped_test_out
+    k: k_wrap_test_out
+  note: "Exercises Eqs. 1-2 wrapping operator W on illustrative unwrapped phase > pi (4.5 rad -> -1.783 rad, k = -1)."
+
+- id: run_phase_gradient_eq4
+  model: phase_gradient_eq4
+  inputs:
+    phi_n: phi_wrapped_n_added
+    phi_prev: phi_wrapped_prev_added
+  outputs:
+    dphi_wrapped: dphi_wrapped_test_out
+  note: "Exercises Eq. 4 across a +pi/-pi wrap discontinuity (-2.9 - 2.9 = -5.8 rad -> wrapped +0.483 rad)."
+
+- id: run_figS2_grad_mag_bound
+  model: phase_gradient_2d_vector
+  inputs:
+    g_x: figS2CD_phase_grad_axis_max
+    g_y: figS2CD_phase_grad_axis_max
+  outputs:
+    grad_mag: figS2_grad_mag_diag_pred
+    grad_dir: figS2_grad_dir_diag_pred
+  note: "Checks 2D gradient magnitude at the SI Fig. S2C-D axis ceiling (40, 40) rad/um -> 56.57 rad/um vs 60 rad/um ceiling in Fig. S2F."
+
+- id: run_intensity_from_amplitude
+  model: intensity_from_amplitude
+  inputs:
+    A: amplitude_illustrative_added
+  outputs:
+    I: intensity_test_pred
+  note: "Exercises SI Fig. S3B intensity definition I = A^2 at A = 10^5 (I = 10^10 arb. units)."
+
+- id: run_axial_steps_200um
+  model: axial_z_steps_from_depth
+  inputs:
+    depth: imaging_depth_max
+    dz: axial_scan_step_size
+  outputs:
+    N_steps: n_steps_200um
+  note: "200 um / 400 nm = 500 exact z-steps."
+
+- id: run_axial_steps_fig3C_16p8um
+  model: axial_z_steps_from_depth
+  inputs:
+    depth: volumetric_display_depth_fig3C
+    dz: axial_scan_step_size
+  outputs:
+    N_steps: n_steps_16p8um
+  note: "16.8 um / 400 nm = 42 exact z-steps."
+
+- id: run_axial_steps_figS2L_3p2um
+  model: axial_z_steps_from_depth
+  inputs:
+    depth: max_projection_depth_figS2L
+    dz: axial_scan_step_size
+  outputs:
+    N_steps: n_steps_3p2um
+  note: "3.2 um / 400 nm = 8 exact z-steps."
+
+# ============================================================================
+# 4. Scale geometry, peak height, and pooled statistics runs (added illustrative inputs)
+# ============================================================================
+
+- id: run_bounding_box_41pct
+  model: scale_bounding_box_geometry
+  inputs:
+    L: scale_length_41pct_added
+    W: scale_width_41pct_added
+    T: scale_thickness_41pct_added
+  outputs:
+    V: scale_vol_41pct_est
+    S: scale_area_41pct_est
+  note: "Exercises presumptive bounding-box volume and surface area (Fig. 5F, p. 7) at ~41% scale dimensions prior to figure digitization."
+
+- id: run_scale_length_s9
+  model: scale_length_plane_extrapolation
+  inputs:
+    z_tip: scale_tip_height_s9_added
+    theta: scale_inclination_angle_s9_added
+  outputs:
+    L: scale_length_s9_est
+  note: "Exercises longitudinal plane-extrapolation scale length geometry (SI Fig. S9C, p. 22)."
+
+- id: run_ridge_peak_height_s10
+  model: ridge_peak_height_baseline
+  inputs:
+    x_left: peak_x_left_s10_added
+    h_left: peak_h_left_s10_added
+    x_peak: peak_x_center_s10_added
+    h_peak: peak_h_center_s10_added
+    x_right: peak_x_right_s10_added
+    h_right: peak_h_right_s10_added
+  outputs:
+    H_vert: peak_H_vert_s10_est
+    H_perp: peak_H_perp_s10_est
+  note: "Exercises trough-connecting baseline peak height definition (p. 7, SI Fig. S10C) and verifies H_vert vs H_perp agreement (<0.02%)."
+
+- id: run_pooled_stats_41pct
+  model: pooled_mean_and_sd
+  inputs:
+    n1: pooled_n1_added
+    n2: pooled_n2_added
+    n3: pooled_n3_added
+    mu1: pooled_mu1_added
+    mu2: pooled_mu2_added
+    mu3: pooled_mu3_added
+    sd1: pooled_sd1_added
+    sd2: pooled_sd2_added
+    sd3: pooled_sd3_added
+  outputs:
+    pooled_mean: pooled_mean_est
+    pooled_sd_total: pooled_sd_total_est
+    pooled_sd_within: pooled_sd_within_est
+  note: "Exercises 3-scale pooled mean and both pooled SD definitions (total combined SD vs within-profile ANOVA pooled SD, p. 7 & SI p. 11)."
+
+# ============================================================================
+# 5. Curve-port model runs on calibrated digitized figures (Figs. 2J-K, 5B-F, S8B, S10B-C)
+# ============================================================================
+
+- id: run_fft1d_figS10c
+  model: dominant_spatial_frequency_fft_1d
+  inputs:
+    h: figS10c_rotated_profile_data
+  outputs:
+    freq: figS10c_fft_freq_pred
+    s: figS10c_fft_spacing_pred
+  note: "Runs the existing mean-subtracted 1D FFT model on digitized SI Fig. S10C (41% dev) to test against printed freq = 0.684 um^-1 and s = 1.4618 um."
+
+- id: run_fft1d_uncentered_figS10c
+  model: dominant_spatial_frequency_fft_1d_uncentered
+  inputs:
+    h: figS10c_rotated_profile_data
+  outputs:
+    freq: figS10c_fft_unc_freq_pred
+    s: figS10c_fft_unc_spacing_pred
+  note: "Runs the uncentered 1D FFT variant (retaining the nonzero DC peak shown in SI Fig. S10D) on digitized SI Fig. S10C (41% dev)."
+
+- id: run_fft1d_fig5b
+  model: dominant_spatial_frequency_fft_1d
+  inputs:
+    h: fig5b_profile_41pct_data
+  outputs:
+    freq: fig5b_fft_freq_pred
+    s: fig5b_fft_spacing_pred
+  note: "Runs mean-subtracted 1D FFT on digitized Fig. 5B bottom (41% dev, same trace as SI Fig. S10C)."
+
+- id: run_fft1d_uncentered_fig5b
+  model: dominant_spatial_frequency_fft_1d_uncentered
+  inputs:
+    h: fig5b_profile_41pct_data
+  outputs:
+    freq: fig5b_fft_unc_freq_pred
+    s: fig5b_fft_unc_spacing_pred
+  note: "Runs uncentered 1D FFT variant on digitized Fig. 5B bottom (41% dev)."
+
+- id: run_fft1d_figS8b
+  model: dominant_spatial_frequency_fft_1d
+  inputs:
+    h: figS8b_profile_37pct_data
+  outputs:
+    freq: figS8b_fft_freq_pred
+    s: figS8b_fft_spacing_pred
+  note: "Runs 1D FFT dominant spatial frequency extraction on digitized SI Fig. S8B bottom (37% irregular stage)."
+
+- id: run_fft1d_fig2j
+  model: dominant_spatial_frequency_fft_1d
+  inputs:
+    h: fig2j_ridge_profile_data
+  outputs:
+    freq: fig2j_fft_freq_pred
+    s: fig2j_fft_spacing_pred
+  note: "Runs 1D FFT dominant spatial frequency extraction on digitized Fig. 2J (83% dev ridges)."
+
+- id: run_fft1d_fig2k
+  model: dominant_spatial_frequency_fft_1d
+  inputs:
+    h: fig2k_lamellae_profile_data
+  outputs:
+    freq: fig2k_fft_freq_pred
+    s: fig2k_fft_spacing_pred
+  note: "Runs 1D FFT dominant spatial frequency extraction on digitized Fig. 2K (83% dev ridge lamellae)."
+
+- id: run_rot_peaks_figS10b
+  model: profile_slope_rotation_and_peaks
+  inputs:
+    h_raw: figS10b_unrotated_profile_data
+  outputs:
+    mean_peak_height: figS10b_mean_height_pred
+    sd_peak_height: figS10b_sd_height_pred
+    slope_angle: figS10b_slope_angle_pred
+  note: "Runs OLS slope-flattening rotation and trough-baseline peak height pipeline on digitized unrotated SI Fig. S10B (41% dev)."
+
+- id: run_rot_peaks_fig5b
+  model: profile_slope_rotation_and_peaks
+  inputs:
+    h_raw: fig5b_profile_41pct_data
+  outputs:
+    mean_peak_height: fig5b_mean_height_pred
+    sd_peak_height: fig5b_sd_height_pred
+    slope_angle: fig5b_slope_angle_pred
+  note: "Runs slope-rotation and peak-height pipeline on digitized Fig. 5B bottom (41% dev) to test against caption 'about 100 nm'."
+
+- id: run_rot_peaks_figS8b
+  model: profile_slope_rotation_and_peaks
+  inputs:
+    h_raw: figS8b_profile_37pct_data
+  outputs:
+    mean_peak_height: figS8b_mean_height_pred
+    sd_peak_height: figS8b_sd_height_pred
+    slope_angle: figS8b_slope_angle_pred
+  note: "Runs peak-height extraction on digitized SI Fig. S8B bottom (37% irregular stage)."
+
+- id: run_rot_peaks_fig2j
+  model: profile_slope_rotation_and_peaks
+  inputs:
+    h_raw: fig2j_ridge_profile_data
+  outputs:
+    mean_peak_height: fig2j_mean_height_pred
+    sd_peak_height: fig2j_sd_height_pred
+    slope_angle: fig2j_slope_angle_pred
+  note: "Runs peak-height extraction on digitized Fig. 2J (83% dev ridges)."
+
+- id: run_rot_peaks_fig2k
+  model: profile_slope_rotation_and_peaks
+  inputs:
+    h_raw: fig2k_lamellae_profile_data
+  outputs:
+    mean_peak_height: fig2k_mean_height_pred
+    sd_peak_height: fig2k_sd_height_pred
+    slope_angle: fig2k_slope_angle_pred
+  note: "Runs peak-height extraction on digitized Fig. 2K (83% dev ridge lamellae)."
+
+- id: run_bounding_box_fig5f
+  model: scale_bounding_box_percent_curves
+  inputs:
+    L: fig5c_length_mean_data
+    W: fig5d_width_mean_data
+    T: fig5e_thickness_mean_data
+  outputs:
+    V_pct: fig5f_vol_pct_pred
+    S_pct: fig5f_surf_pct_pred
+  note: "Propagates digitized 6-timepoint mean cover scale L(t), W(t), T(t) from Fig. 5C-E through V=L*W*T and S=2*(LW+LT+WT) normalized to max=100% for direct reproduction check against Fig. 5F."

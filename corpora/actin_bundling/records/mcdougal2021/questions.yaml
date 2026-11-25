@@ -1,0 +1,594 @@
+- id: q_phase_to_height_unstated
+  kind: unstated_model
+  about:
+    - reflection_phase_to_height
+    - fluid_refractive_index_si
+    - laser_wavelength_center
+  text: >
+    The paper states that unwrapped phase profiles capture nanoscale scale surface height
+    (pp. 2, 7; SI pp. 10-11) and plots surface height h(x) in nm in Figs. 2J-K, 5A-B, S8A-C,
+    and S10B-C, with laser center wavelength lambda_0 = 800 nm and biological fluid refractive
+    index n = 1.35 (SI p. 10). However, the paper never prints the phase-to-height conversion
+    formula h = phi * lambda_0 / (4 * pi * n), nor specifies which refractive index n is applied
+    in vivo (n = 1.35 biological fluid vs n = 1.333 water) or for dry adult scales (Fig. 1F,
+    likely air n = 1.0). Under standard double-pass reflection at lambda_0 = 800 nm, n = 1.35,
+    one 2*pi phase wrap equals 296.3 nm, closely matching the 0-300 nm vertical scale of Fig. 2J-K.
+  citation:
+    page: 2
+    printed_page: "2"
+    quote: "The phase data capture the height of the material interfaces"
+    where: "text (also SI p. 10)"
+
+- id: q_eq4_missing_pixel_pitch
+  kind: unstated_input
+  about:
+    - phase_gradient_eq4
+    - phase_gradient_2d_vector
+    - figS2CD_phase_grad_axis_max
+    - figS2F_phase_grad_mag_max
+    - cmp_figS2_grad_mag_bound
+  text: >
+    Eq. 4 (p. 7, SI p. 11) defines the local phase gradient simply as the pixel-to-pixel
+    wrapped difference W Delta phi_wrapped(n) (in radians per pixel), omitting division by the
+    lateral pixel spacing dx. Yet SI Fig. S2C-D plot the wrapped phase gradient along x and y in
+    units of rad/um spanning [-40, 40] rad/um, and SI Fig. S2F plots gradient magnitude in rad/um
+    up to 60 rad/um. Neither the camera pixel pitch in object space nor the image pixel dimensions
+    are printed anywhere in the paper or SI. Since |W Delta phi| <= pi, a single-axis bound of
+    ~40-43 rad/um implies dx ~ 73-79 nm (e.g., 75 um / 1024 px = 73.2 nm gives pi/dx = 42.9 rad/um
+    and diagonal sqrt(2)*42.9 = 60.7 rad/um, matching the 60 rad/um colorbar top in Fig. S2F).
+  citation:
+    page: 13
+    printed_page: "SI 5"
+    quote: "Phase gradient along x, wrapped (rad/µm)"
+    where: "SI Fig. S2C-F (and Eq. 4, p. 7 / SI p. 11)"
+
+- id: q_speckle_psf_and_axial_res
+  kind: unstated_model
+  about:
+    - speckle_psf_deconvolution
+    - rayleigh_lateral_resolution
+    - lateral_resolution_theoretical
+    - axial_resolution_theoretical
+    - cmp_rayleigh_lateral_resolution
+  text: >
+    The paper states a theoretical lateral resolution of 490 nm and axial resolution of 1.03 um
+    (citing Choi et al. 2014, ref-37) and applies 10 iterations of Lucy-Richardson deconvolution
+    with a theoretically estimated point spread function (citing Zhou et al. 2017, ref-45), but
+    does not print the PSF or resolution equations in the main text or SI. Evaluating the
+    standard Rayleigh stand-in 0.61 * lambda_0 / NA with lambda_0 = 800 nm and NA = 1.0 yields
+    488.0 nm (0.4% from 490 nm, identical to 2 significant figures).
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "resolution of 490 nm and the theoretical axial resolution of 1.03 μm were"
+    where: "Materials and Methods (also p. 7, SI pp. 10-11)"
+
+- id: q_fft_and_findpeaks_settings
+  kind: unstated_input
+  about:
+    - two_d_fourier_ridge_spacing
+    - dominant_spatial_frequency_fft_1d
+    - profile_slope_rotation_and_peaks
+  text: >
+    SI Detailed Methods (p. 11) describe zero-padded 1D FFT frequency interpolation, high-pass
+    filtered 2D FFT peak selection (SI Fig. S11B), and MATLAB 'findpeaks' with manually defined
+    minimum peak height and spacing, without printing the numerical zero-padding factor, high-pass
+    cutoff frequency, or findpeaks thresholds in the PDF. Raw image stacks and MATLAB analysis
+    scripts are archived separately on Zenodo (ref-48).
+  citation:
+    page: 11
+    printed_page: "SI 3"
+    quote: "manually defining the minimum accepted peak height and spacing"
+    where: "SI Detailed Methods (Image analysis)"
+
+- id: q_pooled_sd_definition
+  kind: unstated_model
+  about:
+    - pooled_mean_and_sd
+    - fig5_measured_scale_count
+  text: >
+    Materials and Methods (p. 7) and SI Detailed Methods (p. 11) state that per-profile mean and
+    SD peak heights are calculated and then combined into "the pooled mean and the pooled SD for
+    each time point" (with error bars corresponding to measurements from n = 3 scales, Fig. 5
+    caption). The exact formula for pooled SD is not printed, leaving open whether between-profile
+    mean variance is included (exact combined sample SD of all pooled peaks) or excluded (ANOVA
+    within-profile pooled SD), and per-profile peak counts n_i are not reported in the PDF.
+  citation:
+    page: 7
+    printed_page: "7"
+    quote: "all profiles are then used to determine the pooled"
+    where: "Materials and Methods (also SI p. 11)"
+
+- id: q_bounding_box_percent_normalization
+  kind: reading
+  about:
+    - scale_bounding_box_geometry
+  text: >
+    Fig. 5F (p. 5) plots scale bounding-box volume and surface area "as percentage of maximum"
+    for both individual scales (crosses) and the 3-scale mean (dashed curves), without specifying
+    whether values are normalized by the maximum of the timepoint mean curve or by each individual
+    scale's own maximum. Several individual markers around 38-42% development sit near or above
+    100%, suggesting normalization by the maximum timepoint mean; to be verified once Fig. 5C-F
+    are digitized.
+  citation:
+    page: 5
+    printed_page: "5"
+    quote: "volume (red) and surface area (black) as percentage of maximum"
+    where: "Fig. 5F caption"
+
+- id: q_figS10_freq_rounding_precision
+  kind: reading
+  about:
+    - figS10_dominant_freq
+    - figS10_ridge_spacing
+    - cmp_figS10_spacing_from_freq
+  text: >
+    SI Fig. S10D (p. 23) prints the dominant spatial frequency to 3 significant figures
+    (freq = 0.684 um^-1) alongside the reciprocal spacing to 5 significant figures
+    (s = 1.4618 um). Direct inversion of the rounded frequency gives 1/0.684 = 1.46199 um,
+    differing by 0.00019 um from 1.4618 um; conversely 1/1.4618 = 0.684088 um^-1 rounds cleanly
+    to 0.684 um^-1, showing that s was computed from the unrounded FFT peak before printing freq.
+  citation:
+    page: 23
+    printed_page: "SI 15"
+    quote: "freq = s-1 = 0.684μm-1"
+    where: "SI Fig. S10D"
+
+- id: q_figS10C_peak_height_aspect
+  kind: reading
+  about:
+    - ridge_peak_height_baseline
+  text: >
+    Methods (p. 7, SI p. 11) define peak height as "the distance from the peak to the line
+    connecting the troughs on either side of the peak", and SI Fig. S10C draws the peak-height
+    arrow perpendicular to the sloped dashed trough line in display coordinates (while noting
+    that the y-axis in nm and x-axis in um use different length scales). In true physical length
+    units, vertical height H_vert and perpendicular distance H_perp agree to within <0.1% because
+    physical slopes dh/dx are O(10^-2); measuring perpendicular distance in distorted display
+    coordinates would depend arbitrarily on plot aspect ratio.
+  citation:
+    page: 23
+    printed_page: "SI 15"
+    quote: "note that the y-axis and x-axis are shown with different length scales"
+    where: "SI Fig. S10C caption"
+
+- id: q_fig2_caption_panel_ref
+  kind: possible_error
+  about:
+    - fig2G_dev_fraction
+  text: >
+    The Fig. 2 caption (p. 3) states "(J and K) Surface profiles along lines indicated in G
+    showing ridges (J) and height of ridge lamellae (K)." On page-003.png, the white dashed lines
+    explicitly labeled J and K are drawn in panel I (phase gradient map), whereas panel G
+    (amplitude slice) displays an unlabeled blue L-shaped pair of lines.
+  citation:
+    page: 3
+    printed_page: "3"
+    quote: "Surface profiles along lines indicated in G showing ridges"
+    where: "Fig. 2J-K caption"
+
+- id: q_si_caption_crossref_typos
+  kind: possible_error
+  about:
+    - figS7A_dev_fraction
+    - figS10_ridge_spacing
+  text: >
+    Three minor SI caption cross-reference / wording typos were identified by inspecting page
+    images: (1) SI Fig. S5C caption (p. 17) cites "(see Fig. S6)" for presumed ground scale
+    precursor cells, which are actually tracked in Fig. S7 (Fig. S6 shows smooth epicuticle
+    appearance); (2) SI Fig. S7 caption (p. 19) prints "the second subset of scale precursor cells
+    also locate more distally and differentiate after the second subset" (evidently meaning "after
+    the first subset"); (3) SI Fig. S10 caption (p. 23) cites "Refer also to Fig. 5G, Fig. S8" for
+    phase-data ridge height and spacing, which are plotted in Fig. 5H (Fig. 5G shows amplitude-data
+    spacing).
+  citation:
+    page: 19
+    printed_page: "SI 11"
+    quote: "also locate more distally and differentiate after the second subset."
+    where: "SI Fig. S7 caption (also SI Fig. S5C p. 17 and SI Fig. S10 p. 23)"
+
+- id: q_apolysis_timing_20_vs_10
+  kind: reading
+  about:
+    - apolysis_dev_forewing_text
+    - hindwing_adherence_end_dev
+  text: >
+    Main text Materials and Methods (p. 6) and SI p. 10 state that forewing cuticle can be removed
+    "at any time after apolysis, which occurs at ~20% of development (SI Appendix, Fig. S3)."
+    However, the SI Fig. S3 caption (p. 15) reports that the hindwing adheres to the peripodial
+    membrane for only "the first ~10% of development", after which it detaches and retracts
+    ~120 um (with a speed change at ~23%). The ~10% vs ~20% timings likely distinguish the onset
+    of hindwing epithelial detachment from sufficient forewing separation for safe cuticle surgery.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "occurs at ∼20% of development (SI Appendix, Fig. S3)."
+    where: "Materials and Methods (compared with SI Fig. S3 p. 15)"
+
+- id: q_ridge_onset_37_vs_47_pupae
+  kind: reading
+  about:
+    - ridge_onset_phase_dev
+    - ridge_regular_periodicity_dev
+    - ridge_spacing_constant_conclusion_start
+    - actin_spars_onset_dev
+  text: >
+    The Conclusion (p. 6) summarizes that "ridge spacing remains constant from the first occurrence
+    of ridges at about 47% development to at least 89% development", which corresponds to the
+    second pupa tracked over long durations in Fig. 5G (gray transition ~44-47% after actin spars
+    first appear at ~39%). In contrast, the Results (p. 5), Fig. 5H, and SI Fig. S8 report ridge
+    onset at ~37% and regular ridge periodicity from ~39% in the faster-developing first pupa
+    (as noted on p. 5, developmental timing varies across individuals and wing regions).
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "at about 47% development to at least 89% development."
+    where: "Conclusion (compared with Results p. 5 and Fig. 5G-H)"
+
+- id: q_itoh_raw_wrapped_phase_unprinted
+  kind: unstated_input
+  about:
+    - phase_unwrapping_itoh_eq3
+  text: >
+    The paper prints the 1D Itoh phase unwrapping algorithm (Eq. 3, p. 7 & SI p. 11), which is
+    implemented as a runnable curve-port model (phase_unwrapping_itoh_eq3). Because no 1D wrapped
+    phase trace phi_wrapped(x) is tabulated or plotted in the PDF (all 1D line profiles in Figs.
+    2J-K, 5A-B, S8, and S10 are already unwrapped and converted to surface height in nm), no PDF
+    run can currently feed wrapped phase data into Eq. 3; raw interferometric data are archived
+    on Zenodo (ref-48).
+  citation:
+    page: 7
+    printed_page: "7"
+    quote: "We use this approach to analyze 1D profiles in our phase data."
+    where: "Materials and Methods, Eq. 3 (also Data Availability ref-48)"
+
+- id: q_generation_pupal_durations_unstated
+  kind: unstated_input
+  about:
+    - cmp_fig2G_dev_pct_typical
+    - fig2G_dev_fraction
+    - fig2G_elapsed_time
+    - fig5_key_window_dev_fraction
+    - fig5_key_window_elapsed_time
+    - pupal_duration_typical
+  text: >
+    Materials and Methods (p. 6, SI p. 10) state that % development after surgery is normalized by
+    the average pupal duration T_pupal of unoperated pupae from the same generation (which can vary
+    by up to 2 d around ~10 d, p. 2), but the generation-specific T_pupal values are not printed.
+    Using the typical 10 d duration for Fig. 2G (8.12 d) yields 81.2% rather than the printed 83%
+    (cmp_fig2G_dev_pct_typical = not reproduced); the checkpoint implies T_pupal = 9.78 d for the
+    Fig. 2G generation, whereas the p. 5 window (35-40% <-> 100-114 h) implies T_pupal = 11.88-11.90 d
+    for the Fig. 5 generation (both within the stated 10 +/- 2 d range).
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "The percentage of development of an individual after surgery is estimated using"
+    where: "Materials and Methods (also p. 2, p. 3, p. 5, SI p. 10)"
+
+- id: q_audit_figS2_colorbar_ticks
+  kind: reading
+  about:
+    - figS2CD_phase_grad_axis_max
+    - figS2F_phase_grad_mag_max
+    - cmp_figS2_grad_mag_bound
+  text: >
+    Second-reader disagreement: figS2CD_phase_grad_axis_max (40 rad/um) and
+    figS2F_phase_grad_mag_max (60 rad/um) record the highest labeled tick marks of the
+    SI Fig. S2C-D and S2F colorbars as upper limits, and cmp_figS2_grad_mag_bound checks
+    sqrt(40^2 + 40^2) = 56.57 rad/um against 60 rad/um, yielding a 'not reproduced' verdict.
+    Inspecting page-013.png directly shows that the colorbars in Fig. S2C-D visibly extend
+    beyond +/-40 rad/um (just as Fig. S2B extends beyond +/-3 to +/-pi rad) and Fig. S2F
+    extends slightly past 60 rad/um (and down past 10 to 0). Thus 40 and 60 are rounded
+    axis ticks rather than true colorbar extrema, so cmp_figS2_grad_mag_bound = not reproduced
+    is an artifact of evaluating the vector norm on rounded tick labels rather than an
+    inconsistency in the paper's phase-gradient calculation.
+  citation:
+    page: 13
+    printed_page: "SI 5"
+    quote: "Magnitude of phase gradient"
+    where: "SI Fig. S2C-D and S2F colorbars"
+
+- id: q_audit_fft_dc_and_findpeaks
+  kind: reading
+  about:
+    - dominant_spatial_frequency_fft_1d
+    - profile_slope_rotation_and_peaks
+    - figS10_dominant_freq
+    - figS10_ridge_spacing
+  text: >
+    Second-reader disagreement on two implementation choices in from_words processing models
+    that will matter once SI Fig. S10B-D are digitized: (1) dominant_spatial_frequency_fft_1d
+    subtracts mean(y) before taking the 1D FFT, whereas SI Fig. S10D (page-023.png) visibly
+    shows a large nonzero DC peak at spatial frequency 0 reaching ~4.4 x 10^3 nm (consistent
+    with unnormalized abs(fft(h)) on the nonnegative profile in Fig. S10C without mean
+    subtraction, whose rectangular-window DC sinc sidelobes leak into f > 0 and can slightly
+    shift low-frequency peaks); (2) profile_slope_rotation_and_peaks uses scipy's prominence
+    parameter (min_peak_prominence_nm = 15.0, min_peak_distance_um = 0.8), whereas SI p. 11
+    describes MATLAB's findpeaks with 'minimum accepted peak height and spacing' (MinPeakHeight
+    rather than MinPeakProminence), and both models embed unstated reader-chosen settings
+    (n_fft = 4096, f_min = 0.3, n_uniform = 256, min_peak_prominence_nm = 15.0,
+    min_peak_distance_um = 0.8).
+  citation:
+    page: 23
+    printed_page: "SI 15"
+    quote: "The magnitude of spatial frequencies shows the dominant frequency of the periodic surface height"
+    where: "SI Fig. S10D (and SI Detailed Methods p. 11)"
+
+- id: q_audit_figS8_tilde_range
+  kind: reading
+  about:
+    - smooth_epicuticle_phase_window
+    - irregular_surface_phase_window
+  text: >
+    Second-reader disagreement on transcribing SI Fig. S8 (page-021.png) '(34~36% of
+    development)' and '(37~39% of development)' as '~34 to 36' and '~37 to 39' (which
+    represents the single tilde both as a range separator 'to' and as a leading approximate
+    prefix '~' with no precision). On page-021.png there is no leading '~' before 34 or 37,
+    and the medial '~' functions as a wave-dash range separator ('34 to 36', '37 to 39'),
+    contrasting with the prefix '~' in 'From ~39% onward' in the immediately following
+    sentence (although visually the shaded region transitions in Fig. S8D on page-020.png
+    fall near ~36.5% and ~39.5%, making an approximate reading plausible as well).
+  citation:
+    page: 21
+    printed_page: "SI 13"
+    quote: "the scale surface is smooth (34~36% of development). Later (37~39% of development)"
+    where: "SI Fig. S8 caption (continued)"
+
+- id: q_audit_reference_arm_typo
+  kind: possible_error
+  about:
+    - axial_scan_step_size
+    - axial_z_steps_from_depth
+    - fluid_refractive_index_si
+  text: >
+    Both Materials and Methods (p. 6) and SI Detailed Methods (p. 10, line 61) print
+    'We place the pupa under the reference arm of the speckle-correlation reflection phase
+    microscope and scan along the optical axis (z axis) in 400-nm steps'. This contradicts
+    the preceding microscope description ('A motorized stage in the sample stage scans the
+    vertical position of the sample'), the following paragraph on SI p. 10 ('we replace the
+    reference arm mirror ... A coverslip with a gold coating'), and the schematics in Fig. 2F
+    (p. 3) and SI Fig. S1 (p. 12), all of which place the pupa in the sample arm and the
+    gold-coated coverslip mirror in the reference arm.
+  citation:
+    page: 10
+    printed_page: "SI 2"
+    quote: "We place the pupa under the reference arm of the speckle-correlation reflection phase microscope"
+    where: "SI Detailed Methods (Imaging protocol; also main text p. 6)"
+
+- id: q_audit_curvature_vs_radius
+  kind: possible_error
+  about:
+    - scale_bounding_box_geometry
+    - scale_width_41pct_added
+  text: >
+    SI Detailed Methods (p. 11, lines 109-110) define the lateral width measurement location as
+    'where the rounded end becomes nearly straight (where the curvature of the scale’s edge
+    exceeds the scale length)'. Curvature (dimension 1/[length]) cannot be compared to scale
+    length ([length]) and becomes small rather than large on a nearly straight edge; the
+    authors evidently mean the radius of curvature R = 1/kappa exceeding the scale length L.
+  citation:
+    page: 11
+    printed_page: "SI 3"
+    quote: "nearly straight (where the curvature of the scale’s edge exceeds the scale length)."
+    where: "SI Detailed Methods (Image analysis)"
+
+- id: q_digitize_fft_uncentered_confirmed
+  kind: reading
+  about:
+    - dominant_spatial_frequency_fft_1d
+    - dominant_spatial_frequency_fft_1d_uncentered
+    - figS10c_rotated_profile_data
+    - figS10d_fft_spectrum_data
+    - cmp_fft1d_figS10c_freq
+    - cmp_fft1d_uncentered_figS10c_freq
+  text: >
+    Calibrated digitization of SI Fig. S10B-D settles q_audit_fft_dc_and_findpeaks
+    quantitatively: Fig. S10D displays a nonzero DC peak reaching 4.38 x 10^3 nm at f = 0, a
+    dominant peak of 1.27 x 10^3 nm at f = 0.684 um^-1 (red circle center 0.685 um^-1), and
+    terminates at Nyquist f_nyq = 5.649 um^-1 (implying lateral sample step dx = 88.5 nm, i.e.,
+    N = 79 diagonal MATLAB improfile samples at ~34 deg across a ~73 nm pixel grid). Running
+    the mean-subtracted model dominant_spatial_frequency_fft_1d on digitized Fig. S10C removes
+    the DC sinc sidelobe, raising the peak to ~1.52 x 10^3 nm and shifting its frequency down to
+    0.6591 um^-1 (s = 1.517 um, -3.64%, not reproduced). Running the uncentered variant
+    dominant_spatial_frequency_fft_1d_uncentered (without mean subtraction, n_uniform = 79)
+    reproduces the DC peak (~4.39 x 10^3 nm), dominant peak magnitude (~1.26 x 10^3 nm), and
+    dominant frequency (0.6784 um^-1, s = 1.474 um, within 0.81% of printed 0.684 um^-1 /
+    1.4618 um, 4.5x closer than mean-subtracted). Rotating digitized Fig. S10B by its OLS
+    best-fit slope (-0.01633 rad = -0.936 deg) reproduces Fig. S10C (and Fig. 5B / Fig. S8C
+    bottom) to ~1.2 nm RMS, and profile_slope_rotation_and_peaks yields mean peak height
+    90.8 nm (SD 6.6 nm), matching the 41.0% pooled mean 89.2 nm in Fig. 5H to 1.9%.
+  citation:
+    page: 23
+    printed_page: "SI 15"
+    quote: "The magnitude of spatial frequencies shows the dominant frequency of the periodic surface height"
+    where: "SI Fig. S10B-D"
+
+- id: q_digitize_fig5f_normalization_and_n
+  kind: reading
+  about:
+    - scale_bounding_box_percent_curves
+    - fig5c_length_scales_data
+    - fig5f_volume_mean_data
+    - fig5f_surface_mean_data
+    - fig5_measured_scale_count
+    - cmp_bounding_box_fig5f_vol
+    - cmp_bounding_box_fig5f_surf
+  text: >
+    Calibrated digitization of Fig. 5C-F settles q_bounding_box_percent_normalization: both
+    volume V = L*W*T and surface area S = 2*(LW + LT + WT) are computed for each individual
+    scale and normalized by the maximum of the timepoint mean curve (max V_bar ~ 32.9 x 10^3 um^3
+    at 41.0% dev; max S_bar ~ 14.9 x 10^3 um^2 at 41.0% and 53.7% dev, both at 100.0%, which
+    explains individual crosses reaching 125.1% in volume and 114.0% in surface area). At 47.0%
+    and 53.7%, pairing individual (L, W, T) crosses reproduces individual Fig. 5F ratios to <0.1%,
+    while applying scale_bounding_box_percent_curves to the 6-timepoint mean curves reproduces
+    Fig. 5F surface area at all 6 timepoints (reproduced, 0.05-0.46 pp) and Fig. 5F volume to
+    close (5/6 reproduced within reading intervals; 47.0% within +1.51 pp due to averaging L, W, T
+    before vs after multiplying across n = 2 scales). Digitization also reveals that only the
+    first four timepoints (29.7%, 34.8%, 37.1%, 41.0%) have n = 3 measured scales, whereas
+    47.0% has n = 2 and 53.7% has n = 1 (contrasting with the blanket caption statement 'Error
+    bars correspond to measurements from three scales').
+  citation:
+    page: 5
+    printed_page: "5"
+    quote: "as percentage of maximum estimated from the bounding box of scales (F)."
+    where: "Fig. 5C-F"
+
+- id: q_digitize_fig5g_end_87_vs_89
+  kind: reading
+  about:
+    - fig5g_late_scale5_data
+    - fig5g_late_scale6_data
+    - fig5g_late_scale7_data
+    - ridge_spacing_tracked_until_dev
+  text: >
+    The main text (p. 5) and Conclusion (p. 6) state that periodic ridge spacing remains constant
+    on individual scales 'for the measured scales, at least until 89% of pupal development'.
+    Calibrated digitization of Fig. 5G (x-axis calibration misfit 0.37 px across ticks 30-90%)
+    places all three late-stage tracked scales' rightmost data points at 87.19-87.20% pupal
+    development (roughly 2.8 percentage points before the 90% tick), rather than >=89%.
+  citation:
+    page: 5
+    printed_page: "5"
+    quote: "least until 89% of pupal development)."
+    where: "text and Fig. 5G (also Conclusion p. 6)"
+
+- id: q_totz2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - dominant_spatial_frequency_fft_1d
+    - dominant_spatial_frequency_fft_1d_uncentered
+    - profile_slope_rotation_and_peaks
+    - ridge_peak_height_baseline
+    - pupal_development_percent
+    - pupal_duration_from_checkpoint
+    - rayleigh_lateral_resolution
+    - fig5h_ridge_height_data
+    - fig5h_ridge_spacing_data
+    - fig5B_protoridge_height
+    - fig5a_profile_35pct_data
+    - fig5b_profile_41pct_data
+    - figS8b_profile_37pct_data
+    - figS10b_unrotated_profile_data
+    - figS10c_rotated_profile_data
+    - figS10d_fft_spectrum_data
+    - figS10_dominant_freq
+    - figS10_ridge_spacing
+    - figS11_dominant_freq
+    - figS11_ridge_spacing
+    - fig5g_actin_smooth_data
+    - fig5g_early_scale1_data
+    - fig5g_late_scale5_data
+    - fig2j_ridge_profile_data
+    - fig2k_lamellae_profile_data
+    - actin_bundle_spacing_plateau
+    - fig5c_length_mean_data
+    - fig5d_width_mean_data
+    - fig5e_thickness_mean_data
+    - fig5f_volume_mean_data
+    - fig5f_surface_mean_data
+    - figS3b_depth_intensity_data
+    - figS4_apical_basal_depth_vs_dev
+    - pupal_duration_typical
+    - totz2024/q_mcdougal2021_no_cross_validation
+    - totz2024/q_mcdougal2021_shared_pupa_heights_and_Ymin_sensitivity
+    - totz2024/rayleigh_ritz_amplitude_eq3_corrected
+    - totz2024/rayleigh_ritz_strain_eq3_corrected
+    - totz2024/rayleigh_ritz_width_eq3_corrected
+    - totz2024/youngs_modulus_lower_bound_eq3_corrected
+    - totz2024/critical_growth_strain_eq4
+    - totz2024/zero_pressure_amplitude_e44
+    - totz2024/zero_pressure_profile_e44
+    - totz2024/fvk_1d_ode_solver_e42_e29
+    - totz2024/buckled_profile_cosine
+    - totz2024/buckled_profile_cosine_trough_origin
+    - totz2024/d_fig1E_profile_35_8pct
+    - totz2024/d_fig1F_profile_40_0pct
+    - totz2024/d_fig1G_profile_41_0pct
+    - totz2024/d_fig3A_invivo_39_6pct
+    - totz2024/d_fig3E_invivo_41_0pct
+    - totz2024/d_fig3F_w0_mean
+    - totz2024/d_fig3G_L_mean
+    - totz2024/d_figS1E_mean_profile
+    - totz2024/d_figS1E_peaks
+    - totz2024/d_figS1E_troughs
+    - totz2024/d_figS1F_ridge1
+    - totz2024/d_figS1F_ridge5
+    - totz2024/d_figS1J_mean_sd
+    - totz2024/L_Vcardui_p8
+    - totz2024/protoridge_height_approx
+    - totz2024/Y_min_printed
+  text: >
+    No cross-record validations are entered in validations.yaml for either mcdougal2021 or totz2024
+    (0 entries in both directions). Although totz2024 (from the same Kolle/So lab, citing mcdougal2021
+    as ref-35 / SI ref-S1) models early-stage V. cardui scale ridge buckling on overlapping timestamps
+    (39.6%-41.0% development) of the same single pupa imaged in mcdougal2021 Fig. 5A-B/5H/S8/S10,
+    no model in either record produces a valid on-conditions prediction with an informative BoxGraph
+    verdict against a measured datum of the other record:
+    (1) mcdougal2021 models (21 optical/image-processing/geometric/staging models; 0 biomechanical
+    models, as p. 6 explicitly defers mechanical modeling to future work) vs totz2024 measurements
+    (37 origin: measured and 24 origin: reported entries):
+    (a) 1D FFT periodicity models (dominant_spatial_frequency_fft_1d and _uncentered): totz2024's
+    Fig. 3A-E (d_fig3A..E_invivo_*), Fig. S1F, and Fig. S1J are pre-segmented single-ridge windows
+    spanning only 1.03-1.21 um (< 1 period L = 1.6 um), where 1D FFT fails structurally and returns
+    window-length or f_min-cutoff artifacts (1.03-1.14 um centered; 2.14-2.19 um uncentered). Fig. S1E
+    (d_figS1E_mean_profile, 11 sparse points, dx = 0.90 um) is aliased (Nyquist 0.556 um^-1 < 0.625 um^-1).
+    On multi-ridge Fig. 1G (d_fig1G_profile_41_0pct, 19 points, dx = 0.25 um, 3 peaks spaced at 1.75 um),
+    1D FFT recovers s = 1.796 um (centered) and 1.846 um (uncentered), inside Fig. 3G 41.0% IQR
+    1.38-1.80 um (and 1.586 um uncentered on Fig. 1F 40.0% vs Fig. 3G mean 1.595 um), but totz2024
+    contains no scalar origin: measured spacing target (d_fig3G_L_mean is a 5-point curve;
+    totz2024/L_Vcardui_p8 = 1.6 um is origin: reported citing mcdougal2021 itself).
+    (b) Trough-baseline peak height models (profile_slope_rotation_and_peaks and
+    ridge_peak_height_baseline): on totz2024 Fig. 3A-E and S1J, unobstructed curves stop at
+    x = +/-0.46..0.67 um above w = 0, causing artificial 6-15 nm baseline subtraction (16.8-50.7 nm vs
+    true curve peaks 22.8-61.3 nm), and d_fig3F_w0_mean is a 5-point curve without per-timepoint scalar
+    targets. On Fig. 1G, outer peaks 1 and 3 are boundary-truncated at x = 0.25 and 4.75 um (biasing
+    profile_slope_rotation_and_peaks to 68.8 +/- 14.0 nm vs central bracketed peak 71.9 nm and
+    trough-referenced peak elevations 83.2-100.0 nm; Fig. 1F gives 30.5 +/- 2.8 nm; smooth Fig. 1E gives
+    nan), and totz2024's only scalar measured height datum (protoridge_height_approx = "~100" nm, p. 4)
+    is an approximate prose estimate producing 'no verdict'. Offline evaluation of
+    ridge_peak_height_baseline on totz2024's Fig. S1E peaks and troughs (d_figS1E_peaks,
+    d_figS1E_troughs) yields 31.37, 30.70, 74.22, 49.81, 82.63 nm, matching totz2024 Fig. S1F's rotated
+    individual ridge peaks (32.36, 30.02, 74.32, 48.17, 82.32 nm) within -0.99 to +1.64 nm, confirming
+    methodological equivalence of the two papers' trough-flattening peak-height definitions, though the
+    coordinates are stored as curves rather than scalar inputs/targets.
+    (c) Staging, diffraction, and remaining models: totz2024 reports no elapsed times for Fig. 1B-D or
+    Fig. 3 timestamps (while pupal_development_percent on protoridge_onset_days "~3.5 to 4.5" d /
+    pupal_duration_typical "about 10" d vs protoridge_onset_fraction "~35 to 45" % yields 'no verdict');
+    totz2024's "~500" nm and "~1" um resolutions are origin: reported citations of mcdougal2021's own
+    490 nm / 1.03 um specs (already linked in totz2024/cited.yaml); and totz2024 measures no numerical
+    optical phase, intensity, axial scan step, or macroscopic scale cuboid dimensions.
+    (2) totz2024 models (34 FvK elastic plate buckling, Hooke constitutive, and segmentation models) vs
+    mcdougal2021 measurements (65 origin: measured and 5 origin: derived entries):
+    (a) fig5h_ridge_height_data (10 points, 34.82%-41.04%, mean +/- SD): totz2024 has no dynamical model
+    taking pupal_development_fraction or time as input (Y and g are unmeasured free parameters constrained
+    only along degenerate fitted isocontours in Fig. 3H). Offline cross-checks confirm substantial
+    pipeline sensitivity: evaluating totz2024's corrected Eq. 3 at mcdougal2021 Fig. 5H's 39.63% mean
+    (44.02 +/- 17.4 nm, L = 1.255 +/- 0.337 um) lowers Y_min from 3.5e6 Pa to 3.52e5 Pa at own L (9.9x
+    lower; 1.16e6 Pa at H - 1 SD) and 9.28e5 Pa at L = 1.6 um (3.8x lower); matching 41.04% (89.16 +/-
+    34.4 nm, L = 1.469 um) requires g = 1.258% at Y = 3.5 MPa (1.170% at Y = 1 MPa), exceeding totz2024
+    Table S1's 0.0%-0.7% range; and driving Eq. 3 along totz2024's Fig. 3H g(t) at Y = 3.5 MPa with
+    Fig. 5H's spacings predicts 14.2-58.1 nm (-35% to -68%, -0.58 to -1.72 SD below Fig. 5H means across
+    all 5 shared timestamps).
+    (b) fig5B_protoridge_height ("about 100" nm at 41%): unmeasured (Y, g) give 20.8-83.1 nm across
+    totz2024's parameter ranges at L = 1.4618 um (57.3-58.1 nm on Fig. 3H 41.0%), "about 100" yields
+    'no verdict', and Fig. 5B is the same pupa/timestamp as totz2024 Fig. 3E.
+    (c) 1D surface height profiles: sweeping totz2024's phase-pinned single-ridge cosines over
+    mcdougal2021's unaligned 41% multi-ridge traces (fig5b_profile_41pct_data,
+    figS10c_rotated_profile_data) fails purely from arbitrary cursor-origin phase offset (r = -0.551/-0.594
+    trough-origin; peak-origin puts ~95 nm at the 11.0 nm x = 0 trough) and unequal local ridge widths
+    (1.33, 1.33, 1.77 um), while Fig. 5A (35% smooth), Fig. S8B (37% irregular), Fig. S10B (unrotated),
+    Fig. 2J (83% mature sclerotized chitin ridges with lamellae), and Fig. 2K (longitudinal lamellae)
+    lie outside totz2024's early protoridge buckling regime.
+    (d) Actin/ridge spacings (fig5h_ridge_spacing_data, fig5g_*, figS10/S11_ridge_spacing,
+    actin_bundle_spacing_plateau), macroscopic scale dimensions (Fig. 5C-F), optical depth profiles
+    (Fig. S3B, Fig. S4), and staging measurements: totz2024 takes actin spacing L as an external input
+    (does not predict L, though critical_growth_strain_eq4 maps Fig. 5G's widening from 0.984 to
+    1.562-1.943 um to a 3.9x drop in g_c from 0.181% to 0.0465%-0.0719%) and models none of the
+    macroscopic, optical, or developmental-timing observables. See totz2024/q_mcdougal2021_no_cross_validation
+    and totz2024/q_mcdougal2021_shared_pupa_heights_and_Ymin_sensitivity.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "and inform quantitative mechanical models that are needed to"
+    where: "Conclusion (cross-validation assessment between mcdougal2021 and totz2024)"
+

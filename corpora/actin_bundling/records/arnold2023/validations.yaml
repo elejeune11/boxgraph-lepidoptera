@@ -1,0 +1,171 @@
+# Cross-record validations of arnold2023 runnable models against independent
+# experimental measurements in paired actin_bundling records.
+#
+# Audit scope across all four paired records:
+# 1. arnold2023 + gubbala2025 (Gubbala, Jena, Arnold & Takatori, Soft Matter
+#    21:6243-6251, 2025; same Takatori lab, citing arnold2023 as ref-8 on pp. 1
+#    and 6 [Fig. 3 caption]):
+#    3 validations below test arnold2023/domain_growth_power_law_scaling
+#    (a/a_0 ~ t^alpha, prefactor: unknown) at arnold2023's theoretical passive
+#    coarsening exponent alpha = alpha_passive_theory (1/3) with zero added
+#    inputs against all three Fig. 3 digitized experimental domain-coarsening
+#    curves (R(t)/R_0 vs. t [s]):
+#      (a) gubbala2025/R_ratio_fig3_inset_no_actin_exp (exact matched passive
+#          actin-free control explicitly citing arnold2023 [ref-8] for alpha = 1/3);
+#      (b) gubbala2025/R_ratio_fig3_exp_low (passive low-actin membrane, testing
+#          Gubbala's claim that passive actin hinders coarsening below t^(1/3));
+#      (c) gubbala2025/R_ratio_fig3_exp_high (passive high-actin membrane).
+#    Excluded pairs (SI Fig. S2 3-regime curves, single-point '~1.55' scalars,
+#    unmeasured timescales, and reverse-direction gubbala2025/coarsening_power_law
+#    lacking printed t_0 for arnold2023's arbitrarily shifted curves) are
+#    documented in q_gubbala2025_cross_validation_audit in questions.yaml.
+# 2. arnold2023 + arnold2024 (Arnold & Takatori, Langmuir 40:26570-26578, 2024;
+#    same lab): 0 CrossValidation entries in either direction due to strict
+#    dimensionality barriers (dimensionless normalized_domain_size / domain_size_sim
+#    vs. dimensional structure_factor_wavelength [um]) and the fixed-prefactor
+#    quantity/regime barrier separating Smoluchowski hard-disk domain radius a
+#    (actin-free Brownian coalescence) from Fig. 3C structure-factor center-to-center
+#    wavelength a = 2*pi/<k> (viscoelastic actin-coupled Ostwald ripening);
+#    see q_arnold2024_no_cross_validation in questions.yaml.
+# 3. arnold2023 + weirich2017 (Weirich et al., PNAS 114:2131-2136, 2017):
+#    0 CrossValidation entries in either direction (2D lipid membrane domains vs.
+#    3D nematic F-actin tactoids; dimensionless vs. [length] coarsening metrics);
+#    see q_weirich2017_no_cross_validation in questions.yaml.
+# 4. arnold2023 + zwicker2015 (Zwicker, Hyman & Julicher, PRE 92:012317, 2015):
+#    0 CrossValidation entries in either direction (zwicker2015 is purely theoretical
+#    with 0 origin: measured datums, while its lifshitz_slyozov_scaling_corrected
+#    outputs [length] [m] against arnold2023's 24 strictly dimensionless measured
+#    datums); see q_zwicker2015_no_cross_validation in questions.yaml.
+
+- id: val_powerlaw_passive_vs_gubbala_fig3_no_actin
+  model: domain_growth_power_law_scaling
+  inputs:
+    alpha: alpha_passive_theory
+  sweep:
+    t: "gubbala2025/R_ratio_fig3_inset_no_actin_exp"
+  output: a_norm
+  against: "gubbala2025/R_ratio_fig3_inset_no_actin_exp"
+  purpose: validation
+  quantities:
+    "gubbala2025/time": time
+    "gubbala2025/domain_size_ratio": normalized_domain_size
+  conditions_ok: >
+    Matched passive actin-free Lo/Ld supported lipid bilayer coarsening from the
+    same Takatori laboratory. Arnold, Gubbala & Takatori (2023, p. 2 & SI Sec.
+    II.C p. 8) rupture cushioned DOPC/DPPC/cholesterol/DOTAP GUVs (44.7% DOPC /
+    34.7% DPPC / 15% cholesterol / 5% DOTAP / 0.3% DSPE-PEG2k-FITC / 0.3% ATTO
+    647-DOPE) on HMM/PLL-g-PEG glass coverslips, quench to room temperature
+    without actin, and model passive normalized domain growth via a/a_0 ~ t^(1/3)
+    (domain_growth_power_law_scaling with alpha_passive_theory = 1/3, prefactor
+    unknown). Gubbala, Jena, Arnold & Takatori (2025, Sec. 3 Fig. 3 bottom inset,
+    p. 6 / printed p. 6248, and SI Sec. 1.3-1.4 & 2.2) perform the same passive
+    actin-free control on cushioned DOPC/DPPC/cholesterol/DOTAP supported lipid
+    bilayers over t = 12 to 90 s and normalize characteristic Lo domain size
+    R(t) = (int S(k, t) dk) / (int k S(k, t) dk) (identical inverse first moment
+    of S(k, t) as arnold2023 SI Eq. 47, differing only in k_cut = 50*k_max vs.
+    2*k_max, whose constant factor cancels in the normalized ratio and fitted
+    shape prefactor). Evaluating arnold2023's theoretical passive scaling law
+    a/a_0 ~ t^(1/3) directly on Gubbala's independent no-actin control curve is
+    a clean out-of-sample test with zero added inputs.
+  basis: >
+    Gubbala, Jena, Arnold & Takatori (2025, Fig. 3 caption, p. 6 / printed p.
+    6248) explicitly cite arnold2023 (ref-8) for the classical passive alpha = 1/3
+    growth law tested against the Fig. 3 bottom inset no-actin experimental
+    control: "In absence of actin, domain coarsening follows the classical
+    alpha = 1/3 growth (black dotted line, bottom inset).8,15" Arnold, Gubbala &
+    Takatori (2023, pp. 1-3, Fig. 2, SI Sec. III.A Eq. 11 & Sec. III.B.1 Eq. 29)
+    derive and validate a ~ t^(1/3) (alpha_passive_theory = 1/3) for passive
+    actin-free Lo/Ld membrane domain coarsening. Because alpha = 1/3 is
+    theoretical (not fitted to Gubbala's 2025 measurements) and BoxGraph judges
+    shape with a single multiplicative prefactor fitted across the 11 curve
+    points, this is an out-of-sample validation.
+  note: >
+    Verdict: close (6/11 reproduced, 5/11 close, 0/11 not reproduced) with zero
+    added inputs. Fitted multiplicative prefactor C = 0.44098 s^(-1/3) (implying
+    effective reference time t_0 = C^(-3) = 11.66 s, closely matching gubbala2025's
+    added t_0 = 11 s). Mean relative residual 1.63%, max relative residual 4.27%
+    (residuals from -0.0450 at t = 12 s to +0.0488 at t = 90 s, reflecting measured
+    OLS log-log slope 0.3124 vs. theoretical 1/3 = 0.3333).
+
+- id: val_powerlaw_passive_vs_gubbala_fig3_low_actin
+  model: domain_growth_power_law_scaling
+  inputs:
+    alpha: alpha_passive_theory
+  sweep:
+    t: "gubbala2025/R_ratio_fig3_exp_low"
+  output: a_norm
+  against: "gubbala2025/R_ratio_fig3_exp_low"
+  purpose: validation
+  quantities:
+    "gubbala2025/time": time
+    "gubbala2025/domain_size_ratio": normalized_domain_size
+  conditions_ok: >
+    Intentional passive-baseline contrast between actin-free thermal coarsening
+    (arnold2023, alpha = 1/3 without actin) and passive (myosin-free, ATP-free)
+    F-actin-coupled cushioned Lo/Ld bilayers at low actin density (gubbala2025
+    Fig. 3 bottom, average of 3 samples normalized by R_0 at t = 720 s over the
+    intermediate coarsening window t = 800 to 7000 s). Both papers use the same
+    cushioned Lo/Ld bilayer platform and inverse-first-moment structure-factor
+    domain size ratio R(t)/R_0 = a(t)/a_0. Comparing arnold2023's actin-free
+    passive baseline a/a_0 ~ t^(1/3) against Gubbala's low-actin experimental
+    curve directly tests Gubbala et al.'s central Fig. 3 contrast that passive
+    nematic F-actin elasticity measurably hinders coarsening below the classical
+    t^(1/3) scaling law.
+  basis: >
+    Gubbala, Jena, Arnold & Takatori (2025, Fig. 3 caption, p. 6 / printed p.
+    6248, and Sec. 3, p. 5 / printed p. 6247) explicitly benchmark passive
+    low-actin domain coarsening against the classical alpha = 1/3 passive growth
+    law citing arnold2023 (ref-8): "In absence of actin, domain coarsening
+    follows the classical alpha = 1/3 growth (black dotted line, bottom
+    inset).8,15 In contrast, domain coarsening is hindered to alpha approx 0.25
+    in the presence of low actin density (dark blue)". Running arnold2023's
+    passive alpha = 1/3 scaling model on gubbala2025/R_ratio_fig3_exp_low
+    directly tests whether passive actin breaks classical t^(1/3) shape scaling.
+  note: >
+    Verdict: not reproduced (1/11 reproduced, 3/11 close, 7/11 not reproduced)
+    with zero added inputs. Fitted prefactor C = 0.09166 s^(-1/3) (implying
+    t_0 = C^(-3) = 1299 s vs. actual normalization t_0 = 720 s), with monotonic
+    residual drift from -0.1540 (-15.3%) at t = 800 s to +0.1820 (+11.6%) at
+    t = 7000 s (mean relative residual 7.17%, measured OLS log-log slope 0.2150
+    vs. 1/3), quantitatively confirming passive low-density F-actin elasticity
+    slows coarsening well below arnold2023's actin-free t^(1/3) baseline.
+
+- id: val_powerlaw_passive_vs_gubbala_fig3_high_actin
+  model: domain_growth_power_law_scaling
+  inputs:
+    alpha: alpha_passive_theory
+  sweep:
+    t: "gubbala2025/R_ratio_fig3_exp_high"
+  output: a_norm
+  against: "gubbala2025/R_ratio_fig3_exp_high"
+  purpose: validation
+  quantities:
+    "gubbala2025/time": time
+    "gubbala2025/domain_size_ratio": normalized_domain_size
+  conditions_ok: >
+    Intentional passive-baseline contrast between actin-free thermal coarsening
+    (arnold2023, alpha = 1/3 without actin) and passive (myosin-free, ATP-free)
+    F-actin-coupled cushioned Lo/Ld bilayers at high actin density (gubbala2025
+    Fig. 3 bottom, average of 2 samples normalized by R_0 at t = 720 s over the
+    intermediate coarsening window t = 800 to 7000 s). Both papers use the same
+    cushioned Lo/Ld bilayer platform and inverse-first-moment structure-factor
+    domain size ratio R(t)/R_0 = a(t)/a_0. Comparing arnold2023's actin-free
+    passive baseline a/a_0 ~ t^(1/3) against Gubbala's high-actin experimental
+    curve directly tests Gubbala et al.'s Fig. 3 claim that dense passive actin
+    further slows and renders domain growth sub-t^(1/3) and non-log-linear.
+  basis: >
+    Gubbala, Jena, Arnold & Takatori (2025, Fig. 3 caption, p. 6 / printed p.
+    6248, and Sec. 3, p. 5 / printed p. 6247) directly contrast high-actin
+    passive membrane coarsening with the classical alpha = 1/3 passive growth
+    law citing arnold2023 (ref-8): "In absence of actin, domain coarsening
+    follows the classical alpha = 1/3 growth (black dotted line, bottom
+    inset).8,15 In contrast, domain coarsening is hindered to alpha approx 0.25
+    in the presence of low actin density (dark blue) and to alpha < 0.25 with
+    high actin density (light blue)."
+  note: >
+    Verdict: not reproduced (2/11 reproduced, 2/11 close, 7/11 not reproduced)
+    with zero added inputs. Fitted prefactor C = 0.09201 s^(-1/3) (implying
+    t_0 = C^(-3) = 1284 s vs. actual normalization t_0 = 720 s), with monotonic
+    residual drift from -0.1449 (-14.5%) at t = 800 s to +0.2384 (+15.7%) at
+    t = 7000 s (mean relative residual 7.41%, measured OLS log-log slope 0.2082
+    vs. 1/3), confirming even stronger late-time arrest than low-actin samples.

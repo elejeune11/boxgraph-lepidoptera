@@ -1,0 +1,50 @@
+# Numerical refinements verifying convergence of every numerical port in mirza2025_code
+- id: ref_lin_stab_grid
+  run: run_lin_stab_config_barrier
+  setting: n_grid
+  factors: [1, 2]
+  mode: multiply
+  output: lambda_crit
+  tolerance: "0.01%"
+  tolerance_basis: "added: verifies linear marginal-stability minimization is independent of initial log-grid search resolution"
+  tolerance_added: true
+
+- id: ref_fem1d_dt
+  run: run_fem_1d_config_nobarrier
+  setting: dt_max_scale
+  factors: [1, 2]
+  mode: divide
+  output: rho_max
+  tolerance: "2%"
+  tolerance_basis: "added: verifies temporal convergence of 1D Q1 FEM Newton-Raphson peak density between config maxDelt = 0.4 and 0.2"
+  tolerance_added: true
+
+- id: ref_fem1d_grid
+  run: run_fem_1d_config_nobarrier
+  setting: N_elem
+  factors: [1, 1.5]
+  mode: multiply
+  output: rho_max
+  tolerance: "2%"
+  tolerance_basis: "added: verifies spatial Q1 mesh convergence of 1D FEM peak density between N = 160 and N = 240 elements"
+  tolerance_added: true
+
+- id: ref_pde2d_dt
+  run: run_pde_2d_config_fibrillar
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: omega
+  tolerance: "5%"
+  tolerance_basis: "added: verifies temporal convergence of 2D continuum PDE architectural order parameter omega between dt = 0.06 and dt = 0.03"
+  tolerance_added: true
+
+- id: ref_pde2d_grid
+  run: run_pde_2d_config_fibrillar
+  setting: N_grid
+  factors: [1, 1.5]
+  mode: multiply
+  output: omega
+  tolerance: "15%"
+  tolerance_basis: "added: verifies spatial spectral convergence of 2D continuum PDE architectural order parameter omega between N = 24 and N = 36"
+  tolerance_added: true

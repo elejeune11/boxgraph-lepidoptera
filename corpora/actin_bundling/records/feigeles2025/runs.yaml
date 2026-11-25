@@ -1,0 +1,515 @@
+# ==========================================================================
+# 1. Fig. 5B unduloid droplet shape, Young-Laplace ODE, and Eqs. (2)-(5)
+# ==========================================================================
+
+- id: run_fig5b_c_eq4
+  model: unduloid_constant_eq4
+  inputs:
+    R_f: fig5b_bundle_radius
+    R_b: fig5b_cutoff_radius
+    theta_b: fig5b_cutoff_angle
+    theta: fig5b_contact_angle
+  outputs:
+    c: fig5b_c_eq4
+  note: "Computes integration constant c from Fig. 5B printed parameters (Rf=1.2 um, Rb=6.5 um, theta_b=77 deg, theta=31 deg)."
+
+- id: run_fig5b_dp_eq5
+  model: unduloid_pressure_eq5
+  inputs:
+    R_f: fig5b_bundle_radius
+    theta: fig5b_contact_angle
+    c: fig5b_c_eq4
+  outputs:
+    DeltaP_over_2sigma: fig5b_dp_over_2sigma
+    DeltaP_over_sigma: fig5b_dp_over_sigma
+  note: "Computes Delta p / (2*sigma) and Delta p / sigma from Eq. (5) for the Fig. 5B droplet."
+
+- id: run_fig5b_theta_eq5
+  model: unduloid_contact_angle_eq5
+  inputs:
+    R_f: fig5b_bundle_radius
+    DeltaP_over_2sigma: fig5b_dp_over_2sigma
+    c: fig5b_c_eq4
+  outputs:
+    theta: fig5b_theta_recovered_eq5
+  note: "Round-trip inversion of Eq. (5) to recover contact angle theta as stated on p. 8."
+
+- id: run_fig5b_rmax
+  model: unduloid_max_radius_from_params
+  inputs:
+    R_f: fig5b_bundle_radius
+    DeltaP_over_2sigma: fig5b_dp_over_2sigma
+    c: fig5b_c_eq4
+  outputs:
+    R_max: fig5b_R_max
+    n: fig5b_rescaled_radius
+  note: "Finds the apex radius R_max (where dy/dx = 0) of the Fig. 5B unduloidal droplet."
+
+- id: run_fig5b_eq2_ode
+  model: young_laplace_ode_eq2
+  inputs:
+    R_f: fig5b_bundle_radius
+    R_b: fig5b_cutoff_radius
+    theta: fig5b_contact_angle
+    DeltaP_over_sigma: fig5b_dp_over_sigma
+  outputs:
+    theta_b: fig5b_theta_b_eq2
+  note: "Integrates Young-Laplace ODE Eq. (2) from y = R_f to y = R_b to check reproduction of Fig. 5B cut-off angle theta_b = 77 deg."
+
+- id: run_fig5b_eq3_lhs
+  model: unduloid_ode_eq3_lhs
+  inputs:
+    R_f: fig5b_bundle_radius
+    R_b: fig5b_cutoff_radius
+    DeltaP_over_2sigma: fig5b_dp_over_2sigma
+    c: fig5b_c_eq4
+  outputs:
+    theta_contact: fig5b_theta_eq3_lhs
+    theta_b_out: fig5b_theta_b_eq3_lhs
+    x_b: fig5b_x_b_eq3_lhs
+    x_apex: fig5b_x_apex_eq3_lhs
+    aspect_ratio_eq: fig5b_ar_eq3_lhs
+  note: "Integrates the first printed form of Eq. (3) (exact) using RK45 (mirroring MATLAB ode45) for Fig. 5B."
+
+- id: run_fig5b_eq3_rhs_printed
+  model: unduloid_ode_eq3_rhs_printed
+  inputs:
+    R_f: fig5b_bundle_radius
+    R_b: fig5b_cutoff_radius
+    DeltaP_over_2sigma: fig5b_dp_over_2sigma
+    c: fig5b_c_eq4
+  outputs:
+    theta_contact: fig5b_theta_eq3_rhs_printed
+    theta_b_out: fig5b_theta_b_eq3_rhs_printed
+    x_b: fig5b_x_b_eq3_rhs_printed
+    x_apex: fig5b_x_apex_eq3_rhs_printed
+    aspect_ratio_eq: fig5b_ar_eq3_rhs_printed
+  note: "Integrates the second printed form of Eq. (3) verbatim (missing square on denominator) for Fig. 5B."
+
+- id: run_fig5b_eq3_rhs_corrected
+  model: unduloid_ode_eq3_rhs_corrected
+  inputs:
+    R_f: fig5b_bundle_radius
+    R_b: fig5b_cutoff_radius
+    DeltaP_over_2sigma: fig5b_dp_over_2sigma
+    c: fig5b_c_eq4
+  outputs:
+    theta_contact: fig5b_theta_eq3_rhs_corr
+    theta_b_out: fig5b_theta_b_eq3_rhs_corr
+    x_b: fig5b_x_b_eq3_rhs_corr
+    x_apex: fig5b_x_apex_eq3_rhs_corr
+    aspect_ratio_eq: fig5b_ar_eq3_rhs_corr
+  note: "Integrates the corrected variant of Eq. (3) RHS (square restored) for Fig. 5B."
+
+# ==========================================================================
+# 2. Capillary pressure, cylindrical column, dimensionless pressure, and groove meniscus (p. 4)
+# ==========================================================================
+
+- id: run_fig5b_capillary_pressure_90
+  model: unduloid_capillary_pressure
+  inputs:
+    sigma: surface_tension_assumed_lit
+    R_max: fig5b_R_max
+    R_f: fig5b_bundle_radius
+    theta: fig5b_contact_angle
+  outputs:
+    DeltaP_condensate: fig5b_dp_condensate_90
+  note: "Evaluates p. 4 unduloid capillary pressure on the Fig. 5B droplet with assumed sigma = 90 uN/m."
+
+- id: run_fig5b_capillary_pressure_40
+  model: unduloid_capillary_pressure
+  inputs:
+    sigma: surface_tension_coalescence_si
+    R_max: fig5b_R_max
+    R_f: fig5b_bundle_radius
+    theta: fig5b_contact_angle
+  outputs:
+    DeltaP_condensate: fig5b_dp_condensate_40
+  note: "Evaluates p. 4 unduloid capillary pressure on the Fig. 5B droplet using the SI Fig. S6C tension (~40 uN/m) to test internal consistency."
+
+- id: run_fig5b_column_pressure_90
+  model: cylindrical_column_capillary_pressure
+  inputs:
+    sigma: surface_tension_assumed_lit
+    R_f: fig5b_bundle_radius
+  outputs:
+    DeltaP_column: fig5b_dp_column_90
+  note: "Cylindrical FUS column capillary pressure sigma / R_f for Fig. 5B bundle radius Rf = 1.2 um with sigma = 90 uN/m."
+
+- id: run_p3_thickness_column_pressure_90
+  model: cylindrical_column_capillary_pressure
+  inputs:
+    sigma: surface_tension_assumed_lit
+    R_f: R_f_from_p3_thickness_added
+  outputs:
+    DeltaP_column: p3_thickness_dp_column_90
+  note: "Cylindrical FUS column capillary pressure if p. 3 bundle thickness 0.23 um is used as bundle radius R_f."
+
+- id: run_rf_from_col_low
+  model: bundle_radius_from_column_pressure
+  inputs:
+    sigma: surface_tension_assumed_lit
+    DeltaP_column: column_pressure_low_added
+  outputs:
+    R_f: inferred_rf_max_from_col
+  note: "Upper bundle radius R_f implied by lower bound Delta P_column = 65 N/m^2 at sigma = 90 uN/m."
+
+- id: run_rf_from_col_high
+  model: bundle_radius_from_column_pressure
+  inputs:
+    sigma: surface_tension_assumed_lit
+    DeltaP_column: column_pressure_high_added
+  outputs:
+    R_f: inferred_rf_min_from_col
+  note: "Lower bundle radius R_f implied by upper bound Delta P_column = 260 N/m^2 at sigma = 90 uN/m."
+
+- id: run_fig5b_pstar
+  model: dimensionless_capillary_pressure
+  inputs:
+    R_max: fig5b_R_max
+    R_f: fig5b_bundle_radius
+    theta: fig5b_contact_angle
+  outputs:
+    P_star: fig5b_P_star
+  note: "Dimensionless capillary pressure for Fig. 5B droplet."
+
+- id: run_bulk_low_pstar_rescaled
+  model: dimensionless_capillary_pressure_rescaled
+  inputs:
+    n: rescaled_radius_bulk_low_added
+    theta: contact_angle_avg
+  outputs:
+    P_star: bulk_low_P_star
+  note: "Dimensionless capillary pressure at representative lower-bulk n = R_max/R_f = 4.0 and average contact angle 39.5 deg."
+
+- id: run_fig5b_groove_meniscus
+  model: groove_meniscus_radius
+  inputs:
+    R_max: fig5b_R_max
+    R_f: fig5b_bundle_radius
+    theta: fig5b_contact_angle
+  outputs:
+    R_FUS: fig5b_R_FUS
+    R_FUS_over_Rf: fig5b_R_FUS_over_Rf
+  note: "Equilibrium surface-groove meniscus radius R_FUS and ratio R_FUS/R_f for the Fig. 5B droplet."
+
+- id: run_bulk_low_groove_meniscus
+  model: groove_meniscus_radius_rescaled
+  inputs:
+    n: rescaled_radius_bulk_low_added
+    theta: contact_angle_avg
+  outputs:
+    R_FUS_over_Rf: bulk_low_R_FUS_over_Rf
+  note: "Rescaled groove meniscus radius at n = 4.0 (alternatives include Fig. 2C extreme n = 2.4) and theta = 39.5 deg."
+
+- id: run_bulk_high_groove_meniscus
+  model: groove_meniscus_radius_rescaled
+  inputs:
+    n: rescaled_radius_bulk_high_added
+    theta: contact_angle_avg
+  outputs:
+    R_FUS_over_Rf: bulk_high_R_FUS_over_Rf
+  note: "Rescaled groove meniscus radius at n = 10.0 (alternatives include Fig. 2C extreme n = 11.8) and theta = 39.5 deg."
+
+# ==========================================================================
+# 3. Gaussian bundle profile, FWHM, droplet aspect ratio, and bundle straightness (pp. 3, 7, 12)
+# ==========================================================================
+
+- id: run_gaussian_profile_peak
+  model: gaussian_bundle_profile_eq1
+  inputs:
+    x: gaussian_x_eval_added
+    x_0: gaussian_x0_rep_added
+    delta: gaussian_delta_rep_added
+    I_0: gaussian_I0_rep_added
+    I_B: gaussian_IB_rep_added
+  outputs:
+    I: gaussian_profile_eval
+  note: "Evaluates Eq. (1) transverse Gaussian intensity profile on representative added parameters."
+
+- id: run_bundle_fwhm_rep
+  model: bundle_fwhm_radius
+  inputs:
+    delta: gaussian_delta_rep_added
+  outputs:
+    fwhm: bundle_fwhm_eval
+  note: "Evaluates FWHM = 2*delta*sqrt(2*ln 2) at representative Gaussian width delta = 0.10 um."
+
+- id: run_spherical_aspect_ratio
+  model: droplet_aspect_ratio
+  inputs:
+    R_max: spherical_drop_rmax_figS3_added
+    l: spherical_drop_length_figS3_added
+  outputs:
+    AR: spherical_ar_pred
+  note: "Evaluates aspect ratio 2*R_max/l for a free spherical condensate prior to adsorption (R_i = 2.2 um, l = 4.4 um)."
+
+- id: run_straightness_p3
+  model: bundle_straightness_ratio_p3
+  inputs:
+    L_c: straightness_Lc_rep_added
+    l: straightness_eps_rep_added
+  outputs:
+    ratio: straightness_p3_eval
+  note: "Evaluates p. 3 contour-to-end-to-end ratio L_c / l on representative mildly curved bundle (L_c = 20 um, l = 18 um)."
+
+- id: run_straightness_figS2_printed
+  model: bundle_straightness_ratio_figS2_printed
+  inputs:
+    epsilon: straightness_eps_rep_added
+    L_c: straightness_Lc_rep_added
+  outputs:
+    ratio: straightness_figS2_printed_eval
+  note: "Evaluates Fig. S2 printed label epsilon / L_c (yields < 1, opposite to Fig. S2 plotted range 1.0–2.6)."
+
+- id: run_straightness_figS2_corrected
+  model: bundle_straightness_ratio_figS2_corrected
+  inputs:
+    epsilon: straightness_eps_rep_added
+    L_c: straightness_Lc_rep_added
+  outputs:
+    ratio: straightness_figS2_corr_eval
+  note: "Evaluates corrected Fig. S2 variant L_c / epsilon (yields >= 1, matching p. 3 and Fig. S2 plotted values)."
+
+# ==========================================================================
+# 4. SI Fig. S6 droplet coalescence relaxation and surface tension extraction (pp. 14-15)
+# ==========================================================================
+
+- id: run_figS6B_decay_printed
+  model: coalescence_exponential_decay_figS6B_printed
+  inputs:
+    L_i: coalescence_Li_figS6B_added
+    L_f: coalescence_Lf_figS6B_added
+    tau: coalescence_decay_time_figS6B
+    t: coalescence_t_eval_figS6B_added
+  outputs:
+    L: figS6B_L_printed
+  note: "Evaluates Fig. S6B inset equation verbatim: L_i + (L_i - L_f)*exp(-tau/t) increases above L_i instead of decaying."
+
+- id: run_figS6B_decay_corrected
+  model: coalescence_exponential_decay_figS6B_corrected
+  inputs:
+    L_i: coalescence_Li_figS6B_added
+    L_f: coalescence_Lf_figS6B_added
+    tau: coalescence_decay_time_figS6B
+    t: coalescence_t_eval_figS6B_added
+  outputs:
+    L: figS6B_L_corrected
+  note: "Evaluates corrected Fig. S6B exponential decay L_f + (L_i - L_f)*exp(-t/tau) with printed tau = 0.6 s."
+
+- id: run_figS6C_capillary_velocity_40
+  model: coalescence_capillary_velocity_figS6C
+  inputs:
+    eta: fus_viscosity_assumed_si
+    gamma: surface_tension_coalescence_si
+  outputs:
+    v_cap: figS6C_v_cap_40
+    inv_v_cap: figS6C_inv_v_cap_40
+  note: "Expected capillary velocity gamma/eta (= 33.3 um/s) and inverse eta/gamma (= 0.030 s/um) for SI eta = 1.2 Pa*s and gamma ~ 40 uN/m."
+
+- id: run_figS6C_capillary_velocity_90
+  model: coalescence_capillary_velocity_figS6C
+  inputs:
+    eta: fus_viscosity_assumed_si
+    gamma: surface_tension_assumed_lit
+  outputs:
+    v_cap: figS6C_v_cap_90
+    inv_v_cap: figS6C_inv_v_cap_90
+  note: "Expected capillary velocity gamma/eta (= 75.0 um/s) and inverse eta/gamma (= 0.0133 s/um) for eta = 1.2 Pa*s and main-text sigma = 90 uN/m."
+
+- id: run_figS6C_surface_tension
+  model: coalescence_surface_tension_figS6C
+  inputs:
+    eta: fus_viscosity_assumed_si
+    slope: coalescence_slope_figS6C_added
+  outputs:
+    gamma: figS6C_gamma_from_slope
+  note: "Extracts gamma = eta * (Delta L / tau) from eta = 1.2 Pa*s and approximate Fig. S6C visual slope ~3.4 um/s (~4.1 uN/m vs printed ~40 uN/m)."
+
+# ==========================================================================
+# 5. Runs and sweeps on calibrated figure readings (Figs. 2B–D, 3C, S4, S6B–C)
+# ==========================================================================
+
+- id: run_fig2d_pstar_avg_theta
+  model: dimensionless_capillary_pressure_rescaled
+  inputs:
+    theta: contact_angle_avg
+  sweep:
+    n: d_fig2d_dimensionless_pressure
+  outputs:
+    P_star: fig2d_pstar_avg_theta_pred
+  note: "Sweeps dimensionless capillary pressure P*(n, theta) at average theta = 39.5 deg over all digitized Fig. 2D rescaled droplet radii."
+
+- id: run_fig2d_pstar_from_fig2c
+  model: dimensionless_capillary_pressure_from_fig2c
+  inputs:
+    theta_vs_n: d_fig2c_contact_angle
+    P_star_target: d_fig2d_dimensionless_pressure
+  outputs:
+    P_star_curve: fig2d_pstar_from_fig2c_pred
+  note: "Evaluates P*(n_i, theta_i) point-by-point from the digitized Fig. 2C (n, theta) pairs matched onto Fig. 2D x positions."
+
+- id: run_fig2c_theta_mean
+  model: contact_angle_mean_fig2c
+  inputs:
+    theta_vs_n: d_fig2c_contact_angle
+  outputs:
+    theta_mean: fig2c_theta_mean
+  note: "Computes sample mean contact angle across all 28 digitized Fig. 2C condensates."
+
+- id: run_figS4_theta_mean
+  model: contact_angle_mean_figS4
+  inputs:
+    theta_vs_Rmax: d_figS4_contact_angle_vs_Rmax
+  outputs:
+    theta_mean: figS4_theta_mean
+  note: "Computes sample mean contact angle across all 28 digitized Fig. S4 condensates."
+
+- id: run_fig2b_spreading_fit_extract
+  model: spreading_decay_time_from_curve
+  inputs:
+    AR_vs_t: d_fig2b_aspect_ratio_fit
+  outputs:
+    tau: fig2b_tau_extracted
+    AR_eq: fig2b_ar_eq_extracted
+  note: "Extracts characteristic spreading decay time tau and equilibrium aspect ratio AR_eq from the digitized Fig. 2B red exponential fit."
+
+- id: run_fig3c_coalescence_fit_extract
+  model: coalescence_decay_time_from_curve
+  inputs:
+    L_vs_t: d_fig3c_coalescence_length_fit
+  outputs:
+    tau: fig3c_tau_extracted
+    L_f: fig3c_Lf_extracted
+    Delta_L: fig3c_DeltaL_extracted
+  note: "Extracts characteristic decay time tau, L_f, and Delta_L from the digitized Fig. 3C red exponential fit."
+
+- id: run_fig3c_coalescence_data_extract
+  model: coalescence_decay_time_from_curve
+  inputs:
+    L_vs_t: d_fig3c_coalescence_length_data
+  outputs:
+    tau: fig3c_data_tau_extracted
+    L_f: fig3c_data_Lf_extracted
+    Delta_L: fig3c_data_DeltaL_extracted
+  note: "Fits exponential decay directly to the digitized Fig. 3C measured black dots."
+
+- id: run_figS6b_printed_sweep
+  model: coalescence_exponential_decay_figS6B_printed
+  inputs:
+    L_i: coalescence_Li_figS6B_added
+    L_f: coalescence_Lf_figS6B_added
+    tau: coalescence_decay_time_figS6B
+  sweep:
+    t: d_figS6b_coalescence_fit
+  outputs:
+    L: figS6b_L_printed_curve
+  note: "Sweeps the verbatim printed Fig. S6B inset equation L_i + (L_i - L_f)*exp(-tau/t) at printed tau = 0.6 s over the Fig. S6B fit x positions."
+
+- id: run_figS6b_corrected_sweep
+  model: coalescence_exponential_decay_figS6B_corrected
+  inputs:
+    L_i: coalescence_Li_figS6B_added
+    L_f: coalescence_Lf_figS6B_added
+    tau: coalescence_decay_time_figS6B
+  sweep:
+    t: d_figS6b_coalescence_fit
+  outputs:
+    L: figS6b_L_corrected_curve
+  note: "Sweeps the corrected Fig. S6B decay L_f + (L_i - L_f)*exp(-t/tau) with printed tau = 0.6 s over the Fig. S6B fit x positions."
+
+- id: run_figS6b_corrected_sweep_data
+  model: coalescence_exponential_decay_figS6B_corrected
+  inputs:
+    L_i: coalescence_Li_figS6B_added
+    L_f: coalescence_Lf_figS6B_added
+    tau: coalescence_decay_time_figS6B
+  sweep:
+    t: d_figS6b_coalescence_data
+  outputs:
+    L: figS6b_L_corrected_data_curve
+  note: "Sweeps the corrected Fig. S6B decay L_f + (L_i - L_f)*exp(-t/tau) with printed tau = 0.6 s over the 12 measured Fig. S6B data points."
+
+- id: run_figS6b_fit_tau_extract
+  model: coalescence_decay_time_from_curve
+  inputs:
+    L_vs_t: d_figS6b_coalescence_fit
+  outputs:
+    tau: figS6b_fit_tau_extracted
+    L_f: figS6b_fit_Lf_extracted
+    Delta_L: figS6b_fit_DeltaL_extracted
+  note: "Fits shifted exponential L_f + A*exp(-(t - t_0)/tau) to the digitized Fig. S6B red fit curve (recovers tau ~ 0.0725 s vs printed 0.6 s)."
+
+- id: run_figS6b_data_tau_extract
+  model: coalescence_decay_time_from_curve
+  inputs:
+    L_vs_t: d_figS6b_coalescence_data
+  outputs:
+    tau: figS6b_data_tau_extracted
+    L_f: figS6b_data_Lf_extracted
+    Delta_L: figS6b_data_DeltaL_extracted
+  note: "Fits shifted exponential directly to the 12 digitized Fig. S6B black data points (recovers tau ~ 0.068 s vs printed 0.6 s)."
+
+- id: run_figS6c_fit_gamma
+  model: coalescence_surface_tension_from_figS6C_curve
+  inputs:
+    DeltaL_vs_tau: d_figS6c_coalescence_fit
+    eta: fus_viscosity_assumed_si
+  outputs:
+    slope: figS6c_fit_slope_exact
+    gamma: figS6c_fit_gamma_exact
+  note: "Extracts exact capillary velocity slope (3.116 um/s) and interfacial tension (3.74 uN/m at eta = 1.2 Pa*s) from the digitized Fig. S6C red line."
+
+- id: run_figS6c_data_gamma
+  model: coalescence_surface_tension_from_figS6C_curve
+  inputs:
+    DeltaL_vs_tau: d_figS6c_coalescence_data
+    eta: fus_viscosity_assumed_si
+  outputs:
+    slope: figS6c_data_slope_exact
+    gamma: figS6c_data_gamma_exact
+  note: "Extracts OLS capillary velocity slope (3.115 um/s) and interfacial tension (3.74 uN/m) directly from the 6 digitized Fig. S6C black data points."
+
+- id: run_figS6c_deltaL_sweep_40
+  model: coalescence_deltaL_linear_scaling
+  inputs:
+    eta: fus_viscosity_assumed_si
+    gamma: surface_tension_coalescence_si
+  sweep:
+    tau: d_figS6c_coalescence_fit
+  outputs:
+    Delta_L: figS6c_deltaL_pred_40
+  note: "Sweeps zero-intercept viscous coalescence scaling Delta L = (gamma/eta)*tau at stated gamma = 40 uN/m, eta = 1.2 Pa*s over Fig. S6C fit tau values."
+
+- id: run_figS6c_deltaL_sweep_data_40
+  model: coalescence_deltaL_linear_scaling
+  inputs:
+    eta: fus_viscosity_assumed_si
+    gamma: surface_tension_coalescence_si
+  sweep:
+    tau: d_figS6c_coalescence_data
+  outputs:
+    Delta_L: figS6c_deltaL_data_pred_40
+  note: "Sweeps Delta L = (gamma/eta)*tau at stated gamma = 40 uN/m, eta = 1.2 Pa*s over the 6 digitized Fig. S6C data points."
+
+- id: run_figS5_hist_from_fig2c
+  model: rescaled_radius_histogram_from_fig2c
+  inputs:
+    theta_vs_n: d_fig2c_contact_angle
+    hist_target: d_figS5_rescaled_radius_hist
+  outputs:
+    freq_curve: figS5_hist_from_fig2c_pred
+  note: "Reconstructs Fig. S5 histogram counts by binning the 28 digitized Fig. 2C R_max/R_f values on left-edge intervals [2,4)..[10,12)."
+
+- id: run_figS7_hist_from_fig2c_figS4
+  model: capillary_pressure_histogram_from_fig2c_figS4
+  inputs:
+    theta_vs_n: d_fig2c_contact_angle
+    theta_vs_Rmax: d_figS4_contact_angle_vs_Rmax
+    sigma: surface_tension_assumed_lit
+    hist_target: d_figS7_capillary_pressure_hist
+  outputs:
+    freq_curve: figS7_hist_from_fig2c_figS4_pred
+  note: "Reconstructs Fig. S7 capillary pressure histogram counts by pairing the 28 Fig. 2C and Fig. S4 droplets via theta and binning Delta P_condensate (at sigma = 90 uN/m) on left-edge intervals [20,30)..[60,70)."
+
+

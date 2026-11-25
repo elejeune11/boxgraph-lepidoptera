@@ -1,0 +1,442 @@
+# ==============================================================================
+# Cross-record ModelAtlas relations with weirich2017
+# (Weirich, Banerjee, Dasbiswas, Witten, Vaikuntanathan & Gardel,
+#  Proc. Natl. Acad. Sci. USA 114, 2131-2136, 2017)
+# Neither paper cites the other (0 stated relations, 0 cited.yaml data links;
+# 1 shared bibliographic reference across 55 x 49 entries: Spudich & Watt, JBC
+# 1971 [ref-17/ref-S1 <-> ref-39]). Across all 16 scalar runnable arnold2023 x
+# 52 weirich2017 models, 50 of Weirich's models (tactoid Wulff minimization,
+# circular-arc geometry, anchoring/aspect-ratio scaling, capillary instability,
+# exponential coalescence shape relaxation, FRAP, filamin stoichiometry) are
+# physically disjoint from arnold2023's 2D lipid membrane coarsening models.
+# Exactly two physically meaningful touchpoints exist: (1) Stokes-Einstein
+# low-Re translational diffusivity (2D large-domain Saffman-Delbruck drag
+# 16*eta*a vs. 3D slender-rod drag 6*pi*eta*L/ln(2L/r), flagged by shape match)
+# and (2) power-law droplet coarsening (2D passive t^(1/3) / active t^(2/3) vs.
+# 3D tactoid coalescence t^(1/2)). See arnold2023/questions.yaml
+# (q_weirich2017_modelatlas_audit).
+# ==============================================================================
+
+- id: rel_weirich2017_stokes_einstein_fixed_aspect_scales
+  kind: scales_as
+  a: arnold2023/saffman_delbruck_diffusivity_peclet
+  b: weirich2017/stokes_einstein_ellipsoid_diffusion
+  mapping:
+    T: "T"
+    eta: "eta"
+    L: "1000 * a"
+    r: "1000 * a / 28.57142857"
+  output_map:
+    D: D_c
+  regime:
+    T: [293.0, 310.0]
+    eta: [0.0008, 3.0]
+    a: [0.05, 1.0]
+    gamma_dot: [1.0, 1.0]
+  provenance: proposed
+  reason: >
+    Both models instantiate the overdamped Stokes-Einstein fluctuation-dissipation relation
+    D = k_B*T / zeta with linear-size Stokes drag zeta proportional to eta * R, albeit in
+    different geometries and dimensions: arnold2023 p. 4 / SI Sec. III.B.1 uses the large-domain
+    (a >> L_SD) 2D Saffman-Delbruck / Hughes-Pailthorpe-White bulk-subphase drag D_c =
+    k_B*T / (16*eta*a) for a circular lipid domain of radius a in a membrane bounded by aqueous
+    solvent of viscosity eta, whereas weirich2017 SI p. 2 uses 3D prolate-ellipsoid / slender-rod
+    Stokes-Einstein drag D = k_B*T*ln(2L/r) / (6*pi*eta*L) for an actin filament of half-length L
+    and radius r diffusing inside a nematic tactoid of internal viscosity eta. Under isotropic
+    size rescaling at fixed Weirich actin aspect ratio L/r = 100 nm / 3.5 nm = 28.57 (holding
+    ln(2L/r) = 4.045 constant; 1 um = 1000 nm), both share exact (+1, -1, -1) Stokes-Einstein
+    log-slopes in (T, eta, size) to machine precision, differing by the constant geometric drag
+    ratio D_rod / D_c = 16*ln(2L/r)/(6*pi) = 3.434.
+  assumptions:
+    - "Maps lipid domain radius a [um] to filament half-length L = 1000*a [nm] while holding Weirich's actin filament aspect ratio fixed at L/r = 100/3.5 = 28.5714 so ln(2L/r) is constant."
+    - "Identifies bulk aqueous viscosity eta in arnold2023 symbolically with internal nematic tactoid viscosity eta in weirich2017 (both in Pa*s; both outputs in um^2/s)."
+
+- id: rel_weirich2017_stokes_einstein_fixed_radius_contrast
+  kind: scales_as
+  a: arnold2023/saffman_delbruck_diffusivity_peclet
+  b: weirich2017/stokes_einstein_ellipsoid_diffusion
+  mapping:
+    T: "T"
+    eta: "eta"
+    L: "1000 * a"
+    r: "3.5"
+  output_map:
+    D: D_c
+  regime:
+    T: [293.0, 310.0]
+    eta: [0.0008, 3.0]
+    a: [0.05, 0.5]
+    gamma_dot: [1.0, 1.0]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast isolating the hydrodynamic difference between 2D large-domain
+    Saffman-Delbruck drag (16*eta*a, strictly algebraic a^(-1)) and 3D slender-rod drag
+    (6*pi*eta*L / ln(2L/r)) in Weirich's physical regime of fixed F-actin filament radius
+    r = 3.5 nm (filament diameter 7 nm) with varying filament half-length L = 50-500 nm
+    (a in [0.05, 0.5] um). Because ln(2L/r) varies with L, Weirich's length log-slope shifts from
+    -1 to -1 + 1/ln(2L/r) (between -0.82 and -0.70 across L in [50, 500] nm), yielding an honest
+    not_verified status with log-slope discrepancy up to ~0.30.
+  assumptions:
+    - "Fixes F-actin filament radius at Weirich's physical value r = 3.5 nm while varying L = 1000*a across [50, 500] nm."
+
+- id: rel_weirich2017_coarsening_power_law_scales
+  kind: scales_as
+  a: arnold2023/domain_growth_power_law_scaling
+  b: weirich2017/tactoid_coarsening_power_law
+  mapping:
+    t: "t / 60"
+    alpha: "0.5"
+  output_map:
+    L: a_norm
+  regime:
+    t: [600.0, 7200.0]
+    alpha: [0.5, 0.5]
+  provenance: proposed
+  reason: >
+    Both papers fit phase-separated liquid-droplet coarsening to a power law with unstated
+    prefactor: arnold2023 (p. 1, Fig. 2) fits 2D Lo lipid domain growth a/a_0 ~ t^alpha (time in
+    s), while weirich2017 (p. 3 / 2133, Fig. 3A) fits 3D nematic actin tactoid major-axis length
+    L ~ t^alpha at constant aspect ratio L/r (time in min; measured alpha = 0.47 +/- 0.01 vs. 3D
+    coalescence theory alpha = 0.5). Converting t [min] = t [s] / 60 at common exponent alpha =
+    0.5 verifies exact temporal scaling agreement (+0.5 log-slope) across 10-120 min.
+  assumptions:
+    - "Exact time unit conversion t [min] = t [s] / 60 evaluated at Weirich's theoretical 3D coalescence exponent alpha = 0.5 (constant tactoid aspect ratio L/r implies L and radius share alpha)."
+
+- id: rel_weirich2017_coarsening_passive_2d_vs_3d_contrast
+  kind: scales_as
+  a: arnold2023/domain_growth_power_law_scaling
+  b: weirich2017/tactoid_coarsening_power_law
+  mapping:
+    t: "t / 60"
+    alpha: "0.5"
+  output_map:
+    L: a_norm
+  regime:
+    t: [600.0, 7200.0]
+    alpha: [0.3333333333333333, 0.3333333333333333]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast placing 3D nematic tactoid coalescence (weirich2017, theoretical
+    alpha = 0.5, measured 0.47 +/- 0.01) against 2D passive lipid membrane coarsening (arnold2023,
+    alpha = 1/3 for both Ostwald ripening and 2D Brownian coalescence). Honestly not_verified with
+    exact temporal log-slope discrepancy 1/2 - 1/3 = 1/6 = 0.1667 (note arnold2023's active 2D
+    shear-coalescence exponent alpha = 2/3 sits symmetrically +1/6 above Weirich's 3D passive
+    alpha = 1/2).
+  assumptions:
+    - "Compares arnold2023's passive 2D coarsening exponent alpha = 1/3 against weirich2017's 3D coalescence exponent alpha = 0.5 over t in [600, 7200] s (10-120 min)."
+
+# ==============================================================================
+# Cross-record ModelAtlas relations with zwicker2015
+# (Zwicker, Hyman & Julicher, Phys. Rev. E 92, 012317, 2015)
+# Neither paper cites the other (0 stated relations, 0 cited.yaml data links;
+# 1 shared bibliographic reference across 55 x 46 entries: E. D. Siggia, Phys.
+# Rev. A 20, 595, 1979 [ref-11/ref-S10 <-> ref-12]). Both papers start from
+# passive Cahn-Hilliard / Lifshitz-Slyozov Ostwald ripening (R ~ t^(1/3)) and
+# drive the system out of equilibrium in opposite directions: zwicker2015 adds
+# active chemical reactions to ARREST Ostwald ripening into stable finite
+# monodisperse emulsions, whereas arnold2023 adds active actomyosin surface
+# shear flows to ACCELERATE coarsening from t^(1/3) to t^(2/3). Nine proposed
+# relations below connect their Lifshitz-Slyozov scaling laws (corroborating
+# printed misprints in BOTH papers), Smoluchowski passive/shear coalescence,
+# Cahn-Hilliard interface width, 2D vs. 3D Ostwald droplet growth rate, and
+# Gibbs-Thomson curvature shift. See arnold2023/questions.yaml
+# (q_zwicker2015_modelatlas_and_2d_3d_coarsening_audit).
+# ==============================================================================
+
+# --- 1. Lifshitz-Slyozov Ostwald Ripening & Cross-Paper Printed-Misprint Corroboration ---
+
+- id: rel_zwicker2015_ls2d_asymptotic_scales_ls3d_corrected
+  kind: scales_as
+  a: arnold2023/lifshitz_slyozov_2d_asymptotic_eq11
+  b: zwicker2015/lifshitz_slyozov_scaling_corrected
+  mapping:
+    t: "t"
+    D_B: "1e-12"
+    w: "sigma * 1e-7"
+  output_map:
+    R_mean: a
+  regime:
+    sigma: [0.1, 2.0]
+    t: [10.0, 5000.0]
+  provenance: proposed
+  reason: >
+    Directly bridges the two papers' passive Lifshitz-Slyozov Ostwald-ripening asymptotic laws:
+    arnold2023 SI Sec. III.A Eq. (11) derives 2D Ostwald ripening a = ((9/2)*sigma*t)^(1/3)
+    (dimensionless Cahn-Hilliard units with dimensionless line tension sigma proportional to the
+    capillary length), while zwicker2015 Sec. III (corrected variant
+    lifshitz_slyozov_scaling_corrected) gives 3D Ostwald ripening <R> ~ w*(t*D_B/w^2)^(1/3) =
+    (t*D_B*w)^(1/3) [m] (using capillary length gamma*beta = w/6 proportional to interface width w).
+    Mapping dimensionless line tension sigma proportionally to interface width w (w = sigma*1e-7 m
+    at fixed molecular diffusivity D_B = 1e-12 m^2/s) yields exact (+1/3, +1/3) log-slopes in both
+    elapsed time t and capillary/tension scale (sigma <-> w) to machine precision.
+  assumptions:
+    - "Maps arnold2023 dimensionless line tension sigma proportionally to zwicker2015 Cahn-Hilliard interface width w = 6*gamma*beta (via w = sigma*1e-7 m at fixed D_B = 1e-12 m^2/s)."
+    - "Uses zwicker2015's dimensionally corrected variant lifshitz_slyozov_scaling_corrected."
+
+- id: rel_zwicker2015_ls2d_asymptotic_vs_ls3d_printed
+  kind: scales_as
+  a: arnold2023/lifshitz_slyozov_2d_asymptotic_eq11
+  b: zwicker2015/lifshitz_slyozov_scaling_printed
+  mapping:
+    t: "t"
+    D_B: "1e-12"
+    w: "sigma * 1e-7"
+  output_map:
+    R_mean: a
+  regime:
+    sigma: [0.1, 2.0]
+    t: [10.0, 5000.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing zwicker2015's literally printed Lifshitz-Slyozov scaling
+    <R> ~ (t*D_B/w^2)^(1/3) (zwicker2015/lifshitz_slyozov_scaling_printed, which omits the leading
+    factor of w, making the RHS dimensionless) against arnold2023's 2D Ostwald-ripening law
+    a = ((9/2)*sigma*t)^(1/3) under the exact same mapping as
+    rel_zwicker2015_ls2d_asymptotic_scales_ls3d_corrected. Honestly not_verified with an exact
+    log-slope discrepancy of 1.0 in sigma <-> w (+1/3 in arnold2023 vs. -2/3 in printed
+    zwicker2015), independently corroborating zwicker2015's missing-w dimensional misprint.
+  assumptions:
+    - "Same (t, sigma <-> w) mapping and regime as rel_zwicker2015_ls2d_asymptotic_scales_ls3d_corrected, evaluating printed lifshitz_slyozov_scaling_printed."
+
+# --- 2. 2D Brownian & Shear Smoluchowski Coalescence vs. 3D Lifshitz-Slyozov Scaling ---
+
+- id: rel_zwicker2015_smol_passive_corr_scales_ls_corrected
+  kind: scales_as
+  a: arnold2023/smoluchowski_passive_approx_eq28_corrected
+  b: zwicker2015/lifshitz_slyozov_scaling_corrected
+  mapping:
+    t: "t"
+    D_B: "1e-12"
+    w: "1e-7"
+  output_map:
+    R_mean: a
+  regime:
+    T: [293.0, 310.0]
+    eta: [0.0008, 0.0012]
+    phi_A: [0.2, 0.45]
+    L: [10.0, 50.0]
+    a_0: [0.01, 0.04]
+    epsilon: [0.05, 0.3]
+    t: [500.0, 5000.0]
+  provenance: proposed
+  reason: >
+    Bridges the two distinct passive coarsening mechanisms that both yield universal t^(1/3)
+    growth (and directly addresses the shape match between arnold2023/smoluchowski_passive_approx_eq28
+    and zwicker2015/lifshitz_slyozov_scaling_corrected): arnold2023 SI Eq. (28) (corrected) models
+    2D Brownian domain coalescence a(t) = (k*t + b*a_0^3)^(1/3) [um] with hydrodynamic rate
+    k = 9*k_B*T*phi_A / [16*eta*(3*epsilon + 1)], whereas zwicker2015 models 3D bulk-diffusion
+    Ostwald ripening <R> ~ (t*D_B*w)^(1/3) [m]. In the late-time asymptotic regime k*t >> b*a_0^3
+    (a_0 in [0.01, 0.04] um, t in [500, 5000] s), both models share the exact +1/3 temporal
+    log-slope to < 1e-4 despite different dimensionality (2D vs. 3D) and microscopic prefactors
+    (thermal domain mobility vs. molecular solute diffusion).
+  assumptions:
+    - "Uses arnold2023's corrected passive Smoluchowski variant smoluchowski_passive_approx_eq28_corrected in the late-time asymptotic regime k*t >> b*a_0^3."
+    - "Tests purely temporal scaling (t <-> t) at fixed Zwicker (D_B, w) so the distinct microscopic prefactors drop out cleanly."
+
+- id: rel_zwicker2015_smol_passive_printed_vs_ls_corrected
+  kind: scales_as
+  a: arnold2023/smoluchowski_passive_approx_eq28
+  b: zwicker2015/lifshitz_slyozov_scaling_corrected
+  mapping:
+    t: "t"
+    D_B: "1e-12"
+    w: "1e-7"
+  output_map:
+    R_mean: a
+  regime:
+    T: [293.0, 310.0]
+    eta: [0.0008, 0.0012]
+    phi_A: [0.2, 0.45]
+    L: [10.0, 50.0]
+    a_0: [0.8, 1.2]
+    epsilon: [0.05, 0.2]
+    t: [0.5, 4.0]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing arnold2023's literally printed passive Smoluchowski
+    Eq. (28) (arnold2023/smoluchowski_passive_approx_eq28, whose denominator 3*ln(1/2) +
+    3*epsilon + 1 ~= -1.079 + 3*epsilon is strictly negative for small epsilon, making k < 0)
+    against zwicker2015/lifshitz_slyozov_scaling_corrected in the pre-collapse positive-radius
+    window (0 < |k|*t < b*a_0^3; a_0 in [0.8, 1.2] um, t in [0.5, 4.0] s). Because k < 0 causes
+    printed Eq. (28) to shrink a(t) toward zero (negative log-slope in t), the relation is
+    honestly not_verified against Zwicker's +1/3 Ostwald growth, independently corroborating
+    arnold2023/q_smol_eq28_negative_k.
+  assumptions:
+    - "Evaluated in the pre-collapse window t in [0.5, 4.0] s at a_0 in [0.8, 1.2] um where b*a_0^3 > |k|*t > 0 so printed Eq. (28) remains positive while shrinking (negative d(ln a)/d(ln t))."
+
+- id: rel_zwicker2015_smol_shear_low_scales_ls_corrected
+  kind: scales_as
+  a: arnold2023/smoluchowski_shear_eq35_37_corrected
+  b: zwicker2015/lifshitz_slyozov_scaling_corrected
+  mapping:
+    t: "t"
+    D_B: "1e-12"
+    w: "1e-7"
+  output_map:
+    R_mean: a
+  regime:
+    T: [293.0, 310.0]
+    eta: [0.0008, 0.0012]
+    phi_A: [0.2, 0.45]
+    gamma_dot: [1.0e-11, 1.0e-10]
+    C: [1.0, 2.0]
+    epsilon: [0.05, 0.3]
+    a_0: [0.01, 0.03]
+    t: [500.0, 5000.0]
+  provenance: proposed
+  reason: >
+    Verifies that arnold2023's corrected shear-flow Smoluchowski coalescence ODE
+    da/dt = (m/a^2)*(1 + C*Pe_c^(1/2)) (SI Eqs. 35-37 corrected) recovers zwicker2015's passive
+    Lifshitz-Slyozov t^(1/3) temporal scaling in the genuinely low-Pe_c Brownian limit
+    (gamma_dot in [1e-11, 1e-10] s^-1 so C*Pe_c^(1/2) < 1e-3 even after domains grow to
+    a ~ 15-20 um, with small a_0 so m*t >> C_0). Both share the +1/3 temporal log-slope to
+    < 1e-3 across t in [500, 5000] s.
+  assumptions:
+    - "Genuinely low-Pe_c Brownian limit (gamma_dot in [1e-11, 1e-10] s^-1 -> C*Pe_c^(1/2) < 1e-3 at a ~ 15-20 um) and late-time asymptotic regime m*t >> C_0 in smoluchowski_shear_eq35_37_corrected."
+
+- id: rel_zwicker2015_smol_shear_high_vs_ls_corrected
+  kind: scales_as
+  a: arnold2023/smoluchowski_shear_eq35_37_corrected
+  b: zwicker2015/lifshitz_slyozov_scaling_corrected
+  mapping:
+    t: "t"
+    D_B: "1e-12"
+    w: "1e-7"
+  output_map:
+    R_mean: a
+  regime:
+    T: [293.0, 310.0]
+    eta: [0.0008, 0.0012]
+    phi_A: [0.2, 0.45]
+    gamma_dot: [50.0, 200.0]
+    C: [1.0, 2.0]
+    epsilon: [0.05, 0.3]
+    a_0: [0.01, 0.03]
+    t: [500.0, 5000.0]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast capturing how active surface shear in arnold2023 breaks the
+    passive t^(1/3) Lifshitz-Slyozov baseline shared with zwicker2015: in the high-shear regime
+    (gamma_dot in [50, 200] s^-1 so C*Pe_c^(1/2) >> 1), arnold2023's corrected Smoluchowski
+    coalescence model accelerates to a ~ t^(2/3), yielding an honest not_verified status with
+    temporal log-slope discrepancy ~1/3 above zwicker2015/lifshitz_slyozov_scaling_corrected
+    (in sharp contrast to zwicker2015's chemical-reaction activity, which drives coarsening BELOW
+    t^(1/3) to complete arrest).
+  assumptions:
+    - "High-shear regime (gamma_dot in [50, 200] s^-1 -> C*Pe_c^(1/2) >> 1) in smoluchowski_shear_eq35_37_corrected over t in [500, 5000] s."
+
+# --- 3. Cahn-Hilliard Interface Width, Gibbs-Thomson Shift & 2D vs. 3D Ostwald Rate ---
+
+- id: rel_zwicker2015_ch_interface_width_scales_lc
+  kind: scales_as
+  a: zwicker2015/interface_width_w
+  b: arnold2023/cahn_hilliard_scales_peclet
+  mapping:
+    M: "1"
+    kappa: "kappa / b"
+    gamma_dot: "1"
+  output_map:
+    l_c: w
+  regime:
+    kappa: [1.0e-13, 1.0e-11]
+    b: [0.5, 10.0]
+  provenance: proposed
+  reason: >
+    Connects the shared Cahn-Hilliard diffuse interface width scale across both papers:
+    zwicker2015 Sec. II defines w = 2*sqrt(kappa / b) [m] from gradient energy (kappa/2)|grad phi|^2
+    and bulk quartic modulus b (zwicker2015/interface_width_w), while arnold2023 SI Sec. III.B.3
+    (p. 14) defines l_c = sqrt(kappa) (dimensionless, with bulk energy density normalized to b = 1)
+    in arnold2023/cahn_hilliard_scales_peclet. Under the direct mapping kappa_arnold = kappa/b,
+    both share exact (+1/2 in kappa, -1/2 in b) log-slopes to machine precision (differing by the
+    constant factor of 2 and dimensional units).
+  assumptions:
+    - "Identifies arnold2023's bulk-normalized Cahn-Hilliard gradient parameter kappa with zwicker2015's ratio kappa / b [m^2]."
+
+- id: rel_zwicker2015_gibbs_thomson_scales_ls2d_epsilon
+  kind: scales_as
+  a: zwicker2015/gibbs_thomson_eq6
+  b: arnold2023/lifshitz_slyozov_2d_ode_eq6
+  mapping:
+    sigma: "gamma_beta * 1e7"
+    L: "10 * R * 1e6"
+    a_0: "R * 1e6"
+    t: "1e-8"
+  output_map:
+    epsilon_mid: phi_plus_B
+  regime:
+    psi: [1.0, 1.0]
+    gamma_beta: [1.0e-8, 1.0e-7]
+    R: [1.0e-6, 1.0e-5]
+  provenance: proposed
+  reason: >
+    Links the underlying Gibbs-Thomson interfacial concentration shift that drives Ostwald
+    ripening in both papers: zwicker2015 Eq. (6) gives outer interfacial excess phi_+^B =
+    gamma*beta / R (3D spherical Laplace pressure), while arnold2023 SI Eq. (4) inside
+    lifshitz_slyozov_2d_ode_eq6 imposes epsilon(a) = sigma / (2*a) (2D circular line-tension
+    shift), yielding epsilon_mid = sigma / (4*a) at the geometric midpoint r = sqrt(a*L). Evaluated
+    at initial snapshot t = 1e-8 (so a = a_0 = R*1e6) with fixed box ratio L/a_0 = 10, both models
+    share exact (+1 in capillary length gamma_beta <-> sigma, -1 in droplet radius R <-> a_0)
+    Gibbs-Thomson log-slopes to < 1e-6.
+  assumptions:
+    - "Initial snapshot t = 1e-8 (so a(t) = a_0 to < 1e-7) with fixed domain-to-box ratio L/a_0 = 10 and linear mapping sigma = gamma_beta*1e7, a_0 = R*1e6."
+
+- id: rel_zwicker2015_eq13_fixed_ratio_scales_ls2d_ode_rate
+  kind: scales_as
+  a: zwicker2015/binary_droplet_growth_eq13
+  b: arnold2023/lifshitz_slyozov_2d_ode_eq6
+  mapping:
+    sigma: "gamma_beta * 1e7"
+    L: "10 * R * 1e6"
+    a_0: "R * 1e6"
+    t: "1e-8"
+  output_map:
+    da_dt: dR_dt
+  regime:
+    R: [1.0e-6, 1.0e-5]
+    D_B: [1.0e-12, 1.0e-12]
+    phi_0_B: [0.0, 0.0]
+    gamma_beta: [1.0e-8, 1.0e-7]
+    k_b: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Compares the passive isolated-droplet Ostwald flux-balance ODEs of both papers in the zero-
+    reaction, zero-background-supersaturation limit (zwicker2015 Eq. 13 at k_b = 0, phi_0^B = 0:
+    dR/dt = -D_B*gamma*beta / R^2 vs. arnold2023 SI Eq. 6 with outer BC epsilon(L) = 0:
+    da/dt = +sigma / (2*a^2*ln(L/a))). Holding the 2D outer cutoff ratio constant at L/a_0 = 10
+    (with initial snapshot t = 1e-8 so a = a_0 = R*1e6) eliminates the logarithmic variation of
+    ln(L/a), verifying exact (+1 in capillary length gamma_beta <-> sigma, -2 in radius R <-> a_0)
+    magnitude log-slopes to < 1e-6. Crucially, because scales_as tests magnitudes (|y1/y0|), note
+    that the two models have OPPOSITE SIGNS: Zwicker Eq. (13) correctly predicts an isolated
+    droplet in an unsaturated bath shrinks (dR/dt < 0), whereas Arnold SI Eq. (6) predicts growth
+    (da/dt > 0) due to the flux-balance sign inversion documented in arnold2023/q_ls_eq5_flux_sign_and_limit.
+  assumptions:
+    - "Zero-reaction, zero-background-supersaturation limit (k_b = 0, phi_0^B = 0) in zwicker2015 Eq. (13) matched to arnold2023 SI Eq. (4)'s far-field BC epsilon(L) = 0."
+    - "Fixed 2D box ratio L/a_0 = 10 at initial snapshot t = 1e-8; scales_as verifies magnitude scaling while the sign discrepancy (+da/dt vs. -dR/dt) corroborates q_ls_eq5_flux_sign_and_limit."
+
+- id: rel_zwicker2015_eq13_vs_ls2d_ode_fixed_box_log_contrast
+  kind: scales_as
+  a: zwicker2015/binary_droplet_growth_eq13
+  b: arnold2023/lifshitz_slyozov_2d_ode_eq6
+  mapping:
+    sigma: "gamma_beta * 1e7"
+    L: "100"
+    a_0: "R * 1e6"
+    t: "1e-8"
+  output_map:
+    da_dt: dR_dt
+  regime:
+    R: [1.0e-6, 2.0e-5]
+    D_B: [1.0e-12, 1.0e-12]
+    phi_0_B: [0.0, 0.0]
+    gamma_beta: [1.0e-8, 1.0e-7]
+    k_b: [0.0, 0.0]
+  provenance: proposed
+  reason: >
+    Diagnostic physical contrast isolating the 2D vs. 3D dimensionality difference in Ostwald
+    ripening: repeating rel_zwicker2015_eq13_fixed_ratio_scales_ls2d_ode_rate at a fixed 2D outer
+    domain size L = 100 while varying droplet radius a_0 = R*1e6 across [1, 20] exposes the 2D
+    Laplace-equation logarithmic screening factor 1/ln(L/a), which shifts arnold2023's radial
+    log-slope from -2 (3D zwicker2015 Eq. 13) to -2 + 1/ln(L/a) (between -1.78 and -1.38).
+    Honestly not_verified with a log-slope discrepancy up to ~0.62.
+  assumptions:
+    - "Same zero-reaction, zero-supersaturation mapping as rel_zwicker2015_eq13_fixed_ratio_scales_ls2d_ode_rate, but with fixed 2D outer cutoff L = 100 across a_0 in [1, 20]."

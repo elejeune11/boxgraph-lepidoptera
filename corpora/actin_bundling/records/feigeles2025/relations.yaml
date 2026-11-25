@@ -1,0 +1,312 @@
+- id: rel_pstar_rescaled_same_as_pstar
+  kind: same_as
+  a: feigeles2025/dimensionless_capillary_pressure
+  b: feigeles2025/dimensionless_capillary_pressure_rescaled
+  mapping:
+    n: "R_max / R_f"
+    theta: "theta"
+  output_map:
+    P_star: P_star
+  regime:
+    R_max: [2.0, 10.0]
+    R_f: [0.3, 1.5]
+    theta: [10.0, 60.0]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "7875"
+    quote: "against the condensate radius rescaled by the"
+    where: "p. 7875, col. 1 & Fig. 2D"
+  assumptions:
+    - "Expressing R_max in units of R_f (n = R_max / R_f) leaves the dimensionless capillary pressure algebraically identical."
+
+- id: rel_groove_rescaled_same_as_groove
+  kind: same_as
+  a: feigeles2025/groove_meniscus_radius
+  b: feigeles2025/groove_meniscus_radius_rescaled
+  mapping:
+    n: "R_max / R_f"
+    theta: "theta"
+  output_map:
+    R_FUS_over_Rf: R_FUS_over_Rf
+  regime:
+    R_max: [2.0, 10.0]
+    R_f: [0.3, 1.5]
+    theta: [10.0, 60.0]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "7875"
+    quote: "that RFUS ranges between 2.3Rf o RFUS o 5.4Rf, suggesting"
+    where: "p. 7875, col. 2"
+  assumptions:
+    - "Expressing R_max / R_f = n gives R_FUS / R_f = (n^2 - 1) / (2 * (n - cos(theta))), algebraically identical to groove_meniscus_radius."
+
+- id: rel_straightness_p3_same_as_figS2_corr
+  kind: same_as
+  a: feigeles2025/bundle_straightness_ratio_p3
+  b: feigeles2025/bundle_straightness_ratio_figS2_corrected
+  mapping:
+    L_c: "L_c"
+    epsilon: "l"
+  output_map:
+    ratio: ratio
+  regime:
+    L_c: [2.0, 50.0]
+    l: [2.0, 50.0]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "7874"
+    quote: "we take the ratio of the contour length, Lc, to the end-to-end length, l"
+    where: "p. 7874, col. 1 & SI Fig. S2"
+  assumptions:
+    - "Main text p. 3 denotes end-to-end length by l while SI Fig. S2 denotes it by epsilon; once the inverted Fig. S2 y-axis label is corrected to L_c / epsilon, both definitions coincide."
+
+# ==========================================================================
+# Cross-record relations: feigeles2025 <-> weirich2017
+# ==========================================================================
+
+- id: rel_weirich2017_coalescence_exp_decay_same_as_tactoid_relaxation
+  kind: same_as
+  a: feigeles2025/coalescence_exponential_decay_figS6B_corrected
+  b: weirich2017/tactoid_exponential_relaxation
+  mapping:
+    t: "t"
+    L_i: "L_i"
+    L_f: "L_f"
+    tau: "tau"
+  output_map:
+    L: L
+  regime:
+    L_i: [3.0, 25.0]
+    L_f: [1.0, 12.0]
+    tau: [0.05, 50.0]
+    t: [0.01, 100.0]
+  provenance: proposed
+  reason: >
+    Both papers from the Weirich group fit the major-axis length relaxation of two coalescing
+    liquid-like droplets with the identical single-exponential decay law
+    L(t) = L_f + (L_i - L_f) * exp(-t / tau): Weirich et al. (2017, Fig. 3B-C, SI p. 8) for
+    coalescing cross-linked actin-filamin tactoids, and Feigeles et al. (2025, Fig. 3C along
+    bundles and SI Fig. S6B in free solution, after correcting the printed inset typo
+    L_i + (L_i - L_f)*exp(-tau/t)). Symbolically identical under identity variable mapping.
+  assumptions:
+    - "Uses Feigeles 2025's corrected exponential decay model (coalescence_exponential_decay_figS6B_corrected) rather than the misprinted Fig. S6B inset formula L_i + (L_i - L_f)*exp(-tau/t)."
+
+- id: rel_weirich2017_inv_vcap_same_as_coalescence_slope
+  kind: same_as
+  a: weirich2017/coalescence_tau_linear_scaling
+  b: feigeles2025/coalescence_capillary_velocity_figS6C
+  mapping:
+    eta: "eta"
+    gamma: "gamma_eff / 1000"
+  output_map:
+    inv_v_cap: slope
+  regime:
+    eta: [0.1, 100.0]
+    gamma_eff: [50.0, 150000.0]
+    delta_L: [0.5, 20.0]
+  provenance: proposed
+  reason: >
+    Both papers extract the viscocapillary inverse capillary velocity eta / gamma [s/um] from
+    linear regression of coalescence relaxation time tau against length change Delta L = L_i - L_f.
+    Weirich et al. (2017, Fig. 3D) plot tau (y-axis) vs. L_i - L_f (x-axis) so the slope is directly
+    eta / gamma_eff, whereas Feigeles et al. (2025, SI Fig. S6C) plot the swapped axes Delta L (y-axis)
+    vs. tau (x-axis) (actual slope v_cap = gamma / eta) while printing eta / gamma in the caption.
+    Symbolically identical after converting gamma_eff [nN/m] to gamma [uN/m] (= gamma_eff / 1000).
+  assumptions:
+    - "Maps Weirich's effective tactoid tension gamma_eff [nN/m] (which incorporates nematic anchoring) to Feigeles's isotropic FUS condensate interfacial tension gamma [uN/m] via 1 uN/m = 1000 nN/m."
+
+- id: rel_weirich2017_surface_tension_same_as_coalescence_gamma
+  kind: same_as
+  a: feigeles2025/coalescence_surface_tension_figS6C
+  b: weirich2017/interfacial_tension_from_capillary_velocity
+  mapping:
+    eta: "eta"
+    v_cap: "slope"
+  output_map:
+    gamma_I: gamma
+  regime:
+    eta: [0.1, 100.0]
+    slope: [0.001, 100.0]
+  provenance: proposed
+  reason: >
+    Both papers infer droplet interfacial tension from an independently known condensate viscosity
+    and the coalescence capillary velocity via gamma = eta * v_cap: Weirich et al. (2017, p. 3)
+    obtain gamma_I ~ 100 nN/m (0.1 uN/m) for filamin-crosslinked actin tactoids from FRAP-derived
+    viscosity and coalescence v_cap, while Feigeles et al. (2025, SI Fig. S6C) multiply Ijavi et al.'s
+    FUS viscosity (1.2 Pa*s) by the Fig. S6C Delta L vs. tau slope to report gamma ~ 40 uN/m
+    (three orders of magnitude stiffer than actin tactoids). Symbolically identical across uN/m <-> nN/m.
+  assumptions:
+    - "Identifies Feigeles Fig. S6C's plotted linear slope d(Delta L)/d(tau) [um/s] with Weirich's capillary velocity v_cap = gamma_I / eta [um/s]; Pint converts uN/m <-> nN/m automatically."
+
+- id: rel_weirich2017_isotropic_energy_balance_scales_as_inv_vcap
+  kind: scales_as
+  a: weirich2017/isotropic_coalescence_tau_energy_balance
+  b: feigeles2025/coalescence_capillary_velocity_figS6C
+  mapping:
+    eta: "eta"
+    gamma: "gamma_I / 1000"
+  output_map:
+    inv_v_cap: tau
+  regime:
+    eta: [0.5, 20.0]
+    gamma_I: [100.0, 100000.0]
+    V: [10.0, 500.0]
+    r: [1.0, 6.0]
+    L_i: [3.0, 15.0]
+    delta_L: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Connects Weirich et al.'s (2017, SI p. 8) isotropic droplet coalescence energy balance
+    tau ~ (eta / gamma_I) * (V / (r * L_i^2)) * (L_i - L_f) (balancing bulk viscous dissipation
+    against interfacial area reduction) to Feigeles et al.'s (2025, SI Fig. S6C) viscocapillary
+    inverse velocity inv_v_cap = eta / gamma for coalescing isotropic FUS condensates. Both share
+    exact (+1, -1) log-slopes in (viscosity eta, interfacial tension gamma_I <-> gamma) across
+    three orders of magnitude in tension.
+  assumptions:
+    - "Isotropic liquid droplet geometry with dimensionless geometric prefactor V / (r * L_i^2) = O(1) independent of viscosity eta and interfacial tension gamma."
+
+- id: rel_weirich2017_isotropic_rate_corr_scales_as_vcap
+  kind: scales_as
+  a: weirich2017/isotropic_relaxation_rate_corrected
+  b: feigeles2025/coalescence_capillary_velocity_figS6C
+  mapping:
+    eta: "eta"
+    gamma: "gamma_I / 1000"
+  output_map:
+    v_cap: dL_dt
+  regime:
+    L: [2.0, 15.0]
+    r: [1.0, 6.0]
+    eta: [0.5, 20.0]
+    gamma_I: [100.0, 100000.0]
+  provenance: proposed
+  reason: >
+    Connects Weirich et al.'s (2017, SI p. 8, corrected) differential isotropic droplet relaxation
+    rate dL/dt ~ -L * gamma_I / (r * eta) to Feigeles et al.'s (2025, SI Fig. S6C) coalescence
+    capillary velocity v_cap = gamma / eta. At fixed droplet aspect ratio L / r, the relaxation
+    speed |dL/dt| shares the exact (-1, +1) log-slopes in (eta, gamma_I <-> gamma) with v_cap.
+  assumptions:
+    - "Uses Weirich's dimensionally corrected relaxation rate (isotropic_relaxation_rate_corrected) rather than the inverted SI p. 8 misprint; magnitude comparison drops the contraction minus sign."
+
+- id: rel_weirich2017_tactoid_ode_iso_scales_as_inv_vcap
+  kind: scales_as
+  a: feigeles2025/coalescence_capillary_velocity_figS6C
+  b: weirich2017/tactoid_shape_dynamics_ode
+  mapping:
+    omega: "0.001"
+    v_cap: "gamma / eta"
+    L_eq: "4.6"
+    L_i: "7.2"
+    t_max: "10.0 * eta / gamma"
+  output_map:
+    tau: inv_v_cap
+  regime:
+    eta: [0.5, 5.0]
+    gamma: [10.0, 120.0]
+  provenance: proposed
+  reason: >
+    Tests Weirich et al.'s (2017, SI p. 9) full nonlinear variational shape-dynamics ODE
+    (dF/dt + D = 0, constant volume, RK4 integration with exponential fit to L(t)) in the
+    isotropic spherical-droplet limit (omega = 0.001, vanishing nematic anchoring — corresponding
+    to an isotropic FUS protein condensate) against Feigeles et al.'s (2025, SI Fig. S6C) inverse
+    capillary velocity inv_v_cap = eta / gamma. Evaluated at Feigeles Fig. S6B's coalescing pair
+    dimensions (L_i = 7.2 um, L_eq = 4.6 um, Delta L = 2.6 um), Weirich's isotropic ODE yields
+    tau = 0.869 * (eta / gamma) * Delta L, sharing exact (+1, -1) log-slopes in (eta, gamma) with
+    inv_v_cap. Notably, at Feigeles's stated FUS parameters (eta = 1.2 Pa*s, gamma = 40 uN/m),
+    Weirich's isotropic ODE predicts tau = 0.0678 s, matching the digitized 12-point Fig. S6B
+    decay time (0.0681 s) rather than the printed inset label (0.6 s).
+  assumptions:
+    - "Near-isotropic limit omega = 0.001 (representing an isotropic FUS condensate with zero nematic anchoring) at fixed Fig. S6B droplet lengths (L_eq = 4.6 um, L_i = 7.2 um)."
+    - "Integration horizon t_max = 10 * (eta / gamma) scales proportionally with the viscocapillary timescale so the exponential fit spans the same dimensionless relaxation window."
+
+- id: rel_weirich2017_capillary_free_energy_per_len_scales_as_column_pressure
+  kind: scales_as
+  a: feigeles2025/cylindrical_column_capillary_pressure
+  b: weirich2017/capillary_free_energy_per_length
+  mapping:
+    R_0: "R_f"
+    u: "0.01"
+    lam: "4 * pi * R_f"
+    gamma_I: "1000 * sigma"
+    omega: "0"
+  output_map:
+    delta_F_over_lam: DeltaP_column
+  regime:
+    sigma: [10.0, 120.0]
+    R_f: [0.35, 1.5]
+  provenance: proposed
+  reason: >
+    Connects the capillary-pressure instability of a uniform cylindrical condensate column coating
+    an actin bundle of radius R_f (Feigeles 2025 p. 4, DeltaP_column = sigma / R_f, which exceeds
+    unduloid barrel-droplet capillary pressure P* < 1) to Weirich et al.'s (2017, SI pp. 10-11)
+    exact nonlinear Rayleigh-Plateau interfacial free-energy change per unit wavelength
+    delta_F / lam for a liquid cylinder of radius R_0 = R_f in the isotropic limit (omega = 0).
+    For small sinusoidal perturbation u = 0.01 um << R_f at fixed unstable dimensionless wavenumber
+    k = 2*pi*R_0/lam = 0.5 < 1, delta_F / lam = -(3*pi/8) * u^2 * (gamma_I / R_0), sharing exact
+    (+1, -1) log-slopes in (sigma, R_f) with DeltaP_column.
+  assumptions:
+    - "Isotropic liquid condensate cylinder (omega = 0) in the small-amplitude linear Rayleigh-Plateau regime (u = 0.01 um << R_f) at fixed unstable dimensionless wavenumber k = 0.5 (lam = 4*pi*R_f)."
+    - "Maps FUS interfacial tension sigma [uN/m] to Weirich's gamma_I [nN/m] = 1000 * sigma; neglects the rigid internal actin-bundle core present in Feigeles 2025."
+
+- id: rel_weirich2017_capillary_dispersion_iso_scales_as_column_pressure
+  kind: scales_as
+  a: feigeles2025/cylindrical_column_capillary_pressure
+  b: weirich2017/capillary_dispersion_corrected
+  mapping:
+    gamma_I: "1000 * sigma"
+    eta: "1.2"
+    R_0: "1000 * R_f"
+    omega: "0"
+    k: "0.5"
+  output_map:
+    Omega: DeltaP_column
+  regime:
+    sigma: [10.0, 120.0]
+    R_f: [0.35, 1.5]
+  provenance: proposed
+  reason: >
+    Connects Feigeles et al.'s (2025, p. 4) cylindrical condensate column Laplace pressure
+    DeltaP_column = sigma / R_f to Weirich et al.'s (2017, SI p. 11, corrected) Rayleigh-Plateau
+    instability growth rate Omega(k) ~ (gamma_I / (eta * R_0)) * k^2 * (1 - (1 + 2*omega) * k^2)
+    in the isotropic limit (omega = 0). At fixed condensate viscosity (eta = 1.2 Pa*s) and unstable
+    dimensionless wavenumber k = 0.5, the viscocapillary breakup rate Omega = (3/16) * DeltaP_column / eta
+    scales identically (+1, -1) in (sigma, R_f) with the column capillary pressure driving beading.
+  assumptions:
+    - "Isotropic condensate (omega = 0) at Feigeles's FUS condensate viscosity eta = 1.2 Pa*s and fixed unstable mode k = 0.5; converts R_f [um] -> R_0 [nm] = 1000*R_f and sigma [uN/m] -> gamma_I [nN/m] = 1000*sigma."
+
+# ==========================================================================
+# Cross-record relations: feigeles2025 <-> gubbala2025
+# ==========================================================================
+
+- id: rel_gubbala2025_unduloid_pressure_reduces_to_circle_curvature
+  kind: reduces_to
+  a: feigeles2025/unduloid_pressure_eq5
+  b: gubbala2025/boundary_curvature_s2_corrected
+  mapping:
+    R: "R_f / cos(theta * pi / 180)"
+  output_map:
+    kappa_mean: DeltaP_over_2sigma
+  limit:
+    c: "0"
+  regime:
+    R_f: [0.35, 2.0]
+    theta: [10.0, 60.0]
+    c: [0.01, 2.0]
+  provenance: proposed
+  reason: >
+    Links the Young-Laplace curvature equations across both Soft Matter 2025 condensate/domain-actin
+    studies. Feigeles et al. (2025, p. 8 Eq. 5) express the 3D axisymmetric unduloid mean curvature
+    as H = Delta p / (2*sigma) = cos(theta)/R_f + c/R_f^2 [1/um], while Gubbala et al. (2025,
+    p. 6 & SI Eq. S2 corrected) explicitly invoke the classical Young-Laplace proportionality
+    between domain boundary curvature kappa and excess interfacial stress for circular domains
+    (kappa_mean = 1/R [1/um]). In the c -> 0 limit of Feigeles's Eq. (3)-(5), the unduloid profile
+    degenerates into an exact spherical cap of radius R = R_f / cos(theta) whose 3D mean curvature
+    H = cos(theta) / R_f reduces exactly to Gubbala's corrected 2D circular curvature kappa_mean = 1/R
+    across all fiber radii R_f and contact angles theta.
+  assumptions:
+    - "Spherical-cap limit c -> 0 of Feigeles Eq. (3)-(5), where the axisymmetric unduloid has constant radius of curvature R = R_f / cos(theta) and mean curvature H = 1/R."
+    - "Targets Gubbala's corrected SI Eq. (S2) parametric curvature (boundary_curvature_s2_corrected) rather than the misprinted denominator (x' + y')^(3/2)."
+
