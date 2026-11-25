@@ -1,0 +1,8 @@
+"""Calibrated figure reader for figS4g_v_theory."""
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _figS4_S5 import read_figS4g_theory
+
+def read(image, at):
+    return read_figS4g_theory(image, at)

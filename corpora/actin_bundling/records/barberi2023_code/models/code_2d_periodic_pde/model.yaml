@@ -1,0 +1,39 @@
+id: code_2d_periodic_pde
+name: "Exact port of 2D/{InputParameters,kernels,main}.jl periodic Fourier pseudo-spectral Euler-forward solver with traceless viscous operator (1 + 2|K|^2) (2D/kernels.jl:3-136, 2D/main.jl:10-97)"
+role: model
+stated:
+  file: 2D/kernels.jl
+  lines: "43-81"
+  quote: "fV[i,j,1] = im * kx * fΠ / (1 + 2*(kx2 + ky2))"
+  where: "2D/kernels.jl:3-136 & 2D/main.jl:10-97 (rfft along x + fft along y, traceless viscous denominator 1 + visc_coeff*(kx^2 + ky^2), (C, Np, Nm) EulerForward!)"
+equation: "Pi = Z*C^2 - B*C^3; fV_x = i*kx*fPi/(1 + visc_coeff*(kx^2 + ky^2)), fV_y = i*ky*fPi/(1 + visc_coeff*(kx^2 + ky^2)); d_t C = -div(C*V) + Dc*lap(C) + (A/2)*(Np + Nm) - Kd*C; d_t Np = -div(Np*V) + 0.5*(Dap*lap(Np) + Dam*lap(Nm)); d_t Nm = -div(Nm*V) + 0.5*(Dam*lap(Np) + Dap*lap(Nm)) + Omega0*(1 + Omega*0.25*(Np + Nm)^2)*(Np - Nm) - (Omega_d0 + Omega_d*C)*(Np + Nm)"
+inputs:
+  L: {quantity: dimless_system_size, unit: dimensionless}
+  Dc: {quantity: dimless_diffusivity_c, unit: dimensionless}
+  Da: {quantity: dimless_diffusivity_a, unit: dimensionless}
+  Di: {quantity: dimless_diffusivity_i, unit: dimensionless}
+  A: {quantity: dimless_assembly_rate, unit: dimensionless}
+  Kd: {quantity: dimless_disassembly_rate, unit: dimensionless}
+  Omega0: {quantity: dimless_basal_activation_rate, unit: dimensionless}
+  Omega: {quantity: dimless_cooperative_activation, unit: dimensionless}
+  Omega_d: {quantity: dimless_actin_inactivation, unit: dimensionless}
+  Omega_d0: {quantity: dimless_spontaneous_inactivation, unit: dimensionless}
+  Z: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  B: {quantity: dimless_passive_stress_coeff, unit: dimensionless}
+  visc_coeff: {quantity: viscous_stress_ratio_2d, unit: dimensionless}
+  var_ic: {quantity: bump_width_param, unit: dimensionless}
+  T_end: {quantity: dimless_time, unit: dimensionless}
+outputs:
+  C_HSS: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  C_min: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  C_max: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  C_corner: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  transverse_std: {quantity: dimensionless_residual, unit: dimensionless}
+  mean_Np: {quantity: dimless_mean_nucleator_density, unit: dimensionless}
+settings:
+  N_grid: 64
+  dt: 0.005
+  ic_type: "bump"
+  noise_amp: 0.0
+  seed: 123
+stochastic: false

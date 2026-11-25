@@ -1,0 +1,137 @@
+id: barberi2023_code
+kind: software
+title: "Barberi-Kruse-2022: Released Julia 1D/2D simulation and linear stability code (Barberi & Kruse, 2023)"
+authors:
+  - Luca Barberi
+  - Karsten Kruse
+year: 2023
+doi: "10.5281/zenodo.10209642"
+url: "https://github.com/lucabrb/Barberi-Kruse-2022"
+file: corpus/actin_bundling/code/barberi2023_code
+version: "sha256:89bf160172899bc5885a2e62d8b4d6fc352ca44f60eb2cef02de176f550a859a"
+licence: GPL-3.0-only
+language: Julia
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1"
+  date: "2026-11-25"
+notes: >
+  Full source-code audit and line-by-line executable port of
+  `corpus/actin_bundling/code/barberi2023_code` (GitHub
+  https://github.com/lucabrb/Barberi-Kruse-2022 commit 00e6844 / Zenodo
+  10.5281/zenodo.10209642; tree digest
+  sha256:89bf160172899bc5885a2e62d8b4d6fc352ca44f60eb2cef02de176f550a859a; GNU GPL v3.0
+  in `LICENSE`), the released Julia simulation and linear stability repository accompanying
+  Barberi & Kruse, Phys. Rev. Lett. 131, 238401 (2023) (`barberi2023`).
+
+  Repository contents (all 12 files inspected):
+  (1) `README.md` (14 lines) and `LICENSE` (GPL v3.0).
+  (2) `1D/stabilitydiagram.jl` (158 lines): 1D homogeneous steady-state root finder (`EqnHSS`),
+    3x3 stability matrix (`StabilityMatrixElement`), discrete periodic wavenumber scan
+    (`StabilityMatrix!`), and staircase boundary extractor (`BifurcationLines`).
+  (3) `1D/PeriodicBoundaries/{InputParameters.jl, functions.jl, main.jl}` (69, 82, 118 lines):
+    1D periodic un-dealiased Fourier pseudo-spectral solver (`FFTW.rfft`/`irfft`) with viscous
+    operator `(1 + k^2)`, square `ZeroMeanBump` and uniform `ZeroMeanNoise` ICs, and adaptive
+    step-doubling midpoint integrator (`AdaptiveTimeStep!`).
+  (4) `1D/NoFlux/{InputParameters.jl, functions.jl, main.jl}` (77, 99, 151 lines):
+    1D no-flux finite-difference solver with `SymTridiagonal` viscous solve `(1 - d_xx)v = d_x Pi`,
+    5-point `FDC1` (`d_x C`), 3-point `FDC2` (`d_xx`), 1st-order donor-cell upwind advection,
+    Neumann copy `RHS[:, 1] = RHS[:, 2]` / `RHS[:, Nx] = RHS[:, Nx-1]`, and `AdaptiveTimeStep!`.
+  (5) `2D/{InputParameters.jl, kernels.jl, main.jl}` (62, 136, 100 lines):
+    2D periodic CUDA.jl GPU Fourier pseudo-spectral solver (`CUFFT.rfft` along x, `fft` along y)
+    in `(C, Np, Nm)` variables with traceless viscous denominator `(1 + 2*(kx^2 + ky^2))`,
+    1-based Gaussian `ZeroMeanBump`/`ZeroMeanStripe` ICs, and fixed explicit Euler (`dt = 1e-4`,
+    `FinalTime = 1e4`, `Nt = 10^8`).
+
+  Record inventory: 40 quantities, 102 data (80 parameters cited directly from the 4 Julia
+  modules + 15 figure parameters and 7 printed/digitized paper targets copied from `barberi2023`;
+  56 cross-linked to `barberi2023` via `from_source`/`from_datum` with 0 mismatches), 8 added
+  inputs, 7 models (all runnable Python ports without `software: true`), 27 runs (all 27
+  succeed with 0 failures and 0 NaNs), 14 comparisons (12 reproduction + 2 consistency:
+  7 reproduced, 2 close, 4 not reproduced, 1 no verdict), 6 refinements (5 settled /
+  `belongs_to: model`, 1 unsettled / `belongs_to: numerics` quantifying `1D/NoFlux`'s `O(dx)`
+  upwind non-convergence), and 8 open questions.
+
+  Key discoveries resolving open questions in `barberi2023`:
+  (1) `1D/stabilitydiagram.jl` completely resolves SM Fig. 1 (`barberi2023`
+    `q_sm_fig1_long_wave_type_iis` and `q_digitize_smfig1_finite_domain_offset`):
+    - Lines 43-49 and 103-104 evaluate `M(K)` only on discrete periodic modes
+      `K_p = p*(2*pi/L) = 0.2*p` (`p = 1..255`, `Kmin = 0.2`, `Kmax = 51.2`, `Nk = 255`),
+      shifting the long-wave Type II_s threshold upward (e.g., at `Z = 15`: continuum `8.1435`
+      -> discrete `8.3177` at `K_1 = 0.2`) and classifying `K_1 = 0.2` as finite-wavelength
+      Type I_s.
+    - `BifurcationLines` (lines 138, 142) detects the lower boundary solely via one-sided
+      `i-1 -> i` (`0 -> 1/2`, `i > 1`), shifting points right by `0..+dZ` and skipping `Z = 0`
+      (explaining why SM Fig. 1's dashed I_o curve stops short of `Z = 0`); the `j`-clause
+      (`1/2 -> 0`) detects only upper restabilization above `Omega ~ 70-95` (`C_H > 2/3`).
+    - Shipped `MaxPar = 100, NPar = 500` (`dZ = dOm = 0.2`) reproduces 14/17 raw (`17/17` with
+      input rounding, `cmp_smfig1_Is_shipped`), whereas running the exact algorithm on SM Fig. 1's
+      plotted `[0, 30] x [0, 30]` window with `NPar = 100` (`dZ = dOm = 0.3`,
+      `cmp_smfig1_Is_smfig1_grid`) directly reproduces all 17/17 digitized I_s points to
+      `0.0001-0.0081` (median `0.0038`) without rounding, matching `Z(Om = 0) = 24.6` and
+      `Z_io_start = 0.3`. Alternatives `MaxPar = 100` or `NPar = 150, 300` degrade the verdict.
+    - Minor quirks: line 52 allocates `Nk + 1 = 256` columns while lines 103-110 fill `1:255`,
+      leaving column 256 identically zero (clamping `MaxEigenvRe >= 0`); `Omega_d0 = 0` is hardcoded.
+
+  (2) `1D/PeriodicBoundaries` vs `1D/NoFlux` completely resolves SM Fig. 3's exact spike heights
+    `0.65272, 0.66710, 0.67374, 0.67694, 0.67850, 0.67928 ± 0.00004` (`barberi2023`
+    `q_digitize_smfig3_inset_discretization`):
+    - `1D/NoFlux` (1st-order donor-cell upwind at `Delta X = L/1024`) fails SM Fig. 3 in both
+      symmetries (`cmp_smfig3_nf1d_half` not reproduced: `0.62130..0.66291`; `cmp_smfig3_nf1d_node`
+      not reproduced: `0.66042..0.70484`; 55-75% too-large `2L - 1L` jump), and `ref_nf1d_spike_ngrid`
+      confirms `O(dx)` upwind non-convergence (`0.62130 -> 0.65261 -> 0.66239` across
+      `Nx = 1024 -> 2048 -> 4096`).
+    - `1D/PeriodicBoundaries` node-centered (`X_peak = 0, N_bar = 1`, `cmp_smfig3_per1d_node`
+      not reproduced) gives continuum peaks `0.66446..0.69305` (`+0.012..+0.014` above SM Fig. 3),
+      spectrally converged to `4.7e-5` (`ref_per1d_spike_ngrid`).
+    - Combining two exact discretization artifacts of `1D/PeriodicBoundaries/InputParameters.jl`
+      (lines 6, 35, 44) — half-grid-cell peak centering at `X_peak = -dx/2` (midpoint of half-open
+      `x = [-L/2 + i*dx for i = 0:Nx-1]`, matching SM Fig. 3 main panel's digitized `X_peak = -0.0165`)
+      AND normalizing nucleator density via `integrate(x, Na + Ni)/L = 1` over `[-L/2, L/2 - dx]`
+      (width `L - dx`, inflating discrete periodic mean to `N_bar = Nx/(Nx - 1)`) — yields
+      `0.65275, 0.66711, 0.67376, 0.67697, 0.67855, 0.67933`, matching SM Fig. 3 to `0.00001-0.00005`
+      (`cmp_smfig3_per1d_half_trapz` close: 4/6 inside `±0.00004`, 2/6 within `0.00005`;
+      `cmp_smfig3_asymptotic_scalar` yields `0.67933` vs `"≃ 0.68"`).
+    - `1D/PeriodicBoundaries` also directly reproduces Fig. 2's 13-point LP0 `<(d_X C)^2>` branch
+      (`cmp_fig2_per1d_lp0_branch` reproduced 13/13 without rounding), Fig. 1(a) `C(X)`
+      (`cmp_fig1a_per1d_profile` reproduced 21/21 with rounding, 20/21 raw), Fig. 3(a) `C(X)`
+      (`cmp_fig3a_per1d_profile` close 16/19), and SM Fig. 2's passive travelling wave
+      (`run_per1d_smfig2_wave`, `ref_per1d_wave_dt` settled `0.83% < 1%`).
+
+  (3) `2D/kernels.jl` and `2D/InputParameters.jl` definitively settle `barberi2023` Eq. (3) and
+    Fig. 4 `Omega_d` (`q_eq3_non_traceless_strain_rate`, `q_audit_eq3_2d_printed_vs_traceless`,
+    `q_fig4_omega_d_unstated`):
+    - `2D/kernels.jl:54-55` explicitly solves `fV = i*k*fPi / (1 + 2*(kx^2 + ky^2))` (the traceless
+      2D viscous operator, coefficient `2`, NOT Main Text Eq. 3's printed `2.5`). Our 2D port
+      sustains Fig. 4(a) circular LS (`C_max = 0.936`, `ref_2d_fig4a_dt` settled `1.73% < 2%`) and
+      Fig. 4(c) band LS (`C_max = 0.817`, `transverse_std = 1.1e-16`, `ref_2d_fig4c_dt` settled
+      `0.002% < 1%`) at coefficient `2`, whereas printed Eq. (3)'s `2.5` decays toward `H`
+      (`C_max = 0.219`).
+    - `2D/InputParameters.jl:44` explicitly sets `Ωd = 10` (missing from Fig. 4's caption).
+    - Shipped `2D/InputParameters.jl:45-48` sets placeholder defaults `Ωd0 = 10, Ω = 10, Z = B = 10`
+      (not Fig. 4), where `H` is stable (`C_H = 0.0465`) and bumps decay (`C_max = 0.0466`).
+
+  (4) Code bugs, hidden numerics, and missing scripts:
+    - 1D `AdaptiveTimeStep!` (`PeriodicBoundaries/functions.jl:73,78`, `NoFlux/functions.jl:90,95`):
+      drops `abs.` on denominator inside `while` loop, discards more accurate `Fields_ShortStep`
+      for `Fields_LongStep`, risks off-by-one `BoundsError` on `plotframes = floor(FinalTime/FrameTimeStep)`,
+      and leaves `Savedv[:, 1] = 0`. Shipped `1D/PeriodicBoundaries` uses non-figure defaults
+      `Z = B = 9.3, Omega = 12, Nx = 512, FinalTime = 10` (subcritical oscillatory LS regime below
+      `Omega_c = 13.35`), and square `ZeroMeanBump` crashes step 1 `dt` 15 times to `6.104e-7`.
+    - `1D/NoFlux`: boundary upwind terms (`functions.jl:15-18`) are dead code overwritten by
+      `RHS[:, 1] = RHS[:, 2]` / `RHS[:, Nx] = RHS[:, Nx-1]` (lines 32-33), leaking conserved
+      nucleator mass under outward boundary flow (`run_nf1d_outward_leak`: `mass_drift = -0.0125`
+      by `T = 5`); commented 5-pt `A` (`main.jl:57,60`) writes `(2 + Δx)` missing `^2`; `main.jl:120`
+      comment inverts "never less than MaxTimeStep"; shipped `Nx = 4096, Z = 15, Omega = 6.05`
+      matches the leftmost Fig. 2 `LP0` point (`<(d_X C)^2> = 0.0310` vs `0.0334` spectral).
+    - `2D/`: `InputParameters.jl:61` computes `TotPrints = floor(FinalTime / PrintEvery) = floor(1e4 / 1e6) = 0`
+      instead of `Nt / PrintEvery = 100` (`cmp_2d_totprints_bug_vs_divisor` not reproduced: `0 vs 100`;
+      `cmp_2d_totprints_intended_vs_divisor` reproduced: `100 vs 100`); `main.jl:87-89` overwrites
+      `"data.jld"` ignoring `numm`; `InputParameters.jl:24` writes `Ny = WrapsT * Bx`; `main.jl:37,39`
+      size `factor_∂x`/`factor_Δ` with `Nx`; `kernels.jl:6,18` shift 1-based Gaussian `+dx` relative
+      to `x`; fixed Euler uses `dt = 1e-4, FinalTime = 1e4` (`cfl_diff_2d = 0.524 < 2`).
+    - Unshipped analysis code: no scripts are released for Fig. 3(c)'s 8D spatial-dynamics
+      eigenvalues, SM Table I's local linear stability analysis, Fig. 2 branch continuation, or
+      figure plotting (leaving `barberi2023`'s Fig. 3(c) and SM Table I discrepancies unexplained
+      by the released repository).

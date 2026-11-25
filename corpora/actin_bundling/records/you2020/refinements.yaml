@@ -1,0 +1,111 @@
+# Numerical refinement checks for all ODE and PDE models
+
+- id: ref_ode_dk1p5_rtol
+  run: run_ode_dk1p5
+  setting: rtol
+  factors: [1, 10, 100]
+  mode: divide
+  output: v_final
+  tolerance: "0.01%"
+  tolerance_basis: "added: verifies RK45 time integration of Eqs. (4a-4d) converges well below 0.01% relative error on steady drift speed"
+  tolerance_added: true
+
+- id: ref_pde1d_dk2_N
+  run: run_pde1d_dk2
+  setting: N
+  factors: [1, 2]
+  mode: multiply
+  output: v
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies spatial spectral convergence (N = 64 -> 128) of 1D PDE Eq. (1) traveling velocity at delta = 2*kappa"
+  tolerance_added: true
+
+- id: ref_pde1d_dk2_dt
+  run: run_pde1d_dk2
+  setting: dt
+  factors: [1, 2, 4]
+  mode: divide
+  output: v
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies temporal SBDF2 convergence (dt = 2.0 -> 1.0 -> 0.5) of 1D PDE Eq. (1) traveling velocity"
+  tolerance_added: true
+
+- id: ref_pde1d_dk1_rhoB_N
+  run: run_pde1d_dk1
+  setting: N
+  factors: [1, 2]
+  mode: multiply
+  output: rho_B
+  tolerance: "0.1%"
+  tolerance_basis: "added: confirms static-state |phi_hat_B^1| = 0.20101 is spatially converged, ruling out discretization error in the Fig. S1(a) discrepancy"
+  tolerance_added: true
+
+- id: ref_pde2d_stripe_dk3_N
+  run: run_pde2d_stripe_dk3
+  setting: N
+  factors: [1, 2]
+  mode: multiply
+  output: v
+  tolerance: "0.2%"
+  tolerance_basis: "added: verifies 2D spatial spectral convergence (N = 32 -> 64) of traveling stripe velocity in Fig. S4(g)"
+  tolerance_added: true
+
+- id: ref_pde2d_osc_dk3_N
+  run: run_pde2d_osc_dk3
+  setting: N
+  factors: [1, 2]
+  mode: multiply
+  output: freq_osc
+  tolerance: "0.5%"
+  tolerance_basis: "added: verifies 2D spatial spectral convergence (N = 32 -> 64) of splitting-merging oscillation frequency in Fig. S4(h)"
+  tolerance_added: true
+
+- id: ref_pde2d_osc_dk3_dt
+  run: run_pde2d_osc_dk3
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: freq_osc
+  tolerance: "0.5%"
+  tolerance_basis: "added: verifies 2D temporal SBDF2 convergence (dt = 2.0 -> 1.0) of oscillation frequency in Fig. S4(h)"
+  tolerance_added: true
+
+- id: ref_bisup_pde_dk4_N
+  run: run_bisup_pde_dk4
+  setting: N
+  factors: [1, 2]
+  mode: multiply
+  output: v
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies spatial convergence (N = 64 -> 128) of bi-supercritical 1D PDE Eq. (S31) speed at delta = 4*kappa"
+  tolerance_added: true
+
+- id: ref_bisup_pde_dk4_dt
+  run: run_bisup_pde_dk4
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: v
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies temporal SBDF2 convergence (dt = 2.0 -> 1.0) of bi-supercritical 1D PDE Eq. (S31) speed"
+  tolerance_added: true
+
+- id: ref_ap_pde_v70_L64_N
+  run: run_ap_pde_v70_L64
+  setting: N
+  factors: [1, 2]
+  mode: multiply
+  output: period_travel
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies spatial spectral convergence (N = 64 -> 128) of active-passive 1D PDE Eqs. (S39)-(S40) traveling period at L = 64"
+  tolerance_added: true
+
+- id: ref_ap_pde_v70_L64_dt
+  run: run_ap_pde_v70_L64
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: period_travel
+  tolerance: "0.2%"
+  tolerance_basis: "added: verifies temporal SBDF2 convergence (dt = 0.05 -> 0.025) of active-passive 1D PDE Eqs. (S39)-(S40) traveling period"
+  tolerance_added: true

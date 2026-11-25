@@ -1,0 +1,37 @@
+id: code_grid_config_derived
+name: "Derived grid, wavenumber, CFL, and frame-count formulas across the four Julia scripts (1D/stabilitydiagram.jl:33-49, 1D/PeriodicBoundaries/InputParameters.jl:5,66, 1D/NoFlux/InputParameters.jl:5,68,74, 2D/InputParameters.jl:6-7,21-24,59-61)"
+role: processing
+stated:
+  file: 2D/InputParameters.jl
+  lines: "59-61"
+  quote: "TotPrints = floor(Int64, FinalTime / PrintEvery)"
+  where: "1D/stabilitydiagram.jl:33-49, 1D/NoFlux/InputParameters.jl:68, 2D/InputParameters.jl:59-61"
+equation: "dZ = (MaxZ - MinZ)/NPar1; dx_stab = L/Nx_stab; Kmin = 2*pi/L; Kmax = pi/dx_stab; Nk = floor((Kmax - Kmin)/Kmin); MaxTimeStep_nf = (L/Nx_nf)^2 / 2; plotframes_per = floor(T_per/Frame_per); Nt_2d = floor(T_2d/dt_2d); PrintEvery_2d = floor(Nt_2d/save_div); TotPrints_2d_buggy = floor(T_2d/PrintEvery_2d); TotPrints_2d_intended = floor(Nt_2d/PrintEvery_2d); cfl_diff_2d = dt_2d * Di * 2*(pi/(L/N_2d))^2"
+inputs:
+  L: {quantity: dimless_system_size, unit: dimensionless}
+  MinZ: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  MaxZ: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  NPar1: {quantity: grid_point_count, unit: dimensionless}
+  Nx_stab: {quantity: grid_point_count, unit: dimensionless}
+  Nx_nf: {quantity: grid_point_count, unit: dimensionless}
+  T_per: {quantity: dimless_time, unit: dimensionless}
+  Frame_per: {quantity: dimless_time, unit: dimensionless}
+  N_2d: {quantity: grid_point_count, unit: dimensionless}
+  dt_2d: {quantity: dimless_time, unit: dimensionless}
+  Di: {quantity: dimless_diffusivity_i, unit: dimensionless}
+  T_2d: {quantity: dimless_time, unit: dimensionless}
+  save_div: {quantity: step_count, unit: dimensionless}
+outputs:
+  dZ_stab: {quantity: dimless_grid_spacing, unit: dimensionless}
+  Kmin_stab: {quantity: dimless_wavenumber, unit: dimensionless}
+  Kmax_stab: {quantity: dimless_wavenumber, unit: dimensionless}
+  Nk_stab: {quantity: grid_point_count, unit: dimensionless}
+  MaxTimeStep_nf: {quantity: dimless_time, unit: dimensionless}
+  plotframes_per: {quantity: step_count, unit: dimensionless}
+  Nt_2d: {quantity: step_count, unit: dimensionless}
+  PrintEvery_2d: {quantity: step_count, unit: dimensionless}
+  TotPrints_2d_buggy: {quantity: step_count, unit: dimensionless}
+  TotPrints_2d_intended: {quantity: step_count, unit: dimensionless}
+  cfl_diff_2d: {quantity: cfl_number, unit: dimensionless}
+settings: {}
+stochastic: false

@@ -1,0 +1,866 @@
+# ==============================================================================
+# 1. Derived numerical grid, wavenumber, CFL, and frame-count checks
+# ==============================================================================
+- id: run_grid_config_derived
+  model: code_grid_config_derived
+  inputs:
+    L: stab_L
+    MinZ: stab_MinPar1_Z
+    MaxZ: stab_MaxPar1_Z
+    NPar1: stab_NPar1
+    Nx_stab: stab_Nx
+    Nx_nf: nf1d_Nx
+    T_per: per1d_FinalTime
+    Frame_per: per1d_FrameTimeStep
+    N_2d: code2d_N
+    dt_2d: code2d_dt
+    Di: code2d_Di
+    T_2d: code2d_FinalTime
+    save_div: code2d_save_divisor
+  settings: {}
+  outputs:
+    dZ_stab: cfg_dZ_stab
+    Kmin_stab: cfg_Kmin_stab
+    Kmax_stab: cfg_Kmax_stab
+    Nk_stab: cfg_Nk_stab
+    MaxTimeStep_nf: cfg_MaxTimeStep_nf
+    plotframes_per: cfg_plotframes_per
+    Nt_2d: cfg_Nt_2d
+    PrintEvery_2d: cfg_PrintEvery_2d
+    TotPrints_2d_buggy: cfg_TotPrints_2d_buggy
+    TotPrints_2d_intended: cfg_TotPrints_2d_intended
+    cfl_diff_2d: cfg_cfl_diff_2d
+  note: "Verifies exact derived grid/mode counts across all four Julia scripts and exposes 2D/InputParameters.jl:61 TotPrints = floor(1e4 / 1e6) = 0 vs intended 100."
+
+# ==============================================================================
+# 2. Pointwise 1D linear stability checks (1D/stabilitydiagram.jl)
+# ==============================================================================
+- id: run_stab_point_Z15_Om6
+  model: code_stability_point_1d
+  inputs:
+    A: stab_A
+    Kd: stab_Kd
+    Dc: stab_Dc
+    Dap: stab_Dap
+    Dam: stab_Dam
+    Omega0: stab_Omega0
+    Omega_d: stab_Omega_d
+    Z: nf1d_Z
+    Omega: paper_Omega_LP0
+    L: stab_L
+    Nx: stab_Nx
+  settings:
+    include_uninit_col: true
+  outputs:
+    Na_HSS: stab_pt_Z15_Om6_NaH
+    C_HSS: stab_pt_Z15_Om6_CH
+    MaxEigenvRe: stab_pt_Z15_Om6_max_re
+    MaxEigenvIm: stab_pt_Z15_Om6_max_im
+    K_dominant: stab_pt_Z15_Om6_Kdom
+    regime_code: stab_pt_Z15_Om6_code
+    Omega_crit_discrete: stab_pt_Z15_Om6_Om_crit
+    K_crit_discrete: stab_pt_Z15_Om6_K_crit
+  note: "Pointwise 1D/stabilitydiagram.jl at Fig. 1(a) LP0 (Z = 15, Omega = 6): confirms discrete finite-domain onset Omega_c = 8.3177 at K_1 = 0.2 (vs continuum 8.1435) and MaxEigenvRe = 0 clamped by uninitialized column Nk+1."
+
+- id: run_stab_point_per1d_default
+  model: code_stability_point_1d
+  inputs:
+    A: stab_A
+    Kd: stab_Kd
+    Dc: stab_Dc
+    Dap: stab_Dap
+    Dam: stab_Dam
+    Omega0: stab_Omega0
+    Omega_d: stab_Omega_d
+    Z: per1d_Z
+    Omega: per1d_Omega
+    L: stab_L
+    Nx: stab_Nx
+  settings:
+    include_uninit_col: true
+  outputs:
+    Na_HSS: stab_pt_per1d_NaH
+    C_HSS: stab_pt_per1d_CH
+    MaxEigenvRe: stab_pt_per1d_max_re
+    MaxEigenvIm: stab_pt_per1d_max_im
+    K_dominant: stab_pt_per1d_Kdom
+    regime_code: stab_pt_per1d_code
+    Omega_crit_discrete: stab_pt_per1d_Om_crit
+    K_crit_discrete: stab_pt_per1d_K_crit
+  note: "Pointwise 1D/stabilitydiagram.jl at shipped 1D/PeriodicBoundaries default Z = 9.3, Omega = 12: confirms H is linearly stable (code 0, Omega_c = 13.35) so the shipped default sits in the subcritical oscillatory LS regime."
+
+- id: run_stab_point_smfig2_passive
+  model: code_stability_point_1d
+  inputs:
+    A: stab_A
+    Kd: stab_Kd
+    Dc: stab_Dc
+    Dap: stab_Dap
+    Dam: stab_Dam
+    Omega0: stab_Omega0
+    Omega_d: stab_Omega_d
+    Z: paper_Z_passive
+    Omega: paper_Omega_smfig2
+    L: stab_L
+    Nx: stab_Nx
+  settings:
+    include_uninit_col: true
+  outputs:
+    Na_HSS: stab_pt_smfig2_NaH
+    C_HSS: stab_pt_smfig2_CH
+    MaxEigenvRe: stab_pt_smfig2_max_re
+    MaxEigenvIm: stab_pt_smfig2_max_im
+    K_dominant: stab_pt_smfig2_Kdom
+    regime_code: stab_pt_smfig2_code
+    Omega_crit_discrete: stab_pt_smfig2_Om_crit
+    K_crit_discrete: stab_pt_smfig2_K_crit
+  note: "Pointwise 1D/stabilitydiagram.jl at SM Fig. 2 passive fluid Z = 0, Omega = 30: confirms Type I_o Hopf instability (code 2, K_dom = 2.4, Im = 1.219)."
+
+# ==============================================================================
+# 3. 1D/stabilitydiagram.jl BifurcationLines vs SM Fig. 1 boundaries
+# ==============================================================================
+- id: run_stab_diag_Is_shipped
+  model: code_stability_diagram_1d
+  inputs:
+    A: stab_A
+    Kd: stab_Kd
+    Dc: stab_Dc
+    Dap: stab_Dap
+    Dam: stab_Dam
+    Omega0: stab_Omega0
+    Omega_d: stab_Omega_d
+    L: stab_L
+    Nx: stab_Nx
+    MinZ: stab_MinPar1_Z
+    MaxZ: stab_MaxPar1_Z
+    NPar1: stab_NPar1
+    MinOm: stab_MinPar2_Omega
+    MaxOm: stab_MaxPar2_Omega
+    NPar2: stab_NPar2
+    query_curve: paper_smfig1_boundary_Is
+  settings:
+    branch: "turing"
+    scan_window_Z: 30.0
+    scan_window_Om: 30.0
+  outputs:
+    Omega_boundary: stab_Is_shipped_curve
+    Z_onset_Om0: stab_Is_shipped_Z0
+    Z_io_start: stab_Is_shipped_Zio
+    Omega_at_Z15: stab_Is_shipped_Om15
+  note: "Exact 1D/stabilitydiagram.jl BifurcationLines Turing boundary at shipped MaxPar = 100, NPar = 500 (dZ = dOm = 0.2): matches 14/17 digitized SM Fig. 1 I_s points."
+
+- id: run_stab_diag_Io_shipped
+  model: code_stability_diagram_1d
+  inputs:
+    A: stab_A
+    Kd: stab_Kd
+    Dc: stab_Dc
+    Dap: stab_Dap
+    Dam: stab_Dam
+    Omega0: stab_Omega0
+    Omega_d: stab_Omega_d
+    L: stab_L
+    Nx: stab_Nx
+    MinZ: stab_MinPar1_Z
+    MaxZ: stab_MaxPar1_Z
+    NPar1: stab_NPar1
+    MinOm: stab_MinPar2_Omega
+    MaxOm: stab_MaxPar2_Omega
+    NPar2: stab_NPar2
+    query_curve: paper_smfig1_boundary_Io
+  settings:
+    branch: "hopf"
+    scan_window_Z: 30.0
+    scan_window_Om: 30.0
+  outputs:
+    Omega_boundary: stab_Io_shipped_curve
+    Z_onset_Om0: stab_Io_shipped_Z0
+    Z_io_start: stab_Io_shipped_Zio
+    Omega_at_Z15: stab_Io_shipped_Om15
+  note: "Exact 1D/stabilitydiagram.jl BifurcationLines Hopf boundary at shipped MaxPar = 100, NPar = 500 (dZ = dOm = 0.2, starts at Z = 0.2 because i > 1 omits Z = 0)."
+
+- id: run_stab_diag_Is_smfig1_grid
+  model: code_stability_diagram_1d
+  inputs:
+    A: stab_A
+    Kd: stab_Kd
+    Dc: stab_Dc
+    Dap: stab_Dap
+    Dam: stab_Dam
+    Omega0: stab_Omega0
+    Omega_d: stab_Omega_d
+    L: stab_L
+    Nx: stab_Nx
+    MinZ: stab_MinPar1_Z
+    MaxZ: smfig1_MaxPar1_added
+    NPar1: smfig1_NPar_added
+    MinOm: stab_MinPar2_Omega
+    MaxOm: smfig1_MaxPar2_added
+    NPar2: smfig1_NPar_added
+    query_curve: paper_smfig1_boundary_Is
+  settings:
+    branch: "turing"
+    scan_window_Z: 30.0
+    scan_window_Om: 30.0
+  outputs:
+    Omega_boundary: stab_Is_smfig1_curve
+    Z_onset_Om0: stab_Is_smfig1_Z0
+    Z_io_start: stab_Is_smfig1_Zio
+    Omega_at_Z15: stab_Is_smfig1_Om15
+  note: "Exact 1D/stabilitydiagram.jl BifurcationLines Turing boundary on SM Fig. 1 [0, 30] x [0, 30] with NPar = 100 (dZ = dOm = 0.3): reproduces all 17/17 digitized SM Fig. 1 I_s points to median |diff| = 0.0038."
+
+- id: run_stab_diag_Io_smfig1_grid
+  model: code_stability_diagram_1d
+  inputs:
+    A: stab_A
+    Kd: stab_Kd
+    Dc: stab_Dc
+    Dap: stab_Dap
+    Dam: stab_Dam
+    Omega0: stab_Omega0
+    Omega_d: stab_Omega_d
+    L: stab_L
+    Nx: stab_Nx
+    MinZ: stab_MinPar1_Z
+    MaxZ: smfig1_MaxPar1_added
+    NPar1: smfig1_NPar_added
+    MinOm: stab_MinPar2_Omega
+    MaxOm: smfig1_MaxPar2_added
+    NPar2: smfig1_NPar_added
+    query_curve: paper_smfig1_boundary_Io
+  settings:
+    branch: "hopf"
+    scan_window_Z: 30.0
+    scan_window_Om: 30.0
+  outputs:
+    Omega_boundary: stab_Io_smfig1_curve
+    Z_onset_Om0: stab_Io_smfig1_Z0
+    Z_io_start: stab_Io_smfig1_Zio
+    Omega_at_Z15: stab_Io_smfig1_Om15
+  note: "Exact 1D/stabilitydiagram.jl BifurcationLines Hopf boundary on SM Fig. 1 [0, 30] x [0, 30] with NPar = 100 (dZ = dOm = 0.3, starts at Z = 0.3 explaining why SM Fig. 1's dashed I_o curve stops before Z = 0)."
+
+# ==============================================================================
+# 4. 1D/PeriodicBoundaries Fourier pseudo-spectral solver runs
+# ==============================================================================
+- id: run_per1d_shipped_adaptive
+  model: code_1d_periodic_pde
+  inputs:
+    L_base: per1d_L
+    L_mult: per1d_L_mult_1
+    N_base: per1d_Nx
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega: per1d_Omega
+    Omega_d: per1d_Omega_d
+    Omega_d0: per1d_Omega_d0
+    Z: per1d_Z
+    B: per1d_B
+    T_end: per1d_FinalTime
+    ErrorTolerance: per1d_ErrorTolerance
+    dt_init: per1d_dt_init
+  settings:
+    solver: "adaptive_midpoint"
+    adapt_steps: 5
+  outputs:
+    C_HSS: per1d_ad_CH
+    C_min: per1d_ad_Cmin
+    C_max: per1d_ad_Cmax
+    C_center: per1d_ad_Ccenter
+    grad_c_sq_mean: per1d_ad_grad_c_sq
+    mean_N: per1d_ad_mean_N
+    max_rhs: per1d_ad_max_rhs
+    dt_first_step: per1d_ad_dt_first
+  note: "Verbatim 1D/PeriodicBoundaries AdaptiveTimeStep! on shipped square ZeroMeanBump IC (Z = 9.3, Omega = 12, Nx = 512): confirms Gibbs ringing halves step 1 fifteen times to dt = 6.104e-7."
+
+- id: run_per1d_shipped_oscillatory
+  model: code_1d_periodic_pde
+  inputs:
+    L_base: per1d_L
+    L_mult: per1d_L_mult_1
+    N_base: per1d_Nx
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega: per1d_Omega
+    Omega_d: per1d_Omega_d
+    Omega_d0: per1d_Omega_d0
+    Z: per1d_Z
+    B: per1d_B
+    T_end: T_end_wave_cpu_added
+    ErrorTolerance: per1d_ErrorTolerance
+    dt_init: per1d_dt_init
+  settings:
+    solver: "imex_wave"
+    dt_imex: 0.05
+  outputs:
+    C_HSS: per1d_osc_CH
+    C_min: per1d_osc_Cmin
+    C_max: per1d_osc_Cmax
+    C_center: per1d_osc_Ccenter
+    grad_c_sq_mean: per1d_osc_grad_c_sq
+    mean_N: per1d_osc_mean_N
+    max_rhs: per1d_osc_max_rhs
+    dt_first_step: per1d_osc_dt
+  note: "Time integration of 1D/PeriodicBoundaries Fourier RHS at shipped defaults Z = 9.3, Omega = 12 (T = 300): confirms sustained subcritical oscillatory localized state (C_max ~ 0.88, max_rhs ~ 0.66)."
+
+- id: run_per1d_smfig2_wave
+  model: code_1d_periodic_pde
+  inputs:
+    L_base: per1d_L
+    L_mult: per1d_L_mult_1
+    N_base: per1d_Nx
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega: paper_Omega_smfig2
+    Omega_d: per1d_Omega_d
+    Omega_d0: per1d_Omega_d0
+    Z: paper_Z_passive
+    B: paper_B_passive
+    T_end: T_end_wave_cpu_added
+    ErrorTolerance: per1d_ErrorTolerance
+    dt_init: per1d_dt_init
+  settings:
+    solver: "imex_wave"
+    dt_imex: 0.01
+    seed: 123
+  outputs:
+    C_HSS: per1d_wave_CH
+    C_min: per1d_wave_Cmin
+    C_max: per1d_wave_Cmax
+    C_center: per1d_wave_Ccenter
+    grad_c_sq_mean: per1d_wave_grad_c_sq
+    mean_N: per1d_wave_mean_N
+    max_rhs: per1d_wave_max_rhs
+    dt_first_step: per1d_wave_dt
+  note: "Time integration of 1D/PeriodicBoundaries Fourier RHS at SM Fig. 2 passive fluid Z = 0, Omega = 30 (T = 300): confirms sustained travelling wave (C_max ~ 0.93, max_rhs ~ 1.38)."
+
+- id: run_per1d_fig1a_profile
+  model: code_1d_periodic_profile
+  inputs:
+    L: per1d_L
+    Nx: per1d_Nx
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega: paper_Omega_LP0
+    Omega_d: per1d_Omega_d
+    Omega_d0: per1d_Omega_d0
+    Z: nf1d_Z
+    B: nf1d_B
+    target_curve: paper_fig1a_C
+  settings:
+    branch: "lp0"
+    shift_half: false
+    nbar_mode: "exact_1"
+  outputs:
+    C_profile: per1d_fig1a_C_profile
+    C_max: per1d_fig1a_C_max
+    grad_c_sq_mean: per1d_fig1a_grad_c_sq
+  note: "Exact 1D/PeriodicBoundaries steady-state LP0 profile at Fig. 1(a) (Z = 15, Omega = 6, Nx = 512) sampled at digitized X coordinates."
+
+- id: run_per1d_fig3a_profile
+  model: code_1d_periodic_profile
+  inputs:
+    L: per1d_L
+    Nx: paper_N_grid_smfig3
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega: paper_Omega_spike
+    Omega_d: paper_Omega_d_spike
+    Omega_d0: paper_Omega_d0_spike
+    Z: paper_Z_spike
+    B: paper_B_spike
+    target_curve: paper_fig3a_C
+  settings:
+    branch: "spike"
+    shift_half: false
+    nbar_mode: "exact_1"
+  outputs:
+    C_profile: per1d_fig3a_C_profile
+    C_max: per1d_fig3a_C_max
+    grad_c_sq_mean: per1d_fig3a_grad_c_sq
+  note: "Exact 1D/PeriodicBoundaries steady-state spike profile at Fig. 3(a) (Z = 20, Omega = 0, Omega_d0 = 3, Omega_d = 0, Nx = 1024) sampled at digitized X coordinates."
+
+- id: run_per1d_fig2_lp0_sweep
+  model: code_1d_periodic_pde
+  inputs:
+    L_base: per1d_L
+    L_mult: per1d_L_mult_1
+    N_base: per1d_Nx
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega_d: per1d_Omega_d
+    Omega_d0: per1d_Omega_d0
+    Z: nf1d_Z
+    B: nf1d_B
+    T_end: per1d_FinalTime
+    ErrorTolerance: per1d_ErrorTolerance
+    dt_init: per1d_dt_init
+  sweep:
+    Omega: paper_fig2_LP0
+  settings:
+    solver: "newton_krylov"
+    branch: "lp0"
+    shift_half: false
+    nbar_mode: "exact_1"
+  outputs:
+    C_HSS: per1d_fig2_CH
+    C_min: per1d_fig2_Cmin
+    C_max: per1d_fig2_Cmax
+    C_center: per1d_fig2_Ccenter
+    grad_c_sq_mean: per1d_fig2_lp0_grad_c_sq
+    mean_N: per1d_fig2_mean_N
+    max_rhs: per1d_fig2_max_rhs
+    dt_first_step: per1d_fig2_dt
+  note: "Sweep of 1D/PeriodicBoundaries exact steady-state LP0 branch across Fig. 2's 13 Omega values (6.05..6.65) at Nx = 512."
+
+- id: run_per1d_spike_L1
+  model: code_1d_periodic_pde
+  inputs:
+    L_base: per1d_L
+    L_mult: per1d_L_mult_1
+    N_base: paper_N_grid_smfig3
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega: paper_Omega_spike
+    Omega_d: paper_Omega_d_spike
+    Omega_d0: paper_Omega_d0_spike
+    Z: paper_Z_spike
+    B: paper_B_spike
+    T_end: per1d_FinalTime
+    ErrorTolerance: per1d_ErrorTolerance
+    dt_init: per1d_dt_init
+  settings:
+    solver: "newton_krylov"
+    branch: "spike"
+    shift_half: false
+    nbar_mode: "exact_1"
+    n_grid_scale: 1.0
+  outputs:
+    C_HSS: per1d_spk1_CH
+    C_min: per1d_spk1_Cmin
+    C_max: per1d_spk1_Cmax
+    C_center: per1d_spk1_Ccenter
+    grad_c_sq_mean: per1d_spk1_grad_c_sq
+    mean_N: per1d_spk1_mean_N
+    max_rhs: per1d_spk1_max_rhs
+    dt_first_step: per1d_spk1_dt
+  note: "Baseline L x 1 (Nx = 1024) 1D/PeriodicBoundaries spike steady state used for spectral grid-refinement verification."
+
+- id: run_per1d_smfig3_node
+  model: code_1d_periodic_pde
+  inputs:
+    L_base: per1d_L
+    N_base: paper_N_grid_smfig3
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega: paper_Omega_spike
+    Omega_d: paper_Omega_d_spike
+    Omega_d0: paper_Omega_d0_spike
+    Z: paper_Z_spike
+    B: paper_B_spike
+    T_end: per1d_FinalTime
+    ErrorTolerance: per1d_ErrorTolerance
+    dt_init: per1d_dt_init
+  sweep:
+    L_mult: paper_smfig3_inset_Cmax
+  settings:
+    solver: "newton_krylov"
+    branch: "spike"
+    shift_half: false
+    nbar_mode: "exact_1"
+  outputs:
+    C_HSS: per1d_sm3n_CH
+    C_min: per1d_sm3n_Cmin
+    C_max: per1d_smfig3_node_C_max
+    C_center: per1d_sm3n_Ccenter
+    grad_c_sq_mean: per1d_sm3n_grad_c_sq
+    mean_N: per1d_sm3n_mean_N
+    max_rhs: per1d_sm3n_max_rhs
+    dt_first_step: per1d_sm3n_dt
+  note: "1D/PeriodicBoundaries spike C_max across L x 1..32 (Delta X = L/1024) with node-centered peak (X_peak = 0) and exact N_bar = 1: yields continuum heights 0.66446..0.69305 (+0.012..+0.014 above SM Fig. 3)."
+
+- id: run_per1d_smfig3_half_trapz
+  model: code_1d_periodic_pde
+  inputs:
+    L_base: per1d_L
+    N_base: paper_N_grid_smfig3
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega: paper_Omega_spike
+    Omega_d: paper_Omega_d_spike
+    Omega_d0: paper_Omega_d0_spike
+    Z: paper_Z_spike
+    B: paper_B_spike
+    T_end: per1d_FinalTime
+    ErrorTolerance: per1d_ErrorTolerance
+    dt_init: per1d_dt_init
+  sweep:
+    L_mult: paper_smfig3_inset_Cmax
+  settings:
+    solver: "newton_krylov"
+    branch: "spike"
+    shift_half: true
+    nbar_mode: "trapz_grid"
+  outputs:
+    C_HSS: per1d_sm3ht_CH
+    C_min: per1d_sm3ht_Cmin
+    C_max: per1d_smfig3_half_trapz_C_max
+    C_center: per1d_sm3ht_Ccenter
+    grad_c_sq_mean: per1d_sm3ht_grad_c_sq
+    mean_N: per1d_sm3ht_mean_N
+    max_rhs: per1d_sm3ht_max_rhs
+    dt_first_step: per1d_sm3ht_dt
+  note: "1D/PeriodicBoundaries spike C_max across L x 1..32 with exact InputParameters.jl:6,35,44 half-cell peak centering (X_peak = -dx/2) and trapezoidal normalization on [-L/2, L/2 - dx] (N_bar = Nx/(Nx - 1)): reproduces SM Fig. 3 inset 0.65272..0.67928 to 0.00001..0.00005."
+
+- id: run_per1d_smfig3_L32_half_trapz
+  model: code_1d_periodic_pde
+  inputs:
+    L_base: per1d_L
+    L_mult: L_mult_32_added
+    N_base: paper_N_grid_smfig3
+    Dc: per1d_Dc
+    Da: per1d_Da
+    A: per1d_A
+    Kd: per1d_Kd
+    Omega0: per1d_Omega0
+    Omega: paper_Omega_spike
+    Omega_d: paper_Omega_d_spike
+    Omega_d0: paper_Omega_d0_spike
+    Z: paper_Z_spike
+    B: paper_B_spike
+    T_end: per1d_FinalTime
+    ErrorTolerance: per1d_ErrorTolerance
+    dt_init: per1d_dt_init
+  settings:
+    solver: "newton_krylov"
+    branch: "spike"
+    shift_half: true
+    nbar_mode: "trapz_grid"
+  outputs:
+    C_HSS: per1d_L32_CH
+    C_min: per1d_L32_Cmin
+    C_max: per1d_smfig3_L32_half_trapz_C_max
+    C_center: per1d_L32_Ccenter
+    grad_c_sq_mean: per1d_L32_grad_c_sq
+    mean_N: per1d_L32_mean_N
+    max_rhs: per1d_L32_max_rhs
+    dt_first_step: per1d_L32_dt
+  note: "Scalar 32*L (Nx = 32768) 1D/PeriodicBoundaries half-cell + trapz spike peak (0.67933) compared against SM Fig. 3 caption's C_max ~= 0.68."
+
+# ==============================================================================
+# 5. 1D/NoFlux finite-difference upwind solver runs
+# ==============================================================================
+- id: run_nf1d_spike_L1
+  model: code_1d_noflux_pde
+  inputs:
+    L_base: nf1d_L
+    L_mult: per1d_L_mult_1
+    N_base: paper_N_grid_smfig3
+    Dc: nf1d_Dc
+    Da: nf1d_Da
+    A: nf1d_A
+    Kd: nf1d_Kd
+    Omega0: nf1d_Omega0
+    Omega: paper_Omega_spike
+    Omega_d: paper_Omega_d_spike
+    Omega_d0: paper_Omega_d0_spike
+    Z: paper_Z_spike
+    B: paper_B_spike
+    T_end: nf1d_FinalTime
+    ErrorTolerance: nf1d_ErrorTolerance
+  settings:
+    solver: "banded_newton"
+    branch: "spike"
+    centered_on_node: false
+    n_grid_scale: 1.0
+  outputs:
+    C_HSS: nf1d_spk1_CH
+    C_max: nf1d_spk1_Cmax
+    C_center: nf1d_spk1_Ccenter
+    C_boundary: nf1d_spk1_Cboundary
+    grad_c_sq_mean: nf1d_spk1_grad_c_sq
+    max_rhs: nf1d_spk1_max_rhs
+    mass_drift: nf1d_spk1_mass_drift
+  note: "Baseline L x 1 (Nx = 1024) 1D/NoFlux upwind spike steady state used to quantify O(dx) upwind grid convergence via refinement."
+
+- id: run_nf1d_smfig3_half
+  model: code_1d_noflux_pde
+  inputs:
+    L_base: nf1d_L
+    N_base: paper_N_grid_smfig3
+    Dc: nf1d_Dc
+    Da: nf1d_Da
+    A: nf1d_A
+    Kd: nf1d_Kd
+    Omega0: nf1d_Omega0
+    Omega: paper_Omega_spike
+    Omega_d: paper_Omega_d_spike
+    Omega_d0: paper_Omega_d0_spike
+    Z: paper_Z_spike
+    B: paper_B_spike
+    T_end: nf1d_FinalTime
+    ErrorTolerance: nf1d_ErrorTolerance
+  sweep:
+    L_mult: paper_smfig3_inset_Cmax
+  settings:
+    solver: "banded_newton"
+    branch: "spike"
+    centered_on_node: false
+  outputs:
+    C_HSS: nf1d_sm3h_CH
+    C_max: nf1d_smfig3_half_C_max
+    C_center: nf1d_sm3h_Ccenter
+    C_boundary: nf1d_sm3h_Cboundary
+    grad_c_sq_mean: nf1d_sm3h_grad_c_sq
+    max_rhs: nf1d_sm3h_max_rhs
+    mass_drift: nf1d_sm3h_mass_drift
+  note: "1D/NoFlux upwind half-cell spike C_max across L x 1..32 (Delta X = L/1024): yields 0.62130..0.66291, ruling out 1D/NoFlux as the generator of SM Fig. 3."
+
+- id: run_nf1d_smfig3_node
+  model: code_1d_noflux_pde
+  inputs:
+    L_base: nf1d_L
+    N_base: paper_N_grid_smfig3
+    Dc: nf1d_Dc
+    Da: nf1d_Da
+    A: nf1d_A
+    Kd: nf1d_Kd
+    Omega0: nf1d_Omega0
+    Omega: paper_Omega_spike
+    Omega_d: paper_Omega_d_spike
+    Omega_d0: paper_Omega_d0_spike
+    Z: paper_Z_spike
+    B: paper_B_spike
+    T_end: nf1d_FinalTime
+    ErrorTolerance: nf1d_ErrorTolerance
+  sweep:
+    L_mult: paper_smfig3_inset_Cmax
+  settings:
+    solver: "banded_newton"
+    branch: "spike"
+    centered_on_node: true
+  outputs:
+    C_HSS: nf1d_sm3n_CH
+    C_max: nf1d_smfig3_node_C_max
+    C_center: nf1d_sm3n_Ccenter
+    C_boundary: nf1d_sm3n_Cboundary
+    grad_c_sq_mean: nf1d_sm3n_grad_c_sq
+    max_rhs: nf1d_sm3n_max_rhs
+    mass_drift: nf1d_sm3n_mass_drift
+  note: "1D/NoFlux upwind node-centered spike C_max across L x 1..32 (Delta X = L/1024): yields 0.66042..0.70484, also ruling out node-centered 1D/NoFlux for SM Fig. 3."
+
+- id: run_nf1d_shipped_lp0
+  model: code_1d_noflux_pde
+  inputs:
+    L_base: nf1d_L
+    L_mult: per1d_L_mult_1
+    N_base: nf1d_Nx
+    Dc: nf1d_Dc
+    Da: nf1d_Da
+    A: nf1d_A
+    Kd: nf1d_Kd
+    Omega0: nf1d_Omega0
+    Omega: nf1d_Omega
+    Omega_d: nf1d_Omega_d
+    Omega_d0: nf1d_Omega_d0
+    Z: nf1d_Z
+    B: nf1d_B
+    T_end: nf1d_FinalTime
+    ErrorTolerance: nf1d_ErrorTolerance
+  settings:
+    solver: "banded_newton"
+    branch: "lp0"
+    centered_on_node: false
+  outputs:
+    C_HSS: nf1d_lp0_CH
+    C_max: nf1d_lp0_Cmax
+    C_center: nf1d_lp0_Ccenter
+    C_boundary: nf1d_lp0_Cboundary
+    grad_c_sq_mean: nf1d_shipped_lp0_grad_c_sq
+    max_rhs: nf1d_lp0_max_rhs
+    mass_drift: nf1d_lp0_mass_drift
+  note: "Exact 1D/NoFlux steady state at shipped defaults (Nx = 4096, Z = 15, Omega = 6.05): leftmost Fig. 2 LP0 branch point (<(d_X C)^2> ~ 0.0329 vs 0.0334 spectral)."
+
+- id: run_nf1d_outward_leak
+  model: code_1d_noflux_pde
+  inputs:
+    L_base: nf1d_L
+    L_mult: per1d_L_mult_1
+    N_base: nf1d_Nx
+    Dc: nf1d_Dc
+    Da: nf1d_Da
+    A: nf1d_A
+    Kd: nf1d_Kd
+    Omega0: nf1d_Omega0
+    Omega: nf1d_Omega
+    Omega_d: nf1d_Omega_d
+    Omega_d0: nf1d_Omega_d0
+    Z: nf1d_Z
+    B: nf1d_B
+    T_end: T_end_noflux_leak_added
+    ErrorTolerance: nf1d_ErrorTolerance
+  settings:
+    solver: "adaptive_midpoint_leak"
+    leak_probe_Nx: 128
+  outputs:
+    C_HSS: nf1d_leak_CH
+    C_max: nf1d_leak_Cmax
+    C_center: nf1d_leak_Ccenter
+    C_boundary: nf1d_leak_Cboundary
+    grad_c_sq_mean: nf1d_leak_grad_c_sq
+    max_rhs: nf1d_leak_max_rhs
+    mass_drift: nf1d_leak_mass_drift
+  note: "Verbatim 1D/NoFlux AdaptiveTimeStep! on boundary-peaked IC (outward boundary flow): proves dead upwind boundary terms + RHS[:,1]=RHS[:,2] overwrite leak conserved nucleator mass (mass_drift ~ -0.015 by T = 5)."
+
+# ==============================================================================
+# 6. 2D periodic GPU-kernel Fourier Euler-forward runs (2D/{InputParameters,kernels,main}.jl)
+# ==============================================================================
+- id: run_2d_shipped_defaults
+  model: code_2d_periodic_pde
+  inputs:
+    L: code2d_L
+    Dc: code2d_Dc
+    Da: code2d_Da
+    Di: code2d_Di
+    A: code2d_A
+    Kd: code2d_Kd
+    Omega0: code2d_Omega0
+    Omega: code2d_Omega
+    Omega_d: code2d_Omega_d
+    Omega_d0: code2d_Omega_d0
+    Z: code2d_Z
+    B: code2d_B
+    visc_coeff: code2d_viscous_coeff_2d
+    var_ic: code2d_var_bump
+    T_end: T_end_2d_cpu_added
+  settings:
+    N_grid: 64
+    dt: 0.005
+    ic_type: "bump"
+  outputs:
+    C_HSS: c2d_ship_CH
+    C_min: c2d_ship_Cmin
+    C_max: c2d_ship_Cmax
+    C_corner: c2d_ship_Ccorner
+    transverse_std: c2d_ship_tstd
+    mean_Np: c2d_ship_mean_Np
+  note: "2D code port at shipped placeholder defaults (Z = B = 10, Omega = 10, Omega_d = 10, Omega_d0 = 10): confirms H is stable (C_H = 0.0465) and the initial Gaussian bump decays back to H."
+
+- id: run_2d_fig4a_traceless
+  model: code_2d_periodic_pde
+  inputs:
+    L: code2d_L
+    Dc: code2d_Dc
+    Da: code2d_Da
+    Di: code2d_Di
+    A: code2d_A
+    Kd: code2d_Kd
+    Omega0: code2d_Omega0
+    Omega: paper_Omega_fig4_ac
+    Omega_d: code2d_Omega_d
+    Omega_d0: per1d_Omega_d0
+    Z: paper_Z_fig4
+    B: paper_B_fig4
+    visc_coeff: code2d_viscous_coeff_2d
+    var_ic: code2d_var_bump
+    T_end: T_end_2d_cpu_added
+  settings:
+    N_grid: 64
+    dt: 0.005
+    ic_type: "bump"
+  outputs:
+    C_HSS: c2d_4a_CH
+    C_min: c2d_4a_Cmin
+    C_max: c2d_4a_Cmax
+    C_corner: c2d_4a_Ccorner
+    transverse_std: c2d_4a_tstd
+    mean_Np: c2d_4a_mean_Np
+  note: "2D code port at Fig. 4(a) (Z = 30, Omega = 0, Omega_d = 10 from 2D/InputParameters.jl:44, Omega_d0 = 0) with shipped traceless viscous operator (1 + 2|K|^2): sustains circular localized state (C_max ~ 0.94)."
+
+- id: run_2d_fig4a_eq3_printed
+  model: code_2d_periodic_pde
+  inputs:
+    L: code2d_L
+    Dc: code2d_Dc
+    Da: code2d_Da
+    Di: code2d_Di
+    A: code2d_A
+    Kd: code2d_Kd
+    Omega0: code2d_Omega0
+    Omega: paper_Omega_fig4_ac
+    Omega_d: code2d_Omega_d
+    Omega_d0: per1d_Omega_d0
+    Z: paper_Z_fig4
+    B: paper_B_fig4
+    visc_coeff: viscous_coeff_2d_eq3_printed_added
+    var_ic: code2d_var_bump
+    T_end: T_end_2d_cpu_added
+  settings:
+    N_grid: 64
+    dt: 0.005
+    ic_type: "bump"
+  outputs:
+    C_HSS: c2d_4a25_CH
+    C_min: c2d_4a25_Cmin
+    C_max: c2d_4a25_Cmax
+    C_corner: c2d_4a25_Ccorner
+    transverse_std: c2d_4a25_tstd
+    mean_Np: c2d_4a25_mean_Np
+  note: "Counterfactual Fig. 4(a) run substituting Main Text Eq. (3) as printed (non-traceless viscous operator 1 + 2.5|K|^2): circular localized state collapses toward H (C_max ~ 0.22), proving Fig. 4 required 2D/kernels.jl's traceless coefficient 2."
+
+- id: run_2d_fig4c_stripe
+  model: code_2d_periodic_pde
+  inputs:
+    L: code2d_L
+    Dc: code2d_Dc
+    Da: code2d_Da
+    Di: code2d_Di
+    A: code2d_A
+    Kd: code2d_Kd
+    Omega0: code2d_Omega0
+    Omega: paper_Omega_fig4_ac
+    Omega_d: code2d_Omega_d
+    Omega_d0: per1d_Omega_d0
+    Z: paper_Z_fig4
+    B: paper_B_fig4
+    visc_coeff: code2d_viscous_coeff_2d
+    var_ic: code2d_var_stripe
+    T_end: T_end_2d_cpu_added
+  settings:
+    N_grid: 64
+    dt: 0.005
+    ic_type: "stripe"
+  outputs:
+    C_HSS: c2d_4c_CH
+    C_min: c2d_4c_Cmin
+    C_max: c2d_4c_Cmax
+    C_corner: c2d_4c_Ccorner
+    transverse_std: c2d_4c_tstd
+    mean_Np: c2d_4c_mean_Np
+  note: "2D code port at Fig. 4(c) (Z = 30, Omega = 0, Omega_d = 10, Omega_d0 = 0, VarStripe = 2) with traceless (1 + 2|K|^2): sustains transversely uniform band localized state (C_max ~ 0.82, transverse_std ~ 1e-16)."

@@ -1,0 +1,48 @@
+id: code_stability_diagram_1d
+name: "Exact port of 1D/stabilitydiagram.jl StabilityMatrix! and BifurcationLines boundary extraction (1D/stabilitydiagram.jl:26-149)"
+role: model
+stated:
+  file: 1D/stabilitydiagram.jl
+  lines: "131-149"
+  quote: "if (i>1 && StabilityDiagram[i,j] == 1 && StabilityDiagram[i-1,j] == 0) || (j>1 && StabilityDiagram[i,j] == 0 && StabilityDiagram[i,j-1] == 1)"
+  where: "1D/stabilitydiagram.jl:26-149 (StabilityMatrix! + BifurcationLines)"
+built_from:
+  - code_stability_point_1d
+equation: "Scan Z_i = MinZ + (i-1)*dZ, Omega_j = MinOm + (j-1)*dOm on discrete modes K_p = p*(2*pi/L) (p = 1..Nk); TuringLine collects (Z_i, Omega_j) where (SD[i,j]==1 & SD[i-1,j]==0) or (SD[i,j]==0 & SD[i,j-1]==1); HopfLine analogously for code 2; polyline interpolated onto query Z values"
+inputs:
+  A: {quantity: dimless_assembly_rate, unit: dimensionless}
+  Kd: {quantity: dimless_disassembly_rate, unit: dimensionless}
+  Dc: {quantity: dimless_diffusivity_c, unit: dimensionless}
+  Dap: {quantity: dimless_diffusivity_sum, unit: dimensionless}
+  Dam: {quantity: dimless_diffusivity_diff, unit: dimensionless}
+  Omega0: {quantity: dimless_basal_activation_rate, unit: dimensionless}
+  Omega_d: {quantity: dimless_actin_inactivation, unit: dimensionless}
+  L: {quantity: dimless_system_size, unit: dimensionless}
+  Nx: {quantity: grid_point_count, unit: dimensionless}
+  MinZ: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  MaxZ: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  NPar1: {quantity: grid_point_count, unit: dimensionless}
+  MinOm: {quantity: dimless_cooperative_activation, unit: dimensionless}
+  MaxOm: {quantity: dimless_cooperative_activation, unit: dimensionless}
+  NPar2: {quantity: grid_point_count, unit: dimensionless}
+  query_curve:
+    quantity: dimless_cooperative_activation
+    unit: dimensionless
+    curve:
+      quantity: dimless_active_stress_coeff
+      unit: dimensionless
+outputs:
+  Omega_boundary:
+    quantity: dimless_cooperative_activation
+    unit: dimensionless
+    curve:
+      quantity: dimless_active_stress_coeff
+      unit: dimensionless
+  Z_onset_Om0: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  Z_io_start: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  Omega_at_Z15: {quantity: dimless_cooperative_activation, unit: dimensionless}
+settings:
+  branch: "turing"
+  scan_window_Z: 30.0
+  scan_window_Om: 30.0
+stochastic: false

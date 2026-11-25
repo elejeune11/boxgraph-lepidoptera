@@ -1,0 +1,60 @@
+# Numerical convergence refinements for the ported numerical/PDE solvers
+- id: ref_stab_point_bisect
+  run: run_stab_point_Z15_Om6
+  setting: bisect_iters
+  factors: [1, 2]
+  mode: multiply
+  output: Omega_crit_discrete
+  tolerance: "0.01%"
+  tolerance_basis: "added: well below 0.1% plotting precision of the SM Fig. 1 discrete stability threshold"
+  tolerance_added: true
+
+- id: ref_per1d_spike_ngrid
+  run: run_per1d_spike_L1
+  setting: n_grid_scale
+  factors: [1, 2]
+  mode: multiply
+  output: C_max
+  tolerance: "0.2%"
+  tolerance_basis: "added: well below the 2-decimal precision (~0.7%) of SM Fig. 3's C_max ~= 0.68"
+  tolerance_added: true
+
+- id: ref_per1d_wave_dt
+  run: run_per1d_smfig2_wave
+  setting: dt_imex
+  factors: [1, 2]
+  mode: divide
+  output: C_max
+  tolerance: "1%"
+  tolerance_basis: "added: well below visual colorbar precision of SM Fig. 2 travelling-wave amplitude"
+  tolerance_added: true
+
+- id: ref_nf1d_spike_ngrid
+  run: run_nf1d_spike_L1
+  setting: n_grid_scale
+  factors: [1, 2, 4]
+  mode: multiply
+  output: C_max
+  tolerance: "1%"
+  tolerance_basis: "added: 1% threshold to test whether 1D/NoFlux's first-order upwind stencil has converged at Delta X = L/1024..L/4096"
+  tolerance_added: true
+
+- id: ref_2d_fig4c_dt
+  run: run_2d_fig4c_stripe
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: C_max
+  tolerance: "1%"
+  tolerance_basis: "added: well below visual colorbar precision of Fig. 4(c)'s 2D band localized state"
+  tolerance_added: true
+
+- id: ref_2d_fig4a_dt
+  run: run_2d_fig4a_traceless
+  setting: dt
+  factors: [1, 2]
+  mode: divide
+  output: C_max
+  tolerance: "2%"
+  tolerance_basis: "added: visual colorbar precision (~2%) for Fig. 4(a)'s sharp circular localized state on the N_grid = 64 un-dealiased CPU port"
+  tolerance_added: true

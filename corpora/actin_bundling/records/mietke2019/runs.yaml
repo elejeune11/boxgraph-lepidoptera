@@ -1,0 +1,1153 @@
+# Model runs for Mietke, Jülicher & Sbalzarini (2019)
+
+# --- Group 1: Constitutive relations, scales, and homogeneous equilibrium ---
+
+- id: run_tau_phys
+  model: characteristic_timescale
+  inputs:
+    eta_b: phys_eta_b_added
+    gamma: phys_gamma_added
+  outputs:
+    tau: tau_phys_pred
+
+- id: run_hill_m2
+  model: hill_regulation_eq12
+  inputs:
+    c: c_homogeneous_dimless
+    c0: c0_dimless
+    m: hill_m_main
+  outputs:
+    f: hill_f_c0_pred
+    c0_df_dc0: hill_slope_c0_pred
+
+- id: run_alpha_fig2b
+  model: contractility_parameter_eq25
+  inputs:
+    xi_over_gamma: fig2b_xi_over_gamma
+    c0_df_dc0: hill_slope_c0_pred
+  outputs:
+    alpha: alpha_fig2b_pred
+
+- id: run_alpha_fig2c
+  model: contractility_parameter_eq25
+  inputs:
+    xi_over_gamma: fig2c_xi_over_gamma
+    c0_df_dc0: hill_slope_c0_pred
+  outputs:
+    alpha: alpha_fig2c_pred
+
+- id: run_alpha_fig3
+  model: contractility_parameter_eq25
+  inputs:
+    xi_over_gamma: fig3_xi_over_gamma
+    c0_df_dc0: hill_slope_c0_pred
+  outputs:
+    alpha: alpha_fig3_pred
+
+- id: run_p0_sphere
+  model: sphere_equilibrium_pressure_si
+  inputs:
+    gamma: phys_gamma_added
+    xi: phys_xi_fig2b_added
+    f_c0: hill_f_c0_pred
+    R0: phys_R0_added
+  outputs:
+    p0_s: p0_sphere_phys_pred
+
+- id: run_p0_cylinder
+  model: cylinder_equilibrium_pressure_si
+  inputs:
+    gamma: phys_gamma_added
+    xi: phys_xi_fig2b_added
+    f_c0: hill_f_c0_pred
+    kappa: phys_kappa_fig3d_added
+    r0: phys_r0_added
+  outputs:
+    p0_c: p0_cylinder_phys_pred
+
+- id: run_spheroid_fig2c
+  model: prolate_spheroid_geometry
+  inputs:
+    e: fig2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+  outputs:
+    a_over_R0: spheroid_fig2c_a_pred
+    b_over_R0: spheroid_fig2c_b_pred
+    Css_pole_dimless: spheroid_fig2c_Css_pole_pred
+    Css_eq_dimless: spheroid_fig2c_Css_eq_pred
+    Cphi_eq_dimless: spheroid_fig2c_Cphi_eq_pred
+
+- id: run_spheroid_figs2a
+  model: prolate_spheroid_geometry
+  inputs:
+    e: figs2a_eccentricity
+    V_over_R03: sphere_vol_dimless
+  outputs:
+    a_over_R0: spheroid_figs2a_a_pred
+    b_over_R0: spheroid_figs2a_b_pred
+    Css_pole_dimless: spheroid_figs2a_Css_pole_pred
+    Css_eq_dimless: spheroid_figs2a_Css_eq_pred
+    Cphi_eq_dimless: spheroid_figs2a_Cphi_eq_pred
+
+# --- Group 2: Spherical linear stability (Eq. 26 & Eqs. S69-S72) ---
+
+- id: run_alpha_s_star_phys
+  model: sphere_critical_contractility_eq26
+  inputs:
+    eta_b: phys_eta_b_added
+    gamma: phys_gamma_added
+    D: phys_D_fig2b_added
+    R0: phys_R0_added
+    k: phys_k_zero_added
+  outputs:
+    alpha_s_star: alpha_s_star_fig2b_phys_pred
+
+- id: run_alpha_s_star_fig2b
+  model: sphere_critical_contractility_dimless
+  inputs:
+    D_tilde: fig2b_D_tilde
+    k_tilde: fig2b_k_tilde
+  outputs:
+    alpha_s_star: alpha_s_star_fig2b_pred
+
+- id: run_alpha_s_star_fig2c
+  model: sphere_critical_contractility_dimless
+  inputs:
+    D_tilde: fig2c_D_tilde
+    k_tilde: fig2c_k_tilde
+  outputs:
+    alpha_s_star: alpha_s_star_fig2c_pred
+
+- id: run_lambda1_threshold
+  model: sphere_polar_growth_rate_eqs72
+  inputs:
+    D: phys_D_fig2b_added
+    R0: phys_R0_added
+    k: phys_k_zero_added
+    xi: phys_xi_threshold_fig2b_added
+    eta_b: phys_eta_b_added
+    c0_df_dc0: hill_slope_c0_pred
+  outputs:
+    lambda_1: lambda1_threshold_eqs72_pred
+
+- id: run_lambda1_fig2b_phys
+  model: sphere_polar_growth_rate_eqs72
+  inputs:
+    D: phys_D_fig2b_added
+    R0: phys_R0_added
+    k: phys_k_zero_added
+    xi: phys_xi_fig2b_added
+    eta_b: phys_eta_b_added
+    c0_df_dc0: hill_slope_c0_pred
+  outputs:
+    lambda_1: lambda1_fig2b_phys_pred
+
+- id: run_sphere_mode_l1_threshold_printed
+  model: sphere_mode_l_stability_eqs69_71
+  inputs:
+    l: mode_l_1
+    eta_s: phys_eta_s_added
+    eta_b: phys_eta_b_added
+    gamma: phys_gamma_added
+    xi: phys_xi_threshold_fig2b_added
+    f_c0: hill_f_c0_pred
+    c0_df_dc0: hill_slope_c0_pred
+    kappa: phys_kappa_zero_added
+    R0: phys_R0_added
+    D: phys_D_fig2b_added
+    k: phys_k_zero_added
+  outputs:
+    max_re_lambda: sphere_l1_threshold_printed_pred
+    im_lambda: sphere_l1_threshold_printed_im_pred
+
+- id: run_sphere_mode_l1_threshold_corrected
+  model: sphere_mode_l_stability_eqs69_71_corrected
+  inputs:
+    l: mode_l_1
+    eta_s: phys_eta_s_added
+    eta_b: phys_eta_b_added
+    gamma: phys_gamma_added
+    xi: phys_xi_threshold_fig2b_added
+    f_c0: hill_f_c0_pred
+    c0_df_dc0: hill_slope_c0_pred
+    kappa: phys_kappa_zero_added
+    R0: phys_R0_added
+    D: phys_D_fig2b_added
+    k: phys_k_zero_added
+  outputs:
+    max_re_lambda: sphere_l1_threshold_corrected_pred
+    im_lambda: sphere_l1_threshold_corrected_im_pred
+
+- id: run_sphere_mode_l2_fig2b_corrected
+  model: sphere_mode_l_stability_eqs69_71_corrected
+  inputs:
+    l: mode_l_2
+    eta_s: phys_eta_s_added
+    eta_b: phys_eta_b_added
+    gamma: phys_gamma_added
+    xi: phys_xi_fig2b_added
+    f_c0: hill_f_c0_pred
+    c0_df_dc0: hill_slope_c0_pred
+    kappa: phys_kappa_zero_added
+    R0: phys_R0_added
+    D: phys_D_fig2b_added
+    k: phys_k_zero_added
+  outputs:
+    max_re_lambda: sphere_l2_fig2b_corrected_pred
+    im_lambda: sphere_l2_fig2b_corrected_im_pred
+
+- id: run_sphere_mode_l1_threshold_s70_s71_corrected
+  model: sphere_mode_l_stability_eqs69_71_s70_s71_corrected
+  inputs:
+    l: mode_l_1
+    eta_s: phys_eta_s_added
+    eta_b: phys_eta_b_added
+    gamma: phys_gamma_added
+    xi: phys_xi_threshold_fig2b_added
+    f_c0: hill_f_c0_pred
+    c0_df_dc0: hill_slope_c0_pred
+    kappa: phys_kappa_zero_added
+    R0: phys_R0_added
+    D: phys_D_fig2b_added
+    k: phys_k_zero_added
+  outputs:
+    max_re_lambda: sphere_l1_threshold_s70_s71_corrected_pred
+    im_lambda: sphere_l1_threshold_s70_s71_corrected_im_pred
+
+- id: run_sphere_mode_l2_kappa_s71_only
+  model: sphere_mode_l_stability_eqs69_71_corrected
+  inputs:
+    l: mode_l_2
+    eta_s: phys_eta_s_added
+    eta_b: phys_eta_b_added
+    gamma: phys_gamma_added
+    xi: phys_xi_fig2b_added
+    f_c0: hill_f_c0_pred
+    c0_df_dc0: hill_slope_c0_pred
+    kappa: phys_kappa_fig3d_added
+    R0: phys_R0_added
+    D: phys_D_fig2b_added
+    k: phys_k_zero_added
+  outputs:
+    max_re_lambda: sphere_l2_kappa_s71_only_pred
+    im_lambda: sphere_l2_kappa_s71_only_im_pred
+
+- id: run_sphere_mode_l2_kappa_s70_s71_corrected
+  model: sphere_mode_l_stability_eqs69_71_s70_s71_corrected
+  inputs:
+    l: mode_l_2
+    eta_s: phys_eta_s_added
+    eta_b: phys_eta_b_added
+    gamma: phys_gamma_added
+    xi: phys_xi_fig2b_added
+    f_c0: hill_f_c0_pred
+    c0_df_dc0: hill_slope_c0_pred
+    kappa: phys_kappa_fig3d_added
+    R0: phys_R0_added
+    D: phys_D_fig2b_added
+    k: phys_k_zero_added
+  outputs:
+    max_re_lambda: sphere_l2_kappa_s70_s71_corrected_pred
+    im_lambda: sphere_l2_kappa_s70_s71_corrected_im_pred
+
+# --- Group 3: Cylindrical linear stability (Eq. 27, Eqs. S76-S86, Fig. 3A) ---
+
+- id: run_alpha_c_star_phys
+  model: cylinder_critical_contractility_eq27
+  inputs:
+    eta_b: phys_eta_b_added
+    gamma: phys_gamma_added
+    D: phys_D_fig3_added
+    r0: phys_r0_added
+    k: phys_k_fig3_added
+  outputs:
+    alpha_c_star: alpha_c_star_fig3_phys_pred
+
+- id: run_alpha_c_star_fig3
+  model: cylinder_critical_contractility_dimless
+  inputs:
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+  outputs:
+    alpha_c_star: alpha_c_star_fig3_pred
+
+- id: run_nu_bar_equal_printed
+  model: viscosity_parameter_nu_bar
+  inputs:
+    eta_s: phys_eta_s_unit_added
+    eta_b: phys_eta_b_unit_added
+  outputs:
+    nu_bar: nu_bar_equal_printed_pred
+
+- id: run_nu_bar_equal_corrected
+  model: viscosity_parameter_nu_bar_corrected
+  inputs:
+    eta_s: phys_eta_s_unit_added
+    eta_b: phys_eta_b_unit_added
+  outputs:
+    nu_bar: nu_bar_equal_corrected_pred
+
+- id: run_nu_bar_limit_printed
+  model: viscosity_parameter_nu_bar
+  inputs:
+    eta_s: phys_eta_s_unit_added
+    eta_b: phys_eta_b_small_limit_added
+  outputs:
+    nu_bar: nu_bar_limit_printed_pred
+
+- id: run_nu_bar_limit_corrected
+  model: viscosity_parameter_nu_bar_corrected
+  inputs:
+    eta_s: phys_eta_s_unit_added
+    eta_b: phys_eta_b_small_limit_added
+  outputs:
+    nu_bar: nu_bar_limit_corrected_pred
+
+- id: run_bc_rayleigh
+  model: cylinder_bending_factor_eqs79
+  inputs:
+    k_n: phys_kn_rayleigh_added
+    r0: phys_r0_added
+  outputs:
+    B_c: bc_rayleigh_pred
+
+- id: run_pr_fig3d_length
+  model: plateau_rayleigh_growth_rate_eqs83
+  inputs:
+    L_over_2pi_r0: fig3d_L_over_2pi_r0
+    n_mode: mode_n_1
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    max_re_lambda_tilde: pr_fig3d_growth_pred
+
+- id: run_cyl_jac_fig3b
+  model: cylinder_jacobian_eqs80_82
+  inputs:
+    L_over_2pi_r0: fig3b_L_over_2pi_r0
+    n_mode: mode_n_1
+    alpha: alpha_fig3_pred
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_zero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    max_re_lambda_tilde: cyl_jac_fig3b_re_pred
+    im_lambda_tilde: cyl_jac_fig3b_im_pred
+    oscillation_period_tilde: cyl_jac_fig3b_period_pred
+    tr_tilde: cyl_jac_fig3b_tr_pred
+    det_tilde: cyl_jac_fig3b_det_pred
+
+- id: run_cyl_jac_fig3c
+  model: cylinder_jacobian_eqs80_82
+  inputs:
+    L_over_2pi_r0: fig3c_L_over_2pi_r0
+    n_mode: mode_n_1
+    alpha: alpha_fig3_pred
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_zero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    max_re_lambda_tilde: cyl_jac_fig3c_re_pred
+    im_lambda_tilde: cyl_jac_fig3c_im_pred
+    oscillation_period_tilde: cyl_jac_fig3c_period_pred
+    tr_tilde: cyl_jac_fig3c_tr_pred
+    det_tilde: cyl_jac_fig3c_det_pred
+
+- id: run_cyl_jac_fig3d
+  model: cylinder_jacobian_eqs80_82
+  inputs:
+    L_over_2pi_r0: fig3d_L_over_2pi_r0
+    n_mode: mode_n_1
+    alpha: alpha_fig3_pred
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_nonzero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    max_re_lambda_tilde: cyl_jac_fig3d_re_pred
+    im_lambda_tilde: cyl_jac_fig3d_im_pred
+    oscillation_period_tilde: cyl_jac_fig3d_period_pred
+    tr_tilde: cyl_jac_fig3d_tr_pred
+    det_tilde: cyl_jac_fig3d_det_pred
+
+- id: run_cyl_stab_rayleigh
+  model: cylinder_stability_boundary_fig3a
+  inputs:
+    alpha: alpha_zero
+    xi_f0_over_gamma: xi_f0_zero
+    kappa_tilde: fig3_kappa_tilde_zero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    L_crit_over_2pi_r0: rayleigh_L_over_2pi_pred
+    L_crit_over_r0: rayleigh_L_over_r0_pred
+    L_osc_min_over_2pi_r0: rayleigh_L_osc_min_pred
+    L_osc_max_over_2pi_r0: rayleigh_L_osc_max_pred
+
+- id: run_cyl_stab_fig3a_k0_a3
+  model: cylinder_stability_boundary_fig3a
+  inputs:
+    alpha: alpha_fig3_pred
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_zero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    L_crit_over_2pi_r0: fig3a_k0_a3_Lcrit_pred
+    L_crit_over_r0: fig3a_k0_a3_L_over_r0_pred
+    L_osc_min_over_2pi_r0: fig3a_k0_a3_Losc_min_pred
+    L_osc_max_over_2pi_r0: fig3a_k0_a3_Losc_max_pred
+
+- id: run_cyl_stab_fig3a_k025_a0
+  model: cylinder_stability_boundary_fig3a
+  inputs:
+    alpha: alpha_zero
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_nonzero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    L_crit_over_2pi_r0: fig3a_k025_a0_Lcrit_pred
+    L_crit_over_r0: fig3a_k025_a0_L_over_r0_pred
+    L_osc_min_over_2pi_r0: fig3a_k025_a0_Losc_min_pred
+    L_osc_max_over_2pi_r0: fig3a_k025_a0_Losc_max_pred
+
+- id: run_cyl_stab_fig3a_k025_a3
+  model: cylinder_stability_boundary_fig3a
+  inputs:
+    alpha: alpha_fig3_pred
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_nonzero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    L_crit_over_2pi_r0: fig3a_k025_a3_Lcrit_pred
+    L_crit_over_r0: fig3a_k025_a3_L_over_r0_pred
+    L_osc_min_over_2pi_r0: fig3a_k025_a3_Losc_min_pred
+    L_osc_max_over_2pi_r0: fig3a_k025_a3_Losc_max_pred
+
+- id: run_cyl_roots_at_alpha_c
+  model: cylinder_trace_det_roots_eqs84_86
+  inputs:
+    alpha: alpha_c_star_fig3_pred
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    nu_bar: nu_bar_equal_corrected_pred
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    k_tilde_trace_zero: cyl_knc_at_alpha_c_pred
+    k_tilde_det_root1: cyl_det_root1_pred
+    k_tilde_det_root2: cyl_det_root2_at_alpha_c_pred
+    L_crit_over_2pi_r0: cyl_Lcrit_at_alpha_c_pred
+
+- id: run_cyl_roots_a3_printed_nu
+  model: cylinder_trace_det_roots_eqs84_86
+  inputs:
+    alpha: alpha_fig3_pred
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    nu_bar: nu_bar_equal_printed_pred
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    k_tilde_trace_zero: cyl_knc_a3_printed_nu_pred
+    k_tilde_det_root1: cyl_det1_a3_printed_nu_pred
+    k_tilde_det_root2: cyl_det2_a3_printed_nu_pred
+    L_crit_over_2pi_r0: cyl_Lcrit_a3_printed_nu_pred
+
+- id: run_cyl_roots_a3_corrected_nu
+  model: cylinder_trace_det_roots_eqs84_86
+  inputs:
+    alpha: alpha_fig3_pred
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    nu_bar: nu_bar_equal_corrected_pred
+    eta_s_over_eta_b: viscosity_ratio_main
+  outputs:
+    k_tilde_trace_zero: cyl_knc_a3_corrected_nu_pred
+    k_tilde_det_root1: cyl_det1_a3_corrected_nu_pred
+    k_tilde_det_root2: cyl_det2_a3_corrected_nu_pred
+    L_crit_over_2pi_r0: cyl_Lcrit_a3_corrected_nu_pred
+
+# --- Group 4: Hydrodynamics, convergence validation, and nonlinear PDEs ---
+
+- id: run_sphere_hydro_s2a
+  model: sphere_hydrodynamics_single_step_eqs32_33
+  inputs:
+    e: figs2a_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: figs2a_xi_over_gamma
+    kappa_tilde: figs2a_kappa_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+  settings:
+    N: 101
+  outputs:
+    vn_max_dimless: s2a_vn_max_pred
+    vs_max_dimless: s2a_vs_max_pred
+    vn_pole_dimless: s2a_vn_pole_pred
+    p_dimless: s2a_p_pred
+
+- id: run_sphere_hydro_s2a_kappa025_printed
+  model: sphere_hydrodynamics_single_step_eqs32_33
+  inputs:
+    e: figs2a_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: figs2a_xi_over_gamma
+    kappa_tilde: finite_kappa_test_added
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+  settings:
+    N: 101
+  outputs:
+    vn_max_dimless: s2a_k025_vn_max_printed_pred
+    vs_max_dimless: s2a_k025_vs_max_printed_pred
+    vn_pole_dimless: s2a_k025_vn_pole_printed_pred
+    p_dimless: s2a_k025_p_printed_pred
+
+- id: run_sphere_hydro_s2a_kappa025_corrected
+  model: sphere_hydrodynamics_single_step_eqs32_33_corrected
+  inputs:
+    e: figs2a_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: figs2a_xi_over_gamma
+    kappa_tilde: finite_kappa_test_added
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+  settings:
+    N: 101
+  outputs:
+    vn_max_dimless: s2a_k025_vn_max_corrected_pred
+    vs_max_dimless: s2a_k025_vs_max_corrected_pred
+    vn_pole_dimless: s2a_k025_vn_pole_corrected_pred
+    p_dimless: s2a_k025_p_corrected_pred
+
+- id: run_conv_s2a_kappa0
+  model: sphere_spatial_convergence_s2a
+  inputs:
+    e: figs2a_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: figs2a_xi_over_gamma
+    kappa_tilde: figs2a_kappa_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+  settings:
+    N_base: 51
+    N_ref: 801
+  outputs:
+    order_vn: s2a_order_vn_pred
+    order_vs: s2a_order_vs_pred
+  note: "Uses N_ref = 801 instead of the paper's 3201 for speed; nested N = 51, 101, 201 already isolate the O(N^-4) slope accurately."
+
+- id: run_conv_s2a_kappa025_printed
+  model: sphere_spatial_convergence_s2a
+  inputs:
+    e: figs2a_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: figs2a_xi_over_gamma
+    kappa_tilde: finite_kappa_test_added
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+  settings:
+    N_base: 51
+    N_ref: 801
+  outputs:
+    order_vn: s2a_k025_order_vn_printed_pred
+    order_vs: s2a_k025_order_vs_printed_pred
+
+- id: run_conv_s2a_kappa025_corrected
+  model: sphere_spatial_convergence_s2a_corrected
+  inputs:
+    e: figs2a_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: figs2a_xi_over_gamma
+    kappa_tilde: finite_kappa_test_added
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+  settings:
+    N_base: 51
+    N_ref: 801
+  outputs:
+    order_vn: s2a_k025_order_vn_corrected_pred
+    order_vs: s2a_k025_order_vs_corrected_pred
+
+- id: run_conv_s2b
+  model: tube_temporal_convergence_s2b
+  inputs:
+    L_over_2pi_r0: figs2b_L_over_2pi_r0
+    xi_over_gamma: figs2b_xi_over_gamma
+    kappa_tilde: figs2b_kappa_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    t_end_tilde: figs2b_conv_time_added
+  settings:
+    N: 25
+    Nt_base: 50
+    Nt_ref: 1600
+  outputs:
+    order_Css: s2b_order_Css_pred
+    order_Cphi: s2b_order_Cphi_pred
+  note: "Uses Nt_ref = 1600 over t/tau = 0.2 instead of the paper's 3.2e5 (full stationary convergence) to verify explicit-Euler O(Nt^-1) convergence in under 2 seconds."
+
+- id: run_pde_fig2b
+  model: sphere_active_surface_pde
+  inputs:
+    e_init: sphere_zero_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2b_xi_over_gamma
+    kappa_tilde: fig2b_kappa_tilde
+    D_tilde: fig2b_D_tilde
+    k_tilde: fig2b_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_small_added
+    t_end_tilde: fig2b_steady_time_added
+  settings:
+    N: 61
+    rtol: 1.0e-5
+    atol: 1.0e-7
+  outputs:
+    c_pole_dimless: pde_fig2b_c_pole_pred
+    c_min_dimless: pde_fig2b_c_min_pred
+    c_max_dimless: pde_fig2b_c_max_pred
+    vs_min_dimless: pde_fig2b_vs_min_pred
+    Css_pole_dimless: pde_fig2b_Css_pole_pred
+    Css_max_dimless: pde_fig2b_Css_max_pred
+    Cphi_max_dimless: pde_fig2b_Cphi_max_pred
+    Cphi_opposite_pole_dimless: pde_fig2b_Cphi_opp_pred
+    vn_max_dimless: pde_fig2b_vn_max_pred
+    volume_ratio: pde_fig2b_vol_ratio_pred
+    molecule_ratio: pde_fig2b_mass_ratio_pred
+    rel_vol_error: pde_fig2b_rel_vol_err_pred
+    rel_mass_error: pde_fig2b_rel_mass_err_pred
+
+- id: run_pde_fig2c
+  model: sphere_active_surface_pde
+  inputs:
+    e_init: fig2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2c_xi_over_gamma
+    kappa_tilde: fig2c_kappa_tilde
+    D_tilde: fig2c_D_tilde
+    k_tilde: fig2c_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_zero_added
+    t_end_tilde: fig2c_snapshot_time
+  settings:
+    N: 61
+    rtol: 1.0e-5
+    atol: 1.0e-7
+  outputs:
+    c_pole_dimless: pde_fig2c_c_pole_pred
+    c_min_dimless: pde_fig2c_c_min_pred
+    c_max_dimless: pde_fig2c_c_max_pred
+    vs_min_dimless: pde_fig2c_vs_min_pred
+    Css_pole_dimless: pde_fig2c_Css_pole_pred
+    Css_max_dimless: pde_fig2c_Css_max_pred
+    Cphi_max_dimless: pde_fig2c_Cphi_max_pred
+    Cphi_opposite_pole_dimless: pde_fig2c_Cphi_opp_pred
+    vn_max_dimless: pde_fig2c_vn_max_pred
+    volume_ratio: pde_fig2c_vol_ratio_pred
+    molecule_ratio: pde_fig2c_mass_ratio_pred
+    rel_vol_error: pde_fig2c_rel_vol_err_pred
+    rel_mass_error: pde_fig2c_rel_mass_err_pred
+
+- id: run_pde_figs2c
+  model: sphere_active_surface_pde
+  inputs:
+    e_init: figs2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: figs2c_xi_over_gamma
+    kappa_tilde: figs2c_kappa_tilde
+    D_tilde: figs2c_D_tilde
+    k_tilde: figs2c_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_zero_added
+    t_end_tilde: figs2c_t_end
+  settings:
+    N: 61
+    rtol: 1.0e-5
+    atol: 1.0e-7
+  outputs:
+    c_pole_dimless: pde_figs2c_c_pole_pred
+    c_min_dimless: pde_figs2c_c_min_pred
+    c_max_dimless: pde_figs2c_c_max_pred
+    vs_min_dimless: pde_figs2c_vs_min_pred
+    Css_pole_dimless: pde_figs2c_Css_pole_pred
+    Css_max_dimless: pde_figs2c_Css_max_pred
+    Cphi_max_dimless: pde_figs2c_Cphi_max_pred
+    Cphi_opposite_pole_dimless: pde_figs2c_Cphi_opp_pred
+    vn_max_dimless: pde_figs2c_vn_max_pred
+    volume_ratio: pde_figs2c_vol_ratio_pred
+    molecule_ratio: pde_figs2c_mass_ratio_pred
+    rel_vol_error: pde_figs2c_rel_vol_err_pred
+    rel_mass_error: pde_figs2c_rel_mass_err_pred
+
+- id: run_pde_fig3b
+  model: tube_active_surface_pde
+  inputs:
+    L_over_2pi_r0: fig3b_L_over_2pi_r0
+    xi_over_gamma: fig3_xi_over_gamma
+    kappa_tilde: fig3_kappa_tilde_zero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_small_added
+    t_end_tilde: fig3b_snapshot_time_final
+  settings:
+    N: 33
+    rtol: 1.0e-5
+    atol: 1.0e-7
+    asym_pert: 0.0
+  outputs:
+    r_min_dimless: pde_fig3b_r_min_pred
+    r_max_dimless: pde_fig3b_r_max_pred
+    c_min_dimless: pde_fig3b_c_min_pred
+    c_max_dimless: pde_fig3b_c_max_pred
+    wave_speed_dimless: pde_fig3b_v0_pred
+    vs_comov_min_dimless: pde_fig3b_vs_min_pred
+    vs_comov_max_dimless: pde_fig3b_vs_max_pred
+    Css_min_dimless: pde_fig3b_Css_min_pred
+    Css_max_dimless: pde_fig3b_Css_max_pred
+    Cphi_max_dimless: pde_fig3b_Cphi_max_pred
+    volume_ratio: pde_fig3b_vol_ratio_pred
+
+- id: run_pde_fig3c
+  model: tube_active_surface_pde
+  inputs:
+    L_over_2pi_r0: fig3c_L_over_2pi_r0
+    xi_over_gamma: fig3_xi_over_gamma
+    kappa_tilde: fig3_kappa_tilde_zero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_small_added
+    t_end_tilde: fig3c_sim_time_added
+  settings:
+    N: 33
+    rtol: 1.0e-5
+    atol: 1.0e-7
+    asym_pert: 0.0
+  outputs:
+    r_min_dimless: pde_fig3c_r_min_pred
+    r_max_dimless: pde_fig3c_r_max_pred
+    c_min_dimless: pde_fig3c_c_min_pred
+    c_max_dimless: pde_fig3c_c_max_pred
+    wave_speed_dimless: pde_fig3c_v0_pred
+    vs_comov_min_dimless: pde_fig3c_vs_min_pred
+    vs_comov_max_dimless: pde_fig3c_vs_max_pred
+    Css_min_dimless: pde_fig3c_Css_min_pred
+    Css_max_dimless: pde_fig3c_Css_max_pred
+    Cphi_max_dimless: pde_fig3c_Cphi_max_pred
+    volume_ratio: pde_fig3c_vol_ratio_pred
+
+- id: run_pde_fig3d
+  model: tube_active_surface_pde
+  inputs:
+    L_over_2pi_r0: fig3d_L_over_2pi_r0
+    xi_over_gamma: fig3_xi_over_gamma
+    kappa_tilde: fig3_kappa_tilde_nonzero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_small_added
+    t_end_tilde: fig3d_steady_time_added
+  settings:
+    N: 33
+    rtol: 1.0e-4
+    atol: 1.0e-6
+    asym_pert: 0.02
+  outputs:
+    r_min_dimless: pde_fig3d_r_min_pred
+    r_max_dimless: pde_fig3d_r_max_pred
+    c_min_dimless: pde_fig3d_c_min_pred
+    c_max_dimless: pde_fig3d_c_max_pred
+    wave_speed_dimless: pde_fig3d_v0_pred
+    vs_comov_min_dimless: pde_fig3d_vs_min_pred
+    vs_comov_max_dimless: pde_fig3d_vs_max_pred
+    Css_min_dimless: pde_fig3d_Css_min_pred
+    Css_max_dimless: pde_fig3d_Css_max_pred
+    Cphi_max_dimless: pde_fig3d_Cphi_max_pred
+    volume_ratio: pde_fig3d_vol_ratio_pred
+
+# --- Group 5: Calibrated figure curve & sweep runs (Figs. 2B, 3A, 3D, S1B-C, S2A-B) ---
+
+# Fig. 2B steady-state spherical profiles: reported m = 2 vs hypothesis m = 1
+- id: run_fig2b_profiles_m2
+  model: sphere_active_surface_arc_profiles
+  inputs:
+    e_init: sphere_zero_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2b_xi_over_gamma
+    kappa_tilde: fig2b_kappa_tilde
+    D_tilde: fig2b_D_tilde
+    k_tilde: fig2b_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_small_added
+    t_end_tilde: fig2b_steady_time_clean_added
+    c_init_dimless: c_homogeneous_dimless
+    sample_curve: fig2b_vs_fig
+  settings:
+    N: 61
+    rtol: 1.0e-5
+    atol: 1.0e-7
+  outputs:
+    c_profile: fig2b_c_m2_pred
+    vs_profile: fig2b_vs_m2_pred
+    vn_profile: fig2b_vn_m2_pred
+    Css_profile: fig2b_Css_m2_pred
+    Cphi_profile: fig2b_Cphi_m2_full_pred
+
+- id: run_fig2b_cphi_m2
+  model: sphere_active_surface_cphi_profile
+  inputs:
+    e_init: sphere_zero_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2b_xi_over_gamma
+    kappa_tilde: fig2b_kappa_tilde
+    D_tilde: fig2b_D_tilde
+    k_tilde: fig2b_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_small_added
+    t_end_tilde: fig2b_steady_time_clean_added
+    sample_curve: fig2b_Cphi_fig
+  settings:
+    N: 61
+    rtol: 1.0e-5
+    atol: 1.0e-7
+  outputs:
+    Cphi_profile: fig2b_Cphi_m2_pred
+
+- id: run_fig2b_profiles_m1
+  model: sphere_active_surface_arc_profiles
+  inputs:
+    e_init: sphere_zero_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2b_xi_over_gamma
+    kappa_tilde: fig2b_kappa_tilde
+    D_tilde: fig2b_D_tilde
+    k_tilde: fig2b_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_1_hypothesis_added
+    pert_amp: pde_init_pert_small_added
+    t_end_tilde: fig2b_steady_time_clean_added
+    c_init_dimless: c_homogeneous_dimless
+    sample_curve: fig2b_vs_fig
+  settings:
+    N: 61
+    rtol: 1.0e-5
+    atol: 1.0e-7
+  outputs:
+    c_profile: fig2b_c_m1_pred
+    vs_profile: fig2b_vs_m1_pred
+    vn_profile: fig2b_vn_m1_pred
+    Css_profile: fig2b_Css_m1_pred
+    Cphi_profile: fig2b_Cphi_m1_full_pred
+
+- id: run_fig2b_cphi_m1
+  model: sphere_active_surface_cphi_profile
+  inputs:
+    e_init: sphere_zero_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2b_xi_over_gamma
+    kappa_tilde: fig2b_kappa_tilde
+    D_tilde: fig2b_D_tilde
+    k_tilde: fig2b_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_1_hypothesis_added
+    pert_amp: pde_init_pert_small_added
+    t_end_tilde: fig2b_steady_time_clean_added
+    sample_curve: fig2b_Cphi_fig
+  settings:
+    N: 61
+    rtol: 1.0e-5
+    atol: 1.0e-7
+  outputs:
+    Cphi_profile: fig2b_Cphi_m1_pred
+
+# Fig. 3A stability and oscillatory region sweeps
+- id: run_fig3a_k0_stability_sweep
+  model: cylinder_stability_boundary_fig3a
+  inputs:
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_zero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  sweep:
+    alpha: fig3a_k0_stability_fig
+  outputs:
+    L_crit_over_2pi_r0: fig3a_k0_stability_pred
+
+- id: run_fig3a_k025_stability_sweep
+  model: cylinder_stability_boundary_fig3a
+  inputs:
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_nonzero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  sweep:
+    alpha: fig3a_k025_stability_fig
+  outputs:
+    L_crit_over_2pi_r0: fig3a_k025_stability_pred
+
+- id: run_fig3a_k0_osc_max_sweep
+  model: cylinder_stability_boundary_fig3a
+  inputs:
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_zero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  sweep:
+    alpha: fig3a_k0_osc_max_fig
+  outputs:
+    L_osc_max_over_2pi_r0: fig3a_k0_osc_max_pred
+
+- id: run_fig3a_k025_osc_max_sweep
+  model: cylinder_stability_boundary_fig3a
+  inputs:
+    xi_f0_over_gamma: fig3a_xi_f0_fixed_added
+    kappa_tilde: fig3_kappa_tilde_nonzero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+  sweep:
+    alpha: fig3a_k025_osc_max_fig
+  outputs:
+    L_osc_max_over_2pi_r0: fig3a_k025_osc_max_pred
+
+# Fig. 3D steady peristaltic wave profiles (m = 2)
+- id: run_fig3d_profiles
+  model: tube_active_surface_arc_profiles
+  inputs:
+    L_over_2pi_r0: fig3d_L_over_2pi_r0
+    xi_over_gamma: fig3_xi_over_gamma
+    kappa_tilde: fig3_kappa_tilde_nonzero
+    D_tilde: fig3_D_tilde
+    k_tilde: fig3_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_small_added
+    t_end_tilde: fig3d_steady_time_added
+    c_peak_s_over_L: fig3d_c_peak_phase_added
+    sample_curve: fig3d_c_fig
+  settings:
+    N: 33
+    rtol: 1.0e-4
+    atol: 1.0e-6
+    asym_pert: 0.02
+  outputs:
+    c_profile: fig3d_c_pred
+    vs_profile: fig3d_vs_pred
+    Css_profile: fig3d_Css_pred
+    Cphi_profile: fig3d_Cphi_pred
+
+# Fig. S1B & S1C relaxing prolate spheroid profiles (Fig. 2C parameters, c_init = 4*pi*R0^2 / A0)
+- id: run_figs1b_ref_t1
+  model: sphere_active_surface_ref_profiles
+  inputs:
+    e_init: fig2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2c_xi_over_gamma
+    kappa_tilde: fig2c_kappa_tilde
+    D_tilde: fig2c_D_tilde
+    k_tilde: fig2c_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_zero_added
+    t_end_tilde: figs1_t1_time_added
+    c_init_dimless: figs1_c_init_conserved_added
+    sample_curve: figs1b_h_t2_fig
+  settings:
+    N: 61
+    rtol: 1.0e-6
+    atol: 1.0e-8
+  outputs:
+    h_profile: figs1b_h_t1_pred
+    Css_profile: figs1b_Css_t1_pred
+
+- id: run_figs1b_ref_t2
+  model: sphere_active_surface_ref_profiles
+  inputs:
+    e_init: fig2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2c_xi_over_gamma
+    kappa_tilde: fig2c_kappa_tilde
+    D_tilde: fig2c_D_tilde
+    k_tilde: fig2c_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_zero_added
+    t_end_tilde: figs1_t2_time_added
+    c_init_dimless: figs1_c_init_conserved_added
+    sample_curve: figs1b_h_t2_fig
+  settings:
+    N: 61
+    rtol: 1.0e-6
+    atol: 1.0e-8
+  outputs:
+    h_profile: figs1b_h_t2_pred
+    Css_profile: figs1b_Css_t2_pred
+
+- id: run_figs1b_ref_t3
+  model: sphere_active_surface_ref_profiles
+  inputs:
+    e_init: fig2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2c_xi_over_gamma
+    kappa_tilde: fig2c_kappa_tilde
+    D_tilde: fig2c_D_tilde
+    k_tilde: fig2c_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_zero_added
+    t_end_tilde: figs1_t3_time_added
+    c_init_dimless: figs1_c_init_conserved_added
+    sample_curve: figs1b_h_t3_fig
+  settings:
+    N: 61
+    rtol: 1.0e-6
+    atol: 1.0e-8
+  outputs:
+    h_profile: figs1b_h_t3_pred
+    Css_profile: figs1b_Css_t3_pred
+
+- id: run_figs1c_vs_t1
+  model: sphere_active_surface_arc_profiles
+  inputs:
+    e_init: fig2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2c_xi_over_gamma
+    kappa_tilde: fig2c_kappa_tilde
+    D_tilde: fig2c_D_tilde
+    k_tilde: fig2c_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_zero_added
+    t_end_tilde: figs1_t1_time_added
+    c_init_dimless: figs1_c_init_conserved_added
+    sample_curve: figs1c_vs_t1_fig
+  settings:
+    N: 61
+    rtol: 1.0e-6
+    atol: 1.0e-8
+  outputs:
+    vs_profile: figs1c_vs_t1_pred
+
+- id: run_figs1c_vs_t2
+  model: sphere_active_surface_arc_profiles
+  inputs:
+    e_init: fig2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2c_xi_over_gamma
+    kappa_tilde: fig2c_kappa_tilde
+    D_tilde: fig2c_D_tilde
+    k_tilde: fig2c_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_zero_added
+    t_end_tilde: figs1_t2_time_added
+    c_init_dimless: figs1_c_init_conserved_added
+    sample_curve: figs1c_vs_t2_fig
+  settings:
+    N: 61
+    rtol: 1.0e-6
+    atol: 1.0e-8
+  outputs:
+    vs_profile: figs1c_vs_t2_pred
+
+- id: run_figs1c_vn_t1
+  model: sphere_active_surface_arc_profiles
+  inputs:
+    e_init: fig2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2c_xi_over_gamma
+    kappa_tilde: fig2c_kappa_tilde
+    D_tilde: fig2c_D_tilde
+    k_tilde: fig2c_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_zero_added
+    t_end_tilde: figs1_t1_time_added
+    c_init_dimless: figs1_c_init_conserved_added
+    sample_curve: figs1c_vn_t1_fig
+  settings:
+    N: 61
+    rtol: 1.0e-6
+    atol: 1.0e-8
+  outputs:
+    vn_profile: figs1c_vn_t1_pred
+
+- id: run_figs1c_vn_t2
+  model: sphere_active_surface_arc_profiles
+  inputs:
+    e_init: fig2c_eccentricity
+    V_over_R03: sphere_vol_dimless
+    xi_over_gamma: fig2c_xi_over_gamma
+    kappa_tilde: fig2c_kappa_tilde
+    D_tilde: fig2c_D_tilde
+    k_tilde: fig2c_k_tilde
+    eta_s_over_eta_b: viscosity_ratio_main
+    m: hill_m_main
+    pert_amp: pde_init_pert_zero_added
+    t_end_tilde: figs1_t2_time_added
+    c_init_dimless: figs1_c_init_conserved_added
+    sample_curve: figs1c_vn_t2_fig
+  settings:
+    N: 61
+    rtol: 1.0e-6
+    atol: 1.0e-8
+  outputs:
+    vn_profile: figs1c_vn_t2_pred
+
+# Fig. S2A & S2B convergence scaling sweeps (prefactor: unknown)
+- id: run_figs2a_vn_scaling
+  model: spatial_error_scaling_s2a
+  inputs: {}
+  sweep:
+    N: figs2a_vn_fig
+  outputs:
+    max_error: figs2a_vn_scaling_pred
+
+- id: run_figs2a_vs_scaling
+  model: spatial_error_scaling_s2a
+  inputs: {}
+  sweep:
+    N: figs2a_vs_fig
+  outputs:
+    max_error: figs2a_vs_scaling_pred
+
+- id: run_figs2b_Css_scaling
+  model: temporal_error_scaling_s2b
+  inputs: {}
+  sweep:
+    Nt: figs2b_Css_fig
+  outputs:
+    max_error: figs2b_Css_scaling_pred
+
+- id: run_figs2b_Cphi_scaling
+  model: temporal_error_scaling_s2b
+  inputs: {}
+  sweep:
+    Nt: figs2b_Cphi_fig
+  outputs:
+    max_error: figs2b_Cphi_scaling_pred
+

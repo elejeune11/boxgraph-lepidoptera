@@ -1,0 +1,45 @@
+id: code_1d_periodic_pde
+name: "Exact port of 1D/PeriodicBoundaries/{InputParameters,functions,main}.jl Fourier pseudo-spectral solver (1D/PeriodicBoundaries/functions.jl:1-81, InputParameters.jl:3-61, main.jl:25-81)"
+role: model
+stated:
+  file: 1D/PeriodicBoundaries/functions.jl
+  lines: "1-81"
+  quote: "v[:] .= Pinv * ( (P * σ) .* (im .* k) ./ (1 .+ k.*k) )"
+  where: "1D/PeriodicBoundaries/functions.jl:1-81, InputParameters.jl:3-61, main.jl:25-81 (un-dealiased rfft/irfft, (1 + k^2) viscous operator, ZeroMeanBump/Noise ICs, adaptive midpoint)"
+equation: "k = 2*pi*rfftfreq(Nx, 1/dx); sigma = Z*C^2 - B*C^3; v = irfft(rfft(sigma)*(i*k)/(1 + k^2)); d_t C = -d_x(C*v) + Dc*d_xx C - Kd*C + A*Na; d_t Na = -d_x(Na*v) + Da*d_xx Na - (Omega_d0 + Omega_d*C)*Na + Omega0*Ni*(1 + Omega*Na^2); d_t Ni = -d_x(Ni*v) + d_xx Ni + (Omega_d0 + Omega_d*C)*Na - Omega0*Ni*(1 + Omega*Na^2)"
+inputs:
+  L_base: {quantity: dimless_system_size, unit: dimensionless}
+  L_mult: {quantity: system_size_multiple, unit: dimensionless}
+  N_base: {quantity: grid_point_count, unit: dimensionless}
+  Dc: {quantity: dimless_diffusivity_c, unit: dimensionless}
+  Da: {quantity: dimless_diffusivity_a, unit: dimensionless}
+  A: {quantity: dimless_assembly_rate, unit: dimensionless}
+  Kd: {quantity: dimless_disassembly_rate, unit: dimensionless}
+  Omega0: {quantity: dimless_basal_activation_rate, unit: dimensionless}
+  Omega: {quantity: dimless_cooperative_activation, unit: dimensionless}
+  Omega_d: {quantity: dimless_actin_inactivation, unit: dimensionless}
+  Omega_d0: {quantity: dimless_spontaneous_inactivation, unit: dimensionless}
+  Z: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  B: {quantity: dimless_passive_stress_coeff, unit: dimensionless}
+  T_end: {quantity: dimless_time, unit: dimensionless}
+  ErrorTolerance: {quantity: relative_error_tolerance, unit: dimensionless}
+  dt_init: {quantity: dimless_time, unit: dimensionless}
+outputs:
+  C_HSS: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  C_min: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  C_max: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  C_center: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  grad_c_sq_mean: {quantity: dimless_grad_c_sq_mean, unit: dimensionless}
+  mean_N: {quantity: dimless_mean_nucleator_density, unit: dimensionless}
+  max_rhs: {quantity: dimensionless_residual, unit: dimensionless}
+  dt_first_step: {quantity: dimless_time, unit: dimensionless}
+settings:
+  solver: "newton_krylov"
+  branch: "spike"
+  shift_half: false
+  nbar_mode: "exact_1"
+  n_grid_scale: 1.0
+  dt_imex: 0.05
+  adapt_steps: 5
+  seed: 123
+stochastic: false

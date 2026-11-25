@@ -1,0 +1,553 @@
+- id: q_eq3_non_traceless_strain_rate
+  kind: possible_error
+  about:
+    - viscous_stress_1d_eq3
+    - viscous_stress_1d_eq3_corrected
+    - cmp_viscous_coeff_eq3_printed
+    - cmp_viscous_coeff_eq3_corrected
+  text: >
+    On p. 1 (Main Text Eq. 3), the text defines the 'traceless strain rate tensor' as
+    v = (1/2)[grad v + (grad v)^T - (grad . v / d) 1]. Because Tr(grad v + (grad v)^T) = 2 div v,
+    this printed expression has trace (1/2) div v != 0 and is missing a factor of 2 on the trace
+    term (it should read (1/2)[grad v + (grad v)^T] - (div v / d) 1). In d = 1 with eta = eta_tilde,
+    the printed expression yields viscous stress (eta + eta_tilde) d_x v = 2 eta d_x v (dimensionless
+    coefficient 2), contradicting Eq. (SM3) Sigma = d_X V + Pi(C) (coefficient 1). Numerical checks
+    confirm that the spike solution of Fig. 3(a) and SM Fig. 3 vanishes when the viscous coefficient
+    is 2 and matches SM Fig. 3 when it is 1.
+  citation:
+    page: 1
+    printed_page: "238401-1"
+    quote: "active fluid, v ¼ ð1=2Þ½∇v þ ð∇vÞT − ð∇ · v=dÞ1  is the"
+    where: "Eq. 3"
+
+- id: q_sm_table2_A_misprint
+  kind: possible_error
+  about:
+    - A_default
+  text: >
+    SM Table II (PDF p. 14 / SM p. 8) prints the expression for the dimensionless assembly rate A
+    as 'A*tau' (capital A on both sides, which is self-referential and dimensionally inconsistent),
+    whereas SM p. 2 (PDF p. 8, immediately below Eq. SM1) explicitly prints 'A = alpha*tau', where
+    alpha is the dimensional actomyosin assembly rate in Eq. (1).
+  citation:
+    page: 14
+    printed_page: "SM-8"
+    quote: "A Aτ 1"
+    where: "SM Table II"
+
+- id: q_sm_nloc_integral_limit_misprint
+  kind: possible_error
+  about:
+    - pde_1d_steady_state_sm1_5
+    - rel_dev_threshold_Nloc
+  text: >
+    SM Sec. I B (PDF p. 11 / SM p. 5) defines the local average nucleator density as
+    N_bar_loc = [1 / (X_r - X_l)] int_{-X_l}^{X_r} dX (N_a + N_i). Since X_l and X_r are defined
+    starting from X = -L/2 and X = L/2 respectively (so for symmetric profiles centered at 0,
+    X_l = -X_r < 0), the printed lower limit -X_l equals X_r and makes the integral vanish
+    identically. Clearly the lower limit is a misprint for X_l; using int_{X_l}^{X_r} reproduces
+    SM Table I's N_bar_loc values to ~0.01 across LP2-LP7.
+  citation:
+    page: 11
+    printed_page: "SM-5"
+    quote: "where Xl (Xr ) is the first point from the left (right) where the relative deviation of Ni from"
+    where: "SM Sec. I B"
+
+- id: q_fig3c_spatial_eigenvalues_mismatch
+  kind: possible_error
+  about:
+    - spatial_dynamics_eigenvalues_sm24
+    - spatial_eval_unit_mult_spike
+    - spatial_eval_unit_mult_LP0
+    - cmp_spatial_unit_mult_spike
+    - cmp_spatial_unit_mult_LP0
+  text: >
+    Fig. 3(c) (p. 3) and SM Sec. II (p. 14) state that the plotted eigenvalues come from linearizing
+    the 8D spatial-dynamics ODE system Eqs. (SM24)-(SM31) around H, and Fig. 3(c)'s caption states
+    that 'In either case, the eigenvalue with real part equal to 1 has multiplicity 4.' Direct
+    evaluation of the exact 8x8 Jacobian of Eqs. (SM24)-(SM31) at H yields reversible spectra
+    symmetric under mu <-> -mu with NO eigenvalue at Re(mu) = 1:
+    {0 (mult 2), +-1.3081, +-2.8615, +-7.5803} for the spike (Fig. 3a) and
+    {0 (mult 2), +-0.6696, +-4.6396 +- 3.8907i} for LP0 (Fig. 1a).
+    By contrast, Fig. 3(c) plots only non-negative real parts at {0, 1 (mult 4), 30.5, 100} for the
+    spike (x) and {0, 1 (mult 4), 56.34 +- 18.46i} for LP0 (+). Those non-zero/non-unit numbers
+    ({30.5, 100} and {56.336 +- 18.464i}) are the exact eigenvalues of the decoupled 3x3
+    reaction-diffusion sub-block -D^{-1} R_H (independent of active stress Z, B and velocity V),
+    which arise if the identity block I_4 and reaction-diffusion block are misplaced onto the block
+    diagonal of the 8x8 Jacobian rather than off-diagonal. In addition, p. 3 attributes complex-conjugate
+    pairing to reversibility; complex-conjugate pairing holds for any real matrix, whereas reversibility
+    enforces sign reflection mu <-> -mu (yielding quartets +-a +- i*b, absent from Fig. 3c).
+  citation:
+    page: 3
+    printed_page: "238401-3"
+    quote: "In either case, the eigenvalue with real part equal to 1 has multiplicity 4."
+    where: "Fig. 3(c)"
+
+- id: q_sm_table1_lsa_mismatch
+  kind: possible_error
+  about:
+    - inner_wavelength_lsa_sm1b
+    - inner_wavelength_lsa_sm15_literal
+    - cmp_sm1b_K_star_LP2
+    - cmp_sm1b_K_star_LP6
+    - cmp_sm15lit_K_star_LP2
+    - cmp_sm15lit_K_star_LP6
+  text: >
+    SM Sec. I B (pp. 11-13) computes K* and [K*_left, K*_right] in SM Table I by linear stability
+    analysis of the homogeneous state H with total nucleator density N_bar = N_bar_loc on discrete
+    wavenumbers K = n*pi/W. Every printed entry in SM Table I is indeed an exact integer multiple of
+    pi/W. However, exact linearization of Eqs. (SM1)-(SM5) at N_bar = N_bar_loc (equivalently
+    rescaling Omega -> Omega*N_loc^2, Omega_d -> Omega_d*N_loc, Z -> Z*N_loc^2, B -> B*N_loc^3 per
+    SM Table II) produces K* ~ 1.08-1.25 and K*_right ~ 3.97-5.49 with K*_left = pi/W for all six
+    states LP2-LP7, failing to reproduce SM Table I (K* ~ 3.57-4.22, K*_right ~ 8.33-9.57, and
+    K*_left ~ 1.08-1.37 for LP4-LP7). Notably, substituting C_H(N_loc) and N_H^- = 2*N_a,H(N_loc) - N_loc
+    literally into printed Eqs. (SM15)-(SM23) while leaving N_H^+ = 1 unscaled (model
+    inner_wavelength_lsa_sm15_literal) matches 8 of 18 printed entries exactly (LP2 K*_right = 9.57,
+    LP3 K* = 3.57, LP4 K*_left = 1.13, LP5 K* = 4.06 and K*_left = 1.08, LP6 K* = 3.83, LP7 K*_left = 1.25
+    and K*_right = 8.49; 13 of 18 reproduce within BoxGraph input-rounding propagation) and recovers
+    the shift to K*_left > pi/W for LP4-LP7, though residual 1-2 Delta K differences remain.
+  citation:
+    page: 11
+    printed_page: "SM-5"
+    quote: "homogeneous state with N̄ = N̄loc and all other parameters as for the corresponding LP."
+    where: "SM Sec. I B & SM Table I"
+
+- id: q_sm_table1_W_Kobs_vs_fig1
+  kind: unexplained_difference
+  about:
+    - pde_1d_steady_state_sm1_5
+    - W_LP3
+    - K_obs_LP3
+    - W_LP6
+    - K_obs_LP6
+    - cmp_pde_W_LP3
+    - cmp_pde_K_obs_LP3
+    - cmp_pde_W_LP6
+    - cmp_pde_K_obs_LP6
+  text: >
+    SM Table I's caption (p. 13) states that LP2-LP7 'are the same as in Fig. 1 of the main text'
+    (Omega = 10 for LP2-LP3, 14 for LP4-LP6, 15.5 for LP7). Converged, grid-independent 1D steady-state
+    solutions of Eqs. (SM1)-(SM5) (residual < 10^-11, verified between N = 1024 and N = 2048) match the
+    actual curves plotted in Fig. 1(b)-(g) to ~0.5% in width W and inner wavenumber K_obs and match
+    Fig. 2's <(d_X C)^2> and SM Table I's N_bar_loc within ~0.01 across all six states. However, SM
+    Table I prints systematically larger W and smaller K_obs for LP3, LP5, LP6, and LP7 than both our
+    PDE solutions and the paper's own Fig. 1(c, e-g) plots (e.g., LP3 has W = 6.78 < LP2's 7.27 and
+    K_obs = 3.44 in both our PDE and Fig. 1(c), whereas SM Table I prints W = 7.92 > 7.55 and
+    K_obs = 3.15; LP6 has W = 10.28 and K_obs = 4.08 in both our PDE and Fig. 1(f), whereas SM Table I
+    prints W = 11.47 and K_obs = 3.81). The definition of FWHM (of C vs N_i vs N_a + N_i) and the
+    exact method used to extract K_obs are not specified in SM Sec. I B, and SM Table I may have been
+    evaluated at slightly different Omega values or with an alternative width/wavenumber metric.
+  citation:
+    page: 13
+    printed_page: "SM-7"
+    quote: "SM Table I: Geometric features of six different localized patterns, LP2−7 . For definitions,"
+    where: "SM Table I"
+
+- id: q_sm_fig1_long_wave_type_iis
+  kind: possible_error
+  about:
+    - stability_boundary_smfig1
+    - linear_stability_1d_sm15
+    - run_boundary_Z15
+  text: >
+    SM Sec. I A (p. 10) and SM Fig. 1 (p. 11) label the entire solid instability boundary of H as a
+    finite-wavelength stationary (Type I_s) instability. Direct evaluation of Eqs. (SM15)-(SM23) shows
+    that for Z in roughly [2.78, 23.08] (including Z = 15 of Figs. 1-2, where Omega_c = 8.1435 as K -> 0^+),
+    the first mode to become unstable as Omega increases is the long-wavelength (K -> 0^+) conserved-density
+    mode (a Type II_s instability in the Cross-Hohenberg classification), while a genuine finite-wavelength
+    Type I_s onset (K_c ~ 3.41 down to 3.24) takes over only for Z >= 23.09 (reaching Omega_c = 0 at
+    Z ~ 24.46, and Type I_o oscillatory onset with K_c ~ 2.25-2.28 occurs for Z <= 2.77). Additionally,
+    SM Fig. 1's caption refers to 'solid and dotted lines' whereas the plot and legend draw a solid line
+    and a dashed line.
+  citation:
+    page: 11
+    printed_page: "SM-5"
+    quote: "steady state H is unstable above the solid and dotted lines. Parameter values as in Fig. 1"
+    where: "SM Fig. 1"
+
+- id: q_sm_CH_Kd_omitted_and_sm28_kd
+  kind: possible_error
+  about:
+    - homogeneous_steady_state
+    - spatial_dynamics_eigenvalues_sm24
+  text: >
+    SM p. 3 (PDF p. 9) writes the homogeneous steady state as C_H = A*(N_a)_H rather than
+    C_H = (A/K_d)*(N_a)_H, implicitly setting K_d = 1 (SM Table II) even though Eq. (SM15) retains K_d
+    explicitly. Similarly, Eq. (SM28) on SM p. 7 (PDF p. 13) prints lowercase k_d instead of the
+    dimensionless parameter K_d.
+  citation:
+    page: 9
+    printed_page: "SM-3"
+    quote: "steady state H of Eqs. (SM1)–(SM5), i.e. CH = A(Na )H , (Na )H , (Ni )H = 1−(Na )H"
+    where: "SM Sec. I A & Eq. SM28"
+
+- id: q_sm_fig5_caption_ref_typo
+  kind: possible_error
+  about:
+    - pde_1d_steady_state_sm1_5
+  text: >
+    SM Fig. 5 caption (PDF p. 17 / SM p. 11) states 'This figure zooms into the central inner peak of
+    LP3 in Fig. 2c of the main text.' Main text Fig. 2 has no panel (c); LP3 is plotted in Fig. 1(c).
+  citation:
+    page: 17
+    printed_page: "SM-11"
+    quote: "SM Figure 5: This figure zooms into the central inner peak of LP3 in Fig. 2c of the main"
+    where: "SM Fig. 5"
+
+- id: q_fig4_omega_d_unstated
+  kind: unstated_input
+  about:
+    - Omega_d_fig4_added
+    - T_end_2d_added
+    - pde_2d_time_eq1_5
+    - run_pde_2d_fig4a
+  text: >
+    Fig. 4's caption (p. 4) specifies 'Parameters as in SM Table II [28], with Omega_d,0 = 0, Z = 30,
+    and Omega = 0 (a),(c), Omega = 9 (b),(d)', but omits Omega_d (which SM Table II lists as 'see text')
+    as well as the 2D grid resolution, integration time, and initial conditions. Using Omega_d = 10
+    (as in Figs. 1-2) and the corrected traceless 2D viscous stress (1 + 2|K|^2) V_hat = i K Pi_hat
+    reproduces a stable circular localized state for Fig. 4(a) with C in [0.185, 0.902], consistent
+    with Fig. 4's colorbar [0.2, 1.1].
+  citation:
+    page: 4
+    printed_page: "238401-4"
+    quote: "Ωd;0 ¼ 0, Z ¼ 30, and Ω ¼ 0 (a),(c), Ω ¼ 9 (b),(d)."
+    where: "Fig. 4"
+
+- id: q_pde_numerics_and_ics_unstated
+  kind: unstated_input
+  about:
+    - pde_1d_steady_state_sm1_5
+    - pde_1d_time_sm1_5
+    - pde_2d_time_eq1_5
+    - eta_ref_added
+    - gamma_ref_added
+    - Di_dim_ref_added
+  text: >
+    The article and Supplementary Material do not report the numerical discretization scheme, time-stepping
+    algorithm, time step dt, integration horizon (except T = 2000 on SM Fig. 2's axis), noise amplitude,
+    or explicit localized initial conditions used to generate Figs. 1-4 and SM Figs. 2-6 (only the grid
+    spacing Delta X = L/1024 is given in SM Fig. 3, referring readers to the external Julia repository).
+    No dimensional physical parameter values are stated in the paper; representative dimensional reference
+    values are placed in added.yaml solely to exercise the dimensional scaling relations.
+  citation:
+    page: 2
+    printed_page: "238401-2"
+    quote: "end, we use a custom Julia [30] code, available online [31]."
+    where: text
+
+- id: q_wave_horizon_choice
+  kind: choice
+  about:
+    - T_end_wave_added
+    - run_pde_wave_smfig2
+    - ref_pde_wave_dt
+  text: >
+    SM Fig. 2 plots the passive-fluid travelling wave at Z = 0, Omega = 30 up to T = 2000. Because the
+    linear growth rate (~0.15) saturates the travelling wave well before T = 100, run_pde_wave_smfig2
+    uses T_end = 250 (with alternatives 500 and 2000 recorded in added.yaml) so stochastic replicates
+    and dt refinement remain fast while capturing the asymptotic wave amplitude.
+  citation:
+    page: 12
+    printed_page: "SM-6"
+    quote: "SM Figure 2: Travelling wave state observed at Z = 0, Ω = 30 (other parameters as in"
+    where: "SM Fig. 2"
+
+- id: q_audit_eq3_2d_printed_vs_traceless
+  kind: possible_error
+  about:
+    - pde_2d_time_eq1_5_printed
+    - pde_2d_time_eq1_5
+    - run_pde_2d_fig4a_printed
+    - run_pde_2d_fig4a
+  text: >
+    In d = 2 with eta = eta_tilde, the non-traceless strain-rate tensor printed on p. 1
+    (v = (1/2)[grad v + (grad v)^T - (div v / d) 1]) produces div sigma_visc = eta lap(v) + (3/2) eta grad(div v),
+    giving longitudinal Fourier operator (1 + 2.5 |K|^2) V_hat = i K Pi_hat (model pde_2d_time_eq1_5_printed)
+    rather than the traceless form (1 + 2 |K|^2) V_hat = i K Pi_hat (variant pde_2d_time_eq1_5). At Fig. 4(a)
+    parameters (Z = B = 30, Omega = 0, Omega_d = 10), run_pde_2d_fig4a_printed decays toward H (C_max = 0.234
+    at T = 100 vs C_H = 0.200), whereas the traceless variant sustains the circular localized state
+    (C in [0.185, 0.901]), confirming that the paper's 2D simulations used the traceless strain-rate tensor.
+  citation:
+    page: 1
+    printed_page: "238401-1"
+    quote: "active fluid, v ¼ ð1=2Þ½∇v þ ð∇vÞT − ð∇ · v=dÞ1  is the"
+    where: "Eq. 3 & Fig. 4(a)"
+
+- id: q_audit_spike_grid_resolution
+  kind: numerics
+  about:
+    - ref_pde_spike_L1_ngrid
+    - run_pde_spike_L1
+    - run_pde_spike_L32
+    - C_max_spike_asymptotic
+    - pde_1d_steady_state_sm1_5
+  text: >
+    Grid refinement ref_pde_spike_L1_ngrid fails to settle within 0.2% (belongs_to: numerics, 2.15% shift):
+    for the L x 1 spike (Fig. 3a, SM Fig. 3), 2nd-order finite-volume C_max rises cleanly as O(Delta X^2)
+    from 0.64924 (N = 1024, Delta X = L/1024) to 0.66060 (N = 2048) to 0.66347 (N = 4096), giving
+    Richardson continuum limit 0.66443 (independently verified by Fourier pseudo-spectral N = 1024:
+    C_max = 0.66433). The same ~0.015 (~2%) under-resolution of the sharp D_c = 0.01 spike peak at the
+    paper's stated Delta X = L/1024 persists at larger domains (L x 4: 0.67120 -> 0.68608, continuum 0.6871;
+    L x 8: 0.67453 -> 0.68647, continuum 0.6905; L x 32: 0.67697 at Delta X = L/1024 vs continuum ~0.693),
+    indicating that SM Fig. 3's inset (0.653 at L x 1 saturating to C_max ~= 0.68 at L x 32) reflects
+    finite-difference discretization error at fixed Delta X = L/1024 rather than the continuum peak ~0.693.
+  citation:
+    page: 15
+    printed_page: "SM-9"
+    quote: "simulations, the X axis is discretized such that grid spacing ∆X = L/1024 is independent"
+    where: "SM Fig. 3"
+
+- id: q_audit_wave_dt_and_horizon
+  kind: reading
+  about:
+    - ref_pde_wave_dt
+    - run_pde_wave_smfig2
+    - T_end_wave_added
+    - q_wave_horizon_choice
+    - T_max_smfig2
+  text: >
+    Audit disagreement with T_end_wave_added = 250 / q_wave_horizon_choice: refinement ref_pde_wave_dt fails
+    to settle (belongs_to: numerics, 6.1% shift in mean C_max across dt = 0.05, 0.025, 0.0125: 0.8204 ->
+    0.7900 -> 0.7729, SE = 0.0419). Independent re-runs show that although the linear instability saturates
+    by T ~ 80, phase/defect coarsening between counter-propagating wave trains is still active at T = 250
+    (e.g., seed = 44 exhibits transient defect peaks C_max = 0.9035 at dt = 0.05 and K_dom = 2.6 vs 2.4).
+    Integrating to the paper's plotted horizon T = 2000 (T_max_smfig2, SM Fig. 2) relaxes tested seeds
+    uniformly to C_min = 0.2638, C_max = 0.7649, K_dom = 2.400.
+  citation:
+    page: 12
+    printed_page: "SM-6"
+    quote: "SM Figure 2: Travelling wave state observed at Z = 0, Ω = 30 (other parameters as in"
+    where: "SM Fig. 2"
+
+- id: q_audit_sm_table1_kobs_scaling_and_kmin
+  kind: reading
+  about:
+    - pde_1d_steady_state_sm1_5
+    - W_LP3
+    - K_obs_LP3
+    - W_LP6
+    - K_obs_LP6
+    - q_sm_table1_W_Kobs_vs_fig1
+    - ref_boundary_Z15_nk
+    - stability_boundary_smfig1
+  text: >
+    Two additional audit notes: (1) Across all six rows LP2-LP7 of SM Table I (p. 13), printed K_obs and W
+    obey K_obs * W / (2*pi) = (i + 1) to within 0.5-0.7% (2.98, 3.97, 4.98, 5.96, 6.96, 7.97 for i = 2..7),
+    whereas pde_1d_steady_state_sm1_5 computes K_obs from interior peaks only and W as FWHM of C. Testing
+    alternative FWHM definitions (on N_i or N_a + N_i) and all-peak wavenumbers on converged PDE solutions
+    still leaves W smaller than SM Table I for LP3, LP5, LP6, LP7 (and makes K_all even larger), confirming
+    that the paper's own Fig. 1(c, f) curves are narrower than SM Table I (also SM p. 6's printed claim
+    K* - K_obs ~= Delta K for LP3 checks out as 3.57 - 3.15 = 0.42 vs pi / 7.92 = 0.397). (2) In
+    ref_boundary_Z15_nk, because Z = 15 is a long-wave Type II_s (K -> 0^+) onset, K_crit is clamped at the
+    fixed lower floor k_min = 0.02 so refining n_k leaves Omega_crit = 8.1452 invariant while shrinking
+    k_min -> 10^-4 shifts Omega_crit by 0.02% to 8.1435 (still well inside the 0.1% tolerance).
+  citation:
+    page: 13
+    printed_page: "SM-7"
+    quote: "SM Table I: Geometric features of six different localized patterns, LP2−7 . For definitions,"
+    where: "SM Table I & SM Fig. 1"
+
+- id: q_digitize_fig1_vs_sm_table1_settled
+  kind: unexplained_difference
+  about:
+    - q_sm_table1_W_Kobs_vs_fig1
+    - fig1b_LP2_C_fig
+    - fig1c_LP3_C_fig
+    - fig1d_LP4_C_fig
+    - fig1e_LP5_C_fig
+    - fig1f_LP6_C_fig
+    - fig1g_LP7_C_fig
+    - cmp_W_fig1_vs_table1_LP3
+    - cmp_W_fig1_vs_table1_LP6
+    - cmp_smfig5a_C
+  text: >
+    Calibrated digitization of Main Text Fig. 1(b)-(g) (178/178 points reproduced by 1D PDE solutions of
+    Eqs. SM1-SM5), Fig. 2 (all 8 slanted-snaking branches matching <(d_X C)^2> to median |diff| =
+    0.0001-0.0003), SM Fig. 4 (116/116 points reproduced), and SM Fig. 5(a)-(d) (148/148 points reproduced
+    for LP3 central peak at Omega = 10) definitively settles q_sm_table1_W_Kobs_vs_fig1: the curves
+    actually plotted in Figs. 1-2 and SM Figs. 4-5 are exact converged solutions of Eqs. (SM1)-(SM5),
+    with directly extracted FWHM widths W_fig = 7.36 (LP2), 6.79 (LP3), 11.00 (LP4), 10.82 (LP5), 10.36
+    (LP6), 11.41 (LP7) agreeing with our PDE (7.27, 6.78, 10.95, 10.83, 10.28, 11.38) to 0.01-0.09 while
+    contradicting SM Table I's printed widths (7.55, 7.92, 11.17, 11.60, 11.47, 12.58; 6/6 not reproduced,
+    discrepancies up to -1.17 / -14% on LP3, LP5, LP6, LP7).
+  citation:
+    page: 2
+    printed_page: "238401-2"
+    quote: "(b)–(g) Multipeaked LPi , where i ¼ 2; …; 7 is the number of"
+    where: "Fig. 1(b)-(g) & SM Table I"
+
+- id: q_digitize_fig3c_eigenvalues_settled
+  kind: possible_error
+  about:
+    - q_fig3c_spatial_eigenvalues_mismatch
+    - fig3c_spike_re_fig
+    - fig3c_LP0_re_fig
+    - fig3c_LP0_im_fig
+    - cmp_fig3c_spike_re
+    - cmp_fig3c_LP0_re
+    - cmp_fig3c_LP0_im
+  text: >
+    Calibrated broken-axis digitization of Fig. 3(c) (0.00 px misfit on right x-ticks 40, 60, 80, 100 and
+    <0.25 px on y-ticks -20..20) directly measures the plotted markers at Re = {0.001, 1.000, 30.527,
+    100.020}, Im = 0 (spike x) and Re = {0.001, 1.000, 56.316, 56.316}, Im = {0, 0, -18.470, +18.406}
+    (LP0 +). These match the decoupled 3x3 reaction-diffusion sub-block eigenvalues ({30.5, 100} and
+    {56.336 +- 18.464i}) to 0.02-0.15%, while producing not-reproduced verdicts against the true 8x8
+    Jacobian of Eqs. (SM24)-(SM31) ({0, 1.308, 2.862, 7.580} and {0, 0.670, 4.640 +- 3.891i}; max |diff|
+    = 92.41 on spike Re, 51.65 on LP0 Re, 14.56 on LP0 Im), quantitatively settling
+    q_fig3c_spatial_eigenvalues_mismatch.
+  citation:
+    page: 3
+    printed_page: "238401-3"
+    quote: "spatial dynamics linearized around H, for parameter values"
+    where: "Fig. 3(c)"
+
+- id: q_digitize_smfig1_finite_domain_offset
+  kind: reading
+  about:
+    - q_sm_fig1_long_wave_type_iis
+    - smfig1_boundary_Io_fig
+    - smfig1_boundary_Is_fig
+    - fig2_H_fig
+    - cmp_smfig1_boundary_Is_cont
+    - cmp_smfig1_boundary_Is_finiteL
+  text: >
+    Calibrated digitization of SM Fig. 1's stability boundary shows the solid curve sits systematically
+    +0.17 to +0.92 higher in Omega than the continuum K -> 0+ Type II_s threshold of Eqs. (SM15)-(SM23)
+    (e.g. digitized Omega_c = 8.39 [8.26, 8.53] at Z = 15 vs continuum 8.145; median |diff| = 0.375),
+    whereas evaluating Eqs. (SM15)-(SM23) above the smallest nonzero periodic mode K_1 = 2*pi/L = 0.2 of
+    the L = 10*pi domain yields Omega_c = 8.32 at Z = 15 and cuts median |diff| nearly threefold to 0.134
+    (comparable to the plot's ~0.2-0.3 scan-grid stair-stepping). Together with digitized Fig. 2 showing
+    the pink homogeneous branch H extending to Omega = 8.5 at Z = 15, this indicates SM Fig. 1 was
+    computed on the finite-domain discrete wavenumber spectrum K_n = 2*pi*n/L >= 0.2, explaining both the
+    upward shift and why the authors labeled the K_1 = 0.2 onset as finite-wavelength Type I_s.
+  citation:
+    page: 11
+    printed_page: "SM-5"
+    quote: "SM Figure 1: Stability diagram obtained from linear stability analysis. The homogeneous"
+    where: "SM Fig. 1 & Fig. 2"
+
+- id: q_digitize_smfig3_inset_discretization
+  kind: numerics
+  about:
+    - q_audit_spike_grid_resolution
+    - smfig3_inset_Cmax_fig
+    - smfig3_main_C_L32_fig
+    - cmp_smfig3_inset_Cmax
+    - cmp_smfig3_main_C_L32
+  text: >
+    Calibrated digitization of all 6 SM Fig. 3 inset dots (0.00 px misfit across 16 x-ticks and 4 y-ticks)
+    gives C_max = 0.65272, 0.66710, 0.67374, 0.67694, 0.67850, 0.67928 (+/- 0.00005) at L x 1, 2, 4, 8,
+    16, 32. Our staggered cell-centered finite-volume solver at the paper's stated Delta X = L/1024 yields
+    0.64924, 0.66428, 0.67120, 0.67453, 0.67617, 0.67697 (uniformly -0.0023 to -0.0035 below the inset,
+    giving not reproduced against the +/- 0.00005 dot uncertainty), while continuum resolution gives
+    0.6644 at L x 1 rising to ~0.693 at L x 32. Thus the inset lies ~0.012-0.014 below the continuum peak
+    and ~0.0023-0.0035 above cell-centered C(0.5*dx), reflecting finite-difference discretization error at
+    fixed Delta X = L/1024 (and SM Fig. 3 main panel directly exhibits a half-grid-cell peak offset of
+    X_peak = -0.0165 ~= -Delta X / 2).
+  citation:
+    page: 15
+    printed_page: "SM-9"
+    quote: "of system size. (Inset) The maximum of C, i.e. C(X = 0), saturates to Cmax ≃ 0.68 with"
+    where: "SM Fig. 3 (inset)"
+
+- id: q_cross_validation_no_dimensional_params
+  kind: unstated_input
+  about:
+    - linear_stability_1d_sm15
+    - inner_wavelength_lsa_sm1b
+    - pde_1d_steady_state_sm1_5
+    - hydrodynamic_length
+    - diffusive_timescale
+    - hannezo2015/ring_wavelength_embryo_wt
+    - hannezo2015/rings_per_cell_embryo_wt
+    - hannezo2015/turnover_time_frap
+    - hannezo2015/diffusion_coeff_frap
+  text: >
+    Cross-validation check of barberi2023 paired with {bois2011, frohoff2021, hannezo2015, mirza2025}:
+    no validations.yaml entries are warranted. bois2011, frohoff2021, and mirza2025 contain zero
+    measured (origin: measured) datums. hannezo2015 contains 35 measured Drosophila tracheal datums
+    (circumferential actin ring wavelengths, ring counts, FRAP diffusion D and turnover tau, fluorescence
+    ramps, mutant/RNAi fold changes), whereas barberi2023 states zero dimensional physical parameter
+    values in the article or Supplementary Material (SM Table II lists only dimensionless parameter
+    values for a generic 3-species mechanochemical model) and provides no dimensional wavelength or
+    ring-spacing model (only bare scale definitions hydrodynamic_length, diffusive_timescale, and
+    viscous_stress_1d_eq3, none of which corresponds to a directly measured datum in hannezo2015).
+    Evaluating barberi2023's dimensionless 3-species pattern-formation models against hannezo2015's
+    embryo measurements would require inventing ~10 unmeasured nucleator-kinetics and cubic-stress
+    parameters (A, K_d, Omega_0, Omega, Omega_d,0, Omega_d, D_a, D_i, Z, B) for Drosophila trachea
+    and is physically ill-posed.
+  citation:
+    page: 2
+    printed_page: "238401-2"
+    quote: "quantities with capital letters: X ¼ x=λ, T ¼ t=τ,"
+    where: "Main text p. 2 & SM Table II"
+
+- id: q_cross_active_fluid_viscous_coeff_and_stress_monotonicity
+  kind: reading
+  about:
+    - viscous_stress_1d_eq3
+    - viscous_stress_1d_eq3_corrected
+    - nonviscous_stress_1d
+    - rel_bois2011_dispersion_eq12_reduces
+    - rel_hannezo2015_dispersion_eq8_reduces
+    - rel_mirza2025_dispersion_eqC7_reduces
+    - bois2011/single_species_dispersion_eq12
+    - hannezo2015/dispersion_relation_dimless_eq8
+    - mirza2025/dispersion_1d_eqC7
+  text: >
+    Cross-record synthesis across the active-fluid quartet {barberi2023, bois2011, hannezo2015,
+    mirza2025} highlights two constitutive distinctions governing linear screening and nonlinear
+    localization: (1) Although all four share the bare hydrodynamic length sqrt(eta/gamma), their
+    1D longitudinal viscous coefficients differ: bois2011 and hannezo2015 use 1*eta (screening length
+    lambda = sqrt(eta/gamma)); barberi2023's corrected traceless Eq. (3) with eta = eta_tilde gives
+    1*eta in 1D and 2*eta in 2D (whereas printed Eq. 3 gives misprinted 2*eta in 1D and 2.5*eta in
+    2D, q_eq3_non_traceless_strain_rate); and mirza2025's 2D compressible viscous stress
+    2*eta*(d + tr(d)*I) yields 4*eta in 1D uniaxial flow (effective screening length 2*ell_s and 4x
+    timescale ratio, corresponding to barberi2023/viscous_stress_1d_eq3_corrected at d = 2,
+    eta_tilde = 3*eta). (2) In linear stability (decoupled fast-diffusing active-nucleator limit),
+    barberi2023 reduces identically to bois2011 Eq. (12), hannezo2015 SI Eq. (8), and mirza2025
+    Eq. (C7) whenever Pi'_H > 0; nonlinearly, however, bois2011 (Ref. 11), hannezo2015, and
+    mirza2025 use monotonic contractile stress (Pi'(C) > 0, giving purely attractive inflow toward
+    density peaks), whereas barberi2023's nonmonotonic Pi(C) = Z*C^2 - B*C^3 (Endnote 37, p. 5)
+    flips Pi'(C) < 0 at high density C > 2*Z/(3*B), producing repulsive convective outflow between
+    internal peaks that stabilizes multipeaked localized patterns LP2-LP7.
+  citation:
+    page: 5
+    printed_page: "238401-5"
+    quote: "monotonic dependence on c, like in Ref. [11], density peaks"
+    where: "Endnote 37 (p. 5)"
+
+- id: q_cross_frohoff2021_conserved_typeIIs_and_nonreciprocity
+  kind: reading
+  about:
+    - linear_stability_1d_sm15
+    - linear_stability_1d_passive
+    - q_sm_fig1_long_wave_type_iis
+    - rel_frohoff2021_passive_nonreciprocal_eq12_same
+    - rel_frohoff2021_typeIIs_longwave_reduces
+    - rel_frohoff2021_conserved_nucleator_ch_approx
+    - frohoff2021/linear_dispersion_general_eq12
+    - frohoff2021/linear_dispersion_variational_limit
+  text: >
+    Cross-record comparison of barberi2023 with frohoff2021 connects two shared conserved-quantity
+    mechanisms and pinpoints a key structural contrast: (1) Conservation of total nucleators
+    N_+ = N_a + N_i gives barberi2023 a neutral K = 0 mode whose long-wave linear-kinetics Schur
+    complement reduces identically to frohoff2021's conserved Cahn-Hilliard (Type II_s) dispersion
+    with a_eff = D_a*N_a,H + (1 - N_a,H) - Pi'_H*C_H (and Brinkman screening supplies the O(K^4)
+    interfacial stiffness), directly illuminating both the true continuum Type II_s boundary in
+    SM Fig. 1 (q_sm_fig1_long_wave_type_iis) and the slanted-snaking bifurcation diagram of Fig. 2.
+    (2) In the equal-diffusivity passive limit (D_a = 1, Z = B = 0, Omega = 0), barberi2023's
+    (delta C, delta N_-) block is algebraically identical to frohoff2021's rescaled nonreciprocal
+    2x2 operator -B(q) Eq. (12) with pure nonreciprocal coupling Delta = alpha^2 = A*N_a,H*Omega_d > 0;
+    however, because both fields in frohoff2021 are conserved (multiplying eigenvalues by q^2), its
+    oscillatory frequency vanishes at onset as q -> 0 (Im(lambda_+) = q^2 * omega_tilde), whereas
+    barberi2023's non-conserved (C, N_-) pair retains a finite oscillation frequency as K -> 0
+    (supporting finite-frequency travelling waves in SM Fig. 2).
+  citation:
+    page: 3
+    printed_page: "238401-3"
+    quote: "slanted snaking scenario [38,39], typical of systems featuring a"
+    where: "Main text p. 3 & Fig. 2"
+
+

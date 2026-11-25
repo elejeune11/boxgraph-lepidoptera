@@ -1,0 +1,40 @@
+id: code_1d_noflux_pde
+name: "Exact port of 1D/NoFlux/{InputParameters,functions,main}.jl finite-difference upwind solver (1D/NoFlux/functions.jl:1-98, main.jl:54-124)"
+role: model
+stated:
+  file: 1D/NoFlux/functions.jl
+  lines: "14-34"
+  quote: "∂xFieldsv[i,j] = -abs(v[j]) * Fields[i,j]"
+  where: "1D/NoFlux/functions.jl:1-98 & 1D/NoFlux/main.jl:54-124 (tridiagonal A, 5-pt FDC1, 3-pt FDC2, 1st-order donor-cell upwind, Neumann RHS[:,1]=RHS[:,2])"
+equation: "A*v[2:Nx-1] = (2*Z*C - 3*B*C^2)*(FDC1*C) with A = (2/dx^2 + 1)I - (1/dx^2)offdiag, v[1]=v[Nx]=0; adv[i,j] = (-|v[j]|F[i,j] + max(v[j-1],0)F[i,j-1] + max(-v[j+1],0)F[i,j+1])/dx; RHS[:,2:Nx-1] = adv + D*(FDC2*F) + R; RHS[:,1]=RHS[:,2], RHS[:,Nx]=RHS[:,Nx-1]"
+inputs:
+  L_base: {quantity: dimless_system_size, unit: dimensionless}
+  L_mult: {quantity: system_size_multiple, unit: dimensionless}
+  N_base: {quantity: grid_point_count, unit: dimensionless}
+  Dc: {quantity: dimless_diffusivity_c, unit: dimensionless}
+  Da: {quantity: dimless_diffusivity_a, unit: dimensionless}
+  A: {quantity: dimless_assembly_rate, unit: dimensionless}
+  Kd: {quantity: dimless_disassembly_rate, unit: dimensionless}
+  Omega0: {quantity: dimless_basal_activation_rate, unit: dimensionless}
+  Omega: {quantity: dimless_cooperative_activation, unit: dimensionless}
+  Omega_d: {quantity: dimless_actin_inactivation, unit: dimensionless}
+  Omega_d0: {quantity: dimless_spontaneous_inactivation, unit: dimensionless}
+  Z: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  B: {quantity: dimless_passive_stress_coeff, unit: dimensionless}
+  T_end: {quantity: dimless_time, unit: dimensionless}
+  ErrorTolerance: {quantity: relative_error_tolerance, unit: dimensionless}
+outputs:
+  C_HSS: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  C_max: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  C_center: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  C_boundary: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  grad_c_sq_mean: {quantity: dimless_grad_c_sq_mean, unit: dimensionless}
+  max_rhs: {quantity: dimensionless_residual, unit: dimensionless}
+  mass_drift: {quantity: dimensionless_residual, unit: dimensionless}
+settings:
+  solver: "banded_newton"
+  branch: "spike"
+  centered_on_node: false
+  n_grid_scale: 1.0
+  leak_probe_Nx: 128
+stochastic: false

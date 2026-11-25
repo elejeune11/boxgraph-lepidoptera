@@ -1,0 +1,85 @@
+import math
+import numpy as np
+
+
+def run(inputs, settings):
+    chiA = float(inputs["chi_A"])
+    chiB = float(inputs["chi_B"])
+    gammaA = float(inputs["gamma_A"])
+    gammaB = float(inputs["gamma_B"])
+    kappa = float(inputs["kappa"])
+    delta = float(inputs["delta"])
+    L = float(inputs["L"])
+    phi0A = float(inputs["phi0_A"])
+    phi0B = float(inputs["phi0_B"])
+    qj = float(inputs["q_j"])
+
+    N = int(round(float(settings.get("N", 64))))
+    dt = float(settings.get("dt", 2.0))
+    t_max = float(settings.get("t_max", 20000.0))
+    seed = int(settings.get("seed", 42))
+
+    k = 2.0 * math.pi * np.fft.rfftfreq(N, d=L / N)
+    k2 = k * k
+    kAB = kappa - delta
+    kBA = kappa + delta
+    dealias = np.abs(np.fft.rfftfreq(N) * N) <= (N // 3)
+
+    x = np.linspace(0.0, L, N, endpoint=False)
+    rng = np.random.default_rng(seed)
+    phiA = phi0A + 1.0e-2 * np.cos(2.0 * math.pi * x / L) + 1.0e-3 * rng.standard_normal(N)
+    phiB = phi0B - 1.0e-2 * np.cos(2.0 * math.pi * x / L + 0.05) + 1.0e-3 * rng.standard_normal(N)
+    phiA -= phiA.mean() - phi0A
+    phiB -= phiB.mean() - phi0B
+
+    Ahat = np.fft.rfft(phiA)
+    Bhat = np.fft.rfft(phiB)
+
+    M11 = -k2 * (chiA + gammaA * k2)
+    M12 = -k2 * kAB
+    M21 = -k2 * kBA
+    M22 = -k2 * (chiB + gammaB * k2)
+
+    e11 = 1.0 - dt * M11
+    e12 = -dt * M12
+    e21 = -dt * M21
+    e22 = 1.0 - dt * M22
+    edet = e11 * e22 - e12 * e21
+
+    s11 = 3.0 - 2.0 * dt * M11
+    s12 = -2.0 * dt * M12
+    s21 = -2.0 * dt * M21
+    s22 = 3.0 - 2.0 * dt * M22
+    sdet = s11 * s22 - s12 * s21
+
+    steps = int(round(t_max / dt))
+    A = np.fft.irfft(Ahat, n=N)
+    B = np.fft.irfft(Bhat, n=N)
+    nlA_prev = -(1.0 / 3.0) * k2 * np.fft.rfft(A * A * A) * dealias
+    nlB_prev = -(1.0 / 3.0) * k2 * np.fft.rfft(B * B * B) * dealias
+    Ahat_prev = Ahat.copy()
+    Bhat_prev = Bhat.copy()
+
+    rhsA = Ahat + dt * nlA_prev
+    rhsB = Bhat + dt * nlB_prev
+    Ahat = (e22 * rhsA - e12 * rhsB) / edet
+    Bhat = (-e21 * rhsA + e11 * rhsB) / edet
+
+    for _ in range(1, steps):
+        A = np.fft.irfft(Ahat, n=N)
+        B = np.fft.irfft(Bhat, n=N)
+        nlA = -(1.0 / 3.0) * k2 * np.fft.rfft(A * A * A) * dealias
+        nlB = -(1.0 / 3.0) * k2 * np.fft.rfft(B * B * B) * dealias
+        rhsA = 4.0 * Ahat - Ahat_prev + 2.0 * dt * (2.0 * nlA - nlA_prev)
+        rhsB = 4.0 * Bhat - Bhat_prev + 2.0 * dt * (2.0 * nlB - nlB_prev)
+        Ahat_prev = Ahat
+        Bhat_prev = Bhat
+        nlA_prev = nlA
+        nlB_prev = nlB
+        Ahat = (s22 * rhsA - s12 * rhsB) / sdet
+        Bhat = (-s21 * rhsA + s11 * rhsB) / sdet
+
+    j = int(round(qj * L / (2.0 * math.pi)))
+    if j < 0 or j >= len(Ahat):
+        return {"amp_A": 0.0, "amp_B": 0.0}
+    return {"amp_A": float(abs(Ahat[j]) / N), "amp_B": float(abs(Bhat[j]) / N)}

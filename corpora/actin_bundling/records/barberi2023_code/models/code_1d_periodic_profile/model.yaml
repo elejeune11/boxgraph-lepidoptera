@@ -1,0 +1,44 @@
+id: code_1d_periodic_profile
+name: "Spatial profile curve evaluator of 1D/PeriodicBoundaries Fourier pseudo-spectral steady states (1D/PeriodicBoundaries/functions.jl:1-18)"
+role: model
+stated:
+  file: 1D/PeriodicBoundaries/functions.jl
+  lines: "1-18"
+  quote: "function CalculateRHS!(Pars, v, Fields, ∂xx, ∂xFieldsv, σ, RHS, k, P, Pinv, Factor1stDer, Factor2ndDer)"
+  where: "1D/PeriodicBoundaries/functions.jl:1-18 (steady-state C(X) sampled at digitized figure coordinates)"
+built_from:
+  - code_1d_periodic_pde
+equation: "Solve 1D/PeriodicBoundaries steady-state RHS(C, Na, Ni) = 0 on periodic grid x = -L/2 + i*dx and interpolate C(X) onto target_curve X coordinates"
+inputs:
+  L: {quantity: dimless_system_size, unit: dimensionless}
+  Nx: {quantity: grid_point_count, unit: dimensionless}
+  Dc: {quantity: dimless_diffusivity_c, unit: dimensionless}
+  Da: {quantity: dimless_diffusivity_a, unit: dimensionless}
+  A: {quantity: dimless_assembly_rate, unit: dimensionless}
+  Kd: {quantity: dimless_disassembly_rate, unit: dimensionless}
+  Omega0: {quantity: dimless_basal_activation_rate, unit: dimensionless}
+  Omega: {quantity: dimless_cooperative_activation, unit: dimensionless}
+  Omega_d: {quantity: dimless_actin_inactivation, unit: dimensionless}
+  Omega_d0: {quantity: dimless_spontaneous_inactivation, unit: dimensionless}
+  Z: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  B: {quantity: dimless_passive_stress_coeff, unit: dimensionless}
+  target_curve:
+    quantity: dimless_actomyosin_density
+    unit: dimensionless
+    curve:
+      quantity: dimless_position
+      unit: dimensionless
+outputs:
+  C_profile:
+    quantity: dimless_actomyosin_density
+    unit: dimensionless
+    curve:
+      quantity: dimless_position
+      unit: dimensionless
+  C_max: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  grad_c_sq_mean: {quantity: dimless_grad_c_sq_mean, unit: dimensionless}
+settings:
+  branch: "lp0"
+  shift_half: false
+  nbar_mode: "exact_1"
+stochastic: false

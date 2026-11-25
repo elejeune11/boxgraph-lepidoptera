@@ -1,0 +1,51 @@
+id: sphere_hydrodynamics_single_step_eqs32_33_corrected
+name: single-step axisymmetric hydrodynamic solver on a prolate spheroid (Eq. S41 pole bending corrected)
+role: model
+variant_of: sphere_hydrodynamics_single_step_eqs32_33
+corrections:
+  - equation: "Eq. (S41)"
+    change: "Replace -8*kappa*d_s^2 C_s^s at the poles s={0,L} with -(16/3)*kappa*d_s^2 C_s^s"
+    evidence: "Near a smooth axisymmetric pole, C_s^s(s) = c0 + (c2/2)s^2 + O(s^4) implies psi(s) = c0*s + (c2/6)s^3, r(s) = s - (c0^2/6)s^3, and C_phi^phi(s) = sin(psi)/r = c0 + (c2/6)s^2 + O(s^4), so d_s^2 C_phi^phi|_0 = (1/3)*d_s^2 C_s^s|_0 rather than d_s^2 C_s^s|_0. Hence d_s^2 C_k^k|_0 = (4/3)*d_s^2 C_s^s|_0 and -2*kappa*(d_s^2 C_k^k + Gamma_phi_s^phi d_s C_k^k)|_0 = -4*kappa*d_s^2 C_k^k|_0 = -(16/3)*kappa*d_s^2 C_s^s|_0. With kappa > 0, printed -8 creates an O(1) discontinuity in vn at the pole and breaks O(N^-4) convergence, whereas -(16/3) restores smooth O(N^-4) convergence."
+stated:
+  page: 11
+  printed_page: "SI-5"
+  quote: "Using Eqs. (S36)–(S37), it follows that Eq. (S32) vanishes identically"
+  where: "Eq. (S41)"
+equation: "4th-order centered FD discretization of Eqs. (S32), (S33), (S59), and corrected pole Eq. (S41) with -(16/3)*kappa*d_s^2 C_s^s"
+inputs:
+  e:
+    quantity: spheroid_eccentricity
+    unit: dimensionless
+  V_over_R03:
+    quantity: dimensionless_enclosed_volume
+    unit: dimensionless
+  xi_over_gamma:
+    quantity: dimensionless_active_contractility
+    unit: dimensionless
+  kappa_tilde:
+    quantity: dimensionless_bending_rigidity
+    unit: dimensionless
+  eta_s_over_eta_b:
+    quantity: surface_viscosity_ratio
+    unit: dimensionless
+  m:
+    quantity: hill_coefficient
+    unit: dimensionless
+outputs:
+  vn_max_dimless:
+    quantity: dimensionless_velocity
+    unit: dimensionless
+  vs_max_dimless:
+    quantity: dimensionless_velocity
+    unit: dimensionless
+  vn_pole_dimless:
+    quantity: dimensionless_velocity
+    unit: dimensionless
+  p_dimless:
+    quantity: dimensionless_pressure
+    unit: dimensionless
+settings:
+  N: 101
+stochastic: false
+built_from:
+  - sphere_hydrodynamics_single_step_eqs32_33

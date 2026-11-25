@@ -1,0 +1,543 @@
+# ==============================================================================
+# Open Questions: Printed Algebraic Misprints, Numerical Findings, and Unstated Inputs
+# ==============================================================================
+- id: q_eqB2_misprint_6zeta
+  kind: possible_error
+  about: [pseudovariables_eqB1_B2, binodals_flat_eqB2, phi1_z2l2_fig5a, phi2_z2l2_fig5a]
+  text: >
+    Appendix B Eq. (B2) (p. 14) prints "- 6*zeta*K^2*phi" inside the brackets of g(phi) instead of
+    "- 6*(zeta - 2*lambda)*K^2*phi". Exact integration of Eq. (9) (dg/dphi = f'(phi) exp[(zeta-2*lambda)phi/K])
+    uniquely yields -6*(zeta - 2*lambda)*K^2*phi. As printed, Eq. (B2) violates dg/dpsi = df/dphi whenever
+    lambda != 0, violates the paper's core result that flat binodals depend only on (zeta - 2*lambda) (Sec. III p. 5,
+    Fig. 2), diverges as O((zeta-2*lambda)^-4) along zeta = 2*lambda != 0, and fails to reproduce the Fig. 5(a)
+    binodals (-1.096, 0.864) (yielding (-1.122, 0.325) at zeta=1, lambda=-0.5 and (-0.778, -0.350) at zeta=4,
+    lambda=1). The corrected variant binodals_flat_eqB2_corrected (and direct integration of Eq. 9) reproduces
+    -1.096 and 0.864 to every printed digit.
+  citation:
+    page: 14
+    printed_page: "031080-14"
+    quote: "It is useful to notice that the explicit solution to"
+    where: "Appendix B Eq. B2"
+
+- id: q_eq30_spurious_factor
+  kind: possible_error
+  about: [ostwald_beta_over_Rs_eq30, ostwald_ripening_eq27_29]
+  text: >
+    Sec. IV Eq. (30) (p. 9) prints beta / R_s = [f''(phi_1) / (Delta_phi * Delta_psi)] * epsilon + O(epsilon^2).
+    However, directly expanding Eq. (28) (R_s = Delta_psi * beta / [f'(phi_s) * Delta_psi - Delta_g]) with
+    phi_s = phi_1 + epsilon and using Eqs. (8) and (10) (Delta_g / Delta_psi = mu_bar = f'(phi_1)) yields
+    beta / R_s = f'(phi_1 + epsilon) - f'(phi_1) = f''(phi_1) * epsilon + O(epsilon^2), without the factor
+    1 / (Delta_phi * Delta_psi). Even in the passive limit (Delta_phi = Delta_psi = 2), printed Eq. (30)
+    underpredicts exact Eq. (28) by a factor of 4. Because Delta_phi > 0 and Delta_psi > 0, the qualitative
+    sign conclusion (R_s > 0 when beta < 0 and epsilon < 0) is unaffected.
+  citation:
+    page: 9
+    printed_page: "031080-9"
+    quote: "also negative. To determine the sign of Rs , we Taylor"
+    where: "Sec. IV Eq. 30"
+
+- id: q_appC_eqC2_signs_and_limits
+  kind: possible_error
+  about: [curved_binodals_appC, curved_binodals_appC_corrected]
+  text: >
+    Appendix C (p. 15) contains three related sign/limit misprints for a dense droplet (phi(0) = phi_+ > phi_- = phi(inf),
+    for which phi'(r) = -sqrt(w(phi)) < 0 and dr = -dphi / sqrt(w)): (1) the inline expressions for S_0 and S_1 print
+    integration limits from phi_+ to phi_- (giving negative values since phi_+ > phi_-) instead of phi_- to phi_+,
+    and drop the outer grouping brackets in exp{[(zeta-2*lambda)/K] phi_+}; (2) both O(1/R) terms in Eq. (C2) have
+    reversed signs (as if phi' = +sqrt(w)), which causes the boundary consistency integral int exp(alpha*x) s(x) dx = 0
+    to yield P(phi_+) - P(phi_-) = -(d-1)*sigma/R (opposite to Eq. 19) and drives w(phi_+) strongly nonzero/negative;
+    (3) Eq. (C3) prints lower integration limit 1 instead of phi_- (likely a misprint for phi_1 or phi_-), which lies
+    outside the support [phi_-, phi_+] of sqrt(w) whenever phi_+ < 1 (e.g., zeta - 2*lambda > 0). The corrected variant
+    curved_binodals_appC_corrected matches the Fig. 3(a)-(b) theory curves cleanly.
+  citation:
+    page: 15
+    printed_page: "031080-15"
+    quote: "The perturbative strategy then goes as follows."
+    where: "Appendix C inline S_0, S_1 and Eqs. C2-C3"
+
+- id: q_eq34_ito_drift_sign
+  kind: possible_error
+  about: [cg_aoup_ito_prefactor_eq34, cg_aoup_ito_prefactor_eq34_corrected, mu_qs_log_prefactor_eq39]
+  text: >
+    Sec. VI Eq. (34) (p. 12) prints the Ito form of Stratonovich SDE Eq. (33) with a minus sign on the spurious drift
+    (-tau * v * grad_i v). Converting r_dot =_s sqrt(2*tau) * v * eta to Ito form yields +(1/2)*(sqrt(2*tau)*v)*grad_i(sqrt(2*tau)*v)
+    = +tau * v * grad_i v. Substituting the printed minus sign into the Dean / Fokker-Planck equation gives
+    J_qs = -rho * D * grad[log(rho) + (3/2) log(tau*v^2 + T)], contradicting the factor 1/2 in Eq. (39), whereas
+    the corrected +tau * v * grad_i v yields Eq. (39) identically.
+  citation:
+    page: 12
+    printed_page: "031080-12"
+    quote: "We then write the Dean equation"
+    where: "Sec. VI Eqs. 33, 34, and 39"
+
+- id: q_appG_eqG2_G4_G6_missing_tau_and_half
+  kind: possible_error
+  about: [cg_qs_coeffs_eqG4_G6, cg_qs_coeffs_eqG4_G6_corrected]
+  text: >
+    Appendix G Eq. (G2) (p. 17) expands (1/2) log(tau * (v + delta_v)^2 + T) from Eq. (39) as
+    [v / (tau*v^2 + T)] * delta_v, omitting the factor of tau in the numerator (exact derivative is
+    [tau * v / (tau*v^2 + T)] * delta_v; omitting tau makes the gradient term dimensionally inconsistent with
+    dimensionless log(rho) by a factor of 1/time). This missing factor of tau propagates into Eqs. (G4), (G5),
+    and (G6). In addition, Eq. (G4) prints an extraneous factor of 1/2 in the denominator
+    (K^qs = -v_0*gamma_0 / [2*(T + tau*v_0^2)]), whereas matching Eq. (41)-(42) delta F_qs/delta rho = f'_qs -
+    (K^qs + 2*K_1^qs*rho)*grad^2 rho - K_1^qs*|grad rho|^2 equates -K^qs (without factor 2) to the zeroth-order
+    coefficient of grad^2 rho, giving K^qs = -tau*v_0*gamma_0 / (T + tau*v_0^2). Note that Eqs. (44) and (G11)-(G12)
+    for the pair-potential contribution do NOT have this omission and are algebraically exact.
+  citation:
+    page: 17
+    printed_page: "031080-17"
+    quote: "and the other parameters are set as"
+    where: "Appendix G Eqs. G2, G4-G6"
+
+- id: q_fig6_vs_fig4b_parameter_mismatch
+  kind: possible_error
+  about: [zeta_fig6_A, lambda_fig6_A, zeta_fig6_B, lambda_fig6_B, zeta_fig3_A, zeta_fig3_B]
+  text: >
+    Both the Fig. 6 caption and Appendix F text (p. 16) state that Fig. 6 shows snapshots of the total current J
+    "for the two droplet simulations shown in Fig. 4(b) at short time t = 1000." However, Fig. 4(b) (p. 8) uses
+    (zeta, lambda) = (-1, 0.5) and (-4, -1) with initial radii R_1 ≈ 16.7, R_2 ≈ 9.2, whereas Fig. 6 uses
+    (zeta, lambda) = (-0.8, -0.4) and (-1.6, -0.8) (both on the line zeta = 2*lambda where the flat binodals
+    remain +/-1) with visibly different droplet radii (R_1 ≈ 23, R_2 ≈ 7 in the 120 x 120 box).
+  citation:
+    page: 16
+    printed_page: "031080-16"
+    quote: "FIG. 6. Snapshots of the total current J for the two droplet"
+    where: "Fig. 6 caption and Appendix F (p. 16) vs Fig. 4(b) caption (p. 8)"
+
+- id: q_appE_mass_conservation_d2_vs_d3
+  kind: choice
+  about: [two_droplet_ode_eqE1_E2]
+  text: >
+    Appendix E derives Eqs. (E1)-(E2) stating "(for dimension d = 3)" (p. 16), yet the coupled pair
+    Delta_phi(R_1) * R_1 * dR_1/dt = f'(phi_-(R_2)) - f'(phi_-(R_1)) = -Delta_phi(R_2) * R_2 * dR_2/dt
+    conserves 2D droplet area (proportional to R_1^2 + R_2^2 when Delta_phi is approximately constant) rather than
+    3D droplet volume (R_1^3 + R_2^3), because the effective-medium 3D flux 4*pi*R_i*Delta_mu into each droplet
+    depends on its own radius R_i. Moreover, the paper does not state the initial radii R_1(0), R_2(0), the box size
+    L used in Fig. 4(b), or the 2D logarithmic screening factor ln(ell/R) omitted between Eqs. (E1)-(E2) and the
+    d = 2 simulations.
+  citation:
+    page: 16
+    printed_page: "031080-16"
+    quote: "there is a logarithmic correction, but this does not change"
+    where: "Appendix E Eqs. E1-E2 (p. 16)"
+
+- id: q_stochastic_appA_uv_blowup_regionC
+  kind: numerics
+  about: [amb_plus_2d_stochastic_pde, amb_plus_2d_stochastic_uv_pde, D_stochastic, zeta_fig5_C, lambda_fig5_C]
+  text: >
+    Implementing Appendix A Eqs. (A1)-(A2) verbatim (explicit Ito Euler, 8th-order central finite difference Eq. A2
+    applied twice for second derivatives, A = 0.25, K = 1, K_1 = 0, dx = dy = 1, dt = 0.001) is numerically stable
+    in the passive limit (zeta = lambda = 0, D = 0.2) and in Region A (zeta = 1, lambda = -0.5, D = 0.2), but blows
+    up in finite time (t ≈ 0.22) for the paper's Region C parameters (zeta = 4, lambda = 1, D = 0.2, phi_0 = 0.6,
+    and also at phi_0 = 1.0 and -1.1). The blowup persists at 5x smaller time step (dt = 0.0002, blowup at t ≈ 0.20),
+    at 4x lower noise (D = 0.05, blowup at t ≈ 0.71), in 1D (blowup at t ≈ 0.40 even though continuum 1D (zeta=4,
+    lambda=1) is identical to stable (zeta=0, lambda=-1)), and under 2nd-order, staggered, stress-tensor, and
+    2/3-dealiased discretizations (stable only for D <= 0.02 at dx = 1 or with an isotropic UV cutoff |k| <= k_cut ≈ 1.0-1.3).
+    Two factors cause this: (i) discrete Eq. (A2) has a Nyquist null mode keff(pi) = 0 and breaks the product rule
+    (1/2) d_x((d_x phi)^2) = (d_x^2 phi)(d_x phi); (ii) at |zeta| = 4, K = 1, the quadratic active term zeta*(lap phi)*grad phi
+    is O(k^4 phi^2) and overwhelms linear -K*lap^2 phi once grid-scale fluctuations reach |delta phi| >= K/|zeta| = 0.25.
+    An unstated UV regularization or implementation detail appears necessary to reach Fig. 5(a)-(c) (D up to 0.8, t up to 131072).
+  citation:
+    page: 14
+    printed_page: "031080-14"
+    quote: "We choose Dt = 0.001 and"
+    where: "Appendix A Eqs. A1-A2 and Sec. V Fig. 5 (pp. 9-10, 14)"
+
+- id: q_affordable_pde_settings_choice
+  kind: choice
+  about: [run_1d_flat_pde_fig5A, run_2d_two_droplet_pde_fig6A, run_2d_stochastic_verbatim_fig5A, run_2d_stochastic_uv_fig5C]
+  text: >
+    Running the paper's full simulation settings (192 x 192 lattice with explicit dt = 0.001 to t = 32000-131072, i.e.,
+    3.2e7 to 1.3e8 steps) is far beyond a single-minute build budget. The deterministic 1D flat-interface and 2D
+    two-droplet PDE runs therefore use IMEX time stepping with the exact Eq. (A2) 8th-order spatial operator on
+    L = 64 lattices (dt = 0.25 and 0.05, verified by dt refinement in refinements.yaml), and the stochastic runs use
+    affordable lattices and horizons (L = 32, t_end = 1.0 at paper's dt = 0.001 for verbatim Region A; L = 48,
+    t_end = 150.0, dt = 0.05, k_cut = 1.0 for reconstructed Region C).
+  citation:
+    page: 9
+    printed_page: "031080-9"
+    quote: "full stochastic simulations of AMB+ with finite noise"
+    where: "Sec. V (p. 9) and Appendix A (p. 14)"
+
+- id: q_unstated_box_sizes_and_radii
+  kind: unstated_input
+  about: [R1_init_two_droplet, R2_init_two_droplet, R1_fig6_added, R2_fig6_added, R_test_droplet]
+  text: >
+    The paper does not state numerical values for the simulation box sizes L used in Fig. 1, Fig. 3, and Fig. 4(b),
+    nor the initial droplet radii R_1(0), R_2(0) in Fig. 4(b) and Fig. 6, nor the exact droplet-identification threshold
+    or bubble-radius definition used to compute P(R), R_bar, and n_bar in Fig. 5(b)-(c). Likewise, Sec. VI and
+    Appendix G give no numerical microscopic parameter values (tau, T, v_0, v_1, gamma_0, gamma_1, beta_0, U(r)) to
+    instantiate a concrete AOUP fluid in Regions A, B, or C.
+  citation:
+    page: 8
+    printed_page: "031080-8"
+    quote: "Evolution of two droplets with initial radii"
+    where: "Fig. 4(b) caption (p. 8) and Sec. V-VI (pp. 10-12)"
+
+- id: q_audit_eqB2_rounding_band_and_no_physical_root
+  kind: reading
+  about: [binodals_flat_eqB2, cmp_phi1_B2_printed_fig5A, phi1_z2l2_fig5a, phi2_z2l2_fig5a]
+  text: >
+    Audit note on printed Eq. (B2): exhaustive root scanning across all mu in the spinodal window confirms that
+    printed Eq. (B2) has NO physical two-phase binodal pair (phi_1 < -1/sqrt(3) and phi_2 > +1/sqrt(3)) for either
+    Fig. 5 parameter set; its only distinct real roots are (-1.12218, 0.32543) at (zeta=1, lambda=-0.5) and
+    (-0.77817, -0.34973) at (zeta=4, lambda=1), both with phi_2 inside the spinodal. Although cmp_phi1_B2_printed_fig5A
+    notes that printed Eq. (B2) fails to reproduce phi_1 = -1.096, BoxGraph assigns it a nominal "reproduced" verdict
+    solely because exact integer parameters (K=1, zeta=1, lambda=-0.5) entered with origin reported receive wide
+    input_rounding intervals (-2.071 to -0.173) that swallow the -0.0262 discrepancy (52x the 3-decimal printed precision).
+  citation:
+    page: 14
+    printed_page: "031080-14"
+    quote: "Then, finding the binodals amounts to finding those"
+    where: "Appendix B Eq. B2 (p. 14) vs Fig. 5(a) (p. 10)"
+
+- id: q_audit_appC_scope_and_w2_clipping
+  kind: reading
+  about: [curved_binodals_appC, curved_binodals_appC_corrected]
+  text: >
+    Audit reading nuance on Appendix C (p. 15): (1) the printed model curved_binodals_appC isolates the reversed O(1/R)
+    signs in printed Eq. (C2) while using positive-definite S_0, S_1 limits (phi_- to phi_+ from Eqs. 21-22) and lower
+    limit phi_- in Eq. (C3) rather than implementing all three printed Appendix C misprints simultaneously (reversing
+    S_0, S_1 limits as printed on p. 15 would already flip the sign of sigma at O(1/R^0)); (2) in
+    curved_binodals_appC_corrected, interpolating flat-interface sqrt(w_0) onto the expanded O(1/R) interval
+    [phi_-(1), phi_+(1)] leaves a small O(1/R^2) negative residual w_2(phi_+(1)) ≈ -0.035 at R=15 in Region B that is
+    clipped at 0. Independent comparison with Fig. 3(a)-(b) confirms this single 2-step perturbative iteration matches
+    the plotted curves better than iterating Eq. (C1)-(C2) to a self-consistent fixed point (which overshoots to
+    phi_+(15) ≈ 1.280 vs ~1.258 in Fig. 3b). Also note that Eq. (19) (p. 7) uses P(phi_+-) = psi(phi_+-)*mu_I(R) - g(phi_+-)
+    with the curved interfacial chemical potential mu_I(R) = f'(phi_-) rather than f'(phi_+) inside the droplet, which is
+    implied by the derivation from Eq. (15) and Eq. (24) though not restated explicitly in Eq. (11).
+  citation:
+    page: 15
+    printed_page: "031080-15"
+    quote: "The perturbative strategy then goes as follows."
+    where: "Appendix C Eqs. C1-C3 (p. 15) and Sec. III Eq. 19 (p. 7)"
+
+- id: q_audit_fig4b_2d_log_factor_and_fig6_scaling
+  kind: reading
+  about: [two_droplet_ode_eqE1_E2, amb_plus_2d_two_droplet_pde, L_fig6_x, R1_fig6_added, R2_fig6_added]
+  text: >
+    Audit reading notes on two-droplet kinetics (Fig. 4b, Appendix E, Fig. 6): (1) integrating verbatim Eqs. (E1)-(E2)
+    at d = 2 from R_1(0) ≈ 16.7, R_2(0) ≈ 9.2 matches the trajectory shape of both dashed theory curves in Fig. 4(b)
+    (p. 8) but evolves approximately 2x faster in time (e.g., reaching R_1 = 15.01, R_2 = 11.66 at t = 10000 vs ~20000
+    in Fig. 4b blue dashed, and evaporating R_2 at t ~ 9000 vs ~18000 in Fig. 4b red dashed), consistent with an unstated
+    2D logarithmic screening factor ln(l/R) ≈ 2 mentioned qualitatively on pp. 8 and 16 without a stated l or formula;
+    (2) amb_plus_2d_two_droplet_pde automatically rescales input radii R1_0 = 23, R2_0 = 7 by 0.20*L/R1_0 ≈ 0.557 on its
+    affordable L = 64 grid, preserving the Ostwald sign while amplifying vapor current |J| ~ 1/R^2 by roughly 3x relative
+    to Fig. 6's x in [0, 120] geometry (whose full y-height, 60 vs cropped 120, is also unstated). Note also a minor
+    vector/scalar notation slip on p. 9 above Eq. (26): "-J_I = -grad mu|_R = (mu_I(R) - f'(phi_s)) r_hat / R" pairs
+    scalar J_I (used as a scalar in Eq. 26) with unit vector r_hat.
+  citation:
+    page: 16
+    printed_page: "031080-16"
+    quote: "there is a logarithmic correction, but this does not change"
+    where: "Appendix E (p. 16), Fig. 4(b) (p. 8), Fig. 6 (p. 16), and Sec. IV (p. 9)"
+
+- id: q_digitize_fig2_settles_eqB2_and_fig3_appC
+  kind: reading
+  about: [fig2_phi1_curve, fig2_phi2_curve, fig3a_phi_minus_theory_A, fig3a_phi_minus_theory_B, fig3b_phi_plus_theory_A, fig3b_phi_plus_theory_B, binodals_flat_combo_eqB2, curved_binodals_appC, curved_binodals_appC_corrected]
+  text: >
+    Calibrated digitization of Fig. 2 (28 pts, cal misfit 0.43 px) and Fig. 3(a)-(b) (60 pts across 4 theory curves
+    and 4 simulation marker sets, cal misfit <= 0.6 px) quantitatively settles q_eqB2_misprint_6zeta and
+    q_appC_eqC2_signs_and_limits. On Fig. 2, direct Eq. (9) (binodals_flat_combo_eq9) and corrected Eq. (B2)
+    (binodals_flat_combo_eqB2_corrected at lambda = 1) reproduce all 14/14 points of both phi_1 and phi_2 to < 0.001
+    without input-rounding help, whereas printed Eq. (B2) (binodals_flat_combo_eqB2 at lambda = 1) fails drastically
+    across the entire curve (not reproduced even after automatic input_rounding). On Fig. 3(a)-(b), printed Eq. (C2)
+    (curved_binodals_appC) fails on all 4 curves in raw comparison (errors up to -0.074 on Fig. 3a Region A and
+    -0.15 / +0.091 on Fig. 3b Regions A / B, remaining not reproduced even after +/-50% integer input_rounding on
+    Fig. 3b Region A). Corrected Eq. (C2) (curved_binodals_appC_corrected) reproduces Fig. 3a Regions A & B and
+    Fig. 3b Region A to <= 0.001 for R >= 12 and reduces Fig. 3b Region B error by >10x (0.001-0.009), showing that
+    the plotted Fig. 3b Region B curve lies strictly between 1-step (1.2484 at R=16) and 2-step/fixed-point
+    (1.2617/1.2664 vs digitized 1.2571) Appendix C iteration (settling q_audit_appC_scope_and_w2_clipping). Note that
+    BoxGraph's automatic input_rounding on exact integer reported inputs (K=1, d=2, zeta=-1/-4, lam=-1) still assigns
+    nominal reproduced verdicts to several printed-model comparisons whose raw discrepancies are 10-50x the figure
+    reading precision.
+  citation:
+    page: 6
+    printed_page: "031080-6"
+    quote: "results from the numerical simulations, and lines indicate"
+    where: "Fig. 2 and Fig. 3(a)-(b) (p. 6)"
+
+- id: q_digitize_fig4b_settles_2d_log_screening
+  kind: reading
+  about: [fig4b_R1_theory_A_curve, fig4b_R2_theory_A_curve, fig4b_R1_theory_B_curve, fig4b_R2_theory_B_curve, two_droplet_ode_eqE1_E2, two_droplet_ode_2d_log_screened, ell_2d_screening]
+  text: >
+    Calibrated digitization of all 8 curves in Fig. 4(b) (90 pts, log10 x-axis misfit 0.35 px) settles
+    q_appE_mass_conservation_d2_vs_d3 and q_audit_fig4b_2d_log_factor_and_fig6_scaling: (1) tick calibration reveals
+    that the right plot border lies at t = 200000 (not 100000, which sits one log10(2) fraction inside the border);
+    (2) calibrated initial radii at t = 200 are R_1 = 16.70, R_2 = 9.27 (Region A) and R_1 = 16.76, R_2 = 9.41
+    (Region B); (3) verbatim printed Eqs. (E1)-(E2) (two_droplet_ode_eqE1_E2) exhibits three simultaneous raw
+    discrepancies against the dashed theory curves: ~1.7x faster evolution (evaporating R_2 by t ~ 10000 vs ~17500
+    in Region A), strict 2D area-conservation cap R_1 <= 19.07 (vs >20.0 in Fig. 4b red dashed), and Region B
+    asymptote R_eq = 13.46 (vs 13.26 in Fig. 4b blue dashed); (4) dividing dR_i/dt by the 2D logarithmic screening
+    factor ln(ell/R_i) (reconstructed model two_droplet_ode_2d_log_screened, ell = 50) simultaneously resolves all
+    three features because ln(ell/R_1) < ln(ell/R_2) for R_1 > R_2 drives R_1 upward above 19.1 in Region A and
+    shifts R_eq downward toward ~13.1-13.2 in Region B while slowing evolution by ~1.7x.
+  citation:
+    page: 8
+    printed_page: "031080-8"
+    quote: "dashed lines are predictions from our theory"
+    where: "Fig. 4(b) (p. 8) and Appendix E (p. 16)"
+
+- id: q_digitize_fig6_settles_geometry_and_currents
+  kind: reading
+  about: [fig6_contours_normal_curve, fig6_contours_reverse_curve, fig6_Jx_normal_curve, fig6_Jx_reverse_curve, L_fig6_x, R1_fig6_added, R2_fig6_added]
+  text: >
+    Calibrated digitization of Fig. 6 (54 pts across droplet contours and midline vapor arrows, cal misfit <= 0.4 px)
+    settles q_fig6_vs_fig4b_parameter_mismatch and q_unstated_box_sizes_and_radii: (1) tick calibration proves the
+    plotted box spans x in [0, 128] and y in [0, 64] (128 x 128 periodic domain; ticks 120 and 60 lie strictly inside
+    the borders); (2) circle fits to the blue phi = 0 contours yield droplet centers (32.1, 30.0) and (95.0, 29.6)
+    (L/4 and 3L/4) and t = 1000 radii R_1 = 23.25 (both halves) and R_2 = 5.85 (top Normal Ostwald, shrunk) vs
+    R_2 = 7.53 (bottom Reverse Ostwald, grown), confirming Fig. 6 differs from Fig. 4(b) (R_1 ~ 16.7, R_2 ~ 9.3) in
+    geometry as well as (zeta, lambda); (3) direct 128 x 128 2D AMB+ PDE simulation from R_1(0) = 23.25, R_2(0) = 6.7
+    reproduces R_2(1000) = 5.56 (normal) vs 7.51 (reverse), |J_x(68)| = 3.1-3.7 x 10^-4, and the exact midline vapor
+    current sign reversal in both gap (x in [60, 80]) and periodic exterior (x in [112, 124]), while revealing that
+    the printed arrow lengths are mildly compressed relative to linear |J_x| (gap rise factor ~1.27 vs PDE ~2.1).
+  citation:
+    page: 16
+    printed_page: "031080-16"
+    quote: "The arrows are magnified for better visibility"
+    where: "Fig. 6 (p. 16)"
+
+- id: q_digitize_fig5_histogram_binning_and_axis_range
+  kind: reading
+  about: [fig5b_PR_t512_curve, fig5b_PR_t4096_curve, fig5b_PR_t32768_curve, fig5b_PR_t131072_curve, fig5c_Rbar_vs_D, fig5c_nbar_vs_D]
+  text: >
+    Calibrated digitization of Fig. 5(b) (57 pts across 4 times) and Fig. 5(c) (22 pts across 11 noise values D in
+    [0.12, 0.80]) establishes two quantitative conventions not stated in the caption: (1) all four P(R) curves in
+    Fig. 5(b) integrate to int P(R) dR = 0.250 (rather than 1.0), proving P(R) is plotted as a discrete histogram
+    with bin width Delta_R = 0.25 and sum_i P(R_i) = 1; (2) the first moment of steady-state Fig. 5(b) (R_bar = 5.56
+    at t = 32768) matches the calibrated Fig. 5(c) point at D = 0.200 (R_bar = 5.663, n_bar = 0.000983) to ~1.8%,
+    confirming quantitative consistency between panels (b) and (c); (3) Fig. 5(c)'s left y-axis top border sits at
+    R_bar = 15 (one unit above its topmost labelled tick 14), whereas the right y-axis top border equals 0.008.
+  citation:
+    page: 10
+    printed_page: "031080-10"
+    quote: "Probability distribution of bubble radius for parameters"
+    where: "Fig. 5(b)-(c) (p. 10)"
+
+# ==============================================================================
+# Cross-Record ModelAtlas Syntheses & Validation Audits
+# (zwicker2015, frohoff2021, gubbala2025)
+# ==============================================================================
+
+- id: q_zwicker2015_amb_plus_vs_active_emulsions_synthesis
+  kind: reading
+  about:
+    - ref-30
+    - model_b_bulk_eq3
+    - equilibrium_interface_p4
+    - pseudotension_flat_eq20
+    - binodals_flat_eq9
+    - curved_binodals_O1R_eq16_19
+    - curved_binodals_appC
+    - curved_binodals_appC_corrected
+    - chemical_potential_droplet_eq24
+    - chemical_potential_profile_eq25
+    - ostwald_ripening_eq27_29
+    - coarsening_scaling_p3
+    - rel_zwicker2015_ternary_muB_scales_model_b_mu
+    - rel_zwicker2015_binary_sec3_general_psi_vs_model_b_mu
+    - rel_zwicker2015_surface_tension_scales_eq_interface
+    - rel_zwicker2015_curved_appC_printed_vs_gibbs_thomson
+    - rel_zwicker2015_ostwald_eq27_scales_droplet_growth_eq13
+    - zwicker2015/ternary_free_energy_eq1
+    - zwicker2015/binary_free_energy_sec3
+    - zwicker2015/surface_tension_gamma
+    - zwicker2015/coexistence_exact_eqA1
+    - zwicker2015/gibbs_thomson_eq6
+    - zwicker2015/outer_profile_eqC1
+    - zwicker2015/binary_droplet_growth_eq13
+    - zwicker2015/binary_growth_inf_norm
+    - zwicker2015/binary_ss_inf_norm
+  text: >
+    Cross-record ModelAtlas synthesis between tjhung2018 (Active Model B+) and zwicker2015 (active
+    emulsions with chemical reactions; cited qualitatively by tjhung2018 as ref-30 on pp. 1 and 13):
+    21 cross-record relations in tjhung2018/relations.yaml (19 verified + 2 documented-misprint
+    tests) establish the complete exact passive Cahn-Hilliard equivalence and contrast the two
+    distinct active Ostwald-arrest mechanisms.
+    (1) Exact passive dictionary: shifting Zwicker's order parameter phi^B in [0, psi] to Tjhung's
+    symmetric phi in [-1, 1] via phi^B = (psi/2)*(1 + phi) maps Zwicker's bulk + gradient free
+    energy onto Tjhung Eqs. (3)-(4) with A = b*psi^2/8, K = kappa*psi^2/4, bulk vapor diffusivity
+    D_B = 2*A (for M = 1), exact interfacial tension sigma_eq = sqrt(8*K*A/9) = (1/6)*psi^2*sqrt(b*kappa)
+    = gamma, exact width ratio w = 2*xi_eq, and binary capillary length gamma*beta = xi_eq/3 = sigma_eq/(4*A).
+    Note the opposite subscript convention: Tjhung dense interior phi_+ corresponds to Zwicker dense
+    interior phi_-^B, and Tjhung dilute exterior phi_- corresponds to Zwicker dilute exterior phi_+^B.
+    (2) Unified passive 3D kinetics: under this dictionary with no activity (zeta = lambda = 0 in
+    AMB+; k_f = k_b = 0, l -> oo in Zwicker), Zwicker's screened exterior profile Eq. (C1) reduces
+    to Tjhung's harmonic Laplace profile Eq. (25), Zwicker's curved-droplet coexistence Eq. (A1) &
+    Gibbs-Thomson Eq. (6) match Tjhung Eqs. (16), (19), (24) & corrected App. C, Zwicker's 3D
+    droplet growth rate Eq. (13) matches Tjhung Eq. (27) identically (including prefactor and
+    critical radius R_crit = R_s = sigma_eq/(2*A*epsilon)), and both share R(t) ~ t^(1/3).
+    (3) Contrasting active arrest mechanisms: AMB+ conserves total mass globally and arrests/reverses
+    Ostwald ripening by driving the active pseudotension sigma < 0 (flipping the sign of the 1/R^2
+    curvature term in Eq. 27), whereas Zwicker retains positive equilibrium tension gamma > 0 and
+    suppresses Ostwald ripening by breaking species conservation with the bulk chemical sink -k_b*R/3
+    in Eq. (13) (and screening exterior diffusion at length l = sqrt(D_B/(k_f + k_b))).
+    (4) Cross-paper misprint corroborations: rel_zwicker2015_binary_sec3_general_psi_vs_model_b_mu
+    exposes Zwicker Sec. III's omitted 1/psi^2 factor (psi log-slope difference 2), while
+    rel_zwicker2015_curved_appC_printed_vs_gibbs_thomson shows that Tjhung's printed Eq. (C2) sign
+    error violates equilibrium Gibbs-Thomson even in the passive limit (error 2.54e-2 vs 3.44e-3
+    for curved_binodals_appC_corrected).
+    (5) Citations & validations: 0 cited.yaml links (tjhung2018 takes no numerical values from
+    zwicker2015) and 0 validations.yaml entries (zwicker2015 is purely theoretical/computational
+    with 0 origin: measured datums).
+  citation:
+    page: 13
+    printed_page: "031080-13"
+    quote: "Ostwald ripening can also be arrested by con-"
+    where: "Sec. VII (p. 13) and Sec. I (p. 1), citing ref-30 (zwicker2015)"
+
+- id: q_frohoff2021_amb_plus_vs_nonreciprocal_ch_synthesis
+  kind: reading
+  about:
+    - model_b_bulk_eq3
+    - equilibrium_interface_p4
+    - pseudovariables_eqB1_B2_corrected
+    - binodals_flat_eq9
+    - binodals_flat_combo_eqB2
+    - binodals_flat_combo_eqB2_corrected
+    - ostwald_beta_over_Rs_eq30
+    - ostwald_beta_over_Rs_eq30_corrected
+    - rel_frohoff2021_decoupled_binodals_same_model_b
+    - rel_frohoff2021_ostwald_eq30_corr_same_curvature
+    - rel_frohoff2021_ostwald_eq30_printed_vs_curvature
+    - rel_frohoff2021_binodals_combo_eqB2_printed_vs_decoupled
+    - frohoff2021/bulk_free_energy_eq3_A1
+    - frohoff2021/bulk_energy_curvature_eq3_4
+    - frohoff2021/decoupled_binodals_appC
+    - frohoff2021/variational_coexistence_eqC1_C3
+    - frohoff2021/turing_spinodal_composition_eq4_19
+    - frohoff2021/one_field_subcritical_eqD11
+    - frohoff2021/nondim_scales_eqA3_A6
+  text: >
+    Cross-record ModelAtlas synthesis between tjhung2018 (single-field AMB+) and frohoff2021
+    (nonreciprocal two-field Cahn-Hilliard; frohoff2021 cites tjhung2018 as ref-28 on pp. 2 and 11,
+    explicitly likening its nonreciprocal "reverse coarsening" to AMB+'s "reverse Ostwald ripening"):
+    14 cross-record relations in tjhung2018/relations.yaml (12 verified + 2 documented-misprint
+    tests) link all shared single-field Cahn-Hilliard equilibrium structures and contrast the two
+    conserved nonequilibrium coarsening-arrest mechanisms.
+    (1) Shared ModelAtlas families and passive reductions: both papers use the exact zero-midpoint
+    quartic Landau potential f(phi) = (a/2)*phi^2 + (b/4)*phi^4 and chemical potential mu = a*phi + b*phi^3.
+    Two verified same_as relations join tjhung2018/model_b_bulk_eq3 with frohoff2021/decoupled_binodals_appC
+    (phi_b = sqrt(-a/b)) and tjhung2018/ostwald_beta_over_Rs_eq30_corrected with
+    frohoff2021/bulk_energy_curvature_eq3_4 (symbolic identity for f''(phi_1)). Five verified
+    reduces_to relations confirm that AMB+ flat binodals (zeta, lambda -> 0 or combo = zeta - 2*lambda -> 0),
+    Frohoff variational coexistence (rho -> 0), and Frohoff Turing spinodal (rho = 0, alpha -> 0,
+    f_2'' -> 0) all converge to the shared passive single-field Model B binodals and spinodals;
+    Frohoff's Novick-Cohen subcriticality threshold sqrt(-a/5) scales at constant ratio sqrt(3/5)
+    inside Model B's spinodal sqrt(-a/3); and Frohoff's phi_hat_1 scales with Tjhung's xi_eq.
+    (2) Contrasting conserved arrest mechanisms: both systems strictly conserve their scalar order
+    parameter(s) without chemical turnover, yet arrest/reverse coarsening by distinct nonvariational
+    routes — single-field AMB+ requires d >= 2 dimensions so its rotational active current
+    zeta*(lap phi)*grad phi drives circulating currents and negative pseudotension sigma < 0
+    (whereas 1D AMB+ is integrable via Eq. 9 and cannot arrest coarsening), whereas Frohoff's
+    nonreciprocal two-field coupling (-alpha*phi_2, +alpha*phi_1) already arrests coarsening,
+    induces reverse coarsening (mesa splitting), and generates traveling/oscillatory states in d = 1.
+    (3) Cross-paper misprint corroborations: rel_frohoff2021_ostwald_eq30_printed_vs_curvature
+    exposes Tjhung Eq. (30)'s spurious 1/(Delta_phi*Delta_psi) = 1/4 factor against Frohoff's
+    exact bulk curvature f_1'', while rel_frohoff2021_binodals_combo_eqB2_printed_vs_decoupled
+    exposes printed Eq. (B2)'s -6*zeta*K^2*phi divergence along zeta = 2*lambda != 0.
+    (4) Citations & validations: 0 cited.yaml links and 0 validations.yaml entries (frohoff2021
+    is purely theoretical/numerical with 0 origin: measured datums).
+
+- id: q_gubbala2025_amb_plus_vs_model_c_synthesis
+  kind: reading
+  about:
+    - model_b_bulk_eq3
+    - equilibrium_interface_p4
+    - pseudovariables_eqB1_B2_corrected
+    - curved_binodals_O1R_eq16_19
+    - coarsening_scaling_p3
+    - rel_gubbala2025_ch_mu_same_model_b_mu
+    - rel_gubbala2025_ch_f_derived_model_b_f
+    - rel_gubbala2025_coupled_binodal_approx_curved_O1R
+    - rel_gubbala2025_coarsening_passive_scales_p3
+    - gubbala2025/cahn_hilliard_free_energy_eq2
+    - gubbala2025/nondim_parameters_s32
+    - gubbala2025/coupled_binodal_coexistence
+    - gubbala2025/coarsening_power_law
+    - gubbala2025/effective_line_tension_s13
+  text: >
+    Cross-record ModelAtlas synthesis between tjhung2018 (Active Model B+) and gubbala2025 (2D
+    passive variational anisotropic Model C for lipid bilayers coupled to adsorbed nematic F-actin;
+    note that gubbala2025 ref-49 cites Cates & Tjhung J. Fluid Mech. 2018 rather than Tjhung PRX 2018):
+    9 verified cross-record relations in tjhung2018/relations.yaml establish the exact shared
+    passive Model B core.
+    (1) Exact dimensionless Model B identity: gubbala2025/cahn_hilliard_free_energy_eq2 and
+    tjhung2018/model_b_bulk_eq3 join into a symbolic same_as ModelAtlas family for mu = phi^3 - phi
+    at unit symmetric bulk scale A = -a = b = 1, with symbolic derived_from and numeric reduces_to
+    linking f_phi -> f as |grad phi| -> 0 and tjhung2018's corrected pseudopotential g -> f_phi as
+    zeta, lambda -> 0.
+    (2) Interfacial scales, binodals, and coarsening: Gubbala's bare Cahn-Hilliard length scale
+    l_c = sqrt(lambda_tilde) equals sqrt(2)*xi_eq (at A = 1, K = lambda_tilde); note that Gubbala's
+    "effective line tension parameter" lambda = 1 + chi/2 (effective_line_tension_s13) enters as
+    the square-gradient stiffness K rather than the integrated interfacial tension itself, so
+    equilibrium line tension scales as sigma_eq = (2*sqrt(2)/3)*sqrt(lambda) rather than linearly
+    with lambda. As nematic stiffness beta -> oo, Gubbala's coupled binodals (phi_Lo_eq, phi_Ld_eq)
+    reduce identically to Tjhung's passive Model B binodals (-1, +1), while at finite beta in [1, 50]
+    Gubbala's nematic dense-binodal shift 1 + 1/(4*beta) matches Tjhung's passive 3D Laplace shift
+    1 + 2*sqrt(2)/(3*R) under R = 8*sqrt(2)*beta/3 to within 4.36% (max at beta = 1). Both papers
+    anchor their coarsening kinetics on classical passive bulk-diffusion R(t) ~ t^(1/3) (both
+    citing Bray & Emmott 1995), contrasting AMB+'s active TRS-breaking reverse Ostwald arrest
+    against Gubbala's strictly passive nematic-elastic coarsening slowdown (alpha <= 0.25).
+
+- id: q_cross_validation_audit_zwicker_frohoff_gubbala
+  kind: reading
+  about:
+    - coarsening_scaling_p3
+    - t_fig5b_steady
+    - zwicker2015/lifshitz_slyozov_scaling_corrected
+    - frohoff2021/coupled_ch_pde_1d_eq4
+    - gubbala2025/R_ratio_fig3_inset_no_actin_exp
+    - gubbala2025/R_ratio_fig3_exp_low
+    - gubbala2025/R_ratio_fig3_exp_high
+    - gubbala2025/R_ratio_figS2_exp_low
+    - gubbala2025/R_ratio_figS2_exp_high
+    - gubbala2025/R_ratio_low_exp_fig3_end
+    - gubbala2025/R_ratio_high_exp_fig3_end
+    - gubbala2025/domain_size_no_actin
+    - gubbala2025/actin_filament_length_exp
+    - gubbala2025/P_kappa_fig4c_exp_no_actin
+    - gubbala2025/P_kappa_fig4c_exp_low
+    - gubbala2025/P_kappa_fig4c_exp_high
+    - gubbala2025/actin_density_figS1_exp
+    - gubbala2025/coarsening_time_actin
+    - gubbala2025/intermediate_time_start
+    - gubbala2025/actin_unbinding_time
+  text: >
+    Audit of cross-record validations (validations.yaml) for tjhung2018 paired with
+    {zwicker2015, frohoff2021, gubbala2025}: 0 CrossValidation entries are entered in tjhung2018
+    because no partner measurement is both dimensionally compatible with and physically predicted
+    by tjhung2018's 37 dimensionless models.
+    (1) zwicker2015 and frohoff2021: both are purely theoretical/computational records containing
+    0 origin: measured datums in their data.yaml files (zwicker2015: 108 total datums, 0 measured;
+    frohoff2021: 182 total datums, 0 measured). Hence tjhung2018 has zero empirical targets in
+    either record. (Conversely, tjhung2018's sole origin: measured datum, t_fig5b_steady ≈ 32000,
+    is the dimensionless 2D stochastic AMB+ simulation equilibration time of Fig. 5b rather than a
+    physical experiment, and is not predicted by any partner model.)
+    (2) gubbala2025 (16 origin: measured experimental datums on passive supported lipid bilayers +
+    adsorbed F-actin): every measured datum is excluded on strict unit, quantity, or physics grounds:
+      (a) All 5 time-resolved coarsening curves (R_ratio_fig3_inset_no_actin_exp,
+      R_ratio_fig3_exp_low, R_ratio_fig3_exp_high, R_ratio_figS2_exp_low, R_ratio_figS2_exp_high;
+      domain_size_ratio R(t)/R_0 vs time [s]): tjhung2018/coarsening_scaling_p3 (R ~ t^(1/3),
+      prefactor: unknown) declares input port t with unit dimensionless (reflecting Tjhung 2018's
+      strictly dimensionless natural field-theory units with no SI timescale anywhere in the paper),
+      which is dimensionally incompatible with Gubbala's x-axis unit s ([time]), and declares output
+      droplet_radius R rather than normalized onset ratio R(t)/R(t_0). Moreover, the four actin-
+      coupled curves test passive nematic-elastic hindering rather than active AMB+ dynamics.
+      (The passive t^(1/3) exponent equivalence is captured cleanly via ModelAtlas relation
+      rel_gubbala2025_coarsening_passive_scales_p3.)
+      (b) Both scalar normalized endpoints (R_ratio_low_exp_fig3_end, R_ratio_high_exp_fig3_end =
+      ~1.55 at 7180 s): single-point ratios cannot be tested by a prefactor-unknown scaling law
+      and belong to passive actin-coupled bilayers.
+      (c) All 5 dimensional scalar measurements (domain_size_no_actin [um], actin_filament_length_exp
+      [um], coarsening_time_actin [hr], intermediate_time_start [min], actin_unbinding_time [hr]):
+      incompatible with tjhung2018's strictly dimensionless model outputs and measure distinct
+      experimental/biochemical quantities.
+      (d) All 3 boundary curvature PDFs (P_kappa_fig4c_exp_no_actin/low/high) and the sample
+      relative actin density series (actin_density_figS1_exp): zero models in tjhung2018 predict
+      2D nematic-deformed domain boundary curvature distributions or fluorescence-normalized sample
+      actin densities.
+
+
+

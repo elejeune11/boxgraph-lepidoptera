@@ -1,0 +1,1127 @@
+- id: rel_filament_length_conc_vs_mol
+  kind: same_as
+  a: scheff2020/actin_filament_length
+  b: scheff2020/actin_filament_length_from_mol_fraction
+  mapping:
+    d_mon: "d_mon"
+    f_cp: "c_cp / (10 * c_actin)"
+  output_map:
+    L: L
+  regime:
+    d_mon: [2.0, 3.5]
+    c_actin: [1.0, 10.0]
+    c_cp: [25.0, 300.0]
+  provenance: stated
+  citation:
+    page: 6
+    quote: "is increased from 1 mol% to 3 mol%"
+    where: "Methods p. 2 & Results p. 6"
+  assumptions:
+    - "Expressing [Capping Protein]/[Actin] in mol% (f_cp = 100 * c_cp[nM] / (1000 * c_actin[uM]) = c_cp / (10 * c_actin)) yields the identical filament length formula L = d_mon / f_cp."
+
+- id: rel_coal_decay_same_as_master
+  kind: same_as
+  a: scheff2020/coalescence_area_decay
+  b: scheff2020/coalescence_normalized_area
+  mapping:
+    t_rescaled: "t / tau"
+  output_map:
+    A_norm: A_norm
+  regime:
+    A_i: [10.0, 40.0]
+    A_f: [5.0, 25.0]
+    t: [0.5, 40.0]
+    tau: [2.0, 25.0]
+  provenance: stated
+  citation:
+    page: 5
+    quote: "collapse into a single curve that is consistent"
+    where: "Results and discussion, Fig. 2(b)"
+  assumptions:
+    - "Normalizing A(t) = A_f + (A_i - A_f) exp(-t/tau) by (A - A_f)/(A_i - A_f) and rescaling time by t_rescaled = t/tau collapses all coalescence events onto exp(-t_rescaled)."
+
+- id: rel_fs_integral_same_as_closed
+  kind: same_as
+  a: scheff2020/quasi_bipolar_surface_factor_integral
+  b: scheff2020/quasi_bipolar_surface_factor_closed
+  mapping:
+    x: "x"
+  output_map:
+    f_s: f_s
+  regime:
+    x: [1.0, 10.0]
+  provenance: stated
+  tolerance: 1.0e-5
+  citation:
+    page: 3
+    quote: "factors corresponding to surface area and volume"
+    where: "Eq. (2A)"
+  assumptions:
+    - "Verifies that the printed closed-form Eq. (2A) equals the printed bispherical surface integral over [0, 2*pi] x [0, pi]."
+
+- id: rel_v_integral_same_as_closed
+  kind: same_as
+  a: scheff2020/quasi_bipolar_volume_factor_integral
+  b: scheff2020/quasi_bipolar_volume_factor_closed
+  mapping:
+    x: "x"
+  output_map:
+    v: v
+  regime:
+    x: [1.0, 10.0]
+  provenance: stated
+  tolerance: 1.0e-5
+  citation:
+    page: 3
+    quote: "factors corresponding to surface area and volume"
+    where: "Eq. (2D)"
+  assumptions:
+    - "Verifies that the printed closed-form Eq. (2D) equals the printed bispherical volume integral over [0, 2*pi] x [0, pi] x [0, eta_0]."
+
+- id: rel_tactoid_surface_reduces_to_sphere
+  kind: reduces_to
+  a: scheff2020/tactoid_geometry_from_semimajor
+  b: scheff2020/sphere_geometry
+  mapping:
+    R: "R"
+  output_map:
+    S: S
+  regime:
+    R: [0.5, 10.0]
+    x: [1.0, 5.0]
+  limit:
+    x: "1"
+  provenance: stated
+  tolerance: 1.0e-4
+  citation:
+    page: 3
+    quote: "recover the expected surface area and volume factors"
+    where: "Methods, Quasi bipolar tactoid model"
+  assumptions:
+    - "As aspect ratio x -> 1, f_s(x) -> 4*pi and tactoid surface area S = R^2 f_s(x) -> 4*pi*R^2."
+
+- id: rel_tactoid_volume_reduces_to_sphere
+  kind: reduces_to
+  a: scheff2020/tactoid_geometry_from_semimajor
+  b: scheff2020/sphere_geometry
+  mapping:
+    R: "R"
+  output_map:
+    V: V
+  regime:
+    R: [0.5, 10.0]
+    x: [1.0, 5.0]
+  limit:
+    x: "1"
+  provenance: stated
+  tolerance: 1.0e-4
+  citation:
+    page: 3
+    quote: "recover the expected surface area and volume factors"
+    where: "Methods, Quasi bipolar tactoid model"
+  assumptions:
+    - "As aspect ratio x -> 1, v(x) -> (4/3)*pi and tactoid volume V = R^3 v(x) -> (4/3)*pi*R^3."
+
+- id: rel_tactoid_surface_scales_as_cylinder
+  kind: scales_as
+  a: scheff2020/tactoid_geometry_from_semimajor
+  b: scheff2020/tactoid_cylindrical_limit_scaling
+  mapping:
+    R: "R"
+    x: "x"
+  output_map:
+    S: S
+  regime:
+    R: [0.5, 10.0]
+    x: [20.0, 200.0]
+  provenance: stated
+  citation:
+    page: 3
+    quote: "surface area and volume scale as R2/x"
+    where: "Methods, Quasi bipolar tactoid model"
+  assumptions:
+    - "High-aspect-ratio limit x >> 1 where f_s(x) = (8*pi)/(3*x) + O(x^(-3)), so S ~ R^2/x = R*r."
+
+- id: rel_tactoid_volume_scales_as_cylinder
+  kind: scales_as
+  a: scheff2020/tactoid_geometry_from_semimajor
+  b: scheff2020/tactoid_cylindrical_limit_scaling
+  mapping:
+    R: "R"
+    x: "x"
+  output_map:
+    V: V
+  regime:
+    R: [0.5, 10.0]
+    x: [20.0, 200.0]
+  provenance: stated
+  citation:
+    page: 3
+    quote: "surface area and volume scale as R2/x"
+    where: "Methods, Quasi bipolar tactoid model"
+  assumptions:
+    - "High-aspect-ratio limit x >> 1 where v(x) = (16*pi)/(15*x^2) + O(x^(-4)), so V ~ R^3/x^2 = R*r^2."
+
+- id: rel_quasi_bipolar_reduces_to_homogeneous
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_minimizer_printed
+  b: scheff2020/homogeneous_tactoid_minimizer
+  mapping:
+    omega: "omega"
+  output_map:
+    x_eq: x_eq
+  regime:
+    V: [0.001, 1.0]
+    K_over_gamma: [0.5, 3.0]
+    omega: [0.15, 3.5]
+  limit:
+    V: "0"
+  provenance: stated
+  tolerance: 1.0e-3
+  citation:
+    page: 8
+    quote: "limit, the aspect ratio of the droplet is determined by"
+    where: "Results and discussion, p. 8 col 1"
+  assumptions:
+    - "For small droplets R << K/gamma (V -> 0 at fixed K/gamma), director curvature becomes prohibitively expensive so y -> oo and the quasi-bipolar equilibrium aspect ratio reduces to the homogeneous-director minimizer determined solely by omega."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with weirich2017
+# (Weirich, Banerjee, Dasbiswas, Witten, Vaikuntanathan & Gardel,
+#  PNAS 114(9):2131-2136, 2017; cited by scheff2020 as ref-19)
+#
+# Audit summary (44 runnable scheff2020 x 52 runnable weirich2017 models):
+# - 3 stated same_as relations explicitly citing ref-19: capping-protein
+#   filament length formula (p. 2), normalized single-exponential coalescence
+#   master curve (p. 5), and viscous-capillary coalescence time scaling (p. 5).
+# - 4 proposed non-plain same_as relations forming exact ModelAtlas families:
+#   circular-arc spindle tactoid surface area S <-> A and volume V <-> V
+#   under the exact coordinate map R_arc = R*(x^2+1)/(2*x), alpha = 2*atan(1/x),
+#   and the homogeneous tactoid equilibrium minimizer (both x_eq <-> aspect_ratio
+#   and F_nondim <-> F_hat_min).
+# - 3 proposed reduces_to limits proving that scheff2020's quasi-bipolar
+#   free energy (y -> oo), nondimensional free energy (y -> oo), and full
+#   quasi-bipolar minimizer (V -> 0) reduce identically to weirich2017's
+#   homogeneous tactoid theory.
+# - 2 proposed scales_as relations linking scheff2020's coalescence scaling
+#   to weirich2017's isotropic energy balance and variational shape ODE.
+# - Explicitly excluded: the scheduler-flagged pair
+#   quasi_bipolar_free_energy_exact_bend vs capillary_energy_cost_corrected
+#   (spurious shape match: positive total spindle-tactoid free energy vs
+#   sign-changing O(u^2) Rayleigh-Plateau perturbation energy of a cylinder).
+# ==========================================================================
+
+- id: rel_weirich2017_filament_length_same_as
+  kind: same_as
+  a: scheff2020/actin_filament_length
+  b: weirich2017/actin_filament_length_cp
+  mapping:
+    a_m: "d_mon"
+    r_CP: "c_cp / (1000 * c_actin)"
+  output_map:
+    L_f: L
+  regime:
+    d_mon: [2.0, 3.5]
+    c_actin: [1.0, 10.0]
+    c_cp: [25.0, 300.0]
+  provenance: stated
+  citation:
+    page: 2
+    quote: "filament length of 2.7 nm   [Actin]/[Capping Protein].19"
+    where: "Methods, Filament length (citing ref-19)"
+  assumptions:
+    - "Converts capping protein concentration c_cp [nM] and actin concentration c_actin [uM] to dimensionless mole fraction r_CP = c_cp / (1000 * c_actin)."
+
+- id: rel_weirich2017_coal_master_same_as
+  kind: same_as
+  a: scheff2020/coalescence_area_decay
+  b: weirich2017/tactoid_exponential_master_curve
+  mapping:
+    t_scaled: "t / tau"
+  output_map:
+    L_scaled: A_norm
+  regime:
+    A_i: [10.0, 40.0]
+    A_f: [5.0, 25.0]
+    t: [0.5, 40.0]
+    tau: [2.0, 25.0]
+  provenance: stated
+  citation:
+    page: 5
+    quote: "indicative of coalescence associated with isotropic fluids"
+    where: "Results and discussion, Fig. 2(b) (citing ref-19)"
+  assumptions:
+    - "Both papers normalize their coalescing observable (cross-sectional area A in scheff2020; major-axis length L in weirich2017) onto the identical dimensionless single-exponential master curve exp(-t/tau)."
+
+- id: rel_weirich2017_coal_tau_same_as
+  kind: same_as
+  a: scheff2020/coalescence_relaxation_time_scaling
+  b: weirich2017/coalescence_tau_linear_scaling
+  mapping:
+    eta: "eta_over_gamma"
+    gamma_eff: "1000"
+    delta_L: "delta_l"
+  output_map:
+    tau: tau
+  regime:
+    eta_over_gamma: [0.5, 50.0]
+    delta_l: [0.1, 10.0]
+  provenance: stated
+  citation:
+    page: 5
+    quote: "liquid as t B Z/g Dl.19 Thus, the slope of"
+    where: "Results and discussion, Fig. 2(c) (citing ref-19)"
+  assumptions:
+    - "Maps inverse capillary velocity eta_over_gamma [s/um] to weirich2017's 1000*eta[Pa*s]/gamma_eff[nN/m] by setting eta = eta_over_gamma and gamma_eff = 1000 nN/m = 1 pN/um."
+    - "Identifies scheff2020's area-root relaxation length Delta_l = sqrt(A_i) - sqrt(A_f) with weirich2017's linear deformation length Delta_L = L_i - L_f up to an O(1) geometric factor."
+
+- id: rel_weirich2017_tactoid_surface_same_as
+  kind: same_as
+  a: scheff2020/tactoid_geometry_from_semimajor
+  b: weirich2017/tactoid_geometry_circular_arc
+  mapping:
+    R: "R * (x**2 + 1) / (2 * x)"
+    alpha: "2 * atan(1 / x)"
+  output_map:
+    A: S
+  regime:
+    R: [0.5, 10.0]
+    x: [1.05, 8.0]
+  provenance: proposed
+  reason: >
+    Both papers model a spindle tactoid as the exact same solid of revolution of a circular arc
+    about its chord (following Kaznacheev et al. 2002 and Prinsen & van der Schoot 2003/2004).
+    Scheff et al. (2020) parameterize the surface area in bispherical coordinates by semi-major
+    axis R = L/2 and aspect ratio x = R/r (S = R^2 * f_s(x), Eq. 2A), while Weirich et al. (2017)
+    parameterize it by generating arc radius R_arc and half-opening angle alpha (A = 4*pi*R_arc^2*
+    (sin(alpha) - alpha*cos(alpha)), SI p. 8). Under the exact geometric change of variables
+    R_arc = R*(x^2 + 1)/(2*x) and alpha = 2*atan(1/x) = eta_0, the two surface areas are
+    algebraically identical to machine precision.
+  assumptions:
+    - "Exact circular-arc to bispherical coordinate dictionary: alpha = eta_0 = 2*atan(1/x) and R_arc = R / sin(alpha) = R*(x^2 + 1)/(2*x)."
+
+- id: rel_weirich2017_tactoid_volume_same_as
+  kind: same_as
+  a: scheff2020/tactoid_geometry_from_semimajor
+  b: weirich2017/tactoid_geometry_circular_arc
+  mapping:
+    R: "R * (x**2 + 1) / (2 * x)"
+    alpha: "2 * atan(1 / x)"
+  output_map:
+    V: V
+  regime:
+    R: [0.5, 10.0]
+    x: [1.05, 8.0]
+  provenance: proposed
+  reason: >
+    Under the exact coordinate transformation R_arc = R*(x^2 + 1)/(2*x) and alpha = 2*atan(1/x)
+    between bispherical semi-axis coordinates (R, x) in Scheff et al. (2020, Eq. 2D) and
+    circular-arc coordinates (R_arc, alpha) in Weirich et al. (2017, SI p. 8), the tactoid volume
+    V = R^3 * v(x) is algebraically identical to 2*pi*R_arc^3*(sin(alpha) - alpha*cos(alpha) -
+    (1/3)*sin^3(alpha)).
+  assumptions:
+    - "Exact circular-arc to bispherical coordinate dictionary: alpha = 2*atan(1/x) and R_arc = R*(x^2 + 1)/(2*x)."
+
+- id: rel_weirich2017_homogeneous_min_ar_same_as
+  kind: same_as
+  a: scheff2020/homogeneous_tactoid_minimizer
+  b: weirich2017/tactoid_equilibrium_minimizer
+  mapping:
+    omega: "omega"
+  output_map:
+    aspect_ratio: x_eq
+  regime:
+    omega: [0.1, 10.0]
+  tolerance: 1.0e-5
+  provenance: proposed
+  reason: >
+    In the small-droplet homogeneous-director limit (y -> oo, R << K/gamma), Scheff et al. (2020,
+    p. 8 col 1) minimize (f_s(x) + omega*f_an(x, oo)) / v(x)^(2/3) numerically over aspect ratio x
+    (homogeneous_tactoid_minimizer), which is identically the same variational problem as Weirich
+    et al. (2017, SI p. 8, tactoid_equilibrium_minimizer) minimizing F_hat(alpha, omega) over tip
+    angle alpha = 2*atan(1/x). Across omega in [0.1, 10], equilibrium aspect ratios agree to < 1e-6.
+  assumptions:
+    - "Identical dimensionless Rapini-Papoular anchoring ratio omega = gamma_A / gamma in both records."
+
+- id: rel_weirich2017_homogeneous_min_F_same_as
+  kind: same_as
+  a: scheff2020/homogeneous_tactoid_minimizer
+  b: weirich2017/tactoid_equilibrium_minimizer
+  mapping:
+    omega: "omega"
+  output_map:
+    F_hat_min: F_nondim
+  regime:
+    omega: [0.1, 10.0]
+  tolerance: 1.0e-6
+  provenance: proposed
+  reason: >
+    Verifies that not only the equilibrium aspect ratio but also the minimized nondimensional
+    homogeneous tactoid free energy F/(gamma * V^(2/3)) in Scheff et al. (2020) equals F_hat_min
+    in Weirich et al. (2017) to machine precision (~1e-15) across omega in [0.1, 10], confirming
+    that the y -> oo limit of Scheff's Eq. (2C) bispherical anchoring integral equals Weirich's
+    closed-form Rapini-Papoular anchoring factor A_omega = 2*pi*R_arc^2*g(alpha) with prefactor 1.
+  assumptions:
+    - "Identical normalization F / (gamma * V^(2/3)) and identical dimensionless anchoring ratio omega = gamma_A / gamma."
+
+- id: rel_weirich2017_qb_free_energy_reduces_homogeneous
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_free_energy_printed
+  b: weirich2017/tactoid_free_energy
+  mapping:
+    R: "R * (x**2 + 1) / (2 * x)"
+    alpha: "2 * atan(1 / x)"
+    gamma_I: "1000 * gamma"
+    gamma_A: "1000 * gamma * omega"
+  output_map:
+    F: F
+  limit:
+    y: "oo"
+  regime:
+    R: [0.5, 10.0]
+    x: [1.05, 6.0]
+    y: [1.5, 10.0]
+    K: [0.5, 5.0]
+    gamma: [0.1, 2.0]
+    omega: [0.1, 5.0]
+  tolerance: 1.0e-5
+  provenance: proposed
+  reason: >
+    As the virtual defect poles recede to infinity (y = R_tilde/R -> oo), the quasi-bipolar
+    director field becomes strictly uniform along the major axis, driving the bulk Frank elastic
+    shape factor f_el(x, y) -> 0 (for both printed and exact-bend variants) while R^2*f_an(x, y)
+    converges identically to Weirich et al.'s (2017, SI p. 8) closed-form anchoring area A_omega.
+    Hence Scheff's full dimensional Eq. (1) free energy reduces identically to Weirich's homogeneous
+    tactoid free energy F = gamma_I*A + gamma_A*A_omega (with 1 pN/um = 1000 nN/m and automatic
+    pN*um <-> J conversion).
+  assumptions:
+    - "Uniform-director limit y -> oo eliminates bulk elasticity (f_el -> 0) and maps anchoring tension gamma_A = omega * gamma."
+
+- id: rel_weirich2017_qb_nondim_reduces_rescaled
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_free_energy_nondim_printed
+  b: weirich2017/tactoid_rescaled_free_energy
+  mapping:
+    alpha: "2 * atan(1 / x)"
+    omega: "omega"
+  output_map:
+    F_hat: F_nondim
+  limit:
+    y: "oo"
+  regime:
+    V: [0.5, 50.0]
+    x: [1.05, 6.0]
+    y: [1.5, 10.0]
+    K_over_gamma: [0.5, 4.0]
+    omega: [0.1, 5.0]
+  tolerance: 1.0e-5
+  provenance: proposed
+  reason: >
+    Directly bridges the nondimensional fixed-volume free energy landscapes of the two papers:
+    as y -> oo (homogeneous director), Scheff et al.'s (2020, p. 3) nondimensional free energy
+    F/(gamma*V^(2/3)) reduces identically to Weirich et al.'s (2017, SI p. 8) rescaled homogeneous
+    free energy F_hat(alpha, omega) at alpha = 2*atan(1/x) for arbitrary V and K/gamma.
+  assumptions:
+    - "Uniform-director limit y -> oo sets f_el -> 0 regardless of K/(gamma*V^(1/3))."
+
+- id: rel_weirich2017_qb_min_reduces_homogeneous
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_minimizer_frank_half
+  b: weirich2017/tactoid_equilibrium_minimizer
+  mapping:
+    omega: "omega"
+  output_map:
+    aspect_ratio: x_eq
+  limit:
+    V: "0"
+  regime:
+    V: [0.01, 1.0]
+    K_over_gamma: [0.5, 4.0]
+    omega: [0.2, 4.0]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: >
+    Establishes the small-droplet endpoint of the Gardel/Weirich tactoid trilogy: as droplet volume
+    V -> 0 at fixed nematic distortion length K/gamma (R << K/gamma), bulk director curvature
+    becomes prohibitively costly so y_eq -> oo and Scheff et al.'s (2020) physically exact
+    Frank-normalized quasi-bipolar minimizer (quasi_bipolar_minimizer_frank_half) reduces
+    identically to Weirich et al.'s (2017) volume-independent homogeneous tactoid minimizer.
+  assumptions:
+    - "Small-droplet limit V -> 0 drives c = (K/gamma)/V^(1/3) -> oo and virtual poles y_eq -> oo."
+
+- id: rel_weirich2017_tactoid_ode_iso_scales_coal_tau
+  kind: scales_as
+  a: scheff2020/coalescence_relaxation_time_scaling
+  b: weirich2017/tactoid_shape_dynamics_ode
+  mapping:
+    omega: "0.001"
+    v_cap: "1 / eta_over_gamma"
+    L_eq: "2 * delta_l"
+    L_i: "3 * delta_l"
+    t_max: "10 * eta_over_gamma * delta_l"
+  output_map:
+    tau: tau
+  regime:
+    eta_over_gamma: [0.5, 25.0]
+    delta_l: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Connects Scheff et al.'s (2020, p. 5) isotropic viscocapillary coalescence relaxation scaling
+    tau ~ (eta/gamma) * Delta_l to Weirich et al.'s (2017, SI p. 9) full nonlinear Rayleigh-dissipation
+    variational shape-dynamics ODE (dF/dt + D = 0 at constant volume) in the near-isotropic limit
+    (omega = 0.001). For geometrically similar coalescing droplets (L_eq = 2*delta_l, L_i = 3*delta_l,
+    giving L_i - L_eq = delta_l), Weirich's variational ODE yields tau = 0.9563 * (eta/gamma) * delta_l,
+    sharing exact (+1, +1) log-slopes in (eta/gamma, delta_l) with Scheff's scaling law.
+  assumptions:
+    - "Near-isotropic droplet limit omega = 0.001 with fixed initial-to-final elongation ratio L_i/L_eq = 1.5 and scaled integration window t_max = 10 * (eta/gamma) * delta_l."
+
+- id: rel_weirich2017_iso_energy_balance_scales_coal_tau
+  kind: scales_as
+  a: weirich2017/isotropic_coalescence_tau_energy_balance
+  b: scheff2020/coalescence_relaxation_time_scaling
+  mapping:
+    eta_over_gamma: "1000 * eta / gamma_I"
+    delta_l: "delta_L"
+  output_map:
+    tau: tau
+  regime:
+    eta: [0.5, 20.0]
+    gamma_I: [100.0, 50000.0]
+    V: [10.0, 500.0]
+    r: [1.0, 6.0]
+    L_i: [3.0, 15.0]
+    delta_L: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Links Weirich et al.'s (2017, SI p. 8) explicit isotropic viscocapillary energy balance
+    tau ~ (eta/gamma_I) * (V / (r*L_i^2)) * (L_i - L_f) to Scheff et al.'s (2020, p. 5) scaling law
+    tau ~ (eta/gamma) * Delta_l (which cites Weirich 2017 ref-19 for balancing viscous dissipation
+    against interfacial energy reduction). Both share exact (+1, -1, +1) log-slopes in
+    (eta, gamma_I, delta_L) at fixed droplet geometry.
+  assumptions:
+    - "Dimensionless geometric factor V / (r * L_i^2) = O(1) held independent of (eta, gamma_I, delta_L); converts gamma_I [nN/m] via 1000 * eta / gamma_I [s/um]."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with weirich2019
+# (Weirich, Dasbiswas, Witten, Vaikuntanathan & Gardel,
+#  PNAS 116(23):11125-11130, 2019; cited by scheff2020 as ref-42)
+#
+# Audit summary (44 runnable scheff2020 x 46 runnable weirich2019 models):
+# - 0 stated relations (ref-42 is cited once qualitatively on p. 9 for spatial
+#   structuring; scheff2020 p. 3 cites Prinsen & van der Schoot 2004 ref-34
+#   for the ideal bipolar y = 1 limit).
+# - 2 proposed non-plain same_as relations joining the circular-arc tactoid
+#   geometry family across all three Gardel/Weirich papers (V <-> V and r <-> L_y).
+# - 5 proposed reduces_to limits in the ideal-bipolar limit (y -> 1 and
+#   omega -> oo) that provide independent cross-paper proof from the same
+#   authors' own 2019 PNAS Eq. 6 that scheff2020 Eqs. (1)+(2B) both misprinted
+#   cos^2(eta) for sin^2(eta) AND omitted the Frank 1/2 prefactor:
+#   * quasi_bipolar_free_energy_frank_half (y -> 1) -> Eq. 6 F_bare: VERIFIED (~1e-7)
+#   * quasi_bipolar_free_energy_exact_bend (y -> 1, K_w19 = 2*K) -> Eq. 6: VERIFIED
+#   * quasi_bipolar_free_energy_printed (y -> 1, K_w19 = K) -> Eq. 6: honest NOT_VERIFIED
+#   * quasi_bipolar_minimizer_frank_half (omega -> oo) -> bipolar AR_eq: VERIFIED (~1e-7)
+#   * quasi_bipolar_minimizer_printed (omega -> oo) -> bipolar AR_eq: honest NOT_VERIFIED
+# - 1 proposed scales_as relation linking the elongated cylindrical volume
+#   limit V ~ R^3/x^2 to weirich2019's small-tip-angle scaling V ~ R_arc^3*alpha^5.
+# - Explicitly excluded as too_plain (<= 2 ops): nematic_distortion_length_def
+#   (R_c = K/gamma, 1 op) vs weirich2019/nematic_distortion_length (l_K = K/gamma, 2 ops).
+# ==========================================================================
+
+- id: rel_weirich2019_eq6_volume_same_as
+  kind: same_as
+  a: scheff2020/tactoid_geometry_from_semimajor
+  b: weirich2019/bipolar_tactoid_geometry_eq6
+  mapping:
+    K: "1.0"
+    gamma: "300.0"
+    R: "R * (x**2 + 1) / (2 * x)"
+    alpha: "2 * atan(1 / x)"
+  output_map:
+    V: V
+  regime:
+    R: [0.5, 10.0]
+    x: [1.05, 8.0]
+  provenance: proposed
+  reason: >
+    Joins Scheff et al.'s (2020, Eq. 2D) bispherical tactoid volume V = R^3*v(x) with Weirich et al.'s
+    (2019, SI Theory 3 Eq. 6) circular-arc bipolar tactoid volume V = 2*pi*R_arc^3*(sin(alpha) -
+    alpha*cos(alpha) - sin^3(alpha)/3) into one verified ModelAtlas family across all three
+    Gardel/Weirich tactoid papers under R_arc = R*(x^2+1)/(2*x) and alpha = 2*atan(1/x).
+  assumptions:
+    - "Exact circular-arc to bispherical coordinate dictionary; V in bipolar_tactoid_geometry_eq6 is independent of K and gamma (set to nominal 1.0 pN and 300.0 nN/m)."
+
+- id: rel_weirich2019_semiminor_same_as_angle
+  kind: same_as
+  a: scheff2020/tactoid_geometry_from_semimajor
+  b: weirich2019/tactoid_aspect_ratio_angle
+  mapping:
+    R: "R * (x**2 + 1) / (2 * x)"
+    alpha: "2 * atan(1 / x)"
+  output_map:
+    L_y: r
+  regime:
+    R: [0.5, 10.0]
+    x: [1.05, 8.0]
+  provenance: proposed
+  reason: >
+    Verifies exact geometric equivalence between Scheff et al.'s (2020) semi-minor axis r = R/x
+    and Weirich et al.'s (2019, SI Theory 1 p. 9) transverse semi-axis L_y = R_arc*(1 - cos(alpha))
+    under R_arc = R*(x^2+1)/(2*x) and alpha = 2*atan(1/x) (where 1 - cos(alpha) = 2/(x^2+1), so
+    L_y = R/x identically).
+  assumptions:
+    - "Exact circular-arc semi-axis parameterization with L_D = R_arc*sin(alpha) = R and L_y = R_arc*(1 - cos(alpha)) = r."
+
+- id: rel_weirich2019_qb_frank_half_reduces_eq6
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_free_energy_frank_half
+  b: weirich2019/bipolar_tactoid_geometry_eq6
+  mapping:
+    K: "K"
+    gamma: "1000 * gamma"
+    R: "R * (x**2 + 1) / (2 * x)"
+    alpha: "2 * atan(1 / x)"
+  output_map:
+    F_bare: F
+  limit:
+    y: "1"
+  regime:
+    R: [0.5, 10.0]
+    x: [1.05, 6.0]
+    y: [1.0, 2.0]
+    K: [0.5, 5.0]
+    gamma: [0.1, 2.0]
+    omega: [0.1, 5.0]
+  tolerance: 1.0e-5
+  provenance: proposed
+  reason: >
+    Proves that Scheff et al.'s (2020) doubly corrected quasi-bipolar free energy variant
+    (quasi_bipolar_free_energy_frank_half: exact sin^2(eta) bend integrand plus the standard Frank
+    1/2 prefactor) reduces identically (to < 1e-6 as y -> 1, and to ~2e-15 at exact y = 1) to the
+    same authors' closed-form ideal bipolar tactoid bare free energy in Weirich et al. (2019, SI
+    Theory 3 Eq. 6: F_bare = K*R_arc*f_el(alpha) + gamma*R_arc^2*f_s(alpha) with f_el(alpha) =
+    -pi*(7*alpha*cos(alpha) - 7*sin(alpha) + alpha^2*sin(alpha))) across all aspect ratios x > 1
+    and all anchoring strengths omega (since f_an(x, 1) = 0 identically).
+  assumptions:
+    - "Ideal bipolar limit y = R_tilde/R -> 1 places the virtual boojums on the tactoid cusps, making the director strictly tangent to the boundary (f_an -> 0)."
+    - "Uses identical Frank constant K [pN] and converts gamma [pN/um] to weirich2019's gamma [nN/m] = 1000 * gamma."
+
+- id: rel_weirich2019_qb_exact_bend_reduces_eq6_2K
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_free_energy_exact_bend
+  b: weirich2019/bipolar_tactoid_geometry_eq6
+  mapping:
+    K: "2 * K"
+    gamma: "1000 * gamma"
+    R: "R * (x**2 + 1) / (2 * x)"
+    alpha: "2 * atan(1 / x)"
+  output_map:
+    F_bare: F
+  limit:
+    y: "1"
+  regime:
+    R: [0.5, 10.0]
+    x: [1.05, 6.0]
+    y: [1.0, 2.0]
+    K: [0.5, 5.0]
+    gamma: [0.1, 2.0]
+    omega: [0.1, 5.0]
+  tolerance: 1.0e-5
+  provenance: proposed
+  reason: >
+    Isolates the exact factor-of-2 Frank normalization omission in Scheff et al. (2020) Eqs. (1)
+    and (2B): after correcting only the cos^2(eta) -> sin^2(eta) bend misprint (without restoring
+    the 1/2 prefactor), quasi_bipolar_free_energy_exact_bend reduces as y -> 1 to Weirich et al.
+    (2019) Eq. 6 F_bare ONLY when Weirich's standard Frank elastic constant is doubled (K_w19 = 2*K_scheff).
+  assumptions:
+    - "Exact sin^2(eta) bend integrand without the Frank 1/2 prefactor equals standard Frank elasticity at K_w19 = 2*K_scheff across all aspect ratios x."
+
+- id: rel_weirich2019_qb_printed_vs_eq6_diagnostic
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_free_energy_printed
+  b: weirich2019/bipolar_tactoid_geometry_eq6
+  mapping:
+    K: "K"
+    gamma: "1000 * gamma"
+    R: "R * (x**2 + 1) / (2 * x)"
+    alpha: "2 * atan(1 / x)"
+  output_map:
+    F_bare: F
+  limit:
+    y: "1"
+  regime:
+    R: [0.5, 10.0]
+    x: [1.05, 6.0]
+    y: [1.0, 2.0]
+    K: [0.5, 5.0]
+    gamma: [0.1, 2.0]
+    omega: [0.1, 5.0]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper refutation test checking whether Scheff et al.'s (2020, p. 3) verbatim
+    printed Eqs. (1) and (2B) reduce as y -> 1 ("idealized bipolar tactoid configuration") to the
+    same authors' closed-form ideal bipolar free energy in Weirich et al. (2019, Eq. 6) at identical
+    (K, gamma, R_arc, alpha). Honestly not_verified: printed F_el exceeds Weirich's F_el by a
+    non-constant x-dependent factor ranging from 1.828x (x = 1.01) to 2.181x (x = 6.0), providing
+    direct cross-record confirmation of both q_eq2b_bend_misprint and q_eq1_eq2b_missing_frank_half.
+  assumptions:
+    - "Tests literal printed Eq. (1)+(2B) with cos^2(eta) bend term and omitted 1/2 prefactor at identical K and gamma."
+
+- id: rel_weirich2019_qb_min_frank_half_reduces_bipolar
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_minimizer_frank_half
+  b: weirich2019/bipolar_tactoid_equilibrium_exact
+  mapping:
+    K: "K_over_gamma"
+    gamma: "1000.0"
+    V: "V"
+  output_map:
+    AR_eq: x_eq
+  limit:
+    omega: "oo"
+  regime:
+    V: [1.0, 100.0]
+    K_over_gamma: [0.5, 4.0]
+    omega: [1.0, 10.0]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    Establishes the strong-anchoring endpoint of the Gardel/Weirich tactoid trilogy: as the
+    dimensionless surface anchoring strength omega -> oo at fixed volume V and distortion length
+    K/gamma, misalignment of the director at the droplet surface becomes infinitely expensive,
+    pinning the virtual poles to the cusps (y_eq -> 1) and reducing Scheff et al.'s (2020)
+    Frank-normalized quasi-bipolar minimizer (quasi_bipolar_minimizer_frank_half) identically
+    (to ~1e-7 in equilibrium aspect ratio) to Weirich et al.'s (2019) bare bipolar tactoid
+    equilibrium minimizer (bipolar_tactoid_equilibrium_exact).
+  assumptions:
+    - "Because bipolar_tactoid_equilibrium_exact depends on (K, gamma) solely through K/gamma, setting K = K_over_gamma [pN] and gamma = 1000 nN/m = 1 pN/um preserves K/gamma identically."
+    - "Strong tangential anchoring limit omega -> oo forces y_eq -> 1."
+
+- id: rel_weirich2019_qb_min_printed_vs_bipolar_diagnostic
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_minimizer_printed
+  b: weirich2019/bipolar_tactoid_equilibrium_exact
+  mapping:
+    K: "K_over_gamma"
+    gamma: "1000.0"
+    V: "V"
+  output_map:
+    AR_eq: x_eq
+  limit:
+    omega: "oo"
+  regime:
+    V: [1.0, 100.0]
+    K_over_gamma: [0.5, 4.0]
+    omega: [1.0, 10.0]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: >
+    Diagnostic strong-anchoring test of Scheff et al.'s (2020) verbatim printed minimizer
+    (quasi_bipolar_minimizer_printed) against Weirich et al.'s (2019) ideal bipolar minimizer
+    at identical (K/gamma, V). Honestly not_verified: because printed Eq. (1)+(2B) omits the Frank
+    1/2 factor and misprints the bend integrand, as omega -> oo its equilibrium aspect ratio
+    converges ~50-60% above Weirich's bipolar AR_eq (e.g. 8.09 vs 5.17 at V = 20 um^3, K/gamma = 3.33 um).
+  assumptions:
+    - "Same (K/gamma, V) mapping as rel_weirich2019_qb_min_frank_half_reduces_bipolar, applied to the verbatim printed model."
+
+- id: rel_weirich2019_cylindrical_vol_scales_small_alpha
+  kind: scales_as
+  a: scheff2020/tactoid_cylindrical_limit_scaling
+  b: weirich2019/bipolar_tactoid_small_alpha_scaling
+  mapping:
+    K: "1.0"
+    gamma: "300.0"
+    R: "R * x / 2"
+    alpha: "2 / x"
+  output_map:
+    V: V
+  regime:
+    R: [0.5, 10.0]
+    x: [10.0, 100.0]
+  provenance: proposed
+  reason: >
+    Connects both papers' elongated-tactoid asymptotic volume scaling laws: in Scheff et al.
+    (2020, p. 3), V ~ R^3 / x^2 for high aspect ratio x >> 1, while in Weirich et al. (2019,
+    SI Theory 3 p. 11), V ~ R_arc^3 * alpha^5 for small tip angle alpha << 1. Under the exact
+    large-x asymptotic map R_arc ~ R*x/2 and alpha ~ 2/x, R_arc^3 * alpha^5 = 4 * R^3 / x^2,
+    yielding identical (+3, -2) log-slopes in (R, x).
+  assumptions:
+    - "Elongated asymptotic regime x >> 1 (alpha = 2*atan(1/x) ~ 2/x, R_arc = R*(x^2+1)/(2*x) ~ R*x/2)."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with graham2023
+# (Graham, Chandrasekaran, Hayden, Stachowiak & Rangamani,
+#  Nature Physics 19:574-585, 2023; cites scheff2020 as ref-40 on p. 10)
+#
+# Audit summary (44 runnable scheff2020 x 31 runnable graham2023 models):
+# - 0 stated relations (graham2023 Discussion p. 10 cites ref-40 qualitatively
+#   to contrast VASP-driven long actin rings/rods with Scheff's short pre-
+#   polymerized nematic tactoids).
+# - 7 proposed non-plain cross-record relations (5 verified, 2 honest
+#   diagnostic not_verified; 0 same_as families) bridging 2D elliptical
+#   droplet mechanics in graham2023 to 3D quasi-bipolar tactoid geometry and
+#   energetics in scheff2020:
+#   * Mutual circular/spherical isotropic surface-energy reductions (2) and
+#     SLSQP ring-vanishing T_ring -> 0 reduction (1) under gamma_3D = gamma_2D/(2*R).
+#   * 2D-vs-3D isotropic surface-energy approximation within 5.20% over
+#     AR in [1.01, 3.0] (1) and diagnostic AR^(1/2) vs AR^(1/3) dimensionality
+#     exponent gap (1, honest not_verified).
+#   * 3D prolate-spheroid effective diameter scaling with tactoid semi-major
+#     axis at fixed x = 1 (1) and diagnostic 2D constant-area AR^(1/2) vs
+#     3D constant-volume AR^(2/3) axis-elongation gap (1, honest not_verified).
+# - Explicitly excluded: the scheduler-flagged pair
+#   droplet_ring_minimization_corrected vs nematic_distortion_length_def
+#   (spurious shape match: 13-input 2D SLSQP ring-droplet minimizer outputting
+#   semi-axes vs 1-op ratio K/gamma).
+# ==========================================================================
+
+- id: rel_graham2023_ring_rod_reduces_qb_sphere
+  kind: reduces_to
+  a: graham2023/ring_rod_transition_energy
+  b: scheff2020/quasi_bipolar_free_energy_frank_half
+  mapping:
+    R: "R"
+    x: "1.0"
+    y: "1.5"
+    K: "0.0"
+    gamma: "gamma_I / (2 * R)"
+    omega: "0.0"
+  output_map:
+    F: E_surf
+  limit:
+    AR: "1"
+  regime:
+    R: [0.5, 3.5]
+    L: [0.5, 2.5]
+    k_b: [73000.0, 1500000.0]
+    gamma_I: [1.0, 15.0]
+    AR: [1.0, 10.0]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the circular/spherical limit (AR -> 1), Graham et al.'s (2023, SI Section 2.11) 2D
+    elliptical VASP droplet interfacial surface energy E_surf = gamma_I_2D * P(R, AR) reduces
+    identically to 2*pi*R*gamma_I_2D, which equals Scheff et al.'s (2020, Eq. 1) 3D droplet
+    interfacial free energy F = 4*pi*R^2*gamma_3D in the isotropic pure-protein-droplet limit
+    (x = 1, K = 0, omega = 0) under the exact diameter-projected 2D-to-3D tension dictionary
+    gamma_3D [pN/um] = gamma_I_2D [pN] / (2*R [um]) (with automatic pN*nm <-> pN*um conversion).
+  assumptions:
+    - "Circular droplet limit AR -> 1 matched to pure isotropic spherical condensate (x = 1, K = 0, omega = 0; y = 1.5 irrelevant when K = omega = 0)."
+    - "Diameter-projected 2D-to-3D interfacial tension dictionary gamma_3D = gamma_I_2D / (2*R)."
+
+- id: rel_graham2023_qb_reduces_ring_rod_sphere
+  kind: reduces_to
+  a: scheff2020/quasi_bipolar_free_energy_frank_half
+  b: graham2023/ring_rod_transition_energy
+  mapping:
+    R: "R"
+    L: "R"
+    k_b: "73000.0"
+    gamma_I: "2 * R * gamma"
+    AR: "1.0"
+  output_map:
+    E_surf: F
+  limit:
+    K: "0"
+    x: "1"
+    omega: "0"
+  regime:
+    R: [0.5, 3.5]
+    x: [1.0, 4.0]
+    y: [1.2, 5.0]
+    K: [0.5, 5.0]
+    gamma: [0.1, 5.0]
+    omega: [0.1, 3.0]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    Converse limit across Scheff et al.'s (2020) full 3D quasi-bipolar parameter space: removing
+    nematic actin elasticity (K -> 0) and anisotropic anchoring (omega -> 0) while approaching a
+    spherical droplet (x -> 1) reduces Scheff's 3D free energy F identically to Graham et al.'s
+    (2023) circular 2D droplet surface energy E_surf = 2*pi*R*gamma_I_2D with gamma_I_2D = 2*R*gamma.
+  assumptions:
+    - "Pure isotropic spherical condensate limit K -> 0, omega -> 0, x -> 1."
+    - "Diameter-projected 2D line tension gamma_I_2D [pN] = 2*R [um] * gamma [pN/um]; L = R and k_b = 73000 pN*nm^2 do not affect E_surf."
+
+- id: rel_graham2023_slsqp_reduces_qb_sphere
+  kind: reduces_to
+  a: graham2023/droplet_ring_minimization_corrected
+  b: scheff2020/quasi_bipolar_free_energy_frank_half
+  mapping:
+    R: "D_droplet / 2"
+    x: "1.0"
+    y: "1.5"
+    K: "0.0"
+    gamma: "gamma_I / D_droplet"
+    omega: "0.0"
+  output_map:
+    F: total_energy
+  limit:
+    T_ring: "0"
+  regime:
+    D_droplet: [0.5, 1.5]
+    T_ring: [15.0, 150.0]
+    delta: [15.0, 15.0]
+    L_p: [17.73, 17.73]
+    kBT: [4.114, 4.114]
+    L_cyl: [100.0, 100.0]
+    k_stretch_fil: [100.0, 100.0]
+    gamma_AVR: [1.0e-8, 1.0e-8]
+    gamma_AVD: [10000.0, 10000.0]
+    k_e: [64.0, 64.0]
+    gamma_I: [1.0, 15.0]
+    L_ratio: [3.1, 3.1]
+    noise_amp: [0.1, 0.1]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    Bridges Graham et al.'s (2023) flagship discrete 2D SLSQP droplet-ring free-energy minimizer
+    (droplet_ring_minimization_corrected) to Scheff et al.'s (2020) 3D free energy functional
+    (quasi_bipolar_free_energy_frank_half): in the bare-droplet limit T_ring -> 0 (eliminating
+    the encapsulated actin ring's mechanical and wetting energies), SLSQP relaxes the VASP droplet
+    to a circle of minimized total_energy = pi*D_droplet*gamma_I_2D, matching Scheff's isotropic
+    pure-condensate sphere F = 4*pi*(D_droplet/2)^2*gamma_3D under gamma_3D = gamma_I_2D / D_droplet.
+  assumptions:
+    - "Actin-free limit T_ring -> 0 in droplet_ring_minimization_corrected paired with K = 0, omega = 0, x = 1 in quasi_bipolar_free_energy_frank_half."
+    - "Benchmarked over Graham's Fig. 4f-g diameter range D_droplet in [0.5, 1.5] um and line-tension range gamma_I in [1, 15] pN."
+
+- id: rel_graham2023_2d_ellipse_approx_3d_iso_tactoid
+  kind: approximated_by
+  a: graham2023/ring_rod_transition_energy
+  b: scheff2020/quasi_bipolar_free_energy_frank_half
+  mapping:
+    R: "R * (8 * AR**3 / (3 * (AR + (2/3)*AR**3 + AR**5 - (AR**2 - 1)*(AR**2 + 1)**2 * atan(1/AR))))**(1/3)"
+    x: "AR"
+    y: "1.5"
+    K: "0.0"
+    gamma: "gamma_I / (2 * R)"
+    omega: "0.0"
+  output_map:
+    F: E_surf
+  regime:
+    R: [0.5, 3.5]
+    L: [0.5, 2.5]
+    k_b: [73000.0, 1500000.0]
+    gamma_I: [1.0, 15.0]
+    AR: [1.01, 3.0]
+  tolerance: 0.06
+  provenance: proposed
+  reason: >
+    Quantifies the exact 2D-vs-3D dimensionality error of Graham et al.'s (2023) constant-area 2D
+    elliptical surface energy E_surf(R, AR) relative to Scheff et al.'s (2020) constant-volume 3D
+    isotropic spindle surface energy F(R_sm, x=AR, K=0, omega=0) matched at equal spherical
+    volume V = (4*pi/3)*R^3 (setting R_sm = R * ((4*pi/3)/v(AR))^(1/3)) and sphere-matched tension
+    gamma_3D = gamma_I_2D / (2*R). Across Scheff's entire experimental aspect-ratio range
+    AR in [1.01, 3.0], the 2D perimeter model approximates the 3D spindle surface energy within
+    5.20% (0.91% at AR = 1.5, 2.34% at AR = 2.0, 5.20% at AR = 3.0) before diverging at Graham's
+    high-aspect-ratio rod regime (AR > 10).
+  assumptions:
+    - "Purely isotropic droplet surface energy comparison (K = 0, omega = 0) at matched 3D volume V = (4*pi/3)*R^3 and aspect ratio x = AR."
+    - "6% tolerance bounds the 5.20% maximum relative error at AR = 3.0."
+
+- id: rel_graham2023_2d_ellipse_vs_3d_qb_ar_scaling_diagnostic
+  kind: scales_as
+  a: graham2023/ring_rod_transition_energy
+  b: scheff2020/quasi_bipolar_free_energy_nondim_printed
+  mapping:
+    V: "10.0"
+    x: "AR"
+    y: "1.5"
+    K_over_gamma: "0.0"
+    omega: "0.0"
+  output_map:
+    F_nondim: E_surf
+  regime:
+    R: [1.0, 1.0]
+    L: [1.0, 1.0]
+    k_b: [73000.0, 73000.0]
+    gamma_I: [5.0, 5.0]
+    AR: [2.0, 15.0]
+  provenance: proposed
+  reason: >
+    Diagnostic dimensionality scaling test contrasting Graham et al.'s (2023) 2D constant-area
+    ellipse surface energy E_surf(AR) ~ AR^(+1/2) against Scheff et al.'s (2020) 3D constant-volume
+    nondimensional surface energy F_nondim(AR, K=0, omega=0) = f_s(AR)/v(AR)^(2/3) ~ AR^(+1/3)
+    across Graham's elongated ring-to-rod regime AR in [2, 15]. Honestly not_verified: exposes the
+    exact 1/2 - 1/3 = 1/6 ~= 0.167 dimensionality exponent gap between 2D constant-area and 3D
+    constant-volume droplet surface energy.
+  assumptions:
+    - "Isolates pure aspect-ratio surface-energy scaling by fixing R, L, k_b, gamma_I and setting K_over_gamma = omega = 0."
+
+- id: rel_graham2023_eff_diam_scales_tactoid_semimajor
+  kind: scales_as
+  a: graham2023/effective_spherical_diameter
+  b: scheff2020/tactoid_semimajor_from_volume
+  mapping:
+    V: "(pi / 6) * a * b**2"
+    x: "1.0"
+  output_map:
+    R: D
+  regime:
+    a: [1.0, 10.0]
+    b: [0.5, 7.0]
+  provenance: proposed
+  reason: >
+    Connects Graham et al.'s (2023, Methods p. 15) 3D prolate-spheroid effective spherical diameter
+    D = (a*b^2)^(1/3) to Scheff et al.'s (2020, p. 3) volume-to-semi-major-axis relation
+    R = (V / v(x))^(1/3) evaluated at the spherical limit x = 1 (v(1) = 4*pi/3) under the exact
+    prolate-spheroid volume V = (pi/6)*a*b^2, where R = D/2 shares identical (+1/3, +2/3) log-slopes
+    in full axes (a, b).
+  assumptions:
+    - "Maps prolate-spheroid full major and minor axes (a, b) to volume V = (pi/6)*a*b^2 at spherical reference x = 1 (factor of 2 between diameter D and radius R absorbed by scales_as)."
+
+- id: rel_graham2023_ellipse_axes_vs_tactoid_semimajor_diagnostic
+  kind: scales_as
+  a: graham2023/ellipse_axes_constant_area
+  b: scheff2020/tactoid_semimajor_from_volume
+  mapping:
+    V: "(pi / 6) * D_droplet**3"
+    x: "AR"
+  output_map:
+    R: a
+  regime:
+    D_droplet: [1.0, 7.0]
+    AR: [1.5, 10.0]
+  provenance: proposed
+  reason: >
+    Diagnostic geometric scaling test contrasting Graham et al.'s (2023) 2D constant-area ellipse
+    semi-major axis a = (D_droplet/2)*AR^(1/2) against Scheff et al.'s (2020) 3D constant-volume
+    tactoid semi-major axis R = (V/v(AR))^(1/3) ~ AR^(2/3) at equal spherical volume
+    V = (pi/6)*D_droplet^3. Honestly not_verified: exposes the fundamental 2/3 - 1/2 = 1/6 ~= 0.167
+    aspect-ratio elongation exponent discrepancy between 2D area-conserving and 3D volume-conserving
+    droplet deformations.
+  assumptions:
+    - "Equal initial spherical volume V = (pi/6)*D_droplet^3 and identical aspect ratio x = AR."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with feigeles2025
+# (Feigeles, Li, Dasbiswas, Gardel & Weirich, Soft Matter 21:6346-6355, 2025;
+#  cites scheff2020 as ref-35 on p. 6 for internal actin-doped FUS tactoids
+#  and for the identical A. Hyman-lab FUS-GFP protein preparation)
+#
+# Audit summary (44 runnable scheff2020 x 34 runnable feigeles2025 models):
+# - 0 stated relations (feigeles2025 p. 6 cites ref-35 qualitatively to
+#   contrast internal bulk nematic elasticity of short actin inside FUS
+#   condensates with external capillary wetting of pre-formed long bundles).
+# - 4 proposed cross-record relations (3 verified, 1 honest diagnostic
+#   not_verified; 0 same_as families):
+#   * Coalescence single-exponential decay scaling between scheff2020/
+#     coalescence_area_decay.A_norm and feigeles2025's corrected Fig. S6B
+#     decay (verified) vs misprinted exp(-tau/t) Fig. S6B equation (honest
+#     not_verified).
+#   * Coalescence viscocapillary timescale scaling between feigeles2025/
+#     coalescence_capillary_velocity_figS6C.inv_v_cap and scheff2020/
+#     coalescence_relaxation_time_scaling.tau in (eta, gamma).
+#   * Fiber-free pure-FUS spherical droplet limit: feigeles2025/
+#     unduloid_ode_eq3_lhs.aspect_ratio_eq (R_f -> 0, c -> 0) reduces to
+#     scheff2020/homogeneous_tactoid_minimizer.x_eq (omega = 0, AR = 1).
+# ==========================================================================
+
+- id: rel_feigeles2025_coal_decay_corr_scales_area_norm
+  kind: scales_as
+  a: scheff2020/coalescence_area_decay
+  b: feigeles2025/coalescence_exponential_decay_figS6B_corrected
+  mapping:
+    L_i: "1.0"
+    L_f: "0.0"
+    tau: "tau"
+    t: "t"
+  output_map:
+    L: A_norm
+  regime:
+    A_i: [10.0, 40.0]
+    A_f: [5.0, 25.0]
+    t: [0.5, 40.0]
+    tau: [2.0, 25.0]
+  provenance: proposed
+  reason: >
+    Both Weirich/Gardel-group studies model the coalescence relaxation of Hyman-lab FUS-GFP
+    protein condensates as a single exponential exp(-t/tau): Scheff et al. (2020, p. 5, Fig. 2b)
+    fit cross-sectional area A(t) = A_f + (A_i - A_f)*exp(-t/tau) (normalized A_norm = exp(-t/tau)),
+    while Feigeles et al. (2025, SI Fig. S6B, corrected variant) fit major-axis length
+    L(t) = L_f + (L_i - L_f)*exp(-t/tau). Setting unit amplitude (L_i = 1 um, L_f = 0) verifies
+    identical (-t/tau, +t/tau) log-slopes in (t, tau) across both non-trivial coalescence models.
+  assumptions:
+    - "Compares Feigeles's corrected Fig. S6B exponential decay (exp(-t/tau)) with zero baseline (L_f = 0, L_i = 1 um) against Scheff's normalized exponential decay A_norm = exp(-t/tau); scales_as is unit-invariant."
+
+- id: rel_feigeles2025_coal_decay_printed_vs_area_norm_diagnostic
+  kind: scales_as
+  a: scheff2020/coalescence_area_decay
+  b: feigeles2025/coalescence_exponential_decay_figS6B_printed
+  mapping:
+    L_i: "1.0"
+    L_f: "0.0"
+    tau: "tau"
+    t: "t"
+  output_map:
+    L: A_norm
+  regime:
+    A_i: [10.0, 40.0]
+    A_f: [5.0, 25.0]
+    t: [0.5, 40.0]
+    tau: [2.0, 25.0]
+  provenance: proposed
+  reason: >
+    Diagnostic contrast against Feigeles et al.'s (2025, SI p. 14) verbatim printed Fig. S6B
+    inset formula L = L_i + (L_i - L_f)*exp(-tau/t), which inverted the exponent to -tau/t and
+    replaced the L_f baseline by L_i. Honestly not_verified: log-slopes in (t, tau) have opposite
+    signs and different functional forms from Scheff et al.'s (2020) standard exp(-t/tau) decay.
+  assumptions:
+    - "Same mapping as rel_feigeles2025_coal_decay_corr_scales_area_norm applied to Feigeles's verbatim printed equation."
+
+- id: rel_feigeles2025_inv_vcap_scales_coal_tau
+  kind: scales_as
+  a: feigeles2025/coalescence_capillary_velocity_figS6C
+  b: scheff2020/coalescence_relaxation_time_scaling
+  mapping:
+    eta_over_gamma: "eta / gamma"
+    delta_l: "1.0"
+  output_map:
+    tau: inv_v_cap
+  regime:
+    eta: [0.5, 20.0]
+    gamma: [1.0, 120.0]
+  provenance: proposed
+  reason: >
+    Both papers extract the FUS-GFP condensate viscocapillary timescale ratio eta/gamma [s/um]
+    from linear coalescence scaling between relaxation time tau and characteristic length change
+    Delta l: Scheff et al. (2020, p. 5, Fig. 2c-d) plot tau vs Delta l = sqrt(A_i) - sqrt(A_f)
+    to extract slope eta/gamma directly, whereas Feigeles et al. (2025, SI Fig. S6C) plot
+    Delta L vs tau (extracting capillary velocity gamma/eta and printing eta/gamma in the caption).
+    Verifies exact (+1, -1) log-slopes in (viscosity eta, surface tension gamma) across FUS
+    condensate regimes (with 1 Pa*s / (1 uN/m) = 1 s/um).
+  assumptions:
+    - "Fixed characteristic coalescence relaxation length delta_l = 1 um isolates the viscocapillary ratio eta/gamma."
+
+- id: rel_feigeles2025_unduloid_ode_reduces_iso_sphere
+  kind: reduces_to
+  a: feigeles2025/unduloid_ode_eq3_lhs
+  b: scheff2020/homogeneous_tactoid_minimizer
+  mapping:
+    omega: "0.0"
+  output_map:
+    x_eq: aspect_ratio_eq
+  limit:
+    R_f: "0"
+    c: "0"
+  regime:
+    R_f: [0.05, 0.2]
+    R_b: [0.8, 1.5]
+    DeltaP_over_2sigma: [0.25, 0.5]
+    c: [0.01, 0.1]
+  tolerance: 1.0e-3
+  provenance: proposed
+  reason: >
+    Unifies the two opposite actin-FUS condensate topologies in their common actin-free pure-FUS
+    limit: Feigeles et al. (2025, p. 8 Eq. 3) integrate the 3D Young-Laplace unduloid ODE for a
+    FUS droplet wetting an external rigid actin bundle of radius R_f (with aspect ratio defined as
+    width/length <= 1), while Scheff et al. (2020, p. 8) minimize the 3D nematic tactoid free
+    energy for a FUS droplet containing internal actin filaments (aspect ratio length/width >= 1).
+    When the external bundle vanishes (R_f -> 0, unduloid constant c -> 0, spherical cap of radius
+    1/(DeltaP/(2*sigma)) in [2, 4] um > R_b), Feigeles's unduloid ODE reduces to a free spherical
+    FUS droplet (aspect_ratio_eq -> 1.000), matching Scheff's actin-free isotropic limit
+    (omega = 0, x_eq = 1.000).
+  assumptions:
+    - "Fiber-free spherical-cap limit R_f -> 0, c -> 0 with cutoff radius R_b in [0.8, 1.5] um strictly inside the sphere radius 1/(DeltaP/(2*sigma)) in [2, 4] um."
+    - "Tolerance 1e-3 accounts for the ~4e-4 numerical integration floor of feigeles2025/unduloid_ode_eq3_lhs near the spherical apex."
+

@@ -1,0 +1,41 @@
+id: curved_binodals_appC_corrected
+name: Perturbative O(1/R^2) curved-interface droplet densities with corrected Eq. (C2) signs (Appendix C, Fig. 3)
+role: model
+variant_of: curved_binodals_appC
+corrections:
+  - equation: "Eq. (C2)"
+    change: "Flip the signs of both O(1/R) terms in Eq. (C2): +(2*(d-1)/R)*sqrt(w(x)) + (2*(d-1)*zeta/(K*R))*int_{phi_-}^x sqrt(w(y)) dy instead of printed -(2*(d-1)/R)*sqrt(w(x)) + (2*(d-1)*zeta/(K*R))*int_x^{phi_-} sqrt(w(y)) dy"
+    evidence: "For a dense droplet (phi(0) = phi_+ > phi_- = phi(inf)), phi'(r) = -sqrt(w(phi)) < 0 and dr = -dphi/sqrt(w). Substituting phi' = -sqrt(w) into Eq. (15) flips both O(1/R) terms in Eq. (C2) and guarantees the consistency condition int_{phi_-}^{phi_+} exp(alpha*x)*s(x) dx = 0 reproduces Eq. (19) (P(phi_+) - P(phi_-) = +(d-1)*sigma/R) with w(phi_+) = 0, matching the Fig. 3(a)-(b) theory curves."
+  - equation: "Appendix C inline S_0, S_1 (p. 15)"
+    change: "Integrate from phi_- to phi_+ (positive definite) rather than printed phi_+ to phi_- (negative since phi_+ > phi_-)"
+    evidence: "Changing variables from r in [0, inf) to x = phi(r) with phi' = -sqrt(w) < 0 yields int_0^inf phi'^2 dr = int_{phi_-}^{phi_+} sqrt(w(x)) dx > 0, matching positive-definite Eqs. (21)-(22)."
+  - equation: "Eq. (C3)"
+    change: "Use lower integration limit phi_- (with C = 0 so w(phi_-) = 0) instead of printed lower limit 1"
+    evidence: "sqrt(w(y)) is defined only on [phi_-, phi_+], whereas phi_+ < 1 whenever zeta - 2*lambda > 0 (Fig. 2)."
+stated:
+  page: 15
+  printed_page: "031080-15"
+  quote: "The perturbative strategy then goes as follows."
+  where: "Appendix C Eqs. C1-C3 (corrected for phi' = -sqrt(w))"
+equation: "w'(x) = ((2*lambda - zeta)/K)*w(x) + (2/K)*[f'(x)-mu_I] + (2*(d-1)/R)*sqrt(w(x)) + (2*(d-1)*zeta/(K*R))*int_{phi_-}^x sqrt(w(y)) dy"
+built_from: [curved_binodals_O1R_eq16_19]
+inputs:
+  A: {quantity: bulk_free_energy_scale, unit: dimensionless}
+  K: {quantity: gradient_coefficient, unit: dimensionless}
+  zeta: {quantity: active_rotational_parameter_zeta, unit: dimensionless}
+  lam: {quantity: active_gradient_parameter_lambda, unit: dimensionless}
+  d: {quantity: spatial_dimension, unit: dimensionless}
+  R: {quantity: droplet_radius, unit: dimensionless}
+outputs:
+  phi_minus: {quantity: order_parameter, unit: dimensionless}
+  phi_plus: {quantity: order_parameter, unit: dimensionless}
+  mu_I: {quantity: chemical_potential, unit: dimensionless}
+  Delta: {quantity: chemical_potential_jump, unit: dimensionless}
+  sigma: {quantity: interfacial_tension, unit: dimensionless}
+  dphi_minus_dR: {quantity: derivative_phi_wrt_R, unit: dimensionless}
+  dphi_plus_dR: {quantity: derivative_phi_wrt_R, unit: dimensionless}
+  ostwald_sign_from_slope: {quantity: ostwald_sign_indicator, unit: dimensionless}
+settings:
+  n_grid: 400
+  xtol: 1.0e-12
+stochastic: false

@@ -1,0 +1,95 @@
+# ==============================================================================
+# 1. SM Fig. 1 linear stability boundaries (1D/stabilitydiagram.jl)
+# ==============================================================================
+- id: cmp_smfig1_Is_shipped
+  purpose: reproduction
+  computed: stab_Is_shipped_curve
+  printed: paper_smfig1_boundary_Is
+  note: "Shipped 1D/stabilitydiagram.jl grid (MaxPar1 = MaxPar2 = 100, NPar1 = NPar2 = 500, dZ = dOm = 0.2) vs digitized SM Fig. 1 Type I_s boundary: discrete K_1 = 0.2 + one-sided i-transition match 14/17 points (max diff 0.20 at Z = 24.2)."
+
+- id: cmp_smfig1_Is_smfig1_grid
+  purpose: reproduction
+  computed: stab_Is_smfig1_curve
+  printed: paper_smfig1_boundary_Is
+  note: "Identical 1D/stabilitydiagram.jl algorithm on SM Fig. 1's plotted [0, 30] x [0, 30] window with NPar = 100 (dZ = dOm = 0.3): reproduces all 17/17 digitized SM Fig. 1 Type I_s points to 0.0001-0.0081 (median 0.0038)."
+
+- id: cmp_smfig1_Io_shipped
+  purpose: reproduction
+  computed: stab_Io_shipped_curve
+  printed: paper_smfig1_boundary_Io
+  note: "Shipped 1D/stabilitydiagram.jl grid (dZ = dOm = 0.2) vs digitized SM Fig. 1 Type I_o dashed boundary (6 points); omits Z = 0 via i > 1."
+
+- id: cmp_smfig1_Io_smfig1_grid
+  purpose: reproduction
+  computed: stab_Io_smfig1_curve
+  printed: paper_smfig1_boundary_Io
+  note: "1D/stabilitydiagram.jl on SM Fig. 1's [0, 30] x [0, 30] window with NPar = 100 (dZ = dOm = 0.3) vs digitized SM Fig. 1 Type I_o dashed boundary (starts at Z = 0.3, matching why the dashed curve stops short of Z = 0)."
+
+# ==============================================================================
+# 2. SM Fig. 3 spike height C_max vs L x 1..32 (1D/PeriodicBoundaries vs 1D/NoFlux)
+# ==============================================================================
+- id: cmp_smfig3_per1d_half_trapz
+  purpose: reproduction
+  computed: per1d_smfig3_half_trapz_C_max
+  printed: paper_smfig3_inset_Cmax
+  note: "Exact 1D/PeriodicBoundaries Fourier pseudo-spectral steady state with InputParameters.jl:6,35,44 half-cell peak centering (X_peak = -dx/2) and trapezoidal normalization on [-L/2, L/2 - dx] (N_bar = Nx/(Nx - 1)): matches all 6 digitized SM Fig. 3 inset heights (0.65272..0.67928) to 0.00001-0.00005."
+
+- id: cmp_smfig3_per1d_node
+  purpose: reproduction
+  computed: per1d_smfig3_node_C_max
+  printed: paper_smfig3_inset_Cmax
+  note: "1D/PeriodicBoundaries Fourier steady state centered on a grid node (X_peak = 0) with exact N_bar = 1: continuum peaks 0.66446..0.69305 lie +0.012 to +0.014 above SM Fig. 3, demonstrating the half-cell sampling offset."
+
+- id: cmp_smfig3_nf1d_half
+  purpose: reproduction
+  computed: nf1d_smfig3_half_C_max
+  printed: paper_smfig3_inset_Cmax
+  note: "1D/NoFlux upwind finite-difference steady state (half-cell symmetric, Delta X = L/1024): O(dx) upwind numerical diffusion depresses C_max to 0.62130..0.66291 and inflates the 2L - 1L jump by 62%, ruling out 1D/NoFlux as the generator of SM Fig. 3."
+
+- id: cmp_smfig3_nf1d_node
+  purpose: reproduction
+  computed: nf1d_smfig3_node_C_max
+  printed: paper_smfig3_inset_Cmax
+  note: "1D/NoFlux upwind finite-difference steady state (node-centered, Delta X = L/1024): overshoots SM Fig. 3 to 0.66042..0.70484 with a 75% too-large 2L - 1L jump, confirming SM Fig. 3 came from 1D/PeriodicBoundaries."
+
+- id: cmp_smfig3_asymptotic_scalar
+  purpose: reproduction
+  computed: per1d_smfig3_L32_half_trapz_C_max
+  printed: paper_C_max_spike_asymptotic
+  note: "1D/PeriodicBoundaries half-cell + trapz spike peak at 32*L (0.67933) directly reproduces SM Fig. 3 caption's printed asymptotic value C_max ~= 0.68."
+
+# ==============================================================================
+# 3. Fig. 1(a), Fig. 3(a), and Fig. 2 LP0 branch (1D/PeriodicBoundaries)
+# ==============================================================================
+- id: cmp_fig1a_per1d_profile
+  purpose: reproduction
+  computed: per1d_fig1a_C_profile
+  printed: paper_fig1a_C
+  note: "Exact 1D/PeriodicBoundaries steady-state LP0 profile (Z = 15, Omega = 6, Nx = 512) vs digitized Fig. 1(a) C(X) (21 points)."
+
+- id: cmp_fig3a_per1d_profile
+  purpose: reproduction
+  computed: per1d_fig3a_C_profile
+  printed: paper_fig3a_C
+  note: "Exact 1D/PeriodicBoundaries steady-state spike profile (Z = 20, Omega = 0, Omega_d0 = 3, Omega_d = 0, Nx = 1024) vs digitized Fig. 3(a) C(X) (19 points)."
+
+- id: cmp_fig2_per1d_lp0_branch
+  purpose: reproduction
+  computed: per1d_fig2_lp0_grad_c_sq
+  printed: paper_fig2_LP0
+  note: "Exact 1D/PeriodicBoundaries steady-state LP0 <(d_X C)^2> sweep across Omega = 6.05..6.65 (Nx = 512) vs digitized Fig. 2 LP0 stable branch (13 points)."
+
+# ==============================================================================
+# 4. Internal code-consistency checks (2D/InputParameters.jl:60-61 TotPrints bug)
+# ==============================================================================
+- id: cmp_2d_totprints_bug_vs_divisor
+  purpose: consistency
+  computed: cfg_TotPrints_2d_buggy
+  printed: code2d_save_divisor
+  note: "Exposes the unit-mismatch bug on 2D/InputParameters.jl:61: TotPrints = floor(FinalTime / PrintEvery) = floor(1e4 / 1e6) = 0, contradicting line 60's intended 100 saved frames (Nt / PrintEvery)."
+
+- id: cmp_2d_totprints_intended_vs_divisor
+  purpose: consistency
+  computed: cfg_TotPrints_2d_intended
+  printed: code2d_save_divisor
+  note: "Confirms that replacing FinalTime with Nt in 2D/InputParameters.jl:61 yields floor(Nt / PrintEvery) = 100 matching line 60's divisor."

@@ -1,0 +1,818 @@
+# Within-record relations explicitly stated by Mietke, Jülicher & Sbalzarini (2019)
+
+- id: rel_sphere_eq26_dimless
+  kind: same_as
+  a: mietke2019/sphere_critical_contractility_eq26
+  b: mietke2019/sphere_critical_contractility_dimless
+  mapping:
+    D_tilde: D * (eta_b / gamma) / (R0 ** 2)
+    k_tilde: k * (eta_b / gamma)
+  output_map:
+    alpha_s_star: alpha_s_star
+  regime:
+    eta_b: [10.0, 2000.0]
+    gamma: [10.0, 500.0]
+    D: [0.1, 20.0]
+    R0: [1.0, 20.0]
+    k: [0.0, 2.0]
+  provenance: stated
+  citation:
+    page: 18
+    printed_page: "SI-12"
+    quote: "characteristic time-scale is given by τ = ηb /γ"
+    where: "Eq. (26) / Table S1"
+  assumptions:
+    - "Nondimensionalization with l_c = R0 and tau = eta_b / gamma"
+
+- id: rel_cylinder_eq27_dimless
+  kind: same_as
+  a: mietke2019/cylinder_critical_contractility_eq27
+  b: mietke2019/cylinder_critical_contractility_dimless
+  mapping:
+    D_tilde: D * (eta_b / gamma) / (r0 ** 2)
+    k_tilde: k * (eta_b / gamma)
+  output_map:
+    alpha_c_star: alpha_c_star
+  regime:
+    eta_b: [10.0, 2000.0]
+    gamma: [10.0, 500.0]
+    D: [0.01, 5.0]
+    r0: [1.0, 20.0]
+    k: [0.0, 2.0]
+  provenance: stated
+  citation:
+    page: 18
+    printed_page: "SI-12"
+    quote: "characteristic time-scale is given by τ = ηb /γ"
+    where: "Eq. (27) / Table S1"
+  assumptions:
+    - "Nondimensionalization with l_c = r0 and tau = eta_b / gamma"
+
+- id: rel_cylinder_jacobian_reduces_to_rayleigh
+  kind: reduces_to
+  a: mietke2019/cylinder_jacobian_eqs80_82
+  b: mietke2019/plateau_rayleigh_growth_rate_eqs83
+  mapping:
+    L_over_2pi_r0: L_over_2pi_r0
+    n_mode: n_mode
+    eta_s_over_eta_b: eta_s_over_eta_b
+  output_map:
+    max_re_lambda_tilde: max_re_lambda_tilde
+  limit:
+    alpha: "0"
+    xi_f0_over_gamma: "0"
+    kappa_tilde: "0"
+  regime:
+    L_over_2pi_r0: [1.1, 3.0]
+    n_mode: [1.0, 1.0]
+    alpha: [0.01, 1.0]
+    xi_f0_over_gamma: [0.01, 1.0]
+    kappa_tilde: [0.001, 0.1]
+    D_tilde: [0.01, 1.0]
+    k_tilde: [0.1, 2.0]
+    eta_s_over_eta_b: [0.2, 5.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "33"
+    quote: "The case α = 0 and κ = 0 exactly represents"
+    where: "text / Eq. (S83)"
+  assumptions:
+    - "Passive surface (xi = 0, hence alpha = 0 and xi*f(c0)/gamma = 0) with zero bending rigidity (kappa = 0)"
+    - "Unstable Plateau-Rayleigh regime L_0 / (2*pi*r0) > 1 so the geometric mode is the dominant eigenvalue"
+
+- id: rel_cyl_stab_reduces_to_eqs84_86
+  kind: reduces_to
+  a: mietke2019/cylinder_stability_boundary_fig3a
+  b: mietke2019/cylinder_trace_det_roots_eqs84_86
+  mapping:
+    alpha: alpha
+    xi_f0_over_gamma: xi_f0_over_gamma
+    D_tilde: D_tilde
+    k_tilde: k_tilde
+    nu_bar: (eta_s_over_eta_b + 1) / (4 * eta_s_over_eta_b)
+    eta_s_over_eta_b: eta_s_over_eta_b
+  output_map:
+    L_crit_over_2pi_r0: L_crit_over_2pi_r0
+  limit:
+    kappa_tilde: "0"
+  regime:
+    alpha: [0.5, 4.5]
+    xi_f0_over_gamma: [0.5, 4.0]
+    kappa_tilde: [0.0001, 0.01]
+    D_tilde: [0.02, 0.2]
+    k_tilde: [0.5, 2.0]
+    eta_s_over_eta_b: [0.5, 2.0]
+  tolerance: 1.0e-3
+  provenance: stated
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "present a brief analytic characterisation of J near the critical contractility"
+    where: "Eqs. (S84)-(S86)"
+  assumptions:
+    - "Zero bending rigidity (kappa -> 0) and corrected viscosity parameter nu_bar = (eta_s + eta_b)/(4*eta_s)"
+
+# ==============================================================================
+# Cross-record relations with bois2011 (Bois, Julicher & Grill, PRL 106:028103,
+# 2011; cited by mietke2019 as ref-14 on pp. 1, 3, 5)
+# ==============================================================================
+
+- id: rel_bois2011_disp_raw_reduces_sphere_polar
+  kind: reduces_to
+  a: bois2011/single_species_dispersion_raw
+  b: mietke2019/sphere_polar_growth_rate_eqs72
+  mapping:
+    D: "D * 10**12"
+    R0: "sqrt(2) * 10**6 / k"
+    k: "0"
+    xi: "zdm0"
+    eta_b: "eta"
+    c0_df_dc0: "c0 * df_dc"
+  output_map:
+    lambda_1: lam
+  limit:
+    gamma: "0"
+  regime:
+    k: [1.0e5, 2.0e6]
+    D: [1.0e-14, 1.0e-12]
+    c0: [0.2, 5.0]
+    zdm0: [10.0, 500.0]
+    df_dc: [0.1, 1.0]
+    gamma: [1.0e12, 1.0e14]
+    eta: [1.0e2, 1.0e4]
+  provenance: proposed
+  reason: >
+    In the zero-substrate-friction limit (gamma -> 0) of Bois Eq. (12)'s raw 1D active-fluid
+    dispersion relation, internal viscosity alone balances active stress gradients to yield
+    lambda(k) = -D*k^2 + (zeta*Delta_mu)_0 * c0 * df/dc / eta. This matches Mietke SI Eq. (S72)'s
+    spherical polar (l = 1) growth rate lambda_1 = -2*D/R0^2 - k + (xi/eta_b)*c0*df/dc at zero
+    turnover (k = 0), spherical Laplace-Beltrami wavenumber k = sqrt(2)/R0, and 2D thin-film
+    thickness cancellation xi/eta_b = (h*(zeta*Delta_mu)_0)/(h*eta) = (zeta*Delta_mu)_0/eta.
+  assumptions:
+    - "Zero external substrate friction (gamma -> 0 in Bois Eq. 12) and conserved stress regulator (k = 0 in Mietke Eq. S72)."
+    - "Spherical l = 1 polar mode wavenumber k = sqrt(l*(l+1))/R0 = sqrt(2)/R0 (zero shear dissipation on a sphere for l = 1, leaving pure bulk viscosity eta_b)."
+    - "Thin-film thickness h cancels in xi/eta_b = (zeta*Delta_mu)_0/eta (mapped at unit reference thickness h = 1 um where 1 Pa * 1 um = 1 pN/um)."
+
+- id: rel_bois2011_sphere_mode_l_reduces_disp_raw
+  kind: reduces_to
+  a: mietke2019/sphere_mode_l_stability_eqs69_71_s70_s71_corrected
+  b: bois2011/single_species_dispersion_raw
+  mapping:
+    k: "sqrt(floor(l + 0.5) * (floor(l + 0.5) + 1)) * 10**6 / R0"
+    D: "D / 10**12"
+    c0: "1"
+    zdm0: "xi"
+    df_dc: "c0_df_dc0"
+    gamma: "0"
+    eta: "eta_b + eta_s * (floor(l + 0.5) - 1) * (floor(l + 0.5) + 2) / (floor(l + 0.5) * (floor(l + 0.5) + 1))"
+  output_map:
+    lam: max_re_lambda
+  limit:
+    gamma: "oo"
+    k: "0"
+  regime:
+    l: [2.0, 10.0]
+    eta_s: [10.0, 50.0]
+    eta_b: [10.0, 50.0]
+    gamma: [0.5, 2.0]
+    xi: [200.0, 1000.0]
+    f_c0: [0.5, 0.5]
+    c0_df_dc0: [0.5, 1.0]
+    kappa: [1.0, 50.0]
+    R0: [4.0, 20.0]
+    D: [0.05, 0.5]
+    k: [0.001, 0.1]
+  provenance: proposed
+  reason: >
+    Mietke et al. (2019) p. 5 contrast their deforming-surface instability with fixed-geometry
+    mechanochemical instabilities (citing Bois 2011 as ref-14). Suppressing radial shape
+    deformations via infinite surface tension (gamma -> oo, driving delta_R_l -> 0) and
+    eliminating regulator turnover (k -> 0) in Mietke's corrected spherical Jacobian Eqs. (S69)-(S71)
+    adiabatically eliminates the fast shape mode J_11 -> -oo and recovers Bois Eq. (12)'s
+    fixed-geometry dispersion relation in the zero-friction limit (gamma_fric = 0) across all
+    integer harmonic degrees l >= 2, with effective 2D compressional viscosity
+    eta_eff(l) = eta_b + eta_s*(l - 1)*(l + 2)/(l*(l + 1)) -> eta_b + eta_s in the flat limit.
+  assumptions:
+    - "Fixed-shape rigid sphere limit (surface tension gamma -> oo so delta_R_l -> 0) and conserved species (turnover k -> 0)."
+    - "Zero substrate friction (gamma = 0) in Bois Eq. (12); thin-film thickness h cancels in xi/eta_eff (mapped at h = 1 um)."
+    - "floor(l + 0.5) matches the integer harmonic degree rounding l = int(round(l)) in sphere_mode_l_stability_eqs69_71_s70_s71_corrected."
+
+- id: rel_bois2011_rda_eq15_approx_sphere_polar
+  kind: approximated_by
+  a: bois2011/single_species_rda_dispersion_eq15
+  b: mietke2019/sphere_polar_growth_rate_eqs72
+  mapping:
+    D: "D * 10**12"
+    R0: "sqrt(2) * 10**6 / k"
+    k: "-dR_dc"
+    xi: "D * Pe / l**2"
+    eta_b: "1"
+    c0_df_dc0: "c0 * df_dc"
+  output_map:
+    lambda_1: lam
+  regime:
+    k: [1.0e6, 3.0e6]
+    D: [1.0e-14, 1.0e-13]
+    dR_dc: [-0.5, -0.05]
+    Pe: [5.0e4, 2.0e5]
+    c0: [0.5, 2.0]
+    df_dc: [0.25, 1.0]
+    l: [2.0e-5, 5.0e-5]
+  tolerance: 0.01
+  provenance: proposed
+  reason: >
+    Bois Eq. (15) generalizes Eq. (12) to include chemical reactions with linear rate dR/dc.
+    Identifying first-order turnover dR/dc = -k < 0 and writing D*Pe/l^2 = (zeta*Delta_mu)_0/eta
+    = xi/eta_b, the viscous-dominated low-friction regime k*ell in [20, 150] satisfies
+    k^2*ell^2/(1 + k^2*ell^2) = 1 - O((k*ell)^-2), so Bois Eq. (15) is approximated within 1%
+    by Mietke Eq. (S72) with nonzero turnover k = -dR/dc at spherical wavenumber k = sqrt(2)/R0.
+  assumptions:
+    - "Viscous-dominated / low-friction regime k*ell >> 1 (here k*ell in [20, 150]) away from the marginal zero crossing."
+    - "First-order linear turnover reaction dR/dc = -k < 0."
+
+- id: rel_bois2011_disp_eq12_approx_cyl_jac
+  kind: approximated_by
+  a: bois2011/single_species_dispersion_eq12
+  b: mietke2019/cylinder_jacobian_eqs80_82
+  mapping:
+    L_over_2pi_r0: "1 / (k * l)"
+    n_mode: "1"
+    alpha: "2 * Pe * c0 * df_dc"
+    xi_f0_over_gamma: "0"
+    kappa_tilde: "100000"
+    D_tilde: "1"
+    k_tilde: "0"
+    eta_s_over_eta_b: "1"
+  output_map:
+    max_re_lambda_tilde: lam_dimless
+  regime:
+    k: [1.2e6, 2.5e6]
+    D: [1.0e-14, 1.0e-12]
+    Pe: [4000.0, 10000.0]
+    c0: [0.5, 2.0]
+    df_dc: [0.5, 1.0]
+    l: [1.0e-5, 1.2e-5]
+  tolerance: 0.015
+  provenance: proposed
+  reason: >
+    In the rigid-cylinder limit (kappa_tilde >> 1, suppressing radial shape deformation delta_r -> 0),
+    Mietke's cylindrical Jacobian Eqs. (S80)-(S82) has slow concentration eigenvalue
+    alpha/(1 + eta_s/eta_b) - D_tilde*k_tilde^2 - k_tilde. At eta_s/eta_b = 1, D_tilde = 1,
+    k_tilde = 0, and k_tilde = k*ell, setting alpha = 2*Pe*c0*df_dc yields -(k*ell)^2 + Pe*c0*df_dc,
+    approximating Bois Eq. (12)'s dimensionless growth rate tau_D*lambda = -(k*ell)^2 +
+    Pe*c0*df_dc*(k*ell)^2/(1 + (k*ell)^2) within 1.5% across the viscous-dominated regime k*ell in [12, 30].
+  assumptions:
+    - "Rigid fixed-shape cylinder (kappa_tilde = 10^5) with zero turnover (k_tilde = 0) and eta_s/eta_b = 1."
+    - "Viscous-dominated supercritical regime k*ell in [12, 30] where finite-friction attenuation 1/(1 + (k*ell)^-2) is below 1%."
+
+- id: rel_bois2011_instab_eq13_reduces_cyl_eq27
+  kind: reduces_to
+  a: bois2011/single_species_instability_eq13
+  b: mietke2019/cylinder_critical_contractility_eq27
+  mapping:
+    eta_b: "1"
+    gamma: "c0 * df_dc"
+    D: "1"
+    r0: "L_over_l / (beta * pi)"
+    k: "0"
+  output_map:
+    alpha_c_star: Pe_crit
+  limit:
+    L_over_l: "0"
+  regime:
+    Pe: [1.0, 20.0]
+    c0: [0.2, 5.0]
+    df_dc: [0.1, 1.0]
+    beta: [1.0, 2.0]
+    L_over_l: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    In the zero-friction limit ell = sqrt(eta/gamma_fric) >> L (i.e. L/ell -> 0), Bois Eq. (13)'s
+    critical Peclet number Pe_crit = (1 + (beta*pi*ell/L)^2)/(c0*df/dc) drops its unit friction term
+    and reduces to (beta*pi*ell/L)^2/(c0*df/dc), equivalently (zeta*Delta_mu)_0*c0*df/dc / eta =
+    D*(beta*pi/L)^2. This matches Mietke Eq. (27)'s cylindrical critical contractility
+    alpha_c^* = (eta_b/gamma)*(D/r0^2 + k) at zero turnover (k = 0), fundamental mode wavenumber
+    1/r0 = beta*pi/L (in units of ell = 1), and gamma = c0*df/dc (converting bare Pe_crit to
+    linearized contractility alpha_c^*).
+  assumptions:
+    - "Vanishing substrate friction limit L/ell -> 0 (ell >> L) on the Bois side and conserved species k = 0 on the Mietke side."
+    - "Fundamental finite-domain wavenumber beta*pi/L matched to cylinder curvature wavenumber 1/r0."
+
+- id: rel_bois2011_hill_boundary_reduces_cyl_eq27
+  kind: reduces_to
+  a: bois2011/single_species_stability_boundary_hill
+  b: mietke2019/cylinder_critical_contractility_eq27
+  mapping:
+    eta_b: "1"
+    gamma: "c0 / (1 + c0)**2"
+    D: "1"
+    r0: "L_over_l / (beta * pi)"
+    k: "0"
+  output_map:
+    alpha_c_star: Pe_crit
+  limit:
+    L_over_l: "0"
+  regime:
+    c0: [0.2, 5.0]
+    beta: [1.0, 2.0]
+    L_over_l: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Mietke et al. (2019) p. 3 explicitly cite Bois et al. (2011) (ref-14) for saturating Hill
+    regulation f(c) = c^m/(c0^m + c^m) (Eq. 12), which generalizes Bois's m = 1 Hill function
+    f(c) = c/(1 + c) with logarithmic slope c0*d_c f(c0) = c0/(1 + c0)^2 (equaling 1/4 at c0 = 1).
+    In the zero-friction limit L/ell -> 0, Bois's Hill stability boundary Pe_crit =
+    (1 + (beta*pi*ell/L)^2)*(1 + c0)^2/c0 reduces identically to Mietke Eq. (27) at k = 0 with
+    Hill sensitivity gamma = c0/(1 + c0)^2 and 1/r0 = beta*pi/L.
+  assumptions:
+    - "m = 1 Hill active-stress regulation f(c) = c/(1 + c) (logarithmic sensitivity c0*f'(c0) = c0/(1 + c0)^2)."
+    - "Zero-friction limit L/ell -> 0 and conserved species (k = 0)."
+
+- id: rel_bois2011_instab_eq13_reduces_contractility_eq25
+  kind: reduces_to
+  a: bois2011/single_species_instability_eq13
+  b: mietke2019/contractility_parameter_eq25
+  mapping:
+    xi_over_gamma: "Pe"
+    c0_df_dc0: "c0 * df_dc"
+  output_map:
+    alpha: stability_ratio
+  limit:
+    L_over_l: "oo"
+  regime:
+    Pe: [1.0, 30.0]
+    c0: [0.2, 5.0]
+    df_dc: [0.1, 1.0]
+    beta: [1.0, 2.0]
+    L_over_l: [1.0, 10.0]
+  provenance: proposed
+  reason: >
+    In the infinite-domain limit L/ell -> oo, Bois Eq. (13)'s finite-domain instability ratio
+    Pe*c0*df/dc / (1 + (beta*pi*ell/L)^2) reduces to the effective linearized active Peclet number
+    Pe_eff = Pe*c0*d_c f(c0), which has the exact constitutive form of Mietke Eq. (25)'s
+    dimensionless contractility parameter alpha = (xi/gamma)*c0*d_c f(c0) under the tension-scale
+    correspondence xi/gamma <-> Pe = (zeta*Delta_mu)_0/(D*gamma_fric).
+  assumptions:
+    - "Infinite-domain limit L/ell -> oo."
+    - "Bare contractility ratio xi/gamma in Mietke maps to active Peclet number Pe in Bois."
+
+# ==============================================================================
+# Cross-record relations with hannezo2015 (Hannezo et al., PNAS 112:8620-8625,
+# 2015; cited by mietke2019 as ref-16 on pp. 1, 2, 5)
+# ==============================================================================
+
+- id: rel_hannezo2015_disp_eq7_reduces_sphere_polar
+  kind: reduces_to
+  a: hannezo2015/dispersion_relation_eq7
+  b: mietke2019/sphere_polar_growth_rate_eqs72
+  mapping:
+    D: "D"
+    R0: "sqrt(2) / q"
+    k: "1 / tau"
+    xi: "sigma_a * 10**6"
+    eta_b: "eta * 10**6"
+    c0_df_dc0: "1"
+  output_map:
+    lambda_1: lam
+  limit:
+    xi: "0"
+  regime:
+    tau: [5.0, 50.0]
+    D: [0.01, 0.5]
+    sigma_a: [1.0e-5, 1.0e-3]
+    xi: [1.0e6, 1.0e8]
+    eta: [1.0e-6, 1.0e-4]
+    q: [0.5, 10.0]
+  provenance: proposed
+  reason: >
+    Both Hannezo et al. (2015) and Mietke et al. (2019) formulate 2D thin-film active-cortex
+    hydrodynamics with first-order regulator turnover (k = 1/tau) and diffusion D; Hannezo includes
+    cortical-substrate friction xi [Pa*s/m] on a fixed cylinder whereas Mietke sets external
+    tangential friction to zero. Taking the zero-friction limit xi -> 0 in Hannezo SI Eq. (7)
+    yields lambda = -1/tau - D*q^2 + sigma_a/eta, identically reproducing Mietke SI Eq. (S72)'s
+    spherical polar growth rate lambda_1 = -k - 2*D/R0^2 + (xi/eta_b)*c0*df/dc with exact 2D-to-2D
+    unit conversions (1 Pa*m = 10^6 pN/um, 1 Pa*s*m = 10^6 pN*s/um), linear active stress
+    (c0*df/dc = 1), and spherical l = 1 wavenumber q = sqrt(2)/R0.
+  assumptions:
+    - "Zero cortical-substrate friction limit (xi -> 0) in Hannezo SI Eq. (7)."
+    - "Linear active stress in Hannezo (c0*d_c f(c0) = 1), turnover rate k = 1/tau, and 2D bulk viscosity eta_b = eta."
+    - "Spherical polar l = 1 Laplace-Beltrami wavenumber q = sqrt(2)/R0."
+
+- id: rel_hannezo2015_cyl_eq27_same_zero_friction
+  kind: same_as
+  a: mietke2019/cylinder_critical_contractility_eq27
+  b: hannezo2015/zero_friction_bifurcation_corrected
+  mapping:
+    phi: "eta_b * k / gamma"
+    alpha: "pi * r0 * sqrt(gamma / (eta_b * D))"
+    i: "1"
+  output_map:
+    chi_i0: alpha_c_star
+  regime:
+    eta_b: [10.0, 2000.0]
+    gamma: [10.0, 500.0]
+    D: [0.01, 5.0]
+    r0: [1.0, 20.0]
+    k: [0.01, 2.0]
+  provenance: proposed
+  reason: >
+    Hannezo SI Section 2.6.6 derives the zero-friction active-gel bifurcation threshold for mode
+    q_i = i*pi/l as chi_i^(0) = phi + i^2*pi^2/alpha^2, i.e. dimensional critical active tension
+    sigma_{a,c} = eta*(D*q_i^2 + 1/tau) normalized by reference tension gamma_ref = xi*D.
+    Mietke Main Eq. (27) gives the cylindrical critical contractility alpha_c^* = (eta_b/gamma)*(D/r0^2 + k),
+    i.e. dimensional threshold alpha_c^* * gamma = eta_b*(D*q^2 + k) evaluated at the cylinder's
+    Plateau-Rayleigh wavenumber q = 1/r0. Under gamma_ref = gamma, eta = eta_b, 1/tau = k, and
+    q_1 = pi/l = 1/r0 (l = pi*r0), the two models are symbolically identical.
+  assumptions:
+    - "Reference tension normalization gamma_ref = xi*D in Hannezo matched to equilibrium surface tension gamma in Mietke."
+    - "Fundamental mode wavenumber q_1 = pi/l matched to cylinder Plateau-Rayleigh curvature wavenumber 1/r0 (l = pi*r0), with eta = eta_b and 1/tau = k."
+
+- id: rel_hannezo2015_sphere_eq26_same_zero_friction
+  kind: same_as
+  a: mietke2019/sphere_critical_contractility_eq26
+  b: hannezo2015/zero_friction_bifurcation_corrected
+  mapping:
+    phi: "eta_b * k / gamma"
+    alpha: "pi * R0 * sqrt(gamma / (2 * eta_b * D))"
+    i: "1"
+  output_map:
+    chi_i0: alpha_s_star
+  regime:
+    eta_b: [10.0, 2000.0]
+    gamma: [10.0, 500.0]
+    D: [0.01, 5.0]
+    R0: [1.0, 20.0]
+    k: [0.01, 2.0]
+  provenance: proposed
+  reason: >
+    Mietke Main Eq. (26) gives the spherical polar (l = 1) mechanochemical instability threshold
+    alpha_s^* = (eta_b/gamma)*(2*D/R0^2 + k), where shear dissipation vanishes identically for l = 1
+    and the Laplace-Beltrami eigenvalue is q_1^2 = 2/R0^2. Matching q_1 = pi/l = sqrt(2)/R0
+    (l = pi*R0/sqrt(2)), eta = eta_b, 1/tau = k, and reference tension gamma_ref = gamma makes
+    Mietke Eq. (26) symbolically identical to Hannezo's zero-friction bifurcation threshold chi_1^(0),
+    joining sphere_critical_contractility_eq26, cylinder_critical_contractility_eq27, and
+    hannezo2015/zero_friction_bifurcation_corrected in one ModelAtlas family.
+  assumptions:
+    - "Reference tension normalization gamma_ref = xi*D in Hannezo matched to equilibrium surface tension gamma in Mietke."
+    - "Fundamental mode wavenumber q_1 = pi/l matched to spherical polar l = 1 wavenumber sqrt(2)/R0 (l = pi*R0/sqrt(2)), with eta = eta_b and 1/tau = k."
+
+- id: rel_hannezo2015_finite_thresh_reduces_cyl_eq27
+  kind: reduces_to
+  a: hannezo2015/finite_domain_bifurcation_threshold
+  b: mietke2019/cylinder_critical_contractility_eq27
+  mapping:
+    eta_b: "1"
+    gamma: "1"
+    D: "1"
+    r0: "alpha / (i * pi)"
+    k: "phi"
+  output_map:
+    alpha_c_star: chi_i0
+  limit:
+    alpha: "0"
+  regime:
+    alpha: [0.5, 5.0]
+    phi: [0.1, 10.0]
+    i: [1.0, 5.0]
+  provenance: proposed
+  reason: >
+    Hannezo's finite-domain mode-i bifurcation threshold factors identically as
+    chi_i^(0) = (1 + alpha^2/(i*pi)^2)*(phi + (i*pi/alpha)^2). In the zero-friction limit
+    alpha = l/l_h -> 0 (l_h = sqrt(eta/xi) >> l), the friction prefactor 1 + (q_i*l_h)^-2 -> 1
+    and chi_i^(0) reduces identically to Mietke Eq. (27)'s alpha_c^* = D/r0^2 + k with
+    r0 = alpha/(i*pi) and k = phi (in dimensionless tension/viscosity units).
+  assumptions:
+    - "Zero-friction limit alpha = l/l_h -> 0 on a finite domain of length l."
+    - "Mode wavenumber i*pi/alpha matched to 1/r0 and turnover parameter phi matched to k."
+
+- id: rel_hannezo2015_dimless_crit_eq10_reduces_cyl_dimless
+  kind: reduces_to
+  a: hannezo2015/dimensionless_critical_contractility_eq10
+  b: mietke2019/cylinder_critical_contractility_dimless
+  mapping:
+    D_tilde: "0"
+    k_tilde: "phi"
+  output_map:
+    alpha_c_star: chi_c
+  limit:
+    phi: "oo"
+  regime:
+    phi: [1.0e4, 1.0e6]
+  provenance: proposed
+  reason: >
+    In Hannezo SI Eq. (10), chi_c^(0) = (1 + sqrt(phi))^2 with dimensionless turnover
+    phi = eta/(D*tau*xi). As substrate friction vanishes (xi -> 0, hence phi -> oo), the critical
+    wavenumber q_c = (xi/(eta*D*tau))^(1/4) -> 0 so diffusion drops out and chi_c^(0) ~ phi =
+    eta/(xi*D*tau). This matches Mietke's dimensionless cylindrical threshold
+    alpha_c^* = D_tilde + k_tilde in the infinite-radius flat limit (r0 -> oo, D_tilde = D*tau_vc/r0^2 = 0)
+    with k_tilde = phi under tension normalization gamma = xi*D.
+  assumptions:
+    - "Zero substrate friction limit phi = eta/(D*tau*xi) -> oo in Hannezo Eq. (10) (where q_c -> 0)."
+    - "Infinite-radius flat limit r0 -> oo (D_tilde = 0) in Mietke cylinder_critical_contractility_dimless."
+
+- id: rel_hannezo2015_disp_dimless_approx_cyl_jac
+  kind: approximated_by
+  a: hannezo2015/dispersion_relation_dimless_eq8
+  b: mietke2019/cylinder_jacobian_eqs80_82
+  mapping:
+    L_over_2pi_r0: "1 / q_hat"
+    n_mode: "1"
+    alpha: "2 * chi"
+    xi_f0_over_gamma: "0"
+    kappa_tilde: "100000"
+    D_tilde: "1"
+    k_tilde: "phi"
+    eta_s_over_eta_b: "1"
+  output_map:
+    max_re_lambda_tilde: lam_hat
+  regime:
+    q_hat: [12.0, 25.0]
+    chi: [2000.0, 5000.0]
+    phi: [1.0, 50.0]
+  tolerance: 0.015
+  provenance: proposed
+  reason: >
+    In the viscous-dominated low-friction regime q_hat = q*l_h >> 1 (here q_hat in [12, 25]),
+    Hannezo's dimensionless cylindrical dispersion relation Eq. (8)
+    lam_hat = -phi - q_hat^2 + chi*q_hat^2/(1 + q_hat^2) approaches -phi - q_hat^2 + chi.
+    This is approximated within 1.5% by Mietke's rigid-cylinder (kappa_tilde = 10^5, delta_r -> 0)
+    Jacobian Eqs. (S80)-(S82) at eta_s/eta_b = 1, D_tilde = 1, k_tilde = phi, and alpha = 2*chi
+    (accounting for longitudinal 2D viscosity eta_s + eta_b = 2*eta_b).
+  assumptions:
+    - "Rigid fixed-shape cylinder (kappa_tilde = 10^5) with eta_s/eta_b = 1 and alpha = 2*chi."
+    - "Viscous-dominated supercritical regime q_hat in [12, 25] where friction attenuation 1/(1 + q_hat^-2) is below 1%."
+
+# ==============================================================================
+# Cross-record relations with gov2018 (Gov, Phil. Trans. R. Soc. B 373:20170115,
+# 2018; shared Helfrich membrane bending and cylindrical tube mechanics)
+# ==============================================================================
+
+- id: rel_gov2018_sphere_mode_l_reduces_flat_disp
+  kind: reduces_to
+  a: mietke2019/sphere_mode_l_stability_eqs69_71_s70_s71_corrected
+  b: gov2018/flat_membrane_dispersion
+  mapping:
+    q: "sqrt(floor(l + 0.5) * (floor(l + 0.5) + 1)) / R0"
+    kappa: "2 * kappa"
+    sigma: "gamma"
+    kBT: "0.00411"
+    Lambda: "D / 0.00411"
+    H0: "0"
+    ns: "100"
+    n0: "0.1"
+    J: "0"
+    xi: "4 * eta_s / R0**2"
+    A: "0"
+  output_map:
+    omega_real: max_re_lambda
+  limit:
+    xi: "0"
+    k: "0"
+    eta_b: "oo"
+  regime:
+    l: [2.0, 12.0]
+    eta_s: [10.0, 100.0]
+    eta_b: [100.0, 1000.0]
+    gamma: [10.0, 200.0]
+    xi: [0.1, 10.0]
+    f_c0: [0.5, 0.5]
+    c0_df_dc0: [0.25, 1.0]
+    kappa: [1.0, 50.0]
+    R0: [2.0, 10.0]
+    D: [0.05, 5.0]
+    k: [0.001, 0.1]
+  provenance: proposed
+  reason: >
+    In the passive (xi -> 0), conserved (k -> 0), and 2D-incompressible (eta_b -> oo) limit of
+    Mietke's corrected spherical stability model Eqs. (S69)-(S71), the two eigenvalues decouple
+    into Helfrich shape relaxation J_11 -> -(gamma*q^2 + 2*kappa*q^4)/(4*eta_s/R0^2) and Fickian
+    surface diffusion J_22 -> -D*q^2 with q = sqrt(l*(l+1))/R0 for every harmonic degree l >= 2.
+    Both branches match Gov's passive flat Helfrich membrane dispersion (A = H0 = J = 0)
+    identically under exact physical units: kappa_Gov = 2*kappa_Mietke (reflecting Mietke Eq. 5's
+    kappa*(C_k^k)^2 vs Gov Eq. 2.1's (1/2)*kappa*H^2, independently corroborating
+    q_eqs70_bending_factor_two), sigma = gamma, Einstein mobility Lambda = D/(k_B*T), and
+    effective normal viscous drag xi_Gov = 4*eta_s/R0^2 [pN*s/um^3].
+  assumptions:
+    - "Passive (xi -> 0), conserved (k -> 0), 2D-incompressible (eta_b -> oo) spherical surface on Mietke's corrected Eq. (S70)+(S71) model."
+    - "Passive bare membrane (A = 0, H0 = 0, J = 0) in Gov with Helfrich modulus convention kappa_Gov = 2*kappa_Mietke and effective normal drag xi_Gov = 4*eta_s/R0^2."
+    - "Einstein relation D = Lambda*k_B*T (k_B*T = 0.00411 pN*um cancels identically)."
+
+- id: rel_gov2018_cyl_bending_scales_flat_disp
+  kind: scales_as
+  a: mietke2019/cylinder_bending_factor_eqs79
+  b: gov2018/flat_membrane_dispersion
+  mapping:
+    q: "k_n"
+    kappa: "0.08"
+    sigma: "0"
+    kBT: "0.00411"
+    Lambda: "1000000"
+    H0: "0"
+    ns: "100"
+    n0: "0.1"
+    J: "0"
+    xi: "1000000"
+    A: "0"
+  output_map:
+    omega_real: B_c
+  regime:
+    k_n: [10.0, 50.0]
+    r0: [5.0, 20.0]
+  provenance: proposed
+  reason: >
+    In the short-wavelength flat-sheet regime k_n*r0 >> 1 (here k_n*r0 in [50, 1000]), Mietke's
+    Ou-Yang-Helfrich cylindrical bending response factor B_c(k_n*r0) = 2*k_n^4 - k_n^2/r0^2 + 3/r0^4
+    (Eq. S79) approaches 2*k_n^4, sharing the exact fourth-power Helfrich bending scaling q^4 with
+    Gov's tensionless passive flat-membrane shape relaxation rate omega_h = -(kappa/xi)*q^4.
+  assumptions:
+    - "Short-wavelength flat-sheet regime k_n*r0 >> 1 (k_n*r0 in [50, 1000])."
+    - "Tensionless passive bare membrane (sigma = A = H0 = J = 0) in Gov with fast diffusion so omega_real selects the bending shape branch."
+
+- id: rel_gov2018_cyl_bending_scales_cyl_ring_short
+  kind: scales_as
+  a: mietke2019/cylinder_bending_factor_eqs79
+  b: gov2018/cylindrical_ring_dispersion
+  mapping:
+    q: "k_n"
+    R0: "r0"
+    kappa: "0.08"
+    kBT: "0.00411"
+    Lambda: "1000000"
+    H0: "0"
+    ns: "100"
+    n0: "0.1"
+    xi: "1000000"
+    A: "0"
+  output_map:
+    omega_real: B_c
+  regime:
+    k_n: [10.0, 50.0]
+    r0: [5.0, 20.0]
+  provenance: proposed
+  reason: >
+    In the short-wavelength regime k_n*r0 >> 1, Mietke's exact cylindrical bending factor
+    B_c(k_n*r0) = 2*k_n^4 - k_n^2/r0^2 + 3/r0^4 (Eq. S79) and Gov's passive cylindrical tube
+    shape relaxation rate omega_h = -(kappa/(xi*R0^4))*(1 + q^2*R0^2 + q^4*R0^4) share identical
+    log-slopes in both axial wavenumber (+4 in k_n = q) and tube radius (0 in r0 = R0).
+  assumptions:
+    - "Short-wavelength regime k_n*r0 in [50, 1000]."
+    - "Passive bare cylindrical membrane (A = 0, H0 = 0) in Gov with fast diffusion so omega_real selects the Helfrich bending mode."
+
+- id: rel_gov2018_cyl_bending_scales_cyl_ring_long
+  kind: scales_as
+  a: mietke2019/cylinder_bending_factor_eqs79
+  b: gov2018/cylindrical_ring_dispersion
+  mapping:
+    q: "k_n"
+    R0: "r0"
+    kappa: "0.08"
+    kBT: "0.00411"
+    Lambda: "1000000"
+    H0: "0"
+    ns: "100"
+    n0: "0.1"
+    xi: "1000000"
+    A: "0"
+  output_map:
+    omega_real: B_c
+  regime:
+    k_n: [0.001, 0.005]
+    r0: [1.0, 5.0]
+  provenance: proposed
+  reason: >
+    In the long-wavelength radial-breathing regime k_n*r0 << 1 (here k_n*r0 in [0.001, 0.025]),
+    both Mietke's cylindrical bending factor B_c(k_n*r0) ~ 3/r0^4 and Gov's passive cylindrical
+    tube bending relaxation rate omega_h ~ -kappa/(xi*R0^4) scale as r0^(-4) and k_n^0, matching
+    log-slopes in both r0 = R0 (-4) and k_n = q (0). (At intermediate k_n*r0 ~ 1, the two differ
+    by Gov's +q^2*R0^2 term; see q_gov2018_helfrich_convention_and_cylinder_variation.)
+  assumptions:
+    - "Long-wavelength regime k_n*r0 in [0.001, 0.025]."
+    - "Passive bare cylindrical membrane (A = 0, H0 = 0) in Gov with fast diffusion so omega_real selects the radial bending mode."
+
+# ==============================================================================
+# Cross-record relations with mirza2025 (Mirza et al., eLife 14:RP93097, 2025;
+# isotropic zero-friction limit of 2D active nematic cortex)
+# ==============================================================================
+
+- id: rel_mirza2025_iso_dimless_reduces_cyl_dimless
+  kind: reduces_to
+  a: mirza2025/isotropic_threshold_dimless
+  b: mietke2019/cylinder_critical_contractility_dimless
+  mapping:
+    D_tilde: "0"
+    k_tilde: "4 * k_d"
+  output_map:
+    alpha_c_star: lambda_crit_0
+  limit:
+    k_d: "oo"
+  regime:
+    k_d: [1.0e4, 1.0e6]
+  provenance: proposed
+  reason: >
+    In Mirza et al. (2025), the dimensionless turnover parameter is k_bar_d = k_d*eta/(gamma*D),
+    so vanishing cortical-substrate friction (gamma -> 0) corresponds to k_bar_d -> oo. In this
+    limit, the isotropic active-gel instability threshold lambda_crit_0 = (1 + 2*sqrt(k_bar_d))^2
+    approaches 4*k_bar_d = 4*eta*k_d/(gamma*D) (while the critical wavenumber nu_crit_0 -> 0 in
+    physical units). This matches Mietke's flat-limit (r0 -> oo, D_tilde = 0) critical contractility
+    alpha_c^* = k_tilde = eta_eff*k/gamma_ref, where the exact factor of 4 reflects Mirza's 2D
+    compressible viscous stress 2*eta*(d + tr(d)*I) -> 4*eta*d_x v in 1D (equivalent to Mietke Eq. 9
+    with eta_s = h*eta and eta_b = 3*h*eta, so eta_s + eta_b = 4*h*eta).
+  assumptions:
+    - "Zero substrate friction limit k_bar_d = k_d*eta/(gamma*D) -> oo on Mirza's isotropic branch."
+    - "Infinite-radius flat limit r0 -> oo (D_tilde = 0) on Mietke's cylindrical threshold, with effective 1D viscosity 4*eta and tension normalization gamma_ref = gamma*D*h."
+
+- id: rel_mirza2025_caseA_L0_approx_cyl_dimless
+  kind: approximated_by
+  a: mirza2025/caseA_critical_L0_eqC13
+  b: mietke2019/cylinder_critical_contractility_dimless
+  mapping:
+    D_tilde: "0"
+    k_tilde: "4 * k_d"
+  output_map:
+    alpha_c_star: lambda_crit
+  regime:
+    k_d: [1.0e4, 1.0e5]
+    c_0: [5.0, 20.0]
+    beta: [-0.5, -0.05]
+    kappa: [-1.0e-7, 1.0e-7]
+  tolerance: 0.015
+  provenance: proposed
+  reason: >
+    In Mirza's full nematic Case A (L = 0) critical threshold Eq. (C13), the dimensionless product
+    k_bar_d*delta = k_d*kappa*beta/(2*c_0) is strictly independent of substrate friction gamma, so
+    the isotropic (kappa -> 0) and zero-friction (k_bar_d -> oo) limits do not commute (see
+    q_mirza2025_viscosity_and_noncommuting_zero_friction_limit). In the joint low-friction
+    (k_bar_d in [10^4, 10^5]) and weak-nematic-coupling (|k_bar_d*delta| << 1) regime, Case A
+    Eq. (C13) is approximated within 1.5% by Mietke's flat-limit isotropic threshold 4*k_bar_d.
+  assumptions:
+    - "Low-friction regime k_bar_d in [10^4, 10^5] and weak nematic coupling |k_bar_d*delta| = |k_d*kappa*beta/(2*c_0)| << 1."
+    - "Flat limit r0 -> oo (D_tilde = 0) on Mietke with 1D longitudinal viscosity 4*eta."
+
+- id: rel_mirza2025_disp_1d_approx_cyl_jac
+  kind: approximated_by
+  a: mirza2025/dispersion_1d_eqC7
+  b: mietke2019/cylinder_jacobian_eqs80_82
+  mapping:
+    L_over_2pi_r0: "1 / nu"
+    n_mode: "1"
+    alpha: "lam"
+    xi_f0_over_gamma: "0"
+    kappa_tilde: "100000"
+    D_tilde: "1"
+    k_tilde: "k_d"
+    eta_s_over_eta_b: "3"
+  output_map:
+    max_re_lambda_tilde: alpha_plus
+  regime:
+    nu: [6.0, 15.0]
+    k_d: [1.0, 20.0]
+    L: [1.0, 2.0]
+    c_0: [500.0, 1000.0]
+    b: [20.0, 20.0]
+    eta_rot: [0.5, 1.0]
+    beta: [0.0, 0.0]
+    lambda_o: [6.0, 6.0]
+    kappa: [0.0, 0.0]
+    lam: [2500.0, 5000.0]
+    q_0: [0.0, 0.0]
+  tolerance: 0.015
+  provenance: proposed
+  reason: >
+    In the decoupled isotropic limit (kappa = beta = q_0 = 0, fast nematic relaxation c_0 >> 1),
+    Mirza Eq. (C7)'s hydrodynamic density branch simplifies to alpha_plus = -k_d - nu^2 +
+    lam*nu^2/(1 + 4*nu^2). In the viscous-dominated regime 4*nu^2 >> 1 (here nu in [6, 15],
+    4*nu^2 in [144, 900]), this approaches -k_d - nu^2 + lam/4, matching within 1.5% Mietke's
+    rigid-cylinder (kappa_tilde = 10^5, delta_r -> 0) Jacobian Eqs. (S80)-(S82) with D_tilde = 1,
+    k_tilde = k_d, k_tilde_n = nu, alpha = lam, and 1 + eta_s/eta_b = 4 (reflecting Mirza's 4*eta
+    longitudinal viscosity in timescale t_0 = eta/(gamma*D)).
+  assumptions:
+    - "Decoupled isotropic state (kappa = beta = q_0 = 0) with fast nematic relaxation (c_0 in [500, 1000]) so alpha_plus selects the density branch."
+    - "Viscous-dominated supercritical regime nu in [6, 15] and rigid fixed cylinder (kappa_tilde = 10^5) with 1 + eta_s/eta_b = 4."
+
+- id: rel_mirza2025_iso_dim_scales_cyl_eq27
+  kind: scales_as
+  a: mirza2025/isotropic_threshold_dimensional_eq9
+  b: mietke2019/cylinder_critical_contractility_eq27
+  mapping:
+    eta_b: "4 * eta"
+    gamma: "100"
+    D: "D"
+    r0: "1000"
+    k: "k_d"
+  output_map:
+    alpha_c_star: lambda_crit_0
+  regime:
+    gamma: [1.0e10, 1.0e12]
+    D: [0.01, 0.1]
+    k_d: [0.1, 2.0]
+    eta: [1.0e3, 1.0e5]
+  provenance: proposed
+  reason: >
+    In the low-friction turnover-dominated regime of Mirza Eq. (9) (gamma*D << 4*k_d*eta) and
+    the large-radius flat regime of Mietke Eq. (27) (D/r0^2 << k_d), both critical active-stress
+    thresholds collapse onto the universal viscous-turnover law sigma_{a,c} ~ eta*k_d, matching
+    log-slopes in all three shared parameters D (0), eta (+1), and k_d (+1).
+  assumptions:
+    - "Low-friction regime gamma*D << 4*k_d*eta on the Mirza side and large-radius flat regime r0 = 1000 um >> sqrt(D/k_d) on the Mietke side."
+

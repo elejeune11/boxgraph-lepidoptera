@@ -1,0 +1,35 @@
+id: code_stability_point_1d
+name: "Exact pointwise port of 1D/stabilitydiagram.jl linear stability matrix M(K) on discrete periodic modes K_p = p*(2*pi/L) (1D/stabilitydiagram.jl:43-126)"
+role: model
+stated:
+  file: 1D/stabilitydiagram.jl
+  lines: "55-126"
+  quote: "function StabilityMatrixElement(i, j, Pars, C_HSS, Nm_HSS, K)"
+  where: "1D/stabilitydiagram.jl:43-126 (EqnHSS, StabilityMatrixElement, discrete K_p = p*Kmin, p = 1..Nk)"
+equation: "EqnHSS(Na) = -(Omega_d*A/Kd)*Na^2 + Omega0*(1 - Na)*(1 + Omega*Na^2) = 0; K_p = p*(2*pi/L) for p = 1..floor((pi/dx - Kmin)/Kmin); StabilityMatrix M(K_p) per lines 56-82 (Omega_d0 = 0 hardcoded); MaxEigenv = max_{p=1..Nk+1} Re(eigvals(M)) with uninitialized column Nk+1 = 0"
+inputs:
+  A: {quantity: dimless_assembly_rate, unit: dimensionless}
+  Kd: {quantity: dimless_disassembly_rate, unit: dimensionless}
+  Dc: {quantity: dimless_diffusivity_c, unit: dimensionless}
+  Dap: {quantity: dimless_diffusivity_sum, unit: dimensionless}
+  Dam: {quantity: dimless_diffusivity_diff, unit: dimensionless}
+  Omega0: {quantity: dimless_basal_activation_rate, unit: dimensionless}
+  Omega_d: {quantity: dimless_actin_inactivation, unit: dimensionless}
+  Z: {quantity: dimless_active_stress_coeff, unit: dimensionless}
+  Omega: {quantity: dimless_cooperative_activation, unit: dimensionless}
+  L: {quantity: dimless_system_size, unit: dimensionless}
+  Nx: {quantity: grid_point_count, unit: dimensionless}
+outputs:
+  Na_HSS: {quantity: dimless_active_nucleator_density, unit: dimensionless}
+  C_HSS: {quantity: dimless_actomyosin_density, unit: dimensionless}
+  MaxEigenvRe: {quantity: dimless_growth_rate, unit: dimensionless}
+  MaxEigenvIm: {quantity: dimless_oscillation_frequency, unit: dimensionless}
+  K_dominant: {quantity: dimless_wavenumber, unit: dimensionless}
+  regime_code: {quantity: stability_regime_code, unit: dimensionless}
+  Omega_crit_discrete: {quantity: dimless_cooperative_activation, unit: dimensionless}
+  K_crit_discrete: {quantity: dimless_wavenumber, unit: dimensionless}
+settings:
+  include_uninit_col: true
+  omega_max_bisect: 40.0
+  bisect_iters: 50
+stochastic: false

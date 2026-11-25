@@ -1,0 +1,1401 @@
+# ==========================================================================
+# Decoupled ground states, cross-diffusivities, and effective one-mode rates
+# ==========================================================================
+
+- id: run_ground_state_B
+  model: decoupled_ground_state
+  inputs:
+    chi_mu: chi_B_0005
+  outputs:
+    phi_g: phi_g_B_pred
+
+- id: run_ground_state_A
+  model: decoupled_ground_state
+  inputs:
+    chi_mu: chi_A_m005
+  outputs:
+    phi_g: phi_g_A_pred
+
+- id: run_cross_diff_dk1
+  model: cross_diffusivity_parametrization
+  inputs:
+    kappa: kappa_0005
+    delta: delta_0005
+  outputs:
+    kappa_AB: kappa_AB_dk1_pred
+    kappa_BA: kappa_BA_dk1_pred
+
+- id: run_cross_diff_dk2
+  model: cross_diffusivity_parametrization
+  inputs:
+    kappa: kappa_0005
+    delta: delta_0010
+  outputs:
+    kappa_AB: kappa_AB_dk2_pred
+    kappa_BA: kappa_BA_dk2_pred
+
+- id: run_eff_params_main
+  model: one_mode_effective_params
+  inputs:
+    chi_A: chi_A_m005
+    gamma_A: gamma_A_004
+    phi0_A: phi0_A_zero
+    chi_B: chi_B_0005
+    gamma_B: gamma_B_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+
+- id: run_eff_params_figS2
+  model: one_mode_effective_params
+  inputs:
+    chi_A: chi_A_m006
+    gamma_A: gamma_A_004
+    phi0_A: phi0_A_zero
+    chi_B: chi_B_0005
+    gamma_B: gamma_B_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    alpha_A: alpha_A_figS2_pred
+    alpha_B: alpha_B_figS2_pred
+
+- id: run_eff_params_bisup
+  model: one_mode_effective_params
+  inputs:
+    chi_A: chi_A_m005
+    gamma_A: gamma_A_004
+    phi0_A: phi0_A_zero
+    chi_B: chi_B_m005_bisup
+    gamma_B: gamma_B_004_bisup
+    phi0_B: phi0_B_zero
+  outputs:
+    alpha_A: alpha_A_bisup_pred
+    alpha_B: alpha_B_bisup_pred
+
+# ==========================================================================
+# One-mode analytical fixed points F_S and F_T (Eqs. 5-7, Figs. 2, 3C)
+# ==========================================================================
+
+- id: run_static_fp_dk0
+  model: one_mode_static_fp
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_0
+  outputs:
+    rho_A_s: rho_A_s_dk0_pred
+    rho_B_s: rho_B_s_dk0_pred
+    theta_s: theta_s_dk0_pred
+    amp_ratio_s: amp_ratio_s_dk0_pred
+    v_s: v_s_dk0_pred
+
+- id: run_static_fp_dk1
+  model: one_mode_static_fp
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_0005
+  outputs:
+    rho_A_s: rho_A_s_dk1_pred
+    rho_B_s: rho_B_s_dk1_pred
+    theta_s: theta_s_dk1_pred
+    amp_ratio_s: amp_ratio_s_dk1_pred
+    v_s: v_s_dk1_pred
+
+- id: run_static_fp_dk1p5
+  model: one_mode_static_fp
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_00075
+  outputs:
+    rho_A_s: rho_A_s_dk1p5_pred
+    rho_B_s: rho_B_s_dk1p5_pred
+    theta_s: theta_s_dk1p5_pred
+    amp_ratio_s: amp_ratio_s_dk1p5_pred
+    v_s: v_s_dk1p5_pred
+
+- id: run_traveling_fp_dk1p5
+  model: one_mode_traveling_fp
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_00075
+  outputs:
+    delta_c: delta_c_main_pred
+    delta_c_over_kappa: dc_over_k_main_pred
+    v: v_t_dk1p5_pred
+    rho_A_t: rho_A_t_dk1p5_pred
+    rho_B_t: rho_B_t_dk1p5_pred
+    theta_t: theta_t_dk1p5_pred
+    psi_t: psi_t_dk1p5_pred
+    amp_ratio_t: amp_ratio_t_dk1p5_pred
+
+- id: run_traveling_fp_dk2
+  model: one_mode_traveling_fp
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_0010
+  outputs:
+    delta_c: delta_c_dk2_pred
+    delta_c_over_kappa: dc_over_k_dk2_pred
+    v: v_t_dk2_pred
+    rho_A_t: rho_A_t_dk2_pred
+    rho_B_t: rho_B_t_dk2_pred
+    theta_t: theta_t_dk2_pred
+    psi_t: psi_t_dk2_pred
+    amp_ratio_t: amp_ratio_t_dk2_pred
+
+- id: run_traveling_fp_dk3
+  model: one_mode_traveling_fp
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_0015
+  outputs:
+    delta_c: delta_c_dk3_pred
+    delta_c_over_kappa: dc_over_k_dk3_pred
+    v: v_t_dk3_pred
+    rho_A_t: rho_A_t_dk3_pred
+    rho_B_t: rho_B_t_dk3_pred
+    theta_t: theta_t_dk3_pred
+    psi_t: psi_t_dk3_pred
+    amp_ratio_t: amp_ratio_t_dk3_pred
+
+# ==========================================================================
+# Linear stability of F_H, phase boundaries, run-and-catch, and EP (Eqs. 8-11, S12-S30)
+# ==========================================================================
+
+- id: run_phase_bdy_dk0
+  model: one_mode_phase_boundaries
+  inputs:
+    gamma_A: gamma_A_004
+    phi0_A: phi0_A_zero
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_0
+  outputs:
+    abs_chi_A_diff: abs_chi_A_diff_dk0_pred
+    abs_chi_A_osc: abs_chi_A_osc_pred
+    delta_c_over_kappa: dc_over_k_bdy_pred
+
+- id: run_fh_eig_figS2_dk0
+  model: one_mode_homogeneous_eigenvalues
+  inputs:
+    alpha_A: alpha_A_figS2_pred
+    alpha_B: alpha_B_figS2_pred
+    kappa: kappa_0005
+    delta: delta_0
+  outputs:
+    re_lambda_plus: re_lam_p_figS2_dk0_pred
+    re_lambda_minus: re_lam_m_figS2_dk0_pred
+    im_lambda_plus: im_lam_p_figS2_dk0_pred
+    delta_complex_over_kappa: delta_ep_h_figS2_pred
+
+- id: run_fh_eig_figS2_dk4
+  model: one_mode_homogeneous_eigenvalues
+  inputs:
+    alpha_A: alpha_A_figS2_pred
+    alpha_B: alpha_B_figS2_pred
+    kappa: kappa_0005
+    delta: delta_0020
+  outputs:
+    re_lambda_plus: re_lam_p_figS2_dk4_pred
+    re_lambda_minus: re_lam_m_figS2_dk4_pred
+    im_lambda_plus: im_lam_p_figS2_dk4_pred
+    delta_complex_over_kappa: delta_ep_h_figS2_dk4_pred
+
+- id: run_vratio_at_dc
+  model: velocity_ratio_run_and_catch
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_c_main_pred
+    rho_A: rho_A_s_dk1_pred
+    rho_B: rho_B_s_dk1_pred
+  outputs:
+    v_ratio_general: v_ratio_gen_dc_dummy
+    v_ratio_fs: v_ratio_fs_dc_pred
+    psi_growth_rate_near_dc: psi_rate_dc_pred
+    sum_phase_slope_near_dc: phi_slope_dc_pred
+
+- id: run_vratio_fs_dk1p5
+  model: velocity_ratio_run_and_catch
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_00075
+    rho_A: rho_A_s_dk1p5_pred
+    rho_B: rho_B_s_dk1p5_pred
+  outputs:
+    v_ratio_general: v_ratio_gen_fs_dk1p5_pred
+    v_ratio_fs: v_ratio_fs_dk1p5_pred
+    psi_growth_rate_near_dc: psi_rate_dk1p5_pred
+    sum_phase_slope_near_dc: phi_slope_dk1p5_pred
+
+- id: run_vratio_ft_dk1p5
+  model: velocity_ratio_run_and_catch
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_00075
+    rho_A: rho_A_t_dk1p5_pred
+    rho_B: rho_B_t_dk1p5_pred
+  outputs:
+    v_ratio_general: v_ratio_ft_dk1p5_pred
+    v_ratio_fs: v_ratio_fs_from_ft_dk1p5
+    psi_growth_rate_near_dc: psi_rate_ft_dk1p5
+    sum_phase_slope_near_dc: phi_slope_ft_dk1p5
+
+- id: run_vratio_fs_dk3
+  model: velocity_ratio_run_and_catch
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_0015
+    rho_A: rho_A_t_dk3_pred
+    rho_B: rho_B_t_dk3_pred
+  outputs:
+    v_ratio_general: v_ratio_ft_dk3_pred
+    v_ratio_fs: v_ratio_fs_dk3_pred
+    psi_growth_rate_near_dc: psi_rate_dk3_pred
+    sum_phase_slope_near_dc: phi_slope_dk3_pred
+
+- id: run_fs_stab_at_dc
+  model: static_fp_stability_eqS14_S16
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_c_main_pred
+  outputs:
+    re_lambda_s_plus: re_lam_s_p_dc_pred
+    re_lambda_s_minus: re_lam_s_m_dc_pred
+    lambda_theta_s: lam_theta_dc_pred
+
+- id: run_ep_L_0
+  model: exceptional_point_matrix_L
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta_over_dc: delta_over_dc_0
+  outputs:
+    det_Ds: det_Ds_0_pred
+    lambda_1_plus: lambda1_p_0_pred
+    lambda_1_minus: lambda1_m_0_pred
+    u1_plus_1: u1_p_1_0_pred
+    u1_minus_1: u1_m_1_0_pred
+    u1_plus_3: u1_p_3_0_pred
+    u1_minus_3: u1_m_3_0_pred
+
+- id: run_ep_L_1
+  model: exceptional_point_matrix_L
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta_over_dc: delta_over_dc_1
+  outputs:
+    det_Ds: det_Ds_1_pred
+    lambda_1_plus: lambda1_p_1_pred
+    lambda_1_minus: lambda1_m_1_pred
+    u1_plus_1: u1_p_1_1_pred
+    u1_minus_1: u1_m_1_1_pred
+    u1_plus_3: u1_p_3_1_pred
+    u1_minus_3: u1_m_3_1_pred
+
+- id: run_ep_L_2
+  model: exceptional_point_matrix_L
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta_over_dc: delta_over_dc_2
+  outputs:
+    det_Ds: det_Ds_2_pred
+    lambda_1_plus: lambda1_p_2_pred
+    lambda_1_minus: lambda1_m_2_pred
+    u1_plus_1: u1_p_1_2_pred
+    u1_minus_1: u1_m_1_2_pred
+    u1_plus_3: u1_p_3_2_pred
+    u1_minus_3: u1_m_3_2_pred
+
+# ==========================================================================
+# One-mode ODE integration (Eqs. 4a-4d, Fig. 3C)
+# ==========================================================================
+
+- id: run_ode_dk1p5
+  model: one_mode_ode_1d
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_00075
+    psi_probe: psi_mid_fig3c_added
+  outputs:
+    rho_A_final: rho_A_ode_dk1p5_pred
+    rho_B_final: rho_B_ode_dk1p5_pred
+    v_final: v_ode_dk1p5_pred
+    psi_final: psi_ode_dk1p5_pred
+    amp_ratio_final: amp_ratio_ode_dk1p5_pred
+    v_ratio_final: v_ratio_ode_dk1p5_pred
+    v_ratio_at_probe: v_ratio_ode_probe_pred
+    amp_ratio_at_probe: amp_ratio_ode_probe_pred
+
+# ==========================================================================
+# Direct 1D continuum PDE simulations (Eqs. 1-2 / S1, S4; Figs. 1, 2, 3C-D, S1)
+# ==========================================================================
+
+- id: run_pde1d_dk0
+  model: continuum_1d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    rho_A: rho_A_pde1d_dk0_pred
+    rho_B: rho_B_pde1d_dk0_pred
+    rho_A_3: rho_A3_pde1d_dk0_pred
+    rho_B_3: rho_B3_pde1d_dk0_pred
+    v: v_pde1d_dk0_pred
+    psi: psi_pde1d_dk0_pred
+    amp_ratio: amp_ratio_pde1d_dk0_pred
+    state_code: state_pde1d_dk0_pred
+
+- id: run_pde1d_dk1
+  model: continuum_1d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    rho_A: rho_A_pde1d_dk1_pred
+    rho_B: rho_B_pde1d_dk1_pred
+    rho_A_3: rho_A3_pde1d_dk1_pred
+    rho_B_3: rho_B3_pde1d_dk1_pred
+    v: v_pde1d_dk1_pred
+    psi: psi_pde1d_dk1_pred
+    amp_ratio: amp_ratio_pde1d_dk1_pred
+    state_code: state_pde1d_dk1_pred
+
+- id: run_pde1d_dk1p5
+  model: continuum_1d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_00075
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    rho_A: rho_A_pde1d_dk1p5_pred
+    rho_B: rho_B_pde1d_dk1p5_pred
+    rho_A_3: rho_A3_pde1d_dk1p5_pred
+    rho_B_3: rho_B3_pde1d_dk1p5_pred
+    v: v_pde1d_dk1p5_pred
+    psi: psi_pde1d_dk1p5_pred
+    amp_ratio: amp_ratio_pde1d_dk1p5_pred
+    state_code: state_pde1d_dk1p5_pred
+
+- id: run_pde1d_dk2
+  model: continuum_1d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0010
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    rho_A: rho_A_pde1d_dk2_pred
+    rho_B: rho_B_pde1d_dk2_pred
+    rho_A_3: rho_A3_pde1d_dk2_pred
+    rho_B_3: rho_B3_pde1d_dk2_pred
+    v: v_pde1d_dk2_pred
+    psi: psi_pde1d_dk2_pred
+    amp_ratio: amp_ratio_pde1d_dk2_pred
+    state_code: state_pde1d_dk2_pred
+
+- id: run_pde1d_dk3
+  model: continuum_1d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0015
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    rho_A: rho_A_pde1d_dk3_pred
+    rho_B: rho_B_pde1d_dk3_pred
+    rho_A_3: rho_A3_pde1d_dk3_pred
+    rho_B_3: rho_B3_pde1d_dk3_pred
+    v: v_pde1d_dk3_pred
+    psi: psi_pde1d_dk3_pred
+    amp_ratio: amp_ratio_pde1d_dk3_pred
+    state_code: state_pde1d_dk3_pred
+
+# ==========================================================================
+# 2D continuum PDE simulations (SI Sec. IV, Fig. S4)
+# ==========================================================================
+
+- id: run_pde2d_stripe_dk1
+  model: continuum_2d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  settings:
+    init_mode: stripe
+  outputs:
+    v: v_pde2d_dk1_pred
+    freq_osc: freq_pde2d_stripe_dk1_pred
+    state_code: state_pde2d_dk1_pred
+
+- id: run_pde2d_stripe_dk3
+  model: continuum_2d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0015
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  settings:
+    init_mode: stripe
+  outputs:
+    v: v_pde2d_dk3_pred
+    freq_osc: freq_pde2d_stripe_dk3_pred
+    state_code: state_pde2d_dk3_pred
+
+- id: run_pde2d_osc_dk2
+  model: continuum_2d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0010
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  settings:
+    init_mode: oscillatory
+  outputs:
+    v: v_pde2d_osc_dk2_pred
+    freq_osc: freq_pde2d_dk2_pred
+    state_code: state_pde2d_osc_dk2_pred
+
+- id: run_pde2d_osc_dk3
+  model: continuum_2d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0015
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  settings:
+    init_mode: oscillatory
+  outputs:
+    v: v_pde2d_osc_dk3_pred
+    freq_osc: freq_pde2d_dk3_pred
+    state_code: state_pde2d_osc_dk3_pred
+
+# ==========================================================================
+# Bi-supercritical 1D PDE, exact one-mode, and constant-delta_c fit (SI Sec. V, Fig. S5)
+# ==========================================================================
+
+- id: run_bisup_pde_dk1
+  model: bi_supercritical_1d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_m005_bisup
+    gamma_A: gamma_A_004
+    gamma_B: gamma_B_004_bisup
+    kappa: kappa_0005
+    delta: delta_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    rho_A: rho_A_bisup_dk1_pred
+    rho_B: rho_B_bisup_dk1_pred
+    rho_A_3: rho_A3_bisup_dk1_pred
+    rho_B_3: rho_B3_bisup_dk1_pred
+    v: v_bisup_pde_dk1_pred
+    state_code: state_bisup_dk1_pred
+
+- id: run_bisup_pde_dk1p5
+  model: bi_supercritical_1d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_m005_bisup
+    gamma_A: gamma_A_004
+    gamma_B: gamma_B_004_bisup
+    kappa: kappa_0005
+    delta: delta_00075
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    rho_A: rho_A_bisup_dk1p5_pred
+    rho_B: rho_B_bisup_dk1p5_pred
+    rho_A_3: rho_A3_bisup_dk1p5_pred
+    rho_B_3: rho_B3_bisup_dk1p5_pred
+    v: v_bisup_pde_dk1p5_pred
+    state_code: state_bisup_dk1p5_pred
+
+- id: run_bisup_pde_dk2
+  model: bi_supercritical_1d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_m005_bisup
+    gamma_A: gamma_A_004
+    gamma_B: gamma_B_004_bisup
+    kappa: kappa_0005
+    delta: delta_0010
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    rho_A: rho_A_bisup_dk2_pred
+    rho_B: rho_B_bisup_dk2_pred
+    rho_A_3: rho_A3_bisup_dk2_pred
+    rho_B_3: rho_B3_bisup_dk2_pred
+    v: v_bisup_pde_dk2_pred
+    state_code: state_bisup_dk2_pred
+
+- id: run_bisup_pde_dk4
+  model: bi_supercritical_1d_pde
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_m005_bisup
+    gamma_A: gamma_A_004
+    gamma_B: gamma_B_004_bisup
+    kappa: kappa_0005
+    delta: delta_0020
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  outputs:
+    rho_A: rho_A_bisup_dk4_pred
+    rho_B: rho_B_bisup_dk4_pred
+    rho_A_3: rho_A3_bisup_dk4_pred
+    rho_B_3: rho_B3_bisup_dk4_pred
+    v: v_bisup_pde_dk4_pred
+    state_code: state_bisup_dk4_pred
+
+- id: run_bisup_1m_dk2
+  model: bi_supercritical_one_mode_fp
+  inputs:
+    alpha_A: alpha_A_bisup_pred
+    alpha_B: alpha_B_bisup_pred
+    kappa: kappa_0005
+    delta: delta_0010
+  outputs:
+    delta_c_over_kappa: dc_over_k_bisup_1m_pred
+    v: v_bisup_1m_dk2_pred
+    rho_A_t: rho_A_bisup_1m_dk2_pred
+    rho_B_t: rho_B_bisup_1m_dk2_pred
+
+- id: run_bisup_1m_dk4
+  model: bi_supercritical_one_mode_fp
+  inputs:
+    alpha_A: alpha_A_bisup_pred
+    alpha_B: alpha_B_bisup_pred
+    kappa: kappa_0005
+    delta: delta_0020
+  outputs:
+    delta_c_over_kappa: dc_over_k_bisup_1m_dk4_pred
+    v: v_bisup_1m_dk4_pred
+    rho_A_t: rho_A_bisup_1m_dk4_pred
+    rho_B_t: rho_B_bisup_1m_dk4_pred
+
+- id: run_bisup_fit_dk2
+  model: bi_supercritical_speed_fit
+  inputs:
+    kappa: kappa_0005
+    delta: delta_0010
+    delta_c_over_kappa: delta_c_over_kappa_bisup_fitted
+  outputs:
+    v: v_bisup_fit_dk2_pred
+
+- id: run_bisup_fit_dk4
+  model: bi_supercritical_speed_fit
+  inputs:
+    kappa: kappa_0005
+    delta: delta_0020
+    delta_c_over_kappa: delta_c_over_kappa_bisup_fitted
+  outputs:
+    v: v_bisup_fit_dk4_pred
+
+# ==========================================================================
+# SI Sec. VI.A: Microscopic attractive-repulsive mean-field (printed vs pi/12)
+# ==========================================================================
+
+- id: run_micro_mf_AB_printed
+  model: microscopic_ar_meanfield
+  inputs:
+    k_r: k_r_2000
+    sigma_r: sigma_r_1
+    k_munu: k_AB_m2
+    sigma_munu: sigma_AB_3
+    phi_mu: phi_mf_uniform_added
+  outputs:
+    R_munu: R_AB_mf_printed_pred
+    kappa_eff: kappa_AB_mf_printed_pred
+    delta_eff: delta_AB_mf_printed_pred
+
+- id: run_micro_mf_AB_pi12
+  model: microscopic_ar_meanfield_pi12
+  inputs:
+    k_r: k_r_2000
+    sigma_r: sigma_r_1
+    k_munu: k_AB_m2
+    sigma_munu: sigma_AB_3
+    phi_mu: phi_mf_uniform_added
+  outputs:
+    R_munu: R_AB_mf_pi12_pred
+    kappa_eff: kappa_AB_mf_pi12_pred
+    delta_eff: delta_AB_mf_pi12_pred
+
+# ==========================================================================
+# SI Sec. VI.B: Active-passive mixture linear stability & 1D PDE (Fig. S7)
+# ==========================================================================
+
+- id: run_ap_lin_v50_r0625_L64
+  model: active_passive_linear_stability
+  inputs:
+    v_0: v0_50
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_0625
+    rho_P0: rhoP0_03
+    L: L_ap_added
+  outputs:
+    D_AA: DAA_v50_r0625_pred
+    D_AP: DAP_v50_r0625_pred
+    D_PA: DPA_v50_r0625_pred
+    D_PP: DPP_v50_r0625_pred
+    max_re_lambda_q1: max_lam_v50_L64_pred
+    L_min_unstable: L_min_v50_r0625_pred
+
+- id: run_ap_lin_v60_L2pi
+  model: active_passive_linear_stability
+  inputs:
+    v_0: v0_60
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_06
+    rho_P0: rhoP0_03
+    L: L_2pi
+  outputs:
+    D_AA: DAA_v60_pred
+    D_AP: DAP_v60_pred
+    D_PA: DPA_v60_pred
+    D_PP: DPP_v60_pred
+    max_re_lambda_q1: max_lam_v60_L2pi_pred
+    L_min_unstable: L_min_v60_pred
+
+- id: run_ap_pde_v50_r0625_L64
+  model: active_passive_1d_pde
+  inputs:
+    v_0: v0_50
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_0625
+    rho_P0: rhoP0_03
+    L: L_ap_added
+  settings:
+    t_max: 1500.0
+  outputs:
+    amp_A: amp_ap_v50_L64_pred
+    rho_A_max: rAmax_ap_v50_L64_pred
+    rho_A_min: rAmin_ap_v50_L64_pred
+    omega_travel: omega_ap_v50_L64_pred
+    period_travel: period_ap_v50_L64_pred
+    state_code: state_ap_v50_L64_pred
+
+- id: run_ap_pde_v50_r0625_L2pi
+  model: active_passive_1d_pde
+  inputs:
+    v_0: v0_50
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_0625
+    rho_P0: rhoP0_03
+    L: L_2pi
+  settings:
+    t_max: 200.0
+  outputs:
+    amp_A: amp_ap_v50_L2pi_pred
+    rho_A_max: rAmax_ap_v50_L2pi_pred
+    rho_A_min: rAmin_ap_v50_L2pi_pred
+    omega_travel: omega_ap_v50_L2pi_pred
+    period_travel: period_ap_v50_L2pi_pred
+    state_code: state_ap_v50_L2pi_pred
+
+- id: run_ap_pde_v60_L64
+  model: active_passive_1d_pde
+  inputs:
+    v_0: v0_60
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_06
+    rho_P0: rhoP0_03
+    L: L_ap_added
+  outputs:
+    amp_A: amp_ap_v60_L64_pred
+    rho_A_max: rAmax_ap_v60_L64_pred
+    rho_A_min: rAmin_ap_v60_L64_pred
+    omega_travel: omega_ap_v60_L64_pred
+    period_travel: period_ap_v60_L64_pred
+    state_code: state_ap_v60_L64_pred
+
+- id: run_ap_pde_v60_L2pi
+  model: active_passive_1d_pde
+  inputs:
+    v_0: v0_60
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_06
+    rho_P0: rhoP0_03
+    L: L_2pi
+  settings:
+    t_max: 200.0
+  outputs:
+    amp_A: amp_ap_v60_L2pi_pred
+    rho_A_max: rAmax_ap_v60_L2pi_pred
+    rho_A_min: rAmin_ap_v60_L2pi_pred
+    omega_travel: omega_ap_v60_L2pi_pred
+    period_travel: period_ap_v60_L2pi_pred
+    state_code: state_ap_v60_L2pi_pred
+
+- id: run_ap_pde_v70_L64
+  model: active_passive_1d_pde
+  inputs:
+    v_0: v0_70
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_06
+    rho_P0: rhoP0_03
+    L: L_ap_added
+  outputs:
+    amp_A: amp_ap_v70_L64_pred
+    rho_A_max: rAmax_ap_v70_L64_pred
+    rho_A_min: rAmin_ap_v70_L64_pred
+    omega_travel: omega_ap_v70_L64_pred
+    period_travel: period_ap_v70_L64_pred
+    state_code: state_ap_v70_L64_pred
+
+- id: run_ap_pde_v70_L2pi
+  model: active_passive_1d_pde
+  inputs:
+    v_0: v0_70
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_06
+    rho_P0: rhoP0_03
+    L: L_2pi
+  settings:
+    t_max: 200.0
+  outputs:
+    amp_A: amp_ap_v70_L2pi_pred
+    rho_A_max: rAmax_ap_v70_L2pi_pred
+    rho_A_min: rAmin_ap_v70_L2pi_pred
+    omega_travel: omega_ap_v70_L2pi_pred
+    period_travel: period_ap_v70_L2pi_pred
+    state_code: state_ap_v70_L2pi_pred
+
+# ==========================================================================
+# Audit additions: additional runs for uncompared paper predictions & checks
+# ==========================================================================
+
+- id: run_vratio_fs_dk1
+  model: velocity_ratio_run_and_catch
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_0005
+    rho_A: rho_A_s_dk1_pred
+    rho_B: rho_B_s_dk1_pred
+  outputs:
+    v_ratio_general: v_ratio_gen_fs_dk1_pred
+    v_ratio_fs: v_ratio_fs_dk1_pred
+    psi_growth_rate_near_dc: psi_rate_dk1_pred
+    sum_phase_slope_near_dc: phi_slope_dk1_pred
+
+- id: run_fs_stab_chi006_dk2
+  model: static_fp_stability_eqS14_S16
+  inputs:
+    alpha_A: alpha_A_figS2_pred
+    alpha_B: alpha_B_figS2_pred
+    kappa: kappa_0005
+    delta: delta_0010
+  outputs:
+    re_lambda_s_plus: re_lam_s_p_chi006_dk2_pred
+    re_lambda_s_minus: re_lam_s_m_chi006_dk2_pred
+    lambda_theta_s: lam_theta_chi006_dk2_pred
+
+- id: run_micro_mf_BA_printed
+  model: microscopic_ar_meanfield
+  inputs:
+    k_r: k_r_2000
+    sigma_r: sigma_r_1
+    k_munu: k_BA_1
+    sigma_munu: sigma_AB_3
+    phi_mu: phi_mf_uniform_added
+  outputs:
+    R_munu: R_BA_mf_printed_pred
+    kappa_eff: kappa_BA_mf_printed_pred
+    delta_eff: delta_BA_mf_printed_pred
+
+- id: run_micro_mf_BA_pi12
+  model: microscopic_ar_meanfield_pi12
+  inputs:
+    k_r: k_r_2000
+    sigma_r: sigma_r_1
+    k_munu: k_BA_1
+    sigma_munu: sigma_AB_3
+    phi_mu: phi_mf_uniform_added
+  outputs:
+    R_munu: R_BA_mf_pi12_pred
+    kappa_eff: kappa_BA_mf_pi12_pred
+    delta_eff: delta_BA_mf_pi12_pred
+
+# ==========================================================================
+# Calibrated figure-reading sweep runs (digitize stage)
+# ==========================================================================
+
+- id: run_fig1a_diff_solid
+  model: one_mode_phase_boundaries_ratio
+  inputs:
+    gamma_A: gamma_A_004
+    phi0_A: phi0_A_zero
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: abs_chi_A_fig1a_diff_solid
+  outputs:
+    abs_chi_A_diff: abs_chi_A_fig1a_diff_solid_pred
+
+- id: run_fig1a_diff_dashed
+  model: one_mode_phase_boundaries_ratio
+  inputs:
+    gamma_A: gamma_A_004
+    phi0_A: phi0_A_zero
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: abs_chi_A_fig1a_diff_dashed
+  outputs:
+    abs_chi_A_diff: abs_chi_A_fig1a_diff_dashed_pred
+
+- id: run_fig1a_osc
+  model: one_mode_phase_boundaries_ratio
+  inputs:
+    gamma_A: gamma_A_004
+    phi0_A: phi0_A_zero
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: abs_chi_A_fig1a_osc
+  outputs:
+    abs_chi_A_osc: abs_chi_A_fig1a_osc_pred
+
+- id: run_fig1a_dc_bdy
+  model: one_mode_dc_boundary
+  inputs:
+    gamma_A: gamma_A_004
+    phi0_A: phi0_A_zero
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    abs_chi_A: dc_over_k_fig1a_bdy
+  outputs:
+    delta_c_over_kappa: dc_over_k_fig1a_bdy_pred
+
+- id: run_fig2a_static_A_1m
+  model: one_mode_amplitudes_ratio
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: rho_A_fig2a_static
+  outputs:
+    rho_A_s: rho_A_fig2a_static_1m_pred
+
+- id: run_fig2a_static_B_1m
+  model: one_mode_amplitudes_ratio
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: rho_B_fig2a_static
+  outputs:
+    rho_B_s: rho_B_fig2a_static_1m_pred
+
+- id: run_fig2a_travel_1m
+  model: one_mode_amplitudes_ratio
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: rho_A_fig2a_travel
+  outputs:
+    rho_A_t: rho_A_fig2a_travel_1m_pred
+    rho_B_t: rho_B_fig2a_travel_1m_pred
+
+- id: run_fig2a_static_A_pde
+  model: continuum_1d_pde_ratio
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    delta_over_kappa: rho_A_fig2a_static
+  outputs:
+    rho_A: rho_A_fig2a_static_pde_pred
+
+- id: run_fig2a_static_B_pde
+  model: continuum_1d_pde_ratio
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    delta_over_kappa: rho_B_fig2a_static
+  outputs:
+    rho_B: rho_B_fig2a_static_pde_pred
+
+- id: run_fig2a_travel_pde
+  model: continuum_1d_pde_ratio
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    delta_over_kappa: rho_A_fig2a_travel
+  outputs:
+    rho_A: rho_A_fig2a_travel_pde_pred
+    rho_B: rho_B_fig2a_travel_pde_pred
+
+- id: run_fig2b_v_1m
+  model: one_mode_amplitudes_ratio
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: v_fig2b_sim
+  outputs:
+    v: v_fig2b_1m_pred
+
+- id: run_fig2b_v_pde
+  model: continuum_1d_pde_ratio
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    delta_over_kappa: v_fig2b_sim
+  outputs:
+    v: v_fig2b_pde_pred
+
+- id: run_fig3b_vratio
+  model: velocity_ratio_run_and_catch_ratio
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: v_ratio_fig3b
+  outputs:
+    v_ratio_fs: v_ratio_fig3b_pred
+
+- id: run_fig3c_ode_sweep
+  model: one_mode_ode_1d
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+    delta: delta_00075
+  sweep:
+    psi_probe: v_ratio_fig3c
+  outputs:
+    v_ratio_at_probe: v_ratio_fig3c_pred
+    amp_ratio_at_probe: amp_ratio_fig3c_pred
+
+- id: run_fig3c_psit
+  model: one_mode_amplitudes_ratio
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: psi_t_fig3c
+  outputs:
+    psi_t: psi_t_fig3c_pred
+
+- id: run_figS1a_A_main
+  model: continuum_1d_pde_spectrum
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    q_j: amp_A_figS1a
+  outputs:
+    amp_A: amp_A_figS1a_main_pred
+
+- id: run_figS1a_B_main
+  model: continuum_1d_pde_spectrum
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    q_j: amp_B_figS1a
+  outputs:
+    amp_B: amp_B_figS1a_main_pred
+
+- id: run_figS1a_A_bisup
+  model: bi_supercritical_1d_pde_spectrum
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_m005_bisup
+    gamma_A: gamma_A_004
+    gamma_B: gamma_B_004_bisup
+    kappa: kappa_0005
+    delta: delta_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    q_j: amp_A_figS1a
+  outputs:
+    amp_A: amp_A_figS1a_bisup_pred
+
+- id: run_figS1a_B_bisup
+  model: bi_supercritical_1d_pde_spectrum
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_m005_bisup
+    gamma_A: gamma_A_004
+    gamma_B: gamma_B_004_bisup
+    kappa: kappa_0005
+    delta: delta_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    q_j: amp_B_figS1a
+  outputs:
+    amp_B: amp_B_figS1a_bisup_pred
+
+- id: run_figS1b_A_main
+  model: continuum_1d_pde_spectrum
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0015
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    q_j: amp_A_figS1b
+  outputs:
+    amp_A: amp_A_figS1b_main_pred
+
+- id: run_figS1b_B_main
+  model: continuum_1d_pde_spectrum
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    delta: delta_0015
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    q_j: amp_B_figS1b
+  outputs:
+    amp_B: amp_B_figS1b_main_pred
+
+- id: run_figS2_re
+  model: one_mode_homogeneous_eigenvalues_ratio
+  inputs:
+    alpha_A: alpha_A_figS2_pred
+    alpha_B: alpha_B_figS2_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: re_lam_p_figS2
+  outputs:
+    re_lambda_plus: re_lam_p_figS2_pred
+    re_lambda_minus: re_lam_m_figS2_pred
+
+- id: run_figS2_im
+  model: one_mode_homogeneous_eigenvalues_ratio
+  inputs:
+    alpha_A: alpha_A_figS2_pred
+    alpha_B: alpha_B_figS2_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: im_lam_p_figS2
+  outputs:
+    im_lambda_plus: im_lam_p_figS2_pred
+
+- id: run_figS3_all
+  model: exceptional_point_matrix_L
+  inputs:
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_dc: lam1_p_figS3a
+  outputs:
+    lambda_1_plus: lam1_p_figS3a_pred
+    lambda_1_minus: lam1_m_figS3a_pred
+    u1_plus_1: u1_p_1_figS3b_pred
+    u1_minus_1: u1_m_1_figS3b_pred
+    u1_plus_3: u1_p_3_figS3c_pred
+    u1_minus_3: u1_m_3_figS3c_pred
+
+- id: run_figS4g_2d_pde
+  model: continuum_2d_pde_ratio
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  settings:
+    init_mode: stripe
+  sweep:
+    delta_over_kappa: v_2d_figS4g_sim
+  outputs:
+    v: v_2d_figS4g_pde_pred
+
+- id: run_figS4g_1m_sim
+  model: one_mode_amplitudes_ratio
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: v_2d_figS4g_sim
+  outputs:
+    v: v_2d_figS4g_1m_sim_pred
+
+- id: run_figS4g_1m_theory
+  model: one_mode_amplitudes_ratio
+  inputs:
+    alpha_A: alpha_A_main_pred
+    alpha_B: alpha_B_main_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: v_2d_figS4g_theory
+  outputs:
+    v: v_2d_figS4g_1m_theory_pred
+
+- id: run_figS4h_2d_pde
+  model: continuum_2d_pde_ratio
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_0005
+    gamma_A: gamma_A_004
+    kappa: kappa_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  settings:
+    init_mode: oscillatory
+  sweep:
+    delta_over_kappa: freq_2d_figS4h_sim
+  outputs:
+    freq_osc: freq_2d_figS4h_pde_pred
+
+- id: run_figS5c_pde
+  model: bi_supercritical_1d_pde_ratio
+  inputs:
+    chi_A: chi_A_m005
+    chi_B: chi_B_m005_bisup
+    gamma_A: gamma_A_004
+    gamma_B: gamma_B_004_bisup
+    kappa: kappa_0005
+    L: L_2pi
+    phi0_A: phi0_A_zero
+    phi0_B: phi0_B_zero
+  sweep:
+    delta_over_kappa: v_bisup_figS5c_sim
+  outputs:
+    v: v_bisup_figS5c_pde_pred
+
+- id: run_figS5c_exact1m
+  model: bi_supercritical_one_mode_fp_ratio
+  inputs:
+    alpha_A: alpha_A_bisup_pred
+    alpha_B: alpha_B_bisup_pred
+    kappa: kappa_0005
+  sweep:
+    delta_over_kappa: v_bisup_figS5c_sim
+  outputs:
+    v: v_bisup_figS5c_1m_pred
+
+- id: run_figS5c_fit_vs_sim
+  model: bi_supercritical_speed_fit_ratio
+  inputs:
+    kappa: kappa_0005
+    delta_c_over_kappa: delta_c_over_kappa_bisup_fitted
+  sweep:
+    delta_over_kappa: v_bisup_figS5c_sim
+  outputs:
+    v: v_bisup_figS5c_fit_on_sim_pred
+
+- id: run_figS5c_fit_curve
+  model: bi_supercritical_speed_fit_ratio
+  inputs:
+    kappa: kappa_0005
+    delta_c_over_kappa: delta_c_over_kappa_bisup_fitted
+  sweep:
+    delta_over_kappa: v_bisup_figS5c_fit
+  outputs:
+    v: v_bisup_figS5c_fit_curve_pred
+
+- id: run_figS7a_r06_L64
+  model: active_passive_1d_pde
+  inputs:
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_06
+    rho_P0: rhoP0_03
+    L: L_ap_added
+  sweep:
+    v_0: state_ap_figS7a_r06
+  outputs:
+    state_code: state_ap_figS7a_L64_pred
+
+- id: run_figS7a_r06_L2pi
+  model: active_passive_1d_pde
+  inputs:
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_06
+    rho_P0: rhoP0_03
+    L: L_2pi
+  settings:
+    t_max: 200.0
+  sweep:
+    v_0: state_ap_figS7a_r06
+  outputs:
+    state_code: state_ap_figS7a_L2pi_pred
+
+- id: run_figS7d_period_L64
+  model: active_passive_1d_pde
+  inputs:
+    D_R: DR_ap_3
+    a0_AA: a0_AA_1
+    a0_AP: a0_AP_07
+    a1: a1_ap_25
+    kappa_ap: kappa_ap_1000
+    rho_A0: rhoA0_06
+    rho_P0: rhoP0_03
+    L: L_ap_added
+  sweep:
+    v_0: period_ap_figS7d
+  outputs:
+    period_travel: period_ap_figS7d_L64_pred

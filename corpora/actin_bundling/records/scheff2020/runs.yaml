@@ -1,0 +1,653 @@
+# 1. Filament length & Onsager scaling runs
+- id: run_monomer_count_low_cp
+  model: actin_monomer_count
+  inputs: {c_actin: actin_stock_conc, c_cp: cp_conc_low}
+  outputs: {N_m: monomer_count_50nM_pred}
+
+- id: run_monomer_count_high_cp
+  model: actin_monomer_count
+  inputs: {c_actin: actin_stock_conc, c_cp: cp_conc_high}
+  outputs: {N_m: monomer_count_150nM_pred}
+
+- id: run_cp_mol_pct_low
+  model: capping_protein_mol_fraction
+  inputs: {c_actin: actin_stock_conc, c_cp: cp_conc_low}
+  outputs: {f_cp: cp_mol_pct_low_calc}
+
+- id: run_cp_mol_pct_high
+  model: capping_protein_mol_fraction
+  inputs: {c_actin: actin_stock_conc, c_cp: cp_conc_high}
+  outputs: {f_cp: cp_mol_pct_high_calc}
+
+- id: run_length_from_conc_50nM
+  model: actin_filament_length
+  inputs: {d_mon: actin_monomer_rise, c_actin: actin_stock_conc, c_cp: cp_conc_low}
+  outputs: {L: length_50nM_pred}
+
+- id: run_length_from_conc_100nM
+  model: actin_filament_length
+  inputs: {d_mon: actin_monomer_rise, c_actin: actin_stock_conc, c_cp: cp_conc_mid_added}
+  outputs: {L: length_100nM_pred}
+
+- id: run_length_from_conc_150nM
+  model: actin_filament_length
+  inputs: {d_mon: actin_monomer_rise, c_actin: actin_stock_conc, c_cp: cp_conc_high}
+  outputs: {L: length_150nM_pred}
+
+- id: run_length_from_mol_1pct
+  model: actin_filament_length_from_mol_fraction
+  inputs: {d_mon: actin_monomer_rise, f_cp: cp_mol_pct_low}
+  outputs: {L: length_1pct_pred}
+
+- id: run_length_from_mol_2pct
+  model: actin_filament_length_from_mol_fraction
+  inputs: {d_mon: actin_monomer_rise, f_cp: cp_mol_pct_mid_added}
+  outputs: {L: length_2pct_pred}
+
+- id: run_length_from_mol_3pct
+  model: actin_filament_length_from_mol_fraction
+  inputs: {d_mon: actin_monomer_rise, f_cp: cp_mol_pct_high}
+  outputs: {L: length_3pct_pred}
+
+- id: run_filament_aspect_90nm
+  model: filament_aspect_ratio
+  inputs: {L: filament_length_90nm, D: actin_filament_diameter}
+  outputs: {a_f: filament_aspect_90nm_calc}
+
+- id: run_filament_aspect_135nm
+  model: filament_aspect_ratio
+  inputs: {L: filament_length_135nm, D: actin_filament_diameter}
+  outputs: {a_f: filament_aspect_135nm_calc}
+
+- id: run_filament_aspect_270nm
+  model: filament_aspect_ratio
+  inputs: {L: filament_length_270nm, D: actin_filament_diameter}
+  outputs: {a_f: filament_aspect_270nm_calc}
+
+- id: run_onsager_phi_90nm
+  model: onsager_critical_volume_fraction
+  inputs: {L: filament_length_90nm, D: actin_filament_diameter}
+  outputs: {phi_c: onsager_phi_90nm_pred}
+
+- id: run_onsager_phi_135nm
+  model: onsager_critical_volume_fraction
+  inputs: {L: filament_length_135nm, D: actin_filament_diameter}
+  outputs: {phi_c: onsager_phi_135nm_pred}
+
+- id: run_onsager_phi_270nm
+  model: onsager_critical_volume_fraction
+  inputs: {L: filament_length_270nm, D: actin_filament_diameter}
+  outputs: {phi_c: onsager_phi_270nm_pred}
+
+# 2. Partitioning & coalescence probe runs
+- id: run_partition_ratio_probe
+  model: partition_intensity_ratio
+  inputs: {I_inside: probe_I_inside_added, I_outside: probe_I_outside_added}
+  outputs: {P_I: partition_ratio_probe_calc}
+
+- id: run_coalescence_decay_probe
+  model: coalescence_area_decay
+  inputs: {A_i: probe_coal_Ai_added, A_f: probe_coal_Af_added, t: probe_coal_t_added, tau: probe_coal_tau_added}
+  outputs: {A: coal_area_probe_fit, A_norm: coal_norm_probe_fit}
+
+- id: run_coalescence_master_probe
+  model: coalescence_normalized_area
+  inputs: {t_rescaled: probe_coal_t_rescaled_added}
+  outputs: {A_norm: coal_master_probe_pred}
+
+- id: run_coalescence_length_probe
+  model: coalescence_relaxation_length
+  inputs: {A_i: probe_coal_Ai_added, A_f: probe_coal_Af_added}
+  outputs: {delta_l: coal_delta_l_probe_calc}
+
+- id: run_coalescence_tau_scaling_probe
+  model: coalescence_relaxation_time_scaling
+  inputs: {eta_over_gamma: probe_eta_over_gamma_added, delta_l: probe_delta_l_added}
+  outputs: {tau: coal_tau_probe_pred}
+
+# 3. Quasi bipolar tactoid definitions, coordinates & geometric limits
+- id: run_aspect_ratio_def_probe
+  model: tactoid_aspect_ratio_def
+  inputs: {R: probe_semimajor_axis_added, r: probe_semiminor_axis_added}
+  outputs: {x: tactoid_x_probe_calc}
+
+- id: run_bipolarity_def_probe
+  model: tactoid_bipolarity_def
+  inputs: {R_tilde: probe_virtual_pole_added, R: probe_semimajor_axis_added}
+  outputs: {y: tactoid_y_probe_calc}
+
+- id: run_anchoring_ratio_def_probe
+  model: anchoring_ratio_def
+  inputs: {gamma_A: probe_gamma_A_added, gamma: probe_gamma_added}
+  outputs: {omega: omega_def_probe_calc}
+
+- id: run_distortion_length_def_probe
+  model: nematic_distortion_length_def
+  inputs: {K: probe_K_added, gamma: probe_gamma_added}
+  outputs: {R_c: K_over_gamma_def_probe_calc}
+
+- id: run_bulk_to_surface_ratio_135nm
+  model: bulk_to_surface_ratio_def
+  inputs: {K_over_gamma: K_over_gamma_135nm_best, V: probe_volume_typical_added}
+  outputs: {c: bulk_to_surface_c_135nm_calc}
+
+- id: run_bispherical_angle_probe
+  model: bispherical_boundary_angle
+  inputs: {x: probe_aspect_ratio_added}
+  outputs: {eta0: eta0_probe_pred}
+
+- id: run_bispherical_scales_probe
+  model: bispherical_scale_factors
+  inputs: {xi: probe_xi_added, eta: probe_eta_added}
+  outputs: {Z: Z_probe_pred, h_phi: h_phi_probe_pred, h_xi: h_xi_probe_pred, h_eta: h_eta_probe_pred}
+
+- id: run_factor_N_probe
+  model: quasi_bipolar_factor_N
+  inputs: {xi: probe_xi_added, eta: probe_eta_added, y: probe_bipolarity_added}
+  outputs: {N: N_probe_pred}
+
+- id: run_fs_closed_sphere
+  model: quasi_bipolar_surface_factor_closed
+  inputs: {x: sphere_aspect_ratio_ref}
+  outputs: {f_s: fs_closed_sphere_pred}
+
+- id: run_fs_closed_probe
+  model: quasi_bipolar_surface_factor_closed
+  inputs: {x: probe_aspect_ratio_added}
+  outputs: {f_s: fs_closed_probe_pred}
+
+- id: run_fs_integral_probe
+  model: quasi_bipolar_surface_factor_integral
+  inputs: {x: probe_aspect_ratio_added}
+  outputs: {f_s: fs_integral_probe_pred}
+
+- id: run_v_closed_sphere
+  model: quasi_bipolar_volume_factor_closed
+  inputs: {x: sphere_aspect_ratio_ref}
+  outputs: {v: v_closed_sphere_pred}
+
+- id: run_v_closed_probe
+  model: quasi_bipolar_volume_factor_closed
+  inputs: {x: probe_aspect_ratio_added}
+  outputs: {v: v_closed_probe_pred}
+
+- id: run_v_integral_probe
+  model: quasi_bipolar_volume_factor_integral
+  inputs: {x: probe_aspect_ratio_added}
+  outputs: {v: v_integral_probe_pred}
+
+- id: run_tactoid_geom_probe
+  model: tactoid_geometry_from_semimajor
+  inputs: {R: probe_semimajor_axis_added, x: probe_aspect_ratio_added}
+  outputs: {S: S_probe_pred, V: V_probe_pred, r: r_probe_pred, A_spindle: A_spindle_probe_pred, A_ellipse: A_ellipse_probe_pred}
+
+- id: run_semimajor_from_vol_probe
+  model: tactoid_semimajor_from_volume
+  inputs: {V: probe_volume_typical_added, x: probe_aspect_ratio_added}
+  outputs: {R: R_from_vol_probe_pred}
+
+- id: run_cylindrical_scaling_probe
+  model: tactoid_cylindrical_limit_scaling
+  inputs: {R: probe_semimajor_axis_added, x: probe_aspect_ratio_added}
+  outputs: {S: S_cyl_probe_pred, V: V_cyl_probe_pred}
+
+- id: run_sphere_geometry_probe
+  model: sphere_geometry
+  inputs: {R: probe_semimajor_axis_added}
+  outputs: {S: S_sphere_probe_pred, V: V_sphere_probe_pred}
+
+- id: run_energy_size_scaling_probe
+  model: tactoid_energy_size_scaling
+  inputs: {R: probe_semimajor_axis_added, K: probe_K_added, gamma: probe_gamma_added}
+  outputs: {F_s: F_s_scaling_probe_pred, F_el: F_el_scaling_probe_pred}
+
+# 4. Quasi bipolar anchoring, elastic integrals & free energy (printed + corrected variants)
+- id: run_fan_probe
+  model: quasi_bipolar_anchoring_factor
+  inputs: {x: probe_aspect_ratio_added, y: probe_bipolarity_added}
+  outputs: {f_an: fan_probe_pred}
+
+- id: run_fan_ideal_bipolar
+  model: quasi_bipolar_anchoring_factor
+  inputs: {x: probe_aspect_ratio_added, y: ideal_bipolar_y_ref}
+  outputs: {f_an: fan_bipolar_pred}
+
+- id: run_fel_printed_sphere_bipolar
+  model: quasi_bipolar_elastic_factor_printed
+  inputs: {x: sphere_aspect_ratio_ref, y: ideal_bipolar_y_ref}
+  outputs: {f_el: fel_printed_sphere_pred}
+
+- id: run_fel_exact_bend_sphere_bipolar
+  model: quasi_bipolar_elastic_factor_exact_bend
+  inputs: {x: sphere_aspect_ratio_ref, y: ideal_bipolar_y_ref}
+  outputs: {f_el: fel_exact_bend_sphere_pred}
+
+- id: run_fel_frank_half_sphere_bipolar
+  model: quasi_bipolar_elastic_factor_frank_half
+  inputs: {x: sphere_aspect_ratio_ref, y: ideal_bipolar_y_ref}
+  outputs: {f_el: fel_frank_half_sphere_pred}
+
+- id: run_fel_printed_probe
+  model: quasi_bipolar_elastic_factor_printed
+  inputs: {x: probe_aspect_ratio_added, y: probe_bipolarity_added}
+  outputs: {f_el: fel_printed_probe_pred}
+
+- id: run_fel_exact_bend_probe
+  model: quasi_bipolar_elastic_factor_exact_bend
+  inputs: {x: probe_aspect_ratio_added, y: probe_bipolarity_added}
+  outputs: {f_el: fel_exact_bend_probe_pred}
+
+- id: run_fel_frank_half_probe
+  model: quasi_bipolar_elastic_factor_frank_half
+  inputs: {x: probe_aspect_ratio_added, y: probe_bipolarity_added}
+  outputs: {f_el: fel_frank_half_probe_pred}
+
+- id: run_F_printed_probe
+  model: quasi_bipolar_free_energy_printed
+  inputs: {R: probe_semimajor_axis_added, x: probe_aspect_ratio_added, y: probe_bipolarity_added, K: probe_K_added, gamma: probe_gamma_added, omega: omega_135nm_best}
+  outputs: {F: F_printed_probe_pred}
+
+- id: run_F_exact_bend_probe
+  model: quasi_bipolar_free_energy_exact_bend
+  inputs: {R: probe_semimajor_axis_added, x: probe_aspect_ratio_added, y: probe_bipolarity_added, K: probe_K_added, gamma: probe_gamma_added, omega: omega_135nm_best}
+  outputs: {F: F_exact_bend_probe_pred}
+
+- id: run_F_frank_half_probe
+  model: quasi_bipolar_free_energy_frank_half
+  inputs: {R: probe_semimajor_axis_added, x: probe_aspect_ratio_added, y: probe_bipolarity_added, K: probe_K_added, gamma: probe_gamma_added, omega: omega_135nm_best}
+  outputs: {F: F_frank_half_probe_pred}
+
+- id: run_F_nondim_printed_probe
+  model: quasi_bipolar_free_energy_nondim_printed
+  inputs: {V: probe_volume_typical_added, x: probe_aspect_ratio_added, y: probe_bipolarity_added, K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  outputs: {F_nondim: F_nondim_printed_probe_pred}
+
+# 5. Equilibrium quasi bipolar minimizers (fixed volume & fixed area) across all 3 filament lengths
+- id: run_min_printed_135nm_V10
+  model: quasi_bipolar_minimizer_printed
+  inputs: {V: probe_volume_typical_added, K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  outputs: {x_eq: x_min_printed_135nm_V10, y_eq: y_min_printed_135nm_V10, R_eq: R_min_printed_135nm_V10, r_eq: r_min_printed_135nm_V10, A_spindle: A_sp_min_printed_135nm_V10, A_ellipse: A_el_min_printed_135nm_V10, F_nondim: F_min_printed_135nm_V10}
+
+- id: run_min_exact_bend_135nm_V10
+  model: quasi_bipolar_minimizer_exact_bend
+  inputs: {V: probe_volume_typical_added, K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  outputs: {x_eq: x_min_exact_135nm_V10, y_eq: y_min_exact_135nm_V10, R_eq: R_min_exact_135nm_V10, r_eq: r_min_exact_135nm_V10, A_spindle: A_sp_min_exact_135nm_V10, A_ellipse: A_el_min_exact_135nm_V10, F_nondim: F_min_exact_135nm_V10}
+
+- id: run_min_frank_half_135nm_V10
+  model: quasi_bipolar_minimizer_frank_half
+  inputs: {V: probe_volume_typical_added, K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  outputs: {x_eq: x_min_frank_135nm_V10, y_eq: y_min_frank_135nm_V10, R_eq: R_min_frank_135nm_V10, r_eq: r_min_frank_135nm_V10, A_spindle: A_sp_min_frank_135nm_V10, A_ellipse: A_el_min_frank_135nm_V10, F_nondim: F_min_frank_135nm_V10}
+
+- id: run_min_printed_270nm_V10
+  model: quasi_bipolar_minimizer_printed
+  inputs: {V: probe_volume_typical_added, K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  outputs: {x_eq: x_min_printed_270nm_V10, y_eq: y_min_printed_270nm_V10, R_eq: R_min_printed_270nm_V10, r_eq: r_min_printed_270nm_V10, A_spindle: A_sp_min_printed_270nm_V10, A_ellipse: A_el_min_printed_270nm_V10, F_nondim: F_min_printed_270nm_V10}
+
+- id: run_area_printed_90nm_med
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {A: probe_area_medium_added, K_over_gamma: K_over_gamma_90nm_best, omega: omega_90nm_best}
+  outputs: {x_eq: x_area_printed_90nm_med, y_eq: y_area_printed_90nm_med, V_eq: V_area_printed_90nm_med}
+
+- id: run_area_exact_bend_90nm_med
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {A: probe_area_medium_added, K_over_gamma: K_over_gamma_90nm_best, omega: omega_90nm_best}
+  outputs: {x_eq: x_area_exact_90nm_med, y_eq: y_area_exact_90nm_med, V_eq: V_area_exact_90nm_med}
+
+- id: run_area_frank_half_90nm_med
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {A: probe_area_medium_added, K_over_gamma: K_over_gamma_90nm_best, omega: omega_90nm_best}
+  outputs: {x_eq: x_area_frank_90nm_med, y_eq: y_area_frank_90nm_med, V_eq: V_area_frank_90nm_med}
+
+- id: run_area_printed_135nm_small
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {A: probe_area_small_added, K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  outputs: {x_eq: x_area_printed_135nm_small, y_eq: y_area_printed_135nm_small, V_eq: V_area_printed_135nm_small}
+
+- id: run_area_printed_135nm_large
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {A: probe_area_large_added, K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  outputs: {x_eq: x_area_printed_135nm_large, y_eq: y_area_printed_135nm_large, V_eq: V_area_printed_135nm_large}
+
+- id: run_area_exact_bend_135nm_large
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {A: probe_area_large_added, K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  outputs: {x_eq: x_area_exact_135nm_large, y_eq: y_area_exact_135nm_large, V_eq: V_area_exact_135nm_large}
+
+- id: run_area_frank_half_135nm_large
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {A: probe_area_large_added, K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  outputs: {x_eq: x_area_frank_135nm_large, y_eq: y_area_frank_135nm_large, V_eq: V_area_frank_135nm_large}
+
+- id: run_area_printed_270nm_small
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {A: probe_area_small_added, K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  outputs: {x_eq: x_area_printed_270nm_small, y_eq: y_area_printed_270nm_small, V_eq: V_area_printed_270nm_small}
+
+- id: run_area_exact_bend_270nm_small
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {A: probe_area_small_added, K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  outputs: {x_eq: x_area_exact_270nm_small, y_eq: y_area_exact_270nm_small, V_eq: V_area_exact_270nm_small}
+
+- id: run_area_frank_half_270nm_small
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {A: probe_area_small_added, K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  outputs: {x_eq: x_area_frank_270nm_small, y_eq: y_area_frank_270nm_small, V_eq: V_area_frank_270nm_small}
+
+- id: run_area_printed_270nm_large
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {A: probe_area_large_added, K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  outputs: {x_eq: x_area_printed_270nm_large, y_eq: y_area_printed_270nm_large, V_eq: V_area_printed_270nm_large}
+
+- id: run_area_frank_half_270nm_large
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {A: probe_area_large_added, K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  outputs: {x_eq: x_area_frank_270nm_large, y_eq: y_area_frank_270nm_large, V_eq: V_area_frank_270nm_large}
+
+# 6. Homogeneous small-droplet limit runs (R << K/gamma)
+- id: run_homog_90nm
+  model: homogeneous_tactoid_minimizer
+  inputs: {omega: omega_90nm_best}
+  outputs: {x_eq: x_homog_90nm_pred, F_nondim: F_homog_90nm_pred}
+
+- id: run_homog_135nm
+  model: homogeneous_tactoid_minimizer
+  inputs: {omega: omega_135nm_best}
+  outputs: {x_eq: x_homog_135nm_pred, F_nondim: F_homog_135nm_pred}
+
+- id: run_homog_270nm
+  model: homogeneous_tactoid_minimizer
+  inputs: {omega: omega_270nm_best}
+  outputs: {x_eq: x_homog_270nm_pred, F_nondim: F_homog_270nm_pred}
+
+# 7. Digitized figure sweep runs (Fig. 2b, Fig. 2c, Fig. 3c/3f, Fig. 5c, and ESI Fig. S1)
+- id: run_fig2b_exp_sweep
+  model: coalescence_normalized_area
+  inputs: {}
+  sweep: {t_rescaled: coalescence_master_exp_fig2b}
+  outputs: {A_norm: fig2b_exp_pred}
+
+- id: run_fig2c_scaling_data_sweep
+  model: coalescence_relaxation_time_scaling
+  inputs: {eta_over_gamma: probe_eta_over_gamma_added}
+  sweep: {delta_l: coalescence_tau_vs_dl_fig2c}
+  outputs: {tau: fig2c_scaling_data_pred}
+
+- id: run_fig2c_scaling_fit_sweep
+  model: coalescence_relaxation_time_scaling
+  inputs: {eta_over_gamma: probe_eta_over_gamma_added}
+  sweep: {delta_l: coalescence_tau_linear_fit_fig2c}
+  outputs: {tau: fig2c_scaling_fit_pred}
+
+# Fig. 5(c) (L ~ 135 nm): printed, exact_bend, frank_half, and vtilde_inv vs all 3 theoretical curves & experimental data
+- id: run_fig5c_best_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  sweep: {A: aspect_ratio_135nm_best_fit_fig5c}
+  outputs: {x_eq: x_fig5c_best_printed, y_eq: y_fig5c_best_printed, V_eq: V_fig5c_best_printed}
+
+- id: run_fig5c_best_exact_bend
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  sweep: {A: aspect_ratio_135nm_best_fit_fig5c}
+  outputs: {x_eq: x_fig5c_best_exact, y_eq: y_fig5c_best_exact, V_eq: V_fig5c_best_exact}
+
+- id: run_fig5c_best_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  sweep: {A: aspect_ratio_135nm_best_fit_fig5c}
+  outputs: {x_eq: x_fig5c_best_frank, y_eq: y_fig5c_best_frank, V_eq: V_fig5c_best_frank}
+
+- id: run_fig5c_best_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  sweep: {A: aspect_ratio_135nm_best_fit_fig5c}
+  outputs: {x_eq: x_fig5c_best_vtilde, y_eq: y_fig5c_best_vtilde, V_eq: V_fig5c_best_vtilde}
+
+- id: run_fig5c_min_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_135nm_min, omega: omega_135nm_min}
+  sweep: {A: aspect_ratio_135nm_min_bound_fig5c}
+  outputs: {x_eq: x_fig5c_min_printed, y_eq: y_fig5c_min_printed, V_eq: V_fig5c_min_printed}
+
+- id: run_fig5c_min_exact_bend
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {K_over_gamma: K_over_gamma_135nm_min, omega: omega_135nm_min}
+  sweep: {A: aspect_ratio_135nm_min_bound_fig5c}
+  outputs: {x_eq: x_fig5c_min_exact, y_eq: y_fig5c_min_exact, V_eq: V_fig5c_min_exact}
+
+- id: run_fig5c_min_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_135nm_min, omega: omega_135nm_min}
+  sweep: {A: aspect_ratio_135nm_min_bound_fig5c}
+  outputs: {x_eq: x_fig5c_min_frank, y_eq: y_fig5c_min_frank, V_eq: V_fig5c_min_frank}
+
+- id: run_fig5c_min_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_135nm_min, omega: omega_135nm_min}
+  sweep: {A: aspect_ratio_135nm_min_bound_fig5c}
+  outputs: {x_eq: x_fig5c_min_vtilde, y_eq: y_fig5c_min_vtilde, V_eq: V_fig5c_min_vtilde}
+
+- id: run_fig5c_max_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_135nm_max, omega: omega_135nm_max}
+  sweep: {A: aspect_ratio_135nm_max_bound_fig5c}
+  outputs: {x_eq: x_fig5c_max_printed, y_eq: y_fig5c_max_printed, V_eq: V_fig5c_max_printed}
+
+- id: run_fig5c_max_exact_bend
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {K_over_gamma: K_over_gamma_135nm_max, omega: omega_135nm_max}
+  sweep: {A: aspect_ratio_135nm_max_bound_fig5c}
+  outputs: {x_eq: x_fig5c_max_exact, y_eq: y_fig5c_max_exact, V_eq: V_fig5c_max_exact}
+
+- id: run_fig5c_max_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_135nm_max, omega: omega_135nm_max}
+  sweep: {A: aspect_ratio_135nm_max_bound_fig5c}
+  outputs: {x_eq: x_fig5c_max_frank, y_eq: y_fig5c_max_frank, V_eq: V_fig5c_max_frank}
+
+- id: run_fig5c_max_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_135nm_max, omega: omega_135nm_max}
+  sweep: {A: aspect_ratio_135nm_max_bound_fig5c}
+  outputs: {x_eq: x_fig5c_max_vtilde, y_eq: y_fig5c_max_vtilde, V_eq: V_fig5c_max_vtilde}
+
+- id: run_fig5c_data_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  sweep: {A: aspect_ratio_135nm_data_fig5c}
+  outputs: {x_eq: x_fig5c_data_printed, y_eq: y_fig5c_data_printed, V_eq: V_fig5c_data_printed}
+
+- id: run_fig5c_data_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  sweep: {A: aspect_ratio_135nm_data_fig5c}
+  outputs: {x_eq: x_fig5c_data_frank, y_eq: y_fig5c_data_frank, V_eq: V_fig5c_data_frank}
+
+- id: run_fig5c_data_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_135nm_best, omega: omega_135nm_best}
+  sweep: {A: aspect_ratio_135nm_data_fig5c}
+  outputs: {x_eq: x_fig5c_data_vtilde, y_eq: y_fig5c_data_vtilde, V_eq: V_fig5c_data_vtilde}
+
+# ESI Fig. S1 left (L ~ 90 nm): all 4 models vs all 3 theoretical curves & experimental data
+- id: run_figS1_90nm_best_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_90nm_best, omega: omega_90nm_best}
+  sweep: {A: aspect_ratio_90nm_best_fit_figS1}
+  outputs: {x_eq: x_figS1_90_best_printed, y_eq: y_figS1_90_best_printed, V_eq: V_figS1_90_best_printed}
+
+- id: run_figS1_90nm_best_exact_bend
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {K_over_gamma: K_over_gamma_90nm_best, omega: omega_90nm_best}
+  sweep: {A: aspect_ratio_90nm_best_fit_figS1}
+  outputs: {x_eq: x_figS1_90_best_exact, y_eq: y_figS1_90_best_exact, V_eq: V_figS1_90_best_exact}
+
+- id: run_figS1_90nm_best_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_90nm_best, omega: omega_90nm_best}
+  sweep: {A: aspect_ratio_90nm_best_fit_figS1}
+  outputs: {x_eq: x_figS1_90_best_frank, y_eq: y_figS1_90_best_frank, V_eq: V_figS1_90_best_frank}
+
+- id: run_figS1_90nm_best_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_90nm_best, omega: omega_90nm_best}
+  sweep: {A: aspect_ratio_90nm_best_fit_figS1}
+  outputs: {x_eq: x_figS1_90_best_vtilde, y_eq: y_figS1_90_best_vtilde, V_eq: V_figS1_90_best_vtilde}
+
+- id: run_figS1_90nm_min_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_90nm_min, omega: omega_90nm_min}
+  sweep: {A: aspect_ratio_90nm_min_bound_figS1}
+  outputs: {x_eq: x_figS1_90_min_printed, y_eq: y_figS1_90_min_printed, V_eq: V_figS1_90_min_printed}
+
+- id: run_figS1_90nm_min_exact_bend
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {K_over_gamma: K_over_gamma_90nm_min, omega: omega_90nm_min}
+  sweep: {A: aspect_ratio_90nm_min_bound_figS1}
+  outputs: {x_eq: x_figS1_90_min_exact, y_eq: y_figS1_90_min_exact, V_eq: V_figS1_90_min_exact}
+
+- id: run_figS1_90nm_min_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_90nm_min, omega: omega_90nm_min}
+  sweep: {A: aspect_ratio_90nm_min_bound_figS1}
+  outputs: {x_eq: x_figS1_90_min_frank, y_eq: y_figS1_90_min_frank, V_eq: V_figS1_90_min_frank}
+
+- id: run_figS1_90nm_min_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_90nm_min, omega: omega_90nm_min}
+  sweep: {A: aspect_ratio_90nm_min_bound_figS1}
+  outputs: {x_eq: x_figS1_90_min_vtilde, y_eq: y_figS1_90_min_vtilde, V_eq: V_figS1_90_min_vtilde}
+
+- id: run_figS1_90nm_max_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_90nm_max, omega: omega_90nm_max}
+  sweep: {A: aspect_ratio_90nm_max_bound_figS1}
+  outputs: {x_eq: x_figS1_90_max_printed, y_eq: y_figS1_90_max_printed, V_eq: V_figS1_90_max_printed}
+
+- id: run_figS1_90nm_max_exact_bend
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {K_over_gamma: K_over_gamma_90nm_max, omega: omega_90nm_max}
+  sweep: {A: aspect_ratio_90nm_max_bound_figS1}
+  outputs: {x_eq: x_figS1_90_max_exact, y_eq: y_figS1_90_max_exact, V_eq: V_figS1_90_max_exact}
+
+- id: run_figS1_90nm_max_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_90nm_max, omega: omega_90nm_max}
+  sweep: {A: aspect_ratio_90nm_max_bound_figS1}
+  outputs: {x_eq: x_figS1_90_max_frank, y_eq: y_figS1_90_max_frank, V_eq: V_figS1_90_max_frank}
+
+- id: run_figS1_90nm_max_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_90nm_max, omega: omega_90nm_max}
+  sweep: {A: aspect_ratio_90nm_max_bound_figS1}
+  outputs: {x_eq: x_figS1_90_max_vtilde, y_eq: y_figS1_90_max_vtilde, V_eq: V_figS1_90_max_vtilde}
+
+- id: run_figS1_90nm_data_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_90nm_best, omega: omega_90nm_best}
+  sweep: {A: aspect_ratio_90nm_data_figS1}
+  outputs: {x_eq: x_figS1_90_data_printed, y_eq: y_figS1_90_data_printed, V_eq: V_figS1_90_data_printed}
+
+- id: run_figS1_90nm_data_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_90nm_best, omega: omega_90nm_best}
+  sweep: {A: aspect_ratio_90nm_data_figS1}
+  outputs: {x_eq: x_figS1_90_data_vtilde, y_eq: y_figS1_90_data_vtilde, V_eq: V_figS1_90_data_vtilde}
+
+# ESI Fig. S1 right (L ~ 270 nm): all 4 models vs all 3 theoretical curves & experimental data
+- id: run_figS1_270nm_best_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  sweep: {A: aspect_ratio_270nm_best_fit_figS1}
+  outputs: {x_eq: x_figS1_270_best_printed, y_eq: y_figS1_270_best_printed, V_eq: V_figS1_270_best_printed}
+
+- id: run_figS1_270nm_best_exact_bend
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  sweep: {A: aspect_ratio_270nm_best_fit_figS1}
+  outputs: {x_eq: x_figS1_270_best_exact, y_eq: y_figS1_270_best_exact, V_eq: V_figS1_270_best_exact}
+
+- id: run_figS1_270nm_best_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  sweep: {A: aspect_ratio_270nm_best_fit_figS1}
+  outputs: {x_eq: x_figS1_270_best_frank, y_eq: y_figS1_270_best_frank, V_eq: V_figS1_270_best_frank}
+
+- id: run_figS1_270nm_best_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  sweep: {A: aspect_ratio_270nm_best_fit_figS1}
+  outputs: {x_eq: x_figS1_270_best_vtilde, y_eq: y_figS1_270_best_vtilde, V_eq: V_figS1_270_best_vtilde}
+
+- id: run_figS1_270nm_min_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_270nm_min, omega: omega_270nm_min}
+  sweep: {A: aspect_ratio_270nm_min_bound_figS1}
+  outputs: {x_eq: x_figS1_270_min_printed, y_eq: y_figS1_270_min_printed, V_eq: V_figS1_270_min_printed}
+
+- id: run_figS1_270nm_min_exact_bend
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {K_over_gamma: K_over_gamma_270nm_min, omega: omega_270nm_min}
+  sweep: {A: aspect_ratio_270nm_min_bound_figS1}
+  outputs: {x_eq: x_figS1_270_min_exact, y_eq: y_figS1_270_min_exact, V_eq: V_figS1_270_min_exact}
+
+- id: run_figS1_270nm_min_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_270nm_min, omega: omega_270nm_min}
+  sweep: {A: aspect_ratio_270nm_min_bound_figS1}
+  outputs: {x_eq: x_figS1_270_min_frank, y_eq: y_figS1_270_min_frank, V_eq: V_figS1_270_min_frank}
+
+- id: run_figS1_270nm_min_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_270nm_min, omega: omega_270nm_min}
+  sweep: {A: aspect_ratio_270nm_min_bound_figS1}
+  outputs: {x_eq: x_figS1_270_min_vtilde, y_eq: y_figS1_270_min_vtilde, V_eq: V_figS1_270_min_vtilde}
+
+- id: run_figS1_270nm_max_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_270nm_max, omega: omega_270nm_max}
+  sweep: {A: aspect_ratio_270nm_max_bound_figS1}
+  outputs: {x_eq: x_figS1_270_max_printed, y_eq: y_figS1_270_max_printed, V_eq: V_figS1_270_max_printed}
+
+- id: run_figS1_270nm_max_exact_bend
+  model: quasi_bipolar_aspect_vs_area_exact_bend
+  inputs: {K_over_gamma: K_over_gamma_270nm_max, omega: omega_270nm_max}
+  sweep: {A: aspect_ratio_270nm_max_bound_figS1}
+  outputs: {x_eq: x_figS1_270_max_exact, y_eq: y_figS1_270_max_exact, V_eq: V_figS1_270_max_exact}
+
+- id: run_figS1_270nm_max_frank_half
+  model: quasi_bipolar_aspect_vs_area_frank_half
+  inputs: {K_over_gamma: K_over_gamma_270nm_max, omega: omega_270nm_max}
+  sweep: {A: aspect_ratio_270nm_max_bound_figS1}
+  outputs: {x_eq: x_figS1_270_max_frank, y_eq: y_figS1_270_max_frank, V_eq: V_figS1_270_max_frank}
+
+- id: run_figS1_270nm_max_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_270nm_max, omega: omega_270nm_max}
+  sweep: {A: aspect_ratio_270nm_max_bound_figS1}
+  outputs: {x_eq: x_figS1_270_max_vtilde, y_eq: y_figS1_270_max_vtilde, V_eq: V_figS1_270_max_vtilde}
+
+- id: run_figS1_270nm_data_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  sweep: {A: aspect_ratio_270nm_data_figS1}
+  outputs: {x_eq: x_figS1_270_data_printed, y_eq: y_figS1_270_data_printed, V_eq: V_figS1_270_data_printed}
+
+- id: run_figS1_270nm_data_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  sweep: {A: aspect_ratio_270nm_data_figS1}
+  outputs: {x_eq: x_figS1_270_data_vtilde, y_eq: y_figS1_270_data_vtilde, V_eq: V_figS1_270_data_vtilde}
+
+# Fig. 3(c) (separate L ~ 270 nm n=1180 batch) validation sweep
+- id: run_fig3c_270nm_printed
+  model: quasi_bipolar_aspect_vs_area_printed
+  inputs: {K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  sweep: {A: aspect_ratio_vs_area_270nm_fig3c}
+  outputs: {x_eq: x_fig3c_printed, y_eq: y_fig3c_printed, V_eq: V_fig3c_printed}
+
+- id: run_fig3c_270nm_vtilde_inv
+  model: quasi_bipolar_aspect_vs_area_vtilde_inv
+  inputs: {K_over_gamma: K_over_gamma_270nm_best, omega: omega_270nm_best}
+  sweep: {A: aspect_ratio_vs_area_270nm_fig3c}
+  outputs: {x_eq: x_fig3c_vtilde, y_eq: y_fig3c_vtilde, V_eq: V_fig3c_vtilde}

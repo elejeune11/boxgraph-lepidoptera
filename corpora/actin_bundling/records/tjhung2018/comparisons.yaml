@@ -1,0 +1,534 @@
+# ==============================================================================
+# 1. Passive Model B Bulk Binodals & Equilibrium Interfacial Tension
+# ==============================================================================
+- id: cmp_passive_binodal_pos_eq3
+  purpose: reproduction
+  computed: phi_b_pos_eq3
+  printed: phi_b_passive_pos
+  note: "Reproduces passive Model B upper binodal phi_b = +1 under -a = b = A = 0.25 (Eq. 4)."
+
+- id: cmp_passive_binodal_neg_eq3
+  purpose: reproduction
+  computed: phi_b_neg_eq3
+  printed: phi_b_passive_neg
+  note: "Reproduces passive Model B lower binodal -phi_b = -1 under -a = b = A = 0.25 (Eq. 4)."
+
+- id: cmp_passive_binodal_pos_eq9
+  purpose: reproduction
+  computed: phi2_eq9_passive
+  printed: phi_b_passive_pos
+  note: "Verifies Eq. (9) flat-interface binodal solver recovers phi_2 = +1 in the passive limit (zeta = lambda = 0)."
+
+- id: cmp_passive_binodal_neg_eq9
+  purpose: reproduction
+  computed: phi1_eq9_passive
+  printed: phi_b_passive_neg
+  note: "Verifies Eq. (9) flat-interface binodal solver recovers phi_1 = -1 in the passive limit (zeta = lambda = 0)."
+
+- id: cmp_passive_sigma_consistency
+  purpose: consistency
+  computed: sigma_passive_eq20
+  printed: sigma_eq_default
+  note: "Verifies Eq. (20) pseudotension in the passive limit equals equilibrium interfacial tension sigma_eq = (8 K A / 9)^(1/2) (p. 4)."
+
+# ==============================================================================
+# 2. Active Flat-Interface Binodals (Fig. 5a & p. 10): Printed Eq. (B2) vs Corrected vs Eq. (9) vs 1D PDE
+# ==============================================================================
+- id: cmp_phi1_B2_printed_fig5A
+  purpose: reproduction
+  computed: phi1_B2_printed_fig5A
+  printed: phi1_z2l2_fig5a
+  note: "Printed Eq. (B2) (with -6*zeta*K^2*phi) fails to reproduce Fig. 5(a) phi_1 = -1.096 at zeta=1, lambda=-0.5."
+
+- id: cmp_phi2_B2_printed_fig5A
+  purpose: reproduction
+  computed: phi2_B2_printed_fig5A
+  printed: phi2_z2l2_fig5a
+  note: "Printed Eq. (B2) severely fails to reproduce Fig. 5(a) phi_2 = 0.864 at zeta=1, lambda=-0.5 (yields ~0.325)."
+
+- id: cmp_phi1_B2_printed_fig5C
+  purpose: reproduction
+  computed: phi1_B2_printed_fig5C
+  printed: phi1_z2l2_fig5a
+  note: "Printed Eq. (B2) fails to reproduce Fig. 5(a) phi_1 = -1.096 at zeta=4, lambda=1 (yields ~-0.778) and breaks (zeta - 2*lambda) invariance."
+
+- id: cmp_phi2_B2_printed_fig5C
+  purpose: reproduction
+  computed: phi2_B2_printed_fig5C
+  printed: phi2_z2l2_fig5a
+  note: "Printed Eq. (B2) gives unphysical negative phi_2 (~-0.350) instead of Fig. 5(a) phi_2 = 0.864 at zeta=4, lambda=1."
+
+- id: cmp_phi1_B2_corr_fig5A
+  purpose: reproduction
+  computed: phi1_B2_corr_fig5A
+  printed: phi1_z2l2_fig5a
+  note: "Corrected Eq. (B2) (-6*(zeta-2*lambda)*K^2*phi) exactly reproduces Fig. 5(a) phi_1 = -1.096 at zeta=1, lambda=-0.5."
+
+- id: cmp_phi2_B2_corr_fig5A
+  purpose: reproduction
+  computed: phi2_B2_corr_fig5A
+  printed: phi2_z2l2_fig5a
+  note: "Corrected Eq. (B2) exactly reproduces Fig. 5(a) phi_2 = 0.864 at zeta=1, lambda=-0.5."
+
+- id: cmp_phi1_B2_corr_fig5C
+  purpose: reproduction
+  computed: phi1_B2_corr_fig5C
+  printed: phi1_z2l2_fig5a
+  note: "Corrected Eq. (B2) exactly reproduces Fig. 5(a) phi_1 = -1.096 at zeta=4, lambda=1 (identical to zeta=1, lambda=-0.5)."
+
+- id: cmp_phi2_B2_corr_fig5C
+  purpose: reproduction
+  computed: phi2_B2_corr_fig5C
+  printed: phi2_z2l2_fig5a
+  note: "Corrected Eq. (B2) exactly reproduces Fig. 5(a) phi_2 = 0.864 at zeta=4, lambda=1."
+
+- id: cmp_phi1_eq9_fig5A
+  purpose: reproduction
+  computed: phi1_eq9_fig5A
+  printed: phi1_z2l2_fig5a
+  note: "Direct integration of Eq. (9) exactly reproduces Fig. 5(a) phi_1 = -1.096 at zeta=1, lambda=-0.5."
+
+- id: cmp_phi2_eq9_fig5A
+  purpose: reproduction
+  computed: phi2_eq9_fig5A
+  printed: phi2_z2l2_fig5a
+  note: "Direct integration of Eq. (9) exactly reproduces Fig. 5(a) phi_2 = 0.864 at zeta=1, lambda=-0.5."
+
+- id: cmp_phi1_eq9_fig5C_text
+  purpose: reproduction
+  computed: phi1_eq9_fig5C
+  printed: phi1_z2l2_text
+  note: "Checks p. 10 text approximate binodal phi_1 ≃ -1.10 (approximate value, no strict verdict)."
+
+- id: cmp_phi2_eq9_fig5C_text
+  purpose: reproduction
+  computed: phi2_eq9_fig5C
+  printed: phi2_z2l2_text
+  note: "Checks p. 10 text approximate binodal phi_2 ≃ 0.86 (approximate value, no strict verdict)."
+
+- id: cmp_phi1_1d_pde_fig5A
+  purpose: reproduction
+  computed: phi1_1d_pde_fig5A
+  printed: phi1_z2l2_fig5a
+  note: "1D deterministic AMB+ PDE (Eq. A2 operator) independently reproduces Fig. 5(a) phi_1 = -1.096 at zeta=1, lambda=-0.5."
+
+- id: cmp_phi2_1d_pde_fig5A
+  purpose: reproduction
+  computed: phi2_1d_pde_fig5A
+  printed: phi2_z2l2_fig5a
+  note: "1D deterministic AMB+ PDE independently reproduces Fig. 5(a) phi_2 = 0.864 at zeta=1, lambda=-0.5."
+
+- id: cmp_phi1_1d_pde_fig5C
+  purpose: reproduction
+  computed: phi1_1d_pde_fig5C
+  printed: phi1_z2l2_fig5a
+  note: "1D deterministic AMB+ PDE independently reproduces Fig. 5(a) phi_1 = -1.096 at zeta=4, lambda=1."
+
+- id: cmp_phi2_1d_pde_fig5C
+  purpose: reproduction
+  computed: phi2_1d_pde_fig5C
+  printed: phi2_z2l2_fig5a
+  note: "1D deterministic AMB+ PDE independently reproduces Fig. 5(a) phi_2 = 0.864 at zeta=4, lambda=1."
+
+# ==============================================================================
+# 3. Forward vs Reverse Ostwald Regimes (Figs. 3, 4, 5, 6)
+# ==============================================================================
+- id: cmp_ostwald_sign_fig3A_pseudotension
+  purpose: reproduction
+  computed: sign_drop_fig3A
+  printed: ostwald_sign_fig3_A
+  note: "Reproduces Region A (sigma > 0, forward Ostwald for droplets) at zeta=-1, lambda=0.5 via Eq. (20)."
+
+- id: cmp_ostwald_sign_fig3B_pseudotension
+  purpose: reproduction
+  computed: sign_drop_fig3B
+  printed: ostwald_sign_fig3_B
+  note: "Reproduces Region B (sigma < 0, reverse Ostwald for droplets) at zeta=-4, lambda=-1 via Eq. (20)."
+
+- id: cmp_ostwald_sign_fig5A_bubble
+  purpose: reproduction
+  computed: sign_bub_fig5A
+  printed: ostwald_sign_fig5_A_bubble
+  note: "Reproduces Region A (sigma_bubble > 0, forward Ostwald for bubbles) at zeta=1, lambda=-0.5."
+
+- id: cmp_ostwald_sign_fig5C_bubble
+  purpose: reproduction
+  computed: sign_bub_fig5C
+  printed: ostwald_sign_fig5_C_bubble
+  note: "Reproduces Region C (sigma_bubble < 0, reverse Ostwald for bubbles) at zeta=4, lambda=1."
+
+- id: cmp_ostwald_sign_fig6A_pseudotension
+  purpose: reproduction
+  computed: sign_drop_fig6A
+  printed: ostwald_sign_fig6_A
+  note: "Reproduces Fig. 6 top regime A (normal Ostwald) at zeta=-0.8, lambda=-0.4 via Eq. (20) (smooth zeta-2*lambda=0 limit: sigma = 0.2 * sigma_eq > 0)."
+
+- id: cmp_ostwald_sign_fig6B_pseudotension
+  purpose: reproduction
+  computed: sign_drop_fig6B
+  printed: ostwald_sign_fig6_B
+  note: "Reproduces Fig. 6 bottom regime B (reverse Ostwald) at zeta=-1.6, lambda=-0.8 via Eq. (20) (sigma = -0.6 * sigma_eq < 0)."
+
+- id: cmp_ostwald_sign_fig3A_slope
+  purpose: reproduction
+  computed: sign_slope_fig3A
+  printed: ostwald_sign_fig3_A
+  note: "Corrected Appendix C confirms d(phi_-)/dR < 0 (forward Ostwald) at zeta=-1, lambda=0.5 (Fig. 3a red)."
+
+- id: cmp_ostwald_sign_fig3B_slope
+  purpose: reproduction
+  computed: sign_slope_fig3B
+  printed: ostwald_sign_fig3_B
+  note: "Corrected Appendix C confirms d(phi_-)/dR > 0 (reverse Ostwald) at zeta=-4, lambda=-1 (Fig. 3a blue)."
+
+- id: cmp_ostwald_sign_fig4b_ode_A
+  purpose: reproduction
+  computed: sign_ode_fig4b_A
+  printed: ostwald_sign_fig3_A
+  note: "Two-droplet ODE Eqs. (E1)-(E2) confirms forward Ostwald ripening (R_1 grows, R_2 shrinks) at zeta=-1, lambda=0.5 (Fig. 4b red)."
+
+- id: cmp_ostwald_sign_fig4b_ode_B
+  purpose: reproduction
+  computed: sign_ode_fig4b_B
+  printed: ostwald_sign_fig3_B
+  note: "Two-droplet ODE Eqs. (E1)-(E2) confirms reverse Ostwald ripening (R_1 and R_2 converge) at zeta=-4, lambda=-1 (Fig. 4b blue)."
+
+- id: cmp_ostwald_sign_fig6A_pde
+  purpose: reproduction
+  computed: sign_pde_fig6A
+  printed: ostwald_sign_fig6_A
+  note: "2D AMB+ two-droplet PDE confirms forward Ostwald ripening at Fig. 6 top parameters (zeta=-0.8, lambda=-0.4)."
+
+- id: cmp_ostwald_sign_fig6B_pde
+  purpose: reproduction
+  computed: sign_pde_fig6B
+  printed: ostwald_sign_fig6_B
+  note: "2D AMB+ two-droplet PDE confirms reverse Ostwald ripening at Fig. 6 bottom parameters (zeta=-1.6, lambda=-0.8)."
+
+- id: cmp_J_mag_fig6A_pde
+  purpose: reproduction
+  computed: J_mag_pde_fig6A
+  printed: J_mag_fig6_order
+  note: "Checks typical vapor current magnitude |J| ~ 10^-4 reported in Fig. 6 caption for normal Ostwald (approximate value, no strict verdict)."
+
+- id: cmp_J_mag_fig6B_pde
+  purpose: reproduction
+  computed: J_mag_pde_fig6B
+  printed: J_mag_fig6_order
+  note: "Checks typical vapor current magnitude |J| ~ 10^-4 reported in Fig. 6 caption for reverse Ostwald (approximate value, no strict verdict)."
+
+# ==============================================================================
+# 4. Internal Consistency Checks Exposing Printed Misprints (Eqs. 30, 34, C2, G4-G6)
+# ==============================================================================
+- id: cmp_eq30_printed_vs_eq28_passive
+  purpose: approximation
+  computed: beta_over_Rs_eq30_printed_passive
+  printed: beta_over_Rs_eq28_passive
+  note: "Printed Eq. (30) underpredicts exact Eq. (28) beta/R_s at small epsilon = 0.001 by a factor of 4 (spurious 1/(Delta_phi * Delta_psi) factor)."
+
+- id: cmp_eq30_corr_vs_eq28_passive
+  purpose: approximation
+  computed: beta_over_Rs_eq30_corr_passive
+  printed: beta_over_Rs_eq28_passive
+  note: "Corrected Eq. (30) (beta/R_s = f''(phi_1)*epsilon) matches exact Eq. (28) to O(epsilon) (~0.15% at epsilon = 0.001)."
+
+- id: cmp_eq34_printed_vs_eq39_prefactor
+  purpose: reproduction
+  computed: log_prefactor_eq34_printed
+  printed: mu_qs_log_prefactor_eq39
+  note: "Printed Eq. (34) (-tau*v*grad_i v) implies log(tau*v^2 + T) prefactor 3/2 in mu_qs, failing to reproduce 1/2 printed in Eq. (39)."
+
+- id: cmp_eq34_corr_vs_eq39_prefactor
+  purpose: reproduction
+  computed: log_prefactor_eq34_corr
+  printed: mu_qs_log_prefactor_eq39
+  note: "Corrected Stratonovich-to-Ito sign (+tau*v*grad_i v) in Eq. (34) reproduces the 1/2 prefactor of log(tau*v^2 + T) in Eq. (39)."
+
+- id: cmp_appC_printed_vs_corr_fig3B
+  purpose: consistency
+  computed: phi_plus_appC_printed_fig3B
+  printed: phi_plus_appC_corr_fig3B
+  note: "Quantifies the discrepancy caused by printed Eq. (C2)'s opposite O(1/R) signs at R=15 in Region B (printed yields phi_+ ≈ 1.368 vs corrected 1.258, matching Fig. 3b)."
+
+- id: cmp_eqG4_printed_vs_corr_Kqs
+  purpose: consistency
+  computed: K_qs_printed
+  printed: K_qs_corr
+  note: "Quantifies printed Eq. (G4)'s discrepancy against exact Eq. (39) expansion: printed omits tau and adds a spurious 1/2, differing by factor 1/(2*tau) = 2.5 at tau = 0.2."
+
+- id: cmp_eqG5_printed_vs_corr_K1qs
+  purpose: consistency
+  computed: K1_qs_printed
+  printed: K1_qs_corr
+  note: "Quantifies printed Eq. (G5)'s discrepancy against exact Eq. (39) expansion: printed omits tau, differing by factor 1/tau = 5 at tau = 0.2."
+
+- id: cmp_eqG6_printed_vs_corr_lamqs
+  purpose: consistency
+  computed: lam_qs_printed
+  printed: lam_qs_corr
+  note: "Quantifies printed Eq. (G6)'s discrepancy against exact Eq. (39) expansion: printed omits tau in both terms (differing by factor 1/tau = 5 at tau = 0.2)."
+
+# ==============================================================================
+# 5. Additional Audit Reproduction Comparisons (Sec. III p. 7 & Sec. V Fig. 5a)
+# ==============================================================================
+- id: cmp_phi1_eq9_fig5C
+  purpose: reproduction
+  computed: phi1_eq9_fig5C
+  printed: phi1_z2l2_fig5a
+  note: "Direct integration of Eq. (9) reproduces Fig. 5(a) exact 3-decimal binodal phi_1 = -1.096 at Region C parameters (zeta=4, lambda=1)."
+
+- id: cmp_phi2_eq9_fig5C
+  purpose: reproduction
+  computed: phi2_eq9_fig5C
+  printed: phi2_z2l2_fig5a
+  note: "Direct integration of Eq. (9) reproduces Fig. 5(a) exact 3-decimal binodal phi_2 = 0.864 at Region C parameters (zeta=4, lambda=1)."
+
+- id: cmp_ostwald_sign_passive_droplet
+  purpose: reproduction
+  computed: sign_drop_passive
+  printed: ostwald_sign_passive
+  note: "Verifies equilibrium passive limit (zeta=0, lambda=0) has positive tension (+1) for droplets (p. 7)."
+
+- id: cmp_ostwald_sign_passive_bubble
+  purpose: reproduction
+  computed: sign_bub_passive
+  printed: ostwald_sign_passive
+  note: "Verifies equilibrium passive limit (zeta=0, lambda=0) has positive tension (+1) for bubbles (p. 7)."
+
+- id: cmp_ostwald_sign_amb_droplet
+  purpose: reproduction
+  computed: sign_drop_amb
+  printed: ostwald_sign_amb
+  note: "Verifies Active Model B (zeta=0, lambda=1) lies strictly in Region A (sigma > 0, +1 for droplets, p. 7)."
+
+- id: cmp_ostwald_sign_amb_bubble
+  purpose: reproduction
+  computed: sign_bub_amb
+  printed: ostwald_sign_amb
+  note: "Verifies Active Model B (zeta=0, lambda=1) lies strictly in Region A (sigma_bubble > 0, +1 for bubbles, p. 7)."
+
+- id: cmp_ostwald_sign_fig3A_bubble
+  purpose: reproduction
+  computed: sign_bub_fig3A
+  printed: ostwald_sign_fig3_A_bubble
+  note: "Verifies Region A (zeta=-1, lambda=0.5) maintains forward Ostwald (+1) for vapor bubbles as well as droplets (p. 7)."
+
+- id: cmp_ostwald_sign_fig3B_bubble
+  purpose: reproduction
+  computed: sign_bub_fig3B
+  printed: ostwald_sign_fig3_B_bubble
+  note: "Verifies Region B (zeta=-4, lambda=-1) maintains forward Ostwald (+1) for vapor bubbles while reversing droplets (p. 7)."
+
+- id: cmp_ostwald_sign_fig5A_droplet
+  purpose: reproduction
+  computed: sign_drop_fig5A
+  printed: ostwald_sign_fig5_A_droplet
+  note: "Verifies Region A (zeta=1, lambda=-0.5) maintains forward Ostwald (+1) for liquid droplets as well as bubbles (p. 7)."
+
+- id: cmp_ostwald_sign_fig5C_droplet
+  purpose: reproduction
+  computed: sign_drop_fig5C
+  printed: ostwald_sign_fig5_C_droplet
+  note: "Verifies Region C (zeta=4, lambda=1) maintains forward Ostwald (+1) for liquid droplets while reversing bubbles (p. 7)."
+
+# ==============================================================================
+# 6. Digitized Figure Curve Comparisons (Figs. 2, 3a-b, 4a-b)
+# ==============================================================================
+# --- Fig. 2: Flat-interface binodals vs (zeta - 2*lambda) ---
+- id: cmp_fig2_phi1_eq9
+  purpose: reproduction
+  computed: phi1_fig2_eq9
+  printed: fig2_phi1_curve
+  note: "Direct Eq. (9) integration reproduces the entire digitized Fig. 2 lower binodal phi_1(zeta - 2*lambda) across [-5.8, 5.8] to < 0.001."
+
+- id: cmp_fig2_phi2_eq9
+  purpose: reproduction
+  computed: phi2_fig2_eq9
+  printed: fig2_phi2_curve
+  note: "Direct Eq. (9) integration reproduces the entire digitized Fig. 2 upper binodal phi_2(zeta - 2*lambda) across [-5.8, 5.8] to < 0.001."
+
+- id: cmp_fig2_phi1_B2_printed
+  purpose: reproduction
+  computed: phi1_fig2_B2_printed
+  printed: fig2_phi1_curve
+  note: "Printed Appendix B Eq. (B2) (-6*zeta*K^2*phi) evaluated at lambda = 1 fails drastically to reproduce Fig. 2 phi_1 across [-5.8, 5.8], confirming breakdown of (zeta - 2*lambda) invariance."
+
+- id: cmp_fig2_phi2_B2_printed
+  purpose: reproduction
+  computed: phi2_fig2_B2_printed
+  printed: fig2_phi2_curve
+  note: "Printed Appendix B Eq. (B2) evaluated at lambda = 1 fails drastically to reproduce Fig. 2 phi_2 across [-5.8, 5.8]."
+
+- id: cmp_fig2_phi1_B2_corr
+  purpose: reproduction
+  computed: phi1_fig2_B2_corr
+  printed: fig2_phi1_curve
+  note: "Corrected Eq. (B2) (-6*(zeta-2*lambda)*K^2*phi) at lambda = 1 reproduces all 14 digitized points of Fig. 2 phi_1 cleanly."
+
+- id: cmp_fig2_phi2_B2_corr
+  purpose: reproduction
+  computed: phi2_fig2_B2_corr
+  printed: fig2_phi2_curve
+  note: "Corrected Eq. (B2) at lambda = 1 reproduces all 14 digitized points of Fig. 2 phi_2 cleanly."
+
+# --- Fig. 3(a): Outer curved-droplet density phi_-(R) ---
+- id: cmp_fig3a_O1R_A
+  purpose: approximation
+  computed: phim_fig3a_O1R_A
+  printed: fig3a_phi_minus_theory_A
+  note: "Leading O(1/R) Eqs. (16, 18-22) compared against digitized Fig. 3(a) Region A analytical curve."
+
+- id: cmp_fig3a_appC_printed_A
+  purpose: reproduction
+  computed: phim_fig3a_appC_printed_A
+  printed: fig3a_phi_minus_theory_A
+  note: "Printed Appendix C Eq. (C2) (reversed O(1/R) signs) fails sharply to reproduce Fig. 3(a) Region A phi_-(R) (errors up to 0.074 at R = 5)."
+
+- id: cmp_fig3a_appC_corr_A
+  purpose: reproduction
+  computed: phim_fig3a_appC_corr_A
+  printed: fig3a_phi_minus_theory_A
+  note: "Corrected Appendix C Eq. (C2) reproduces Fig. 3(a) Region A phi_-(R) across R in [3.5, 38] (agreement < 0.001 for R >= 8)."
+
+- id: cmp_fig3a_O1R_B
+  purpose: approximation
+  computed: phim_fig3a_O1R_B
+  printed: fig3a_phi_minus_theory_B
+  note: "Leading O(1/R) underpredicts curvature shift of Fig. 3(a) Region B phi_-(R) at small R (error 0.035 at R = 6)."
+
+- id: cmp_fig3a_appC_printed_B
+  purpose: reproduction
+  computed: phim_fig3a_appC_printed_B
+  printed: fig3a_phi_minus_theory_B
+  note: "Printed Appendix C Eq. (C2) misses Fig. 3(a) Region B phi_-(R) systematically at small R."
+
+- id: cmp_fig3a_appC_corr_B
+  purpose: reproduction
+  computed: phim_fig3a_appC_corr_B
+  printed: fig3a_phi_minus_theory_B
+  note: "Corrected Appendix C Eq. (C2) reproduces Fig. 3(a) Region B phi_-(R) to < 0.001 for R >= 12 (vs 0.035 error for O(1/R) at R = 6)."
+
+- id: cmp_fig3a_sim_A_vs_appC_corr
+  purpose: validation
+  computed: phim_fig3a_appC_corr_sim_A
+  printed: fig3a_phi_minus_sim_A
+  note: "Compares corrected Appendix C phi_-(R) against the 5 digitized 2D PDE simulation markers in Fig. 3(a) Region A."
+
+- id: cmp_fig3a_sim_B_vs_appC_corr
+  purpose: validation
+  computed: phim_fig3a_appC_corr_sim_B
+  printed: fig3a_phi_minus_sim_B
+  note: "Compares corrected Appendix C phi_-(R) against the 10 digitized 2D PDE simulation markers in Fig. 3(a) Region B."
+
+# --- Fig. 3(b): Inner curved-droplet density phi_+(R) ---
+- id: cmp_fig3b_O1R_A
+  purpose: approximation
+  computed: phip_fig3b_O1R_A
+  printed: fig3b_phi_plus_theory_A
+  note: "Leading O(1/R) compared against digitized Fig. 3(b) Region A analytical phi_+(R)."
+
+- id: cmp_fig3b_appC_printed_A
+  purpose: reproduction
+  computed: phip_fig3b_appC_printed_A
+  printed: fig3b_phi_plus_theory_A
+  note: "Printed Appendix C Eq. (C2) fails catastrophically on Fig. 3(b) Region A phi_+(R) (non-monotonic, off by 0.15 at R = 5)."
+
+- id: cmp_fig3b_appC_corr_A
+  purpose: reproduction
+  computed: phip_fig3b_appC_corr_A
+  printed: fig3b_phi_plus_theory_A
+  note: "Corrected Appendix C Eq. (C2) reproduces Fig. 3(b) Region A phi_+(R) to <= 0.001 for R >= 12."
+
+- id: cmp_fig3b_O1R_B
+  purpose: approximation
+  computed: phip_fig3b_O1R_B
+  printed: fig3b_phi_plus_theory_B
+  note: "Leading O(1/R) underpredicts Fig. 3(b) Region B phi_+(R) by 0.033 at R = 16."
+
+- id: cmp_fig3b_appC_printed_B
+  purpose: reproduction
+  computed: phip_fig3b_appC_printed_B
+  printed: fig3b_phi_plus_theory_B
+  note: "Printed Appendix C Eq. (C2) overshoots Fig. 3(b) Region B phi_+(R) dramatically (+0.091 at R = 16, +0.067 at R = 20)."
+
+- id: cmp_fig3b_appC_corr_B
+  purpose: reproduction
+  computed: phip_fig3b_appC_corr_B
+  printed: fig3b_phi_plus_theory_B
+  note: "Corrected Appendix C Eq. (C2) reduces error by >10x vs printed Eq. (C2) (residual 0.001-0.009 at R = 13.5-38, reflecting 1-step vs higher-order iterative w(phi) refinement)."
+
+- id: cmp_fig3b_sim_A_vs_appC_corr
+  purpose: validation
+  computed: phip_fig3b_appC_corr_sim_A
+  printed: fig3b_phi_plus_sim_A
+  note: "Compares corrected Appendix C phi_+(R) against the 5 digitized 2D PDE simulation markers in Fig. 3(b) Region A."
+
+- id: cmp_fig3b_sim_B_vs_appC_corr
+  purpose: validation
+  computed: phip_fig3b_appC_corr_sim_B
+  printed: fig3b_phi_plus_sim_B
+  note: "Compares corrected Appendix C phi_+(R) against the 3 digitized 2D PDE simulation markers in Fig. 3(b) Region B."
+
+# --- Fig. 4(a): Mean-field phase boundaries sigma = 0 ---
+- id: cmp_fig4a_boundary_AB
+  purpose: reproduction
+  computed: lam_star_fig4a_AB
+  printed: fig4a_boundary_AB_curve
+  note: "Eq. (23) phase_boundary_eq23 reproduces all 11 digitized points of the Fig. 4(a) Region A/B boundary lambda*(zeta) for zeta in [-3.9, -0.4]."
+
+- id: cmp_fig4a_boundary_AC
+  purpose: reproduction
+  computed: lam_star_fig4a_AC
+  printed: fig4a_boundary_AC_curve
+  note: "Eq. (23) phase_boundary_eq23 reproduces all 11 digitized points of the Fig. 4(a) Region A/C bubble boundary lambda*_bubble(zeta) for zeta in [0.4, 3.9]."
+
+# --- Fig. 4(b): Two-droplet radii R_1(t), R_2(t) vs t ---
+- id: cmp_fig4b_verbatim_A_R1
+  purpose: reproduction
+  computed: R1_fig4b_verbatim_A
+  printed: fig4b_R1_theory_A_curve
+  note: "Verbatim printed Appendix E Eqs. (E1)-(E2) (without 2D log screening) evolves ~1.7x too fast in Region A and caps R_1 at 19.07 (area conservation) vs 20.0+ in Fig. 4(b) red dashed."
+
+- id: cmp_fig4b_verbatim_A_R2
+  purpose: reproduction
+  computed: R2_fig4b_verbatim_A
+  printed: fig4b_R2_theory_A_curve
+  note: "Verbatim printed Appendix E Eqs. (E1)-(E2) evaporates R_2 by t ~ 10000 vs ~17500 in Fig. 4(b) red dashed (~1.75x faster than plotted)."
+
+- id: cmp_fig4b_verbatim_B_R1
+  purpose: reproduction
+  computed: R1_fig4b_verbatim_B
+  printed: fig4b_R1_theory_B_curve
+  note: "Verbatim printed Appendix E Eqs. (E1)-(E2) converges faster and higher (R_eq = 13.46 vs 13.26) than Fig. 4(b) blue dashed R_1(t)."
+
+- id: cmp_fig4b_verbatim_B_R2
+  purpose: reproduction
+  computed: R2_fig4b_verbatim_B
+  printed: fig4b_R2_theory_B_curve
+  note: "Verbatim printed Appendix E Eqs. (E1)-(E2) overshoots Fig. 4(b) blue dashed R_2(t) by +0.45 at t = 10000-20000 and converges to 13.46 vs 13.26."
+
+- id: cmp_fig4b_log2d_A_R1
+  purpose: reproduction
+  computed: R1_fig4b_log2d_A
+  printed: fig4b_R1_theory_A_curve
+  note: "Reconstructed 2D log-screened ODE (dividing dR_i/dt by ln(ell/R_i), ell = 50) matches both the ~1.7x slowdown and the R_1 > 19.1 overshoot of Fig. 4(b) red dashed R_1(t)."
+
+- id: cmp_fig4b_log2d_A_R2
+  purpose: reproduction
+  computed: R2_fig4b_log2d_A
+  printed: fig4b_R2_theory_A_curve
+  note: "Reconstructed 2D log-screened ODE (ell = 50) matches the R_2(t) evaporation timescale (t ~ 17500) of Fig. 4(b) red dashed R_2(t)."
+
+- id: cmp_fig4b_log2d_B_R1
+  purpose: reproduction
+  computed: R1_fig4b_log2d_B
+  printed: fig4b_R1_theory_B_curve
+  note: "Reconstructed 2D log-screened ODE (ell = 50) closely tracks Fig. 4(b) blue dashed R_1(t) across 3 decades of time."
+
+- id: cmp_fig4b_log2d_B_R2
+  purpose: reproduction
+  computed: R2_fig4b_log2d_B
+  printed: fig4b_R2_theory_B_curve
+  note: "Reconstructed 2D log-screened ODE (ell = 50) reproduces the slowdown and R_eq undershoot (< 13.5) of Fig. 4(b) blue dashed R_2(t)."
+
+

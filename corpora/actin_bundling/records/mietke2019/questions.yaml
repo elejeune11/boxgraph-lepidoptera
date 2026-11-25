@@ -1,0 +1,609 @@
+# Open questions, verified mathematical/typographical errors, and unstated choices in mietke2019
+
+- id: q_eqs71_R0_squared_misprint
+  kind: possible_error
+  about:
+    - sphere_mode_l_stability_eqs69_71
+    - sphere_mode_l_stability_eqs69_71_corrected
+    - cmp_sphere_mode_l1_eqs71_printed
+  text: >
+    SI Eq. (S71) (PDF p. 19, SI p. 13) prints the linearized diffusion-turnover bracket on the sphere
+    as [R0^2 * D * l*(l+1) + k], multiplying D by R0^2 instead of dividing by R0^2. This is dimensionally
+    inconsistent ([length]^4/[time] added to 1/[time]) and contradicts Eq. (S72) on the very same page
+    (-2*D/R0^2 - k for l=1) as well as main-text Eq. (26) (2*D/R0^2 + k). At R0 = 10 um and
+    D = 3 um^2/s, the printed Eq. (S71) misses the threshold condition lambda_1 = 0 by -599.94 s^-1,
+    whereas the corrected variant with D*l*(l+1)/R0^2 reproduces Eq. (S72) and lambda_1 = 0 identically.
+  citation:
+    page: 19
+    printed_page: "SI-13"
+    quote: "R02 Dl(l + 1) + k"
+    where: "Eq. (S71)"
+
+- id: q_nu_bar_missing_slash
+  kind: possible_error
+  about:
+    - viscosity_parameter_nu_bar
+    - viscosity_parameter_nu_bar_corrected
+    - cmp_nu_bar_infimum_printed
+    - cmp_cyl_Lcrit_a3_printed_nu_vs_jac
+  text: >
+    SI Sec. 4.2 (PDF p. 21, SI p. 15) defines the viscosity parameter as
+    "nu_bar = (eta_s + eta_b)(4*eta_s) > 1/4", omitting the division slash. The printed product has
+    dimension [mass]^2/[time]^2 rather than dimensionless, violates nu_bar > 1/4 whenever viscosities
+    are small, and breaks Eq. (S84) (giving L_crit/(2*pi*r0) = 0.985 instead of the Jacobian's 0.820
+    at alpha = 3, kappa = 0). Restoring the slash to nu_bar = (eta_s + eta_b)/(4*eta_s) matches
+    Eq. (S80)'s prefactor (eta_s + eta_b)/(4*eta_s*eta_b) = nu_bar/eta_b, strictly satisfies > 1/4,
+    and reproduces the Jacobian stability boundary to machine precision.
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "and a viscosity parameter ν̄ = (ηs + ηb )(4ηs ) > 1/4"
+    where: "SI Sec. 4.2"
+
+- id: q_eqs41_pole_bending_factor
+  kind: possible_error
+  about:
+    - sphere_hydrodynamics_single_step_eqs32_33
+    - sphere_hydrodynamics_single_step_eqs32_33_corrected
+    - sphere_spatial_convergence_s2a
+    - sphere_spatial_convergence_s2a_corrected
+    - cmp_s2a_kappa025_order_vn_printed
+  text: >
+    SI Eq. (S41) (PDF p. 11, SI p. 5) states the pole limit of the normal force balance Eq. (S33) as
+    4*eta_b*C_s^s*(d_s v_s + C_s^s v_n) + 2*(xi*f(c) + gamma)*C_s^s - 8*kappa*d_s^2 C_s^s = p.
+    However, near a smooth axisymmetric pole with C_s^s(s) = c0 + (c2/2)*s^2 + O(s^4), integrating
+    psi(s) = c0*s + (c2/6)*s^3 and r(s) = s - (c0^2/6)*s^3 gives C_phi^phi(s) = sin(psi)/r =
+    c0 + (c2/6)*s^2 + O(s^4), so d_s^2 C_phi^phi|_0 = (1/3)*d_s^2 C_s^s|_0 (not d_s^2 C_s^s|_0).
+    Consequently d_s^2 C_k^k|_0 = (4/3)*d_s^2 C_s^s|_0, and the bending term
+    -2*kappa*(d_s^2 C_k^k + Gamma_phi_s^phi d_s C_k^k)|_0 = -4*kappa*d_s^2 C_k^k|_0 equals
+    -(16/3)*kappa*d_s^2 C_s^s|_0 rather than -8*kappa*d_s^2 C_s^s|_0. All spherical simulations in
+    the paper set kappa = 0, masking the error; at kappa_tilde = 0.25 on the Fig. S2A spheroid,
+    printed -8 creates an O(1) discontinuity in vn at the poles and destroys O(N^-4) convergence
+    (order ~ -0.08), whereas -(16/3) restores smooth O(N^-4) convergence.
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "Using Eqs. (S36)–(S37), it follows that Eq. (S32) vanishes identically"
+    where: "Eq. (S41)"
+
+- id: q_fig2b_hill_exponent_discrepancy
+  kind: unexplained_difference
+  about:
+    - sphere_active_surface_pde
+    - run_pde_fig2b
+    - hill_m_main
+  text: >
+    Table S1 (p. 18) and SI Video 1 (p. 23) state that all simulations in the main text use Hill
+    exponent m = 2 (f(c) = c^2/(c0^2 + c^2)). With m = 2, our periodic tubular PDE solver reproduces
+    Fig. 3D's steady peristaltic wave to three significant figures (c_max = 2.85, vs_cm in [0.04, 1.59],
+    C_s^s in [-0.95, 0.33], C_phi^phi_max = 4.54). For Fig. 2B (xi/gamma = 10, D*tau/R0^2 = 0.3,
+    k*tau = 0, kappa = 0), however, m = 2 converges to c_tilde(0) = 19.9, vs_min = -2.14 at s/L = 0.27,
+    C_s^s(0) = 0.52, and C_s^s_max = 1.92 at s/L = 0.35, whereas the plotted curves in Fig. 2B show
+    c_tilde(0) ~ 18.9, vs_min ~ -2.07 at s/L ~ 0.31, C_s^s(0) ~ 0.58, and C_s^s_max ~ 1.72 at s/L ~ 0.38.
+    Running the exact same solver with Hill exponent m = 1 yields C_s^s(0) = 0.580, C_s^s_max = 1.723
+    at s/L = 0.382, vs_min = -2.034 at s/L = 0.311, and c_tilde(0) = 18.7 (19.1 with 2% initial mean
+    excess from a random perturbation), matching every feature of Fig. 2B. This suggests Fig. 2B may
+    have been generated with m = 1 rather than the reported m = 2; calibrated curve digitization in the
+    next stage will test this quantitatively.
+  citation:
+    page: 18
+    printed_page: "SI-12"
+    quote: "The Hill-coefficient m in Eq. (12) was in all simulations shown in the main text set to m = 2"
+    where: "Table S1 / Fig. 2B"
+
+- id: q_fig3a_unstated_xi_f0_protocol
+  kind: unstated_input
+  about:
+    - fig3a_xi_f0_fixed_added
+    - cylinder_stability_boundary_fig3a
+    - run_cyl_stab_fig3a_k025_a0
+    - run_cyl_stab_fig3a_k025_a3
+  text: >
+    The text and caption of Fig. 3A (p. 5) do not state the values of D*tau/r0^2, k*tau, or how
+    the homogeneous active tension xi*f(c0)/gamma is treated as alpha is varied along the vertical
+    axis. Matching the plotted curves reveals that Fig. 3A uses Table S1's D*tau/r0^2 = 0.05,
+    k*tau = 1.95, eta_s/eta_b = 1 (giving alpha_c^* = 2.0) and holds xi*f(c0)/gamma = 3 FIXED
+    (corresponding to Table S1's xi/gamma = 6, f(c0) = 1/2 while varying the Hill slope c0*d_c f(c0)
+    independently). Holding xi*f(c0)/gamma = 3 fixed produces the vertical red dashed kappa_tilde = 0.25
+    boundary at L0/(2*pi*r0) = 1.129 for alpha < alpha_c^*(0.25) = 1.989 and matches both boundaries
+    across alpha in [0, 5]. If instead xi/gamma were varied at fixed m = 2 (xi*f(c0)/gamma = alpha),
+    the kappa_tilde = 0.25 boundary would curve strongly rightwards below alpha = 2 to L0/(2*pi*r0) =
+    1.887 at alpha = 0, contradicting Fig. 3A.
+  citation:
+    page: 5
+    printed_page: "33"
+    quote: "Stable and unstable regions are separated by"
+    where: "Fig. 3A caption"
+
+- id: q_sphere_re_lambda_overstated_stable
+  kind: overstated_claim
+  about:
+    - sphere_mode_l_stability_eqs69_71_corrected
+    - sphere_polar_growth_rate_eqs72
+  text: >
+    SI Sec. 4.1 (PDF p. 20, SI p. 14) claims unconditionally that "the general Jacobian of this
+    system for l >= 2 yields growth-rates lambda_l with Re(lambda_l) < lambda_1, such that the polar
+    mode l = 1 always becomes unstable first and growth fastest." Because J11 < 0, J22 < lambda_1,
+    and J12*J21 < 0 for all l >= 2, Re(lambda_l) < max(J11, J22) < lambda_1 indeed holds rigorously
+    whenever lambda_1 >= 0 (so l = 1 always destabilizes first and grows fastest in the unstable
+    regime). However, in the deep stable regime (lambda_1 < 0, e.g., small alpha and large D or
+    large eta_s/eta_b), the hydrodynamic shape-relaxation rate J11 < 0 can be less negative than
+    the l = 1 diffusive decay rate lambda_1 < 0, yielding 0 > Re(lambda_l) > lambda_1.
+  citation:
+    page: 20
+    printed_page: "SI-14"
+    quote: "general Jacobian of this system for l ≥ 2 yields growth-rates"
+    where: "SI Sec. 4.1"
+
+- id: q_eqs23_extraneous_tn_phi
+  kind: possible_error
+  about:
+    - sphere_hydrodynamics_single_step_eqs32_33
+  text: >
+    SI Eq. (S23) (PDF p. 9, SI p. 3) prints the axisymmetric normal force balance as
+    d_s t_n^s + Gamma_phi_s^phi*(t_n^s + t_n^phi) - C_s^s t_s^s - C_phi^phi t_phi^phi = -f_n^ext.
+    The "+ t_n^phi" inside the Christoffel term is extraneous and dimensionally mismatched with t_n^s:
+    the covariant divergence nabla_i t_n^i = d_s t_n^s + Gamma_phi_s^phi * t_n^s contains no t_n^phi
+    term. Because t_n^phi = 0 by axisymmetry, the slip cancels before Eq. (S33).
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "∂s tsn + Γφφs tsn + tφn − C ss tss − C φφ tφφ = −fnext"
+    where: "Eq. (S23)"
+
+- id: q_unstated_external_force_F0
+  kind: unstated_input
+  about:
+    - tube_active_surface_pde
+  text: >
+    On p. 5 (right column), the authors test neck stabilization with kappa = 0 and an external radial
+    force f_ext = F0*(r0/r - 1)*e_r and report that directed flows still emerge, but neither the value
+    of F0 (nor its dimensionless amplitude F0*r0/gamma) nor any quantitative profile or wave speed
+    from this test is stated.
+  citation:
+    page: 5
+    printed_page: "33"
+    quote: "spontaneous symmetry breaking, we chose κ = 0"
+    where: "text"
+
+- id: q_unstated_numerical_discretization_params
+  kind: unstated_input
+  about:
+    - sphere_active_surface_pde
+    - tube_active_surface_pde
+    - run_pde_fig2b
+    - run_pde_fig3d
+  text: >
+    SI Sec. 3.1 describes 4th-order centered finite differences on N collocation points with explicit
+    Euler step size delta_t, and Table S1 lists physical dimensionless parameters for Figs. 2B–C,
+    3B–D, and S2A–C, but the paper does not state the grid sizes N, step sizes delta_t, initial
+    perturbation amplitudes/profiles, or final integration times used to generate Figs. 2B, 2C,
+    3B, 3C, 3D, or S1 (nor the physical parameters of Fig. S1, though its initial curvature
+    C_tilde_s^s(0) ~ 1.735 matches Fig. 2C's prolate spheroid e = 0.75).
+  citation:
+    page: 17
+    printed_page: "SI-11"
+    quote: "using explicit Euler time stepping with step size δt"
+    where: "SI Sec. 3.1"
+
+- id: q_minor_si_typos
+  kind: reading
+  about:
+    - tube_active_surface_pde
+    - sphere_active_surface_pde
+  text: >
+    Several minor typographical errors appear in the SI text and figure labels without affecting the
+    equations: (1) SI Sec. 2.2.3 (PDF p. 16, SI p. 10) refers to "Figs. 4 B and C" and "Fig. 4 D"
+    where the main article has only Figs. 1–3 (referring to Figs. 3B, 3C, 3D); (2) Fig. S1 C top panel
+    (PDF p. 16) labels the y-tick below 0 as "0.5" instead of "-0.5"; (3) SI Video 3–5 captions (PDF
+    p. 23) write "D*tau/R0^2 = 0.05" instead of "D*tau/r0^2 = 0.05" for cylindrical surfaces.
+  citation:
+    page: 16
+    printed_page: "SI-10"
+    quote: "was used for the solutions shown in Figs. 4 B and C"
+    where: "SI Sec. 2.2.3 / Fig. S1 / SI Videos 3–5"
+
+- id: q_pde_time_integrator_choice
+  kind: choice
+  about:
+    - sphere_active_surface_pde
+    - tube_active_surface_pde
+    - run_pde_fig2b
+    - run_pde_fig3d
+  text: >
+    While SI Sec. 3.1 uses explicit Euler time stepping (which faces a severe O(du^4/kappa) step-size
+    restriction when kappa > 0, e.g. Nt = 3.2e5 in Fig. S2B), our full nonlinear PDE solvers
+    sphere_active_surface_pde and tube_active_surface_pde use adaptive implicit BDF integration
+    (and odd-N periodic spectral differentiation on tubes to avoid centered-FD Nyquist decoupling)
+    so each run completes in a few seconds while solving the identical continuum PDEs. Explicit Euler
+    O(Nt^-1) convergence is verified directly in tube_temporal_convergence_s2b, and spatial/temporal
+    convergence of the BDF runs is verified in refinements.yaml.
+  citation:
+    page: 17
+    printed_page: "SI-11"
+    quote: "using explicit Euler time stepping with step size δt"
+    where: "SI Sec. 3.1"
+
+- id: q_eqs70_bending_factor_two
+  kind: possible_error
+  about:
+    - sphere_mode_l_stability_eqs69_71
+    - sphere_mode_l_stability_eqs69_71_corrected
+    - sphere_mode_l_stability_eqs69_71_s70_s71_corrected
+    - cmp_sphere_mode_l2_kappa_s70_vs_corrected
+  text: >
+    SI Eq. (S70) (PDF p. 19, SI p. 13) prints the linearized spherical normal force balance bending
+    term as (kappa/R0^2)*l*(l+1)*(l-1)*(l+2)*delta_R_l, omitting a factor of 2. Because the paper's
+    Helfrich free energy Eq. (5) is F_H = int dA [gamma + kappa*(C_k^k)^2] (so Mietke's kappa equals
+    half the standard Helfrich modulus kappa_H = 2*kappa), the axisymmetric normal force balance
+    Eq. (S33) correctly contains -2*kappa*Delta_Gamma C_k^k (and cylindrical Eq. S79 correctly contains
+    2*k_n^4). Linearizing -2*kappa*Delta_Gamma C_k^k around a sphere R = R0 + delta_R_l*Y_l yields
+    +(2*kappa/R0^4)*l*(l+1)*(l-1)*(l+2)*delta_R_l, requiring (2*kappa/R0^2)*l*(l+1) in Eq. (S70)
+    (verified both symbolically with SymPy for l = 2, 3 and numerically against the Eq. S33
+    hydrodynamic solver: at l = 2, kappa_tilde = 0.5, xi = 0, eta_s = eta_b = 1, the exact Eq. S33
+    decay rate is J11 = -17.500 vs printed Eq. S70's -10.000). The error vanishes for l = 1 (where
+    (l-1)*(l+2) = 0) and for kappa = 0 (all spherical simulations in the paper), so Eq. (S72),
+    Eq. (26), and Figs. 2B–C and S2A–C are unaffected.
+  citation:
+    page: 19
+    printed_page: "SI-13"
+    quote: "l(l + 1) + γ + ξf (c0 ) (l − 1)(l + 2)δRl Yl = 0"
+    where: "Eq. (S70)"
+
+- id: q_si_sec42_root_k2_and_alpha_c_kappa
+  kind: overstated_claim
+  about:
+    - cylinder_trace_det_roots_eqs84_86
+    - cylinder_stability_boundary_fig3a
+  text: >
+    Two analytical omissions appear in SI Sec. 4.2 (PDF p. 21, SI p. 15) and its cross-reference on
+    p. 5: (1) Below Eq. (S86), the text writes that alpha < alpha_c^* implies k_tilde_n^(2) < 1 and
+    k_tilde_n^(2) < k_tilde_n^c < 1, with det(J) < 0 for k_tilde_n^(2) < k_tilde_n < 1. However,
+    whenever alpha*gamma < (eta_b + eta_s)*k, the radicand of Eq. (S86) is negative so no real
+    positive root k_tilde_n^(2) exists (det(J) < 0 on all of 0 <= k_tilde_n < 1); for the paper's
+    own Fig. 3 parameters (eta_s = eta_b, k*tau = 1.95, D*tau/r0^2 = 0.05), (eta_b + eta_s)*k/gamma
+    = 3.9 > alpha_c^* = 2.0, so k_tilde_n^(2) is purely imaginary throughout alpha < alpha_c^* (and
+    at alpha = 3). Moreover, when k_tilde_n^(2) is real (requiring eta_s*k < eta_b*D/r0^2), one has
+    det(J) > 0 for 0 < k_tilde_n < k_tilde_n^(2) < 1 and instability there follows from Tr(J) > 0
+    rather than det(J) < 0 (the final stability conclusion k_tilde_n < 1 unstable / > 1 stable for
+    alpha < alpha_c^* remains valid). (2) Main text p. 5 states that alpha_c^* depends on kappa and
+    cites the SI Appendix, but SI Sec. 4.2 analyzes only kappa = 0 analytically and never derives
+    alpha_c^*(kappa).
+  citation:
+    page: 21
+    printed_page: "SI-15"
+    quote: "From this, we see that α < αc∗ implies"
+    where: "SI Sec. 4.2 / Eq. (S86)"
+
+- id: q_sphere_pde_nyquist_drift_fig2b
+  kind: numerics
+  about:
+    - sphere_active_surface_pde
+    - run_pde_fig2b
+    - fig2b_steady_time_added
+  text: >
+    Audit check of run_pde_fig2b (sphere_active_surface_pde at N = 61, t/tau = 8): the basis note of
+    fig2b_steady_time_added in added.yaml states that t/tau = 8 reaches max|v_n| < 1e-5, whereas the
+    actual output pde_fig2b_vn_max_pred is 8.32e-3. Tracking max|v_n|(t) shows it reaches a minimum
+    of 8.2e-5 near t/tau = 4 and subsequently grows due to centered-FD Nyquist decoupling in Eq. (S49)
+    (D1o @ D1e at kappa = 0), causing BDF step-size failure before t/tau = 10 (so the listed
+    alternative t/tau = 12 in added.yaml crashes). Solving the exact vn = 0 steady-state first-order
+    BVP independently (rms residual 5e-8) confirms that run_pde_fig2b at t/tau = 8 remains accurate
+    to 0.2% on c(0) (19.919 vs exact 19.8825) and 0.75% on C_s^s_max (1.933 vs exact 1.9187), and
+    independently confirms q_fig2b_hill_exponent_discrepancy (exact m = 1 BVP: c(0) = 18.6922,
+    vs_min = -2.0340 at s/L = 0.3156, C_s^s(0) = 0.5798, C_s^s_max = 1.7241 at s/L = 0.3870). Also
+    noted: solve_hydro_sphere and solve_hydro_tube use Vn_lz = +inv_An * cos_psi rather than the
+    physical z-force sign -inv_An * cos_psi; this is benign here because lam_z ~ 1e-4 -> 0, though
+    -cos_psi ensures strictly positive projection int (sin^2 psi + cos^2 psi) r ds > 0 on arbitrarily
+    oblate shapes.
+  citation:
+    page: 4
+    printed_page: "32"
+    quote: "deformed steady-state shape emerges with a localized patch of stress regulator"
+    where: "Fig. 2B"
+
+- id: q_additional_si_typos
+  kind: reading
+  about:
+    - sphere_active_surface_pde
+    - tube_temporal_convergence_s2b
+  text: >
+    Additional minor typographical and cross-reference slips identified during independent audit:
+    (1) SI Sec. 2.1.2 (PDF p. 13, SI p. 7) below Eq. (S48) prints "valid for psi != n + pi/2, n in Z"
+    instead of psi != n*pi + pi/2; (2) SI Sec. 3.2 (PDF p. 17, SI p. 11) states that temporal
+    convergence (Fig. S2B) is validated "using a process as shown in Fig. S1" (a relaxing spheroid),
+    whereas Fig. S2B (p. 18) and Table S1 actually use a passive tubular surface (xi = 0,
+    L0/(2*pi*r0) = 2.5, kappa/(gamma*r0^2) = 0.15); (3) SI Sec. 3.1 and 3.2 (PDF p. 17) cite
+    "Eq. (S58)" for the imposed volume-conservation constraint, whereas the imposed integral
+    constraint int v_n sqrt(g) du = 0 is Eq. (S59); (4) in Fig. 2B (PDF p. 4), the 3D surface
+    colorbar runs from 0 to 18 while the adjacent steady-state profile peaks near c_tilde(0) ~ 18.9.
+  citation:
+    page: 13
+    printed_page: "SI-7"
+    quote: "Although this derivation is only valid for ψ 6= n + π/2, n ∈ Z"
+    where: "SI Sec. 2.1.2 / Sec. 3.1–3.2 / Fig. 2B"
+
+- id: q_fig2b_digitized_m1_settled
+  kind: unexplained_difference
+  about:
+    - fig2b_c_fig
+    - fig2b_vs_fig
+    - fig2b_Css_fig
+    - fig2b_Cphi_fig
+    - cmp_fig2b_c_m2
+    - cmp_fig2b_vs_m2
+    - cmp_fig2b_Css_m2
+    - cmp_fig2b_Cphi_m2
+    - cmp_fig2b_c_m1_hypothesis
+    - cmp_fig2b_vs_m1_hypothesis
+    - cmp_fig2b_Css_m1_hypothesis
+    - cmp_fig2b_Cphi_m1_hypothesis
+  text: >
+    Calibrated digitization of all four Fig. 2B profiles (52 calibrated points across c_tilde,
+    v_s_tilde, C_s^s_tilde, and C_phi^phi_tilde) quantitatively settles q_fig2b_hill_exponent_discrepancy.
+    Evaluating the spherical PDE with Table S1's reported Hill exponent m = 2 fails reproduction on
+    every curve (RMS deviations 0.36 on c_tilde, 0.094 on v_s_tilde, 0.131 on C_s^s_tilde, and 0.052
+    on C_phi^phi_tilde; e.g., C_s^s_tilde(0.02) = 0.518 vs digitized 0.578 and peak 1.914 at s/L = 0.35
+    vs digitized 1.721 at s/L = 0.38). Substituting Hill exponent m = 1 reproduces every single
+    calibrated point across all four curves within its reading interval (14/14 on c_tilde, 14/14 on
+    v_s_tilde, 14/14 on C_s^s_tilde, 10/10 on C_phi^phi_tilde), cutting RMS error by 7-22x (to 0.0059
+    on C_s^s_tilde and 0.010 on v_s_tilde). By contrast, Fig. 3D (c_tilde and v_s_tilde) and Fig. S1 /
+    Fig. 2C quantitatively confirm m = 2, indicating Fig. 2B alone was generated with m = 1 despite
+    Table S1 and SI Video 1 stating m = 2 for all main-text simulations.
+  citation:
+    page: 4
+    printed_page: "32"
+    quote: "concentration c̃ = c/c0 , in-plane flow"
+    where: "Fig. 2B (Right) / Table S1"
+
+- id: q_fig3d_curvature_vertical_offset
+  kind: possible_error
+  about:
+    - fig3d_Css_fig
+    - fig3d_Cphi_fig
+    - cmp_fig3d_Css
+    - cmp_fig3d_Cphi
+  text: >
+    Calibrated digitization of Fig. 3D (bottom right) reveals a rigid upward vertical misalignment of
+    Delta_C ~ +0.130 (~28 px at 2400 dpi, ~0.85 pt in PDF coordinates) affecting both plotted curvature
+    curves (C_s^s_tilde and C_phi^phi_tilde) relative to the y-axis ticks (0, 2, 4) and the horizontal
+    dashed reference lines at 0 and 1. This misalignment is independently proved by differential
+    geometry: on any periodic axisymmetric tube, Eq. (17) (d_s psi = C_s^s) requires
+    int_0^1 C_s^s_tilde d(s/L) = (r_0/L)[psi(L) - psi(0)] = 0 identically, whereas integrating the
+    plotted blue C_s^s_tilde curve across 97 densely sampled points yields +0.123 (+0.130 over [0, 1],
+    implying an impossible +52 deg net tangent-angle drift per period). Relative to our m = 2 tubular
+    PDE solution (which reproduces Fig. 3D's c_tilde across all 14 points with RMS = 0.018), both
+    plotted curvature curves sit rigidly higher by the same constant offset (+0.132 +/- 0.011 for
+    C_s^s_tilde; +0.122 +/- 0.028 for C_phi^phi_tilde), consistent with an accidental vertical nudge
+    of the grouped curve artwork during figure assembly. Smaller (~11-12 px at 2400 dpi) vertical
+    offsets also appear between the overlaid left and right y-axes in Fig. 2B (top) and Fig. 3D
+    (bottom left), though in those panels the right tick marks shifted together with the orange curve.
+  citation:
+    page: 5
+    printed_page: "33"
+    quote: "and principle curvatures"
+    where: "Fig. 3D (bottom right)"
+
+- id: q_figs1_params_and_c_init_settled
+  kind: unstated_input
+  about:
+    - figs1b_h_t2_fig
+    - figs1b_h_t3_fig
+    - figs1b_Css_t1_fig
+    - figs1b_Css_t2_fig
+    - figs1c_vs_t1_fig
+    - figs1c_vs_t2_fig
+    - figs1c_vn_t1_fig
+    - figs1c_vn_t2_fig
+    - figs1_c_init_conserved_added
+  text: >
+    Calibrated digitization of all eight nontrivial profiles in Fig. S1B-C identifies Fig. S1's
+    unstated physical parameters (noted in q_unstated_numerical_discretization_params) as the exact
+    Fig. 2C prolate-spheroid relaxation simulation (e = 0.75, xi/gamma = 15, kappa_tilde = 0,
+    D*tau/R0^2 = 8, k*tau = 0, m = 2) sampled at t_1/tau = 0, t_2/tau ~ 0.073, and t_3/tau -> inf.
+    Moreover, comparing the t_1 = 0 velocity profiles against the single-step hydrodynamic solver
+    uncovers an unstated initial concentration normalization: initializing the e = 0.75 spheroid
+    (surface area A_0 = 1.02847 * 4*pi*R_0^2) at c_init = c_0 = 1 overpredicts both v_s(t_1) and
+    v_n(t_1) by a uniform factor of 1.0253, whereas initializing with conserved total molecule number
+    N_c = 4*pi*R_0^2*c_0 (so c_init/c_0 = 4*pi*R_0^2/A_0 = 0.97232, ensuring the final relaxed sphere
+    reaches c = c_0 = 1) reduces total initial tension 1 + (xi/gamma)*f(c_init) with m = 2 by
+    0.9753x and matches Fig. S1C at t_1 to four significant figures (v_n(0.5) = +1.1497 vs digitized
+    +1.1495; v_n(0.03) = -3.0059 vs digitized -3.0066), while simultaneously explaining Fig. 2C's
+    dark-blue (~0.97) color at t = 0 transitioning to cyan (~1.00) at t -> inf.
+  citation:
+    page: 16
+    printed_page: "SI-10"
+    quote: "Exemplary dynamics of collocation points and the geometric fields"
+    where: "Fig. S1B-C / Fig. 2C"
+
+- id: q_figs2_convergence_prefactor_and_finite_ref
+  kind: numerics
+  about:
+    - figs2a_vn_fig
+    - figs2a_vs_fig
+    - figs2b_Css_fig
+    - figs2b_Cphi_fig
+    - figs2c_vol_fig
+    - figs2c_Nc_fig
+    - cmp_figs2a_vn_scaling
+    - cmp_figs2a_vs_scaling
+    - cmp_figs2b_Css_scaling
+    - cmp_figs2b_Cphi_scaling
+  text: >
+    Calibrated digitization of Fig. S2A-C quantifies three numerical details beyond the printed scaling
+    exponents: (1) In Fig. S2A, the four digitized marker pairs lie at N = 51, 101, 201, 401; the v_s
+    errors scale cleanly as N^-3.96 (reproducing the claimed N^-4 law across all four points), whereas
+    the v_n errors decay slightly more slowly (~N^-3.70, matching our own single-step solver's
+    pole-adjacent N^-3.65 slope) and both series sit ~4x (v_s) and ~9x (v_n) above our solver's
+    error magnitudes, reflecting unstated boundary-stencil / quadrature implementation details in the
+    authors' MATLAB code. (2) In Fig. S2B, the five marker pairs lie at N_t = 1e4, 2e4, 4e4, 8e4,
+    1.6e5 (binary halving from N_t_ref = 3.2e5); because the error relative to a finite reference
+    scales as 1/N_t - 1/N_t_ref rather than pure 1/N_t, the empirical log-log slope steepens from
+    ~1.1 to ~1.5 near N_t = 8e4, causing pure N_t^-1 scaling to miss the 1.6e5 point. (3) In Fig. S2C,
+    the digitized relative conservation errors plateau at |V(t)-V(0)|/V(0) = 1.84 x 10^-5 and
+    |N_c(t)-N_c(0)|/N_c(0) = 5.17 x 10^-7, consistent with explicit Euler stepping near N = 51,
+    delta_t ~ 10^-4 (unstated in the SI).
+  citation:
+    page: 18
+    printed_page: "SI-12"
+    quote: "Validation of convergence behaviour and conservation properties"
+    where: "Fig. S2A-C"
+
+# --- Cross-record audit questions and findings ({bois2011, hannezo2015, gov2018, mirza2025}) ---
+
+- id: q_cross_validation_audit_hannezo2015
+  kind: choice
+  about:
+    - cylinder_jacobian_eqs80_82
+    - cylinder_stability_boundary_fig3a
+    - cylinder_trace_det_roots_eqs84_86
+    - cylinder_critical_contractility_eq27
+    - ref-16
+    - hannezo2015/ring_wavelength_embryo_wt
+    - hannezo2015/ring_wavelength_larva_wt_early
+    - hannezo2015/taenidial_wavelength_larva_wt_late
+    - hannezo2015/ring_wavelength_src42
+    - hannezo2015/taenidial_wavelength_moesin_rnai
+    - hannezo2015/ring_wavelength_kkv1
+    - hannezo2015/fig3c_kkv_diameter_vs_actin_data
+    - hannezo2015/fig4f_cop_actin_vs_diameter_data
+  text: >
+    Cross-validation audit of mietke2019 against all 4 related records {bois2011, hannezo2015,
+    gov2018, mirza2025} finds 0 physically well-posed cross-validations (validations.yaml left empty):
+    (1) bois2011, gov2018, and mirza2025 are pure theory/simulation records with 0 `origin: measured`
+    datums. (2) hannezo2015 contains 35 measured Drosophila tracheal datums, including circumferential
+    actin ring spacing (WT stage-16 embryo 0.5 +/- 0.1 um, early larva 1.2 +/- 0.1 um, late larva
+    1.45 +/- 0.3 um, Src42A 0.8 +/- 0.2 um, moesin RNAi 1.8 +/- 0.5 um, chitin-depleted kkv1
+    4.5 +/- 2 um), FRAP diffusivity D = 0.04 +/- 0.03 um^2/s and turnover time tau = 15 +/- 7 s,
+    and tracheal diameters (WT mean r0 = 2.388 um from Fig. 4F; kkv1 mean r0 = 1.539 um from Fig. 3C).
+    Quantitative analysis of mietke2019's cylindrical active-surface model Eqs. (S80)-(S82)
+    (cylinder_jacobian_eqs80_82) proves it CANNOT select a finite periodic ring wavelength: because
+    mietke2019 sets external tangential substrate friction identically to zero (f_j^ext = 0, p. 6 /
+    SI p. 13), long-wavelength in-plane flows are unscreened. Analytically, the geometric driving
+    function T(k) = -kappa_tilde*(2*k^4 - k^2 + 3) + (1 + xi*f0/gamma)*(1 - k^2) is strictly
+    decreasing in k^2 wherever T(k) > 0 (an interior maximum in k^2 requires kappa_tilde >
+    1 + xi*f0/gamma, where T_max < -1.875*kappa_tilde < 0), and the active diagonal entry
+    J_22 = alpha - D_tilde*k^2 - k_tilde is strictly decreasing in k^2. Numerical evaluation across
+    Drosophila tracheal scales (r0 = 1.539-2.388 um, D = 0.04 um^2/s, k = 1/15 s^-1, eta_b = 10-1000
+    pN*s/um, gamma = 100 pN/um, kappa_tilde in [0, 10], alpha/alpha_c^* in [0.5, 5]) confirms
+    k_max -> 0 (lambda_max -> infinity, Type-II long-wavelength coarsening to 1 constriction per
+    periodic box) in every case, in fundamental contrast to hannezo2015's friction-screened Type-I
+    wavelength selection lambda_c = 2*pi*(D*tau*eta/xi)^(1/4). Moreover, cylinder_stability_boundary_fig3a
+    outputs only the dimensionless minimum unstable box aspect ratio L_crit/(2*pi*r0) (not a
+    dimensional wavelength [length] and not lambda_max; converting L_crit = 2*pi*r0/k_crit yields
+    the Plateau-Rayleigh circumference 15.0 um for WT / 9.7 um for kkv1 at alpha <= alpha_c^*,
+    and varies arbitrarily with unmeasured supercriticality alpha above alpha_c^*), and no mietke2019
+    model predicts FRAP recovery, ring counts, or fluorescence ramps.
+  citation:
+    page: 6
+    printed_page: "34"
+    quote: "of external forces, including tangential shear forces acting on"
+    where: "Discussion (p. 34) / SI Sec. 4.2 Eqs. (S80)-(S82)"
+
+- id: q_gov2018_helfrich_convention_and_cylinder_variation
+  kind: unexplained_difference
+  about:
+    - sphere_mode_l_stability_eqs69_71_s70_s71_corrected
+    - cylinder_bending_factor_eqs79
+    - cylinder_equilibrium_pressure_si
+    - q_eqs70_bending_factor_two
+    - rel_gov2018_sphere_mode_l_reduces_flat_disp
+    - rel_gov2018_cyl_bending_scales_cyl_ring_short
+    - rel_gov2018_cyl_bending_scales_cyl_ring_long
+    - gov2018/bending_energy_density_eq2_1
+    - gov2018/tube_equilibrium_radius
+    - gov2018/cylindrical_ring_dispersion
+    - gov2018/flat_membrane_dispersion
+  text: >
+    Cross-record comparison between mietke2019 and gov2018 establishes three exact Helfrich-membrane
+    results: (1) Bending-modulus factor of 2: mietke2019 Eq. (5) writes F_H = int dA [gamma +
+    kappa*(C_k^k)^2] (so f_bend = kappa_M*(c_1 + c_2)^2), whereas gov2018 Eq. (2.1) writes
+    f_bend = (1/2)*kappa_G*(H - n*H0)^2 with H = c_1 + c_2, giving exact equivalence kappa_Gov =
+    2*kappa_Mietke. This independently confirms q_eqs70_bending_factor_two (SI Eq. S70 dropped the
+    factor of 2 in front of kappa_M): only the corrected variant sphere_mode_l_stability_eqs69_71_s70_s71_corrected
+    reduces identically to gov2018/flat_membrane_dispersion under kappa_Gov = 2*kappa_Mietke
+    (rel_gov2018_sphere_mode_l_reduces_flat_disp). (2) Zero-pressure equilibrium tube radius: setting
+    p0^c = 0 and xi = 0 in mietke2019/cylinder_equilibrium_pressure_si yields r0 = sqrt(kappa_M/gamma)
+    = sqrt(kappa_G/(2*sigma)), matching gov2018/tube_equilibrium_radius identically (with active
+    extension r0 = sqrt(kappa_M/(gamma + xi*f(c0)))). (3) Intermediate-wavenumber cylindrical second
+    variation: substituting zero-pressure tension gamma = kappa_M/r0^2 into mietke2019 Eqs. (S77)+(S79)
+    (exact Ou-Yang & Helfrich 1989) gives restoring stiffness (kappa_M/r0^4)*[(2*k^4 - k^2 + 3) +
+    (k^2 - 1)] = (kappa_G/r0^4)*(q^4*r0^4 + 1) with exact cancellation of the q^2*r0^2 term, whereas
+    gov2018/cylindrical_ring_dispersion (reconstructed at H0 = 0 using c_theta = 1/R without the
+    1/sqrt(1 + h'^2) slope-softening factor) gives (kappa_G/R0^4)*(q^4*R0^4 + q^2*R0^2 + 1), which
+    agrees in both q*R0 >> 1 and q*R0 << 1 scaling limits (rel_gov2018_cyl_bending_scales_cyl_ring_short/long)
+    but is up to 1.5x stiffer at q*R0 = 1.
+  citation:
+    page: 2
+    printed_page: "30"
+    quote: "with constant surface tension γ and bending rigidity κ, described"
+    where: "Eq. (5) / SI Eq. (S79)"
+
+- id: q_mirza2025_viscosity_and_noncommuting_zero_friction_limit
+  kind: choice
+  about:
+    - cylinder_critical_contractility_dimless
+    - cylinder_critical_contractility_eq27
+    - cylinder_jacobian_eqs80_82
+    - rel_mirza2025_iso_dimless_reduces_cyl_dimless
+    - rel_mirza2025_caseA_L0_approx_cyl_dimless
+    - rel_mirza2025_disp_1d_approx_cyl_jac
+    - rel_mirza2025_iso_dim_scales_cyl_eq27
+    - mirza2025/isotropic_threshold_dimless
+    - mirza2025/caseA_critical_L0_eqC13
+    - mirza2025/dispersion_1d_eqC7
+    - mirza2025/ref-mietke2019
+  text: >
+    Cross-record analysis between mietke2019 and mirza2025 reveals three structural points:
+    (1) 2D viscous constitutive mapping: mirza2025's 2D viscous stress sigma^diss = 2*eta*(d + tr(d)*I)
+    decomposes into traceless shear plus isotropic bulk stress as 2*eta*(d - (1/2)*tr(d)*I) +
+    3*eta*tr(d)*I, matching mietke2019 Eq. (9) exactly at eta_s = h*eta and eta_b = 3*h*eta
+    (eta_s/eta_b = 1/3, 1D longitudinal viscosity eta_s + eta_b = 4*h*eta, explaining the factor of 4
+    in rel_mirza2025_iso_dimless_reduces_cyl_dimless and rel_mirza2025_disp_1d_approx_cyl_jac).
+    (2) Non-commutativity of the isotropic (kappa -> 0) and zero-friction (gamma -> 0, i.e. k_bar_d -> oo)
+    limits in mirza2025/caseA_critical_L0_eqC13: the product k_bar_d*delta = (k_d*eta/(gamma*D))*
+    (gamma*D*kappa*beta/(2*eta*c_0)) = k_d*kappa*beta/(2*c_0) is strictly independent of substrate
+    friction gamma. Sending gamma -> 0 at fixed contractile anisotropy kappa*beta < 0 therefore hits
+    Mirza's singular boundary 4 + 4*k_bar_d*delta <= 0 rather than reducing to mietke2019's isotropic
+    threshold; convergence to mietke2019 requires taking kappa -> 0 first (|k_bar_d*delta| << 1,
+    verified in rel_mirza2025_caseA_L0_approx_cyl_dimless). (3) Bibliographic disambiguation:
+    mirza2025/references.yaml entry ref-mietke2019 refers to Mietke et al., Phys. Rev. Lett.
+    123:188101 (2019) ("Minimal model of cellular symmetry breaking"), a different article from
+    this PNAS mietke2019 record.
+  citation:
+    page: 2
+    printed_page: "30"
+    quote: "deviatoric tension of the isotropic active thin film is given by"
+    where: "Eq. (9) (p. 30)"
+
+- id: q_bois2011_hill_exponent_and_fixed_vs_deforming_instability
+  kind: choice
+  about:
+    - hill_regulation_eq12
+    - cylinder_trace_det_roots_eqs84_86
+    - cylinder_critical_contractility_eq27
+    - q_fig2b_digitized_m1_settled
+    - ref-14
+    - rel_bois2011_hill_boundary_reduces_cyl_eq27
+    - rel_bois2011_sphere_mode_l_reduces_disp_raw
+    - bois2011/single_species_stability_boundary_hill
+    - bois2011/single_species_dispersion_raw
+  text: >
+    Mietke et al. (2019) p. 3 explicitly cite Bois et al. (2011) (ref-14) when introducing the
+    saturating Hill regulation f(c) = c^m/(c0^m + c^m) (Eq. 12). Bois et al. use m = 1
+    (f(c) = c/(1 + c), giving c0*d_c f(c0) = 1/4 at c0 = 1), whereas Mietke Table S1 reports m = 2
+    (c0*d_c f(c0) = 1/2) for all main-text figures — yet calibrated digitization
+    (q_fig2b_digitized_m1_settled) shows Mietke Fig. 2B actually matches Bois's m = 1 exponent.
+    Structurally, Mietke's cylindrical determinant root k_tilde_n^(2) = sqrt((alpha -
+    (1 + eta_s/eta_b)*k_tilde)/((1 + eta_s/eta_b)*D_tilde)) (Eq. S86, cylinder_trace_det_roots_eqs84_86)
+    is precisely the marginal wavenumber (lambda = 0) of the fixed-geometry zero-friction active
+    fluid (Bois Eq. 12 / Hannezo Eq. 7 with delta_r = 0 and viscosity eta_s + eta_b), whereas
+    allowing radial shape deformations lowers the threshold to alpha_c^* = D_tilde + k_tilde
+    (Eq. 27, viscosity eta_b alone, smaller by a factor of 1 + eta_s/eta_b = 2 for eta_s = eta_b).
+  citation:
+    page: 3
+    printed_page: "31"
+    quote: "local active tension. Following previous works (7, 14, 15), this"
+    where: "Eq. (12) (p. 31) / SI Eq. (S86)"
+
+

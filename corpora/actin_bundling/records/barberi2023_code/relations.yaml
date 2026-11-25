@@ -1,0 +1,664 @@
+# Cross-record ModelAtlas relations for barberi2023_code (Barberi-Kruse-2022 Julia repository)
+# paired with:
+#   - barberi2023 (Barberi & Kruse, Phys. Rev. Lett. 131, 238401, 2023)
+#   - mirza2025   (Mirza et al., eLife 13:RP93097, 2024/2025; cites barberi2023 pp. 2, 8)
+#
+# Structure:
+# - Section 1: 1D homogeneous steady state and linear stability (code_stability_point_1d vs
+#   barberi2023/homogeneous_steady_state, linear_stability_1d_sm15, stability_boundary_smfig1).
+# - Section 2: 1D periodic and no-flux PDE steady-state solvers (code_1d_periodic_pde and
+#   code_1d_noflux_pde vs barberi2023/pde_1d_steady_state_sm1_5 and pde_1d_spike_scaling_smfig3,
+#   plus internal comparison between shipped 1D/NoFlux and 1D/PeriodicBoundaries).
+# - Section 3: 2D periodic PDE solver (code_2d_periodic_pde vs barberi2023/pde_2d_time_eq1_5_printed
+#   [stated, refuted: traceless 1 + 2|K|^2 vs printed Eq. 3's 1 + 2.5|K|^2] and
+#   barberi2023/pde_2d_time_eq1_5 [proposed, verified approximated_by]).
+# - Section 4: Cross-paper isotropic active-gel dispersion bridge to mirza2025
+#   (code_stability_point_1d vs mirza2025/dispersion_1d_eqC7 and fastest_growing_mode_eqC7).
+#
+# Notes on unlinked models (full 7 x 24 barberi2023 & 7 x 49 mirza2025 audit):
+# - Curve-port models (barberi2023_code/code_stability_diagram_1d, code_1d_periodic_profile;
+#   barberi2023/pde_1d_profile_sm1_5, pde_1d_snaking_branch_sm1_5, pde_1d_flux_profile_sm4,
+#   pde_1d_phase_orbit_sm1_5, profile_fwhm_from_curve) cannot be tested directly in ModelAtlas
+#   (boxgraph/atlas.py tests single-valued scalar ports only); their underlying scalar engines are
+#   tested below and their full curves are verified directly in comparisons.yaml (see
+#   q_cross_record_curve_relations_and_mirza2025).
+# - barberi2023_code/code_grid_config_derived encodes Julia-specific discretization/CFL/frame-count
+#   formulas with no counterpart model in barberi2023 or mirza2025.
+# - barberi2023/pde_1d_time_sm1_5 runs time integration of passive travelling waves (SM Fig. 2),
+#   whereas code_1d_periodic_pde defaults to steady-state newton_krylov on the spike branch.
+# - barberi2023's dimensional scale models (hydrodynamic_length, diffusive_timescale), viscous/
+#   nonviscous constitutive helpers, 8D spatial dynamics (spatial_dynamics_*_sm24), and local
+#   inner-wavelength LSA (inner_wavelength_lsa_*) have no released script in Barberi-Kruse-2022
+#   (q_missing_analysis_scripts).
+# - mirza2025's dimensional scale, nematic Q-tensor, Landau free energy, entropy-production, and
+#   CytoSim agent-based models have no counterpart in purely dimensionless isotropic barberi2023_code.
+
+# ==============================================================================
+# 1. 1D Homogeneous Steady State & Linear Stability (1D/stabilitydiagram.jl vs barberi2023)
+# ==============================================================================
+
+- id: rel_code_hss_same_paper_hss
+  kind: same_as
+  a: barberi2023_code/code_stability_point_1d
+  b: barberi2023/homogeneous_steady_state
+  mapping:
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d0: "0"
+    Omega_d: "Omega_d"
+    Z: "Z"
+    B: "Z"
+    Nbar: "1"
+  output_map:
+    C_H: C_HSS
+  regime:
+    A: [0.5, 2.0]
+    Kd: [0.5, 2.0]
+    Dc: [0.005, 0.05]
+    Dap: [1.1, 1.1]
+    Dam: [-0.9, -0.9]
+    Omega0: [0.2, 1.0]
+    Omega_d: [2.0, 15.0]
+    Z: [5.0, 25.0]
+    Omega: [0.5, 25.0]
+    L: [31.4159265359, 31.4159265359]
+    Nx: [16.0, 16.0]
+  provenance: stated
+  citation:
+    file: 1D/stabilitydiagram.jl
+    lines: "92-99"
+    quote: 'EqnHSS(Na) = - (Pars["Ωd"] * Pars["A"] / Pars["Kd"]) * Na^2 + Pars["Ω0"] * (1 - Na) * (1 + Pars["Ω"] * Na^2)'
+    where: "1D/stabilitydiagram.jl lines 92-99 vs barberi2023 Eqs. (SM7)-(SM10)"
+  assumptions:
+    - "1D/stabilitydiagram.jl hardcodes Omega_d0 = 0, B = Z (line 90), and N_bar = 1 (line 97)."
+
+- id: rel_code_stability_point_same_lsa_sm15
+  kind: same_as
+  a: barberi2023_code/code_stability_point_1d
+  b: barberi2023/linear_stability_1d_sm15
+  mapping:
+    K: "2 * pi / L"
+    Dc: "Dc"
+    Da: "(Dap + Dam) / 2"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d0: "0"
+    Omega_d: "Omega_d"
+    Z: "Z"
+    B: "Z"
+  output_map:
+    max_growth_rate: MaxEigenvRe
+  regime:
+    A: [0.9, 1.1]
+    Kd: [0.9, 1.1]
+    Dc: [0.005, 0.02]
+    Dap: [1.1, 1.1]
+    Dam: [-0.9, -0.9]
+    Omega0: [0.45, 0.55]
+    Omega_d: [8.0, 12.0]
+    Z: [16.0, 26.0]
+    Omega: [15.0, 25.0]
+    L: [3.0, 15.0]
+    Nx: [4.0, 4.0]
+  provenance: stated
+  citation:
+    file: 1D/stabilitydiagram.jl
+    lines: "51-83"
+    quote: "StabilityMatrix = zeros(Float64, 3, 3) # This is the matrix M mentioned in the Supplemental Material"
+    where: "1D/stabilitydiagram.jl lines 51-83 vs barberi2023 Eqs. (SM15)-(SM23)"
+  assumptions:
+    - "Single discrete wavenumber Nx = 4 so Nk = floor((pi/(L/4) - 2*pi/L)/(2*pi/L)) = 1 and K_1 = 2*pi/L."
+    - "Unit reference diffusivity Di = (Dap - Dam)/2 = 1 (Dap = 1.1, Dam = -0.9), Omega_d0 = 0, and B = Z."
+    - "Tested in the linearly unstable regime (MaxEigenvRe > 0) so the uninitialized column Nk + 1 = 0 allocated on line 52 of 1D/stabilitydiagram.jl does not clamp the leading eigenvalue to zero."
+
+- id: rel_code_stability_point_same_lsa_sm15_hopf_freq
+  kind: same_as
+  a: barberi2023_code/code_stability_point_1d
+  b: barberi2023/linear_stability_1d_sm15
+  mapping:
+    K: "2 * pi / L"
+    Dc: "Dc"
+    Da: "(Dap + Dam) / 2"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d0: "0"
+    Omega_d: "Omega_d"
+    Z: "Z"
+    B: "Z"
+  output_map:
+    dominant_freq: MaxEigenvIm
+  regime:
+    A: [0.95, 1.05]
+    Kd: [0.95, 1.05]
+    Dc: [0.008, 0.012]
+    Dap: [1.1, 1.1]
+    Dam: [-0.9, -0.9]
+    Omega0: [0.45, 0.55]
+    Omega_d: [9.0, 11.0]
+    Z: [0.1, 1.0]
+    Omega: [30.0, 40.0]
+    L: [2.2, 3.4]
+    Nx: [4.0, 4.0]
+  provenance: stated
+  citation:
+    file: 1D/stabilitydiagram.jl
+    lines: "112-123"
+    quote: "MaxEigenvIm = imag.(EigenvStabilityMatrix[MaxEigenvIndex[1], MaxEigenvIndex[2]])"
+    where: "1D/stabilitydiagram.jl lines 112-123 vs barberi2023 Eqs. (SM15)-(SM23) Type I_o oscillatory frequency"
+  assumptions:
+    - "Single discrete mode Nx = 4 (K_1 = 2*pi/L) inside the Type I_o Hopf unstable region (MaxEigenvRe > 0, MaxEigenvIm > 0), with Di = 1, Omega_d0 = 0, and B = Z."
+
+- id: rel_code_stability_discrete_vs_continuum_smfig1
+  kind: approximated_by
+  a: barberi2023_code/code_stability_point_1d
+  b: barberi2023/stability_boundary_smfig1
+  mapping:
+    Z: "Z"
+    Dc: "Dc"
+    Da: "(Dap + Dam) / 2"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega_d0: "0"
+    Omega_d: "Omega_d"
+  output_map:
+    Omega_crit: Omega_crit_discrete
+  regime:
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Dc: [0.01, 0.01]
+    Dap: [1.1, 1.1]
+    Dam: [-0.9, -0.9]
+    Omega0: [0.5, 0.5]
+    Omega_d: [10.0, 10.0]
+    Z: [5.0, 22.0]
+    Omega: [0.0, 30.0]
+    L: [31.4159265359, 31.4159265359]
+    Nx: [512.0, 512.0]
+  tolerance: 0.03
+  provenance: stated
+  citation:
+    file: README.md
+    lines: "6"
+    quote: "1D/stabilitydiagram.jl >> numerical calculation of the instability boundary of the homogeneous steady state. The result is featured in the stability diagram of the Supplementary Material."
+    where: "README.md line 6 & 1D/stabilitydiagram.jl lines 43-49 vs barberi2023 SM Fig. 1"
+  assumptions:
+    - "Quantifies the exact discrete-wavenumber shift of 1D/stabilitydiagram.jl (L = 10*pi, Nx = 512, K_p = 0.2*p for p = 1..255) relative to continuum stability_boundary_smfig1 (k_min = 0.02) across Z in [5, 22]: max relative offset 2.09% (e.g. at Z = 15, discrete 8.3177 vs continuum 8.1435)."
+
+- id: rel_code_stability_large_L_approx_continuum_smfig1
+  kind: approximated_by
+  a: barberi2023_code/code_stability_point_1d
+  b: barberi2023/stability_boundary_smfig1
+  mapping:
+    Z: "Z"
+    Dc: "Dc"
+    Da: "(Dap + Dam) / 2"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega_d0: "0"
+    Omega_d: "Omega_d"
+  output_map:
+    Omega_crit: Omega_crit_discrete
+  regime:
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Dc: [0.01, 0.01]
+    Dap: [1.1, 1.1]
+    Dam: [-0.9, -0.9]
+    Omega0: [0.5, 0.5]
+    Omega_d: [10.0, 10.0]
+    Z: [5.0, 22.0]
+    Omega: [0.0, 30.0]
+    L: [314.159265359, 314.159265359]
+    Nx: [2048.0, 2048.0]
+  tolerance: 0.001
+  provenance: proposed
+  reason: >
+    Increasing L tenfold from shipped L = 10*pi (K_min = 0.2) to L = 100*pi (Nx = 2048,
+    K_min = 0.02 matching barberi2023/stability_boundary_smfig1's k_min = 0.02) collapses
+    the discrete-vs-continuum instability-threshold discrepancy across Z in [5, 22] from
+    2.09% down to 2.4e-10, directly proving that SM Fig. 1's upward offset arises solely from
+    1D/stabilitydiagram.jl's finite-domain periodic wavenumber cutoff K_1 = 0.2.
+
+# ==============================================================================
+# 2. 1D Periodic & No-Flux PDE Solvers (SM Fig. 3 spike steady states)
+# ==============================================================================
+
+- id: rel_code_1d_periodic_approx_paper_steady_state
+  kind: approximated_by
+  a: barberi2023_code/code_1d_periodic_pde
+  b: barberi2023/pde_1d_steady_state_sm1_5
+  mapping:
+    L: "L_base * L_mult"
+    Dc: "Dc"
+    Da: "Da"
+    Di: "1"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d0: "Omega_d0"
+    Omega_d: "Omega_d"
+    Z: "Z"
+    B: "B"
+    Nbar: "1"
+    rel_dev_thresh: "0.1"
+  output_map:
+    C_max: C_max
+  regime:
+    L_base: [31.4159265359, 31.4159265359]
+    L_mult: [1.0, 1.0]
+    N_base: [1024.0, 1024.0]
+    Dc: [0.0095, 0.0105]
+    Da: [0.095, 0.105]
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Omega0: [0.5, 0.5]
+    Omega: [0.0, 0.0]
+    Omega_d: [0.0, 0.0]
+    Omega_d0: [2.95, 3.02]
+    Z: [20.0, 20.0]
+    B: [20.0, 20.0]
+    T_end: [10.0, 10.0]
+    ErrorTolerance: [1.0e-10, 1.0e-10]
+    dt_init: [0.01, 0.01]
+  tolerance: 0.03
+  provenance: stated
+  citation:
+    file: README.md
+    lines: "8"
+    quote: "1D/PeriodicBoundaries/main.jl (depends on InputParameters.jl and functions.jl) >> numerical integration of the dynamical equations with periodic boundary conditions."
+    where: "README.md line 8 vs barberi2023 Eqs. (SM1)-(SM5) & Fig. 3(a)"
+  assumptions:
+    - "Both models solve the 1D spike steady state at N = 1024 (L = 10*pi): code_1d_periodic_pde uses node-centered Fourier pseudo-spectral discretization (X_peak = 0, C_max = 0.6645 at nominal Fig. 3a parameters), whereas barberi2023/pde_1d_steady_state_sm1_5 uses half-cell-centered 2nd-order centered finite volumes (X_peak = +-dx/2, C_max = 0.6492), yielding a ~2.4% grid-sampling offset."
+
+- id: rel_code_1d_periodic_approx_paper_spike_scaling
+  kind: approximated_by
+  a: barberi2023_code/code_1d_periodic_pde
+  b: barberi2023/pde_1d_spike_scaling_smfig3
+  mapping:
+    L_base: "L_base"
+    L_mult: "L_mult"
+    Dc: "Dc"
+    Da: "Da"
+    Di: "1"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d0: "Omega_d0"
+    Omega_d: "Omega_d"
+    Z: "Z"
+    B: "B"
+    Nbar: "1"
+  output_map:
+    C_max: C_max
+  regime:
+    L_base: [31.4159265359, 31.4159265359]
+    L_mult: [1.0, 2.5]
+    N_base: [1024.0, 1024.0]
+    Dc: [0.0095, 0.0105]
+    Da: [0.095, 0.105]
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Omega0: [0.5, 0.5]
+    Omega: [0.0, 0.0]
+    Omega_d: [0.0, 0.0]
+    Omega_d0: [2.95, 3.02]
+    Z: [20.0, 20.0]
+    B: [20.0, 20.0]
+    T_end: [10.0, 10.0]
+    ErrorTolerance: [1.0e-10, 1.0e-10]
+    dt_init: [0.01, 0.01]
+  tolerance: 0.03
+  provenance: stated
+  citation:
+    file: README.md
+    lines: "8"
+    quote: "1D/PeriodicBoundaries/main.jl (depends on InputParameters.jl and functions.jl) >> numerical integration of the dynamical equations with periodic boundary conditions."
+    where: "README.md line 8 vs barberi2023 SM Fig. 3 system-size spike scaling"
+  assumptions:
+    - "Compares node-centered Fourier pseudo-spectral code_1d_periodic_pde against half-cell finite-volume barberi2023/pde_1d_spike_scaling_smfig3 across SM Fig. 3 domain multiples L_mult in [1.0, 2.5] at constant Delta X = L/1024 (max relative difference 2.43% from half-cell peak sampling; enabling shift_half + trapz_grid in run_per1d_smfig3_half_trapz reproduces all 6 SM Fig. 3 inset dots to 0.00001-0.00005)."
+
+- id: rel_code_1d_noflux_approx_paper_steady_state
+  kind: approximated_by
+  a: barberi2023_code/code_1d_noflux_pde
+  b: barberi2023/pde_1d_steady_state_sm1_5
+  mapping:
+    L: "L_base * L_mult"
+    Dc: "Dc"
+    Da: "Da"
+    Di: "1"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d0: "Omega_d0"
+    Omega_d: "Omega_d"
+    Z: "Z"
+    B: "B"
+    Nbar: "1"
+    rel_dev_thresh: "0.1"
+  output_map:
+    C_max: C_max
+  regime:
+    L_base: [31.4159265359, 31.4159265359]
+    L_mult: [1.0, 1.0]
+    N_base: [1024.0, 1024.0]
+    Dc: [0.0095, 0.0105]
+    Da: [0.095, 0.105]
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Omega0: [0.5, 0.5]
+    Omega: [0.0, 0.0]
+    Omega_d: [0.0, 0.0]
+    Omega_d0: [2.95, 3.02]
+    Z: [20.0, 20.0]
+    B: [20.0, 20.0]
+    T_end: [100.0, 100.0]
+    ErrorTolerance: [1.0e-10, 1.0e-10]
+  tolerance: 0.06
+  provenance: stated
+  citation:
+    file: README.md
+    lines: "10"
+    quote: "1D/NoFlux/main.jl (depends on InputParameters.jl and functions.jl) >> numerical integration of the dynamical equations with no-flux boundary conditions."
+    where: "README.md line 10 vs barberi2023 Eqs. (SM1)-(SM5) & Fig. 3(a)"
+  assumptions:
+    - "Both models center the spike on a half-cell midpoint at Delta X = L/1024, cleanly isolating 1D/NoFlux's O(dx) 1st-order donor-cell upwind numerical diffusion (~|v|*dx/2, comparable to Dc = 0.01), which depresses C_max by up to 5.90% relative to 2nd-order centered finite volumes."
+
+- id: rel_code_1d_noflux_approx_paper_spike_scaling
+  kind: approximated_by
+  a: barberi2023_code/code_1d_noflux_pde
+  b: barberi2023/pde_1d_spike_scaling_smfig3
+  mapping:
+    L_base: "L_base"
+    L_mult: "L_mult"
+    Dc: "Dc"
+    Da: "Da"
+    Di: "1"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d0: "Omega_d0"
+    Omega_d: "Omega_d"
+    Z: "Z"
+    B: "B"
+    Nbar: "1"
+  output_map:
+    C_max: C_max
+  regime:
+    L_base: [31.4159265359, 31.4159265359]
+    L_mult: [1.0, 2.5]
+    N_base: [1024.0, 1024.0]
+    Dc: [0.01, 0.012]
+    Da: [0.095, 0.105]
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Omega0: [0.5, 0.5]
+    Omega: [0.0, 0.0]
+    Omega_d: [0.0, 0.0]
+    Omega_d0: [2.95, 3.05]
+    Z: [20.0, 20.0]
+    B: [20.0, 20.0]
+    T_end: [100.0, 100.0]
+    ErrorTolerance: [1.0e-10, 1.0e-10]
+  tolerance: 0.08
+  provenance: stated
+  citation:
+    file: README.md
+    lines: "10"
+    quote: "1D/NoFlux/main.jl (depends on InputParameters.jl and functions.jl) >> numerical integration of the dynamical equations with no-flux boundary conditions."
+    where: "README.md line 10 vs barberi2023 SM Fig. 3 spike-height scaling"
+  assumptions:
+    - "Quantifies 1D/NoFlux's O(dx) donor-cell upwind peak depression across SM Fig. 3 domain multiples L_mult in [1.0, 2.5] at Delta X = L/1024 (max relative error 6.95%, nearly 3x larger than 1D/PeriodicBoundaries and confirming 1D/NoFlux did not generate SM Fig. 3)."
+
+- id: rel_code_1d_noflux_approx_code_1d_periodic
+  kind: approximated_by
+  a: barberi2023_code/code_1d_noflux_pde
+  b: barberi2023_code/code_1d_periodic_pde
+  mapping:
+    L_base: "L_base"
+    L_mult: "L_mult"
+    N_base: "N_base"
+    Dc: "Dc"
+    Da: "Da"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d: "Omega_d"
+    Omega_d0: "Omega_d0"
+    Z: "Z"
+    B: "B"
+    T_end: "T_end"
+    ErrorTolerance: "ErrorTolerance"
+    dt_init: "0.01"
+  output_map:
+    C_max: C_max
+  regime:
+    L_base: [31.4159265359, 31.4159265359]
+    L_mult: [1.0, 1.0]
+    N_base: [1024.0, 1024.0]
+    Dc: [0.0095, 0.0105]
+    Da: [0.095, 0.105]
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Omega0: [0.5, 0.5]
+    Omega: [0.0, 0.0]
+    Omega_d: [0.0, 0.0]
+    Omega_d0: [2.95, 3.02]
+    Z: [20.0, 20.0]
+    B: [20.0, 20.0]
+    T_end: [100.0, 100.0]
+    ErrorTolerance: [1.0e-10, 1.0e-10]
+  tolerance: 0.10
+  provenance: proposed
+  reason: >
+    Directly compares the two shipped 1D PDE discretizations in Barberi-Kruse-2022 at the
+    identical SM Fig. 3 spike resolution Delta X = L/1024: 1D/NoFlux's 1st-order donor-cell
+    upwind finite-difference scheme (half-cell centered) underpredicts 1D/PeriodicBoundaries's
+    node-centered Fourier pseudo-spectral spike peak by up to 8.42% (combining ~6.5% O(dx)
+    upwind diffusion at nominal Dc = 0.01 with ~2% half-cell vs node sampling).
+
+# ==============================================================================
+# 3. 2D Periodic PDE Solver: Traceless (1 + 2|K|^2) vs Printed Eq. (3) (1 + 2.5|K|^2)
+# ==============================================================================
+
+- id: rel_code_2d_vs_paper_2d_printed
+  kind: same_as
+  a: barberi2023_code/code_2d_periodic_pde
+  b: barberi2023/pde_2d_time_eq1_5_printed
+  mapping:
+    L: "L"
+    Dc: "Dc"
+    Da: "Da"
+    Di: "Di"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d0: "Omega_d0"
+    Omega_d: "Omega_d"
+    Z: "Z"
+    B: "B"
+    Nbar: "1"
+    T_end: "T_end"
+  output_map:
+    C_max: C_max
+  regime:
+    L: [31.4159265359, 31.4159265359]
+    Dc: [0.01, 0.01]
+    Da: [0.1, 0.1]
+    Di: [1.0, 1.0]
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Omega0: [0.5, 0.5]
+    Omega: [0.0, 0.0]
+    Omega_d: [9.8, 10.2]
+    Omega_d0: [0.0, 0.0]
+    Z: [29.6, 30.8]
+    B: [30.0, 30.0]
+    visc_coeff: [2.0, 2.0]
+    var_ic: [1.4142135624, 1.4142135624]
+    T_end: [19.0, 22.0]
+  provenance: stated
+  citation:
+    file: README.md
+    lines: "12"
+    quote: "2D/main.jl (depends on InputParameters.jl and kernels.jl) >> numerical integration of the dynamical equations in 2D, with periodic boundary conditions."
+    where: "README.md line 12 & 2D/kernels.jl lines 54-55 vs barberi2023 Main Text Eq. (3) as printed & Fig. 4(a)"
+  assumptions:
+    - "Tests the README claim that 2D/ integrates the paper's 2D dynamical equations as printed in Main Text Eq. (3): 2D/kernels.jl lines 54-55 hardcode the traceless viscous operator (1 + 2*(kx^2 + ky^2)) (sustaining Fig. 4a circular localized states with C_max ~ 0.78-0.98), whereas verbatim printed Eq. (3)'s non-traceless strain-rate tensor gives (1 + 2.5*(kx^2 + ky^2)) (decaying toward H with C_max ~ 0.35-0.78 across the regime), refuting equivalence at all 40/40 sample points."
+
+- id: rel_code_2d_approx_paper_2d_traceless
+  kind: approximated_by
+  a: barberi2023_code/code_2d_periodic_pde
+  b: barberi2023/pde_2d_time_eq1_5
+  mapping:
+    L: "L"
+    Dc: "Dc"
+    Da: "Da"
+    Di: "Di"
+    A: "A"
+    Kd: "Kd"
+    Omega0: "Omega0"
+    Omega: "Omega"
+    Omega_d0: "Omega_d0"
+    Omega_d: "Omega_d"
+    Z: "Z"
+    B: "B"
+    Nbar: "1"
+    T_end: "T_end"
+  output_map:
+    C_max: C_max
+  regime:
+    L: [31.4159265359, 31.4159265359]
+    Dc: [0.01, 0.01]
+    Da: [0.1, 0.1]
+    Di: [1.0, 1.0]
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Omega0: [0.5, 0.5]
+    Omega: [0.0, 0.0]
+    Omega_d: [9.8, 10.2]
+    Omega_d0: [0.0, 0.0]
+    Z: [29.6, 30.8]
+    B: [30.0, 30.0]
+    visc_coeff: [2.0, 2.0]
+    var_ic: [1.4142135624, 1.4142135624]
+    T_end: [19.0, 22.0]
+  tolerance: 0.10
+  provenance: proposed
+  reason: >
+    Once Main Text Eq. (3)'s misprint is corrected to the true traceless 2D viscous operator
+    (1 + 2|K|^2) (barberi2023/pde_2d_time_eq1_5), both code_2d_periodic_pde (un-dealiased
+    explicit Euler with 2D/kernels.jl:18 zero-mean Gaussian bump, visc_coeff = 2) and
+    barberi2023/pde_2d_time_eq1_5 (2/3-dealiased IMEX with Gaussian bump) sustain the same
+    Fig. 4(a) circular localized state across Z in [29.6, 30.8], Omega_d in [9.8, 10.2],
+    T_end in [19, 22] within 10% (contrasting sharply with the 18-55% divergence against
+    printed Eq. 3 in rel_code_2d_vs_paper_2d_printed).
+
+# ==============================================================================
+# 4. Cross-Paper Relations with mirza2025 (Mirza et al., eLife 13:RP93097, 2024/2025)
+# ==============================================================================
+
+- id: rel_mirza2025_code_stability_reduces_eqC7
+  kind: reduces_to
+  a: barberi2023_code/code_stability_point_1d
+  b: mirza2025/dispersion_1d_eqC7
+  mapping:
+    nu: "pi / L"
+    k_d: "Kd"
+    L: "1"
+    c_0: "10"
+    b: "20"
+    eta_rot: "0.1"
+    beta: "0"
+    lambda_o: "6"
+    kappa: "0"
+    lam: "4 * (2 * Z * (A / Kd) - 3 * Z * (A / Kd)**2) * (A / Kd)"
+    q_0: "0"
+  output_map:
+    alpha_plus: MaxEigenvRe
+  limit:
+    Omega_d: "0"
+    Dap: "oo"
+    Dam: "oo"
+  regime:
+    A: [0.35, 0.48]
+    Kd: [0.8, 1.0]
+    Dc: [0.25, 0.25]
+    Dap: [1.0, 1.0]
+    Dam: [1.0, 1.0]
+    Omega0: [5.0, 15.0]
+    Omega_d: [0.1, 1.0]
+    Z: [30.0, 55.0]
+    Omega: [0.5, 5.0]
+    L: [2.5, 6.0]
+    Nx: [4.0, 4.0]
+  provenance: proposed
+  reason: >
+    Connects Barberi & Kruse's released 1D/stabilitydiagram.jl stability matrix directly to
+    Mirza et al.'s isotropic active-gel dispersion Eq. (C7) (mirza2025 pp. 2, 8 cites
+    barberi2023 as part of the compressible isotropic active-gel patterning family). At
+    single mode Nx = 4 (K = 2*pi/L = 2*nu) and Dc = 1/4, taking the decoupled fast-diffusing
+    nucleator limit (Omega_d -> 0, Dap -> oo, Dam -> oo) reduces 1D/stabilitydiagram.jl's
+    positive leading growth rate MaxEigenvRe identically to mirza2025 Eq. (C7)'s decoupled
+    isotropic density mode alpha_+(nu) = -k_d - nu^2 + lam*nu^2/(1 + 4*nu^2) with
+    lam = 4*Pi'_H*C_H (using B = Z hardcoded on line 90 of 1D/stabilitydiagram.jl). The
+    factors of 2 on wavenumber (K = 2*nu) and 4 on Dc = 1/4 and lam encode mirza2025's 4*eta
+    1D uniaxial viscosity versus barberi2023_code's 1*eta viscous operator (1 + K^2).
+  assumptions:
+    - "Decoupled isotropic nematic limit (kappa = beta = q_0 = 0, fast nematic relaxation c_0/eta_rot = 100) in mirza2025 Eq. (C7)."
+    - "Unstable contractile regime (C_H = A/Kd < 2/3, Z in [30, 55], MaxEigenvRe > 0) so 1D/stabilitydiagram.jl line 52's uninitialized zero column does not clamp the leading eigenvalue."
+
+- id: rel_mirza2025_code_stability_approx_fastest_mode
+  kind: approximated_by
+  a: barberi2023_code/code_stability_point_1d
+  b: mirza2025/fastest_growing_mode_eqC7
+  mapping:
+    k_d: "Kd"
+    L: "1"
+    c_0: "20"
+    b: "20"
+    eta_rot: "0.05"
+    beta: "0"
+    lambda_o: "6"
+    kappa: "0"
+    q_0: "0"
+    activity_ratio: "4 * (2 * Z * (A / Kd) - 3 * Z * (A / Kd)**2) * (A / Kd) / (1 + 2 * sqrt(Kd))**2"
+  output_map:
+    alpha_max: MaxEigenvRe
+  regime:
+    A: [0.35, 0.48]
+    Kd: [0.8, 1.0]
+    Dc: [0.25, 0.25]
+    Dap: [2.0e5, 2.0e5]
+    Dam: [1.0e5, 1.0e5]
+    Omega0: [8.0, 15.0]
+    Omega_d: [0.0, 0.0]
+    Z: [30.0, 55.0]
+    Omega: [0.5, 3.0]
+    L: [100.0, 150.0]
+    Nx: [512.0, 512.0]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    On a wide periodic domain L in [100, 150] (Nx = 512, discrete mode spacing dK = 2*pi/L <= 0.063,
+    K_max >= 10.7) in the decoupled fast-diffusing nucleator regime (Omega_d = 0, Dap = 2e5,
+    Dam = 1e5 -> Da = 1.5e5 > 0, Di = 0.5e5 > 0, Dc = 1/4), 1D/stabilitydiagram.jl's discrete
+    maximum growth rate max_{p=1..Nk} Re(eigvals(M(K_p))) is approximated within < 0.05%
+    (tolerance 0.5%) by mirza2025's continuum isotropic fastest-growing-mode rate alpha_max
+    with activity ratio lam / lam_crit,0 = 4*Pi'_H*C_H / (1 + 2*sqrt(Kd))^2.
+  assumptions:
+    - "Positive inactive-nucleator diffusivity Di = (Dap - Dam)/2 = 5e4 > 0 and fast active-nucleator diffusivity Da = 1.5e5 > 0 so both nucleator modes decouple cleanly."
+    - "Supercritical unstable contractile regime (activity_ratio > 1, MaxEigenvRe > 0)."

@@ -1,0 +1,740 @@
+- id: rel_H_reduces_to_linear
+  kind: reduces_to
+  a: barberi2023/homogeneous_steady_state
+  b: barberi2023/homogeneous_steady_state_linear
+  mapping:
+    A: A
+    Kd: Kd
+    Omega0: Omega0
+    Omega_d0: Omega_d0
+    Nbar: Nbar
+  output_map:
+    C_H: C_H
+  limit:
+    Omega: "0"
+    Omega_d: "0"
+  regime:
+    A: [0.5, 2.0]
+    Kd: [0.5, 2.0]
+    Omega0: [0.2, 2.0]
+    Omega: [0.1, 10.0]
+    Omega_d0: [0.5, 5.0]
+    Omega_d: [0.1, 10.0]
+    Z: [5.0, 25.0]
+    B: [5.0, 25.0]
+    Nbar: [0.5, 2.0]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "238401-3"
+    quote: "kinetics limit of Eqs. (4) and (5), with Ω ¼ Ωd ¼ 0."
+    where: text
+  assumptions:
+    - "Vanishing cooperative activation (Omega -> 0) and actin-mediated inactivation (Omega_d -> 0) with Omega_d,0 > 0"
+
+- id: rel_lsa_reduces_to_passive
+  kind: reduces_to
+  a: barberi2023/linear_stability_1d_sm15
+  b: barberi2023/linear_stability_1d_passive
+  mapping:
+    K: K
+    Dc: Dc
+    Da: Da
+    A: A
+    Kd: Kd
+    Omega0: Omega0
+    Omega: Omega
+    Omega_d0: Omega_d0
+    Omega_d: Omega_d
+  output_map:
+    max_growth_rate: max_growth_rate
+  limit:
+    Z: "0"
+    B: "0"
+  regime:
+    K: [0.2, 5.0]
+    Dc: [0.005, 0.05]
+    Da: [0.05, 0.3]
+    A: [0.5, 2.0]
+    Kd: [0.5, 2.0]
+    Omega0: [0.2, 1.0]
+    Omega: [1.0, 30.0]
+    Omega_d0: [0.0, 1.0]
+    Omega_d: [2.0, 15.0]
+    Z: [0.1, 20.0]
+    B: [0.1, 20.0]
+  provenance: stated
+  citation:
+    page: 10
+    printed_page: "SM-4"
+    quote: "Note that instabilities are possible even if the fluid is passive (Z = 0),"
+    where: "SM Sec. I A"
+  assumptions:
+    - "Passive fluid with vanishing nonviscous stress (Z -> 0, B -> 0 so Pi'_H = 0 and delta V = 0)"
+  tolerance: 1.0e-5
+
+# ==============================================================================
+# Cross-record relations with bois2011 (Bois, Julicher & Grill, PRL 106:028103, 2011; cited as ref-11)
+# ==============================================================================
+
+- id: rel_bois2011_hydrodynamic_length
+  kind: same_as
+  a: barberi2023/hydrodynamic_length
+  b: bois2011/hydrodynamic_length
+  mapping:
+    eta: "eta"
+    gamma: "gamma"
+  regime:
+    eta: [10.0, 1.0e5]
+    gamma: [1.0e12, 1.0e18]
+  provenance: proposed
+  reason: >
+    Both active-fluid papers define the bare hydrodynamic screening length as
+    sqrt(viscosity / friction): barberi2023 lambda = sqrt(eta/gamma) (p. 2) is symbolically
+    identical to bois2011 ell = sqrt(eta/gamma) (p. 2, cited in barberi2023 as ref-11).
+
+- id: rel_bois2011_diffusive_timescale
+  kind: same_as
+  a: barberi2023/diffusive_timescale
+  b: bois2011/diffusive_timescale
+  mapping:
+    l: "lam"
+    D: "D_i"
+  regime:
+    lam: [1.0e-7, 1.0e-4]
+    D_i: [1.0e-14, 1.0e-10]
+  provenance: proposed
+  reason: >
+    Both papers nondimensionalize time by diffusion across one hydrodynamic screening length:
+    barberi2023 tau = lambda^2 / D_i (p. 2, using inactive-nucleator diffusivity D_i) is
+    symbolically identical to bois2011 tau_D = ell^2 / D (Fig. 3, using regulator diffusivity D
+    or substrate diffusivity D_s in ASDM).
+
+- id: rel_bois2011_dispersion_eq12_reduces
+  kind: reduces_to
+  a: barberi2023/linear_stability_1d_sm15
+  b: bois2011/single_species_dispersion_eq12
+  mapping:
+    k: "K"
+    D: "1"
+    Pe: "2 * Z - 3 * B"
+    c0: "1"
+    df_dc: "1"
+    l: "1"
+  output_map:
+    lam_dimless: max_growth_rate
+  limit:
+    A: "oo"
+    Kd: "oo"
+    Omega_d0: "0"
+    Omega_d: "0"
+  regime:
+    K: [0.2, 4.0]
+    Dc: [0.01, 0.2]
+    Da: [1.0, 1.0]
+    A: [1.0, 1.0]
+    Kd: [1.0, 1.0]
+    Omega0: [2.0, 8.0]
+    Omega: [0.5, 5.0]
+    Omega_d0: [0.1, 1.0]
+    Omega_d: [0.1, 1.0]
+    Z: [3.0, 12.0]
+    B: [0.1, 0.8]
+  provenance: proposed
+  reason: >
+    In the vanishing nucleator-inactivation limit (Omega_d,0 -> 0, Omega_d -> 0, so N_a,H -> 1
+    and N_i decouples as a purely damped mode -(K^2 + Omega_0*(1 + Omega)) < 0) combined with
+    fast actomyosin turnover (A, K_d -> oo at fixed ratio C_H = A/K_d = 1, so C adiabatically
+    tracks the conserved active nucleator C = N_a) and equal nucleator diffusivity (D_a = 1 = D_i,
+    so tau = lambda^2/D_a = tau_D), barberi2023's 3-species active fluid Eqs. (SM15)-(SM23)
+    reduces identically to bois2011 Eq. (12)'s conserved single-species active-fluid dispersion
+    tau_D*lambda(K) = -K^2*(1 - Pe_eff/(1 + K^2)) with linearized active Peclet number
+    Pe_eff = Pe*c_0*f'(c_0) = Pi'_H*C_H = 2*Z - 3*B. In this positive-slope regime (2*Z > 3*B),
+    barberi2023's stress mimics bois2011's monotonic contractile stress (ref-11, contrasted in
+    barberi2023 Endnote 37, p. 5).
+  assumptions:
+    - "Vanishing nucleator inactivation (Omega_d,0 -> 0, Omega_d -> 0) and fast actomyosin turnover (A, K_d -> oo at fixed C_H = A/K_d = 1)."
+    - "Equal nucleator diffusivities (D_a = 1, matching reference diffusivity D_i) and positive linearized stress slope 2*Z - 3*B > 0."
+
+- id: rel_bois2011_rda_dispersion_eq15_scales
+  kind: scales_as
+  a: barberi2023/linear_stability_1d_sm15
+  b: bois2011/single_species_rda_dispersion_eq15
+  mapping:
+    k: "K"
+    D: "Dc"
+    dR_dc: "-Kd"
+    Pe: "(2 * Z * (A / Kd) - 3 * B * (A / Kd)**2) * (A / Kd) / Dc"
+    c0: "1"
+    df_dc: "1"
+    l: "1"
+  output_map:
+    lam: max_growth_rate
+  regime:
+    K: [0.5, 3.0]
+    Dc: [0.05, 0.5]
+    Da: [1.0e5, 2.0e5]
+    A: [0.8, 1.5]
+    Kd: [0.3, 1.0]
+    Omega0: [5.0, 10.0]
+    Omega: [0.5, 3.0]
+    Omega_d0: [0.0, 0.0]
+    Omega_d: [0.0, 0.0]
+    Z: [5.0, 12.0]
+    B: [0.1, 0.5]
+  provenance: proposed
+  reason: >
+    In the decoupled fast-diffusing active-nucleator regime (Omega_d,0 = Omega_d = 0 so N_a,H = 1,
+    C_H = A/K_d, and D_a >> 1 so delta N_a -> 0), actomyosin density C in barberi2023 Eqs. (SM15)-(SM23)
+    obeys the single-species active reaction-diffusion-advection dispersion
+    Phi(K) = -D_c*K^2 - K_d + Pi'_H*C_H*K^2/(1 + K^2), matching all six shared-parameter log-slopes
+    (K, D_c, A, K_d, Z, B) of bois2011 Eq. (15) (single_species_rda_dispersion_eq15, dimensional
+    output lam [1/s]) with linear turnover dR/dc = -K_d and effective Peclet number Pe = Pi'_H*C_H/D_c.
+  assumptions:
+    - "Decoupled uniform nucleator pool (Omega_d,0 = Omega_d = 0, D_a in [1e5, 2e5]) so actomyosin C is the leading mode across arbitrary D_c."
+    - "Evaluated in the unstable contractile regime (Pi'_H*C_H > 0, Phi(K) > 0) away from neutral crossings."
+
+- id: rel_bois2011_inner_lsa_fastest_mode_reduces
+  kind: reduces_to
+  a: barberi2023/inner_wavelength_lsa_sm1b
+  b: bois2011/single_species_fastest_mode
+  mapping:
+    Pe: "4 * (2 * Z * (A * N_loc / Kd) - 3 * B * (A * N_loc / Kd)**2) * (A * N_loc / Kd) / Dc"
+    c0: "1"
+    beta: "1"
+    L_over_l: "W"
+  output_map:
+    k_max_discrete_l: K_star
+  limit:
+    Omega_d0: "0"
+    Omega_d: "0"
+    Da: "oo"
+  regime:
+    N_loc: [0.8, 1.5]
+    W: [5.0, 15.0]
+    Dc: [0.2, 1.0]
+    Da: [1.0, 10.0]
+    A: [0.8, 1.5]
+    Kd: [0.5, 1.5]
+    Omega0: [5.0, 10.0]
+    Omega: [0.5, 3.0]
+    Omega_d0: [0.1, 1.0]
+    Omega_d: [0.1, 1.0]
+    Z: [6.0, 15.0]
+    B: [0.1, 0.5]
+  provenance: proposed
+  reason: >
+    barberi2023 SM Sec. I B selects the inner wavenumber K* of localized patterns by maximizing
+    Re[Phi(K)] on the discrete mode spectrum K_n = n*pi/W. In the decoupled-nucleator limit
+    (Omega_d,0 -> 0, Omega_d -> 0, D_a -> oo), Phi(K) = -K_d + D_c*[-K^2*(1 - (Pi'_H*C_H/D_c)/(1 + K^2))];
+    because constant turnover -K_d and positive prefactor D_c leave the wavenumber argmax invariant,
+    barberi2023/inner_wavelength_lsa_sm1b (K_star) reduces identically to bois2011/single_species_fastest_mode
+    (k_max_discrete_l) on a no-flux domain (beta = 1, L/ell = W) with Hill-stress equivalent
+    Pe = 4*Pi'_H*C_H/D_c at c_0 = 1.
+  assumptions:
+    - "Decoupled fast-diffusing active nucleator (Omega_d,0 -> 0, Omega_d -> 0, D_a -> oo) with C_H = (A/K_d)*N_loc."
+    - "Supercritical active stress Pi'_H*C_H/D_c > 1 + (pi/W)^2 so at least one discrete mode is unstable."
+
+# ==============================================================================
+# Cross-record relations with hannezo2015 (Hannezo et al., PNAS 112:8620-8625, 2015)
+# ==============================================================================
+
+- id: rel_hannezo2015_hydrodynamic_length
+  kind: same_as
+  a: barberi2023/hydrodynamic_length
+  b: hannezo2015/hydrodynamic_length
+  mapping:
+    eta: "eta"
+    xi: "gamma"
+  regime:
+    eta: [10.0, 1.0e5]
+    gamma: [1.0e12, 1.0e18]
+  provenance: proposed
+  reason: >
+    Both active-fluid models define the hydrodynamic screening length as sqrt(viscosity / friction):
+    barberi2023 lambda = sqrt(eta/gamma) [m] matches hannezo2015 l_h = sqrt(eta/xi) [um]
+    symbolically because cortex thickness h cancels in eta_2D/xi_2D = (h*eta)/(h*gamma).
+  assumptions:
+    - "2D thickness-integrated cortical viscosity eta_2D = h*eta and friction xi_2D = h*gamma cancel thickness h at unit reference thickness h = 1 m."
+
+- id: rel_hannezo2015_hydrodynamic_length_3d
+  kind: same_as
+  a: hannezo2015/hydrodynamic_length_from_3d
+  b: barberi2023/hydrodynamic_length
+  mapping:
+    eta: "eta_3D"
+    gamma: "xi * 10**9 / h"
+  regime:
+    eta_3D: [10.0, 1000.0]
+    h: [10.0, 500.0]
+    xi: [1.0e7, 1.0e11]
+  provenance: proposed
+  reason: >
+    Expressing hannezo2015's cortical hydrodynamic length via 3D viscosity eta_3D [Pa*s] and
+    thickness h [nm] yields a dimensionally exact 3D-to-3D identity with barberi2023/hydrodynamic_length
+    under eta = eta_3D and gamma = xi / h (converting h from nm to m).
+
+- id: rel_hannezo2015_diffusive_timescale
+  kind: same_as
+  a: hannezo2015/diffusion_time_hydrodynamic
+  b: barberi2023/diffusive_timescale
+  mapping:
+    lam: "sqrt(eta / xi)"
+    D_i: "D / 10**12"
+  regime:
+    eta: [1.0e-7, 1.0e-3]
+    xi: [1.0e7, 1.0e11]
+    D: [0.005, 0.5]
+  provenance: proposed
+  reason: >
+    hannezo2015 SI Sec. 2.3 defines the hydrodynamic diffusion timescale T = eta/(xi*D) = l_h^2/D [s],
+    symbolically identical to barberi2023's unit time tau = lambda^2/D_i [s] with lambda = sqrt(eta/xi)
+    and D_i = D (converting D from um^2/s to m^2/s).
+
+- id: rel_hannezo2015_dispersion_eq8_reduces
+  kind: reduces_to
+  a: barberi2023/linear_stability_1d_sm15
+  b: hannezo2015/dispersion_relation_dimless_eq8
+  mapping:
+    q_hat: "K"
+    phi: "Kd"
+    chi: "(2 * Z * (A / Kd) - 3 * B * (A / Kd)**2) * (A / Kd)"
+  output_map:
+    lam_hat: max_growth_rate
+  limit:
+    Omega_d0: "0"
+    Omega_d: "0"
+    Da: "oo"
+  regime:
+    K: [0.2, 4.0]
+    Dc: [1.0, 1.0]
+    Da: [1.0, 10.0]
+    A: [0.5, 1.5]
+    Kd: [0.2, 1.5]
+    Omega0: [5.0, 15.0]
+    Omega: [0.5, 5.0]
+    Omega_d0: [0.1, 1.0]
+    Omega_d: [0.1, 1.0]
+    Z: [3.0, 12.0]
+    B: [0.1, 0.6]
+  provenance: proposed
+  reason: >
+    In the decoupled fast-diffusing active-nucleator limit (Omega_d,0 -> 0, Omega_d -> 0 so N_a,H -> 1,
+    C_H -> A/K_d, and D_a -> oo so delta N_a -> 0) with unit actomyosin diffusivity ratio D_c = d_c/D_i = 1
+    (matching hannezo2015's timescale T = l_h^2/D_c), barberi2023's 3-species mechanochemical dispersion
+    Eqs. (SM15)-(SM23) reduces identically to hannezo2015 SI Eq. (8)'s dimensionless 1D active-fluid-with-turnover
+    dispersion lam_hat = -phi - q_hat^2 + chi*q_hat^2/(1 + q_hat^2) under q_hat = K, phi = K_d, and
+    chi = Pi'_H*C_H = (2*Z*(A/K_d) - 3*B*(A/K_d)^2)*(A/K_d).
+  assumptions:
+    - "Decoupled uniform nucleator pool (Omega_d,0 -> 0, Omega_d -> 0, D_a -> oo) with fast inactive-nucleator relaxation (Omega_0 in [5, 15]) so actomyosin C is the leading mode."
+    - "Equal actomyosin and reference diffusivity D_c = 1 so both dimensionless growth rates share time scale lambda^2/D_c."
+
+- id: rel_hannezo2015_dispersion_eq7_scales
+  kind: scales_as
+  a: barberi2023/linear_stability_1d_sm15
+  b: hannezo2015/dispersion_relation_eq7
+  mapping:
+    tau: "1 / Kd"
+    D: "Dc * 10**12"
+    sigma_a: "(2 * Z * (A / Kd) - 3 * B * (A / Kd)**2) * (A / Kd)"
+    xi: "1"
+    eta: "1"
+    q: "K / 10**6"
+  output_map:
+    lam: max_growth_rate
+  regime:
+    K: [0.5, 3.0]
+    Dc: [0.05, 0.5]
+    Da: [1.0e5, 2.0e5]
+    A: [0.8, 1.5]
+    Kd: [0.3, 1.0]
+    Omega0: [5.0, 10.0]
+    Omega: [0.5, 3.0]
+    Omega_d0: [0.0, 0.0]
+    Omega_d: [0.0, 0.0]
+    Z: [5.0, 12.0]
+    B: [0.1, 0.5]
+  provenance: proposed
+  reason: >
+    For arbitrary actomyosin diffusivity ratio D_c in the decoupled-nucleator regime
+    (Omega_d,0 = Omega_d = 0, D_a >> 1), barberi2023's dimensionless growth rate
+    Phi(K) = -K_d - D_c*K^2 + Pi'_H*C_H*K^2/(1 + K^2) matches all six shared-parameter log-slopes
+    (K, D_c, A, K_d, Z, B) of hannezo2015 SI Eq. (7) (dimensional dispersion_relation_eq7 [1/s])
+    with tau = 1/K_d, D = D_c (in SI m^2/s), eta = xi = 1, and sigma_a = Pi'_H*C_H.
+  assumptions:
+    - "Decoupled uniform nucleator pool (Omega_d,0 = Omega_d = 0, D_a in [1e5, 2e5]) across arbitrary D_c."
+    - "Unit hydrodynamic scale eta = xi = 1 matching barberi2023's dimensionless length X = x/lambda."
+
+# ==============================================================================
+# Cross-record relations with mirza2025 (Mirza et al., eLife 13:RP93097, 2024/2025; cites barberi2023 pp. 2, 8)
+# ==============================================================================
+
+- id: rel_mirza2025_hydrodynamic_length
+  kind: same_as
+  a: barberi2023/hydrodynamic_length
+  b: mirza2025/hydrodynamic_length
+  mapping:
+    eta: "eta"
+    gamma: "gamma"
+  regime:
+    eta: [100.0, 1.0e5]
+    gamma: [1.0e14, 1.0e19]
+  provenance: proposed
+  reason: >
+    Both active-gel models define the bare hydrodynamic screening length as sqrt(eta/gamma):
+    barberi2023 lambda [m] is symbolically identical to mirza2025 ell_s [um] (mirza2025 pp. 2, 8
+    cites barberi2023 as part of the compressible isotropic active-gel patterning family). Note that
+    in 1D force balance, barberi2023's corrected traceless Eq. (3) with eta = eta_tilde gives
+    viscous stress 1*eta*d_x v (effective screening length lambda), whereas mirza2025's 2D
+    compressible viscous stress 2*eta*(d + tr(d)*I) gives 4*eta*d_x v (effective screening length
+    2*ell_s, matching barberi2023/viscous_stress_1d_eq3_corrected at d = 2, eta_tilde = 3*eta).
+
+- id: rel_mirza2025_diffusive_timescale
+  kind: same_as
+  a: barberi2023/diffusive_timescale
+  b: mirza2025/diffusion_timescale
+  mapping:
+    ell_s: "lam * 10**6"
+    D: "D_i * 10**12"
+  regime:
+    lam: [1.0e-7, 1.0e-5]
+    D_i: [1.0e-14, 1.0e-11]
+  provenance: proposed
+  reason: >
+    barberi2023's diffusive unit time tau = lambda^2/D_i [s] (p. 2) is symbolically identical to
+    mirza2025 Appendix B's bare diffusive timescale t_0 = ell_s^2/D [s] under ell_s = lambda and
+    D = D_i (converting m -> um and m^2/s -> um^2/s).
+
+- id: rel_mirza2025_dispersion_eqC7_reduces
+  kind: reduces_to
+  a: barberi2023/linear_stability_1d_sm15
+  b: mirza2025/dispersion_1d_eqC7
+  mapping:
+    nu: "K / 2"
+    k_d: "Kd"
+    L: "1"
+    c_0: "10"
+    b: "20"
+    eta_rot: "0.1"
+    beta: "0"
+    lambda_o: "6"
+    kappa: "0"
+    lam: "4 * (2 * Z * (A / Kd) - 3 * B * (A / Kd)**2) * (A / Kd)"
+    q_0: "0"
+  output_map:
+    alpha_plus: max_growth_rate
+  limit:
+    Omega_d0: "0"
+    Omega_d: "0"
+    Da: "oo"
+  regime:
+    K: [0.2, 4.0]
+    Dc: [0.25, 0.25]
+    Da: [1.0, 10.0]
+    A: [0.5, 1.5]
+    Kd: [0.2, 1.5]
+    Omega0: [5.0, 15.0]
+    Omega: [0.5, 5.0]
+    Omega_d0: [0.1, 1.0]
+    Omega_d: [0.1, 1.0]
+    Z: [3.0, 12.0]
+    B: [0.1, 0.6]
+  provenance: proposed
+  reason: >
+    Formalizes the isotropic active-gel correspondence for which mirza2025 (pp. 2, 8) cites
+    barberi2023. In the decoupled fast-diffusing active-nucleator limit (Omega_d,0 -> 0, Omega_d -> 0,
+    D_a -> oo) at D_c = 1/4, barberi2023's 1D active-fluid dispersion
+    Phi(K) = -K_d - (1/4)*K^2 + Pi'_H*C_H*K^2/(1 + K^2) reduces identically to mirza2025 Eq. (C7)'s
+    decoupled isotropic density dispersion alpha_+(nu) = -k_d - nu^2 + lam*nu^2/(1 + 4*nu^2)
+    under nu = K/2, k_d = K_d, and lam = 4*Pi'_H*C_H. The factor of 2 on wavenumber (K = 2*nu)
+    and factor of 4 on D_c = 1/4 and lam = 4*Pi'_H*C_H arise directly from mirza2025's 4*eta
+    1D uniaxial viscosity versus barberi2023's 1*eta 1D viscosity.
+  assumptions:
+    - "Decoupled isotropic nematic limit (kappa = beta = q_0 = 0, fast nematic relaxation c_0/eta_rot = 100) in mirza2025 Eq. (C7)."
+    - "Decoupled fast-diffusing active nucleator (Omega_d,0 -> 0, Omega_d -> 0, D_a -> oo) at D_c = 1/4 encoding the 4x viscous timescale ratio."
+
+- id: rel_mirza2025_inner_lsa_fastest_mode_approx
+  kind: approximated_by
+  a: barberi2023/inner_wavelength_lsa_sm1b
+  b: mirza2025/fastest_growing_mode_eqC7
+  mapping:
+    k_d: "Kd"
+    L: "1"
+    c_0: "20"
+    b: "20"
+    eta_rot: "0.05"
+    beta: "0"
+    lambda_o: "6"
+    kappa: "0"
+    q_0: "0"
+    activity_ratio: "4 * (2 * Z * (A * N_loc / Kd) - 3 * B * (A * N_loc / Kd)**2) * (A * N_loc / Kd) / (1 + 2 * sqrt(Kd))**2"
+  output_map:
+    alpha_max: max_growth_rate
+  regime:
+    N_loc: [0.8, 1.5]
+    W: [35.0, 55.0]
+    Dc: [0.25, 0.25]
+    Da: [1.0e5, 2.0e5]
+    A: [0.8, 1.5]
+    Kd: [0.3, 1.0]
+    Omega0: [8.0, 15.0]
+    Omega: [0.5, 3.0]
+    Omega_d0: [0.0, 0.0]
+    Omega_d: [0.0, 0.0]
+    Z: [5.0, 12.0]
+    B: [0.1, 0.4]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    At large localized-pattern width W in [35, 55] (fine discrete mode spacing dK = pi/W <= 0.09)
+    in the decoupled-nucleator limit (Omega_d,0 = Omega_d = 0, D_a >> 1, D_c = 1/4), barberi2023
+    SM Sec. I B's discrete peak growth rate max_{K = n*pi/W} Re[Phi(K)] is approximated within
+    < 0.1% (tolerance 0.005) by mirza2025's continuum isotropic fastest-growing-mode rate alpha_max
+    with activity ratio lam/lam_crit,0 = 4*Pi'_H*C_H/(1 + 2*sqrt(K_d))^2.
+  assumptions:
+    - "Wide localized-pattern domain W in [35, 55] so O(dK^2) discrete wavenumber quantization error is < 0.5% while n_modes = 120 spans K_max = 120*pi/W > K*."
+    - "Decoupled isotropic limit (kappa = beta = q_0 = 0) and decoupled active nucleator (Omega_d,0 = Omega_d = 0, D_a in [1e5, 2e5], D_c = 1/4)."
+
+# ==============================================================================
+# Cross-record relations with frohoff2021 (Frohoff-Hulsmann, Wrembel & Thiele, PRE 103:042602, 2021)
+# ==============================================================================
+
+- id: rel_frohoff2021_passive_nonreciprocal_eq12_same
+  kind: same_as
+  a: barberi2023/linear_stability_1d_passive
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "K"
+    f1_pp: "Omega0 + Omega_d0 + Omega_d * (A / Kd) * (-(Omega0 + Omega_d0) + sqrt((Omega0 + Omega_d0)**2 + 4 * Omega0 * Omega_d * A / Kd)) / (2 * Omega_d * A / Kd)"
+    f2_pp: "Kd"
+    Q: "1"
+    kappa: "Dc"
+    rho: "0"
+    alpha: "sqrt(A * Omega_d * (-(Omega0 + Omega_d0) + sqrt((Omega0 + Omega_d0)**2 + 4 * Omega0 * Omega_d * A / Kd)) / (2 * Omega_d * A / Kd))"
+  output_map:
+    re_lam_tilde_plus: max_growth_rate
+  regime:
+    K: [1.0, 2.5]
+    Dc: [0.005, 0.04]
+    Da: [1.0, 1.0]
+    A: [1.2, 2.2]
+    Kd: [0.55, 0.68]
+    Omega0: [0.005, 0.009]
+    Omega: [0.0, 0.0]
+    Omega_d0: [0.001, 0.005]
+    Omega_d: [1.5, 2.6]
+  provenance: proposed
+  reason: >
+    Exact nonreciprocal 2x2 operator isomorphism: in barberi2023's passive limit (Z = B = 0)
+    with equal nucleator diffusivities (D_a = 1 = D_i), row 2 of Eqs. (SM15)-(SM23) decouples
+    the conserved total nucleator mode delta N_+ with exact eigenvalue -K^2, leaving a 2x2
+    nonreciprocal activator-inhibitor operator on (delta N_-, delta C) with off-diagonal product
+    -(A/2)*(-2*N_a,H*Omega_d) = +A*N_a,H*Omega_d > 0. At Omega = 0 (retaining nonlinear actin-mediated
+    inactivation Omega_d > 0, giving exact quadratic steady state N_a,H), this 2x2 operator is
+    algebraically identical to frohoff2021's rescaled nonreciprocal two-field operator -B(q) (Eq. 12)
+    under q = K, Q = 1, kappa = D_c, f_1'' = Omega_0 + Omega_d,0 + Omega_d*C_H, f_2'' = K_d,
+    rho = 0, and alpha = sqrt(A*N_a,H*Omega_d). Verified to machine precision across both real-eigenvalue
+    and damped-oscillatory regimes where the 2x2 mode dominates -K^2.
+  assumptions:
+    - "Passive fluid (Z = B = 0), equal nucleator diffusivities (D_a = 1), and vanishing cooperative activation (Omega = 0) with nonzero actin-mediated inactivation (Omega_d > 0)."
+    - "Regime satisfies f_1'' + K_d < K^2*(1 - D_c) so the nonreciprocal (delta C, delta N_-) mode is strictly the leading eigenvalue over the decoupled conserved mode -K^2."
+
+- id: rel_frohoff2021_passive_nonreciprocal_freq_same
+  kind: same_as
+  a: barberi2023/linear_stability_1d_passive
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "K"
+    f1_pp: "Omega0 + Omega_d0 + Omega_d * (A / Kd) * (-(Omega0 + Omega_d0) + sqrt((Omega0 + Omega_d0)**2 + 4 * Omega0 * Omega_d * A / Kd)) / (2 * Omega_d * A / Kd)"
+    f2_pp: "Kd"
+    Q: "1"
+    kappa: "Dc"
+    rho: "0"
+    alpha: "sqrt(A * Omega_d * (-(Omega0 + Omega_d0) + sqrt((Omega0 + Omega_d0)**2 + 4 * Omega0 * Omega_d * A / Kd)) / (2 * Omega_d * A / Kd))"
+  output_map:
+    im_lam_plus: dominant_freq
+  regime:
+    K: [1.0, 1.0]
+    Dc: [0.005, 0.02]
+    Da: [1.0, 1.0]
+    A: [1.5, 2.0]
+    Kd: [0.62, 0.68]
+    Omega0: [0.005, 0.008]
+    Omega: [0.0, 0.0]
+    Omega_d0: [0.001, 0.003]
+    Omega_d: [2.0, 2.6]
+  provenance: proposed
+  reason: >
+    Verifies exact agreement of the nonreciprocal oscillation frequency (imaginary part of the
+    leading eigenvalue) between barberi2023/linear_stability_1d_passive and frohoff2021 Eq. (12)
+    inside the complex-eigenvalue regime (discriminant < 0, D_a = 1, Omega = 0) at unit wavenumber
+    K = q = 1 (where frohoff2021's conservation prefactor q^2 = 1). At general wavenumber K,
+    frohoff2021's conserved oscillatory frequency scales as Im(lambda_+) = K^2 * dominant_freq_barberi,
+    vanishing as K -> 0, whereas barberi2023's non-conserved (C, N_-) oscillation retains a finite
+    frequency as K -> 0.
+  assumptions:
+    - "Unit wavenumber K = q = 1 inside the oscillatory box where 4*A*N_a,H*Omega_d > (1 - D_c + f_1'' - K_d)^2 and f_1'' + K_d < 1 - D_c."
+
+- id: rel_frohoff2021_sm15_passive_nonreciprocal_reduces
+  kind: reduces_to
+  a: barberi2023/linear_stability_1d_sm15
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "K"
+    f1_pp: "Omega0 + Omega_d0 + Omega_d * (A / Kd) * (-(Omega0 + Omega_d0) + sqrt((Omega0 + Omega_d0)**2 + 4 * Omega0 * Omega_d * A / Kd)) / (2 * Omega_d * A / Kd)"
+    f2_pp: "Kd"
+    Q: "1"
+    kappa: "Dc"
+    rho: "0"
+    alpha: "sqrt(A * Omega_d * (-(Omega0 + Omega_d0) + sqrt((Omega0 + Omega_d0)**2 + 4 * Omega0 * Omega_d * A / Kd)) / (2 * Omega_d * A / Kd))"
+  output_map:
+    re_lam_tilde_plus: max_growth_rate
+  limit:
+    Z: "0"
+    B: "0"
+    Omega: "0"
+  regime:
+    K: [1.5, 3.0]
+    Dc: [0.005, 0.05]
+    Da: [1.0, 1.0]
+    A: [1.2, 2.2]
+    Kd: [0.55, 0.7]
+    Omega0: [0.005, 0.015]
+    Omega: [0.1, 1.0]
+    Omega_d0: [0.001, 0.005]
+    Omega_d: [1.5, 3.0]
+    Z: [0.5, 5.0]
+    B: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    Directly connects barberi2023's full active 3-species dispersion Eqs. (SM15)-(SM23) to
+    frohoff2021's rescaled nonreciprocal 2-field operator Eq. (12) in the passive, non-cooperative,
+    equal-nucleator-diffusivity limit (Z -> 0, B -> 0, Omega -> 0 at D_a = 1), where the conserved
+    delta N_+ mode decouples and (delta C, delta N_-) maps identically onto -B(q) with pure
+    nonreciprocal coupling alpha = sqrt(A*N_a,H*Omega_d).
+  assumptions:
+    - "Passive non-cooperative limit (Z -> 0, B -> 0, Omega -> 0) at D_a = 1 with f_1'' + K_d < K^2*(1 - D_c)."
+
+- id: rel_frohoff2021_typeIIs_longwave_reduces
+  kind: reduces_to
+  a: barberi2023/linear_stability_1d_sm15
+  b: frohoff2021/linear_dispersion_variational_limit
+  mapping:
+    q: "K"
+    a: "Da * (Omega0 / (Omega0 + Omega_d0)) + (Omega_d0 / (Omega0 + Omega_d0)) - (2 * Z * ((A / Kd) * (Omega0 / (Omega0 + Omega_d0))) - 3 * B * ((A / Kd) * (Omega0 / (Omega0 + Omega_d0)))**2) * ((A / Kd) * (Omega0 / (Omega0 + Omega_d0)))"
+    a_Delta: "0"
+    kappa: "1"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    rho: "0"
+  output_map:
+    lam_plus: max_growth_rate
+  limit:
+    K: "0"
+    Omega: "0"
+    Omega_d: "0"
+  regime:
+    K: [0.5, 50.0]
+    Dc: [0.01, 0.1]
+    Da: [0.05, 0.3]
+    A: [0.8, 1.5]
+    Kd: [0.8, 1.5]
+    Omega0: [0.5, 2.0]
+    Omega: [0.1, 1.0]
+    Omega_d0: [0.5, 2.0]
+    Omega_d: [0.1, 1.0]
+    Z: [15.0, 40.0]
+    B: [0.5, 2.0]
+  provenance: proposed
+  reason: >
+    Schur-complement reduction of barberi2023's conserved large-scale nucleator mode N_+ = N_a + N_i
+    in the linear-kinetics (Omega -> 0, Omega_d -> 0, spike regime of p. 3) long-wavelength limit
+    (K -> 0): eliminating the fast-relaxing non-conserved modes delta C = C_H*delta N_+ and
+    delta N_- = N_H^-*delta N_+ yields the conserved Cahn-Hilliard (Type II_s) dispersion
+    Phi_cons(K) = -a_eff*K^2 + O(K^4) with exact effective diffusivity
+    a_eff = D_a*N_a,H + (1 - N_a,H) - Pi'_H*C_H, matching frohoff2021's decoupled Cahn-Hilliard
+    dispersion lambda_+(q) = -q^2*(q^2 + a_eff) across arbitrary turnover (A, K_d), nucleator
+    diffusivity D_a, and active stress (Z, B). Directly explains the conserved Type II_s instability
+    (a_eff < 0) found in barberi2023 SM Fig. 1 (q_sm_fig1_long_wave_type_iis).
+  assumptions:
+    - "Linear kinetics (Omega -> 0, Omega_d -> 0) so N_a,H = Omega_0/(Omega_0 + Omega_d,0), C_H = (A/K_d)*N_a,H, and non-conserved modes (-K_d, -(Omega_0 + Omega_d,0)) are strictly damped at K = 0."
+    - "Long-wavelength limit K -> 0 bounded away from exact neutral threshold a_eff = 0."
+
+- id: rel_frohoff2021_typeIIs_longwave_approx
+  kind: approximated_by
+  a: barberi2023/linear_stability_1d_sm15
+  b: frohoff2021/linear_dispersion_variational_limit
+  mapping:
+    q: "K"
+    a: "Da * (Omega0 / (Omega0 + Omega_d0)) + (Omega_d0 / (Omega0 + Omega_d0)) - (2 * Z * ((A / Kd) * (Omega0 / (Omega0 + Omega_d0))) - 3 * B * ((A / Kd) * (Omega0 / (Omega0 + Omega_d0)))**2) * ((A / Kd) * (Omega0 / (Omega0 + Omega_d0)))"
+    a_Delta: "0"
+    kappa: "1"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    rho: "0"
+  output_map:
+    lam_plus: max_growth_rate
+  regime:
+    K: [0.02, 0.08]
+    Dc: [0.01, 0.1]
+    Da: [0.05, 0.3]
+    A: [1.0, 1.5]
+    Kd: [0.8, 1.2]
+    Omega0: [0.5, 1.5]
+    Omega: [0.0, 0.0]
+    Omega_d0: [0.5, 1.5]
+    Omega_d: [0.0, 0.0]
+    Z: [25.0, 40.0]
+    B: [0.5, 2.0]
+  tolerance: 0.01
+  provenance: proposed
+  reason: >
+    Quantifies the accuracy of frohoff2021's decoupled Cahn-Hilliard (Type II_s) dispersion
+    lambda_+(K) = -K^2*(K^2 + a_eff) as a finite-wavenumber long-wave approximation to barberi2023's
+    full 3-species active-fluid dispersion in the Type II_s spinodally unstable regime (a_eff < 0,
+    linear kinetics Omega = Omega_d = 0). Across K in [0.02, 0.08], the O(K^2) relative discrepancy
+    remains below 0.3% (within tolerance 0.01).
+  assumptions:
+    - "Type II_s unstable regime (a_eff < 0, Z in [25, 40]) with linear kinetics (Omega = Omega_d = 0) at long wavelengths K in [0.02, 0.08]."
+
+- id: rel_frohoff2021_conserved_nucleator_ch_approx
+  kind: approximated_by
+  a: barberi2023/linear_stability_1d_sm15
+  b: frohoff2021/linear_dispersion_variational_limit
+  mapping:
+    q: "K * (2 * Z - 3 * B)**(1 / 4)"
+    a: "(1 - (2 * Z - 3 * B)) / sqrt(2 * Z - 3 * B)"
+    a_Delta: "0"
+    kappa: "1"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    rho: "0"
+  output_map:
+    lam_plus: max_growth_rate
+  regime:
+    K: [0.05, 0.25]
+    Dc: [0.01, 0.1]
+    Da: [1.0, 1.0]
+    A: [1000.0, 1000.0]
+    Kd: [1000.0, 1000.0]
+    Omega0: [1.0, 5.0]
+    Omega: [0.0, 5.0]
+    Omega_d0: [0.0, 0.0]
+    Omega_d: [0.0, 0.0]
+    Z: [2.0, 10.0]
+    B: [0.1, 0.5]
+  tolerance: 0.01
+  provenance: proposed
+  reason: >
+    In the fast-turnover conserved-nucleator regime (A = K_d = 1000, Omega_d,0 = Omega_d = 0,
+    D_a = 1), barberi2023's conserved mode expands as Phi(K) = (P_eff - 1)*K^2 - P_eff*K^4 + O(K^6)
+    with P_eff = 2*Z - 3*B > 1. Rescaling q = P_eff^(1/4)*K and a = (1 - P_eff)/sqrt(P_eff) in
+    frohoff2021's decoupled Cahn-Hilliard dispersion -q^2*(q^2 + a) matches BOTH the O(K^2)
+    spinodal diffusivity and the O(K^4) stabilizing curvature identically, holding to < 0.5%
+    across K in [0.05, 0.25] (spanning barberi2023's fundamental domain mode K_1 = 2*pi/L = 0.2).
+    Demonstrates that Brinkman viscous screening lambda^2 = eta/gamma plays the exact mathematical
+    role of Cahn-Hilliard interfacial stiffness kappa_eff = P_eff*lambda^2 for the conserved
+    active-nucleator field.
+  assumptions:
+    - "Fast actomyosin turnover (A = K_d = 1000), conserved active nucleators (Omega_d,0 = Omega_d = 0, D_a = 1), and Type II_s unstable contractile stress P_eff = 2*Z - 3*B > 1."
+

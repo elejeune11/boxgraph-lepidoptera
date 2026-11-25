@@ -1,0 +1,1589 @@
+# Intra-record model relations explicitly stated by You, Baskaran & Marchetti (2020)
+
+- id: rel_phase_bdy_dc_same_as_traveling_fp
+  kind: same_as
+  a: you2020/one_mode_phase_boundaries
+  b: you2020/one_mode_traveling_fp
+  mapping:
+    alpha_A: "-0.02"
+    alpha_B: alpha_B
+    kappa: kappa
+    delta: delta
+  output_map:
+    delta_c_over_kappa: delta_c_over_kappa
+  regime:
+    gamma_A: [0.02, 0.06]
+    phi0_A: [0.0, 0.05]
+    alpha_B: [0.002, 0.01]
+    kappa: [0.002, 0.01]
+    delta: [0.015, 0.03]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "19770"
+    quote: "corresponds to the appearance of FT and is shown"
+    where: "Linear Stability Analysis, p. 19770"
+
+- id: rel_traveling_v_same_as_bisup_fit_form
+  kind: same_as
+  a: you2020/one_mode_traveling_fp
+  b: you2020/bi_supercritical_speed_fit
+  mapping:
+    kappa: kappa
+    delta: delta
+    delta_c_over_kappa: sqrt(kappa**2 + alpha_B**2) / kappa
+  output_map:
+    v: v
+  regime:
+    alpha_A: [-0.03, -0.015]
+    alpha_B: [0.002, 0.008]
+    kappa: [0.002, 0.008]
+    delta: [0.015, 0.03]
+  provenance: stated
+  citation:
+    page: 14
+    printed_page: "SI-8"
+    quote: "The red line is a fit to the mean-field theory with v = δ 2 − δc2"
+    where: "SI Sec. V, Fig. S5(c) caption, p. 14"
+
+- id: rel_polar_lambda_theta_same_as_ep_L_subcrit
+  kind: same_as
+  a: you2020/static_fp_stability_eqS14_S16
+  b: you2020/exceptional_point_matrix_L
+  mapping:
+    alpha_B: alpha_B
+    kappa: kappa
+    delta_over_dc: delta / sqrt(kappa**2 + alpha_B**2)
+  output_map:
+    lambda_1_minus: lambda_theta_s
+  regime:
+    alpha_A: [-0.02, -0.008]
+    alpha_B: [0.004, 0.008]
+    kappa: [0.004, 0.008]
+    delta: [0.0005, 0.005]
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "The linear matrix L has four eigenvalues"
+    where: "SI Sec. III Eqs. (S28a) and (S16), pp. 10-11 (subcritical branch delta < delta_c)"
+  assumptions:
+    - "Evaluated for delta < delta_c where lambda_1^- = -(delta_c^2 - delta^2)/alpha_B coincides with polar relative-phase eigenvalue lambda_theta^s."
+
+- id: rel_lambda_theta_approx_by_eq11_near_dc
+  kind: approximated_by
+  a: you2020/static_fp_stability_eqS14_S16
+  b: you2020/velocity_ratio_run_and_catch
+  mapping:
+    alpha_B: alpha_B
+    kappa: kappa
+    delta: delta
+    rho_A: "0.1"
+    rho_B: "0.2"
+  output_map:
+    psi_growth_rate_near_dc: lambda_theta_s
+  regime:
+    alpha_A: [-0.02, -0.01]
+    alpha_B: [0.005, 0.00501]
+    kappa: [0.005, 0.00501]
+    delta: [0.0072, 0.0075]
+  tolerance: 0.05
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "19771"
+    quote: "governed by Eq. 4c linearized about the steady state"
+    where: "Eq. 11, p. 19771"
+  assumptions:
+    - "Near-critical linearization delta -> delta_c of lambda_theta^s = (delta^2 - delta_c^2)/alpha_B = (delta + delta_c)*(delta - delta_c)/alpha_B to 2*delta_c*(delta - delta_c)/alpha_B."
+
+- id: rel_bisup_1m_reduces_to_high_delta_asymptote
+  kind: approximated_by
+  a: you2020/bi_supercritical_one_mode_fp
+  b: you2020/bi_supercritical_speed_fit
+  mapping:
+    kappa: kappa
+    delta: delta
+    delta_c_over_kappa: "1.5"
+  output_map:
+    v: v
+  regime:
+    alpha_A: [-0.01, -0.01]
+    alpha_B: [-0.01, -0.01]
+    kappa: [0.005, 0.005]
+    delta: [0.010, 0.020]
+  tolerance: 0.10
+  provenance: stated
+  citation:
+    page: 14
+    printed_page: "SI-8"
+    quote: "which provides an excellent fit to the velocity obtained from simulations, as shown in Fig. S5c."
+    where: "SI Sec. V, p. 14 (below Eq. S35)"
+  assumptions:
+    - "Quantifies the systematic approximation error between the exact bi-supercritical one-mode Eq. (S33) velocity and the paper's constant-delta_c = 1.5*kappa fit over delta/kappa in [2, 4]."
+
+# ==============================================================================
+# Cross-record relations with frohoff2021 (Frohoff-Hülsmann, Wrembel & Thiele,
+# Phys. Rev. E 103, 042602, 2021).
+# Note: frohoff2021 (2021) cites you2020 (2020) as Ref. [44] (pp. 2, 3, 19, 20)
+# and identifies you2020 as the limiting case kappa = 0 (main text) and
+# kappa = Q = 1 (SI Sec. V) of its nonvariational two-field Cahn-Hilliard PDE.
+# Because you2020 predates frohoff2021 and does not cite it, all cross-record
+# relations authored inside you2020/relations.yaml carry provenance: proposed.
+# ==============================================================================
+
+# --- 1. Exact Conserved Two-Field Nonreciprocal Linear Dispersion Family ---
+
+- id: rel_frohoff2021_eq12_same_as_one_mode_eig_re
+  kind: same_as
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "1"
+    f1_pp: "alpha_A - 1"
+    f2_pp: "alpha_B"
+    Q: "1"
+    kappa: "0"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    re_lam_plus: re_lambda_plus
+  regime:
+    alpha_A: [0.05, 0.20]
+    alpha_B: [0.005, 0.02]
+    kappa: [0.005, 0.015]
+    delta: [0.001, 0.01]
+  provenance: proposed
+  reason: >
+    Exact symbolic identity between You et al. (2020) Eq. (8) / SI Eq. (S12) mode-1
+    homogeneous linear stability eigenvalue Re(lambda_+^h) (at L = 2*pi, q_1 = 1) and
+    Frohoff-Hülsmann et al. (2021) Eq. (12) general conserved two-field dispersion relation
+    Re(lambda_+(q)) at q = 1, Q = 1, kappa_F = 0 (matching Frohoff Sec. VII p. 20, which
+    explicitly identifies Ref. [44] as the kappa = 0, Q = 1 limit), with effective bulk
+    curvatures f_1'' = alpha_A - 1, f_2'' = alpha_B, variational coupling rho = kappa, and
+    nonvariational coupling alpha = delta (yielding identical Delta = alpha^2 - rho^2 =
+    delta^2 - kappa^2).
+  assumptions:
+    - "Unit mobility ratio Q = 1, zero second-species interfacial rigidity kappa_F = 0, and fundamental wavenumber q = 1 (L = 2*pi)."
+    - "Positive real-eigenvalue regime (alpha_A > alpha_B, discriminant > 0) for symbolic verification; algebraic equivalence holds across all real alpha_A, alpha_B."
+
+- id: rel_frohoff2021_eq12_same_as_one_mode_eig_im
+  kind: same_as
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "1"
+    f1_pp: "alpha_A - 1"
+    f2_pp: "alpha_B"
+    Q: "1"
+    kappa: "0"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    im_lam_plus: im_lambda_plus
+  regime:
+    alpha_A: [-0.03, -0.005]
+    alpha_B: [0.002, 0.01]
+    kappa: [0.002, 0.008]
+    delta: [0.025, 0.06]
+  provenance: proposed
+  reason: >
+    Exact equivalence of the complex-eigenvalue imaginary frequency Im(lambda_+^h) in You
+    et al. (2020) Eq. (8) / SI Eq. (S13) (Fig. S2 oscillatory regime above the homogeneous
+    exceptional point delta > delta_EP) and Frohoff-Hülsmann et al. (2021) Eq. (12)
+    Im(lambda_+(q)) under the exact conserved two-field dictionary q = 1, Q = 1, kappa_F = 0,
+    f_1'' = alpha_A - 1, f_2'' = alpha_B, rho = kappa, alpha = delta.
+  assumptions:
+    - "Oscillatory complex-eigenvalue regime (alpha_A - alpha_B)^2 < 4*(delta^2 - kappa^2) matching You 2020 Fig. S2."
+
+- id: rel_frohoff2021_eqB1_same_as_one_mode_eig_re
+  kind: same_as
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: frohoff2021/linear_dispersion_specific_eqB1
+  mapping:
+    q: "1"
+    a: "alpha_A - 1"
+    a_Delta: "alpha_B - alpha_A + 1"
+    kappa: "0"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    re_lam_plus: re_lambda_plus
+  regime:
+    alpha_A: [0.05, 0.20]
+    alpha_B: [0.005, 0.02]
+    kappa: [0.005, 0.015]
+    delta: [0.001, 0.01]
+  provenance: proposed
+  reason: >
+    Exact symbolic identity joining You et al. (2020) Eq. (8) one-mode homogeneous stability
+    eigenvalue Re(lambda_+^h) with Frohoff-Hülsmann et al. (2021) Appendix B Eq. (B1)
+    specific cubic-Landau dispersion relation (Q = 1, kappa_F = 0, zero mean fields
+    phi_bar_1 = phi_bar_2 = 0, a = alpha_A - 1, a_Delta = alpha_B - alpha_A + 1, rho = kappa,
+    alpha = delta at q = 1).
+  assumptions:
+    - "Zero-mean homogeneous base state (phi_bar_1 = phi_bar_2 = 0) with kappa_F = 0 and q = 1."
+
+- id: rel_frohoff2021_eqB1_k_same_as_one_mode_eig_re
+  kind: same_as
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: frohoff2021/linear_dispersion_k_eqB1
+  mapping:
+    k: "2 * pi"
+    ell: "2 * pi"
+    a: "alpha_A - 1"
+    a_Delta: "alpha_B - alpha_A + 1"
+    kappa: "0"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    re_lam_plus: re_lambda_plus
+  regime:
+    alpha_A: [0.05, 0.20]
+    alpha_B: [0.005, 0.02]
+    kappa: [0.005, 0.015]
+    delta: [0.001, 0.01]
+  provenance: proposed
+  reason: >
+    Exact equivalence between You et al. (2020) Eq. (8) mode-1 homogeneous eigenvalue on the
+    periodic box L = 2*pi (q_1 = 2*pi/L = 1) and Frohoff-Hülsmann et al. (2021) Eq. (B1)
+    parameterized by discrete box wavenumber k = 2*pi and domain size ell = 2*pi (q = k/ell = 1).
+  assumptions:
+    - "Fundamental periodic box mode n = 1 (k = 2*pi, ell = 2*pi -> q = 1) with kappa_F = 0."
+
+- id: rel_frohoff2021_eq12_same_as_active_passive_lin_stab
+  kind: same_as
+  a: you2020/active_passive_linear_stability
+  b: frohoff2021/linear_dispersion_general_eq12
+  mapping:
+    q: "(2 * pi / L) * kappa_ap**(1/4)"
+    f1_pp: "(a1 * rho_A0 + (v_0 * (1 - a0_AA * rho_A0 - a0_AP * rho_P0) / (2 * D_R)) * (v_0 * (1 - a0_AA * rho_A0 - a0_AP * rho_P0) - a0_AA * v_0 * rho_A0)) / sqrt(kappa_ap)"
+    f2_pp: "a1 * rho_P0 / sqrt(kappa_ap)"
+    Q: "1"
+    kappa: "1"
+    rho: "-(a1 * rho_A0 - (v_0 * (1 - a0_AA * rho_A0 - a0_AP * rho_P0) / (2 * D_R)) * a0_AP * v_0 * rho_A0 + a1 * rho_P0) / (2 * sqrt(kappa_ap))"
+    alpha: "-(a1 * rho_A0 - (v_0 * (1 - a0_AA * rho_A0 - a0_AP * rho_P0) / (2 * D_R)) * a0_AP * v_0 * rho_A0 - a1 * rho_P0) / (2 * sqrt(kappa_ap))"
+  output_map:
+    re_lam_plus: max_re_lambda_q1
+  regime:
+    v_0: [40.0, 85.0]
+    D_R: [2.0, 5.0]
+    a0_AA: [0.8, 1.1]
+    a0_AP: [0.5, 0.8]
+    a1: [15.0, 35.0]
+    kappa_ap: [500.0, 1500.0]
+    rho_A0: [0.4, 0.7]
+    rho_P0: [0.2, 0.4]
+    L: [40.0, 80.0]
+  provenance: proposed
+  reason: >
+    Exact linear-operator isomorphism between the coarse-grained active-passive Brownian
+    mixture PDE of You et al. (2020) SI Sec. VI.B Eqs. (S39)-(S40) (explicitly cited by
+    Frohoff-Hülsmann et al. 2021 Sec. VII p. 19 as a microscopic coarse-grained realization
+    of their nonvariational two-field Cahn-Hilliard model) and Frohoff Eq. (12) at Q = 1,
+    kappa_F = 1. Rescaling wavenumber as q_F = (2*pi/L)*kappa_ap^(1/4) absorbs the equal
+    interfacial stiffness kappa_ap into unit stiffness while mapping the diffusivity matrix
+    entries directly onto f_1'' = D_AA/sqrt(kappa_ap), f_2'' = D_PP/sqrt(kappa_ap),
+    rho = -(D_AP + D_PA)/(2*sqrt(kappa_ap)), and alpha = -(D_AP - D_PA)/(2*sqrt(kappa_ap)).
+    In the motility-induced phase separation regime where passive crowding reverses D_AP < 0
+    while D_PA > 0, Delta = alpha^2 - rho^2 = -D_AP*D_PA/kappa_ap > 0 directly realizes
+    Frohoff's nonvariational-dominated regime |alpha| > |rho|.
+  assumptions:
+    - "Equal interfacial stiffness kappa_ap for active and passive densities (Q = 1, kappa_F = 1) evaluated at fundamental mode q_1 = 2*pi/L."
+
+- id: rel_frohoff2021_var_limit_reduces_from_one_mode_eig
+  kind: reduces_to
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: frohoff2021/linear_dispersion_variational_limit
+  mapping:
+    q: "1"
+    a: "alpha_A - 1"
+    a_Delta: "alpha_B - alpha_A + 1"
+    kappa: "0"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    rho: "kappa"
+  output_map:
+    lam_plus: re_lambda_plus
+  limit:
+    delta: "0"
+  regime:
+    alpha_A: [-0.03, 0.05]
+    alpha_B: [0.002, 0.02]
+    kappa: [0.002, 0.015]
+    delta: [0.001, 0.01]
+  provenance: proposed
+  reason: >
+    In the passive reciprocal limit delta -> 0 (kappa_AB = kappa_BA = kappa), You et al.
+    (2020) Eq. (8) homogeneous stability eigenvalue Re(lambda_+^h) reduces identically to
+    Frohoff-Hülsmann et al. (2021) passive variational dispersion limit (alpha = 0, Eq. B1)
+    at q = 1, kappa_F = 0, rho = kappa.
+  assumptions:
+    - "Passive reciprocal limit delta -> 0 at q = 1, kappa_F = 0, phi_bar_1 = phi_bar_2 = 0."
+
+- id: rel_frohoff2021_var_limit_derived_from_one_mode_eig
+  kind: derived_from
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: frohoff2021/linear_dispersion_variational_limit
+  mapping:
+    q: "1"
+    a: "alpha_A - 1"
+    a_Delta: "alpha_B - alpha_A + 1"
+    kappa: "0"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    rho: "kappa"
+  output_map:
+    lam_plus: re_lambda_plus
+  steps:
+    - "subs: delta = 0"
+    - simplify
+  regime:
+    alpha_A: [0.05, 0.20]
+    alpha_B: [0.005, 0.02]
+    kappa: [0.005, 0.015]
+    delta: [0.001, 0.01]
+  provenance: proposed
+  reason: >
+    Symbolically derives Frohoff-Hülsmann et al. (2021) passive variational two-field
+    dispersion limit (alpha = 0) from You et al. (2020) Eq. (8) by setting delta = 0.
+  assumptions:
+    - "Real-eigenvalue box (alpha_A > alpha_B > 0) for symbolic verification."
+
+- id: rel_frohoff2021_pure_nonvar_reduces_from_one_mode_eig
+  kind: reduces_to
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: frohoff2021/linear_dispersion_pure_nonvar_limit
+  mapping:
+    q: "1"
+    a: "alpha_A - 1"
+    a_Delta: "alpha_B - alpha_A + 1"
+    kappa: "0"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    alpha: "delta"
+  output_map:
+    re_lam_plus: re_lambda_plus
+  limit:
+    kappa: "0"
+  regime:
+    alpha_A: [-0.03, 0.05]
+    alpha_B: [0.002, 0.02]
+    kappa: [0.002, 0.01]
+    delta: [0.005, 0.03]
+  provenance: proposed
+  reason: >
+    In the purely antisymmetric nonreciprocal limit kappa -> 0 (kappa_AB = -delta,
+    kappa_BA = +delta), You et al. (2020) Eq. (8) homogeneous stability eigenvalue reduces
+    identically to Frohoff-Hülsmann et al. (2021) purely nonvariational (pseudovariational
+    Appendix E, rho = 0) dispersion limit at q = 1, kappa_F = 0, alpha = delta.
+  assumptions:
+    - "Purely nonreciprocal limit kappa -> 0 at q = 1, kappa_F = 0, phi_bar_1 = phi_bar_2 = 0."
+
+- id: rel_frohoff2021_pure_nonvar_derived_from_one_mode_eig
+  kind: derived_from
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: frohoff2021/linear_dispersion_pure_nonvar_limit
+  mapping:
+    q: "1"
+    a: "alpha_A - 1"
+    a_Delta: "alpha_B - alpha_A + 1"
+    kappa: "0"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    alpha: "delta"
+  output_map:
+    re_lam_plus: re_lambda_plus
+  steps:
+    - "subs: kappa = 0"
+    - simplify
+  regime:
+    alpha_A: [0.05, 0.15]
+    alpha_B: [0.005, 0.015]
+    kappa: [0.001, 0.005]
+    delta: [0.001, 0.01]
+  provenance: proposed
+  reason: >
+    Symbolically derives Frohoff-Hülsmann et al. (2021) purely nonvariational (rho = 0)
+    dispersion limit from You et al. (2020) Eq. (8) by setting kappa = 0.
+  assumptions:
+    - "Real-eigenvalue box (alpha_A - alpha_B > 2*delta) so symbolic() expressions are real during consistency check."
+
+# --- 2. Conserved-Hopf Frequency, Traveling Velocity, Exceptional Points & Phase Boundaries ---
+
+- id: rel_frohoff2021_hopf_freq_same_as_traveling_v
+  kind: same_as
+  a: you2020/one_mode_traveling_fp
+  b: frohoff2021/hopf_threshold_general_eq14_15
+  mapping:
+    f2_pp: "alpha_B"
+    Q: "1"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    omega_tilde_c: v
+  regime:
+    alpha_A: [-0.04, -0.015]
+    alpha_B: [0.002, 0.01]
+    kappa: [0.002, 0.01]
+    delta: [0.02, 0.05]
+  provenance: proposed
+  reason: >
+    Exact mathematical equivalence between the nonlinear one-mode traveling-wave phase
+    velocity v = sqrt(delta^2 - kappa^2 - alpha_B^2) of You et al. (2020) Eq. (7) (at
+    q_1 = 1, L = 2*pi) and the linear conserved-Hopf scaled critical frequency
+    omega_tilde_c = sqrt(Q)*sqrt(alpha^2 - rho^2 - Q*(f_2'')^2) of Frohoff-Hülsmann et al.
+    (2021) Eq. (15) at Q = 1, f_2'' = alpha_B, rho = kappa, alpha = delta. Physically,
+    amplitude saturation (rho_A^t)^2 = -alpha_A - alpha_B pins the effective renormalized
+    curvature alpha_A_eff = alpha_A + (rho_A^t)^2 = -alpha_B identically onto Frohoff's
+    conserved-Hopf neutrality line f_1'' + Q*f_2'' = 0, so the finite-amplitude phase speed
+    equals the linear Hopf critical frequency exactly across the entire traveling phase.
+  assumptions:
+    - "Traveling-state domain delta > delta_c = sqrt(kappa^2 + alpha_B^2) and alpha_A < -alpha_B with Q = 1 and q_1 = 1."
+
+- id: rel_frohoff2021_hopf_freq_same_as_bisup_traveling_v
+  kind: same_as
+  a: you2020/bi_supercritical_one_mode_fp
+  b: frohoff2021/hopf_threshold_general_eq14_15
+  mapping:
+    f2_pp: "(alpha_B - alpha_A) / 2 - kappa * (alpha_A + alpha_B) / (2 * delta)"
+    Q: "1"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    omega_tilde_c: v
+  regime:
+    alpha_A: [-0.02, -0.005]
+    alpha_B: [-0.02, -0.005]
+    kappa: [0.002, 0.006]
+    delta: [0.025, 0.06]
+  provenance: proposed
+  reason: >
+    Extends the conserved-Hopf neutrality identity to You et al. (2020) SI Sec. V
+    bi-supercritical one-mode traveling fixed point Eqs. (S33a)-(S33d). Nonlinear saturation
+    of both cubic amplitudes (rho_A^t)^2 = -(delta - kappa)*(alpha_A + alpha_B)/(2*delta)
+    and (rho_B^t)^2 = -(delta + kappa)*(alpha_A + alpha_B)/(2*delta) drives the renormalized
+    effective curvatures to f_2_eff'' = alpha_B + (rho_B^t)^2 = -f_1_eff'' =
+    (alpha_B - alpha_A)/2 - kappa*(alpha_A + alpha_B)/(2*delta), so the exact bi-supercritical
+    traveling velocity v equals Frohoff-Hülsmann et al. (2021) Eq. (15) Hopf critical
+    frequency omega_tilde_c identically at Q = 1, rho = kappa, alpha = delta.
+  assumptions:
+    - "Bi-supercritical traveling regime alpha_A + alpha_B < 0 and delta > delta_c with Q = 1, q_1 = 1."
+
+- id: rel_frohoff2021_pure_nonvar_im_reduces_from_bisup_v
+  kind: reduces_to
+  a: you2020/bi_supercritical_one_mode_fp
+  b: frohoff2021/linear_dispersion_pure_nonvar_limit
+  mapping:
+    q: "1"
+    a: "alpha_A - 1"
+    a_Delta: "alpha_B - alpha_A"
+    kappa: "1"
+    phi1_bar: "0"
+    phi2_bar: "0"
+    alpha: "delta"
+  output_map:
+    im_lam_plus: v
+  limit:
+    kappa: "0"
+  regime:
+    alpha_A: [-0.02, -0.005]
+    alpha_B: [-0.02, -0.005]
+    kappa: [0.001, 0.005]
+    delta: [0.02, 0.05]
+  provenance: proposed
+  reason: >
+    In the purely nonreciprocal limit kappa -> 0 (rho = 0), the delta-dependent shift in
+    You et al. (2020) bi-supercritical one-mode Eqs. (S33) vanishes, leaving equal saturated
+    amplitudes (rho_A^t)^2 = (rho_B^t)^2 = -(alpha_A + alpha_B)/2 and traveling speed
+    v = sqrt(delta^2 - (alpha_A - alpha_B)^2 / 4), which reduces identically to the linear
+    imaginary frequency Im(lambda_+(q=1)) of Frohoff-Hülsmann et al. (2021) purely
+    nonvariational dispersion limit (kappa_F = 1, Q = 1, a_Delta = alpha_B - alpha_A,
+    alpha = delta).
+  assumptions:
+    - "Purely nonreciprocal limit kappa -> 0 in the bi-supercritical traveling regime (alpha_A + alpha_B < 0, delta > |alpha_A - alpha_B|/2)."
+
+- id: rel_frohoff2021_alpha_H_n_same_as_traveling_dc
+  kind: same_as
+  a: you2020/one_mode_traveling_fp
+  b: frohoff2021/subcriticality_zero_mean_eqD17_D19
+  mapping:
+    q_n: "1"
+    a_Delta: "1 + 2 * alpha_B"
+    kappa: "0"
+    rho: "kappa"
+    alpha: "delta"
+    eps: "0.01"
+  output_map:
+    alpha_H_n: delta_c
+  regime:
+    alpha_A: [0.005, 0.02]
+    alpha_B: [0.002, 0.02]
+    kappa: [0.002, 0.02]
+    delta: [0.002, 0.02]
+  provenance: proposed
+  reason: >
+    Exact symbolic equivalence between You et al. (2020) Eq. (7) exceptional-point traveling
+    threshold delta_c = sqrt(kappa^2 + alpha_B^2) (where the conserved-Hopf and stationary CH
+    boundaries intersect in Fig. 1A and static F_S loses stability to traveling F_T) and
+    Frohoff-Hülsmann et al. (2021) Appendix D Eq. (D17) mode-n primary-bifurcation collision
+    / Hopf threshold alpha_{H,n} = sqrt(rho^2 + M_n^2 / 4) evaluated at q_n = 1, kappa_F = 0,
+    and the conserved-Hopf neutrality shift M_n = alpha_A - alpha_B = -2*alpha_B (a_Delta =
+    1 + 2*alpha_B), rho = kappa.
+  assumptions:
+    - "Mode n = 1 (q_n = 1, kappa_F = 0) at conserved-Hopf neutrality alpha_A = -alpha_B (M_n = -2*alpha_B)."
+
+- id: rel_frohoff2021_alpha_H_n_same_as_homogeneous_ep
+  kind: same_as
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: frohoff2021/subcriticality_zero_mean_eqD17_D19
+  mapping:
+    q_n: "1"
+    a_Delta: "1 - (alpha_A - alpha_B) / kappa"
+    kappa: "0"
+    rho: "1"
+    alpha: "delta / kappa"
+    eps: "0.01"
+  output_map:
+    alpha_H_n: delta_complex_over_kappa
+  regime:
+    alpha_A: [0.02, 0.15]
+    alpha_B: [0.002, 0.015]
+    kappa: [0.002, 0.015]
+    delta: [0.002, 0.015]
+  provenance: proposed
+  reason: >
+    Exact symbolic equivalence between You et al. (2020) SI Eq. (S13) / Fig. S2 normalized
+    homogeneous exceptional point delta_EP / kappa = sqrt(1 + (alpha_A - alpha_B)^2 / (4*kappa^2))
+    (where the two homogeneous eigenvalues lambda_pm^h coalesce and become complex conjugate)
+    and Frohoff-Hülsmann et al. (2021) Appendix D Eq. (D17) mode-n Hopf collision threshold
+    alpha_{H,n} / rho normalized by rho = kappa (setting rho = 1 and M_n = (alpha_A - alpha_B)/kappa).
+  assumptions:
+    - "Dimensionless rescaling by reciprocal coupling kappa > 0 (rho_rescaled = 1, M_n = (alpha_A - alpha_B)/kappa)."
+
+- id: rel_frohoff2021_ch_eq20_scales_as_phase_bdy_diff
+  kind: scales_as
+  a: you2020/one_mode_phase_boundaries
+  b: frohoff2021/ch_threshold_general_eq20
+  mapping:
+    f2_pp: "alpha_B"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    f1_pp_CH: abs_chi_A_diff
+  regime:
+    gamma_A: [0.0, 0.0]
+    phi0_A: [0.0, 0.0]
+    alpha_B: [0.002, 0.02]
+    kappa: [0.002, 0.008]
+    delta: [0.012, 0.03]
+  provenance: proposed
+  reason: >
+    Exact boundary equivalence (up to sign convention |chi_A|_diff = -f_1''^CH) between You
+    et al. (2020) Fig. 1A diffusive/stationary instability boundary |chi_A|_diff =
+    gamma_A + phi0_A^2 + (delta^2 - kappa^2)/alpha_B in the long-wavelength zero-mean limit
+    (gamma_A = 0, phi0_A = 0) and Frohoff-Hülsmann et al. (2021) Eq. (20) general conserved
+    Cahn-Hilliard threshold f_1''^CH = -(alpha^2 - rho^2)/f_2''. Because the two records use
+    opposite sign conventions (|chi_A| = -chi_A > 0 vs f_1'' < 0 for delta > kappa), scales_as
+    verifies identical non-power-law log-slopes across all three shared parameters
+    (alpha_B, kappa, delta) to machine precision.
+  assumptions:
+    - "Long-wavelength zero-mean limit gamma_A = 0, phi0_A = 0 with delta > kappa > 0."
+    - "Opposite sign convention: abs_chi_A_diff = -f1_pp_CH."
+
+- id: rel_frohoff2021_hopf_eq14_scales_as_phase_bdy_osc
+  kind: scales_as
+  a: you2020/one_mode_phase_boundaries
+  b: frohoff2021/hopf_threshold_general_eq14_15
+  mapping:
+    f2_pp: "alpha_B"
+    Q: "1"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    f1_pp_H: abs_chi_A_osc
+  regime:
+    gamma_A: [0.0, 0.0]
+    phi0_A: [0.0, 0.0]
+    alpha_B: [0.002, 0.02]
+    kappa: [0.002, 0.008]
+    delta: [0.025, 0.05]
+  provenance: proposed
+  reason: >
+    Exact boundary equivalence (up to sign convention |chi_A|_osc = -f_1''^H) between You
+    et al. (2020) Fig. 1A oscillatory instability boundary |chi_A|_osc = gamma_A + phi0_A^2 +
+    alpha_B at gamma_A = 0, phi0_A = 0 and Frohoff-Hülsmann et al. (2021) Eq. (14) general
+    conserved-Hopf threshold f_1''^H = -Q*f_2'' at Q = 1, f_2'' = alpha_B.
+  assumptions:
+    - "Long-wavelength zero-mean limit gamma_A = 0, phi0_A = 0 with Q = 1 and delta > delta_c."
+    - "Opposite sign convention: abs_chi_A_osc = -f1_pp_H."
+
+- id: rel_frohoff2021_borders_eqB5_scales_as_phase_bdy_diff
+  kind: scales_as
+  a: you2020/one_mode_phase_boundaries
+  b: frohoff2021/stability_borders_eqB3_B5
+  mapping:
+    q: "sqrt(gamma_A)"
+    a_Delta: "gamma_A + phi0_A**2 + alpha_B + (delta**2 - kappa**2) / alpha_B"
+    kappa: "0"
+    phi1_bar: "phi0_A / sqrt(3)"
+    phi2_bar: "0"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    a_plus: abs_chi_A_diff
+  regime:
+    gamma_A: [0.01, 0.08]
+    phi0_A: [0.02, 0.15]
+    alpha_B: [0.008, 0.02]
+    kappa: [0.002, 0.008]
+    delta: [0.001, 0.006]
+  provenance: proposed
+  reason: >
+    Full 5-parameter finite-wavenumber, nonzero-mean equivalence (up to sign convention
+    |chi_A|_diff = -a_+) between You et al. (2020) Fig. 1A stationary instability boundary
+    |chi_A|_diff = gamma_A + phi0_A^2 + (delta^2 - kappa^2)/alpha_B and Frohoff-Hülsmann et al.
+    (2021) Appendix B Eq. (B5) stationary stability border a_+(q) at q = sqrt(gamma_A),
+    kappa_F = 0, phi_bar_1 = phi0_A/sqrt(3) (reflecting the 1/3 vs 1 cubic normalization),
+    phi_bar_2 = 0, rho = kappa, alpha = delta, and self-consistent shift a_Delta = alpha_B - a_+.
+    Verifies identical nonlinear log-slopes across all five parameters (gamma_A, phi0_A,
+    alpha_B, kappa, delta) simultaneously.
+  assumptions:
+    - "Sub-exceptional-point regime delta < delta_c where the stationary border a_+ is real and active."
+    - "Opposite sign convention: abs_chi_A_diff = -a_plus."
+
+- id: rel_frohoff2021_borders_eqB3_scales_as_phase_bdy_osc
+  kind: scales_as
+  a: you2020/one_mode_phase_boundaries
+  b: frohoff2021/stability_borders_eqB3_B5
+  mapping:
+    q: "sqrt(gamma_A)"
+    a_Delta: "gamma_A + phi0_A**2 + 2 * alpha_B"
+    kappa: "0"
+    phi1_bar: "phi0_A / sqrt(3)"
+    phi2_bar: "0"
+    rho: "kappa"
+    alpha: "delta"
+  output_map:
+    a_o: abs_chi_A_osc
+  regime:
+    gamma_A: [0.01, 0.08]
+    phi0_A: [0.02, 0.15]
+    alpha_B: [0.005, 0.02]
+    kappa: [0.002, 0.008]
+    delta: [0.025, 0.05]
+  provenance: proposed
+  reason: >
+    Full 5-parameter finite-wavenumber, nonzero-mean equivalence (up to sign convention
+    |chi_A|_osc = -a_o) between You et al. (2020) Fig. 1A oscillatory instability boundary
+    |chi_A|_osc = gamma_A + phi0_A^2 + alpha_B and Frohoff-Hülsmann et al. (2021) Appendix B
+    Eq. (B3) oscillatory stability border a_o(q) at q = sqrt(gamma_A), kappa_F = 0,
+    phi_bar_1 = phi0_A/sqrt(3), phi_bar_2 = 0, and a_Delta = alpha_B - a_o = gamma_A +
+    phi0_A^2 + 2*alpha_B.
+  assumptions:
+    - "Oscillatory conserved-Hopf regime delta > delta_c with kappa_F = 0."
+    - "Opposite sign convention: abs_chi_A_osc = -a_o."
+
+# --- 3. Bulk Free Energy Curvature, Decoupled Binodals & Nonlinear Steady States ---
+
+- id: rel_frohoff2021_bulk_curv_reduces_from_eff_params
+  kind: reduces_to
+  a: you2020/one_mode_effective_params
+  b: frohoff2021/bulk_energy_curvature_eq3_4
+  mapping:
+    a: "chi_A"
+    a_Delta: "chi_B - chi_A"
+    phi1_bar: "phi0_A / sqrt(3)"
+    phi2_bar: "phi0_B / sqrt(3)"
+  output_map:
+    f1_pp: alpha_A
+  limit:
+    gamma_A: "0"
+  regime:
+    chi_A: [-0.20, -0.05]
+    gamma_A: [0.01, 0.05]
+    phi0_A: [0.02, 0.15]
+    chi_B: [0.005, 0.05]
+    gamma_B: [0.0, 0.04]
+    phi0_B: [0.0, 0.2]
+  provenance: proposed
+  reason: >
+    In the zero-interfacial-rigidity / long-wavelength bulk limit gamma_A -> 0, You et al.
+    (2020) SI Eq. (S6) effective one-mode control parameter alpha_A = chi_A + gamma_A +
+    (phi0_A)^2 reduces identically to Frohoff-Hülsmann et al. (2021) Eqs. (3)-(4) bulk free
+    energy second derivative f_1'' = a + 3*(phi_bar_1)^2 under the exact field rescaling
+    phi0_A = sqrt(3)*phi_bar_1 (mapping f_A = (chi_A/2)*phi_A^2 + (1/12)*phi_A^4 onto
+    f_1 = (a/2)*phi_1^2 + (1/4)*phi_1^4 with a = chi_A).
+  assumptions:
+    - "Bulk limit gamma_A -> 0 with chi_A + phi0_A^2 bounded away from zero."
+    - "Exact Landau field rescaling phi_A = sqrt(3)*phi_1."
+
+- id: rel_frohoff2021_bulk_curv_derived_from_eff_params
+  kind: derived_from
+  a: you2020/one_mode_effective_params
+  b: frohoff2021/bulk_energy_curvature_eq3_4
+  mapping:
+    a: "chi_A"
+    a_Delta: "chi_B - chi_A"
+    phi1_bar: "phi0_A / sqrt(3)"
+    phi2_bar: "phi0_B / sqrt(3)"
+  output_map:
+    f1_pp: alpha_A
+  steps:
+    - "subs: gamma_A = 0"
+    - simplify
+  regime:
+    chi_A: [0.01, 0.10]
+    gamma_A: [0.01, 0.05]
+    phi0_A: [0.05, 0.40]
+    chi_B: [0.005, 0.05]
+    gamma_B: [0.01, 0.04]
+    phi0_B: [0.01, 0.20]
+  provenance: proposed
+  reason: >
+    Symbolically derives Frohoff-Hülsmann et al. (2021) bulk free energy curvature f_1'' =
+    a + 3*phi_bar_1^2 from You et al. (2020) effective parameter alpha_A = chi_A + gamma_A +
+    phi0_A^2 by setting gamma_A = 0 under phi_bar_1 = phi0_A / sqrt(3) and a = chi_A.
+  assumptions:
+    - "Positive-symbol probing box for symbolic consistency verification."
+
+- id: rel_frohoff2021_binodal_scales_as_decoupled_ground_state
+  kind: scales_as
+  a: you2020/decoupled_ground_state
+  b: frohoff2021/decoupled_binodals_appC
+  mapping:
+    a: "3 * chi_mu"
+    a_Delta: "0"
+  output_map:
+    phi1_bin: phi_g
+  regime:
+    chi_mu: [-0.20, -0.01]
+  provenance: proposed
+  reason: >
+    Links You et al. (2020) p. 19768 decoupled double-well ground state phi_g = sqrt(-3*chi_mu)
+    (for f(phi) = (chi_mu/2)*phi^2 + (1/12)*phi^4) to Frohoff-Hülsmann et al. (2021)
+    Appendix C decoupled binodal phi_{1,bin} = sqrt(-a) (for f_1(phi_1) = (a/2)*phi_1^2 +
+    (1/4)*phi_1^4) under the Appendix A nondimensionalization choice L_0 = sqrt(3*gamma_A)
+    (which sets phi_hat_1 = 1 and a = 3*chi_mu, giving phi_{1,bin} = phi_g identically for
+    all chi_mu < 0). Recorded as scales_as because decoupled_ground_state's Piecewise
+    symbolic form simplifies to 0 under SymPy positive-symbol assumptions (avoiding a
+    spurious too_plain flag on same_as).
+  assumptions:
+    - "Supercritical double-well regime chi_mu < 0 with decoupled cross-diffusivities (kappa = delta = 0)."
+
+- id: rel_frohoff2021_steady_eq7_approx_static_fp_rhoA
+  kind: approximated_by
+  a: you2020/one_mode_static_fp
+  b: frohoff2021/steady_state_bifurcation_eq7
+  mapping:
+    a: "0.75 * (alpha_A - 0.04)"
+    a_Delta: "0.75 * (alpha_B - alpha_A + 0.04)"
+    kappa: "0.0"
+    Q: "1.0"
+    rho: "0.75 * kappa"
+    alpha: "-0.75 * delta"
+    ell: "4 * pi / sqrt(3 * 0.04)"
+    phi1_bar: "0.0"
+    phi2_bar: "0.0"
+    n_period: "1"
+    init_amp_1: "sqrt((kappa**2 - delta**2 - alpha_A * alpha_B) / alpha_B)"
+    init_amp_2: "((kappa + delta) / alpha_B) * sqrt((kappa**2 - delta**2 - alpha_A * alpha_B) / alpha_B)"
+  output_map:
+    phi1_max: rho_A_s
+  regime:
+    alpha_A: [-0.008, -0.003]
+    alpha_B: [0.02, 0.04]
+    kappa: [0.002, 0.005]
+    delta: [0.001, 0.004]
+  tolerance: 0.03
+  provenance: proposed
+  reason: >
+    Direct nonlinear verification comparing You et al. (2020) Eq. (5) analytical one-mode
+    static amplitude rho_A^s against Frohoff-Hülsmann et al. (2021) Eq. (7) full 20-mode
+    periodic steady-state PDE solver (phi1_max) at kappa_F = 0, Q = 1, gamma_A = 0.04,
+    L = 2*pi under the exact amplitude-matched rescaling L_0 = sqrt(3*gamma_A)/2 (which sets
+    phi_hat = 2 so phi_1 = phi_A/2 and phi1_max = rho_A^s for a pure first harmonic, with
+    L_0^2/gamma_A = 3/4 and phi_B = -2*phi_2 giving rho = (3/4)*kappa, alpha = -(3/4)*delta).
+    In the weakly nonlinear supercritical static regime where higher harmonics and the cubic
+    phi_2^3 term retained by Frohoff (but omitted in You main text Eq. 1) are small, the two
+    models agree to within 0.51% across all 40 sampled parameter points.
+  assumptions:
+    - "Weakly nonlinear supercritical static regime (gamma_A = 0.04, L = 2*pi, kappa_F = 0, Q = 1, alpha_B >> rho_B^2) where You's omitted phi_B^3 term and higher harmonics remain O(0.5%)."
+
+# ==============================================================================
+# Cross-record relations with zwicker2015 (Zwicker, Hyman & Jülicher,
+# Phys. Rev. E 92, 012317, 2015).
+# Note: Neither paper cites the other; all cross-record mathematical relations
+# below carry provenance: proposed.
+# ==============================================================================
+
+# --- 1. Passive Bulk Double-Well Coexistence & Planar Binodal Limits ---
+
+- id: rel_zwicker2015_coex_eqA1_reduces_decoupled_ground_state
+  kind: reduces_to
+  a: zwicker2015/coexistence_exact_eqA1
+  b: you2020/decoupled_ground_state
+  mapping:
+    chi_mu: "-psi**2 / 3"
+  output_map:
+    phi_g: phi_minus_B
+  limit:
+    R: "oo"
+  regime:
+    b: [1.0, 10.0]
+    psi: [0.1, 1.0]
+    gamma: [1.0e-4, 1.0e-3]
+    R: [1.0, 10.0]
+  provenance: proposed
+  reason: >
+    In the flat-interface thermodynamic limit R -> oo (vanishing Laplace pressure
+    2*gamma/R -> 0), Zwicker et al. (2015) Appendix A Eq. (A1) exact curved-interface dense
+    coexistence fraction phi_-^B(R) reduces to the planar double-well minimum psi, matching
+    You et al. (2020) p. 19768 decoupled ground state phi_g = sqrt(-3*chi_mu) under the exact
+    Landau mapping chi_mu = -psi^2 / 3 (closing the commutative triangle with
+    frohoff2021/rel_zwicker2015_coex_eqA1_reduces_decoupled_binodal where a = 3*chi_mu = -psi^2).
+  assumptions:
+    - "Flat-interface / infinite-droplet thermodynamic limit R -> oo."
+    - "Double-well mapping chi_mu = -psi^2 / 3 aligning You's decoupled ground state sqrt(-3*chi_mu) with Zwicker's dense planar binodal psi."
+
+- id: rel_zwicker2015_flat_interface_reduces_decoupled_ground_state
+  kind: reduces_to
+  a: zwicker2015/flat_interface_profile
+  b: you2020/decoupled_ground_state
+  mapping:
+    chi_mu: "-psi**2 / 3"
+  output_map:
+    phi_g: phi_B
+  limit:
+    x: "oo"
+  regime:
+    psi: [0.1, 1.0]
+    x: [1.0e-6, 1.0e-5]
+    w: [1.0e-7, 1.0e-6]
+  provenance: proposed
+  reason: >
+    Far inside the dense bulk phase (x/w -> oo), Zwicker et al. (2015) passive tanh flat
+    interface profile phi^B(x) = (psi/2)*(1 + tanh(x/w)) reduces identically to the bulk
+    minimum psi = sqrt(-3*chi_mu) of You et al. (2020) decoupled_ground_state at
+    chi_mu = -psi^2 / 3.
+  assumptions:
+    - "Dense-phase far-field bulk limit x -> oo at fixed interface width w > 0."
+
+# --- 2. Passive Single-Field Cahn-Hilliard Linear Dispersion Limit ---
+
+- id: rel_zwicker2015_eqF1_corrected_passive_reduces_you2020_eig
+  kind: reduces_to
+  a: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  b: you2020/one_mode_homogeneous_eigenvalues
+  mapping:
+    alpha_A: "(q * w)**2 * ((q * w)**2 / 4 - (4 * k_f * k_b - k_f**2 - k_b**2) / (k_f + k_b)**2)"
+    alpha_B: "(q * w)**2 * ((q * w)**2 / 4 - (4 * k_f * k_b - k_f**2 - k_b**2) / (k_f + k_b)**2)"
+    kappa: "1"
+    delta: "1"
+  output_map:
+    re_lambda_plus: lam_q_norm
+  limit:
+    D_B: "oo"
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    w: [1.0e-7, 1.0e-6]
+    k_f: [1.0e-4, 1.0e-2]
+    k_b: [1.0e-4, 1.0e-2]
+    q: [5.0e5, 2.0e6]
+  provenance: proposed
+  reason: >
+    In the passive slow-reaction limit (k_f + k_b)/k_0 = (k_f + k_b)*w^2/D_B -> 0 (taken via
+    D_B -> oo at fixed steady-state background composition phi_0^B = k_f/(k_f + k_b)),
+    Zwicker et al. (2015) exact active Cahn-Hilliard dispersion relation Eq. (F1_corrected)
+    normalized by k_0 = D_B/w^2 reduces identically to the passive Cahn-Hilliard dispersion
+    of You et al. (2020) Eq. (8) evaluated on the one-way decoupling boundary delta = kappa
+    (where kappa_AB = kappa - delta = 0, Delta = delta^2 - kappa^2 = 0, so species A executes
+    decoupled passive Model B dynamics with effective rate alpha_A = q_F^2*(q_F^2 - 1 +
+    3*(2*phi_0^B - 1)^2) for q_F = q*w/sqrt(2); setting kappa = delta = 1 avoids 0/0 in
+    delta_ep_over_k while keeping Delta = 0 exactly).
+  assumptions:
+    - "Passive slow-reaction limit D_B -> oo at arbitrary fixed composition phi_0^B = k_f/(k_f + k_b)."
+    - "One-way decoupled passive sector delta = kappa = 1 (kappa_AB = 0, Delta = 0) with alpha_B = alpha_A."
+
+- id: rel_zwicker2015_eqF1_corrected_passive_derived_you2020_eig
+  kind: derived_from
+  a: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  b: you2020/one_mode_homogeneous_eigenvalues
+  mapping:
+    alpha_A: "(q * w)**2 * ((q * w)**2 / 4 - (4 * k_f * k_b - k_f**2 - k_b**2) / (k_f + k_b)**2)"
+    alpha_B: "(q * w)**2 * ((q * w)**2 / 4 - (4 * k_f * k_b - k_f**2 - k_b**2) / (k_f + k_b)**2)"
+    kappa: "1"
+    delta: "1"
+  output_map:
+    re_lambda_plus: lam_q_norm
+  steps:
+    - "limit: D_B -> oo"
+    - simplify
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    w: [1.0e-7, 1.0e-6]
+    k_f: [1.0e-4, 1.0e-2]
+    k_b: [1.0e-4, 1.0e-2]
+    q: [5.0e5, 2.0e6]
+  provenance: proposed
+  reason: >
+    Symbolically proves that taking the passive limit D_B -> oo in Zwicker et al. (2015)
+    exact normalized dispersion relation Eq. (F1_corrected) yields You et al. (2020) Eq. (8)
+    decoupled passive Cahn-Hilliard dispersion identically under delta = kappa = 1.
+  assumptions:
+    - "Exact symbolic limit D_B -> oo at fixed w, k_f, k_b, q."
+
+- id: rel_zwicker2015_eqF1_printed_passive_vs_you2020_eig
+  kind: reduces_to
+  a: zwicker2015/homogeneous_dispersion_eqF1
+  b: you2020/one_mode_homogeneous_eigenvalues
+  mapping:
+    alpha_A: "(q * w)**2 * ((q * w)**2 / 4 - (4 * k_f * k_b - k_f**2 - k_b**2) / (k_f + k_b)**2)"
+    alpha_B: "(q * w)**2 * ((q * w)**2 / 4 - (4 * k_f * k_b - k_f**2 - k_b**2) / (k_f + k_b)**2)"
+    kappa: "1"
+    delta: "1"
+  output_map:
+    re_lambda_plus: lam_q_norm
+  limit:
+    D_B: "oo"
+  regime:
+    D_B: [1.0e-12, 1.0e-11]
+    w: [1.0e-7, 2.0e-7]
+    k_f: [0.004, 0.006]
+    k_b: [0.004, 0.006]
+    q: [3.0e6, 5.0e6]
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check testing whether Zwicker et al. (2015) printed Appendix F
+    Eq. (F1) reduces in the passive limit D_B -> oo to You et al. (2020) passive Cahn-Hilliard
+    dispersion. Expected to be not_verified (persistent relative discrepancy ~0.60) because
+    printed Eq. (F1) carries a spurious factor of 2 on the q^2 bulk-curvature term
+    (independently corroborating zwicker2015/q_appF_factor_of_2_error).
+  assumptions:
+    - "Same exact passive Cahn-Hilliard dictionary as rel_zwicker2015_eqF1_corrected_passive_reduces_you2020_eig, evaluated inside the spinodal band."
+
+# --- 3. Active Adiabatic Nonreciprocal-to-Reactive Bridge (Fast-Slaved Species B) ---
+
+- id: rel_zwicker2015_eqF1_corrected_approx_you2020_adiabatic
+  kind: approximated_by
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: zwicker2015/homogeneous_dispersion_eqF1_corrected
+  mapping:
+    D_B: "1"
+    w: "1"
+    q: "1"
+    k_f: "((delta**2 - kappa**2) / (2 * alpha_B)) * (1 + sqrt((2 * alpha_A + 1/2) / 3))"
+    k_b: "((delta**2 - kappa**2) / (2 * alpha_B)) * (1 - sqrt((2 * alpha_A + 1/2) / 3))"
+  output_map:
+    lam_q_norm: re_lambda_plus
+  regime:
+    alpha_A: [-0.20, -0.10]
+    alpha_B: [50.0, 200.0]
+    kappa: [0.5, 1.0]
+    delta: [1.5, 2.5]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    Quantifies the active adiabatic bridge between You et al. (2020) conserved two-field
+    nonreciprocal dispersion Eq. (8) and Zwicker et al. (2015) single-field reactive
+    Cahn-Hilliard dispersion Eq. (F1_corrected). When the subcritical species B relaxes
+    rapidly (alpha_B in [50, 200] >> |alpha_A|) under nonreciprocal dominance (delta > kappa),
+    adiabatic elimination of phi_B produces an effective non-conserved linear damping term
+    -(delta^2 - kappa^2)/alpha_B in the phi_A equation, matching Zwicker's exact normalized
+    reactive dispersion lam_q_norm = -alpha_A - (k_f + k_b)/k_0 with effective total reaction
+    rate (k_f + k_b)/k_0 = (delta^2 - kappa^2)/alpha_B and composition u = 2*phi_0^B - 1 =
+    sqrt((2*alpha_A + 1/2)/3) at q*w = 1 to within 0.18% (well below the 2% tolerance).
+  assumptions:
+    - "Adiabatic fast-relaxing species B regime (alpha_B in [50, 200]) with nonreciprocal dominance delta > kappa > 0."
+    - "Unstable mode-1 spinodal range alpha_A in [-0.20, -0.10] mapped to q*w = 1 (q_F^2 = 1/2) where 2*alpha_A + 1/2 in [0.1, 0.3] yields physical fractions phi_0^B in (0, 1)."
+
+- id: rel_zwicker2015_eqF1_printed_approx_you2020_adiabatic
+  kind: approximated_by
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: zwicker2015/homogeneous_dispersion_eqF1
+  mapping:
+    D_B: "1"
+    w: "1"
+    q: "1"
+    k_f: "((delta**2 - kappa**2) / (2 * alpha_B)) * (1 + sqrt((2 * alpha_A + 1/2) / 3))"
+    k_b: "((delta**2 - kappa**2) / (2 * alpha_B)) * (1 - sqrt((2 * alpha_A + 1/2) / 3))"
+  output_map:
+    lam_q_norm: re_lambda_plus
+  regime:
+    alpha_A: [-0.20, -0.10]
+    alpha_B: [50.0, 200.0]
+    kappa: [0.5, 1.0]
+    delta: [1.5, 2.5]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    Diagnostic cross-paper check applying the exact active adiabatic mapping of
+    rel_zwicker2015_eqF1_corrected_approx_you2020_adiabatic against Zwicker et al. (2015)
+    printed Appendix F Eq. (F1). Expected to be not_verified (max relative error ~94% vs
+    0.18% for the corrected equation), independently exposing the spurious factor of 2 on the
+    q^2 bulk-curvature term in printed Eq. (F1) (zwicker2015/q_appF_factor_of_2_error).
+  assumptions:
+    - "Same adiabatic regime and exact active mapping as rel_zwicker2015_eqF1_corrected_approx_you2020_adiabatic."
+
+# ==============================================================================
+# Cross-record relations with tjhung2018 (Tjhung, Nardini & Cates,
+# Phys. Rev. X 8, 031080, 2018).
+# Note: Neither paper cites the other (you2020 cites Wittkowski et al. 2014
+# [Active Model B], Cates & Tailleur 2015, Wittkowski-Stenhammar-Cates 2017,
+# and Cates 2019 arXiv:1904.01330, but not Tjhung PRX 2018). All cross-record
+# relations below therefore carry provenance: proposed. Under the exact passive
+# single-field Model B dictionary A = -chi_A, K = gamma_A, phi = phi_A / sqrt(-3*chi_A)
+# (no space or time rescaling), You Eq. (1) in its decoupled/one-way limit
+# (kappa = delta = 0 or delta = kappa where kappa_AB = 0) and Tjhung Eqs. (2)-(4)
+# in their passive limit (zeta = lambda = 0) collapse onto the identical Model B
+# PDE, quartic bulk potential, binodals, bulk curvature, and spinodal length scale,
+# while both papers' microscopic coarse-grainings share the identical 2D ABP/AOUP
+# swim diffusivity (tau = 1/(2*D_R)) and 2D pair-interaction virial integral.
+# ==============================================================================
+
+# --- 1. Shared Passive Model B Double-Well Ground State, Active Binodal Limits & Eq. (B2) Misprint ---
+
+- id: rel_tjhung2018_model_b_scales_decoupled_ground_state
+  kind: scales_as
+  a: tjhung2018/model_b_bulk_eq3
+  b: you2020/decoupled_ground_state
+  mapping:
+    chi_mu: "a / (3 * b)"
+  output_map:
+    phi_g: phi_b_pos
+  regime:
+    a: [-2.0, -0.1]
+    b: [0.2, 2.0]
+    phi: [0.1, 1.0]
+  provenance: proposed
+  reason: >
+    Links Tjhung et al. (2018) Eq. (3) passive Model B quartic double-well binodal
+    phi_b^+ = sqrt(-a/b) (for f(phi) = (a/2)*phi^2 + (b/4)*phi^4) directly to You et al.
+    (2020) p. 19768 decoupled ground state phi_g = sqrt(-3*chi_mu) (for f(phi_mu) =
+    (chi_mu/2)*phi_mu^2 + (1/12)*phi_mu^4) under the exact Landau correspondence
+    chi_mu = a/(3*b), where phi_g = phi_b^+ identically for all a < 0, b > 0. Recorded as
+    scales_as (verifying exact log-slopes +1/2 in a and -1/2 in b) because
+    decoupled_ground_state's Piecewise symbolic form simplifies to 0 under SymPy's
+    positive-symbol assumption (avoiding a spurious too_plain flag on same_as, consistent
+    with rel_frohoff2021_binodal_scales_as_decoupled_ground_state). Closes the 4-paper
+    commutative Model B binodal square across tjhung2018, you2020, frohoff2021, and zwicker2015.
+  assumptions:
+    - "Supercritical double-well regime a < 0, b > 0 mapped via chi_mu = a / (3*b)."
+
+- id: rel_tjhung2018_binodals_flat_reduces_decoupled_ground_state
+  kind: reduces_to
+  a: tjhung2018/binodals_flat_eq9
+  b: you2020/decoupled_ground_state
+  mapping:
+    chi_mu: "-1 / 3"
+  output_map:
+    phi_g: phi_2
+  limit:
+    zeta: "0"
+    lam: "0"
+  regime:
+    A: [0.1, 1.0]
+    K: [0.5, 2.0]
+    zeta: [0.05, 1.0]
+    lam: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    As Active Model B+'s non-integrable gradient activities vanish (zeta -> 0, lambda -> 0),
+    Tjhung et al. (2018) Eq. (9) active flat-interface dense binodal phi_2 reduces to +1,
+    matching You et al. (2020) p. 19768 decoupled Model B ground state phi_g = sqrt(-3*chi_mu)
+    = 1 at canonical unit-binodal coupling chi_mu = -1/3 (equivalently via the exact field
+    normalization phi = phi_A / sqrt(-3*chi_A)).
+  assumptions:
+    - "Passive equilibrium limit zeta, lambda -> 0 in AMB+ compared to canonical chi_mu = -1/3 (phi_g = 1) in You 2020."
+
+- id: rel_tjhung2018_binodals_combo_eqB2_corr_reduces_decoupled_ground_state
+  kind: reduces_to
+  a: tjhung2018/binodals_flat_combo_eqB2_corrected
+  b: you2020/decoupled_ground_state
+  mapping:
+    chi_mu: "-1 / 3"
+  output_map:
+    phi_g: phi_2
+  limit:
+    combo: "0"
+  regime:
+    A: [0.2, 0.5]
+    K: [0.8, 1.5]
+    combo: [0.05, 1.0]
+    lam: [0.2, 1.5]
+  provenance: proposed
+  reason: >
+    Along AMB+'s active equilibrium-binodal line zeta = 2*lambda != 0 (combo = zeta - 2*lambda
+    -> 0 at finite active lambda in [0.2, 1.5]), the flat-interface active binodal shift
+    vanishes even though curved interfaces still sustain active currents and reverse Ostwald
+    ripening. Using corrected Appendix B Eq. (B2), phi_2 reduces cleanly to You et al. (2020)
+    decoupled passive Model B ground state phi_g = 1 at chi_mu = -1/3.
+  assumptions:
+    - "Active-but-equilibrium-binodal line combo = zeta - 2*lambda -> 0 at finite lambda in [0.2, 1.5]."
+
+- id: rel_tjhung2018_binodals_combo_eqB2_printed_vs_decoupled_ground_state
+  kind: reduces_to
+  a: tjhung2018/binodals_flat_combo_eqB2
+  b: you2020/decoupled_ground_state
+  mapping:
+    chi_mu: "-1 / 3"
+  output_map:
+    phi_g: phi_2
+  limit:
+    combo: "0"
+  regime:
+    A: [0.2, 0.5]
+    K: [0.8, 1.5]
+    combo: [0.05, 1.0]
+    lam: [0.2, 1.5]
+  provenance: proposed
+  reason: >
+    Documented paper-misprint diagnostic check: evaluates Tjhung et al. (2018) verbatim
+    printed Appendix B Eq. (B2) (which prints -6*zeta*K^2*phi instead of -6*(zeta - 2*lambda)*K^2*phi)
+    along combo = zeta - 2*lambda -> 0 at finite active lambda against You et al. (2020)
+    decoupled passive ground state phi_g = 1. Intentionally not_verified (relative discrepancy
+    diverges from 0.98 to 1.78 instead of falling to 0), independently corroborating
+    tjhung2018/q_eqB2_misprint_6zeta.
+  assumptions:
+    - "Same active equilibrium-binodal limit combo -> 0 at finite lambda in [0.2, 1.5] as rel_tjhung2018_binodals_combo_eqB2_corr_reduces_decoupled_ground_state."
+
+- id: rel_tjhung2018_curved_O1R_reduces_decoupled_ground_state
+  kind: reduces_to
+  a: tjhung2018/curved_binodals_O1R_eq16_19
+  b: you2020/decoupled_ground_state
+  mapping:
+    chi_mu: "-1 / 3"
+  output_map:
+    phi_g: phi_plus
+  limit:
+    R: "oo"
+    zeta: "0"
+    lam: "0"
+  regime:
+    A: [0.2, 0.5]
+    K: [0.8, 1.5]
+    zeta: [0.05, 0.5]
+    lam: [0.05, 0.5]
+    d: [2.0, 3.0]
+    R: [10.0, 40.0]
+  provenance: proposed
+  reason: >
+    Taking the simultaneous thermodynamic flat-interface (R -> oo) and passive (zeta, lambda -> 0)
+    limit of Tjhung et al. (2018) Eqs. (16) and (19) curved-droplet coexistence reduces the
+    dense interior density phi_+(R) identically to You et al. (2020) decoupled passive Model B
+    ground state phi_g = 1 at chi_mu = -1/3.
+  assumptions:
+    - "Simultaneous sharp flat-interface (R -> oo) and passive (zeta, lambda -> 0) limit in d in [2, 3]."
+
+# --- 2. Passive Single-Field Model B Limit of You 2020, Bulk Curvature Family & Eq. (30) Misprint ---
+
+- id: rel_tjhung2018_model_b_reduces_from_static_fp
+  kind: reduces_to
+  a: you2020/one_mode_static_fp
+  b: tjhung2018/model_b_bulk_eq3
+  mapping:
+    a: "alpha_A"
+    b: "1"
+    phi: "0"
+  output_map:
+    phi_b_pos: rho_A_s
+  limit:
+    kappa: "0"
+    delta: "0"
+  regime:
+    alpha_A: [-0.20, -0.01]
+    alpha_B: [0.005, 0.05]
+    kappa: [0.002, 0.01]
+    delta: [0.001, 0.008]
+  provenance: proposed
+  reason: >
+    In the fully decoupled passive single-field limit (kappa -> 0, delta -> 0), You et al.
+    (2020) Eq. (5) static one-mode amplitude rho_A^s = sqrt((kappa^2 - delta^2 - alpha_A*alpha_B)/alpha_B)
+    reduces identically to the quartic Landau double-well minimum phi_b^+ = sqrt(-a/b) of
+    Tjhung et al. (2018) Eq. (3) at a = alpha_A = chi_A + gamma_A + (phi0_A)^2 and unit
+    one-mode quartic coefficient b = 1 (which in the bulk zero-mean limit gamma_A = phi0_A = 0
+    also equals the Model B spinodal sqrt(-chi_A) = phi_g / sqrt(3) for You's bulk b = 1/3).
+  assumptions:
+    - "Decoupled passive single-field Model B limit kappa -> 0, delta -> 0 with alpha_A < 0, alpha_B > 0."
+
+- id: rel_tjhung2018_model_b_reduces_from_static_fp_oneway
+  kind: reduces_to
+  a: you2020/one_mode_amplitudes_ratio
+  b: tjhung2018/model_b_bulk_eq3
+  mapping:
+    a: "alpha_A"
+    b: "1"
+    phi: "0"
+  output_map:
+    phi_b_pos: rho_A_s
+  limit:
+    delta_over_kappa: "1"
+  regime:
+    alpha_A: [-0.20, -0.01]
+    alpha_B: [0.02, 0.05]
+    kappa: [0.002, 0.01]
+    delta_over_kappa: [0.2, 0.99]
+  provenance: proposed
+  reason: >
+    Tests the distinct one-way decoupling boundary delta/kappa -> 1 (kappa_AB = kappa - delta -> 0
+    at arbitrary finite kappa in [0.002, 0.01]): although species B remains driven by species A
+    through kappa_BA = 2*kappa != 0, feedback onto species A vanishes so species A obeys exact
+    passive single-field Model B dynamics and You's static amplitude rho_A^s reduces identically
+    to Tjhung Eq. (3)'s Landau double-well minimum sqrt(-alpha_A) (a = alpha_A, b = 1).
+  assumptions:
+    - "One-way decoupling limit delta/kappa -> 1 inside the static existence regime delta < delta_c = sqrt(kappa^2 + alpha_B^2)."
+
+- id: rel_tjhung2018_model_b_reduces_from_bisup_fp
+  kind: reduces_to
+  a: you2020/bi_supercritical_one_mode_fp
+  b: tjhung2018/model_b_bulk_eq3
+  mapping:
+    a: "alpha_A + alpha_B"
+    b: "2"
+    phi: "0"
+  output_map:
+    phi_b_pos: rho_A_t
+  limit:
+    kappa: "0"
+  regime:
+    alpha_A: [-0.04, -0.005]
+    alpha_B: [-0.04, -0.005]
+    kappa: [0.001, 0.005]
+    delta: [0.05, 0.15]
+  provenance: proposed
+  reason: >
+    In the purely antisymmetric nonreciprocal limit kappa -> 0 (kappa_AB = -delta, kappa_BA = +delta)
+    of You et al. (2020) SI Sec. V Eq. (S33), the bi-supercritical traveling-wave amplitude
+    rho_A^t = sqrt(-(delta - kappa)*(alpha_A + alpha_B)/(2*delta)) becomes independent of delta
+    and reduces identically to Tjhung Eq. (3)'s quartic Landau double-well minimum sqrt(-a/b)
+    evaluated at the species-averaged supercriticality a/b = (alpha_A + alpha_B)/2.
+  assumptions:
+    - "Purely antisymmetric nonreciprocal limit kappa -> 0 in the bi-supercritical traveling phase (alpha_A < 0, alpha_B < 0, delta > delta_c)."
+
+- id: rel_tjhung2018_ostwald_eq30_corr_same_eff_params
+  kind: same_as
+  a: tjhung2018/ostwald_beta_over_Rs_eq30_corrected
+  b: you2020/one_mode_effective_params
+  mapping:
+    chi_A: "-A * epsilon"
+    gamma_A: "0"
+    phi0_A: "phi_1 * sqrt(3 * A * epsilon)"
+    chi_B: "0"
+    gamma_B: "0"
+    phi0_B: "0"
+  output_map:
+    alpha_A: beta_over_Rs
+  regime:
+    A: [0.2, 1.0]
+    phi_1: [0.7, 1.5]
+    Delta_phi: [1.5, 2.5]
+    Delta_psi: [1.5, 2.5]
+    epsilon: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    Exact symbolic identity joining Tjhung et al. (2018) corrected Ostwald small-supersaturation
+    curvature factor beta/R_s = f''(phi_1)*epsilon = A*(3*phi_1^2 - 1)*epsilon (Eq. 30 corrected)
+    and You et al. (2020) SI Eq. (S6) bulk-limit (gamma_A = 0) effective control parameter
+    alpha_A = chi_A + (phi0_A)^2 = f_A''(phi0_A) under the exact Model B Landau dictionary
+    chi_A = -A*epsilon and phi0_A = phi_1*sqrt(3*A*epsilon) (reflecting b = 1/3 in You vs b = A
+    in Tjhung). Joins you2020/one_mode_effective_params into the verified ModelAtlas bulk-curvature
+    family alongside tjhung2018/ostwald_beta_over_Rs_eq30_corrected and frohoff2021/bulk_energy_curvature_eq3_4.
+  assumptions:
+    - "Long-wavelength bulk limit gamma_A = 0 and corrected Eq. (30) without the printed spurious 1/(Delta_phi*Delta_psi) factor."
+
+- id: rel_tjhung2018_ostwald_eq30_printed_vs_eff_params
+  kind: same_as
+  a: tjhung2018/ostwald_beta_over_Rs_eq30
+  b: you2020/one_mode_effective_params
+  mapping:
+    chi_A: "-A * epsilon"
+    gamma_A: "0"
+    phi0_A: "phi_1 * sqrt(3 * A * epsilon)"
+    chi_B: "0"
+    gamma_B: "0"
+    phi0_B: "0"
+  output_map:
+    alpha_A: beta_over_Rs
+  regime:
+    A: [0.2, 1.0]
+    phi_1: [0.7, 1.5]
+    Delta_phi: [2.0, 2.0]
+    Delta_psi: [2.0, 2.0]
+    epsilon: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    Documented paper-misprint diagnostic check: applies the exact Model B bulk-curvature dictionary
+    of rel_tjhung2018_ostwald_eq30_corr_same_eff_params to Tjhung et al. (2018) verbatim printed
+    Eq. (30) at passive jump values Delta_phi = Delta_psi = 2. Intentionally not_verified with
+    exact constant ratio a = 0.25 * b, independently corroborating tjhung2018/q_eq30_spurious_factor.
+  assumptions:
+    - "Passive equilibrium binodal jumps Delta_phi = Delta_psi = 2."
+
+- id: rel_tjhung2018_ostwald_eq30_corr_reduces_from_eff_params
+  kind: reduces_to
+  a: you2020/one_mode_effective_params
+  b: tjhung2018/ostwald_beta_over_Rs_eq30_corrected
+  mapping:
+    A: "1 / 3"
+    phi_1: "phi0_A"
+    Delta_phi: "2"
+    Delta_psi: "2"
+    epsilon: "1"
+  output_map:
+    beta_over_Rs: alpha_A
+  limit:
+    gamma_A: "0"
+  regime:
+    chi_A: [-0.3333333333333333, -0.3333333333333333]
+    gamma_A: [0.01, 0.05]
+    phi0_A: [0.7, 1.5]
+    chi_B: [0.005, 0.05]
+    gamma_B: [0.0, 0.04]
+    phi0_B: [0.0, 0.2]
+  provenance: proposed
+  reason: >
+    Bulk-limit reduction complementary to rel_tjhung2018_ostwald_eq30_corr_same_eff_params:
+    at You's canonical unit-binodal coupling chi_A = -1/3 (where phi_g = 1 so A = -chi_A = 1/3
+    and phi_1 = phi0_A directly without rescaling), letting interfacial rigidity gamma_A -> 0
+    reduces You SI Eq. (S6)'s alpha_A = chi_A + gamma_A + (phi0_A)^2 identically to Tjhung's
+    corrected Eq. (30) bulk curvature f''(phi_1) = A*(3*phi_1^2 - 1) (at epsilon = 1).
+  assumptions:
+    - "Canonical unit-binodal coupling chi_A = -1/3 (A = 1/3, phi_g = 1) in the bulk limit gamma_A -> 0."
+
+- id: rel_tjhung2018_ostwald_eq28_reduces_eff_params_ground_state
+  kind: reduces_to
+  a: tjhung2018/ostwald_ripening_eq27_29
+  b: you2020/one_mode_effective_params
+  mapping:
+    chi_A: "-A * epsilon"
+    gamma_A: "0"
+    phi0_A: "sqrt(3 * A * epsilon)"
+    chi_B: "0"
+    gamma_B: "0"
+    phi0_B: "0"
+  output_map:
+    alpha_A: beta_over_Rs
+  limit:
+    epsilon: "0"
+  regime:
+    A: [0.1, 1.0]
+    phi_1: [-1.0, -1.0]
+    Delta_phi: [2.0, 2.0]
+    Delta_psi: [2.0, 2.0]
+    Delta_g: [0.0, 0.0]
+    sigma: [0.2, 0.8]
+    d: [3.0, 3.0]
+    epsilon: [0.01, 0.1]
+    R: [20.0, 100.0]
+  provenance: proposed
+  reason: >
+    Connects Tjhung et al. (2018) exact nonlinear Ostwald critical-radius numerator
+    beta/R_s = f'(-1 + epsilon) = 2*A*epsilon - 3*A*epsilon^2 + A*epsilon^3 (Eq. 28 in the
+    passive symmetric limit Delta_g = 0, phi_1 = -1) directly to You et al. (2020) bulk-limit
+    effective curvature alpha_A = chi_A + (phi0_A)^2 = 2*A*epsilon evaluated at the decoupled
+    ground state phi0_A = phi_g = sqrt(-3*chi_A) (scaled by epsilon) as supersaturation epsilon -> 0.
+  assumptions:
+    - "Passive symmetric Ostwald limit (Delta_g = 0, phi_1 = -1, Delta_phi = Delta_psi = 2) as supersaturation epsilon -> 0."
+
+- id: rel_tjhung2018_ostwald_eq28_derived_eff_params_ground_state
+  kind: derived_from
+  a: tjhung2018/ostwald_ripening_eq27_29
+  b: you2020/one_mode_effective_params
+  mapping:
+    chi_A: "-A * epsilon"
+    gamma_A: "0"
+    phi0_A: "sqrt(3 * A * epsilon)"
+    chi_B: "0"
+    gamma_B: "0"
+    phi0_B: "0"
+  output_map:
+    alpha_A: beta_over_Rs
+  steps:
+    - "subs: Delta_g = 0"
+    - "subs: phi_1 = -1"
+    - "series: epsilon -> 0, 2"
+    - simplify
+  regime:
+    A: [0.1, 1.0]
+    phi_1: [-1.0, -1.0]
+    Delta_phi: [2.0, 2.0]
+    Delta_psi: [2.0, 2.0]
+    Delta_g: [0.0, 0.0]
+    sigma: [0.2, 0.8]
+    d: [3.0, 3.0]
+    epsilon: [0.01, 0.1]
+    R: [20.0, 100.0]
+  provenance: proposed
+  reason: >
+    Symbolically derives You et al. (2020) bulk ground-state curvature alpha_A = 2*A*epsilon
+    from Tjhung et al. (2018) exact nonlinear Ostwald Eq. (28) by setting Delta_g = 0,
+    phi_1 = -1, and Taylor-expanding to O(epsilon) around the passive Model B binodal.
+  assumptions:
+    - "Passive symmetric limit Delta_g = 0, phi_1 = -1 expanded to first order in supersaturation epsilon."
+
+- id: rel_tjhung2018_ostwald_eq30_corr_scales_homog_eig_oneway
+  kind: scales_as
+  a: you2020/one_mode_homogeneous_eigenvalues
+  b: tjhung2018/ostwald_beta_over_Rs_eq30_corrected
+  mapping:
+    A: "alpha_A / 2"
+    phi_1: "1"
+    Delta_phi: "2"
+    Delta_psi: "2"
+    epsilon: "1"
+  output_map:
+    beta_over_Rs: re_lambda_plus
+  regime:
+    alpha_A: [0.02, 0.20]
+    alpha_B: [0.30, 0.60]
+    kappa: [1.0, 1.0]
+    delta: [1.0, 1.0]
+  provenance: proposed
+  reason: >
+    On You et al. (2020) one-way decoupling boundary delta = kappa = 1 (kappa_AB = 0, Delta = 0),
+    species A's homogeneous mode-1 relaxation eigenvalue Re(lambda_+^h) = -alpha_A decouples
+    completely from species B (alpha_B in [0.30, 0.60]) and equals minus the passive Model B
+    bulk curvature f''(+-1) = 2*A governing diffusive equilibration around the binodal in
+    Tjhung et al. (2018) Eq. (30) corrected (with opposite sign convention: decay rate = -f'').
+  assumptions:
+    - "One-way decoupled passive single-field Model B sector delta = kappa = 1 with 0 < alpha_A < alpha_B (stable bulk outside the spinodal)."
+    - "Opposite sign convention: Re(lambda_+^h) = -f''(+-1) = -beta_over_Rs (at epsilon = 1)."
+
+- id: rel_tjhung2018_ostwald_eq30_corr_scales_static_stab_oneway
+  kind: scales_as
+  a: you2020/static_fp_stability_eqS14_S16
+  b: tjhung2018/ostwald_beta_over_Rs_eq30_corrected
+  mapping:
+    A: "-alpha_A"
+    phi_1: "1"
+    Delta_phi: "2"
+    Delta_psi: "2"
+    epsilon: "1"
+  output_map:
+    beta_over_Rs: re_lambda_s_plus
+  regime:
+    alpha_A: [-0.20, -0.05]
+    alpha_B: [0.50, 1.00]
+    kappa: [1.0, 1.0]
+    delta: [1.0, 1.0]
+  provenance: proposed
+  reason: >
+    On the one-way decoupled passive single-field Model B boundary delta = kappa = 1, the
+    amplitude relaxation eigenvalue of You et al. (2020) SI Eq. (S15) around the static
+    modulated state F_S simplifies to Re(lambda_+^s) = 2*alpha_A = -2*A (independent of
+    alpha_B for alpha_B > -2*alpha_A), exhibiting the exact universal quartic Landau curvature
+    factor of 2 at the double-well minimum f''(+-1) = 2*A = -2*a shared with Tjhung et al.
+    (2018) Eq. (30) corrected (with opposite sign convention: relaxation rate = -f''(+-1)).
+  assumptions:
+    - "One-way decoupled passive single-field sector delta = kappa = 1 with alpha_A < 0 and alpha_B > -2*alpha_A."
+    - "Opposite sign convention: Re(lambda_+^s) = -2*A = -beta_over_Rs (at epsilon = 1)."
+
+# --- 3. Equilibrium Interfacial Width vs. Pure-Active MIPS Spinodal Wavelength ---
+
+- id: rel_tjhung2018_eq_interface_scales_ap_mips_Lmin
+  kind: scales_as
+  a: you2020/active_passive_linear_stability
+  b: tjhung2018/equilibrium_interface_p4
+  mapping:
+    A: "(v_0**2 / (2 * D_R)) * (1 - a0_AA * rho_A0) * (2 * a0_AA * rho_A0 - 1) - a1 * rho_A0"
+    K: "kappa_ap"
+  output_map:
+    xi_eq: L_min_unstable
+  regime:
+    v_0: [60.0, 90.0]
+    D_R: [2.0, 4.0]
+    a0_AA: [0.95, 1.05]
+    a0_AP: [0.7, 0.7]
+    a1: [5.0, 15.0]
+    kappa_ap: [500.0, 1500.0]
+    rho_A0: [0.62, 0.78]
+    rho_P0: [0.0, 0.0]
+    L: [64.0, 64.0]
+  provenance: proposed
+  reason: >
+    In the pure active Brownian particle limit (rho_P0 = 0, passive species absent), You et al.
+    (2020) SI Sec. VI.B Eq. (S39a) reduces to single-field supercritical Model B with effective
+    negative diffusivity D_AA = a1*rho_A0 - (v_0^2/(2*D_R))*(1 - a0_AA*rho_A0)*(2*a0_AA*rho_A0 - 1)
+    < 0 and biharmonic stiffness K = kappa_ap, yielding minimum unstable spinodal box length
+    L_min = 2*pi*sqrt(kappa_ap/(-D_AA)). Under the exact Model B spinodal identification
+    A = -D_AA and K = kappa_ap, L_min equals 2*pi*sqrt(2)*xi_eq identically relative to Tjhung
+    et al. (2018) p. 4 equilibrium interfacial width xi_eq = sqrt(K/(2*A)), matching nonlinear
+    log-slopes across all six active-Brownian parameters (v_0, D_R, a0_AA, a1, kappa_ap, rho_A0)
+    simultaneously to machine precision.
+  assumptions:
+    - "Pure active-particle MIPS limit rho_P0 = 0 inside the spinodal window D_AA < 0 (giving constant Model B geometric ratio L_min / xi_eq = 2*pi*sqrt(2))."
+
+# --- 4. Microscopic Coarse-Graining Bridges (AOUP/ABP Swim Diffusivity & 2D Pair-Force Virial Integral) ---
+
+- id: rel_tjhung2018_cg_mobility_reduces_from_ap_DAA
+  kind: reduces_to
+  a: you2020/active_passive_linear_stability
+  b: tjhung2018/cg_aoup_mobility_mu_eq36_39
+  mapping:
+    rho: "1"
+    tau: "1 / (2 * D_R)"
+    v: "v_0 * (1 - a0_AP * rho_P0)"
+    T: "a1 * rho_A0"
+  output_map:
+    M_cg: D_AA
+  limit:
+    a0_AA: "0"
+  regime:
+    v_0: [20.0, 80.0]
+    D_R: [1.0, 5.0]
+    a0_AA: [0.1, 1.0]
+    a0_AP: [0.2, 0.8]
+    a1: [5.0, 30.0]
+    kappa_ap: [500.0, 1500.0]
+    rho_A0: [0.2, 0.6]
+    rho_P0: [0.1, 0.4]
+    L: [50.0, 80.0]
+  provenance: proposed
+  reason: >
+    Directly bridges both papers' microscopic coarse-grainings of overdamped active particles.
+    In You et al. (2020) SI Sec. VI.B Eq. (S40a) (citing Wittkowski-Stenhammar-Cates 2017),
+    active-species diffusivity D_AA = a1*rho_A0 + (v/(2*D_R))*(v - a0_AA*v_0*rho_A0) combines
+    steric virial repulsion a1*rho_A0 with 2D ABP swim diffusivity v^2/(2*D_R) and MIPS
+    crowding derivative (v/(2*D_R))*rho_A0*(dv/drho_A). As self-slowing vanishes (a0_AA -> 0,
+    retaining passive crowding v = v_0*(1 - a0_AP*rho_P0)), D_AA reduces identically to Tjhung
+    et al. (2018) Sec. VI Eq. (36) coarse-grained quorum-sensing AOUP effective diffusivity
+    M[rho]/rho = tau*v^2 + T under the exact 2D ABP persistence-time correspondence
+    tau = 1/(2*D_R) and effective passive/virial diffusivity T = a1*rho_A0.
+  assumptions:
+    - "Vanishing active self-slowdown limit a0_AA -> 0 with exact 2D persistence-time dictionary tau = 1/(2*D_R) and unit density normalization rho = 1."
+
+- id: rel_tjhung2018_cg_pair_C_scales_micro_ar_meanfield_pi12
+  kind: scales_as
+  a: you2020/microscopic_ar_meanfield_pi12
+  b: tjhung2018/cg_pair_moments_eq45_46
+  mapping:
+    d: "2"
+    U_0: "k_r * sigma_r**2 / 2"
+    ell: "sigma_r"
+  output_map:
+    C: R_munu
+  regime:
+    k_r: [100.0, 5000.0]
+    sigma_r: [0.5, 3.0]
+    k_munu: [0.0, 0.0]
+    sigma_munu: [1.0, 3.0]
+    phi_mu: [0.1, 1.0]
+  provenance: proposed
+  reason: >
+    Links both papers' lowest-order 2D gradient-expansion pair-interaction virial integrals
+    -(Omega_2 / 2) * int_0^oo s^2 U'(s) ds = int_{R^2} U(r) d^2r. You et al. (2020) SI Sec.
+    VI.A's corrected 2D angular-averaged mean-field coefficient R_munu = (pi/12)*k_r*sigma_r^4
+    (at k_munu = 0, for soft harmonic repulsive core U_harm(s) = (1/2)*k_r*(sigma_r - s)^2 of
+    peak energy U_0 = k_r*sigma_r^2/2 and range sigma_r) and Tjhung et al. (2018) Sec. VI
+    Eq. (46)'s pair-potential integral C = 2*pi*U_0*ell^2 (at d = 2, for Gaussian U_Gauss(s) =
+    U_0*exp(-s^2/(2*ell^2))) compute the exact same physical virial integral and share identical
+    scaling exponents (+1 in k_r, +4 in sigma_r), differing only by the dimensionless radial
+    shape-factor ratio C_Gauss / R_harm = 12.
+  assumptions:
+    - "Pure reciprocal repulsive core k_munu = 0 in d = 2 with matched peak barrier U_0 = k_r*sigma_r^2/2 and interaction range ell = sigma_r."
+
+

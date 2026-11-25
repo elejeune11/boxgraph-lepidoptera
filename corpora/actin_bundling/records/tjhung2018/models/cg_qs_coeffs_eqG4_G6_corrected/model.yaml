@@ -1,0 +1,28 @@
+id: cg_qs_coeffs_eqG4_G6_corrected
+name: Coarse-grained quorum-sensing coefficients K^qs, K_1^qs, and lambda_qs corrected from Eq. (39)
+role: model
+variant_of: cg_qs_coeffs_eqG4_G6
+corrections:
+  - equation: "Eqs. (G2), (G4), (G5), (G6)"
+    change: "Restore missing overall factor of tau in Eqs. (G2), (G4), (G5), and (G6), and remove extraneous factor of 1/2 in Eq. (G4): K^qs = -tau*v_0*gamma_0 / (T + tau*v_0^2), K_1^qs = -(tau/(2*(T+tau*v_0^2)))*[v_0*gamma_1 + v_1*gamma_0 - 2*v_0^2*v_1*gamma_0*tau/(T+tau*v_0^2)], lambda_qs = tau*v_0*beta_0/(T+tau*v_0^2) + K_1^qs"
+    evidence: "Expanding (1/2) log(tau*(v + delta_v)^2 + T) in Eq. (39) yields (tau*v/(tau*v^2 + T)) * delta_v (dimensionally required because [tau*v^2] = [T] = L^2/t while [v*delta_v] = L^2/t^2, so omitting tau breaks dimensional consistency by 1/time). Matching Eq. (41)-(42) delta F_qs/delta rho + lambda_qs |grad rho|^2 = f'_qs - (K^qs + 2*K_1^qs*rho) grad^2 rho + (lambda_qs - K_1^qs) |grad rho|^2 equates -K^qs (with no factor of 2) to tau*v_0*gamma_0/(T+tau*v_0^2) and -2*K_1^qs to the linear rho coefficient."
+stated:
+  page: 17
+  printed_page: "031080-17"
+  quote: "and the other parameters are set as"
+  where: "Appendix G Eqs. G2, G4-G6 (corrected from Eq. 39 and Eqs. 41-42)"
+equation: "K^qs = -tau*v_0*gamma_0 / (T + tau*v_0^2); K_1^qs = -(tau/(2*(T + tau*v_0^2))) * [v_0*gamma_1 + v_1*gamma_0 - 2*v_0^2*v_1*gamma_0*tau/(T + tau*v_0^2)]; lambda_qs = tau*v_0*beta_0 / (T + tau*v_0^2) + K_1^qs"
+inputs:
+  tau: {quantity: persistence_time, unit: dimensionless}
+  T: {quantity: thermal_diffusivity, unit: dimensionless}
+  v_0: {quantity: swim_speed, unit: dimensionless}
+  v_1: {quantity: swim_speed_density_slope, unit: dimensionless}
+  gamma_0: {quantity: swim_speed_laplacian_coeff, unit: dimensionless}
+  gamma_1: {quantity: swim_speed_laplacian_slope, unit: dimensionless}
+  beta_0: {quantity: swim_speed_gradsq_coeff, unit: dimensionless}
+outputs:
+  K_qs: {quantity: cg_gradient_coefficient, unit: dimensionless}
+  K1_qs: {quantity: cg_gradient_coupling_K1, unit: dimensionless}
+  lambda_qs: {quantity: cg_active_lambda, unit: dimensionless}
+settings: {}
+stochastic: false

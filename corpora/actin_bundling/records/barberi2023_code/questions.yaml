@@ -1,0 +1,297 @@
+- id: q_smfig1_discrete_k_and_grid_step
+  kind: numerics
+  about:
+    - code_stability_diagram_1d
+    - code_stability_point_1d
+    - stab_L
+    - stab_Nx
+    - stab_MaxPar1_Z
+    - stab_MaxPar2_Omega
+    - stab_NPar1
+    - stab_NPar2
+    - paper_smfig1_boundary_Is
+    - paper_smfig1_boundary_Io
+  text: >
+    1D/stabilitydiagram.jl completely explains both SM Fig. 1's upward offset relative to the continuum
+    K -> 0+ Type II_s boundary and the Type I_s label (settling barberi2023 q_sm_fig1_long_wave_type_iis
+    and q_digitize_smfig1_finite_domain_offset): (1) Lines 43-49 and 103-104 evaluate the 3x3 stability
+    matrix only on the discrete finite-domain periodic wavenumbers K_p = p * (2*pi/L) = 0.2*p for
+    p = 1..255 (Kmin = 0.2, Kmax = 51.2, Nk = 255), which pushes the long-wave onset upward (e.g.
+    at Z = 15, Omega_c rises from continuum 8.1435 to discrete 8.3177 at K_1 = 0.2) and causes the
+    K_1 = 0.2 real eigenvalue to be flagged as a finite-wavelength Turing (Type I_s) bifurcation.
+    (2) BifurcationLines (lines 138, 142) detects the lower boundary solely via the one-sided i-transition
+    (i > 1 && SD[i,j] == 1/2 && SD[i-1,j] == 0), recording the first unstable grid node Z_i = ceil(Z_crit/dZ)*dZ
+    (shifting the plotted curve right by 0..+dZ and truncating Z = 0, visibly why SM Fig. 1's dashed
+    I_o curve stops before the Z = 0 axis), while the j-transition clause (SD[i,j] == 0 && SD[i,j-1] == 1/2)
+    detects only the upper restabilization boundary at high Omega ~ 70-95 (where C_H > 2/3 makes Pi'(C_H) < 0).
+    (3) Shipped lines 26-34 set MaxPar1 = MaxPar2 = 100, NPar1 = NPar2 = 500 (dZ = dOm = 0.2), which
+    reproduces 14/17 digitized SM Fig. 1 I_s points (median |diff| = 0.092, max 0.301 at Z = 24.2),
+    whereas running the identical algorithm on SM Fig. 1's plotted [0, 30] x [0, 30] window with
+    NPar1 = NPar2 = 100 (dZ = dOm = 0.3) reproduces all 17/17 digitized I_s points to 0.0001-0.0081
+    (median 0.0038) and matches Z(Om = 0) = 24.6 and the dashed I_o start at Z = 0.3.
+    (4) Two minor implementation quirks: line 52 allocates EigenvStabilityMatrix with Nk + 1 = 256 columns
+    while lines 103-110 fill only 1:Nk (255), leaving column 256 identically zero (clamping MaxEigenvRe >= 0
+    even when H is stable); and Omega_d0 = 0 is hardcoded (omitted from Pars and lines 76-81).
+  citation:
+    file: 1D/stabilitydiagram.jl
+    lines: "43-52"
+    quote: "Kmin = 2*π / L"
+
+- id: q_smfig3_half_cell_and_trapz_mass_artifact
+  kind: numerics
+  about:
+    - code_1d_periodic_pde
+    - code_1d_noflux_pde
+    - paper_smfig3_inset_Cmax
+    - paper_C_max_spike_asymptotic
+    - per1d_L
+    - nf1d_Nx
+  text: >
+    Direct ports of both shipped 1D PDE codes settle the exact numerical origin of SM Fig. 3's digitized
+    inset spike heights (0.65272, 0.66710, 0.67374, 0.67694, 0.67850, 0.67928 ± 0.00004 at L x 1..32,
+    Delta X = L/1024; barberi2023 q_digitize_smfig3_inset_discretization):
+    (1) 1D/NoFlux (1st-order conservative upwind advection) does NOT reproduce SM Fig. 3 at Delta X = L/1024:
+    its O(dx) upwind numerical diffusivity (~|v|dx/2, comparable to Dc = 0.01) yields 0.62130..0.66291
+    (half-cell symmetric, -0.016 to -0.031 too low) or 0.66042..0.70484 (node-centered, +0.008 to +0.026
+    too high) and a 55-75% too-large L x 2 - L x 1 jump (0.0233-0.0251 vs 0.01438).
+    (2) 1D/PeriodicBoundaries (un-dealiased Fourier pseudo-spectral) node-centered at X = 0 with N_bar = 1
+    yields continuum peaks 0.66446..0.69305 (+0.012 to +0.014 above SM Fig. 3).
+    (3) However, two exact discretization artifacts of 1D/PeriodicBoundaries/InputParameters.jl (lines 6, 35, 44)
+    together reproduce all six SM Fig. 3 inset dots to 5 significant digits (0.00001-0.00005):
+    (a) half-grid-cell peak centering at X = -Delta X/2 (midpoint of the half-open grid
+    x = [-L/2 + i*dx for i = 0:Nx-1], directly matching SM Fig. 3 main panel's digitized X_peak = -0.0165),
+    which samples the continuum spike at +-Delta X/2 (0.65102..0.67928 for N_bar = 1), and
+    (b) normalizing conserved nucleator density via integrate(x, Na + Ni)/L = 1 on the span [-L/2, L/2 - dx]
+    of width L - dx (omitting the periodic wrap interval [L/2 - dx, L/2]), which inflates the discrete
+    periodic mean to N_bar = Nx/(Nx - 1) and yields 0.65275, 0.66711, 0.67376, 0.67697, 0.67855, 0.67933
+    (matching 4/6 points inside ±0.00004 and the remaining two at L x 16, 32 within 0.00005).
+  citation:
+    file: 1D/PeriodicBoundaries/InputParameters.jl
+    lines: "5-6"
+    quote: "x = [-L/2 + i*Δx for i = 0:Nx-1]"
+
+- id: q_2d_viscous_operator_and_omega_d_settled
+  kind: possible_error
+  about:
+    - code_2d_periodic_pde
+    - code2d_viscous_coeff_2d
+    - code2d_Omega_d
+    - code2d_Omega_d0
+    - code2d_Omega
+    - code2d_Z
+    - viscous_coeff_2d_eq3_printed_added
+  text: >
+    2D/kernels.jl lines 54-55 explicitly solve fV = i*k*fPi / (1 + 2*(kx^2 + ky^2)), implementing the
+    true traceless 2D viscous operator (coefficient 2) rather than the non-traceless strain-rate tensor
+    printed in Main Text Eq. (3) (coefficient 2.5 in d = 2 with eta = eta_tilde). This definitively
+    settles barberi2023 q_eq3_non_traceless_strain_rate and q_audit_eq3_2d_printed_vs_traceless: our
+    2D code port sustains Fig. 4(a) circular and Fig. 4(c) band localized states at coefficient 2
+    (C_max ~ 0.94 and 0.82), whereas substituting printed Eq. (3)'s 2.5 decays back toward H (C_max = 0.219).
+    Furthermore, 2D/InputParameters.jl line 44 explicitly sets Omega_d = 10, settling barberi2023
+    q_fig4_omega_d_unstated (omitted from Fig. 4's caption). Conversely, shipped 2D/InputParameters.jl
+    lines 45-48 set placeholder parameters Omega_d0 = 10, Omega = 10, Z = B = 10 (not Fig. 4's
+    Omega_d0 = 0, Z = 30, Omega = 0 or 9), at which H is stable (C_H = 0.0465) and the initial bump decays.
+  citation:
+    file: 2D/kernels.jl
+    lines: "54-55"
+    quote: "fV[i,j,1] = im * kx * fΠ / (1 + 2*(kx2 + ky2))"
+
+- id: q_1d_adaptive_stepper_and_ic_bugs
+  kind: possible_error
+  about:
+    - code_1d_periodic_pde
+    - code_1d_noflux_pde
+    - per1d_Z
+    - per1d_Omega
+    - per1d_FinalTime
+    - per1d_dt_init
+    - per1d_ErrorTolerance
+  text: >
+    Both 1D time-stepping drivers share four implementation bugs/quirks plus a non-figure default parameter set:
+    (1) Inside AdaptiveTimeStep!'s while loop (1D/PeriodicBoundaries/functions.jl:73 and 1D/NoFlux/functions.jl:90),
+    the relative error expression drops abs() on the denominator (abs.(FL .- FS) ./ FL instead of
+    abs.((FL .- FS) ./ FL) used on line 56/73 before the loop), so any negative density overshoot would
+    produce a negative error ratio and falsely exit the halving loop.
+    (2) AdaptiveTimeStep! computes two half-steps Fields_ShortStep (2nd-order midpoint at 0.5*dt) and one
+    full step Fields_LongStep (at dt), then discards the more accurate Fields_ShortStep and advances with
+    Fields_LongStep (PeriodicBoundaries/functions.jl:78, NoFlux/functions.jl:95).
+    (3) Discontinuous square ZeroMeanBump on 1D/PeriodicBoundaries's un-dealiased rfft grid induces immediate
+    Gibbs ringing that halves step 1 fifteen times from dt = 0.02 down to 6.104e-7.
+    (4) SavedFields allocates plotframes = floor(Int64, FinalTime / FrameTimeStep) slots while storing t = 0
+    at ThisFrame = 1, risking a BoundsError at ThisFrame = plotframes + 1 if the final save hits FinalTime;
+    and Savedv[:, 1] stores all zeros rather than the initial velocity.
+    (5) Shipped 1D/PeriodicBoundaries/InputParameters.jl sets Z = B = 9.3, Omega = 12, FinalTime = 10, which
+    does not match any published figure in barberi2023 (it sits inside the subcritical oscillatory LS regime
+    below Omega_c(9.3) ~= 13.4).
+  citation:
+    file: 1D/PeriodicBoundaries/functions.jl
+    lines: "73-79"
+    quote: "MaxError = findmax(abs.(Fields_LongStep .- Fields_ShortStep) ./ Fields_LongStep)[1]"
+
+- id: q_1d_noflux_mass_leak_and_stencil_typos
+  kind: possible_error
+  about:
+    - code_1d_noflux_pde
+    - nf1d_Nx
+    - nf1d_Omega
+  text: >
+    1D/NoFlux contains a boundary mass-conservation bug and two minor typos:
+    (1) 1D/NoFlux/functions.jl lines 15-18 compute upwind boundary fluxes ∂xFieldsv[:, 1] and ∂xFieldsv[:, Nx],
+    which are dead code because lines 26-28 evaluate RHS only on interior nodes 2:Nx-1 and lines 32-33
+    overwrite RHS[:, 1] = RHS[:, 2] and RHS[:, Nx] = RHS[:, Nx-1]. When boundary velocity points outward
+    (v[2] < 0 or v[Nx-1] > 0), the interior upwind flux -|v[2]|*F[:, 2]/dx (or -|v[Nx-1]|*F[:, Nx-1]/dx)
+    leaves the interior without returning, leaking conserved nucleator mass (our T = 5 outward-flow probe
+    exhibits mass_drift = -0.0125). For centered contractile localized states (inward boundary flow v[2] >= 0,
+    v[Nx-1] <= 0), interior mass is conserved, though O(dx) upwind diffusivity still smears the sharp C profile
+    (explaining why 1D/NoFlux/InputParameters.jl raises Nx to 4096 vs 512 in 1D/PeriodicBoundaries).
+    (2) The commented-out 5-point viscous matrix A in 1D/NoFlux/main.jl lines 57 and 60 writes (2 + Δx)
+    instead of (2 + Δx^2) before dividing by Δx^2 on line 66.
+    (3) 1D/NoFlux/main.jl line 120 comments "provided Δt never less than MaxTimeStep" (inverted for "never greater
+    than MaxTimeStep"), and ZeroMeanNoise uses integrate(x, Noise)/L on [-L/2, L/2 - dx] (span L - dx).
+  citation:
+    file: 1D/NoFlux/functions.jl
+    lines: "15-34"
+    quote: "RHS[:,1] = RHS[:,2];"
+
+- id: q_2d_code_minor_bugs_and_hidden_numerics
+  kind: possible_error
+  about:
+    - code_grid_config_derived
+    - code_2d_periodic_pde
+    - code2d_N
+    - code2d_dt
+    - code2d_FinalTime
+    - code2d_save_divisor
+    - code2d_var_bump
+    - code2d_var_stripe
+  text: >
+    2D/ reveals all previously unstated 2D numerical choices (N = 512, fixed explicit Euler forward dt = 1e-4,
+    FinalTime = 1e4 -> Nt = 10^8 steps with diffusive CFL = 0.524 < 2, adaptive stepper commented out,
+    Gaussian ICs VarBump = sqrt(2) and VarStripe = 2, seed = 123, eps = 0.01) along with several coding bugs:
+    (1) 2D/InputParameters.jl:61 computes TotPrints = floor(Int64, FinalTime / PrintEvery) = floor(1e4 / 1e6) = 0
+    (dividing dimensionless time by step count instead of Nt / PrintEvery = 100; unused variable).
+    (2) 2D/main.jl:87-89 formats timestep string numm = @sprintf("%08d", t) but saves to hardcoded global
+    nm = "data.jld", overwriting every previous snapshot.
+    (3) 2D/InputParameters.jl:24 writes Ny = WrapsT * Bx (copy-paste typo for By; harmless when Nx = Ny),
+    2D/main.jl:37,39 size factor_∂x and factor_Δ with Nx instead of Ny, 2D/kernels.jl:60,72-74 shadow preallocated
+    div_* CuArrays with local scalars, 2D/kernels.jl:118,129 pass unused ZeroMeanBump into EulerForward!, and
+    2D/kernels.jl:6,18 center the 1-based Gaussian at i*dx = L/2 (shifted +dx relative to x = [-L/2 + (0:N-1)*dx]).
+  citation:
+    file: 2D/InputParameters.jl
+    lines: "59-61"
+    quote: "TotPrints = floor(Int64, FinalTime / PrintEvery)"
+
+- id: q_missing_analysis_scripts
+  kind: unstated_model
+  about:
+    - code_stability_diagram_1d
+    - code_1d_periodic_pde
+    - code_1d_noflux_pde
+    - code_2d_periodic_pde
+  text: >
+    The released Barberi-Kruse-2022 repository (commit 00e6844 / Zenodo 10.5281/zenodo.10209642) ships only
+    the 1D linear stability diagram script and the three PDE integrators (1D periodic, 1D no-flux, 2D periodic).
+    No code is released for: (1) Fig. 3(c)'s 8D spatial-dynamics Jacobian eigenvalue calculation (leaving
+    barberi2023 q_fig3c_spatial_eigenvalues_mismatch unexplained by the released software), (2) SM Sec. I B /
+    SM Table I's local linear stability analysis (N_loc, W, K_obs, K*, [K*_left, K*_right]; leaving barberi2023
+    q_sm_table1_lsa_mismatch and q_sm_table1_W_Kobs_vs_fig1 unexplained by the released software), (3) Fig. 2's
+    slanted-snaking branch continuation, or (4) figure post-processing scripts.
+  citation:
+    file: README.md
+    lines: "4-14"
+    quote: "Please note that the 1D code runs on CPU, while the 2D code runs on GPU."
+
+- id: q_cpu_port_numerical_choices
+  kind: choice
+  about:
+    - code_2d_periodic_pde
+    - code_1d_periodic_pde
+    - code_1d_noflux_pde
+    - T_end_2d_cpu_added
+    - T_end_wave_cpu_added
+    - smfig1_NPar_added
+  text: >
+    Because the repository is written in Julia (with CUDA.jl GPU kernels for 2D), every computational module is
+    ported line-by-line to Python without software: true, with affordable CPU settings verified by refinements:
+    (1) code_2d_periodic_pde runs on N_grid = 64, dt = 0.005, T_end = 100 (20,000 explicit Euler steps on CPU)
+    rather than the GPU script's N = 512, dt = 1e-4, FinalTime = 1e4 (10^8 steps), sustaining Fig. 4(a) circular
+    LS (dt refinement 1.73%), Fig. 4(c) band LS (dt refinement 0.002%), and decay under printed Eq. (3) and shipped
+    defaults. Probing Fig. 4(b) (Z = 30, Omega = 9) on the coarse un-dealiased N_grid = 64 grid overflows to NaN
+    even at dt = 0.002 due to spectral aliasing on its sharper multi-ring front (explaining why the GPU script uses
+    N = 512, dt = 1e-4).
+    (2) Steady-state verification runs of code_1d_periodic_pde and code_1d_noflux_pde solve the exact discrete
+    RHS == 0 equations of the Julia stencils directly (Fourier-preconditioned Newton-Krylov / analytic even-odd FFT
+    Newton and banded Newton to < 1e-9 residual) rather than integrating explicit midpoint for O(10^6) steps, while
+    dedicated short runs execute the exact AdaptiveTimeStep! midpoint loops verbatim to confirm step-halving
+    and boundary mass-leak behavior.
+  citation:
+    file: 2D/InputParameters.jl
+    lines: "3-51"
+    quote: "FinalTime = 1e4"
+
+- id: q_cross_record_curve_relations_and_mirza2025
+  kind: choice
+  about:
+    - code_stability_diagram_1d
+    - code_1d_periodic_profile
+    - code_stability_point_1d
+    - code_1d_periodic_pde
+    - code_2d_periodic_pde
+    - barberi2023/stability_boundary_smfig1
+    - barberi2023/pde_1d_profile_sm1_5
+    - barberi2023/pde_1d_snaking_branch_sm1_5
+    - mirza2025/dispersion_1d_eqC7
+    - mirza2025/fastest_growing_mode_eqC7
+  text: >
+    Cross-record ModelAtlas audit for barberi2023_code paired with barberi2023 and mirza2025:
+    (1) Curve-port models cannot be tested directly by ModelAtlas (boxgraph/atlas.py rejects any
+    model with a curve input or output port as unverifiable). Thus barberi2023_code/code_stability_diagram_1d
+    (query_curve -> Omega_boundary) vs barberi2023/stability_boundary_smfig1 and
+    barberi2023_code/code_1d_periodic_profile (target_curve -> C_profile) vs
+    barberi2023/pde_1d_profile_sm1_5 and pde_1d_snaking_branch_sm1_5 are omitted from relations.yaml.
+    Their exact mathematical correspondences are verified instead via their scalar model engines
+    (code_stability_point_1d, code_1d_periodic_pde, code_1d_noflux_pde) in relations.yaml and
+    against the full digitized SM Fig. 1, Fig. 1(a), Fig. 2 LP0, Fig. 3(a), and SM Fig. 3 curves
+    in comparisons.yaml.
+    (2) Against mirza2025 (which cites barberi2023 pp. 2, 8 as part of the isotropic compressible
+    active-gel family), barberi2023_code ships purely dimensionless isotropic equations (no dimensional
+    hydrodynamic_length or diffusive_timescale models and no nematic Q-tensor fields). The exact
+    bridge lives in rel_mirza2025_code_stability_reduces_eqC7 and
+    rel_mirza2025_code_stability_approx_fastest_mode, which link 1D/stabilitydiagram.jl's matrix M(K)
+    directly to mirza2025 Eq. (C7)'s decoupled isotropic density dispersion and fastest-growing mode
+    under the 4x viscous rescaling (Dc = 1/4, nu = K/2 = pi/L, lam = 4*Pi'_H*C_H).
+  citation:
+    file: README.md
+    lines: "2-12"
+    quote: 'This repo provides the code used in the article [_"Localized states in active fluids"_](https://arxiv.org/abs/2209.02581), Barberi &amp; Kruse, arXiv:2209.02581.'
+
+- id: q_val_audit_barberi2023_and_mirza2025
+  kind: reading
+  about:
+    - code_stability_diagram_1d
+    - code_1d_periodic_pde
+    - code_1d_periodic_profile
+    - code_1d_noflux_pde
+    - code_2d_periodic_pde
+    - barberi2023/fig1a_C_fig
+    - barberi2023/fig2_LP0_fig
+    - barberi2023/fig3a_C_fig
+    - barberi2023/smfig1_boundary_Is_fig
+    - barberi2023/smfig3_inset_Cmax_fig
+  text: >
+    Cross-record validation audit for barberi2023_code paired with barberi2023 and mirza2025:
+    0 cross-record validations added to validations.yaml. Neither barberi2023 (33 reported,
+    1 derived, 90 predicted, 1 run; 0 origin: measured — a pure theoretical/numerical active-fluid
+    PDE study) nor mirza2025 (0 origin: measured; also recorded in mirza2025 q_val_audit_mirza2025_code)
+    nor barberi2023_code (95 reported, 7 predicted; 0 origin: measured) contains empirical experimental
+    measurements. Because BoxGraph validations.yaml is reserved for empirical measurements
+    (boxgraph/report.py renders every validation entry as "measured in <record>"), adding
+    barberi2023's digitized Fig. 1(a), Fig. 2, Fig. 3(a), SM Fig. 1, or SM Fig. 3 theoretical PDE
+    curves to validations.yaml would mislabel theoretical outputs as experimental measurements and
+    duplicate the 12 purpose: reproduction comparisons already verified in barberi2023_code/comparisons.yaml
+    (backed by 56/56 inline from_source/from_datum provenance links to barberi2023).
+  citation:
+    file: README.md
+    lines: "6-12"
+    quote: "1D/stabilitydiagram.jl >> numerical calculation of the instability boundary of the homogeneous steady state."
+

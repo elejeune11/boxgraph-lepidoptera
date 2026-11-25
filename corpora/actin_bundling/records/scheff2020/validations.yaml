@@ -1,0 +1,272 @@
+# Cross-record validations of scheff2020 models against independent experimental
+# measurements in paired actin_bundling records (weirich2017, weirich2019,
+# graham2023, feigeles2025).
+#
+# Full 4-partner validation audit:
+# - scheff2020 -> weirich2017 (7 validations below):
+#   Both papers from the Gardel/Weirich lab study nematic F-actin tactoids
+#   (Weirich 2017: pure 2.6 uM F-actin / 1-1.5 mol % CP / filamin tactoids;
+#   Scheff 2020: composite 4.4 uM FUS / 1 uM capped F-actin tactoids).
+#   (1)-(4) Both scheff2020's physically exact Frank-normalized quasi-bipolar
+#   minimizer (quasi_bipolar_minimizer_frank_half) and verbatim printed minimizer
+#   (quasi_bipolar_minimizer_printed) are tested out-of-sample on the exact same
+#   two measured scalar aspect ratios tested by weirich2019/validations.yaml
+#   (weirich2017/aspect_ratio_2p5_filamin = "~3" and aspect_ratio_15_filamin = "~2"),
+#   using K/gamma = 3.33 um (Weirich 2019 K ~ 1 pN / Weirich 2017 gamma_I ~ 300 nN/m)
+#   and Weirich 2017's independent coalescence-fitted anchoring strengths (Table S1
+#   omega = 1.90 +- 0.53 and 1.87 +- 0.07). Unlike weirich2019's bare omega -> oo
+#   bipolar model (6.45 and 5.57, 2.15x-2.79x overshoot), scheff2020's finite-
+#   anchoring quasi-bipolar model predicts 2.520 and 2.445 (printed: 2.643 and 2.586),
+#   cutting the error ~7x and resolving the weirich2017-weirich2019 crossover paradox.
+#   (5) scheff2020/homogeneous_tactoid_minimizer is tested with ZERO added inputs
+#   using weirich2017/tableS1_coal_5_omega against weirich2017/aspect_ratio_2p5_filamin
+#   (predicting 2.793 vs ~3 / Fig. 2A 2.938 [2.691, 3.191]).
+#   (6)-(7) scheff2020/coalescence_relaxation_time_scaling (tau ~ (eta/gamma)*Delta_l,
+#   prefactor: unknown, explicitly citing Weirich 2017 ref-19 on p. 5) is swept
+#   directly over Weirich 2017's 8-point 5 mol % and 6-point 10 mol % filamin
+#   coalescence datasets (d_fig3c_inset_5pct and d_fig3c_inset_10pct), yielding
+#   dimensionless implied prefactors C = 1.065 and C = 1.293.
+#   Additional non-schema-mappable comparisons (16-point Fig. 3A coarsening
+#   trajectory and 4-point Fig. 2A filamin curve) are quantified in
+#   q_weirich2017_cross_model_and_validation_audit in questions.yaml.
+# - scheff2020 -> weirich2019 (0 validations):
+#   All measured datums in weirich2019 quantify active myosin-II motor centering,
+#   alignment, and colloid-induced droplet division rather than passive tactoid
+#   aspect ratio or coalescence; see q_weirich2019_eq6_confirms_eq2b_and_frank_half.
+# - scheff2020 -> feigeles2025 (0 validations):
+#   feigeles2025 studies opposite external-bundle unduloid wetting (width/length ~ 0.7)
+#   and measures coalescence length L(t) [um] rather than area A(t) [um^2], while
+#   its 6-point Fig. S6C dataset plots Delta_L vs tau (swapped axes relative to
+#   coalescence_relaxation_time_scaling) and its scalar Fig. S6B tau = 0.6 s is a
+#   single point (unjudgeable by a prefactor-unknown scaling law and 8.3x misprinted
+#   relative to the plotted curve); see q_feigeles2025_fus_coalescence_and_topology_contrast.
+# - scheff2020 -> graham2023 (0 validations):
+#   graham2023 measures actively polymerizing internal uncapped VASP-actin rings and
+#   buckled rods (AR > 15) without capping protein, Frank nematic K/gamma, or
+#   coalescence tau vs Delta_l curves; see q_graham2023_modelatlas_and_vasp_vs_fus_actin_contrast.
+
+- id: val_qb_frank_half_ar_vs_weirich2017_2p5pct
+  model: quasi_bipolar_minimizer_frank_half
+  inputs:
+    V: V_tactoid_2p5pct_weirich2017_added
+    K_over_gamma: K_over_gamma_weirich_actin_added
+    omega: "weirich2017/tableS1_coal_5_omega"
+  output: x_eq
+  against: "weirich2017/aspect_ratio_2p5_filamin"
+  purpose: validation
+  quantities:
+    "weirich2017/anchoring_strength": anchoring_ratio
+    "weirich2017/tactoid_aspect_ratio": tactoid_aspect_ratio
+  conditions_ok: >
+    Both papers from the Gardel/Weirich lab study nematic F-actin tactoids capped with capping
+    protein (Weirich 2017: 2.6 uM F-actin, 1.5 mol % CP -> ~180 nm filaments, 2.5 mol % filamin
+    without FUS; Scheff 2020: 1 uM capped F-actin inside 4.4 uM FUS condensates). Here Scheff's
+    physically exact Frank-normalized quasi-bipolar minimizer (which reduces to Weirich 2017 as
+    V -> 0 and to Weirich 2019 as omega -> oo) is evaluated on Weirich 2017's pure-actin tactoid
+    parameters: circular-arc volume V = 6.26 um^3 (L = 5 um, Fig. 2A AR = 2.938), distortion length
+    K/gamma = 3.33 um (K ~ 1 pN / gamma_I ~ 300 nN/m), and Weirich 2017's nearest independent
+    coalescence-fitted anchoring strength tableS1_coal_5_omega = 1.90 +- 0.53 (5 mol % filamin,
+    1 mol % CP; independent of Fig. 2A static aspect-ratio measurements).
+  basis: >
+    Scheff et al. (2020, p. 8 col 1-2) apply the quasi-bipolar nematic tactoid model to capture
+    droplet aspect ratio across both the homogeneous (R << K/gamma) and bipolar (R >> K/gamma)
+    regimes and explicitly note: "we estimate the length scale, K/gamma, of FUS-actin droplets to
+    be a few microns, similar to estimates from pure actin tactoids [19], whereas omega = gamma_A/gamma
+    for FUS-actin composite droplets is significantly lower than for pure actin tactoids." Testing
+    quasi_bipolar_minimizer_frank_half out-of-sample on Weirich et al.'s (2017) L ~ 5 um pure-actin
+    tactoid directly tests whether including finite anchoring omega resolves the 2.15x overshoot
+    (AR_eq = 6.450 vs ~3) obtained by Weirich 2019's bare omega -> oo bipolar model.
+  note: >
+    Predicts x_eq = 2.520 (virtual pole bipolarity y_eq = 1.86) vs printed "~3" (-0.480, -16.0%;
+    formal BoxGraph verdict: no verdict because printed "~3" carries an approximate tilde without
+    precision; -14.2% vs digitized Fig. 2A 2.938 [2.691, 3.191]). Compared with weirich2019's bare
+    bipolar prediction (6.450, +115%), including finite anchoring cuts the error by 7x. Across added
+    alternatives: V in {6.00, 16.3, 27.5} um^3 gives x_eq in {2.523, 2.441, 2.391}; K/gamma in
+    {1.67, 6.67} um gives {2.334, 2.645}. Using Fig. 2A's 2.5 mol % filamin anchoring omega = 2.164
+    gives x_eq = 2.643 (y_eq = 1.77, within 10% of 2.938).
+
+- id: val_qb_printed_ar_vs_weirich2017_2p5pct
+  model: quasi_bipolar_minimizer_printed
+  inputs:
+    V: V_tactoid_2p5pct_weirich2017_added
+    K_over_gamma: K_over_gamma_weirich_actin_added
+    omega: "weirich2017/tableS1_coal_5_omega"
+  output: x_eq
+  against: "weirich2017/aspect_ratio_2p5_filamin"
+  purpose: validation
+  quantities:
+    "weirich2017/anchoring_strength": anchoring_ratio
+    "weirich2017/tactoid_aspect_ratio": tactoid_aspect_ratio
+  conditions_ok: >
+    Same pure-actin 2.5 mol % filamin tactoid conditions as val_qb_frank_half_ar_vs_weirich2017_2p5pct
+    (V = 6.26 um^3, K/gamma = 3.33 um, independent coalescence-fitted omega = 1.90 +- 0.53 from
+    Table S1 5 mol % filamin), here testing Scheff et al.'s (2020) verbatim printed Eqs. (1)-(2D)
+    quasi-bipolar minimizer (without restoring the Frank 1/2 prefactor or correcting the cos^2(eta)
+    bend integrand).
+  basis: >
+    Tests the verbatim printed Scheff et al. (2020, p. 3, Eqs. 1 and 2A-2D) quasi-bipolar minimizer
+    out-of-sample against Weirich et al.'s (2017) measured 2.5 mol % filamin tactoid aspect ratio
+    ("~3", Main p. 3 & Fig. 2A), parallel to the Frank-corrected variant.
+  note: >
+    Predicts x_eq = 2.643 vs printed "~3" (-0.357, -11.9%; formal verdict: no verdict due to tilde
+    in "~3"; -10.0% vs digitized Fig. 2A 2.938 [2.691, 3.191]). Because omitting the Frank 1/2
+    factor roughly doubles the bulk elastic penalty at fixed K/gamma, the printed model pushes the
+    director closer to the uniform homogeneous limit (x_hom = 2.793), raising x_eq by +0.123
+    relative to quasi_bipolar_minimizer_frank_half (2.520).
+
+- id: val_qb_frank_half_ar_vs_weirich2017_15pct
+  model: quasi_bipolar_minimizer_frank_half
+  inputs:
+    V: V_tactoid_15pct_weirich2017_added
+    K_over_gamma: K_over_gamma_weirich_actin_added
+    omega: "weirich2017/tableS1_coal_10_omega"
+  output: x_eq
+  against: "weirich2017/aspect_ratio_15_filamin"
+  purpose: validation
+  quantities:
+    "weirich2017/anchoring_strength": anchoring_ratio
+    "weirich2017/tactoid_aspect_ratio": tactoid_aspect_ratio
+  conditions_ok: >
+    Same Gardel/Weirich-lab capped F-actin nematic tactoid system, here evaluated on Weirich 2017's
+    15 mol % filamin tactoid measurement (aspect_ratio_15_filamin = "~2", L ~ 5 um, digitized
+    Fig. 2A 2.037 [1.750, 2.331], circular-arc volume V = 13.45 um^3) using K/gamma = 3.33 um and
+    Weirich 2017's nearest independent coalescence-fitted anchoring strength tableS1_coal_10_omega =
+    1.87 +- 0.07 (10 mol % filamin, 1 mol % CP). Note that higher filamin concentration (15 vs
+    10 mol %) further lowers omega = gamma_A/gamma_I (Fig. 2A gives omega ~ 1.04-1.1 at 15 mol %).
+  basis: >
+    Scheff et al. (2020, p. 8) formulate the quasi-bipolar minimizer to interpolate between
+    homogeneous and bipolar nematic tactoids as droplet size V and anchoring omega vary. Evaluating
+    quasi_bipolar_minimizer_frank_half on Weirich 2017's 15 mol % filamin measurement directly
+    parallels weirich2019/val_bipolar_ar_vs_weirich2017_15pct (which predicted 5.571 vs ~2, 2.79x
+    too high under omega -> oo).
+  note: >
+    Predicts x_eq = 2.445 (y_eq = 1.71) vs printed "~2" (+0.445, +22.3%; formal verdict: no verdict
+    due to tilde in "~2"; +20.0% vs digitized Fig. 2A 2.037 [1.750, 2.331]). Compared with
+    weirich2019's bare bipolar model (5.571, +179%), finite anchoring cuts the error ~8x. Notably,
+    at 10 mol % filamin itself (where omega = 1.87 matches the exact composition and Table S1 gives
+    L_eq = 6.04 um, V = 16.26 um^3), quasi_bipolar_minimizer_frank_half predicts x_eq = 2.428 vs
+    digitized Fig. 2A 2.438 [2.241, 2.640] (0.4% error!); and at 15 mol % filamin's lower anchoring
+    omega = 1.04-1.10, it predicts x_eq = 1.986-2.027 vs 2.037 (0.5-2.5% error).
+
+- id: val_qb_printed_ar_vs_weirich2017_15pct
+  model: quasi_bipolar_minimizer_printed
+  inputs:
+    V: V_tactoid_15pct_weirich2017_added
+    K_over_gamma: K_over_gamma_weirich_actin_added
+    omega: "weirich2017/tableS1_coal_10_omega"
+  output: x_eq
+  against: "weirich2017/aspect_ratio_15_filamin"
+  purpose: validation
+  quantities:
+    "weirich2017/anchoring_strength": anchoring_ratio
+    "weirich2017/tactoid_aspect_ratio": tactoid_aspect_ratio
+  conditions_ok: >
+    Same 15 mol % filamin pure-actin tactoid conditions as val_qb_frank_half_ar_vs_weirich2017_15pct
+    (V = 13.45 um^3, K/gamma = 3.33 um, independent Table S1 10 mol % filamin omega = 1.87 +- 0.07),
+    testing Scheff et al.'s (2020) verbatim printed Eqs. (1)-(2D) quasi-bipolar minimizer.
+  basis: >
+    Tests the verbatim printed Scheff et al. (2020, p. 3, Eqs. 1 and 2A-2D) quasi-bipolar minimizer
+    out-of-sample against Weirich et al.'s (2017) measured 15 mol % filamin tactoid aspect ratio
+    ("~2", Main p. 3 & Fig. 2A).
+  note: >
+    Predicts x_eq = 2.586 vs printed "~2" (+0.586, +29.3%; formal verdict: no verdict due to tilde
+    in "~2"; +27.0% vs digitized Fig. 2A 2.037 [1.750, 2.331]). As at 2.5 mol % filamin, omitting
+    the Frank 1/2 factor raises x_eq by +0.141 relative to quasi_bipolar_minimizer_frank_half (2.445).
+
+- id: val_hom_ar_vs_weirich2017_2p5pct
+  model: homogeneous_tactoid_minimizer
+  inputs:
+    omega: "weirich2017/tableS1_coal_5_omega"
+  output: x_eq
+  against: "weirich2017/aspect_ratio_2p5_filamin"
+  purpose: validation
+  quantities:
+    "weirich2017/anchoring_strength": anchoring_ratio
+    "weirich2017/tactoid_aspect_ratio": tactoid_aspect_ratio
+  conditions_ok: >
+    Evaluates Scheff et al.'s (2020, p. 8) homogeneous-director limit minimizer
+    (homogeneous_tactoid_minimizer, verified algebraically identical to Weirich 2017's
+    tactoid_equilibrium_minimizer via rel_weirich2017_homogeneous_min_ar_same_as) with ZERO added
+    inputs on Weirich 2017's independent coalescence-fitted anchoring strength
+    tableS1_coal_5_omega = 1.90 +- 0.53 (5 mol % filamin, 1 mol % CP) against Weirich 2017's static
+    2.5 mol % filamin aspect-ratio measurement (aspect_ratio_2p5_filamin = "~3", 1.5 mol % CP).
+  basis: >
+    Scheff et al. (2020, p. 8 col 1) state: "For smaller droplets with R << K/gamma, the nematic
+    elastic energy cost of distorting the directors into the bipolar configuration becomes
+    prohibitively expensive resulting in a nearly uniform director structure throughout the droplet.
+    In this homogeneous limit, the aspect ratio of the droplet is determined by the anchoring
+    strength, omega [20]." Running homogeneous_tactoid_minimizer directly on Weirich 2017's
+    dynamically fitted Table S1 omega tests cross-method agreement between coalescence dynamics and
+    static equilibrium aspect ratio with zero added inputs.
+  note: >
+    Predicts x_eq = 2.793 vs printed "~3" (-0.207, -6.9%; formal verdict: no verdict due to tilde in
+    "~3"), falling squarely inside the error bars of both 2.5 mol % filamin (2.938 [2.691, 3.191])
+    and 5 mol % filamin (2.808 [2.582, 3.040]) in digitized Fig. 2A with zero added inputs.
+
+- id: val_coal_tau_scaling_vs_weirich2017_fig3c_5pct
+  model: coalescence_relaxation_time_scaling
+  inputs:
+    eta_over_gamma: inv_vcap_weirich2017_5pct_added
+  sweep:
+    delta_l: "weirich2017/d_fig3c_inset_5pct"
+  output: tau
+  against: "weirich2017/d_fig3c_inset_5pct"
+  purpose: validation
+  quantities:
+    "weirich2017/deformation_length": coalescence_relaxation_length
+    "weirich2017/relaxation_time": coalescence_relaxation_time
+  conditions_ok: >
+    Both papers from the Gardel/Weirich lab measure viscous-capillary droplet coalescence and model
+    the relaxation time as tau ~ (eta/gamma) * Delta_l: Scheff 2020 (p. 5, Fig. 2c) defines
+    Delta_l = sqrt(A_i) - sqrt(A_f) for composite FUS-actin droplets, while Weirich 2017 (Fig. 3C
+    inset, 5 mol % filamin, 1 mol % CP, n = 8 coalescence events) uses major-axis deformation length
+    Delta_L = L_i - L_f for pure F-actin nematic tactoids. Input eta_over_gamma = 7.14 s/um is the
+    reciprocal of Weirich 2017 Table S1's 5 mol % filamin capillary velocity (0.14 +- 0.02 um/s);
+    because coalescence_relaxation_time_scaling has prefactor: unknown, BoxGraph fits one single
+    multiplicative geometric prefactor C across all 8 events and judges proportionality shape.
+  basis: >
+    Scheff et al. (2020, p. 5 col 2) explicitly cite Weirich et al. (2017, ref-19) for the linear
+    viscous-capillary coalescence scaling law: "By balancing viscously dissipated mechanical energy
+    against change in the interfacial energy of the coalesced droplet as it relaxes, we see that tau
+    depends on the viscosity, eta, and interfacial tension, gamma, of the liquid as tau ~ (eta/gamma)
+    Delta l [19]." Sweeping this scaling law over Weirich 2017's 8 measured 5 mol % filamin
+    coalescence events tests linear proportionality and directly extracts the dimensionless
+    geometric prefactor C relating tau / Delta_L to Weirich's ODE inverse capillary velocity eta/gamma_I.
+  note: >
+    BoxGraph fits one geometric-mean dimensionless prefactor C = 1.065 (effective linear slope
+    7.60 s/um vs Table S1 1/0.14 = 7.14 s/um, only +6.5% from unity; OLS origin slope 7.39 s/um,
+    C_ols = 1.035). Formal verdict against the tight +/-0.27 s digitization bands of the 8 single-
+    event points is not reproduced (reflecting ~2.5 s event-to-event experimental scatter in Fig. 3C
+    inset around the linear trend, e.g. tau = 15.51 s at Delta_L = 1.46 um vs tau = 8.30 s at
+    Delta_L = 1.69 um).
+
+- id: val_coal_tau_scaling_vs_weirich2017_fig3c_10pct
+  model: coalescence_relaxation_time_scaling
+  inputs:
+    eta_over_gamma: inv_vcap_weirich2017_10pct_added
+  sweep:
+    delta_l: "weirich2017/d_fig3c_inset_10pct"
+  output: tau
+  against: "weirich2017/d_fig3c_inset_10pct"
+  purpose: validation
+  quantities:
+    "weirich2017/deformation_length": coalescence_relaxation_length
+    "weirich2017/relaxation_time": coalescence_relaxation_time
+  conditions_ok: >
+    Same viscous-capillary scaling test as val_coal_tau_scaling_vs_weirich2017_fig3c_5pct, here
+    swept over Weirich 2017's 6 measured 10 mol % filamin coalescence events (d_fig3c_inset_10pct,
+    1 mol % CP, Delta_L = 1.86 to 4.37 um, tau = 24.5 to 58.5 s) normalized by the reciprocal of
+    Table S1's 10 mol % filamin capillary velocity (1 / 0.11 = 9.09 s/um).
+  basis: >
+    Scheff et al. (2020, p. 5 col 2, citing ref-19 Weirich et al. 2017) state tau ~ (eta/gamma) *
+    Delta l for viscous-capillary droplet coalescence. Sweeping coalescence_relaxation_time_scaling
+    across Weirich 2017's 6 measured 10 mol % filamin events tests linear proportionality at larger
+    deformation lengths (Delta_L up to 4.37 um) and extracts the dimensionless prefactor C relative
+    to Weirich's Table S1 ODE inverse capillary velocity.
+  note: >
+    BoxGraph fits one geometric-mean dimensionless prefactor C = 1.293 (effective linear slope
+    11.75 s/um vs Table S1 1/0.11 = 9.09 s/um, +29.3% above unity; OLS origin slope 11.76 s/um,
+    C_ols = 1.294), quantifying the O(1) anisotropic geometric slowdown of elongated omega ~ 1.9
+    tactoids relative to the simple isotropic formula. Formal verdict against the tight +/-0.27 s
+    digitization bands of the 6 individual events is not reproduced due to ~3-5 s event-to-event
+    experimental scatter around the linear trend (mean relative residual ~9.6%).

@@ -1,0 +1,1677 @@
+# ==========================================================================
+# Dimensional scaling & 1D viscous stress Eq. (3) vs Eq. (SM3)
+# ==========================================================================
+- id: run_hydrodynamic_length
+  model: hydrodynamic_length
+  inputs:
+    eta: eta_ref_added
+    gamma: gamma_ref_added
+  settings: {}
+  outputs:
+    lam: lam_ref_out
+
+- id: run_diffusive_timescale
+  model: diffusive_timescale
+  inputs:
+    lam: lam_ref_out
+    D_i: Di_dim_ref_added
+  settings: {}
+  outputs:
+    tau: tau_ref_out
+
+- id: run_nonviscous_stress_fig1
+  model: nonviscous_stress_1d
+  inputs:
+    C: C_probe_added
+    Z: Z_fig1
+    B: B_fig1
+  settings: {}
+  outputs:
+    Pi: Pi_probe_out
+    Pi_prime: Pi_prime_probe_out
+
+- id: run_viscous_stress_eq3_printed
+  model: viscous_stress_1d_eq3
+  inputs:
+    eta: eta_ref_added
+    eta_tilde: eta_tilde_ref_added
+    d: d_1d
+    dv_dx: dv_dx_ref_added
+  settings: {}
+  outputs:
+    sigma_visc: sigma_visc_eq3_printed_out
+    viscous_coeff: viscous_coeff_eq3_printed_out
+
+- id: run_viscous_stress_eq3_corrected
+  model: viscous_stress_1d_eq3_corrected
+  inputs:
+    eta: eta_ref_added
+    eta_tilde: eta_tilde_ref_added
+    d: d_1d
+    dv_dx: dv_dx_ref_added
+  settings: {}
+  outputs:
+    sigma_visc: sigma_visc_eq3_corr_out
+    viscous_coeff: viscous_coeff_eq3_corr_out
+
+# ==========================================================================
+# Homogeneous steady states H (SM Sec. I A)
+# ==========================================================================
+- id: run_H_LP0
+  model: homogeneous_steady_state
+  inputs:
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP0
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+  settings: {}
+  outputs:
+    C_H: C_H_LP0_out
+    Na_H: Na_H_LP0_out
+    Ni_H: Ni_H_LP0_out
+    NH_minus: NH_minus_LP0_out
+    Pi_prime_H: Pi_prime_H_LP0_out
+
+- id: run_H_spike
+  model: homogeneous_steady_state
+  inputs:
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+  settings: {}
+  outputs:
+    C_H: C_H_spike_out
+    Na_H: Na_H_spike_out
+    Ni_H: Ni_H_spike_out
+    NH_minus: NH_minus_spike_out
+    Pi_prime_H: Pi_prime_H_spike_out
+
+- id: run_H_spike_linear
+  model: homogeneous_steady_state_linear
+  inputs:
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_spike
+    Nbar: Nbar_default
+  settings: {}
+  outputs:
+    C_H: C_H_spike_lin_out
+    Na_H: Na_H_spike_lin_out
+    Ni_H: Ni_H_spike_lin_out
+    NH_minus: NH_minus_spike_lin_out
+
+# ==========================================================================
+# 1D linear stability analysis (Eqs. SM13-SM23 & SM Fig. 1)
+# ==========================================================================
+- id: run_lsa_LP0_probe
+  model: linear_stability_1d_sm15
+  inputs:
+    K: K_probe_added
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP0
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings: {}
+  outputs:
+    max_growth_rate: growth_LP0_probe_out
+    dominant_freq: freq_LP0_probe_out
+    vel_response_imag: vel_resp_LP0_probe_out
+
+- id: run_lsa_passive_smfig2
+  model: linear_stability_1d_passive
+  inputs:
+    K: K_probe_added
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_smfig2
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+  settings: {}
+  outputs:
+    max_growth_rate: growth_passive_smfig2_out
+    dominant_freq: freq_passive_smfig2_out
+
+- id: run_boundary_Z0
+  model: stability_boundary_smfig1
+  inputs:
+    Z: Z_passive
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+  settings:
+    n_k: 400
+  outputs:
+    Omega_crit: Omega_crit_Z0_out
+    K_crit: K_crit_Z0_out
+    freq_crit: freq_crit_Z0_out
+    is_oscillatory: is_osc_Z0_out
+
+- id: run_boundary_Z15
+  model: stability_boundary_smfig1
+  inputs:
+    Z: Z_fig1
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+  settings:
+    n_k: 400
+  outputs:
+    Omega_crit: Omega_crit_Z15_out
+    K_crit: K_crit_Z15_out
+    freq_crit: freq_crit_Z15_out
+    is_oscillatory: is_osc_Z15_out
+
+# ==========================================================================
+# Local linear stability analysis for SM Table I (LP2-LP7): exact N_bar = N_loc
+# ==========================================================================
+- id: run_lsa_sm1b_LP2
+  model: inner_wavelength_lsa_sm1b
+  inputs:
+    N_loc: N_loc_LP2
+    W: W_LP2
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP2_LP3
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm1b_LP2
+    K_left: K_left_sm1b_LP2
+    K_right: K_right_sm1b_LP2
+    delta_K: dK_sm1b_LP2
+    max_growth_rate: growth_sm1b_LP2
+
+- id: run_lsa_sm1b_LP3
+  model: inner_wavelength_lsa_sm1b
+  inputs:
+    N_loc: N_loc_LP3
+    W: W_LP3
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP2_LP3
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm1b_LP3
+    K_left: K_left_sm1b_LP3
+    K_right: K_right_sm1b_LP3
+    delta_K: dK_sm1b_LP3
+    max_growth_rate: growth_sm1b_LP3
+
+- id: run_lsa_sm1b_LP4
+  model: inner_wavelength_lsa_sm1b
+  inputs:
+    N_loc: N_loc_LP4
+    W: W_LP4
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP4_LP5_LP6
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm1b_LP4
+    K_left: K_left_sm1b_LP4
+    K_right: K_right_sm1b_LP4
+    delta_K: dK_sm1b_LP4
+    max_growth_rate: growth_sm1b_LP4
+
+- id: run_lsa_sm1b_LP5
+  model: inner_wavelength_lsa_sm1b
+  inputs:
+    N_loc: N_loc_LP5
+    W: W_LP5
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP4_LP5_LP6
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm1b_LP5
+    K_left: K_left_sm1b_LP5
+    K_right: K_right_sm1b_LP5
+    delta_K: dK_sm1b_LP5
+    max_growth_rate: growth_sm1b_LP5
+
+- id: run_lsa_sm1b_LP6
+  model: inner_wavelength_lsa_sm1b
+  inputs:
+    N_loc: N_loc_LP6
+    W: W_LP6
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP4_LP5_LP6
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm1b_LP6
+    K_left: K_left_sm1b_LP6
+    K_right: K_right_sm1b_LP6
+    delta_K: dK_sm1b_LP6
+    max_growth_rate: growth_sm1b_LP6
+
+- id: run_lsa_sm1b_LP7
+  model: inner_wavelength_lsa_sm1b
+  inputs:
+    N_loc: N_loc_LP7
+    W: W_LP7
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP7
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm1b_LP7
+    K_left: K_left_sm1b_LP7
+    K_right: K_right_sm1b_LP7
+    delta_K: dK_sm1b_LP7
+    max_growth_rate: growth_sm1b_LP7
+
+# ==========================================================================
+# Local LSA for SM Table I: literal printed Eqs. (SM15)-(SM23) with N_H^+ = 1
+# ==========================================================================
+- id: run_lsa_sm15lit_LP2
+  model: inner_wavelength_lsa_sm15_literal
+  inputs:
+    N_loc: N_loc_LP2
+    W: W_LP2
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP2_LP3
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm15lit_LP2
+    K_left: K_left_sm15lit_LP2
+    K_right: K_right_sm15lit_LP2
+    delta_K: dK_sm15lit_LP2
+    max_growth_rate: growth_sm15lit_LP2
+
+- id: run_lsa_sm15lit_LP3
+  model: inner_wavelength_lsa_sm15_literal
+  inputs:
+    N_loc: N_loc_LP3
+    W: W_LP3
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP2_LP3
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm15lit_LP3
+    K_left: K_left_sm15lit_LP3
+    K_right: K_right_sm15lit_LP3
+    delta_K: dK_sm15lit_LP3
+    max_growth_rate: growth_sm15lit_LP3
+
+- id: run_lsa_sm15lit_LP4
+  model: inner_wavelength_lsa_sm15_literal
+  inputs:
+    N_loc: N_loc_LP4
+    W: W_LP4
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP4_LP5_LP6
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm15lit_LP4
+    K_left: K_left_sm15lit_LP4
+    K_right: K_right_sm15lit_LP4
+    delta_K: dK_sm15lit_LP4
+    max_growth_rate: growth_sm15lit_LP4
+
+- id: run_lsa_sm15lit_LP5
+  model: inner_wavelength_lsa_sm15_literal
+  inputs:
+    N_loc: N_loc_LP5
+    W: W_LP5
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP4_LP5_LP6
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm15lit_LP5
+    K_left: K_left_sm15lit_LP5
+    K_right: K_right_sm15lit_LP5
+    delta_K: dK_sm15lit_LP5
+    max_growth_rate: growth_sm15lit_LP5
+
+- id: run_lsa_sm15lit_LP6
+  model: inner_wavelength_lsa_sm15_literal
+  inputs:
+    N_loc: N_loc_LP6
+    W: W_LP6
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP4_LP5_LP6
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm15lit_LP6
+    K_left: K_left_sm15lit_LP6
+    K_right: K_right_sm15lit_LP6
+    delta_K: dK_sm15lit_LP6
+    max_growth_rate: growth_sm15lit_LP6
+
+- id: run_lsa_sm15lit_LP7
+  model: inner_wavelength_lsa_sm15_literal
+  inputs:
+    N_loc: N_loc_LP7
+    W: W_LP7
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP7
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+  settings:
+    n_modes: 120
+  outputs:
+    K_star: K_star_sm15lit_LP7
+    K_left: K_left_sm15lit_LP7
+    K_right: K_right_sm15lit_LP7
+    delta_K: dK_sm15lit_LP7
+    max_growth_rate: growth_sm15lit_LP7
+
+# ==========================================================================
+# Spatial dynamics 8x8 Jacobian eigenvalues (Eqs. SM24-SM31, Fig. 3c)
+# ==========================================================================
+- id: run_spatial_evals_spike
+  model: spatial_dynamics_eigenvalues_sm24
+  inputs:
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+  settings: {}
+  outputs:
+    max_real_part: spatial_max_re_spike
+    max_imag_part: spatial_max_im_spike
+    min_nonzero_real_part: spatial_min_re_spike
+    unit_eval_multiplicity: spatial_unit_mult_spike_out
+    zero_eval_multiplicity: spatial_zero_mult_spike_out
+    has_complex_eigenvalues: spatial_is_complex_spike
+
+- id: run_spatial_evals_LP0
+  model: spatial_dynamics_eigenvalues_sm24
+  inputs:
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP0
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+  settings: {}
+  outputs:
+    max_real_part: spatial_max_re_LP0
+    max_imag_part: spatial_max_im_LP0
+    min_nonzero_real_part: spatial_min_re_LP0
+    unit_eval_multiplicity: spatial_unit_mult_LP0_out
+    zero_eval_multiplicity: spatial_zero_mult_LP0_out
+    has_complex_eigenvalues: spatial_is_complex_LP0
+
+# ==========================================================================
+# 1D steady-state PDE runs (Spike SM Fig. 3, LP0 Fig. 1a, LP2-LP7 SM Table I)
+# ==========================================================================
+- id: run_pde_spike_L1
+  model: pde_1d_steady_state_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+    rel_dev_thresh: rel_dev_threshold_Nloc
+  settings:
+    branch: "spike"
+    n_grid: 1024
+  outputs:
+    C_max: C_max_spike_L1_out
+    C_min: C_min_spike_L1_out
+    Na_max: Na_max_spike_L1_out
+    Ni_max: Ni_max_spike_L1_out
+    V_max: V_max_spike_L1_out
+    grad_C_sq_mean: grad_C_sq_spike_L1_out
+    N_loc: N_loc_spike_L1_out
+    W: W_spike_L1_out
+    K_obs: K_obs_spike_L1_out
+    n_internal_peaks: n_peaks_spike_L1_out
+    max_residual: res_spike_L1_out
+
+- id: run_pde_spike_L32
+  model: pde_1d_steady_state_sm1_5
+  inputs:
+    L: L_smfig3_32
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+    rel_dev_thresh: rel_dev_threshold_Nloc
+  settings:
+    branch: "spike"
+    n_grid: 32768
+  outputs:
+    C_max: C_max_spike_L32_out
+    C_min: C_min_spike_L32_out
+    Na_max: Na_max_spike_L32_out
+    Ni_max: Ni_max_spike_L32_out
+    V_max: V_max_spike_L32_out
+    grad_C_sq_mean: grad_C_sq_spike_L32_out
+    N_loc: N_loc_spike_L32_out
+    W: W_spike_L32_out
+    K_obs: K_obs_spike_L32_out
+    n_internal_peaks: n_peaks_spike_L32_out
+    max_residual: res_spike_L32_out
+  note: "Grid count n_grid = 32 * 1024 = 32768 maintains constant grid spacing Delta X = L/1024 as stated in SM Fig. 3."
+
+- id: run_pde_LP0
+  model: pde_1d_steady_state_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP0
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    rel_dev_thresh: rel_dev_threshold_Nloc
+  settings:
+    branch: "lp0"
+    n_grid: 1024
+  outputs:
+    C_max: C_max_LP0_out
+    C_min: C_min_LP0_out
+    Na_max: Na_max_LP0_out
+    Ni_max: Ni_max_LP0_out
+    V_max: V_max_LP0_out
+    grad_C_sq_mean: grad_C_sq_LP0_out
+    N_loc: N_loc_LP0_out
+    W: W_LP0_out
+    K_obs: K_obs_LP0_out
+    n_internal_peaks: n_peaks_LP0_out
+    max_residual: res_LP0_out
+
+- id: run_pde_LP2
+  model: pde_1d_steady_state_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP2_LP3
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    rel_dev_thresh: rel_dev_threshold_Nloc
+  settings:
+    branch: "lp2"
+    n_grid: 1024
+  outputs:
+    C_max: C_max_LP2_out
+    C_min: C_min_LP2_out
+    Na_max: Na_max_LP2_out
+    Ni_max: Ni_max_LP2_out
+    V_max: V_max_LP2_out
+    grad_C_sq_mean: grad_C_sq_LP2_out
+    N_loc: N_loc_pde_LP2
+    W: W_pde_LP2
+    K_obs: K_obs_pde_LP2
+    n_internal_peaks: n_peaks_LP2_out
+    max_residual: res_LP2_out
+
+- id: run_pde_LP3
+  model: pde_1d_steady_state_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP2_LP3
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    rel_dev_thresh: rel_dev_threshold_Nloc
+  settings:
+    branch: "lp3"
+    n_grid: 1024
+  outputs:
+    C_max: C_max_LP3_out
+    C_min: C_min_LP3_out
+    Na_max: Na_max_LP3_out
+    Ni_max: Ni_max_LP3_out
+    V_max: V_max_LP3_out
+    grad_C_sq_mean: grad_C_sq_LP3_out
+    N_loc: N_loc_pde_LP3
+    W: W_pde_LP3
+    K_obs: K_obs_pde_LP3
+    n_internal_peaks: n_peaks_LP3_out
+    max_residual: res_LP3_out
+
+- id: run_pde_LP4
+  model: pde_1d_steady_state_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP4_LP5_LP6
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    rel_dev_thresh: rel_dev_threshold_Nloc
+  settings:
+    branch: "lp4"
+    n_grid: 1024
+  outputs:
+    C_max: C_max_LP4_out
+    C_min: C_min_LP4_out
+    Na_max: Na_max_LP4_out
+    Ni_max: Ni_max_LP4_out
+    V_max: V_max_LP4_out
+    grad_C_sq_mean: grad_C_sq_LP4_out
+    N_loc: N_loc_pde_LP4
+    W: W_pde_LP4
+    K_obs: K_obs_pde_LP4
+    n_internal_peaks: n_peaks_LP4_out
+    max_residual: res_LP4_out
+
+- id: run_pde_LP5
+  model: pde_1d_steady_state_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP4_LP5_LP6
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    rel_dev_thresh: rel_dev_threshold_Nloc
+  settings:
+    branch: "lp5"
+    n_grid: 1024
+  outputs:
+    C_max: C_max_LP5_out
+    C_min: C_min_LP5_out
+    Na_max: Na_max_LP5_out
+    Ni_max: Ni_max_LP5_out
+    V_max: V_max_LP5_out
+    grad_C_sq_mean: grad_C_sq_LP5_out
+    N_loc: N_loc_pde_LP5
+    W: W_pde_LP5
+    K_obs: K_obs_pde_LP5
+    n_internal_peaks: n_peaks_LP5_out
+    max_residual: res_LP5_out
+
+- id: run_pde_LP6
+  model: pde_1d_steady_state_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP4_LP5_LP6
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    rel_dev_thresh: rel_dev_threshold_Nloc
+  settings:
+    branch: "lp6"
+    n_grid: 1024
+  outputs:
+    C_max: C_max_LP6_out
+    C_min: C_min_LP6_out
+    Na_max: Na_max_LP6_out
+    Ni_max: Ni_max_LP6_out
+    V_max: V_max_LP6_out
+    grad_C_sq_mean: grad_C_sq_LP6_out
+    N_loc: N_loc_pde_LP6
+    W: W_pde_LP6
+    K_obs: K_obs_pde_LP6
+    n_internal_peaks: n_peaks_LP6_out
+    max_residual: res_LP6_out
+
+- id: run_pde_LP7
+  model: pde_1d_steady_state_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP7
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    rel_dev_thresh: rel_dev_threshold_Nloc
+  settings:
+    branch: "lp7"
+    n_grid: 1024
+  outputs:
+    C_max: C_max_LP7_out
+    C_min: C_min_LP7_out
+    Na_max: Na_max_LP7_out
+    Ni_max: Ni_max_LP7_out
+    V_max: V_max_LP7_out
+    grad_C_sq_mean: grad_C_sq_LP7_out
+    N_loc: N_loc_pde_LP7
+    W: W_pde_LP7
+    K_obs: K_obs_pde_LP7
+    n_internal_peaks: n_peaks_LP7_out
+    max_residual: res_LP7_out
+
+# ==========================================================================
+# 1D travelling wave (SM Fig. 2) & 2D localized state (Fig. 4a) time runs
+# ==========================================================================
+- id: run_pde_wave_smfig2
+  model: pde_1d_time_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_smfig2
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_passive
+    B: B_passive
+    Nbar: Nbar_default
+    T_end: T_end_wave_added
+  settings:
+    n_grid: 128
+    dt: 0.05
+    noise_amp: 0.01
+    seed: 42
+  replicates: 3
+  outputs:
+    C_min: C_min_wave_smfig2_out
+    C_max: C_max_wave_smfig2_out
+    K_dom: K_dom_wave_smfig2_out
+  note: "Integrates to T = 250 (added choice, shorter than SM Fig. 2's T = 2000) because the travelling wave saturates by T ~ 80."
+
+- id: run_pde_2d_fig4a
+  model: pde_2d_time_eq1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_fig4_ac
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig4_added
+    Z: Z_fig4
+    B: B_fig4
+    Nbar: Nbar_default
+    T_end: T_end_2d_added
+  settings:
+    n_grid: 64
+    dt: 0.025
+    seed_width: 2.0
+  outputs:
+    C_min: C_min_2d_fig4a_out
+    C_max: C_max_2d_fig4a_out
+    C_corner: C_corner_2d_fig4a_out
+  note: "Uses added Omega_d = 10 (omitted in Fig. 4 caption) and T_end = 100 on a 64x64 grid."
+
+- id: run_pde_2d_fig4a_printed
+  model: pde_2d_time_eq1_5_printed
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_fig4_ac
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig4_added
+    Z: Z_fig4
+    B: B_fig4
+    Nbar: Nbar_default
+    T_end: T_end_2d_added
+  settings:
+    n_grid: 64
+    dt: 0.025
+    seed_width: 2.0
+  outputs:
+    C_min: C_min_2d_fig4a_printed_out
+    C_max: C_max_2d_fig4a_printed_out
+    C_corner: C_corner_2d_fig4a_printed_out
+  note: "Verbatim printed Eq. (3) 2D viscous operator (1 + 2.5 |K|^2) at Fig. 4(a) parameters; decays toward H (C_max = 0.234 at T = 100)."
+
+# ==========================================================================
+# Digitize-stage model runs comparing against calibrated figure readings
+# ==========================================================================
+- id: run_prof_fig1a
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP0
+    ref_C: fig1a_C_fig
+  settings:
+    branch: lp0
+    n_grid: 1024
+  outputs:
+    C_curve: fig1a_C_pred
+    Na_curve: fig1a_Na_pred
+    Ni_curve: fig1a_Ni_pred
+    V_curve: fig1a_V_pred
+- id: run_prof_fig1b_LP2
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP2_LP3
+    ref_C: fig1b_LP2_C_fig
+  settings:
+    branch: lp2
+    n_grid: 1024
+  outputs:
+    C_curve: fig1b_LP2_C_pred
+- id: run_fwhm_fig1b_LP2
+  model: profile_fwhm_from_curve
+  inputs:
+    profile_C: fig1b_LP2_C_fig
+  settings: {}
+  outputs:
+    W: W_fig1_LP2_out
+- id: run_prof_fig1c_LP3
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP2_LP3
+    ref_C: fig1c_LP3_C_fig
+  settings:
+    branch: lp3
+    n_grid: 1024
+  outputs:
+    C_curve: fig1c_LP3_C_pred
+- id: run_fwhm_fig1c_LP3
+  model: profile_fwhm_from_curve
+  inputs:
+    profile_C: fig1c_LP3_C_fig
+  settings: {}
+  outputs:
+    W: W_fig1_LP3_out
+- id: run_prof_fig1d_LP4
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP4_LP5_LP6
+    ref_C: fig1d_LP4_C_fig
+  settings:
+    branch: lp4
+    n_grid: 1024
+  outputs:
+    C_curve: fig1d_LP4_C_pred
+- id: run_fwhm_fig1d_LP4
+  model: profile_fwhm_from_curve
+  inputs:
+    profile_C: fig1d_LP4_C_fig
+  settings: {}
+  outputs:
+    W: W_fig1_LP4_out
+- id: run_prof_fig1e_LP5
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP4_LP5_LP6
+    ref_C: fig1e_LP5_C_fig
+  settings:
+    branch: lp5
+    n_grid: 1024
+  outputs:
+    C_curve: fig1e_LP5_C_pred
+- id: run_fwhm_fig1e_LP5
+  model: profile_fwhm_from_curve
+  inputs:
+    profile_C: fig1e_LP5_C_fig
+  settings: {}
+  outputs:
+    W: W_fig1_LP5_out
+- id: run_prof_fig1f_LP6
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP4_LP5_LP6
+    ref_C: fig1f_LP6_C_fig
+  settings:
+    branch: lp6
+    n_grid: 1024
+  outputs:
+    C_curve: fig1f_LP6_C_pred
+- id: run_fwhm_fig1f_LP6
+  model: profile_fwhm_from_curve
+  inputs:
+    profile_C: fig1f_LP6_C_fig
+  settings: {}
+  outputs:
+    W: W_fig1_LP6_out
+- id: run_prof_fig1g_LP7
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP7
+    ref_C: fig1g_LP7_C_fig
+  settings:
+    branch: lp7
+    n_grid: 1024
+  outputs:
+    C_curve: fig1g_LP7_C_pred
+- id: run_fwhm_fig1g_LP7
+  model: profile_fwhm_from_curve
+  inputs:
+    profile_C: fig1g_LP7_C_fig
+  settings: {}
+  outputs:
+    W: W_fig1_LP7_out
+- id: run_fig2_H
+  model: pde_1d_snaking_branch_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    ref_branch: fig2_H_fig
+  settings:
+    branch: h
+    n_grid: 1024
+  outputs:
+    grad_C_sq_curve: fig2_H_pred
+- id: run_fig2_LP0
+  model: pde_1d_snaking_branch_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    ref_branch: fig2_LP0_fig
+  settings:
+    branch: lp0
+    n_grid: 1024
+  outputs:
+    grad_C_sq_curve: fig2_LP0_pred
+- id: run_fig2_LP2
+  model: pde_1d_snaking_branch_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    ref_branch: fig2_LP2_fig
+  settings:
+    branch: lp2
+    n_grid: 1024
+  outputs:
+    grad_C_sq_curve: fig2_LP2_pred
+- id: run_fig2_LP3
+  model: pde_1d_snaking_branch_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    ref_branch: fig2_LP3_fig
+  settings:
+    branch: lp3
+    n_grid: 1024
+  outputs:
+    grad_C_sq_curve: fig2_LP3_pred
+- id: run_fig2_LP4
+  model: pde_1d_snaking_branch_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    ref_branch: fig2_LP4_fig
+  settings:
+    branch: lp4
+    n_grid: 1024
+  outputs:
+    grad_C_sq_curve: fig2_LP4_pred
+- id: run_fig2_LP5
+  model: pde_1d_snaking_branch_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    ref_branch: fig2_LP5_fig
+  settings:
+    branch: lp5
+    n_grid: 1024
+  outputs:
+    grad_C_sq_curve: fig2_LP5_pred
+- id: run_fig2_LP6
+  model: pde_1d_snaking_branch_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    ref_branch: fig2_LP6_fig
+  settings:
+    branch: lp6
+    n_grid: 1024
+  outputs:
+    grad_C_sq_curve: fig2_LP6_pred
+- id: run_fig2_LP7
+  model: pde_1d_snaking_branch_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    ref_branch: fig2_LP7_fig
+  settings:
+    branch: lp7
+    n_grid: 1024
+  outputs:
+    grad_C_sq_curve: fig2_LP7_pred
+- id: run_prof_fig3a
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+    ref_C: fig3a_C_fig
+  settings:
+    branch: spike
+    n_grid: 1024
+  outputs:
+    C_curve: fig3a_C_pred
+    Ni_curve: fig3a_Ni_pred
+    V_curve: fig3a_V_pred
+- id: run_prof_fig3a_Na
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+    ref_C: fig3a_C_fig
+  settings:
+    branch: spike
+    n_grid: 1024
+    abs_x_min: 0.75
+  outputs:
+    Na_curve: fig3a_Na_pred
+- id: run_orbit_fig3b_spike
+  model: pde_1d_phase_orbit_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+    ref_orbit: fig3b_spike_upper_fig
+  settings:
+    branch: spike
+    n_grid: 1024
+  outputs:
+    C_upper_curve: fig3b_spike_upper_pred
+    C_lower_curve: fig3b_spike_lower_pred
+- id: run_orbit_fig3b_LP0
+  model: pde_1d_phase_orbit_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP0
+    ref_orbit: fig3b_LP0_upper_fig
+  settings:
+    branch: lp0
+    n_grid: 1024
+  outputs:
+    C_upper_curve: fig3b_LP0_upper_pred
+    C_lower_curve: fig3b_LP0_lower_pred
+- id: run_spec_fig3c_spike
+  model: spatial_dynamics_spectrum_sm24
+  inputs:
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+  sweep:
+    idx: fig3c_spike_re_fig
+  settings: {}
+  outputs:
+    re_part: fig3c_spike_re_pred
+    im_part: fig3c_spike_im_pred
+- id: run_spec_fig3c_LP0
+  model: spatial_dynamics_spectrum_sm24
+  inputs:
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_LP0
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+  sweep:
+    idx: fig3c_LP0_re_fig
+  settings: {}
+  outputs:
+    re_part: fig3c_LP0_re_pred
+    im_part: fig3c_LP0_im_pred
+- id: run_smfig1_Io
+  model: stability_boundary_smfig1
+  inputs: &id001
+    Dc: Dc_default
+    Da: Da_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+  sweep:
+    Z: smfig1_boundary_Io_fig
+  settings:
+    n_k: 400
+    k_min: 0.02
+  outputs:
+    Omega_crit: smfig1_Io_pred
+- id: run_smfig1_Is_continuum
+  model: stability_boundary_smfig1
+  inputs: *id001
+  sweep:
+    Z: smfig1_boundary_Is_fig
+  settings:
+    n_k: 400
+    k_min: 0.02
+  outputs:
+    Omega_crit: smfig1_Is_cont_pred
+- id: run_smfig1_Is_finiteL
+  model: stability_boundary_smfig1
+  inputs: *id001
+  sweep:
+    Z: smfig1_boundary_Is_fig
+  settings:
+    n_k: 400
+    k_min: 0.2
+  outputs:
+    Omega_crit: smfig1_Is_finL_pred
+  note: Evaluates Eqs. (SM15)-(SM23) above the smallest nonzero periodic mode K_1 = 2*pi/L = 0.2 of the paper's L = 10*pi
+    domain.
+- id: run_prof_smfig3_L32
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_smfig3_32
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+    ref_C: smfig3_main_C_L32_fig
+  settings:
+    branch: spike
+    n_grid: 32768
+  outputs:
+    C_curve: smfig3_main_C_L32_pred
+- id: run_prof_smfig3_H
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+    ref_C: smfig3_main_H_fig
+  settings:
+    branch: h
+    n_grid: 256
+  outputs:
+    C_curve: smfig3_main_H_pred
+- id: run_scaling_smfig3_inset
+  model: pde_1d_spike_scaling_smfig3
+  inputs:
+    L_base: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega: Omega_spike
+    Omega_d0: Omega_d0_spike
+    Omega_d: Omega_d_spike
+    Z: Z_spike
+    B: B_spike
+    Nbar: Nbar_default
+  sweep:
+    L_mult: smfig3_inset_Cmax_fig
+  settings:
+    n_grid_base: 1024
+  outputs:
+    C_max: smfig3_inset_Cmax_pred
+- id: run_smfig4_LP0_V
+  model: pde_1d_flux_profile_sm4
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP0
+    ref_V: smfig4_LP0_V_fig
+  settings:
+    branch: lp0
+    n_grid: 1024
+  outputs:
+    V_curve: smfig4_LP0_V_pred
+- id: run_smfig4_LP0_flux
+  model: pde_1d_flux_profile_sm4
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP0
+    ref_V: smfig4_LP0_V_fig
+  settings:
+    branch: lp0
+    n_grid: 1024
+    abs_x_max: 5.1
+  outputs:
+    neg_dX_Jc_curve: smfig4_LP0_neg_dX_Jc_pred
+    Rc_curve: smfig4_LP0_Rc_pred
+- id: run_smfig4_LP3_V
+  model: pde_1d_flux_profile_sm4
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP2_LP3
+    ref_V: smfig4_LP3_V_fig
+  settings:
+    branch: lp3
+    n_grid: 1024
+  outputs:
+    V_curve: smfig4_LP3_V_pred
+- id: run_smfig4_LP3_flux
+  model: pde_1d_flux_profile_sm4
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP2_LP3
+    ref_V: smfig4_LP3_V_fig
+  settings:
+    branch: lp3
+    n_grid: 1024
+    abs_x_max: 5.6
+  outputs:
+    neg_dX_Jc_curve: smfig4_LP3_neg_dX_Jc_pred
+    Rc_curve: smfig4_LP3_Rc_pred
+- id: run_prof_smfig5
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP2_LP3
+    ref_C: smfig5a_C_fig
+  settings:
+    branch: lp3
+    n_grid: 1024
+    align_peak: true
+  outputs:
+    C_curve: smfig5a_C_pred
+    Na_curve: smfig5a_Na_pred
+    V_curve: smfig5a_V_pred
+    neg_dX_Jca_curve: smfig5b_Jca_pred
+    neg_dX_Jcd_curve: smfig5b_Jcd_pred
+    neg_dX_Jaa_curve: smfig5c_Jaa_pred
+    neg_dX_Jad_curve: smfig5c_Jad_pred
+    neg_dX_Jia_curve: smfig5d_Jia_pred
+    neg_dX_Jid_curve: smfig5d_Jid_pred
+- id: run_prof_smfig5_Ni
+  model: pde_1d_profile_sm1_5
+  inputs:
+    L: L_default
+    Dc: Dc_default
+    Da: Da_default
+    Di: Di_default
+    A: A_default
+    Kd: Kd_default
+    Omega0: Omega0_default
+    Omega_d0: Omega_d0_fig1
+    Omega_d: Omega_d_fig1
+    Z: Z_fig1
+    B: B_fig1
+    Nbar: Nbar_default
+    Omega: Omega_LP2_LP3
+    ref_C: smfig5a_C_fig
+  settings:
+    branch: lp3
+    n_grid: 1024
+    align_peak: true
+    x_max: 16.3
+  outputs:
+    Ni_curve: smfig5a_Ni_pred

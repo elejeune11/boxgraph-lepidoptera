@@ -1,0 +1,966 @@
+# ---------------------------------------------------------------------------
+# Combinatorial, domain-length, and shift-reduction runs
+# ---------------------------------------------------------------------------
+
+- id: run_param_count_binary
+  model: interaction_parameter_count
+  inputs: {N: N_binary}
+  outputs:
+    n_alpha: n_alpha_binary_comp
+    n_chi: n_chi_binary_comp
+    n_total: n_total_binary_comp
+
+- id: run_param_count_quaternary
+  model: interaction_parameter_count
+  inputs: {N: N_quaternary}
+  outputs:
+    n_alpha: n_alpha_quaternary_comp
+    n_chi: n_chi_quaternary_comp
+    n_total: n_total_quaternary_comp
+
+- id: run_domain_length_201
+  model: domain_length_appA
+  inputs: {N_x: sim_nx_201, h: appA_h}
+  outputs: {L: L_201_comp}
+
+- id: run_domain_length_401
+  model: domain_length_appA
+  inputs: {N_x: sim_nx_401, h: appA_h}
+  outputs: {L: L_401_comp}
+
+- id: run_fig1_shift_reduction
+  model: symmetric_shift_reduction
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22}
+  outputs:
+    c1: fig1_c1_sym
+    c2: fig1_c2_sym
+    phi1_mid: fig1_phi1_mid
+    phi2_mid: fig1_phi2_mid
+
+# ---------------------------------------------------------------------------
+# Chemical potentials (Eqs. 6-7 printed vs corrected variant)
+# ---------------------------------------------------------------------------
+
+- id: run_mu_eq6_eq7_printed_2d
+  model: binary_chemical_potential_eq6_eq7
+  inputs:
+    phi1: fig1_phi1_bar
+    phi2: fig1_phi2_bar_2d
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_high
+  outputs:
+    mu1_eq: mu1_eq_printed_2d
+    mu2_eq: mu2_eq_printed_2d
+    mu1_neq: mu1_neq_printed_2d
+    mu2_neq: mu2_neq_printed_2d
+
+- id: run_mu_eq6_eq7_corrected_2d
+  model: binary_chemical_potential_eq6_eq7_corrected
+  inputs:
+    phi1: fig1_phi1_bar
+    phi2: fig1_phi2_bar_2d
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_high
+  outputs:
+    mu1_eq: mu1_eq_corr_2d
+    mu2_eq: mu2_eq_corr_2d
+    mu1_neq: mu1_neq_corr_2d
+    mu2_neq: mu2_neq_corr_2d
+
+# ---------------------------------------------------------------------------
+# Linear stability (Eq. 8) and spinodal topology (Secs. III, IV E; Figs. 2, 6)
+# ---------------------------------------------------------------------------
+
+- id: run_lin_stab_fig1_center
+  model: linear_stability_eq8
+  inputs:
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_high
+    q: q_probe_added
+  outputs:
+    D11: eq8_fig1_D11
+    D12: eq8_fig1_D12
+    D21: eq8_fig1_D21
+    D22: eq8_fig1_D22
+    trace_D: eq8_fig1_trace
+    disc_over_q4: eq8_fig1_disc
+    re_lambda_max: eq8_fig1_re_max
+    im_lambda_abs: eq8_fig1_im_abs
+
+- id: run_lin_stab_fig2_center
+  model: linear_stability_eq8
+  inputs:
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig2_chip
+    alpha: fig2_alpha_a
+    q: q_probe_added
+  outputs:
+    D11: eq8_fig2_D11
+    D12: eq8_fig2_D12
+    D21: eq8_fig2_D21
+    D22: eq8_fig2_D22
+    trace_D: eq8_fig2_trace
+    disc_over_q4: eq8_fig2_disc
+    re_lambda_max: eq8_fig2_re_max
+    im_lambda_abs: eq8_fig2_im_abs
+  note: "Demonstrates that at the printed Fig. 2 caption parameters (chi = -0.2, chi' = 0.2), the point (0.35, 0.30) lies strictly inside both C_r (re_lambda_max = +0.0825 > 0) and C_i (im_lambda_abs = 0.3076 > 0)."
+
+- id: run_fig2_topology_alpha_033
+  model: spinodal_topology_eq8
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig2_chip
+    alpha: fig2_alpha_a
+  settings: {n_grid: 201, phi_min: -0.8, phi_max: 0.8}
+  outputs:
+    n_components: fig2_comp_033_pred
+    n_osc_components: fig2_osc_033_pred
+    alpha_split: fig2_alpha_split_pred
+
+- id: run_fig2_topology_alpha_049
+  model: spinodal_topology_eq8
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig2_chip
+    alpha: fig2_alpha_b
+  settings: {n_grid: 201, phi_min: -0.8, phi_max: 0.8}
+  outputs:
+    n_components: fig2_comp_049_pred
+    n_osc_components: fig2_osc_049_pred
+    alpha_split: fig2_alpha_split_049_pred
+
+- id: run_fig6_topology_alpha_040
+  model: spinodal_topology_eq8
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_high
+  settings: {n_grid: 201, phi_min: -0.4, phi_max: 1.1}
+  outputs:
+    n_components: fig6_comp_040_pred
+    n_osc_components: fig6_osc_040_pred
+    alpha_split: fig6_alpha_detach_pred
+
+# ---------------------------------------------------------------------------
+# Symmetric linear stability, exceptional points, and limits (Eqs. 15-18)
+# ---------------------------------------------------------------------------
+
+- id: run_sym_stab_fig1_center
+  model: symmetric_stability_eq15_eq18
+  inputs:
+    c1: fig1_c1_sym
+    c2: fig1_c2_sym
+    chi: fig1_chi
+    alpha: fig1_alpha_high
+    q: q_probe_added
+  outputs:
+    D11: sym_fig1_D11
+    D12: sym_fig1_D12
+    D21: sym_fig1_D21
+    D22: sym_fig1_D22
+    alpha_star: alpha_star_fig1_pred
+    re_lambda_max: sym_fig1_re_max
+    im_lambda_abs: sym_fig1_im_abs
+    eigvec_sin_angle: sym_fig1_sin_ang
+
+- id: run_sym_stab_at_exceptional_point
+  model: symmetric_stability_eq15_eq18
+  inputs:
+    c1: fig1_c1_sym
+    c2: fig1_c2_sym
+    chi: fig1_chi
+    alpha: alpha_star_fig1_pred
+    q: q_probe_added
+  outputs:
+    D11: ep_D11
+    D12: ep_D12
+    D21: ep_D21
+    D22: ep_D22
+    alpha_star: ep_alpha_star
+    re_lambda_max: ep_re_max
+    im_lambda_abs: ep_im_abs
+    eigvec_sin_angle: ep_sin_ang
+  note: "Verifies exact eigenvector coalescence (eigvec_sin_angle = 0) at the exceptional point alpha = alpha_* (Eq. 17)."
+
+- id: run_pure_nonreciprocal_fig1
+  model: purely_nonreciprocal_threshold_sec4d
+  inputs: {c1: fig1_c1_sym, c2: fig1_c2_sym}
+  outputs: {alpha_min: alpha_min_pure_fig1}
+
+- id: run_equal_species_fig1
+  model: equal_species_threshold_sec4d
+  inputs: {chi: fig1_chi}
+  outputs: {alpha_star: alpha_star_equal_fig1}
+
+# ---------------------------------------------------------------------------
+# Complex-field NRCH Eq. (9) (printed vs corrected) & Eq. (19)-(20) curves
+# ---------------------------------------------------------------------------
+
+- id: run_complex_eq9_printed
+  model: complex_nrch_eq9
+  inputs:
+    c: c_equal_probe_added
+    alpha: fig1_alpha_high
+    kappa: fig1_kappa
+    q: q_probe_added
+  outputs:
+    re_lambda: eq9_printed_re
+    im_lambda: eq9_printed_im
+
+- id: run_complex_eq9_corrected
+  model: complex_nrch_eq9_corrected
+  inputs:
+    c: c_equal_probe_added
+    alpha: fig1_alpha_high
+    kappa: fig1_kappa
+    q: q_probe_added
+  outputs:
+    re_lambda: eq9_corr_re
+    im_lambda: eq9_corr_im
+
+- id: run_ci_hyperbola_fig6_printed
+  model: ci_hyperbola_eq19
+  inputs:
+    c1: fig1_c1_sym
+    c2: fig1_c2_sym
+    chi: fig1_chi
+    alpha: fig1_alpha_high
+  outputs:
+    hyperbola_offset: ci_eq19_printed_offset
+
+- id: run_ci_hyperbola_fig6_corrected
+  model: ci_hyperbola_eq19_corrected
+  inputs:
+    c1: fig1_c1_sym
+    c2: fig1_c2_sym
+    chi: fig1_chi
+    alpha: fig1_alpha_high
+  outputs:
+    hyperbola_offset: ci_eq19_corr_offset_plus
+    hyperbola_offset_minus: ci_eq19_corr_offset_minus
+
+- id: run_cr_circle_fig6
+  model: cr_circle_eq20
+  inputs: {c1: fig1_c1_sym, c2: fig1_c2_sym}
+  outputs: {radius: cr_circle_radius_fig6}
+
+# ---------------------------------------------------------------------------
+# Four-component Appendix B linear stability
+# ---------------------------------------------------------------------------
+
+- id: run_quaternary_appB
+  model: quaternary_linear_stability_appB
+  inputs:
+    c1: appB_c11
+    c2: appB_c21
+    c3: appB_c31
+    c4: appB_c41
+    C12: appB_C12
+    C13: appB_C13
+    C14: appB_C14
+    C21: appB_C21
+    C23: appB_C23
+    C24: appB_C24
+    C31: appB_C31
+    C32: appB_C32
+    C34: appB_C34
+    C41: appB_C41
+    C42: appB_C42
+    C43: appB_C43
+    phi1_bar: appB_phi1_bar
+    phi2_bar: appB_phi2_bar
+    phi3_bar: appB_phi3_bar
+    phi4_bar: appB_phi4_bar
+    kappa: fig1_kappa
+  outputs:
+    re_leading_over_q2: appB_re_lead
+    im_leading_over_q2: appB_im_lead
+    wavelength_leading: appB_lam1
+    wavelength_secondary: appB_lam2
+
+# ---------------------------------------------------------------------------
+# Minimal oscillator ODEs (Sec. IV B, Fig. 4e-i) and SNIC threshold
+# ---------------------------------------------------------------------------
+
+- id: run_min_osc_unshifted_alpha_04
+  model: minimal_oscillator_sec4b
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_high
+  settings: {dt: 0.05, T: 160.0, x1_init: 0.001, x2_init: 0.001}
+  outputs:
+    omega: min_osc_unshifted_omega_04
+    x1_amp: min_osc_unshifted_x1_04
+    x2_amp: min_osc_unshifted_x2_04
+
+- id: run_min_osc_shifted_alpha_01
+  model: minimal_oscillator_sec4b_shifted
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig4_alpha_low
+  settings: {dt: 0.05, T: 160.0, x1_init: 0.001, x2_init: 0.001}
+  outputs:
+    omega: min_osc_shifted_omega_01
+    x1_amp: min_osc_shifted_x1_01
+    x2_amp: min_osc_shifted_x2_01
+
+- id: run_min_osc_shifted_alpha_04
+  model: minimal_oscillator_sec4b_shifted
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_high
+  settings: {dt: 0.05, T: 160.0, x1_init: 0.001, x2_init: 0.001}
+  outputs:
+    omega: min_osc_shifted_omega_04
+    x1_amp: min_osc_shifted_x1_04
+    x2_amp: min_osc_shifted_x2_04
+
+- id: run_min_osc_shifted_alpha_095
+  model: minimal_oscillator_sec4b_shifted
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig3_alpha_active
+  settings: {dt: 0.05, T: 120.0, x1_init: 0.001, x2_init: 0.001}
+  outputs:
+    omega: min_osc_shifted_omega_095
+    x1_amp: min_osc_shifted_x1_095
+    x2_amp: min_osc_shifted_x2_095
+
+- id: run_min_osc_snic_fig1
+  model: minimal_oscillator_snic_threshold
+  inputs: {c1: fig1_c1_sym, c2: fig1_c2_sym, chi: fig1_chi}
+  outputs: {alpha_sn: alpha_sn_fig1_pred}
+
+# ---------------------------------------------------------------------------
+# 1D and 2D NRCH pseudospectral PDE runs (Figs. 1, 3, Appendix A)
+# ---------------------------------------------------------------------------
+
+- id: run_nrch_1d_alpha_015
+  model: nrch_1d_pde
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig3_alpha_bulk
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+  settings: {N: 128, L: 2.0, dt: 0.0005, T: 8.0, S: 0.8, init_amp: 0.01, seed: 42}
+  outputs:
+    J_mag: nrch_1d_J_015
+    wave_speed: nrch_1d_v_015
+    wavelength: nrch_1d_lam_015
+    phi1_min: nrch_1d_p1min_015
+    phi1_max: nrch_1d_p1max_015
+    phi2_min: nrch_1d_p2min_015
+    phi2_max: nrch_1d_p2max_015
+  note: "Affordable 1D cross-section PDE check (N=128, dt=5e-4 vs paper's 2D 201x201, dt=1e-4) verifying zero polar-order flux for bulk separation at alpha = 0.15."
+
+- id: run_nrch_1d_alpha_020
+  model: nrch_1d_pde
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_low
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+  settings: {N: 128, L: 2.0, dt: 0.0005, T: 8.0, S: 0.8, init_amp: 0.01, seed: 42}
+  outputs:
+    J_mag: nrch_1d_J_020
+    wave_speed: nrch_1d_v_020
+    wavelength: nrch_1d_lam_020
+    phi1_min: nrch_1d_p1min_020
+    phi1_max: nrch_1d_p1max_020
+    phi2_min: nrch_1d_p2min_020
+    phi2_max: nrch_1d_p2max_020
+  note: "1D noiseless cross-section at alpha = 0.2 matching Fig. 1(d): static bulk phase separation with phi1 in [0.20, 0.50] and phi2 in [0.00, 0.60]."
+
+- id: run_nrch_1d_alpha_040
+  model: nrch_1d_pde
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_high
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+  settings: {N: 128, L: 2.0, dt: 0.0005, T: 8.0, S: 0.8, init_amp: 0.01, seed: 42}
+  outputs:
+    J_mag: nrch_1d_J_040
+    wave_speed: nrch_1d_v_040
+    wavelength: nrch_1d_lam_040
+    phi1_min: nrch_1d_p1min_040
+    phi1_max: nrch_1d_p1max_040
+    phi2_min: nrch_1d_p2min_040
+    phi2_max: nrch_1d_p2max_040
+  note: "1D noiseless cross-section at alpha = 0.4 matching Fig. 1(g): steady self-propelled traveling bands with nonzero speed and polar flux."
+
+- id: run_nrch_1d_onset_fig1
+  model: nrch_1d_band_onset
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+  settings: {N: 128, L: 2.0, dt: 0.001, T: 12.0, S: 0.8, v_thresh: 0.05, n_bisect: 8}
+  outputs: {alpha_onset: alpha_onset_1d_pred}
+  note: "Affordable 1D bisection (N=128, dt=1e-3, T=12) locating the bulk-front to traveling-band transition at Fig. 1 parameters."
+
+- id: run_nrch_2d_eq_alpha_0
+  model: nrch_2d_pde
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig3_alpha_eq
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+  settings: {N: 96, L: 4.0, dt: 0.002, T: 10.0, t_fit_lo: 0.15, t_fit_hi: 5.0, S: 0.8, init_amp: 0.01, seed: 42}
+  replicates: 3
+  outputs:
+    coarsening_exponent: nrch_2d_beta_eq_pred
+    R_final: nrch_2d_R_eq_pred
+    J_mag: nrch_2d_Jmag_eq_pred
+    J_comp_avg: nrch_2d_Jcomp_eq_pred
+  note: "Affordable 2D coarsening simulation at alpha = 0 (N=96 on L=4, dt=2e-3, 3 replicates vs paper's 401x401, dt=1e-4) using Eyre-stabilized 2x2 ETD1."
+
+- id: run_nrch_2d_bulk_alpha_015
+  model: nrch_2d_pde
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig3_alpha_bulk
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+  settings: {N: 64, L: 2.0, dt: 0.002, T: 6.0, t_fit_lo: 0.15, t_fit_hi: 4.0, S: 0.8, init_amp: 0.01, seed: 42}
+  replicates: 3
+  outputs:
+    coarsening_exponent: nrch_2d_beta_015_pred
+    R_final: nrch_2d_R_015_pred
+    J_mag: nrch_2d_Jmag_015_pred
+    J_comp_avg: nrch_2d_Jcomp_015_pred
+  note: "Affordable 2D simulation at alpha = 0.15 (N=64 on L=2, dt=2e-3, 3 replicates vs paper's 201x201, dt=1e-4, 250 replicates) verifying decay of polar-order flux J to zero."
+
+- id: run_nrch_2d_active_alpha_095
+  model: nrch_2d_pde
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig3_alpha_active
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+  settings: {N: 96, L: 4.0, dt: 0.0005, T: 4.0, t_fit_lo: 0.15, t_fit_hi: 2.5, S: 0.8, init_amp: 0.01, seed: 42}
+  replicates: 3
+  outputs:
+    coarsening_exponent: nrch_2d_beta_active_pred
+    R_final: nrch_2d_R_active_pred
+    J_mag: nrch_2d_Jmag_active_pred
+    J_comp_avg: nrch_2d_Jcomp_active_pred
+  note: "Affordable 2D active lamellar coarsening and polar-order simulation at alpha = 0.95 (N=96 on L=4, dt=5e-4, 3 replicates vs paper's 401x401/201x201, dt=1e-4, 250 replicates) using Eyre-stabilized 2x2 ETD1."
+
+# ---------------------------------------------------------------------------
+# Runs against calibrated digitized figure curves (Figs. 1-6)
+# ---------------------------------------------------------------------------
+
+# --- Fig. 1(d, g) 1D NRCH PDE profiles ---
+- id: run_fig1d_profile_1d
+  model: nrch_1d_profile_curve
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_low
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+    target_phi1: fig1d_phi1_fig
+    target_phi2: fig1d_phi2_fig
+  settings: {N: 64, L: 2.0, dt: 0.002, T: 8.0, S: 1.0, init_amp: 0.01, seed: 42}
+  outputs:
+    phi1_curve: fig1d_phi1_1d_pred
+    phi2_curve: fig1d_phi2_1d_pred
+
+- id: run_fig1g_profile_1d
+  model: nrch_1d_profile_curve
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig1_alpha_high
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+    target_phi1: fig1g_phi1_fig
+    target_phi2: fig1g_phi2_fig
+  settings: {N: 64, L: 2.0, dt: 0.002, T: 8.0, S: 1.0, init_amp: 0.01, seed: 42}
+  outputs:
+    phi1_curve: fig1g_phi1_1d_pred
+    phi2_curve: fig1g_phi2_1d_pred
+
+# --- Fig. 2(a)-(c): Eq. (8) evaluated at PRINTED caption parameters (chi=-0.2, chi'=0.2) ---
+- id: run_fig2a_cr_upper_printed
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig2_chip, alpha: fig2_alpha_a}
+  sweep: {phi1_bar: fig2a_cr_upper_fig}
+  settings: {kind: cr, branch: upper, y_lo: -0.5, y_hi: 0.6, n_scan: 240}
+  outputs: {phi2_bar: fig2a_cr_upper_printed_pred}
+
+- id: run_fig2a_cr_lower_printed
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig2_chip, alpha: fig2_alpha_a}
+  sweep: {phi1_bar: fig2a_cr_lower_fig}
+  settings: {kind: cr, branch: lower, y_lo: -0.5, y_hi: 0.5, n_scan: 240}
+  outputs: {phi2_bar: fig2a_cr_lower_printed_pred}
+
+- id: run_fig2a_ci_lower_printed
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig2_chip, alpha: fig2_alpha_a}
+  sweep: {phi1_bar: fig2a_ci_lower_fig}
+  settings: {kind: ci, branch: lower, y_lo: 0.05, y_hi: 0.65, n_scan: 240}
+  outputs: {phi2_bar: fig2a_ci_lower_printed_pred}
+
+- id: run_fig2b_cr_ul_printed
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig2_chip, alpha: fig2_alpha_b}
+  sweep: {phi1_bar: fig2b_cr_ul_upper_fig}
+  settings: {kind: cr, branch: upper, y_lo: 0.05, y_hi: 0.55, n_scan: 240}
+  outputs: {phi2_bar: fig2b_cr_ul_printed_pred}
+
+- id: run_fig2b_cr_lr_printed
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig2_chip, alpha: fig2_alpha_b}
+  sweep: {phi1_bar: fig2b_cr_lr_lower_fig}
+  settings: {kind: cr, branch: lower, y_lo: -0.5, y_hi: 0.15, n_scan: 240}
+  outputs: {phi2_bar: fig2b_cr_lr_printed_pred}
+
+- id: run_fig2b_ci_ll_printed
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig2_chip, alpha: fig2_alpha_b}
+  sweep: {phi1_bar: fig2b_ci_ll_upper_fig}
+  settings: {kind: ci, branch: upper, y_lo: -0.65, y_hi: -0.05, n_scan: 240}
+  outputs: {phi2_bar: fig2b_ci_ll_printed_pred}
+
+- id: run_fig2c_cr_alpha0_printed
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig2_chip, alpha: fig2c_alpha_0}
+  sweep: {phi1_bar: fig2c_cr_alpha0_upper_fig}
+  settings: {kind: cr, branch: upper, y_lo: -0.45, y_hi: 0.6, n_scan: 240}
+  outputs: {phi2_bar: fig2c_cr_alpha0_printed_pred}
+
+- id: run_fig2c_cr_alpha09_upper_printed
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig2_chip, alpha: fig2c_alpha_09}
+  sweep: {phi1_bar: fig2c_cr_alpha09_upper_fig}
+  settings: {kind: cr, branch: upper, y_lo: 0.2, y_hi: 0.45, n_scan: 240}
+  outputs: {phi2_bar: fig2c_cr_alpha09_upper_printed_pred}
+
+- id: run_fig2c_cr_alpha09_lower_printed
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig2_chip, alpha: fig2c_alpha_09}
+  sweep: {phi1_bar: fig2c_cr_alpha09_lower_fig}
+  settings: {kind: cr, branch: lower, y_lo: 0.2, y_hi: 0.45, n_scan: 240}
+  outputs: {phi2_bar: fig2c_cr_alpha09_lower_printed_pred}
+
+# --- Fig. 2(a)-(c): Joint fit of (chi, chi') to all 9 digitized contours ---
+- id: run_fig2_chi_chip_fit
+  model: fig2_chi_chip_fit
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    alpha_a: fig2_alpha_a
+    alpha_b: fig2_alpha_b
+    cr_2a_upper_obs: fig2a_cr_upper_fig
+    cr_2a_lower_obs: fig2a_cr_lower_fig
+    ci_2a_lower_obs: fig2a_ci_lower_fig
+    cr_2b_ul_obs: fig2b_cr_ul_upper_fig
+    cr_2b_lr_obs: fig2b_cr_lr_lower_fig
+    ci_2b_ll_obs: fig2b_ci_ll_upper_fig
+    cr_2c_0_obs: fig2c_cr_alpha0_upper_fig
+    cr_2c_09_up_obs: fig2c_cr_alpha09_upper_fig
+    cr_2c_09_lo_obs: fig2c_cr_alpha09_lower_fig
+  outputs:
+    chi_fit: fig2_chi_fitted
+    chip_fit: fig2_chip_fitted
+    alpha_split_fit: fig2_alpha_split_fitted
+    cr_2a_upper_fit: fig2a_cr_upper_fitted
+    cr_2a_lower_fit: fig2a_cr_lower_fitted
+    ci_2a_lower_fit: fig2a_ci_lower_fitted
+    cr_2b_ul_fit: fig2b_cr_ul_fitted
+    cr_2b_lr_fit: fig2b_cr_lr_fitted
+    ci_2b_ll_fit: fig2b_ci_ll_fitted
+    cr_2c_0_fit: fig2c_cr_alpha0_fitted
+    cr_2c_09_up_fit: fig2c_cr_alpha09_upper_fitted
+    cr_2c_09_lo_fit: fig2c_cr_alpha09_lower_fitted
+
+# --- Fig. 3(a) & 3(c): Coarsening slopes, power-law scaling, and flux curves ---
+- id: run_fig3a_slope_alpha0
+  model: fig3_coarsening_slope_extract
+  inputs: {R_curve: fig3a_R_alpha0_fig}
+  settings: {t_lo: 0.1, t_hi: 12.0}
+  outputs: {coarsening_exponent: fig3a_beta_alpha0_extracted}
+
+- id: run_fig3a_slope_alpha095
+  model: fig3_coarsening_slope_extract
+  inputs: {R_curve: fig3a_R_alpha095_fig}
+  settings: {t_lo: 0.1, t_hi: 2.0}
+  outputs: {coarsening_exponent: fig3a_beta_alpha095_extracted}
+
+- id: run_fig3a_powerlaw_alpha0
+  model: coarsening_power_law_sec4c
+  inputs: {beta: fig3_coarsening_exp_eq_printed}
+  sweep: {t: fig3a_R_alpha0_fig}
+  outputs: {R: fig3a_R_alpha0_powerlaw}
+
+- id: run_fig3a_powerlaw_alpha095
+  model: coarsening_power_law_sec4c
+  inputs: {beta: fig3_coarsening_exp_active_printed}
+  sweep: {t: fig3a_R_alpha095_fig}
+  outputs: {R: fig3a_R_alpha095_powerlaw}
+
+- id: run_fig3c_sat_Jx_095
+  model: fig3_flux_sat_extract
+  inputs: {J_curve: fig3c_Jx_alpha095_fig}
+  settings: {t_sat: 4.0}
+  outputs: {J_sat: fig3c_Jx_sat_extracted}
+
+- id: run_fig3c_sat_Jy_095
+  model: fig3_flux_sat_extract
+  inputs: {J_curve: fig3c_Jy_alpha095_fig}
+  settings: {t_sat: 4.0}
+  outputs: {J_sat: fig3c_Jy_sat_extracted}
+
+- id: run_fig3c_sat_J_015
+  model: fig3_flux_sat_extract
+  inputs: {J_curve: fig3c_J_alpha015_fig}
+  settings: {t_sat: 1.0}
+  outputs: {J_sat: fig3c_J_015_sat_extracted}
+
+- id: run_nrch_2d_flux_curve_015
+  model: nrch_2d_flux_curve
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig3_alpha_bulk
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+    target_J: fig3c_J_alpha015_fig
+  settings: {N: 48, L: 2.0, dt: 0.004, S: 1.5, init_amp: 0.01, n_seeds: 3, seed: 42}
+  outputs:
+    J_curve: fig3c_J_015_2d_pred
+    J_final: fig3c_J_015_final_2d_pred
+  note: "Affordable 2D ETD1 flux curve (48x48, L=2, dt=4e-3, 3 internal seeds) verifying J(t) -> 0 across t in [0.1, 9] at alpha = 0.15."
+
+- id: run_nrch_2d_flux_curve_095
+  model: nrch_2d_flux_curve
+  inputs:
+    c11: fig1_c11
+    c12: fig1_c12
+    c21: fig1_c21
+    c22: fig1_c22
+    chi: fig1_chi
+    chip: fig1_chip
+    alpha: fig3_alpha_active
+    kappa: fig1_kappa
+    phi1_bar: fig1_phi1_bar
+    phi2_bar: fig1_phi2_bar
+    target_J: fig3c_Jx_alpha095_fig
+  settings: {N: 48, L: 2.0, dt: 0.004, S: 1.5, init_amp: 0.01, n_seeds: 3, seed: 42}
+  outputs:
+    J_curve: fig3c_J_095_2d_pred
+    J_final: fig3c_J_095_final_2d_pred
+  note: "Affordable 2D ETD1 flux curve (48x48, L=2, dt=4e-3, 3 internal seeds vs paper's 201x201, dt=1e-4, 250 replicates) at alpha = 0.95."
+
+# --- Fig. 4(e)-(i): Minimal oscillator (printed unshifted vs shifted vs sum/diff) ---
+- id: run_fig4e_unshifted
+  model: minimal_oscillator_time_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig4_alpha_low, target_green: fig4e_green_fig, target_blue: fig4e_blue_fig}
+  settings: {dt: 0.05, x1_init: -0.001, x2_init: -0.001}
+  outputs: {green_curve: fig4e_green_unshifted, blue_curve: fig4e_blue_unshifted}
+
+- id: run_fig4e_shifted
+  model: minimal_oscillator_time_curve_shifted
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig4_alpha_low, target_green: fig4e_green_fig, target_blue: fig4e_blue_fig}
+  settings: {dt: 0.05, x1_init: -0.0001, x2_init: -0.0001}
+  outputs: {green_curve: fig4e_green_shifted, blue_curve: fig4e_blue_shifted}
+
+- id: run_fig4e_sumdiff
+  model: minimal_oscillator_time_curve_sumdiff
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig4_alpha_low, target_green: fig4e_green_fig, target_blue: fig4e_blue_fig}
+  settings: {dt: 0.05, x1_init: -0.0001, x2_init: -0.0001}
+  outputs: {green_curve: fig4e_green_sumdiff, blue_curve: fig4e_blue_sumdiff}
+
+- id: run_fig4f_unshifted
+  model: minimal_oscillator_time_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig1_alpha_high, target_green: fig4f_green_fig, target_blue: fig4f_blue_fig}
+  settings: {dt: 0.05, x1_init: -0.001, x2_init: -0.001}
+  outputs: {green_curve: fig4f_green_unshifted, blue_curve: fig4f_blue_unshifted}
+
+- id: run_fig4f_shifted
+  model: minimal_oscillator_time_curve_shifted
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig1_alpha_high, target_green: fig4f_green_fig, target_blue: fig4f_blue_fig}
+  settings: {dt: 0.05, x1_init: -0.0001, x2_init: -0.0001}
+  outputs: {green_curve: fig4f_green_shifted, blue_curve: fig4f_blue_shifted}
+
+- id: run_fig4f_sumdiff
+  model: minimal_oscillator_time_curve_sumdiff
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig1_alpha_high, target_green: fig4f_green_fig, target_blue: fig4f_blue_fig}
+  settings: {dt: 0.05, x1_init: -0.0001, x2_init: -0.0001}
+  outputs: {green_curve: fig4f_green_sumdiff, blue_curve: fig4f_blue_sumdiff}
+
+- id: run_fig4g_unshifted
+  model: minimal_oscillator_phase_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig4_alpha_low, target: fig4g_red_traj_fig}
+  settings: {mode: traj, dt: 0.02, T: 120.0, x1_init: -0.001, x2_init: -0.001}
+  outputs: {x2_curve: fig4g_traj_unshifted}
+
+- id: run_fig4g_shifted
+  model: minimal_oscillator_phase_curve_shifted
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig4_alpha_low, target: fig4g_red_traj_fig}
+  settings: {mode: traj, dt: 0.02, T: 120.0, x1_init: -0.001, x2_init: -0.001}
+  outputs: {x2_curve: fig4g_traj_shifted}
+
+- id: run_fig4h_upper_unshifted
+  model: minimal_oscillator_phase_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig1_alpha_high, target: fig4h_lc_upper_fig}
+  settings: {mode: lc_upper, dt: 0.02, T: 200.0, x1_init: -0.001, x2_init: -0.001}
+  outputs: {x2_curve: fig4h_upper_unshifted}
+
+- id: run_fig4h_upper_shifted
+  model: minimal_oscillator_phase_curve_shifted
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig1_alpha_high, target: fig4h_lc_upper_fig}
+  settings: {mode: lc_upper, dt: 0.02, T: 200.0, x1_init: -0.001, x2_init: -0.001}
+  outputs: {x2_curve: fig4h_upper_shifted}
+
+- id: run_fig4h_lower_shifted
+  model: minimal_oscillator_phase_curve_shifted
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig1_alpha_high, target: fig4h_lc_lower_fig}
+  settings: {mode: lc_lower, dt: 0.02, T: 200.0, x1_init: -0.001, x2_init: -0.001}
+  outputs: {x2_curve: fig4h_lower_shifted}
+
+- id: run_fig4i_upper_unshifted
+  model: minimal_oscillator_phase_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig3_alpha_active, target: fig4i_lc_upper_fig}
+  settings: {mode: lc_upper, dt: 0.02, T: 150.0, x1_init: -0.001, x2_init: -0.001}
+  outputs: {x2_curve: fig4i_upper_unshifted}
+
+- id: run_fig4i_upper_shifted
+  model: minimal_oscillator_phase_curve_shifted
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig3_alpha_active, target: fig4i_lc_upper_fig}
+  settings: {mode: lc_upper, dt: 0.02, T: 150.0, x1_init: -0.001, x2_init: -0.001}
+  outputs: {x2_curve: fig4i_upper_shifted}
+
+- id: run_fig4i_lower_shifted
+  model: minimal_oscillator_phase_curve_shifted
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig3_alpha_active, target: fig4i_lc_lower_fig}
+  settings: {mode: lc_lower, dt: 0.02, T: 150.0, x1_init: -0.001, x2_init: -0.001}
+  outputs: {x2_curve: fig4i_lower_shifted}
+
+# --- Fig. 5(a, b): Exceptional-point boundaries alpha_*(chi) ---
+- id: run_fig5a_ep_sweep
+  model: symmetric_stability_eq15_eq18
+  inputs: {c1: fig1_c1_sym, c2: fig1_c2_sym, alpha: fig1_alpha_high, q: q_probe_added}
+  sweep: {chi: fig5a_ep_upper_fig}
+  outputs: {alpha_star: fig5a_ep_upper_pred}
+  note: "Tests Fig. 5(a)'s unstated c_1, c_2 against Fig. 1's c_1 = 0.15, c_2 = 0.20 (alpha_min = 0.035)."
+
+- id: run_fig5b_ep_sweep
+  model: equal_species_threshold_sec4d
+  inputs: {}
+  sweep: {chi: fig5b_ep_upper_fig}
+  outputs: {alpha_star: fig5b_ep_upper_pred}
+
+# --- Fig. 6(b, c, d): Hopf circle Eq. (20) and C_i hyperbolas Eq. (19) printed vs corrected ---
+- id: run_fig6b_circle_upper
+  model: cr_circle_curve_eq20
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym}
+  sweep: {phi1_bar: fig6b_cr_circle_upper_fig}
+  settings: {branch: upper}
+  outputs: {phi2_bar: fig6b_circle_upper_pred}
+
+- id: run_fig6b_circle_lower
+  model: cr_circle_curve_eq20
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym}
+  sweep: {phi1_bar: fig6b_cr_circle_lower_fig}
+  settings: {branch: lower}
+  outputs: {phi2_bar: fig6b_circle_lower_pred}
+
+- id: run_fig6c_ci_top_printed
+  model: ci_hyperbola_curve_eq19
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym, chi: fig1_chi, alpha: fig1_alpha_high}
+  sweep: {phi1_bar: fig6c_ci_top_fig}
+  settings: {branch: top}
+  outputs: {phi2_bar: fig6c_ci_top_printed_pred}
+
+- id: run_fig6c_ci_top_corrected
+  model: ci_hyperbola_curve_eq19_corrected
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym, chi: fig1_chi, alpha: fig1_alpha_high}
+  sweep: {phi1_bar: fig6c_ci_top_fig}
+  settings: {branch: top}
+  outputs: {phi2_bar: fig6c_ci_top_corr_pred}
+
+- id: run_fig6c_ci_bot_printed
+  model: ci_hyperbola_curve_eq19
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym, chi: fig1_chi, alpha: fig1_alpha_high}
+  sweep: {phi1_bar: fig6c_ci_bot_fig}
+  settings: {branch: bot}
+  outputs: {phi2_bar: fig6c_ci_bot_printed_pred}
+
+- id: run_fig6c_ci_bot_corrected
+  model: ci_hyperbola_curve_eq19_corrected
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym, chi: fig1_chi, alpha: fig1_alpha_high}
+  sweep: {phi1_bar: fig6c_ci_bot_fig}
+  settings: {branch: bot}
+  outputs: {phi2_bar: fig6c_ci_bot_corr_pred}
+
+- id: run_fig6c_ci_right_upper_printed
+  model: ci_hyperbola_curve_eq19
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym, chi: fig1_chi, alpha: fig1_alpha_high}
+  sweep: {phi1_bar: fig6c_ci_right_upper_fig}
+  settings: {branch: right_upper}
+  outputs: {phi2_bar: fig6c_ci_ru_printed_pred}
+
+- id: run_fig6c_ci_right_upper_corrected
+  model: ci_hyperbola_curve_eq19_corrected
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym, chi: fig1_chi, alpha: fig1_alpha_high}
+  sweep: {phi1_bar: fig6c_ci_right_upper_fig}
+  settings: {branch: right_upper}
+  outputs: {phi2_bar: fig6c_ci_ru_corr_pred}
+
+- id: run_fig6c_blue_arm_printed_alpha04
+  model: eq8_boundary_curve
+  inputs: {c11: fig1_c11, c12: fig1_c12, c21: fig1_c21, c22: fig1_c22, chi: fig1_chi, chip: fig1_chip, alpha: fig1_alpha_high}
+  sweep: {phi1_bar: fig6c_blue_arm_right_upper_fig}
+  settings: {kind: cr, branch: upper, y_lo: 0.30, y_hi: 0.45, n_scan: 240}
+  outputs: {phi2_bar: fig6c_blue_arm_printed_pred}
+
+- id: run_fig6c_alpha_fit
+  model: fig6c_alpha_fit
+  inputs:
+    phi1_mid: fig1_phi1_mid
+    phi2_mid: fig1_phi2_mid
+    c1: fig1_c1_sym
+    c2: fig1_c2_sym
+    chi: fig1_chi
+    ci_top_obs: fig6c_ci_top_fig
+    ci_bot_obs: fig6c_ci_bot_fig
+    ci_right_upper_obs: fig6c_ci_right_upper_fig
+    blue_arm_obs: fig6c_blue_arm_right_upper_fig
+  outputs:
+    alpha_fit: fig6c_alpha_fitted
+    ci_top_fit: fig6c_ci_top_fitted
+    ci_bot_fit: fig6c_ci_bot_fitted
+    ci_right_upper_fit: fig6c_ci_ru_fitted
+    blue_arm_fit: fig6c_blue_arm_fitted
+
+- id: run_fig6d_black_outer_upper_eq20
+  model: cr_circle_curve_eq20
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym}
+  sweep: {phi1_bar: fig6d_black_outer_upper_fig}
+  settings: {branch: upper}
+  outputs: {phi2_bar: fig6d_outer_upper_eq20_pred}
+
+- id: run_fig6d_black_outer_lower_eq20
+  model: cr_circle_curve_eq20
+  inputs: {phi1_mid: fig1_phi1_mid, phi2_mid: fig1_phi2_mid, c1: fig1_c1_sym, c2: fig1_c2_sym}
+  sweep: {phi1_bar: fig6d_black_outer_lower_fig}
+  settings: {branch: lower}
+  outputs: {phi2_bar: fig6d_outer_lower_eq20_pred}
