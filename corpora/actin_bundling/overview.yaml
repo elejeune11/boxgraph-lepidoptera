@@ -6,14 +6,14 @@ notice:
   title: "Work in progress:"
   text: results are produced by multi-agent BoxGraph audits and verified by the validator, but not yet reviewed by people;
   link: check a record before citing it
-  href: https://github.com/elejeune11/boxgraph-public
+  href: https://github.com/elejeune11/boxgraph-lepidoptera
 intro:
-  - All models are wrong, but some are useful (George E. P. Box). This page is an executable literature review of physical and mechanochemical models of actin bundle size control, liquid-liquid phase separation and condensate mechanics, active cortical patterning, curved-membrane rings, nematic inclusions, and actin-templated membrane buckling — spanning 15 papers (2007–2025), 100% of their Supplemental Information, and 9 released code and Source Data attachments (24 sources total, 172/172 pipeline jobs gated).
+  - All models are wrong, but some are useful (George E. P. Box). This page is an executable literature review of physical and mechanochemical models of F-actin bundling, electrostatic and helical-twist bundle mechanics, liquid-liquid phase separation and nonreciprocal active matter, active cortical patterning, curved-membrane rings, microscopic actomyosin network simulations, and butterfly wing-scale morphogenesis — spanning 52 papers (1996–2025), 100% of their Supplemental Information, and 17 released code and Source Data attachments (69 sources total, 685/685 pipeline jobs gated).
   - Every value is traced to the page, code line, or spreadsheet cell it came from. Every runnable model is rebuilt as stated, evaluated on its own inputs, refined numerically where applicable, and compared with printed text and calibrated figure readings at the precision printed. Relations between papers are tested symbolically or numerically rather than assumed, released code and Source Data are checked against their parent paper, and models of one paper are tested out-of-sample against another paper's measurements.
   - Nothing is silently corrected or overwritten. Where an equation is evidently misprinted, the printed model is kept and counted in the paper's tally while a corrected variant is added beside it with the evidence. Every disagreement is preserved as a structured finding and open question.
 links:
   - {text: "All reviews", href: "../"}
-  - {text: "BoxGraph design and code (GitHub)", href: "https://github.com/elejeune11/boxgraph-public"}
+  - {text: "BoxGraph Lepidoptera repository (GitHub)", href: "https://github.com/elejeune11/boxgraph-lepidoptera"}
 case_studies:
   - id: misprints
     teaches: A paper against itself
@@ -538,5 +538,276 @@ case_studies:
           1.571), while high actin initially coarsens faster (2.03–2.29) before arresting past
           t > 3000.
         show: "validation: gubbala_code/val_euler_low_indep_Rratio_vs_fig3_exp_low_end"
+
+  - id: lepidoptera_and_droplet_code
+    teaches: Wing-scale actin ridges, CytoSim code audits, & condensate wetting
+    title: Lepidoptera wing scales, Arp2/3–VASP droplets, & CytoSim forensics
+    summary: >-
+      Wave 4 bridges butterfly wing-scale morphogenesis (McDougal et al. 2021; Lloyd et al. 2024)
+      to CytoSim droplet-remodeling codebases (Graham et al. 2024; Walker et al. 2025) and FUS/filamin
+      actin-condensate wetting (Feigeles et al. 2025; Weirich et al. 2017/2019). Auditing live CytoSim
+      analysis notebooks and cross-validating AFM ridge timelines catches hidden code bugs, silent
+      averaging errors, and a 7-degree branching-angle mismatch.
+    sources: [mcdougal2021, lloyd2024, walker2025, walker2025_code, graham2024, graham2024_code, feigeles2025, weirich2017]
+    steps:
+      - text: >-
+          Cross-validating Lloyd et al. (2024)'s Vanessa cardui pupal morphogenesis timeline and AFM
+          ridge heights directly against McDougal et al. (2021) quantitatively links both wing-scale
+          datasets while flagging a CytoD curvature Welch-test SE discrepancy and Fig. S12C unit typo.
+        show: "validation: lloyd2024/val_afm_ridge_height_vs_mcdougal_figS10c_rotated"
+      - text: >-
+          Auditing Graham et al. (2024)'s released CytoSim configs and notebooks exposes a 77-degree
+          branching angle in code vs. the 70 degrees printed in the paper, plus a Radial Aster
+          Enrichment (RAE) script that maximizes bead count rather than radial density.
+        show: "comparison: graham2024_code/cmp_branching_angle_code_vs_paper"
+      - text: >-
+          Running live CSV RAE readers on Graham (2024)'s released trajectories distinguishes the code's
+          count-maximizing RAE from the paper's printed density definition across Fig. 4d.
+        show: "validation: graham2024_code/val_csv_rae_code_arp23_vs_graham2024_fig4d"
+      - text: >-
+          Auditing Walker et al. (2025)'s released CytoSim multimer analysis notebook reveals that
+          Fig. 5d and Fig. S7e average across all simulation snapshots rather than the stated final 30,
+          while Fig. S7d reverses its legend and Table S1 mixes steric and bond stiffnesses.
+        show: "comparison: walker2025_code/cmp_nb_fig5d_nsnaps_as_written_vs_paper"
+      - text: >-
+          In Feigeles et al. (2025), ModelAtlas maps FUS-droplet coalescence directly onto Weirich
+          et al. (2017)'s capillary relaxation laws and validates coalescence velocity and surface
+          tension out-of-sample against Weirich's Fig. 3b tactoid relaxation traces.
+        show: "validation: feigeles2025/val_coal_exp_decay_vs_weirich2017_fig3b_data"
+      - text: >-
+          Digitizing Feigeles et al.'s SI exposes a missing square on Eq. (3)'s RHS, an inverted
+          Fig. S2 straightness ratio, and a 10x slope inversion on Fig. S6C.
+        show: "question: feigeles2025/q_figS6C_slope_inversion_10x_and_n10"
+
+  - id: nonreciprocal_and_active_shells
+    teaches: Unifying active phase separation, nonreciprocal fields, & active gels
+    title: Nonreciprocal Cahn–Hilliard, active emulsions, & 6-paper active-gel synthesis
+    summary: >-
+      Wave 5 and Wave 7 unite six continuum frameworks across active phase separation and active gels:
+      Active Model B+ (Tjhung et al. 2018), nonreciprocal Cahn–Hilliard (Saha et al. 2020; You et al.
+      2020; Frohoff-Hülsmann et al. 2021), deformable active surfaces (Mietke et al. 2019), bistable
+      cortical patterning with released code (Barberi & Kruse 2023), pulsatory two-regulator gels
+      (Kumar et al. 2014), active nematic shells (Mirza et al. 2025), and tactoid coarsening (Scheff
+      et al. 2020).
+    sources: [tjhung2018, saha2020, you2020, frohoff2021, mietke2019, barberi2023, barberi2023_code, kumar2014, mirza2025, hannezo2015, scheff2020, weirich2017]
+    steps:
+      - text: >-
+          ModelAtlas verifies that Saha et al. (2020)'s corrected nonreciprocal Cahn–Hilliard Eq. (6)
+          and Eq. (8) dispersion map identically onto both You et al. (2020)'s cross-diffusion
+          traveling-wave model and Frohoff-Hülsmann et al. (2021) Eq. (12) — while exposing printed
+          sign and prefactor errors in Saha Eq. (6) and Eq. (9).
+        show: "relation: saha2020/rel_frohoff2021_eq8_disc_same_as_eq12"
+      - text: >-
+          In Active Model B+ (Tjhung et al. 2018), symbolic reduction confirms the passive Cahn–Hilliard
+          limit while isolating a misprinted 6*zeta factor in Appendix B Eq. (B2) and an inverted Ito
+          drift sign in Eq. (34).
+        show: "relation: tjhung2018/rel_binodals_eq9_same_as_eqB2_corr_phi1"
+      - text: >-
+          Auditing Barberi & Kruse (2023)'s released Julia PDE code proves that SM Fig. 1 used a
+          discrete wavenumber grid rather than the continuum limit and uncovers half-cell trapz mass
+          artifacts and a 1D no-flux boundary mass leak.
+        show: "question: barberi2023_code/q_smfig3_half_cell_and_trapz_mass_artifact"
+      - text: >-
+          Forty-two verified ModelAtlas relations anchor Kumar et al. (2014) at the hub of the
+          six-paper active-gel lineage (Bois 2011, Kumar 2014, Hannezo 2015, Mietke 2019, Barberi 2023,
+          Mirza 2025), proving Mirza's 1D active-nematic dispersion Eq. (C7) reduces to Kumar's 2D
+          ARD system at exact viscous factor nu = 4 (diff 6.1e-15).
+        show: "relation: kumar2014/rel_mirza2025_disp_eqC7_reduces_ard_eq12_13"
+      - text: >-
+          Tested out-of-sample against Hannezo et al. (2015)'s Drosophila embryonic and larval tracheal
+          actin rings, Mirza et al. (2025)'s isotropic and Case A nematic-gel wavelengths quantify
+          exactly how cortical friction and nematic alignment govern spacing across developmental stages.
+        show: "validation: mirza2025/val_caseA_hannezo_matched_vs_embryo_wt"
+      - text: >-
+          In liquid-crystalline tactoids, Scheff et al. (2020) omit the Frank elastic factor of 1/2 in
+          Eqs. (1) and (2b) — and out-of-sample validation against Weirich et al. (2017)'s 2.5% and 15%
+          filamin tactoids separates the printed formula from the Frank-half correction.
+        show: "validation: scheff2020/val_qb_frank_half_ar_vs_weirich2017_2p5pct"
+
+  - id: wormlike_bundle_trilogy
+    teaches: Same-authors trilogy & a 10x stiffness bug in downstream code
+    title: The wormlike bundle trilogy & Graham's Bathe-branch bug
+    summary: >-
+      Claessens et al. (2006), Bathe et al. (2008), and Claessens et al. (2008) established the
+      wormlike bundle (WLB) model of F-actin flexural rigidity, which Graham et al. (2023) later
+      embedded in VASPDroplet_simulate.ipynb. Rebuilding all three papers with converted Word SI
+      (mmc1.doc) and digitizing 78 panels settles caption/ratio swaps, proves Fourier–ODE equivalence,
+      and exposes a 5.6–10x mode-summation bug in Graham's nonlinear Bathe branch.
+    sources: [claessens2006, bathe2008, claessens2008, graham2023, graham_code]
+    steps:
+      - text: >-
+          On Claessens et al. (2006)'s parameter-free Fig. 3D (4% PEG), evaluating the printed
+          bending-to-shear coupling K = S_2 / N overshoots every digitized point by +34% to +44.5%
+          (and +64% to +221% on Figs. 3A–C).
+        show: "comparison: claessens2006/cmp_fig3d_peg_curve_printed"
+      - text: >-
+          Dropping the spurious 1/N factor (K = S_2) lands cleanly inside all seven digitized Fig. 3D
+          points (+1.4% to +3.8%), while digitization also resolves swapped red/blue and square markers
+          across Figs. 3A–C and Ono 1997 fascin K_d drift (0.7 -> 0.5 -> 0.3 uM) across the trilogy.
+        show: "comparison: claessens2006/cmp_fig3d_peg_curve_KnoN"
+      - text: >-
+          ModelAtlas verifies exact Parseval/partial-fraction equivalence between Bathe et al. (2008)'s
+          Fourier-series Eq. (A8) and Eq. (2), and proves both Bathe Eq. (2) and Eq. (A10) reduce to
+          Graham (2023)'s linear and nonlinear WLB formulas.
+        show: "relation: bathe2008/rel_graham2023_bathe_eqS1_same_as_eq2"
+      - text: >-
+          Zero-free-parameter out-of-sample cross-validations of Bathe's decoupled and fully coupled
+          asymptotes against Claessens (2006) Figs. 3A and 3D quantify residual plastin shear
+          stiffening (pred/meas = 0.77–0.82) and finite PEG shear compliance (pred/meas = 1.67).
+        show: "validation: bathe2008/val_fully_coupled_vs_claessens_peg_4pct"
+      - text: >-
+          Auditing Bathe et al. (2008) against its own Fig. 4, Fig. 5, and converted Word SI (mmc1.doc)
+          reveals that Fig. 4 curves fail at the printed kappa_f = 7e-26, k_x = 1e-5 by 1.7–4x, while
+          SM Fig. S2B switches to phi* = M/8 vs. text M.
+        show: "question: bathe2008/q_fig4_unstated_kf_kx"
+      - text: >-
+          Most strikingly, cross-linking Bathe (2008) to Graham et al. (2023)'s released notebook
+          exposes that VASPDroplet_simulate.ipynb's nonlinearbool=True Bathe branch arithmetically sums
+          10 Fourier modes instead of harmonic-averaging them, inflating stiffness 5.6–10.0x alongside
+          a 17.5x I_f mismatch.
+        show: "question: bathe2008/q_graham_code_nonlinear_bathe_10mode_sum_bug"
+
+  - id: polyelectrolyte_twist_and_vasp
+    teaches: Classic F-actin electrostatics, twist cooperativity, & VASP polymerase
+    title: Polyelectrolyte bundling, Origin 2-sigma SAXS widths, & VASP AUC cooperativity
+    summary: >-
+      Wave 6's ten foundational F-actin bundling and polymerase papers (1996–2010) reveal how
+      software plotting defaults, chirality sign conventions, and omitted binomial weights leave
+      decades-old quantitative footprints in published figures and equations.
+    sources: [tang1996, angelini2003, pelletier2003, henle2005, kierfeld2005, shin2009, gov2008, haviv2008, liu2008, hansen2010]
+    steps:
+      - text: >-
+          Digitizing Tang & Janmey (1996) Fig. 5b refutes their trace Manning Eq. (3) salt-exponent
+          prediction ([KCl]^2 / [KCl]^3) across every divalent and trivalent counterion point
+          (measured slopes alpha = 0.20 and 0.74 < 1).
+        show: "comparison: tang1996/cmp_eq3_mn_fig5b"
+      - text: >-
+          Digitizing Pelletier et al. (2003) Fig. 3(c) Gaussian components proves their printed peak
+          widths (0.056 and 0.136 nm^-1) are Origin's w = 2*sigma rather than FWHM — immediately
+          explaining the mysterious ~50 nm domain size (2*sqrt(2)/w_1 = 50.9 nm vs. Scherrer 112 nm)
+          while showing Fig. 2(a,c) "branching" profiles are clipped at 8-bit saturation 255.
+        show: "question: pelletier2003/q_digitize_fig3c_width_convention_2sigma_vs_fwhm"
+      - text: >-
+          In Shin et al. (2009), evaluating Eq. (3) at the printed right-handed omega_0 = +12*pi/13
+          with left-handed 28/13 binding sites yields negative cooperativity u < 0 (no bundling
+          transition), while digitized Fig. 3(b) refutes both perturbation and exact transfer-matrix
+          curves via an unintended extra square in the abscissa.
+        show: "question: shin2009/q_chirality_sign_mismatch_eq3"
+      - text: >-
+          Cross-linking Gov (2008) against Haviv et al. (2008) (with converted Word SI MOESM1.doc)
+          honestly refutes Gov Eq. (4)'s Gaussian-tail claim while verifying that Gov's incompressible
+          defect model Eq. (6) matches Haviv's exp(-N_b) tail to 9.8e-6 (exposing a 2x radius-vs-diameter
+          citation shift).
+        show: "relation: gov2008/rel_haviv2008_eq1_reduces_to_incomp_gaussian_tail"
+      - text: >-
+          In Hansen & Mullins (2010), digitizing all 32 quantitative panels (84 readings, 698 points)
+          proves Fig. 2H's "VASP +LatB" trace literally plots the no-LatB Fig. 2D curve (10/10
+          reproduced) rather than the Table 1 +LatB rate.
+        show: "comparison: hansen2010/cmp_fig2h_vasp_latb_vs_fig2d"
+      - text: >-
+          Auditing Hansen & Mullins's rasterized Fig. S5 AUC appendix further catches missing binomial
+          C(4,i) statistical factors (overstating negative cooperativity 16x), a 4.3x unit-area
+          normalization gap, and an omitted time variable t in the Fig. 6C/S2D capping formula.
+        show: "question: hansen2010/q_auc_missing_statistical_factors"
+
+  - id: crosslinker_sorting_triad
+    teaches: Convergent blind pixel forensics, AFINES code, & Figshare spreadsheets
+    title: Fascin / alpha-actinin sorting across three papers, two AFINES repos, & Figshare
+    summary: >-
+      Winkelman et al. (2016), Freedman et al. (2019), and Bashirzadeh et al. (2021) trace passive
+      cross-linker sorting from 1D TIRFM bundles to 2D GUV confinement. Independently digitizing all
+      three papers and auditing their two AFINES C++ branches plus Figshare Source Data yields three
+      striking convergent discoveries where blind pixel measurements and code/Excel audits agree to
+      3–4 significant digits.
+    sources: [winkelman2016, freedman2019, freedman2019_code, bashirzadeh2021, bashirzadeh2021_code, bashirzadeh2021_source_data]
+    steps:
+      - text: >-
+          Refining Winkelman et al. (2016)'s 1D KMC lattice size from N = 400 to the exact infinite-lattice
+          Markov limit proves 18–38% finite-size truncation bias (belongs to the numerics), refuting SI
+          p. 27's claim that N = 400 removes edge effects.
+        show: "refinement: winkelman2016/ref_kmc_expfit_nsites"
+      - text: >-
+          ModelAtlas proves Freedman et al. (2019)'s growing-bundle KMC reduces to Winkelman's 1D KMC
+          as mu_grow -> 0 — while testing Winkelman's rate-independent KMC out-of-sample against
+          Freedman's new Fig. 4B actin-concentration TIRFM data cleanly refutes rate independence.
+        show: "validation: winkelman2016/val_kmc_expfit_vs_freedman_fig4b_fascin"
+      - text: >-
+          Blind 1200 dpi digitization of Freedman (2019) Fig. 3B and Fig. S3C independently proved the
+          plotted curves inflate bending energy by 1.363 = (37/35)^3 * (29/27)^2 — and auditing
+          freedman2019_code/kmc.ipynb Cell 2 uncovered the exact verbatim transposition (site_width = 35,
+          dxl = 37 - 8 = 29 nm), reproducing Fig. S3A to the exact printed digit (0.016, 4.1).
+        show: "comparison: freedman2019_code/cmp_kmc_figs3a_ratio_code"
+      - text: >-
+          In Bashirzadeh et al. (2021), Eq. (5)'s Binder cumulant obeys an unconditional Cauchy–Schwarz
+          ceiling U_4 <= 2/3, refuted by all 40/40 digitized Fig. 4h trajectory points (0.977–0.996),
+          while neither the AFINES repo nor Figshare releases any Fig. 4g/4h or Cytosim analysis code.
+        show: "comparison: bashirzadeh2021/cmp_fig4h_combined_alpha_vs_eq5_bound"
+      - text: >-
+          Auditing Bashirzadeh's Figshare Source Data proves all 18 printed p-values on Figs. 1 and 2
+          were swapped between the two figures (plus a 10x typo on Fig. 2d) — and independently confirms
+          our blind Fig. 4e pixel measurements: three buggy Excel row-32 SEM formulas inflated the
+          caption ± values by up to +30.1% while the plotted error bars used true SD/sqrt(N), alongside
+          five 15-digit duplicate bundles and 34.2% length-window violations.
+        show: "question: bashirzadeh2021_source_data/q_figs_1_and_2_all_18_pvalues_swapped_and_10x_typo"
+      - text: >-
+          Auditing Bashirzadeh's AFINES C++ branch (sorting_guv) against Freedman's branch uncovers
+          that 49/49 consecutive filaments share an identical arm angle (mean bend 4x paper's pi/8),
+          cross-linkers are non-uniformly sampled in a disk (+92% lateral cap pileup, <x^2>/<y^2> = 3/2),
+          and hidden overrides (occ = 0.15 um, viscosity = 0.01, a_m_bend = 0) allow same-filament
+          dual-head binding.
+        show: "question: bashirzadeh2021_code/q_init_crosslinker_circle_nonuniform_sampling_bug"
+
+  - id: microscopic_network_solvers
+    teaches: Auditing 3D actomyosin simulators, SlenderBody SBT, & COMSOL PDEs
+    title: MEDYAN lineage, Lie–Trotter splitting in SlenderBody, & COMSOL metric factors
+    summary: >-
+      Auditing Wave 7's microscopic network and membrane PDE papers — MEDYAN (Popov et al. 2016;
+      Chandrasekaran et al. 2019 with converted Word SI s001.docx), nonlocal SlenderBody Brownian
+      dynamics with released code (Maxian et al. 2022), and COMSOL Arp2/3-CP membrane PDEs (Dürre
+      et al. 2018) — catches geometric box-bound violations, parameter-copying regressions, an
+      undocumented 1st-order splitting swap, and a missing cylindrical metric factor.
+    sources: [popov2016, chandrasekaran2019, maxian2022, maxian2022_code, durre2018, kumar2014]
+    steps:
+      - text: >-
+          Digitizing all 18 cells of Popov et al. (2016) Main Fig. 6 (1.004–1.797 um) proves every
+          single cell violates the strict Popoviciu bound sqrt(3)/2 = 0.866 um for a [0, 1 um]^3 box;
+          dividing by Fig. 8 yields implied R_{g,i} = 1.53 um (3.06x a 1 um^3 cube, matching 3 um^3),
+          while S4 Fig. 3 refutes the claimed ">100-fold" NRM speedup (59.8x at t = 10 s, peak 62.9x).
+        show: "comparison: popov2016/cmp_fig6_rma0p01_vs_1um_bound"
+      - text: >-
+          Fifteen verified ModelAtlas relations trace every MEDYAN equation from Popov (2016) to
+          Chandrasekaran et al. (2019), catching a direct Table 2C transcription slip (copying
+          F_NMIIA,unbind = 12.6 pN as F_stall instead of 15 pN while absorbing N_total, understating
+          ensemble stall force 17.9–35.7x) and the exact /pN unit swap between Eqs. (S11)–(S12).
+        show: "relation: chandrasekaran2019/rel_popov2016_myosin_hill_walking_eqS14"
+      - text: >-
+          In Maxian et al. (2022), live audit of stochasticHydroTools/SlenderBody reproduces all
+          21/21 Table S1 SBT entries to four decimals (settling RegularizeS.m delta = 0.1) while
+          catching a C++ dimensional eigenvalue clamp that collapses beta(0.010) by -99.1%.
+        show: "comparison: maxian2022_code/cmp_matlab_table_s1_alpha"
+      - text: >-
+          Although Maxian (2022) Sec. 2.4 states 2nd-order 3-step Strang splitting, released
+          TemporalIntegrator.py implements 1st-order Lie–Trotter splitting: end-of-step LinkStrains
+          collapse std_x by -61.7% (ref_smc_lt_dt_end belongs to numerics), whereas post-Brownian
+          sampling inflates std_x by +24.2%, matching our digitized Fig. S1 right histogram (+22%).
+        show: "refinement: maxian2022_code/ref_smc_lt_dt_end"
+      - text: >-
+          In Dürre et al. (2018), full 2D(r,z) P1-FEM solves across 63 digitized PDE comparisons prove
+          printed SI Eqs. (14)–(15) omit reverse dissociation fluxes (1/21 curves reproduced, causing
+          cone extinction), while true axisymmetric membrane diffusion overshoots every transient peak
+          by +29–51% (2/21 reproduced).
+        show: "comparison: durre2018/cmp_fig5c_printed_40nM"
+      - text: >-
+          Switching solely to a 1D Cartesian membrane Laplacian (matching COMSOL's Boundary PDE missing
+          cylindrical metric factor r) reproduces 14/21 curves (5 close, 2 not reproduced), cutting
+          RMSE 2–3x across Fig. 5c–e and Supp. Figs. 11 & 14 while exposing a +45–50% ring-radius
+          discrepancy on calibrated Fig. 5f.
+        show: "comparison: durre2018/cmp_fig5c_cart_40nM"
+      - text: >-
+          Finally, digitizing all 24 panels of Kumar et al. (2014) proves Fig. 1(b) was plotted at
+          P = 0.50 rather than Eq. (10)'s P_c = 1.1, Fig. 1(e) PDE periods are quantized in 0.5*tau
+          steps, and Fig. 2(b,d,f) plots unscaled Eq. (11) stress (factor 16/3 below rescaled f).
+        show: "comparison: kumar2014/cmp_fig1b_re_p050"
+
 
 
