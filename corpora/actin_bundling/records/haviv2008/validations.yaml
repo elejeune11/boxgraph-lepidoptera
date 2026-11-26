@@ -61,4 +61,88 @@
 #     distributions (P_fig2a/b) cross-linked by rigid fascin (which suppresses axial sliding,
 #     placing bundles in Grason's hexagonal-solid regime Eq. 9 with unstated mu_par, mu_perp, P,
 #     Sigma).
-[]
+#
+# Lepidoptera bundle-size cross-validations (Mechanism 3: bundle-size control & packing):
+# Tests haviv2008's cylindrical cross-sectional packing model N_b = (D_b / D_f)^2 (with
+# haviv2008's own printed effective filament diameter D_f = 9 nm) evaluated on Lloyd et al.
+# (2024)'s measured Heliconius sara pupal actin bundle widths (438 nm blue, 456 nm black, and
+# PSF-deconvolved 360 nm lower bound) against Totz et al. (2024)'s reported Lepidoptera
+# actin bundle filament count (~20 to 200 filaments per bundle).
+
+- id: val_filaments_lloyd_blue_vs_totz2024
+  model: bundle_filament_number_cylinder
+  inputs:
+    D_b: D_b_lloyd_blue_added
+    D_f: effective_filament_diameter_Df
+  output: N_b
+  against: totz2024/actin_filaments_per_bundle
+  purpose: validation
+  quantities:
+    "totz2024/actin_filaments_per_bundle": filament_number
+  conditions_ok: >
+    Mechanism 3 (bundle-size control & packing geometry): applies Haviv et al. (2008)'s
+    cylindrical packing relation N_b = (D_b / D_f)^2 with Haviv's printed effective F-actin
+    inter-filament diameter D_f = 9 nm (p. 448 col 2; dense fascin-like hexagonal bundle) to
+    Lloyd et al. (2024)'s measured iridescent blue Heliconius sara pupal actin bundle width
+    (D_b = 438 nm, Fig. 2J) and tests the implied filament number against Totz et al. (2024)'s
+    reported Lepidoptera longitudinal actin bundle count (~20 to 200 filaments per bundle).
+  basis: >
+    Directly tests whether butterfly scale actin bundles of measured width 438 nm can be
+    modeled as dense cylindrical twist/crosslinker-limited bundles of 20-200 filaments (like
+    Claessens 2008's ~20-filament fascin cylinders or Haviv 2008's in vitro bundles).
+  note: >
+    Computes N_b = 2,368 filaments vs ~20 to 200 filaments (11.8x above upper bound 200;
+    still 1,332 filaments = 6.7x above 200 even at looser 12 nm fascin Bragg spacing, and
+    979 filaments = 4.9x above 200 at 14 nm). Demonstrates that 438 nm butterfly scale bundles
+    cannot be simple dense cylindrical Claessens/Haviv-type bundles of 20-200 filaments.
+
+- id: val_filaments_lloyd_black_vs_totz2024
+  model: bundle_filament_number_cylinder
+  inputs:
+    D_b: D_b_lloyd_black_added
+    D_f: effective_filament_diameter_Df
+  output: N_b
+  against: totz2024/actin_filaments_per_bundle
+  purpose: validation
+  quantities:
+    "totz2024/actin_filaments_per_bundle": filament_number
+  conditions_ok: >
+    Mechanism 3 (bundle-size control & packing geometry): applies Haviv et al. (2008)'s
+    cylindrical packing model (D_f = 9 nm) to Lloyd et al. (2024)'s non-iridescent black
+    Heliconius sara pupal actin bundle width (D_b = 456 nm, Fig. 2J) against Totz et al.
+    (2024)'s reported Lepidoptera bundle filament count (~20 to 200).
+  basis: >
+    Evaluates dense cylindrical packing for non-iridescent black scale actin bundles (456 nm)
+    and pairs with blue scales (438 nm) to test width-to-spacing mass conservation.
+  note: >
+    Computes N_b = 2,567 filaments vs ~20 to 200 (12.8x above upper bound 200). Together with
+    blue scales (2,368 filaments), cylindrical N_b ~ D_b^2 drops by only -7.7% from black to
+    blue while Lloyd's measured bundle count jumps +25% (32 -> 40) and spacing drops -12.3%
+    (1.22 -> 1.07 um), implying +15% to +20% more total cortical actin in iridescent blue scales
+    rather than strict fixed-actin mass conservation.
+
+- id: val_filaments_lloyd_blue_psf_corr_vs_totz2024
+  model: bundle_filament_number_cylinder
+  inputs:
+    D_b: D_b_lloyd_blue_psf_corr_added
+    D_f: effective_filament_diameter_Df
+  output: N_b
+  against: totz2024/actin_filaments_per_bundle
+  purpose: validation
+  quantities:
+    "totz2024/actin_filaments_per_bundle": filament_number
+  conditions_ok: >
+    Mechanism 3 optical-broadening control: repeats Haviv et al. (2008)'s cylindrical packing
+    calculation after subtracting a generous 250 nm confocal PSF FWHM in quadrature from Lloyd
+    et al. (2024)'s 438 nm blue bundle width (D_b = sqrt(438^2 - 250^2) = 360 nm) against
+    Totz et al. (2024)'s ~20 to 200 filaments/bundle.
+  basis: >
+    Tests whether diffraction-limited confocal broadening of Fig. 2J alone accounts for the
+    12x excess in implied cylindrical filament number.
+  note: >
+    Computes N_b = 1,600 filaments vs ~20 to 200 (8.0x above upper bound 200; still 900 filaments
+    at D_f = 12 nm). Confirms the mismatch is not merely a confocal PSF artifact: butterfly scale
+    actin bundles must either contain ~1,000+ filaments (analogous to large Drosophila bristle
+    bundles) or adopt flattened/loose multi-sub-bundle ribbon cross-sections rather than dense
+    twist-limited fascin cylinders.
+

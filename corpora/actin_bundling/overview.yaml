@@ -15,6 +15,97 @@ links:
   - {text: "All reviews", href: "../"}
   - {text: "BoxGraph Lepidoptera repository (GitHub)", href: "https://github.com/elejeune11/boxgraph-lepidoptera"}
 case_studies:
+  - id: lepidoptera_spacing_mechanisms
+    teaches: Evaluating four physical mechanisms against Lepidoptera data
+    title: What sets actin bundle spacing in Lepidoptera wing scales? Testing four candidate mechanisms
+    summary: >-
+      Three direct butterfly wing-scale papers (McDougal et al. 2021; Lloyd et al. 2024; Totz et al.
+      2024) establish when periodic actin bundle spacing locks in (~35–40% pupal development,
+      unaffected by 50%-stage Cytochalasin D) and how spacing L templates adult ridges 1:1 via
+      membrane buckling, yet none of them models what sets L itself. Here we run 20 executable
+      cross-record validations across eight theory and simulation papers to test all four candidate
+      mechanisms — (1) active-gel / active-nematic self-organization, (2) arrested phase separation,
+      (3) bundle-size limitation + mass conservation, and (4) membrane-curvature / membrane-mediated
+      bundling — directly against measured Heliconius sara (1.07 vs 1.22 um, width 0.438 vs 0.456 um,
+      40 vs 32 bundles) and Vanessa cardui (1.6–1.85 um, 0.34–1.60 um across 5 species) data.
+    sources: [lloyd2024, mcdougal2021, totz2024, hannezo2015, mirza2025, sekine2024, zwicker2015, grason2007, haviv2008, gov2018, liu2008]
+    steps:
+      - text: >-
+          Empirical baseline: Totz et al. (2024) treat bundle spacing L (1.6 um in V. cardui;
+          0.34–1.60 um across 5 butterfly species, ~20–200 filaments/bundle) as a prescribed clamped
+          boundary driving membrane buckling (Y_min = 3.5 MPa once Eq. 3's ha misprint is fixed),
+          while McDougal et al. (2021) and Lloyd et al. (2024) establish lock-in by ~39% pupal
+          development and a within-wing contrast in H. sara (iridescent blue: 1.07 ± 0.02 um spacing,
+          0.438 ± 0.004 um width, 40 ± 1.8 bundles; black: 1.22 ± 0.03 um, 0.456 ± 0.003 um, 32 ± 1.1).
+        show: "comparison: totz2024/cmp_Ymin_corrected_eq3"
+      - text: >-
+          Mechanism 1a (Active-gel self-organization — V. cardui): evaluated with zero parameter
+          tuning on Drosophila epithelial cortical FRAP inputs (D = 0.04 um^2/s, tau = 15 s,
+          eta_2D = 1e-5 Pa*s*m, xi = 1e9 Pa*s/m), Hannezo et al. (2015) Eq. [3] predicts
+          lambda_c = 1.749 um — close (+9.3%) to V. cardui's 1.6 um reference spacing (and -2.8%
+          from McDougal's ~1.8 um plateau).
+        show: "validation: hannezo2015/val_lambda_c_eq3_main_vs_totz2024_vcardui"
+      - text: >-
+          Mechanism 1b (Active-gel transfer to H. sara): against tighter Heliconius sara scales,
+          uncalibrated Hannezo Eq. [3] (1.749 um) overshoots black (1.22 ± 0.03 um, +43%) and blue
+          (1.07 ± 0.02 um, +63%) scales. Because lambda_c ~ (D*tau*eta/xi)^(1/4), however, the
+          within-wing black-to-blue spacing shift (-12.3%) requires only a 1.69x change in cortical
+          turnover, viscosity, or friction — which remain unmeasured in scale cells.
+        show: "validation: hannezo2015/val_lambda_c_eq3_main_vs_lloyd2024_blue"
+      - text: >-
+          Mechanism 1c (Active-nematic & CGMD envelopes): Mirza et al. (2025)'s 2D active-nematic
+          bundle theory predicts 3.160 um at its Appendix D cortical baseline (2.59x above H. sara
+          black), whereas Sekine et al. (2024)'s microscopic CGMD anisotropic nanocluster fusion
+          predicts 0.529 um (2.0x below H. sara blue, right near Totz Fig. 4C's narrowest 0.34–0.36 um
+          butterfly species) — bracketing the entire 0.34–1.85 um Lepidoptera spectrum.
+        show: "validation: mirza2025/val_iso_appD_vs_lloyd2024_black"
+      - text: >-
+          Mechanism 2a (Arrested phase separation — ModelAtlas unification): Zwicker et al. (2015)
+          corrected Eq. F1 sits in the exact same symbolic onset family as Hannezo Eq. [3] and
+          Frohoff-Hülsmann Eq. 17 (lambda_c = pi*sqrt(2)*sqrt(w*l_t)). At insect cortical D_B and
+          turnover with a 0.10 um screening interface width, Zwicker reproduces H. sara black scale
+          spacing (1.237 vs 1.22 ± 0.03 um, +1.4%), while half-bundle width w = 0.219 um hits 1.830 um.
+        show: "validation: zwicker2015/val_onset_eqF1_lh_vs_lloyd2024_black"
+      - text: >-
+          Mechanism 2b (Dynamic discrimination vs. free Ostwald arrest): Zwicker's onset wavelength
+          depends strongly on unmeasured w, D_B, and turnover (w = 0.219 um overshoots H. sara blue
+          by +71%), and crucially free arrested Ostwald ripening predicts constant spacing during
+          domain growth — whereas McDougal Fig. 5D/5G shows actin bundle spacing stretching +35–43%
+          (0.98–1.06 -> 1.32–1.41 um) during +85% lateral scale expansion, implying mechanical pinning
+          once bundles lock in.
+        show: "validation: zwicker2015/val_onset_eqF1_halfwidth_vs_lloyd2024_blue"
+      - text: >-
+          Mechanism 3a (Bundle-size control — chiral-twist equilibrium fails by 2.2x–4.0x): tested with
+          zero added parameters against Lloyd et al. (2024)'s measured H. sara blue bundle width
+          (438 ± 4 nm), Grason & Bruinsma (2007)'s F-actin chiral-twist onset diameter predicts only
+          200 nm (printed lambda_{3,perp}, 2.19x too narrow; microscopic scaling 110 nm, 3.98x too
+          narrow) — still 1.8x–3.3x narrower than even a 250 nm confocal PSF-deconvolved 360 nm bound.
+        show: "validation: grason2007/val_chiral_onset_printed_diameter_vs_lloyd2024_blue"
+      - text: >-
+          Mechanism 3b (Cylindrical packing & mass-conservation test): Haviv et al. (2008)'s dense
+          cylindrical packing (D_f = 9 nm) applied to Lloyd's 438 / 456 nm widths implies 2,368 /
+          2,567 filaments (1,600 even after subtracting a 250 nm confocal PSF) — 8x–13x above Totz's
+          cited ~20–200 filaments/bundle. Furthermore, blue scales shrink only -3.9% in width yet
+          -12.3% in spacing with +25% more bundles (+20% higher total actin footprint), ruling out
+          pure fixed-actin width-to-spacing conservation.
+        show: "validation: haviv2008/val_filaments_lloyd_blue_psf_corr_vs_totz2024"
+      - text: >-
+          Mechanism 4a (Flat-membrane curvature instability — tension, not stiffness, is the cutoff):
+          unlike cylindrical trachea (where Gov 2018 failed 9.9x), Gov's flat-sheet mode gives
+          1.346 um on a bare bilayer (+10.3% vs H. sara black) and reproduces 1.235 vs 1.22 ± 0.03 um
+          (+1.2%) when bending rigidity is stiffened 38x to Totz's early cuticle (kappa = 3.11 pN*um).
+          Executable surprise: raising kappa does not kill the flat mode, whereas raising membrane
+          tension above sigma_c = 11.7 pN/um shuts off all unstable modes (omega_max = 0).
+        show: "validation: gov2018/val_flat_totz_cuticle_vs_lloyd2024_black"
+      - text: >-
+          Mechanism 4b (Bare membrane-mediated bundling fails at micron scales): without curved-protein
+          recruitment, Liu et al. (2008)'s geometric capture distance for 200 nm protruding filaments
+          caps at D_max = 0.255 um — 4.2x smaller than H. sara blue spacing (1.07 ± 0.02 um), confining
+          bare membrane attraction to sub-micron bundle nucleation. Decisive next experiments: early
+          (<35% dev) myosin vs. turnover perturbations plus direct scale-cell FRAP (D, tau) and tension
+          measurements to separate active-gel/arrested-coarsening (1–2) from flat-membrane curvature (4a).
+        show: "validation: liu2008/val_geometric_merge_200nm_vs_lloyd2024_blue"
+
   - id: misprints
     teaches: A paper against itself
     title: Misprinted equations settled by calibrated figures

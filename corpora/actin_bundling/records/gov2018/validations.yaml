@@ -192,3 +192,106 @@
     explains the same ~4.5 um (~1 ring/cell) spacing via finite-cell-size saturation (lambda > L)
     of the active-gel model when ECM friction vanishes. See q_hannezo2015_cross_validation_summary.
 
+- id: val_flat_bare_bilayer_vs_lloyd2024_black
+  model: flat_membrane_fastest_mode
+  inputs:
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+  output: lambda_max
+  against: lloyd2024/actin_bundle_spacing_black
+  purpose: validation
+  quantities:
+    "lloyd2024/actin_bundle_spacing": wavelength
+  conditions_ok: >
+    Mechanism 4 (curved-membrane protein / actin-force flat-sheet instability): unlike cylindrical
+    trachea, a developing butterfly wing scale is a flattened plasma-membrane sheet, so Gov (2018)
+    Section 3's flat_membrane_fastest_mode is evaluated at gov2018's baseline bare eukaryotic
+    plasma-membrane parameters (kappa = 0.0823 pN*um = 20 k_B*T, sigma = 4 pN/um, A = 1200 pN/um^2)
+    against Lloyd et al. (2024)'s non-iridescent black Heliconius sara pupal actin bundle spacing
+    (1.22 +/- 0.03 um, Fig. 2K).
+  basis: >
+    Tests whether Gov (2018)'s flat-membrane curvature-instability fastest wavelength (lambda_max)
+    at standard soft-bilayer parameters lands in the micron-scale Lepidoptera bundle spacing regime
+    (contrasting directly with Gov's 9.9x overshoot on cylindrical WT trachea).
+  note: >
+    Computes lambda_max = 1.346 um vs 1.22 +/- 0.03 um (+0.126 um, +10.3%, +4.2 SE; close to
+    within ~10% though outside the tight +/-0.03 um SE). Tension sensitivity is decisive: raising
+    membrane tension from 4 to 10 pN/um exceeds sigma_c = 6.00 pN/um and shuts off the instability
+    completely (omega_max = 0).
+
+- id: val_flat_bare_bilayer_vs_mcdougal2021_plateau
+  model: flat_membrane_fastest_mode
+  inputs:
+    kappa: kappa_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+  output: lambda_max
+  against: mcdougal2021/actin_bundle_spacing_plateau
+  purpose: validation
+  quantities:
+    "mcdougal2021/ridge_or_actin_spacing": wavelength
+  conditions_ok: >
+    Mechanism 4 (flat-membrane curvature instability): evaluates Gov (2018) Section 3's
+    flat_membrane_fastest_mode at baseline bare plasma-membrane parameters (kappa = 20 k_B*T,
+    sigma = 4 pN/um) against McDougal et al. (2021)'s Vanessa cardui actin bundle spacing plateau
+    (~1.8 um).
+  basis: >
+    Evaluates Gov's flat-sheet baseline wavelength (1.346 um) against Vanessa cardui wing-scale
+    actin bundle spacing (~1.8 um).
+  note: >
+    Computes lambda_max = 1.346 um vs ~1.8 um (-0.454 um, -25.2%; sits right inside McDougal
+    Fig. 5G's 38-43.5% live-imaging trajectory 0.98-1.41 um before final protoridge spacing
+    reaches ~1.6-1.8 um).
+
+- id: val_flat_totz_cuticle_vs_lloyd2024_black
+  model: flat_membrane_fastest_mode
+  inputs:
+    kappa: kappa_totz_cuticle_Ymin_added
+    sigma: sigma_added
+    kBT: kBT_added
+    Lambda: Lambda_added
+    H0: H0_convex_added
+    ns: ns_added
+    n0: n0_added
+    J: passive_cylinder_interaction_zero
+    xi: xi_added
+    A: A_protrusive_added
+  output: lambda_max
+  against: lloyd2024/actin_bundle_spacing_black
+  purpose: validation
+  quantities:
+    "lloyd2024/actin_bundle_spacing": wavelength
+  conditions_ok: >
+    Mechanism 4 stiffness-transfer test: replaces Gov (2018)'s bare bilayer bending rigidity
+    (20 k_B*T = 0.0823 pN*um) with the early butterfly scale cuticle bending rigidity inferred
+    from Totz et al. (2024) (Y_min = 3.5 MPa, h = 20 nm, nu = 0.5 -> kappa = 3.111 pN*um =
+    756 k_B*T, 38x stiffer) at sigma = 4 pN/um, tested against Lloyd et al. (2024)'s black
+    Heliconius sara actin bundle spacing (1.22 +/- 0.03 um).
+  basis: >
+    Tests whether stiffening the flat scale sheet to Totz et al. (2024)'s early cuticle modulus
+    suppresses Gov (2018)'s flat-membrane curvature instability (analogous to chitin stiffening
+    in WT trachea) or shifts its selected wavelength.
+  note: >
+    Computes lambda_max = 1.235 um vs 1.22 +/- 0.03 um (+0.015 um, +1.2%, +0.48 SE; reproduced!).
+    Executable surprise: raising kappa 38x does NOT kill Gov's flat-membrane instability (in fact
+    A_c drops from 800 to 411 pN/um^2 because -kappa*H_0*n*lap(h) amplifies curvature sorting)
+    while shifting lambda_max only -8.3% (1.346 -> 1.235 um). Instead, membrane tension sigma is
+    the hard cutoff: exceeding sigma_c = 11.7 pN/um (e.g. sigma = 20 pN/um) kills all unstable
+    modes (omega_max = 0). Caveat: depends on unmeasured scale-cell sigma, H_0, n_0, and A.
+
+

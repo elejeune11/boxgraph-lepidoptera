@@ -1,0 +1,87 @@
+# Cross-record validations evaluating Mechanism 2 (arrested phase separation / chemically
+# controlled Ostwald ripening, Zwicker et al. 2015 corrected Appendix F Eq. F1) against
+# experimental Lepidoptera actin bundle spacing in McDougal et al. (2021) and Lloyd et al. (2024).
+
+- id: val_onset_eqF1_halfwidth_vs_mcdougal2021_plateau
+  model: homogeneous_onset_wavelength_eqF1
+  inputs:
+    D_B: D_B_insect_cortex_added
+    w: w_lloyd_blue_half_added
+    k_f: k_half_insect_cortex_added
+    k_b: k_b_half_insect_cortex_added
+  output: lambda_c
+  against: mcdougal2021/actin_bundle_spacing_plateau
+  purpose: validation
+  quantities:
+    "mcdougal2021/ridge_or_actin_spacing": critical_wavelength
+  conditions_ok: >
+    Mechanism 2 (arrested phase separation / chemically driven Ostwald suppression): evaluates
+    Zwicker et al. (2015)'s corrected Appendix F linear-onset wavelength
+    lambda_c = pi*sqrt(2)*(w*l)^(1/2) (which ModelAtlas verifies is symbolically identical to
+    hannezo2015/critical_wavelength_eq3 and frohoff2021/turing_wavelength_dim_eq17_A2) using
+    insect epithelial cortical diffusivity/turnover (D_B = 0.04 um^2/s, k_f + k_b = 1/15 s^-1 from
+    hannezo2015) and an interfacial width proxy w = 0.219 um (half of Lloyd 2024's measured pupal
+    actin bundle width) against McDougal et al. (2021)'s plateau actin bundle spacing in Vanessa
+    cardui wing scales (~1.8 um).
+  basis: >
+    Tests whether arrested active phase separation at physiological insect-cortex diffusion and
+    turnover scales predicts the micron-scale actin bundle spacing of Vanessa cardui wing scales
+    (~1.8 um) while making explicit the unmeasured interfacial width w and turnover rate.
+  note: >
+    Computes lambda_c = 1.830 um vs ~1.8 um (+0.030 um, +1.7%). Crucially, while arrested phase
+    separation matches the onset wavelength scale, free Ostwald arrest predicts constant spacing
+    during domain growth (inserting new bundles as the domain widens), whereas McDougal 2021
+    Fig. 5D/5G shows actin bundle spacing stretching +35-43% (0.98-1.06 -> 1.32-1.41 um) during
+    lateral scale expansion (24.7 -> 45.8 um), implying mechanical pinning after early lock-in.
+
+- id: val_onset_eqF1_halfwidth_vs_lloyd2024_blue
+  model: homogeneous_onset_wavelength_eqF1
+  inputs:
+    D_B: D_B_insect_cortex_added
+    w: w_lloyd_blue_half_added
+    k_f: k_half_insect_cortex_added
+    k_b: k_b_half_insect_cortex_added
+  output: lambda_c
+  against: lloyd2024/actin_bundle_spacing_blue
+  purpose: validation
+  quantities:
+    "lloyd2024/actin_bundle_spacing": critical_wavelength
+  conditions_ok: >
+    Mechanism 2 (arrested phase separation): evaluates Zwicker et al. (2015) corrected Appendix F
+    Eq. (F1) with insect cortical D_B, k_f + k_b and Lloyd 2024 blue half-bundle width w = 0.219 um
+    against Lloyd et al. (2024)'s measured iridescent blue Heliconius sara pupal actin bundle
+    spacing (1.07 +/- 0.02 um, Fig. 2K).
+  basis: >
+    Tests whether setting the phase-field interface width directly to half the confocal bundle
+    width reproduces H. sara iridescent blue bundle spacing (1.07 +/- 0.02 um) at Drosophila
+    cortical turnover scales.
+  note: >
+    Computes lambda_c = 1.830 um vs 1.07 +/- 0.02 um (+0.760 um, +71.1%; not reproduced). Because
+    lambda_c = pi*sqrt(2)*(w*l)^(1/2), hitting 1.07 um requires either a sharper true interface
+    width (w ~ 75 nm, below confocal resolution) or ~3x faster turnover / slower diffusion.
+
+- id: val_onset_eqF1_lh_vs_lloyd2024_black
+  model: homogeneous_onset_wavelength_eqF1
+  inputs:
+    D_B: D_B_insect_cortex_added
+    w: w_hannezo_lh_added
+    k_f: k_half_insect_cortex_added
+    k_b: k_b_half_insect_cortex_added
+  output: lambda_c
+  against: lloyd2024/actin_bundle_spacing_black
+  purpose: validation
+  quantities:
+    "lloyd2024/actin_bundle_spacing": critical_wavelength
+  conditions_ok: >
+    Mechanism 2 (arrested phase separation): evaluates Zwicker et al. (2015) corrected Appendix F
+    Eq. (F1) using the sharper 0.10 um cortical screening interface scale (w = 1.0e-7 m from
+    hannezo2015) with insect cortical D_B and turnover against Lloyd et al. (2024)'s measured
+    non-iridescent black Heliconius sara pupal actin bundle spacing (1.22 +/- 0.03 um, Fig. 2K).
+  basis: >
+    Quantifies sensitivity of Zwicker's arrested-coarsening onset wavelength to interface width w
+    (0.10 um vs 0.219 um) against Heliconius sara black scale bundle spacing (1.22 +/- 0.03 um).
+  note: >
+    Computes lambda_c = 1.237 um vs 1.22 +/- 0.03 um (+0.017 um, +1.4%, +0.57 SE; reproduced within
+    [1.19, 1.25] um). Strongly depends on the unmeasured added inputs (w, D_B, k_f + k_b): sweeping
+    w across [0.05, 0.219] um moves lambda_c from 0.875 um to 1.830 um, spanning the entire
+    H. sara and V. cardui butterfly spacing range.

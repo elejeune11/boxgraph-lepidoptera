@@ -95,3 +95,117 @@
     outside BoxGraph's close band [410.4, 489.6] nm). Reflects both the 10% mean shift between
     2015 confocal stage-16 (500 nm) and 2024 Airyscan early-stage-16 (450 nm) measurements and
     Sekine's 7.6x narrower embryo-mean SD (+/- 13.2 nm vs +/- 100 nm per-ring SD).
+
+- id: val_lambda_c_eq3_main_vs_mcdougal2021_plateau
+  model: critical_wavelength_eq3
+  inputs:
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+    eta: eta_2d_lit
+    xi: friction_2d_lit
+  output: lambda_c
+  against: mcdougal2021/actin_bundle_spacing_plateau
+  purpose: validation
+  quantities:
+    "mcdougal2021/ridge_or_actin_spacing": ring_wavelength
+  conditions_ok: >
+    Mechanism 1 (active-gel self-organization) cross-species transfer test: Hannezo 2015 Main
+    Eq. [3] uses measured wild-type Drosophila epithelial cortical FRAP parameters
+    (D = 0.04 +/- 0.03 um^2/s, tau = 15 +/- 7 s) and Main p. 3 literature cortical viscosity/
+    friction estimates (eta_2D = 1e-5 Pa*s*m, xi = 1e9 Pa*s/m; zero new added parameters) to
+    predict periodic actin bundle spacing against McDougal et al. (2021)'s in vivo plateau
+    actin bundle spacing in developing Vanessa cardui butterfly wing scales (~1.8 um, Fig. 5G-H).
+    Caveat: scale-cell cortical viscosity, friction, diffusivity, and turnover have not yet been
+    measured directly in Lepidoptera.
+  basis: >
+    Tests whether the canonical active-gel linear-onset wavelength lambda_c = 2*pi*(D*tau*eta/xi)^(1/4)
+    parameterized on Drosophila epithelial cortex reproduces the observed micron-scale actin bundle
+    spacing plateau in Lepidoptera wing scales (McDougal et al. 2021, ~1.8 um) without refitting.
+  note: >
+    Computes lambda_c = 1.749 um vs McDougal 2021's printed '~1.8' um (-0.051 um, -2.8%; falls
+    right at the plateau spacing, though McDougal prints an approximate '~1.8' without explicit
+    error bars). Demonstrates that baseline insect epithelial active-gel transport scales naturally
+    land in the Vanessa cardui spacing band.
+
+- id: val_lambda_c_eq3_main_vs_lloyd2024_black
+  model: critical_wavelength_eq3
+  inputs:
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+    eta: eta_2d_lit
+    xi: friction_2d_lit
+  output: lambda_c
+  against: lloyd2024/actin_bundle_spacing_black
+  purpose: validation
+  quantities:
+    "lloyd2024/actin_bundle_spacing": ring_wavelength
+  conditions_ok: >
+    Mechanism 1 (active-gel self-organization) cross-species transfer test: Hannezo 2015 Main
+    Eq. [3] evaluated on uncalibrated Drosophila epithelial cortical parameters (zero new added
+    inputs) tested against Lloyd et al. (2024)'s confocal measurement of pupal actin bundle
+    spacing in non-iridescent black Heliconius sara butterfly scales at 50% development
+    (1.22 +/- 0.03 um, mean +/- SE, Fig. 2K).
+  basis: >
+    Evaluates whether uncalibrated Drosophila active-gel transport scales predict the tighter
+    (~1.22 um) actin bundle spacing of Heliconius sara non-iridescent scales and quantifies the
+    factor-of-(1.749/1.22)^4 = 4.2x shift in D*tau*eta/xi required across insect species.
+  note: >
+    Computes 1.749 um vs 1.22 +/- 0.03 um (+0.529 um, +43.3%, +17.6 SE; not reproduced). Because
+    lambda_c scales as the fourth root (D*tau*eta/xi)^(1/4), reducing 1.749 um to 1.22 um requires
+    a ~4.2x smaller transport-to-friction ratio (e.g. faster turnover tau or stronger membrane-ECM
+    friction xi) in H. sara scales than in Hannezo's Drosophila baseline.
+
+- id: val_lambda_c_eq3_main_vs_lloyd2024_blue
+  model: critical_wavelength_eq3
+  inputs:
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+    eta: eta_2d_lit
+    xi: friction_2d_lit
+  output: lambda_c
+  against: lloyd2024/actin_bundle_spacing_blue
+  purpose: validation
+  quantities:
+    "lloyd2024/actin_bundle_spacing": ring_wavelength
+  conditions_ok: >
+    Mechanism 1 (active-gel self-organization) cross-species transfer test: Hannezo 2015 Main
+    Eq. [3] evaluated on uncalibrated Drosophila epithelial cortical parameters tested against
+    Lloyd et al. (2024)'s iridescent blue Heliconius sara pupal actin bundle spacing
+    (1.07 +/- 0.02 um, mean +/- SE, Fig. 2K).
+  basis: >
+    Quantifies both the absolute transfer offset against iridescent blue H. sara scales and the
+    within-wing shift relative to black scales (1.07 vs 1.22 um, -12.3%), which under Eq. [3]'s
+    1/4-power law requires a (1.22/1.07)^4 = 1.69x shift in D*tau*eta/xi between adjacent scale
+    cell fates on the same wing.
+  note: >
+    Computes 1.749 um vs 1.07 +/- 0.02 um (+0.679 um, +63.4%, +33.9 SE; not reproduced). Notably,
+    shifting from black (1.22 um) to iridescent blue (1.07 um) scales within H. sara needs only a
+    ~1.69x change in cortical turnover, viscosity, or friction — far smaller than the ~33x shift
+    needed across Drosophila larval growth.
+
+- id: val_lambda_c_eq3_main_vs_totz2024_vcardui
+  model: critical_wavelength_eq3
+  inputs:
+    D: diffusion_coeff_frap
+    tau: turnover_time_frap
+    eta: eta_2d_lit
+    xi: friction_2d_lit
+  output: lambda_c
+  against: totz2024/L_Vcardui_p8
+  purpose: validation
+  quantities:
+    "totz2024/actin_bundle_spacing": ring_wavelength
+  conditions_ok: >
+    Mechanism 1 (active-gel self-organization): evaluates Hannezo 2015 Main Eq. [3] on
+    uncalibrated wild-type Drosophila epithelial cortical parameters (zero new added inputs)
+    directly against Totz et al. (2024)'s reference Vanessa cardui butterfly wing-scale actin
+    bundle spacing (L = 1.6 um, p. 8, citing McDougal et al. 2021).
+  basis: >
+    Direct numeric precision check of Hannezo's uncalibrated insect active-gel wavelength
+    (1.749 um) against Vanessa cardui's reference scale actin bundle spacing (1.6 um).
+  note: >
+    Computes lambda_c = 1.749 um vs printed 1.6 um (+0.149 um, +9.3%; close / within 10% without
+    any parameter tuning, though scale-cell viscosity, friction, diffusion, and turnover remain
+    unmeasured directly in Lepidoptera).
+
+
