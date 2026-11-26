@@ -1,0 +1,23 @@
+id: cpp_sbt_mobility_port
+name: C++ SingleFiberMobilityEvaluator SBT mobility & eigenvalue-clamping port
+role: model
+stated:
+  file: Python/cppmodules/SingleFiberMobilityEvaluator.cpp
+  lines: "122-137"
+  quote: "BlasMatrixProduct(3*_nXPerFib,3*_nXPerFib,3*_nXPerFib,1.0,0.0,M,false,_WTildeXInv,MForce);"
+  where: "Port of SingleFiberMobilityEvaluator.cpp:122-137, 260-399, VectorMethods.cpp:228-244, and SingleFiberSaddlePointSolver.cpp:137-161 on Chebyshev kind-2 grid with W_tilde^-1 and EigValThres clamping"
+equation: "MForce = 0.5*(M_SBT W_tilde^-1 + (M_SBT W_tilde^-1)^T) clamped at eig >= EigValThres; N = (K_r^T MForce^-1 K_r)^+"
+inputs:
+  eps: {quantity: fiber_aspect_ratio, unit: dimensionless}
+  L: {quantity: fiber_length, unit: um}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  delta: {quantity: relative_regularization_length, unit: dimensionless}
+  eig_val_thres: {quantity: eigenvalue_threshold, unit: um/(pN*s)}
+outputs:
+  alpha: {quantity: mobility_alpha, unit: dimensionless}
+  beta: {quantity: mobility_beta, unit: dimensionless}
+  gamma: {quantity: mobility_gamma, unit: dimensionless}
+  min_raw_eig: {quantity: eigenvalue_threshold, unit: um/(pN*s)}
+settings:
+  N_tau: 16
+stochastic: false

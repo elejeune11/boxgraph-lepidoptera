@@ -1,0 +1,651 @@
+- id: rel_excluded_volume_s5_s6_jacobian
+  kind: same_as
+  a: chandrasekaran2019/excluded_volume_eqS5
+  b: chandrasekaran2019/excluded_volume_eqS6_with_jacobian
+  mapping:
+    K_vol: "K_vol"
+    L: "L"
+    d: "d"
+  output_map:
+    U_vol: U_vol
+  regime:
+    K_vol: [100.0, 10000.0]
+    L: [50.0, 200.0]
+    d: [10.0, 100.0]
+  provenance: stated
+  citation:
+    page: 32
+    printed_page: "SI-13"
+    quote: "This can be rewritten by considering"
+    where: "Eqs. (S5)-(S6)"
+  assumptions:
+    - "Evaluated for parallel aligned cylinders of equal length L at separation d, with Jacobian |l_i||l_j| = L^2 restored in Eq. (S6)."
+
+- id: rel_excluded_volume_s5_s6_printed_rescaled
+  kind: same_as
+  a: chandrasekaran2019/excluded_volume_eqS5
+  b: chandrasekaran2019/excluded_volume_eqS6
+  mapping:
+    K_vol: "K_vol * L**2"
+    L: "L"
+    d: "d"
+  output_map:
+    U_vol: U_vol
+  regime:
+    K_vol: [100.0, 10000.0]
+    L: [50.0, 200.0]
+    d: [10.0, 100.0]
+  provenance: stated
+  citation:
+    page: 32
+    printed_page: "SI-13"
+    quote: "This can be rewritten by considering"
+    where: "Eqs. (S5)-(S6)"
+  assumptions:
+    - "Shows that printed Eq. (S6) equals Eq. (S5) only if K_vol in Eq. (S6) absorbs the missing Jacobian L^2 (changing its dimension from energy*length^2 to energy*length^4)."
+
+# ---------------------------------------------------------------------------
+# Cross-record relations with popov2016 (Popov, Komianos & Papoian, PLoS
+# Comput. Biol. 12: e1004877, 2016; ref-58 / ref-S6).
+# chandrasekaran2019 directly runs and documents the MEDYAN force field and
+# mechanochemical cycle introduced in popov2016 (Eqs. S2-S15 vs Popov Eqs.
+# 1-4, 9-11, Table 2A, S3 Eqs. 1-6).
+#
+# Notes on excluded pairs:
+# - nematic_order_parameter_eqS18[_sum1toN] vs popov2016/nematic_order_parameter_eq14:
+#   popov2016/nematic_order_parameter_eq14 is runnable: false (cannot be tested
+#   in relations.yaml); exact verbatim propagation of the sum_{i=0}^{N} off-by-one
+#   bug from Popov Eq. (14) to Eq. (S18) is documented in questions.yaml.
+# - kuramoto_length_s211 vs popov2016/kuramoto_length_s2eq1: kuramoto_length_s211
+#   is runnable: false (corrupted DOCX-to-PDF rendering on p. 29).
+# - diffusion_coefficients_s211 (D_alpha = r_alpha * D_actin, 1 op) vs
+#   popov2016/reduced_diffusion_constant_s2a (D_species = D_actin / factor, 1 op):
+#   omitted as trivial 1-op reciprocal; the 2.5x (1/10 -> 1/4) and 12.5x
+#   (1/100 -> 1/8) diffusion speedup drift is logged in questions.yaml.
+# - Printed unit-corrupted models (mesoscopic_rate_eqS2, myosin_bound_heads_eqS11,
+#   myosin_unbinding_catch_bond_eqS12) fail dimensional conversion against popov2016;
+#   relations below link their dimensionally corrected variants and document the
+#   exact misprints in questions.yaml.
+# ---------------------------------------------------------------------------
+
+- id: rel_popov2016_mesoscopic_rate_eqS2_corrected
+  kind: same_as
+  a: popov2016/compartment_bimolecular_rate_table2a
+  b: chandrasekaran2019/mesoscopic_rate_eqS2_corrected
+  mapping:
+    k_mu: "1000000 * k_macro"
+    V_r: "l_comp**3 / 1000000000000000000000000"
+    N_A: "602214076000000000000000"
+  output_map:
+    c_mu: k_sim
+  regime:
+    k_macro: [0.1, 20.0]
+    l_comp: [100.0, 1000.0]
+  provenance: proposed
+  reason: >
+    Links Popov et al. (2016) Table 2A's compartment bimolecular rate conversion
+    k_sim = k_macro / (N_A * l_comp^3) (p. 59) to Chandrasekaran et al. (2019)
+    Eq. (S2)'s dimensionally corrected Gillespie/Kurtz variant c_mu = k_mu / (V_r * N_A)
+    (p. 31 / SI-12, bimolecular order n = 2) for cubic RDME compartments V_r = l_comp^3
+    with CODATA N_A = 6.02214076e23 mol^-1 and 1 uM^-1 s^-1 = 10^6 L/(mol*s).
+    Printed Eq. (S2) in chandrasekaran2019 erroneously inverts V_r to k_mu * (V_r / N_A).
+  assumptions:
+    - "Bimolecular reaction order n = 2 (heterodimerization; homodimerization adds factor 2)."
+    - "Cubic RDME compartment volume V_r = l_comp^3 with CODATA 2018 N_A = 6.02214076e23 mol^-1."
+
+- id: rel_popov2016_actin_stretching_eqS3
+  kind: same_as
+  a: chandrasekaran2019/actin_stretching_eqS3
+  b: popov2016/filament_stretching_energy_eq2
+  mapping:
+    K_str: "K_str"
+    l: "l_i"
+    l_0: "l_0"
+  output_map:
+    U_str: U_str
+  regime:
+    K_str: [10.0, 500.0]
+    l_i: [95.0, 125.0]
+    l_0: [27.0, 108.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "5"
+    quote: "Various MEDYAN mechanical potentials, such as intra-cylinder stretching and inter-cylinder"
+    where: "Methods (p. 5, Fig. 1) and SI Eq. (S3) (p. 32 / SI-13)"
+  assumptions:
+    - "Exact verbatim MEDYAN actin cylinder harmonic stretching potential U_i^str = (1/2) K_str (|l_i| - l_0)^2 from Popov et al. (2016) Eq. (2) (p. 8)."
+
+- id: rel_popov2016_actin_bending_eqS4
+  kind: same_as
+  a: chandrasekaran2019/actin_bending_eqS4
+  b: popov2016/filament_bending_energy_eq1
+  mapping:
+    eps_bend: "eps_bend"
+    theta: "theta"
+  output_map:
+    U_bend: U_bend
+  regime:
+    eps_bend: [100.0, 5000.0]
+    theta: [0.01, 1.5]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "5"
+    quote: "Various MEDYAN mechanical potentials, such as intra-cylinder stretching and inter-cylinder"
+    where: "Methods (p. 5, Fig. 1) and SI Eq. (S4) (p. 32 / SI-13)"
+  assumptions:
+    - "Exact verbatim MEDYAN inter-cylinder cosine bending potential U_i^bend = eps_bend (1 - cos theta_{i,i+1}) from Popov et al. (2016) Eq. (1) (p. 8)."
+
+- id: rel_popov2016_excluded_volume_eqS6
+  kind: same_as
+  a: chandrasekaran2019/excluded_volume_eqS6
+  b: popov2016/cylinder_excluded_volume_eq4
+  mapping:
+    K_vol: "K_vol"
+    l_0: "L"
+    d: "d"
+  output_map:
+    U_vol: U_vol
+  regime:
+    K_vol: [1000.0, 1000000.0]
+    L: [27.0, 200.0]
+    d: [5.0, 100.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "5"
+    quote: "The MEDYAN force-field prevents filaments passing through each other"
+    where: "Methods (p. 5, citing [58]) and SI Eq. (S6) (p. 32 / SI-13)"
+  assumptions:
+    - "Evaluated for parallel aligned cylinders of equal length L = l_0 at separation d; both Popov Eq. (4) (p. 10) and Chandrasekaran Eq. (S6) (p. 32) integrate ds dt / |r_i - r_j|^4 over [0,1]^2 with K_vol in pN*nm^5, sharing the same dropped Jacobian |l_i||l_j| relative to Popov Eq. (3) / Eq. (S5)."
+
+- id: rel_popov2016_excluded_volume_eqS5_jacobian
+  kind: same_as
+  a: chandrasekaran2019/excluded_volume_eqS5
+  b: popov2016/cylinder_excluded_volume_eq4
+  mapping:
+    K_vol: "K_vol * L**2"
+    l_0: "L"
+    d: "d"
+  output_map:
+    U_vol: U_vol
+  regime:
+    K_vol: [10.0, 10000.0]
+    L: [27.0, 200.0]
+    d: [5.0, 100.0]
+  provenance: proposed
+  reason: >
+    Demonstrates that Popov et al. (2016) Eq. (4) (U_vol = K_vol * int_0^1 int_0^1 ds dt / |r_i - r_j|^4,
+    p. 10) already dropped the Jacobian |l_i|*|l_j| = L^2 when reparameterizing Popov Eq. (3) /
+    Chandrasekaran Eq. (S5) (int_{l_i} int_{l_j} dl_i dl_j / |r_i - r_j|^4), so the two forms agree
+    only when Popov's K_vol absorbs L^2 (shifting its unit from pN*nm^3 to pN*nm^5). Chandrasekaran
+    et al. (2019) copied this exact dropped Jacobian verbatim in Eqs. (S5)-(S6) (p. 32).
+  assumptions:
+    - "Parallel aligned cylinders of equal length L = l_0 at perpendicular separation d."
+
+- id: rel_popov2016_minifilament_stretching_eqS7
+  kind: same_as
+  a: chandrasekaran2019/minifilament_stretching_eqS7
+  b: popov2016/motor_crosslinker_stretching_energy_eq9
+  mapping:
+    K_motor: "K_str_MF"
+    l_m: "l_ij"
+    l_0m: "l_0"
+  output_map:
+    U_motor: U_MF
+  regime:
+    K_str_MF: [0.5, 100.0]
+    l_ij: [175.0, 225.0]
+    l_0: [180.0, 210.0]
+  provenance: stated
+  citation:
+    page: 32
+    printed_page: "SI-13"
+    quote: "Crosslinkers and minifilaments"
+    where: "SI Section 2.2.2 Eq. (S7) (p. 32 / SI-13) and Methods (p. 5)"
+  assumptions:
+    - "Exact verbatim MEDYAN harmonic stretching potential U_ij^MF = (1/2) K_str^MF (|l_ij| - l_0)^2 from Popov et al. (2016) Eq. (9) (p. 12)."
+
+- id: rel_popov2016_crosslinker_stretching_eqS8
+  kind: same_as
+  a: chandrasekaran2019/crosslinker_stretching_eqS8
+  b: popov2016/motor_crosslinker_stretching_energy_eq9
+  mapping:
+    K_motor: "K_str_linker"
+    l_m: "l_ij"
+    l_0m: "l_0"
+  output_map:
+    U_motor: U_linker
+  regime:
+    K_str_linker: [1.0, 50.0]
+    l_ij: [30.0, 45.0]
+    l_0: [32.0, 38.0]
+  provenance: stated
+  citation:
+    page: 32
+    printed_page: "SI-13"
+    quote: "Crosslinkers and minifilaments"
+    where: "SI Section 2.2.2 Eq. (S8) (p. 32 / SI-13) and Methods (p. 5)"
+  assumptions:
+    - "Popov et al. (2016) p. 12 explicitly states passive cross-linkers share the exact harmonic stretching potential of Eq. (9) (modeled by motor_crosslinker_stretching_energy_eq9)."
+
+- id: rel_popov2016_boundary_repulsion_eqS9
+  kind: same_as
+  a: chandrasekaran2019/boundary_repulsion_eqS9
+  b: popov2016/boundary_repulsion_energy_eq11
+  mapping:
+    eps_boundary: "eps_boundary"
+    d_i: "d"
+    lambda_boundary: "lam"
+  output_map:
+    U_boundary: U_boundary
+  regime:
+    eps_boundary: [1.0, 20.0]
+    d: [0.5, 20.0]
+    lam: [1.0, 10.0]
+  provenance: stated
+  citation:
+    page: 33
+    printed_page: "SI-14"
+    quote: "Boundaries in MEDYAN repel cylinders to confine the network within a certain volume."
+    where: "SI Section 2.2.2 Eq. (S9) (p. 33 / SI-14)"
+  assumptions:
+    - "Exact verbatim MEDYAN exponential hard-wall repulsion U_i^boundary = eps_boundary * exp(-d / lambda) from Popov et al. (2016) Eq. (11) (p. 12)."
+
+- id: rel_popov2016_minifilament_binding_eqS10
+  kind: derived_from
+  a: popov2016/nmiia_binding_rate_s3eq1
+  b: chandrasekaran2019/minifilament_binding_rate_eqS10
+  steps:
+    - "subs: alpha = 1"
+  mapping:
+    k_NMIIA_bind: "k_bind"
+    N_total: "N_total"
+  output_map:
+    k_fil_bind: k_fil_bind
+  regime:
+    alpha: [0.5, 2.0]
+    k_bind: [0.05, 1.0]
+    N_total: [10.0, 30.0]
+  provenance: proposed
+  reason: >
+    Popov et al. (2016) S3 Text Eq. (1) (p. 45) writes k_fil,bind = alpha * k_NMIIA,bind * N_total
+    and fits alpha = 1.0 (p. 46, Table 2C p. 61). Chandrasekaran et al. (2019) Eq. (S10) (p. 33 / SI-14)
+    prints k_fil,bind = k_NMIIA,bind * N_total, silently absorbing Popov's fitted alpha = 1.0.
+  assumptions:
+    - "Specializes Popov S3 Eq. (1) to its fitted dimensionless binding parameter alpha = 1.0."
+
+- id: rel_popov2016_myosin_bound_heads_eqS11
+  kind: same_as
+  a: popov2016/nmiia_bound_heads_s3eq3
+  b: chandrasekaran2019/myosin_bound_heads_eqS11_inverse_force
+  mapping:
+    N_0: "rho * N_total"
+    gamma: "gamma"
+    F_ext: "F_ext"
+  output_map:
+    N_bound: N_bound
+  regime:
+    rho: [0.05, 0.3]
+    N_total: [10.0, 30.0]
+    gamma: [0.01, 0.2]
+    F_ext: [0.5, 50.0]
+  provenance: proposed
+  reason: >
+    Popov et al. (2016) S3 Text Eq. (3) (p. 45) writes N_bound = rho * N_total + gamma * F_ext
+    with gamma = 0.05 /pN (p. 46, Table 2C p. 61). Chandrasekaran et al. (2019) Eq. (S11) (p. 34 / SI-15)
+    writes N_bound = N_0 + gamma * F_ext with N_0 = rho * N_total directly above it, omitting the
+    /pN unit on gamma = 0.05 (transposed onto epsilon = 0.2 /pN in Eq. S12); linking to the
+    dimensionally corrected variant myosin_bound_heads_eqS11_inverse_force verifies exact equivalence.
+  assumptions:
+    - "Uses dimensionally corrected variant myosin_bound_heads_eqS11_inverse_force with gamma in 1/pN and N_0 = rho * N_total."
+
+- id: rel_popov2016_myosin_zero_load_bound_heads
+  kind: derived_from
+  a: popov2016/nmiia_bound_heads_s3eq3
+  b: chandrasekaran2019/myosin_zero_load_bound_heads
+  steps:
+    - "subs: F_ext = 0"
+  mapping:
+    rho: "rho"
+    N_total: "N_total"
+  output_map:
+    N_0: N_bound
+  regime:
+    rho: [0.05, 0.3]
+    N_total: [10.0, 30.0]
+    gamma: [0.01, 0.2]
+    F_ext: [0.5, 50.0]
+  provenance: proposed
+  reason: >
+    Setting external load F_ext = 0 in Popov et al. (2016) S3 Text Eq. (3) (N_bound = rho * N_total + gamma * F_ext)
+    directly yields Chandrasekaran et al. (2019) p. 34 zero-load bound-head count N_0 = rho * N_total.
+  assumptions:
+    - "Zero external load limit F_ext = 0."
+
+- id: rel_popov2016_myosin_catch_bond_eqS12
+  kind: same_as
+  a: chandrasekaran2019/myosin_unbinding_catch_bond_eqS12_dimensionless_eps
+  b: popov2016/nmiia_unbinding_and_attachment_time_s3eq2
+  mapping:
+    beta: "epsilon"
+    k_unbind_0: "k0_NMIIA_unbind"
+    N_bound: "N_bound"
+    F_ext: "F_ext"
+    F_unbind: "F_NMIIA_unbind"
+  output_map:
+    k_fil_unbind: k_fil_unbind
+  regime:
+    epsilon: [0.05, 1.0]
+    k0_NMIIA_unbind: [0.5, 5.0]
+    N_bound: [1.0, 15.0]
+    F_ext: [0.5, 50.0]
+    F_NMIIA_unbind: [5.0, 30.0]
+  provenance: proposed
+  reason: >
+    Chandrasekaran et al. (2019) Eq. (S12) (p. 34 / SI-15, citing [6] = popov2016) reproduces
+    Popov et al. (2016) S3 Text Eq. (2) (p. 45) verbatim with Popov's dimensionless fitting parameter
+    beta = 0.2 renamed to epsilon, except that p. 34 prints a spurious unit '0.2 /pN' (transposed
+    from gamma = 0.05 /pN in Eq. S11). Linking the dimensionally corrected variant
+    myosin_unbinding_catch_bond_eqS12_dimensionless_eps proves exact symbolic identity.
+  assumptions:
+    - "Uses dimensionally corrected variant with dimensionless epsilon = beta (= 0.2 in MEDYAN)."
+
+- id: rel_popov2016_myosin_unloaded_walking_eqS13
+  kind: same_as
+  a: popov2016/nmiia_unloaded_walking_rate_s3eq5
+  b: chandrasekaran2019/myosin_zero_load_walking_rate_eqS13
+  mapping:
+    k_NMII_bind: "k_bind"
+    N_total: "N_total"
+    N_bound_0: "rho * N_total"
+  output_map:
+    k_walk_0: k_ens_walk_0
+  regime:
+    N_total: [10.0, 30.0]
+    rho: [0.05, 0.4]
+    k_bind: [0.05, 1.0]
+    d_step: [4.0, 10.0]
+    l_site: [20.0, 40.0]
+  provenance: stated
+  citation:
+    page: 34
+    printed_page: "SI-15"
+    quote: "Under zero load conditions, walking rates are of each minifilament"
+    where: "SI Section 2.3.1 Eq. (S13) (p. 34 / SI-15)"
+  assumptions:
+    - "Matches Popov et al. (2016) S3 Text Eq. (5) ensemble walking rate k_ens,walk^0 = k_NMIIA,bind * (N_total - N_bound^0) / N_bound^0 with N_bound^0 = rho * N_total (Chandrasekaran Eq. S13 omits Popov's cylinder-site step scaling factor d_step / l_site)."
+
+- id: rel_popov2016_myosin_hill_walking_eqS14
+  kind: same_as
+  a: popov2016/nmiia_loaded_walking_rate_s3eq4
+  b: chandrasekaran2019/myosin_hill_walking_rate_eqS14
+  mapping:
+    k_walk_0: "k_ens_walk_0"
+    F_stall: "N_total * F_stall"
+    F_ext: "F_ext"
+    zeta: "zeta"
+  output_map:
+    k_walk: k_ens_walk
+  regime:
+    k_ens_walk_0: [0.5, 5.0]
+    F_stall: [10.0, 25.0]
+    F_ext: [0.5, 100.0]
+    N_total: [15.0, 30.0]
+    zeta: [0.05, 0.5]
+    d_step: [4.0, 10.0]
+  provenance: proposed
+  reason: >
+    Multiplying numerator and denominator of Popov et al. (2016) S3 Text Eq. (4)
+    (k_ens,walk = k_ens,walk^0 * (F_stall - F_ext/N_total)/(F_stall + F_ext/(N_total*zeta)), p. 45)
+    by N_total gives Chandrasekaran et al. (2019) Eq. (S14) (p. 34) identically if and only if
+    Chandrasekaran's F_stall is the ensemble stall force N_total * F_stall_head (= 225-450 pN for
+    N_total = 15-30 heads at Popov's F_stall_head = 15 pN). This proves algebraically that
+    Chandrasekaran's printed value F_stall = 12.6 pN (copied from Popov Table 2C's F_NMIIA,unbind
+    row directly above F_stall = 15 pN) understates the ensemble stall force by 17.9x-35.7x.
+  assumptions:
+    - "Sub-stall regime F_ext < N_total * F_stall so walking rate remains strictly positive."
+    - "Maps Popov's single-head F_stall to Chandrasekaran's ensemble/minifilament stall force F_stall_MF = N_total * F_stall."
+
+- id: rel_popov2016_alpha_actinin_slip_bond_eqS15
+  kind: same_as
+  a: chandrasekaran2019/crosslinker_slip_bond_unbinding_eqS15
+  b: popov2016/alpha_actinin_slip_bond_s3eq6
+  mapping:
+    k_unbind_0: "k0_alpha_unbind"
+    F_ext: "F_ext"
+    F_unbind: "F_alpha_unbind"
+  output_map:
+    k_unbind: k_alpha_unbind
+  regime:
+    k0_alpha_unbind: [0.05, 2.0]
+    F_ext: [0.5, 30.0]
+    F_alpha_unbind: [5.0, 30.0]
+  provenance: stated
+  citation:
+    page: 34
+    printed_page: "SI-15"
+    quote: "while the unbinding rate depends as a slip bond behavior."
+    where: "SI Section 2.3.2 Eq. (S15) (p. 34 / SI-15)"
+  assumptions:
+    - "Exact verbatim MEDYAN Bell slip-bond unbinding law k_alpha,unbind = k^0_alpha,unbind * exp(F_ext / F_alpha,unbind) from Popov et al. (2016) S3 Text Eq. (6) (p. 46)."
+
+# ---------------------------------------------------------------------------
+# Cross-record relations with chandrasekaran2024 (Chandrasekaran et al.,
+# Nature Communications 15: 3139, 2024; same first author, CytoSim + LAMMPS
+# VASP-droplet F-actin bundling/ring formation vs 2019 MEDYAN actomyosin).
+# Neither paper states an equation-level mapping to the other (0 stated
+# relations, 0 cited.yaml links); all 3 relations below are proposed.
+# ---------------------------------------------------------------------------
+
+- id: rel_chandrasekaran2024_bell_slip_bond_eqS15
+  kind: same_as
+  a: chandrasekaran2019/crosslinker_slip_bond_unbinding_eqS15
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k0_alpha_unbind"
+    f: "F_ext"
+    f_u: "F_alpha_unbind"
+  output_map:
+    k_unbind: k_alpha_unbind
+  regime:
+    k0_alpha_unbind: [0.05, 2.0]
+    F_ext: [0.5, 30.0]
+    F_alpha_unbind: [5.0, 30.0]
+  provenance: proposed
+  reason: >
+    Both articles by first author A. Chandrasekaran model force-accelerated passive crosslinker
+    detachment with the exact same exponential Bell slip-bond law k_off(F) = k_off^0 * exp(F / F_u):
+    single-step alpha-actinin unbinding in MEDYAN (chandrasekaran2019 Eq. S15, p. 34; F_u = 17.2 pN
+    from Popov 2016) and per-hand VASP tetramer unbinding in CytoSim (chandrasekaran2024 Methods
+    p. 9, Supp. Table 2 p. 17; f_u = 10 pN).
+  assumptions:
+    - "Applies to the unbinding-rate output k_unbind (not residence time tau_res = 1 / k_unbind); MEDYAN uses single-step crosslinker detachment whereas CytoSim applies the same Bell rate independently to each binding hand."
+
+- id: rel_chandrasekaran2024_actin_stretching_scales_lammps_bond
+  kind: scales_as
+  a: chandrasekaran2019/actin_stretching_eqS3
+  b: chandrasekaran2024/lammps_harmonic_bond_potential
+  mapping:
+    K_bond: "(K_str / 2) * (900 / 4.11)"
+    r: "l_i / 30"
+    r0: "l_0 / 30"
+  output_map:
+    U_bond: U_str
+  regime:
+    K_str: [10.0, 200.0]
+    l_0: [25.0, 110.0]
+    l_i: [115.0, 140.0]
+  provenance: proposed
+  reason: >
+    Both coarse-grained actin models enforce filament inextensibility via a quadratic harmonic bond
+    stretching potential: MEDYAN Eq. (S3) writes U_str = (1/2) K_str (l_i - l_0)^2 in physical units
+    [pN*nm], while Chandrasekaran et al. (2024) Supplementary Table 1 uses LAMMPS bond_style harmonic
+    U_bond = K_bond (r - r0)^2 in dimensionless LJ k_B T units (absorbing 1/2 into K_bond). Because
+    outputs have distinct units (pN*nm vs dimensionless), scales_as verifies exact equality of all
+    three log-slopes (+1 in K_str, 2*l_i/(l_i - l_0) in l_i, and -2*l_0/(l_i - l_0) in l_0) anchored
+    at Chandrasekaran 2024's LJ scales sigma = 30 nm and k_B T = 4.11 pN*nm.
+  assumptions:
+    - "Strictly stretched regime l_i > l_0 so harmonic energy is strictly positive across the sampled domain."
+    - "Fixed LJ reference scales sigma = 30 nm and k_B T = 4.11 pN*nm (constant scale factors preserve all log-slopes)."
+
+- id: rel_chandrasekaran2024_actin_bending_scales_lammps_angle
+  kind: scales_as
+  a: chandrasekaran2019/actin_bending_eqS4
+  b: chandrasekaran2024/lammps_harmonic_angle_potential
+  mapping:
+    K_angle: "eps_bend / (2 * 4.11)"
+    theta: "3.141592653589793 - theta"
+    theta0: "3.141592653589793"
+  output_map:
+    U_angle: U_bend
+  regime:
+    eps_bend: [100.0, 5000.0]
+    theta: [0.005, 0.1]
+  provenance: proposed
+  reason: >
+    Connects MEDYAN's finite-angle cosine hinge bending potential U_bend = eps_bend * (1 - cos theta)
+    (chandrasekaran2019 Eq. S4, p. 32, in pN*nm) to the LAMMPS harmonic angle bending potential
+    U_angle = K_angle * (theta_LAMMPS - pi)^2 (chandrasekaran2024 Supplementary Table 1, in
+    dimensionless k_B T units) in the semiflexible small-angle bend regime (theta in [0.005, 0.1] rad,
+    spanning the thermal RMS bend angle ~0.11 rad for 108 nm segments with l_p = 17 um). With
+    theta_LAMMPS = pi - theta and K_angle = eps_bend / (2 * k_B T), log-slopes match identically in
+    eps_bend (+1) and to within theta^2/6 <= 1.67e-3 << 1e-2 in theta (+2).
+  assumptions:
+    - "Small-angle semiflexible regime theta in [0.005, 0.1] rad (deviation from quadratic scaling is theta^2/6 <= 0.17%)."
+    - "Straight-filament equilibrium angle theta0 = pi in LAMMPS (theta_LAMMPS = pi - theta) with k_B T = 4.11 pN*nm."
+
+# ---------------------------------------------------------------------------
+# Cross-record relations with bathe2008 (Bathe et al., Biophys. J. 94:
+# 2955-2964, 2008): NONE (0 relations).
+# Neither paper cites the other, and their runnable models operate at
+# strictly orthogonal scales (macroscopic continuum WLB bundle bending
+# stiffness kappa_B(N, alpha) vs microscopic discrete segment potentials,
+# RDME kinetics, and actomyosin morphology order parameters); documented
+# in questions.yaml (`q_bathe2008_orthogonal_scales_and_wlb_regime`).
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Cross-record relations with freedman2019 (Freedman et al., PNAS 116(33):
+# 16192-16197, 2019; bioRxiv preprint cited as ref-83 on p. 7; AFINES
+# framework also compared on p. 4 via ref-68).
+# All 3 relations below compare the shared microscopic actin-filament and
+# crosslinker mechanical potentials between MEDYAN and AFINES.
+# ---------------------------------------------------------------------------
+
+- id: rel_freedman2019_actin_stretching_eqS3
+  kind: same_as
+  a: freedman2019/filament_potential_si_eq1
+  b: chandrasekaran2019/actin_stretching_eqS3
+  mapping:
+    K_str: "k_a / 1000"
+    l_i: "1000 * r"
+    l_0: "1000 * l_a"
+  output_map:
+    U_str: U_stretch
+  regime:
+    k_a: [1.0, 100000.0]
+    l_a: [0.05, 1.0]
+    r: [1.05, 1.5]
+    kappa_B: [0.01, 0.5]
+    theta: [0.01, 0.5]
+  provenance: proposed
+  reason: >
+    Both coarse-grained cytoskeletal simulators (MEDYAN in chandrasekaran2019 Eq. S3, p. 32;
+    AFINES in freedman2019 SI Eq. 1) use the exact same harmonic filament-segment stretching
+    potential U_stretch = (1/2) k * (l - l_0)^2, differing only in unit conventions (pN/nm & nm
+    vs pN/um & um; BoxGraph converts output pN*nm <-> pN*um) and parameter stiffness (AFINES uses
+    k_a = 5 pN/um = 0.005 pN/nm, 20,000x softer than MEDYAN's 100 pN/nm from Popov 2016).
+  assumptions:
+    - "Compares the stretching component U_stretch of freedman2019/filament_potential_si_eq1 (independent of kappa_B and theta)."
+
+- id: rel_freedman2019_actin_bending_derived_harmonic
+  kind: derived_from
+  a: chandrasekaran2019/actin_bending_eqS4
+  b: freedman2019/filament_potential_si_eq1
+  steps:
+    - "series: theta -> 0, 4"
+    - "simplify"
+  mapping:
+    k_a: "5"
+    r: "27 / 250"
+    l_a: "27 / 250"
+    kappa_B: "27 * eps_bend / 250000"
+    theta: "theta"
+  output_map:
+    U_bend: U_bend
+  regime:
+    eps_bend: [100.0, 5000.0]
+    theta: [0.01, 1.0]
+  provenance: proposed
+  reason: >
+    Expanding MEDYAN's finite-angle cosine hinge bending potential U_bend = eps_bend * (1 - cos theta)
+    (chandrasekaran2019 Eq. S4, p. 32, in pN*nm) to leading nonvanishing order around theta = 0
+    yields AFINES's quadratic harmonic bending potential U_bend = (kappa_B / (2 l_a)) * theta^2
+    (freedman2019 SI Eq. 1, in pN*um) identically under the discrete wormlike-chain identification
+    eps_bend = kappa_B / l_a (= l_p k_B T / l_0). Symbolic series expansion avoids float64
+    cancellation in 1 - cos(theta) at theta = 1e-8 rad.
+  assumptions:
+    - "Discrete bending energy identification eps_bend = kappa_B / l_a (at l_a = 27/250 = 0.108 um, kappa_B / l_a = eps_bend / 1000 pN*um independent of l_a; k_a and r do not enter U_bend)."
+
+- id: rel_freedman2019_actin_bending_approx_harmonic
+  kind: approximated_by
+  a: chandrasekaran2019/actin_bending_eqS4
+  b: freedman2019/filament_potential_si_eq1
+  mapping:
+    k_a: "5"
+    r: "0.108"
+    l_a: "0.108"
+    kappa_B: "eps_bend * 0.108 / 1000"
+    theta: "theta"
+  output_map:
+    U_bend: U_bend
+  regime:
+    eps_bend: [100.0, 5000.0]
+    theta: [0.01, 0.35]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    Across physiological semiflexible F-actin inter-segment bend angles theta in [0.01, 0.35] rad
+    (spanning up to ~3x the thermal RMS bend angle sqrt(2*l_0/l_p) = 0.11 rad for 108 nm segments
+    at l_p = 17 um), AFINES's quadratic harmonic bending potential (kappa_B / (2 l_a)) * theta^2
+    approximates MEDYAN's cosine potential eps_bend * (1 - cos theta) to within ~theta^2/12 <= 1.03%
+    (stated tolerance 2%).
+  assumptions:
+    - "Discrete bending stiffness identification eps_bend = kappa_B / l_a across bend angles theta in [0.01, 0.35] rad."
+
+- id: rel_freedman2019_crosslinker_stretching_eqS8
+  kind: same_as
+  a: freedman2019/crosslinker_potential_si_eq4
+  b: chandrasekaran2019/crosslinker_stretching_eqS8
+  mapping:
+    K_str_linker: "k_xl / 1000"
+    l_ij: "1000 * r"
+    l_0: "1000 * l_xl"
+  output_map:
+    U_linker: U_stretch
+  regime:
+    k_xl: [5.0, 10000.0]
+    r: [0.35, 0.6]
+    l_xl: [0.03, 0.3]
+    kappa_xl_B: [0.001, 0.05]
+    alpha_L: [1.0, 2.0]
+    alpha_R: [1.0, 2.0]
+    I_L: [0.6, 1.0]
+    I_R: [0.6, 1.0]
+    k_on_1: [0.5, 5.0]
+    k_off_1: [0.01, 0.5]
+    k_on_2: [0.5, 5.0]
+    k_off_2: [0.01, 0.5]
+    T: [290.0, 310.0]
+  provenance: proposed
+  reason: >
+    Both MEDYAN (chandrasekaran2019 Eq. S8, p. 32) and AFINES (freedman2019 SI Eq. 4, stretching
+    term U_stretch) model bound passive crosslinker extension as a linear Hookean spring
+    (1/2) k_xl (r - l_xl)^2 (whereas AFINES additionally adds angular crosslinker-hinge bending
+    U_bend and chemical binding affinity U_bind, and softens k_xl = 10 pN/um = 0.01 pN/nm by 800x
+    relative to MEDYAN's alpha-actinin K_str^linker = 8 pN/nm from Popov 2016).
+  assumptions:
+    - "Compares only the stretching energy output U_stretch of freedman2019/crosslinker_potential_si_eq4 against MEDYAN's purely extensional spring U_linker (r > l_xl across sampled regime)."
+

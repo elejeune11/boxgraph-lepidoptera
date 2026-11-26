@@ -1,0 +1,73 @@
+id: advection_diffusion_pde_1d
+name: 1D active stress-advection-diffusion PDE solver (Eqs. 1-5, 11; Figs. 1d, 1e, 2)
+role: model
+stated:
+  page: 3
+  printed_page: "208101-3"
+  quote: "the Eqs. (1)–(5) in a periodic domain of size L ¼ 2π"
+  where: "Eqs. 1-5, 11 / Figs. 1(d)-(e), 2"
+equation: "d_t A = -d_x(v A) + d_xx A; d_t I = -d_x(v I) + alpha*d_xx I; (1 - d_xx) v = P * d_x f_scaled(A, I); f_scaled = ((1+xi)^2/xi)*[f_0 + (1+beta)*A/(A+xi) + (1-beta)*I/(I+xi)]"
+built_from:
+  - active_stress_regulation_eq11_scaled
+inputs:
+  P:
+    quantity: peclet_number
+    unit: dimensionless
+  beta:
+    quantity: stress_asymmetry_parameter
+    unit: dimensionless
+  alpha:
+    quantity: diffusivity_ratio
+    unit: dimensionless
+  xi:
+    quantity: saturation_ratio
+    unit: dimensionless
+  f_0:
+    quantity: base_active_stress
+    unit: dimensionless
+  L_over_l:
+    quantity: dimensionless_domain_length
+    unit: dimensionless
+  t_max:
+    quantity: dimensionless_time
+    unit: dimensionless
+  eps_init:
+    quantity: initial_perturbation_amplitude
+    unit: dimensionless
+outputs:
+  state_code:
+    quantity: pattern_state_code
+    unit: dimensionless
+    description: "0 = homogeneous, 1 = stationary pattern, 2 = oscillating pattern."
+  T_over_tau:
+    quantity: dimensionless_oscillation_period
+    unit: dimensionless
+    description: "Oscillation period T/tau in the post-transient half (0 if non-oscillating)."
+  A_max:
+    quantity: normalized_activator_concentration
+    unit: dimensionless
+  I_max:
+    quantity: normalized_inhibitor_concentration
+    unit: dimensionless
+  v_max:
+    quantity: dimensionless_velocity
+    unit: dimensionless
+  f_max:
+    quantity: dimensionless_active_stress
+    unit: dimensionless
+    description: "Maximum dimensionless active stress f_scaled(A, I) as literally specified on p. 3."
+  f_min:
+    quantity: dimensionless_active_stress
+    unit: dimensionless
+    description: "Minimum dimensionless active stress f_scaled(A, I) as literally specified on p. 3."
+  A_mean_final:
+    quantity: normalized_activator_concentration
+    unit: dimensionless
+  I_mean_final:
+    quantity: normalized_inhibitor_concentration
+    unit: dimensionless
+settings:
+  n_grid: 64
+  dt: 0.01
+  seed: 42
+stochastic: false

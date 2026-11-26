@@ -1,0 +1,34 @@
+id: afines_spacer_mechanics_and_mc_cpp
+name: AFINES C++ cross-linker bending, lever rule, and Metropolis transition bugs (src/spacer.cpp, src/motor.cpp, prog/bundles.cpp)
+role: model
+stated:
+  file: src/spacer.cpp
+  lines: "247-382"
+  quote: "double delE = 0.5*mk*stretch*stretch + bend_eng - this->get_stretching_energy() - b_eng[hd];"
+  where: "spacer::update_bending(), spacer::metropolis_prob(), motor::filament_update_hd(), bundles.cpp:372"
+equation: "kb = s_bend / mld; b_eng[hd] = 0.5*kb*(acos(c) - th0)^2; lever rule F_i = (pos_a_end/llen)*F, F_{i+1} = (1 - pos_a_end/llen)*F; metropolis_prob uses stale hx[hd]/disp/pos_a_end, omits partner head b_eng[pr(hd)], and subtracts unreset stale b_eng[hd]"
+inputs:
+  mld: {quantity: crosslinker_length, unit: um}
+  mk: {quantity: stretching_stiffness, unit: pN/um}
+  s_bend: {quantity: crosslinker_bending_modulus, unit: pN*um^2}
+  th0: {quantity: crosslinker_rest_angle, unit: dimensionless}
+  link_length: {quantity: filament_link_length, unit: um}
+  head_sep_y: {quantity: spatial_coordinate, unit: um}
+  tilt_dx: {quantity: spatial_coordinate, unit: um}
+  pre_bind_dy: {quantity: spatial_coordinate, unit: um}
+  pos_a_end: {quantity: spatial_coordinate, unit: um}
+  stale_b_eng: {quantity: mechanical_energy, unit: pN*um}
+  kon: {quantity: head_binding_rate, unit: 1/s}
+  dt: {quantity: observation_time, unit: s}
+  temperature: {quantity: thermal_energy, unit: pN*um}
+outputs:
+  kb_eff: {quantity: crosslinker_bending_stiffness, unit: pN*um}
+  U_bend_both_heads: {quantity: mechanical_energy, unit: pN*um}
+  F_total_residual: {quantity: mechanical_force, unit: pN}
+  delE_code_buggy: {quantity: mechanical_energy, unit: pN*um}
+  delE_true_physical: {quantity: mechanical_energy, unit: pN*um}
+  delE_discrepancy: {quantity: mechanical_energy, unit: pN*um}
+  prob_attach_code_buggy: {quantity: metropolis_probability, unit: dimensionless}
+  prob_attach_true_physical: {quantity: metropolis_probability, unit: dimensionless}
+settings: {}
+stochastic: false

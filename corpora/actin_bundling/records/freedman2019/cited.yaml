@@ -1,0 +1,135 @@
+# ==============================================================================
+# Cross-record provenance links (`cited.yaml`) for `freedman2019`
+# (Freedman et al., PNAS 116(33), 16192-16197, 2019).
+#
+# Pairwise audit across all corpus partners (`winkelman2016`, `freedman2019_code`,
+# `popov2016`, `bathe2008`, `kierfeld2005`):
+#
+# 1. `winkelman2016` (Curr. Biol. 26, 2697-2706, 2016; `ref-16` / `ref-si-6`):
+#    - 3 explicit `from_source: ref-16` scalar datums linked below (omitting
+#      `from_source` so BoxGraph resolves via `references.yaml` `ref-16` ->
+#      `winkelman2016`):
+#      * `fascin_size_nm` ("~8" nm) -> `d_interfil_fascin_lit` ("~8" nm; also
+#        agrees with Winkelman's own EM measurement `d_interfil_fascin_EM` = "~8" nm).
+#      * `alpha_actinin_size_nm` ("~35" nm) -> `d_interfil_actinin_lit` ("~35" nm;
+#        also agrees with `size_actinin_dimer_lit` = "~35" nm, whereas Winkelman's
+#        own EM measurement `d_interfil_actinin_EM` is "~32" nm).
+#      * `barrier_height_ref16` ("4.8") -> `eps_barrier_coop` ("4.8").
+#    - 2 explicit `from_source: ref-16` replotted figure datums linked below:
+#      * `fig3c_left_expt_fascin_datum` -> `d_fig3h_data`
+#      * `fig5b_expt_fascin_datum` -> `d_fig3h_data`
+#      (Note: automatic `_cited_table` point-matching does not align them because
+#      the two records name the x-axis quantity differently (`concentration_ratio`
+#      vs `crosslinker_on_rate_ratio`) and Winkelman Fig. 3H carries a +0.019
+#      Illustrator x-shift relative to the unshifted source table plotted in
+#      Freedman Figs. 3C/5B and preserved in `freedman2019_code/kmc_winkelman_expt_table`.)
+#    - 2 inherited 1D lattice-model parameters (no `from_source` in `data.yaml`;
+#      linked with `from_source: winkelman2016`, forming a non-circular chain
+#      `freedman2019_code` -> `freedman2019` -> `winkelman2016`):
+#      * `binding_site_spacing_lb` ("37" nm) -> `a_binding_site_spacing` ("37" nm).
+#      * `filament_length_L0` ("15" um) -> `L_bundle_printed_main` ("~15" um).
+#    - 1 `from_source: ref-16` datum intentionally left UNLINKED:
+#      * `kmc_growth_rate_ref16` ("40" nm/s, p. 3: "at a growth rate of mu_grow =
+#        40 nm/s (corresponding to the approximate growth rate in ref. 16)") is
+#        NOT printed anywhere in `winkelman2016`: Winkelman Fig. S1A-B measures
+#        10 sub/s (~27 nm/s) for leading/alpha-actinin barbed ends and 9 sub/s
+#        (~24.3 nm/s) for fascin trailing ends at 1.5 uM actin, while Fig. S3B
+#        caption states an illustrative 20 sub/s (~53 nm/s). Logged in
+#        `q_winkelman2016_growth_rate_40nms_not_printed`.
+#
+# 2. `freedman2019_code` (Simfreed/AFINES@growing_spacer_exv; `ref-39`):
+#    - 61 datums in `freedman2019_code/data.yaml` ALREADY link inline via
+#      `from_source: freedman2019` + `from_datum`; reverse links for those
+#      parameters are omitted here to avoid circular citation edges (and
+#      `afines_kexv_printed` in `pN*um^2` / `afines_kappa_b_short` in `pN*um`
+#      carry incompatible printed dimensions vs `plots_kexv_fig2d` / `cfg_s1_bend`).
+#    - 2 digitized figure curves whose exact unlinked source tables appear in
+#      `freedman2019_code/data.yaml` (`process/plots.nb` TableForm output) are
+#      linked below with `from_source: freedman2019_code`:
+#      * `fig5e_bot_afines_short_datum` -> `plots_fig5e_koff4_s1_table` (7/7 points)
+#      * `fig5e_bot_afines_long_datum`  -> `plots_fig5e_koff4_s2_table` (7/7 points)
+#
+# 3. `popov2016` (MEDYAN, PLoS Comput. Biol. 2016; `ref-37`):
+#    - Cited strictly qualitatively once on p. 5 / 16196 ("other simulation
+#      frameworks (25, 37, 38)"). Zero numerical values come from `popov2016`.
+#
+# 4. `bathe2008` and `kierfeld2005`:
+#    - Not cited by `freedman2019`. Zero `cited.yaml` links.
+# ==============================================================================
+
+# --- Links to winkelman2016 (ref-16) ------------------------------------------
+
+- datum: fascin_size_nm
+  from_datum: d_interfil_fascin_lit
+  evidence: >
+    Freedman et al. (2019, p. 1 / 16192 & p. 2 / 16193) write "fascin is small (~8 nm)" and
+    "spacing between filaments alternates between ~8 and 35 nm (16)", citing Winkelman et al.
+    (2016, ref-16), which prints "~8 and ~35 nm, respectively" on p. 6 / 2701 (`d_interfil_fascin_lit`)
+    and measures "~8 nm" by negative-stain EM on p. 7 / 2702 (`d_interfil_fascin_EM`).
+
+- datum: alpha_actinin_size_nm
+  from_datum: d_interfil_actinin_lit
+  evidence: >
+    Freedman et al. (2019, p. 1 / 16192 & p. 2 / 16193) write "larger (~35 nm)" and "spacing
+    between filaments alternates between ~8 and 35 nm (16)", citing Winkelman et al. (2016,
+    ref-16), which prints "~8 and ~35 nm, respectively" on p. 6 / 2701 (`d_interfil_actinin_lit`)
+    and "~35 nm" for the alpha-actinin dimer length on p. 3 / 2698 (`size_actinin_dimer_lit`,
+    whereas Winkelman's own EM measurement `d_interfil_actinin_EM` on p. 7 is "~32" nm).
+
+- datum: barrier_height_ref16
+  from_datum: eps_barrier_coop
+  evidence: >
+    Freedman et al. (2019, p. 2 / 16193) write "We found that a kinetic barrier height of
+    epsilon = 4.8 k_B T yielded domain lengths in good agreement with our experimental results (16)",
+    matching Winkelman et al. (2016, p. 5 / 2700 & SI p. 28, `eps_barrier_coop` = "4.8").
+
+- datum: fig3c_left_expt_fascin_datum
+  from_datum: d_fig3h_data
+  evidence: >
+    Freedman et al. (2019, Fig. 3C Left caption, p. 4 / 16195) re-plot "experimental data from
+    ref. 16" (fascin domain length vs [fascin]/[alpha-actinin] from Winkelman et al. 2016 Fig. 3H,
+    `d_fig3h_data`; Freedman plots the unshifted author table preserved in
+    `freedman2019_code/kmc_winkelman_expt_table` rather than Winkelman Fig. 3H's +0.019 shifted layer).
+
+- datum: fig5b_expt_fascin_datum
+  from_datum: d_fig3h_data
+  evidence: >
+    Freedman et al. (2019, Fig. 5B caption, p. 5 / 16196) re-plot all 10 positive-ratio
+    experimental fascin domain-length points from Winkelman et al. (2016, ref-16, Fig. 3H,
+    `d_fig3h_data`), including the zero-length point (0.17895, 0.0) omitted from `kmc.ipynb` Cell 9.
+
+- datum: binding_site_spacing_lb
+  from_source: winkelman2016
+  from_datum: a_binding_site_spacing
+  evidence: >
+    Freedman et al. (2019, p. 3 / 16194 & SI Section B p. 9 / SI-3) adopt the identical F-actin
+    helical-half-pitch binding-site spacing l_b = 37 nm in their 1D lattice extension of Winkelman
+    et al. (2016, p. 10 / 2705 & SI p. 27, `a_binding_site_spacing` = "37" nm).
+
+- datum: filament_length_L0
+  from_source: winkelman2016
+  from_datum: L_bundle_printed_main
+  evidence: >
+    Freedman et al. (2019, p. 3 / 16194) set the 1D lattice filament length to L_0 = 15 um
+    (N = L_0 / l_b = 405 sites) directly extending Winkelman et al. (2016, p. 10 / 2705 & SI
+    p. 27, `L_bundle_printed_main` = "~15" um from 400 x 37 nm = 14.8 um).
+
+# --- Links to freedman2019_code (released plots.nb Fig. 5E source tables) -----
+
+- datum: fig5e_bot_afines_short_datum
+  from_source: freedman2019_code
+  from_datum: plots_fig5e_koff4_s1_table
+  evidence: >
+    Digitized Fig. 5E bottom short cross-linker domain lengths across k_grow = {10, 20, 30, 40, 50,
+    70, 100} nm/s (`k_short^{off,1}/k_long^{off,1} = 4`) come directly from the embedded Mathematica
+    TableForm source table in `xlink_sorting_paper/process/plots.nb:22245-22251`
+    (`freedman2019_code/plots_fig5e_koff4_s1_table`).
+
+- datum: fig5e_bot_afines_long_datum
+  from_source: freedman2019_code
+  from_datum: plots_fig5e_koff4_s2_table
+  evidence: >
+    Digitized Fig. 5E bottom long cross-linker domain lengths across k_grow = {10, 20, 30, 40, 50,
+    70, 100} nm/s (`k_short^{off,1}/k_long^{off,1} = 4`) come directly from the embedded Mathematica
+    TableForm source table in `xlink_sorting_paper/process/plots.nb:22299-22305`
+    (`freedman2019_code/plots_fig5e_koff4_s2_table`).

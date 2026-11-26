@@ -1,0 +1,36 @@
+id: sm_c_two_fiber_strang_variant
+name: 2nd-order Strang-splitting variant of two-fiber Brownian-spring integrator (maxian2022 Sec. 2.4)
+role: model
+variant_of: sm_c_two_fiber_lie_trotter_port
+corrections:
+  - equation: "TemporalIntegrator.py:441-499 (1st-order Lie-Trotter splitting)"
+    change: "Split the single BrownianUpdate(dt) into two symmetric half-steps BrownianUpdate(dt/2) before and after deterministic updateAllFibers(dt), implementing the 2nd-order Strang splitting described in maxian2022 Sec. 2.4 (p. 5)."
+    evidence: "maxian2022 Sec. 2.4 (p. 5) specifies 3-step Strang splitting (Brownian dt/2 -> deterministic+CL dt -> Brownian dt/2) and Fig. S1 caption (p. 21) refers to sampling at the midpoint after step 1, whereas TemporalIntegrator.py:441-445 comments '# Brownian update (always first order)' and omits the second BrownianUpdate(dt/2)."
+stated:
+  file: Python/TemporalIntegrator.py
+  lines: "441-499"
+  quote: "# Brownian update (always first order)"
+  where: "Variant of sm_c_two_fiber_lie_trotter_port adding the symmetric second BrownianUpdate(dt/2) step stated in maxian2022 Sec. 2.4 (p. 5)"
+equation: "Step 1: BrownianUpdate(dt/2); Step 2: deterministic spring update(dt) (midpoint recorded before step 2); Step 3: BrownianUpdate(dt/2) (endpoint recorded after step 3)"
+inputs:
+  L: {quantity: fiber_length, unit: um}
+  eps: {quantity: fiber_aspect_ratio, unit: dimensionless}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  K_c: {quantity: cl_spring_stiffness, unit: pN/um}
+  ell: {quantity: cl_rest_length, unit: um}
+  kBT: {quantity: thermal_energy, unit: pN*um}
+  delta: {quantity: relative_regularization_length, unit: dimensionless}
+  sigma_rel: {quantity: relative_gaussian_width, unit: dimensionless}
+outputs:
+  mean_x_end: {quantity: mean_spring_extension, unit: um}
+  std_x_end: {quantity: std_spring_extension, unit: um}
+  mean_x_after_bd: {quantity: mean_spring_extension, unit: um}
+  std_x_after_bd: {quantity: std_spring_extension, unit: um}
+settings:
+  dt: 0.0005
+  N: 50
+  smooth_force: true
+  t_sim: 40.0
+  burn_t: 1.0
+  seed: 0
+stochastic: true

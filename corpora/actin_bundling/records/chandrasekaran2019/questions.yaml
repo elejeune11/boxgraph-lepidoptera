@@ -1,0 +1,681 @@
+- id: q_medyan_not_runnable
+  kind: unstated_model
+  about: [medyan_3d_bundle_simulation]
+  text: >
+    The full 3D MEDYAN mechanochemical actomyosin bundle simulation (30 actin filaments of 2 um
+    length, Next Reaction Method reaction-diffusion in 500 nm voxels coupled to conjugate-gradient
+    mechanical equilibration for 2000 s across 42 non-treadmilling pairs and 84 treadmilling
+    triads) cannot be run from the paper alone because the MEDYAN software and input scripts are
+    not bundled with the article and most mechanical/chemical numerical parameters are omitted.
+  citation:
+    page: 4
+    printed_page: "4"
+    quote: "MEDYAN is a mechanochemical force field for simulating active matter"
+    where: Methods
+
+- id: q_medyan_omitted_parameters
+  kind: unstated_input
+  about:
+    - medyan_3d_bundle_simulation
+    - diffusion_coefficients_s211
+    - actin_stretching_eqS3
+    - actin_bending_eqS4
+    - excluded_volume_eqS5
+    - excluded_volume_eqS6
+    - minifilament_stretching_eqS7
+    - crosslinker_stretching_eqS8
+    - boundary_repulsion_eqS9
+    - minifilament_binding_rate_eqS10
+    - myosin_unbinding_catch_bond_eqS12
+    - myosin_zero_load_walking_rate_eqS13
+    - crosslinker_slip_bond_unbinding_eqS15
+  text: >
+    Neither the main article nor S1 Text states numerical values for most MEDYAN simulation
+    parameters, instead referring generally to Popov et al. (2016) [ref-58/ref-S6], Fujiwara et al.
+    (2007) [ref-70], and Erdmann et al. (2013) [ref-77/ref-S8]. Omitted parameters include:
+    G-actin diffusion coefficient D_actin; actin stretching stiffness K_str, bending constant
+    epsilon_bend (and temperature T / k_B T), and excluded-volume coefficient K_vol; myosin and
+    alpha-actinin spring stiffnesses (K_str^MF, K_str^linker) and equilibrium lengths (l_0^MF,
+    l_0^linker); boundary repulsion parameters (epsilon_boundary, lambda); all actin barbed/pointed
+    polymerization and depolymerization rate constants (and whether ATP/ADP.Pi/ADP states were
+    enabled); single-head NMIIA binding rate k_NMIIA,bind, zero-load unbinding rate k^0_NMIIA,unbind,
+    and characteristic unbinding force F_NMIIA,unbind; alpha-actinin binding rate, zero-load
+    unbinding rate k^0_alpha,unbind, and slip-bond force F_alpha,unbind; mechanical equilibration
+    interval; and the reaction box dimensions and total actin concentration for the non-treadmilling
+    simulations.
+  citation:
+    page: 30
+    printed_page: "SI-11"
+    quote: "The rate constants for each of these reactions were obtained from experiments as explained in [6]."
+    where: "SI Section 2.1.2"
+
+- id: q_kuramoto_garbled_eq
+  kind: reading
+  about: [kuramoto_length_s211, compartment_size_medyan]
+  text: >
+    The Kuramoto length equation on p. 29 (SI p. 10, Section 2.1.1) is corrupted in the converted
+    S1 Text PDF, rendering red inverted question marks and placing k^{-}/D inside a superscript of k
+    ('K_l = sqrt(k^{+? (k^{-?}/D)} ??)'). Furthermore, the numerical values of D, k+, and k- used to
+    justify the 500 nm compartment size are not printed, so the printed formula cannot be uniquely
+    reconstructed or evaluated from this document alone.
+  citation:
+    page: 29
+    printed_page: "SI-10"
+    quote: "Kuramoto length is given by the ratio"
+    where: "SI Section 2.1.1"
+
+- id: q_eqS2_mesoscopic_rate_inverted
+  kind: possible_error
+  about: [mesoscopic_rate_eqS2, mesoscopic_rate_eqS2_corrected]
+  text: >
+    Eq. (S2) on p. 31 (SI p. 12) prints c_mu = k_mu * (V_r / N_A)^(n - 1). For a bimolecular
+    reaction (n = 2, deterministic k_mu in L/(mol*s), V_r in L, N_A in 1/mol), this gives dimension
+    L^2/s rather than 1/s. The standard Gillespie/Kurtz mesoscopic conversion divides by
+    (V_r * N_A)^(n - 1) (captured in variant mesoscopic_rate_eqS2_corrected). Note also that for
+    the homodimerization example 2A -> B printed immediately above Eq. (S2), an additional factor
+    of 2 applies (c_mu = 2 k_mu / (N_A V_r)).
+  citation:
+    page: 31
+    printed_page: "SI-12"
+    quote: "Mesoscopic rate constant c μ can be obtained from deterministic rate constant"
+    where: "Eq. (S2)"
+
+- id: q_eqS5_S6_excluded_volume_jacobian
+  kind: possible_error
+  about: [excluded_volume_eqS5, excluded_volume_eqS6, excluded_volume_eqS6_with_jacobian]
+  text: >
+    Two errors appear in SI Section 2.2.1 (p. 32 / SI-13): (1) prose immediately preceding Eq. (S5)
+    writes 'a potential equal to |r_i - r_j|^4 between any two fragments' instead of 1/|r_i - r_j|^4
+    (contradicting Eq. S5 right below); (2) rewriting Eq. (S5) via r_i = x_i^1 + t(x_i^2 - x_i^1)
+    to obtain Eq. (S6) (and Fig. 1, p. 5) drops the Jacobian factor |l_i|*|l_j| while keeping the
+    same symbol K_vol, giving K_vol incompatible dimensions between Eq. (S5) (energy*length^2) and
+    Eq. (S6) (energy*length^4).
+  citation:
+    page: 32
+    printed_page: "SI-13"
+    quote: "This can be rewritten by considering"
+    where: "Eqs. (S5)-(S6)"
+
+- id: q_eqS11_S12_unit_transposition
+  kind: possible_error
+  about:
+    - myosin_bound_heads_eqS11
+    - myosin_bound_heads_eqS11_inverse_force
+    - gamma_myosin_bound_heads_printed
+    - myosin_unbinding_catch_bond_eqS12
+    - myosin_unbinding_catch_bond_eqS12_dimensionless_eps
+    - epsilon_myosin_unbind_printed
+  text: >
+    On p. 34 (SI p. 15), the unit '/pN' appears transposed between Eqs. (S11) and (S12). In
+    Eq. (S11) (N_bound = N_0 + gamma * F_ext), gamma is printed as '0.05' with no unit even though
+    dimensional consistency with N_0 (dimensionless) and F_ext (pN) requires gamma in 1/pN.
+    Immediately below in Eq. (S12), epsilon is printed as '0.2 /pN', which makes k_fil,unbind have
+    dimension 1/(pN*s) instead of 1/s (in MEDYAN / Popov et al. 2016, this tunability factor is
+    dimensionless). Both printed models and their corrected variants are included in the record.
+  citation:
+    page: 34
+    printed_page: "SI-15"
+    quote: "ϵ is chosen to be 0.2 /pN."
+    where: "Eqs. (S11)-(S12)"
+
+- id: q_fv_linear_vs_hill_contradiction
+  kind: unexplained_difference
+  about: [myosin_hill_walking_rate_eqS14, myosin_hill_zeta, myosin_stall_force]
+  text: >
+    Main text Methods (p. 5) states 'The motor walking rate is given by a linear force-velocity
+    relationship for motor walking events', whereas S1 Text Section 2.3.1 Eq. (S14) (p. 34)
+    implements a strongly nonlinear hyperbolic Hill-type force-velocity relation with zeta = 0.1
+    (k_walk = k^0_walk * (F_stall - F_ext) / (F_stall + F_ext / zeta)), which reduces to a linear
+    relation only in the limit zeta -> infinity.
+  citation:
+    page: 5
+    printed_page: "5"
+    quote: "The motor walking rate is given by a linear force-velocity relationship"
+    where: "Methods (p. 5) vs Eq. (S14) (p. 34)"
+
+- id: q_eqS18_sum_index_off_by_one
+  kind: possible_error
+  about:
+    - nematic_order_parameter_eqS18
+    - nematic_order_parameter_eqS18_sum1toN
+    - nematic_order_aligned_limit
+    - nematic_order_random_limit
+  text: >
+    Eq. (S18) on p. 38 (SI p. 19) prints Q_{ab} = (3/2) * ((1/N) * sum_{i=0}^{N} u_{ia} u_{ib} -
+    (1/3) delta_{ab}), summing N + 1 terms (i = 0..N) while dividing by N. This makes Tr(Q) =
+    3/(2N) != 0, gives S = 1 + 3/(2N) > 1 for absolute alignment (e.g., S = 2.5 at N = 1, failing
+    to reproduce the stated limit 1), and gives S = 1/(2N) > 0 for an isotropic network. The
+    corrected variant (sum i = 1..N) reproduces both stated limits S = 0 and S = 1 exactly.
+  citation:
+    page: 38
+    printed_page: "SI-19"
+    quote: "Order parameter 0 corresponds to random network while 1 represents absolute alignment."
+    where: "Eq. (S18)"
+
+- id: q_treadmilling_ma_0045_vs_009
+  kind: possible_error
+  about: [n_myosin_tread, medyan_3d_bundle_simulation]
+  text: >
+    Methods (p. 6) reports the four treadmilling myosin mole ratios as '0.0225 0.045, 0.225 and
+    0.675', whereas Results (p. 9 and p. 10), Fig. 5 (p. 11), S4 Movie (p. 14), S7 Figure (p. 26),
+    and S11 Figure legends (p. 36) consistently report M:A = 0.09 instead of 0.045. Additionally,
+    the S8 Figure caption (p. 27) prints 'M:A = 0.0225' even though the embedded panel labels in
+    page-027.png clearly show 'M:A 0.225'.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "Myosin mole ratios of 0.0225 0.045, 0.225 and 0.675 were considered"
+    where: "Methods (p. 6) vs Results (p. 9) and S7-S8 Figures (pp. 26-27)"
+
+- id: q_percentage_rounding_discrepancies
+  kind: possible_error
+  about:
+    - pct_apolar_nontread_bl
+    - pct_apolar_tread_bl_abi
+    - cmp_pct_apolar_nontread_bl
+    - cmp_pct_apolar_tread_bl_abi
+  text: >
+    Two morphology percentages printed alongside exact fractions deviate from standard rounding:
+    (1) on p. 9, '7/42' is printed as '~20%', whereas 7/42 = 16.67% (rounds to 17%, 3.33 percentage
+    points below 20%); (2) on p. 10, '19/84' is printed as '~21%', whereas 19/84 = 22.62% (rounds to
+    23%; 18/84 = 21.43%, suggesting either an arithmetic error or a 19 vs 18 count slip).
+  citation:
+    page: 10
+    printed_page: "10"
+    quote: "compared to 19/84 (~21%) cases for the apolar initial configurations."
+    where: "Results (pp. 9-10)"
+
+- id: q_s242_sampling_window_and_trajectories_contradiction
+  kind: possible_error
+  about:
+    - nematic_avg_start_time_s242
+    - nematic_avg_trajectories_s242
+    - steady_state_window
+    - n_trajectories_nontread
+    - n_trajectories_tread
+  text: >
+    SI Section 2.4.2 (p. 38 / SI-19) states that the nematic order parameter was averaged over
+    'snapshots after t=1000s' (last 1000 s) and '15 trajectories', directly contradicting Methods
+    (p. 6: 8 trajectories for non-treadmilling; p. 10: 7 trajectories for treadmilling), S2 Figure
+    caption (p. 23: 'from the last 500s'), and SI Section 2.4 (p. 35: 'last 500s of the trajectories
+    are considered for analyses').
+  citation:
+    page: 38
+    printed_page: "SI-19"
+    quote: "Order parameter from snapshots after t=1000s was averaged over 15 trajectories"
+    where: "SI Section 2.4.2"
+
+- id: q_clustering_protocol_unstated_details
+  kind: unstated_input
+  about:
+    - hierarchical_clustering_protocol
+    - jensen_shannon_divergence_eqS16
+    - kl_divergence_gaussian_eqS17
+    - n_apolar_tread_anomalous
+  text: >
+    The hierarchical clustering protocol (Methods p. 6; SI Section 2.4.1 pp. 36-38; S12 Figure)
+    does not state the histogram bin width or kernel smoothing used to estimate Dis++, Dis--, and
+    Dis+- distributions, does not specify the logarithm base (e vs 2) in Eq. (S17) (which also omits
+    the differential 'dx'), and does not specify the dendrogram cut height used to partition clades.
+    In S5 Figure (pp. 24-25), 6 apolar treadmilling conditions (2 bundles and 4 spherical asters)
+    were misclassified into an anomalous mixed clade without stating how they were counted in the
+    reported p. 10 percentages (19/84 BL+ABI, 39/84 AL).
+  citation:
+    page: 25
+    printed_page: "SI-6"
+    quote: "6 of the resulting clusters from apolar conditions were incorrectly clustered"
+    where: "S5 Figure caption and SI Section 2.4.1"
+
+- id: q_steady_state_rg_nonstationary
+  kind: overstated_claim
+  about: [steady_state_window, sim_duration, medyan_3d_bundle_simulation]
+  text: >
+    The paper defines steady state for non-treadmilling trajectories as when the network radius of
+    gyration reaches a stationary value (p. 6, p. 35) and averages over the last 500 s (1500-2000 s).
+    However, S10 Figure (p. 35 / SI-16) shows Rg(t)/Rg(0) still rising markedly throughout
+    1500-2000 s for unipolar M:A = 0.675 (rising from ~0.75 at 350 s to ~1.25 at 2000 s) and for
+    apolar M:A = 0.0225 (still climbing steadily past 1.5 at 2000 s), indicating those trajectories
+    have not reached stationary Rg by 2000 s.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "A trajectory is considered to have reached steady state when the network"
+    where: "Results (p. 6) and S10 Figure (p. 35)"
+
+- id: q_myosin_molecules_vs_heads_and_stall_force
+  kind: reading
+  about: [myosin_heads_per_mf_sim, myosin_units_per_mf_intro, myosin_stall_force]
+  text: >
+    Minifilament stoichiometry is stated inconsistently: p. 2 cites '10-30 myosin units' [ref-28],
+    SI Section 2.1.2 (p. 30) states 'NMIIA minifilaments are made of 15-30 myosin molecules [7] and
+    the number of myosin heads is chosen at random within the specified range' (conflating two-headed
+    myosin II molecules with single heads), and SI Section 2.2.2 (p. 32) says '15 to 30 heads'.
+    Additionally, Eq. (S14) (p. 34) gives a single fixed F_stall = 12.6 pN described as 'the
+    minifilament stall force' independent of N_total (whereas in the cited parallel cluster model
+    [ref-S8], ensemble stall force scales with the number of motors).
+  citation:
+    page: 30
+    printed_page: "SI-11"
+    quote: "NMIIA minifilaments are made of 15-30 myosin molecules [7] and the number of myosin heads"
+    where: "SI Section 2.1.2 and Section 2.3.1 (p. 34)"
+
+- id: q_si_figure_and_crossref_errors
+  kind: possible_error
+  about: [medyan_3d_bundle_simulation, hierarchical_clustering_protocol, shape_parameter_eqS19]
+  text: >
+    Multiple figure-numbering, caption, and cross-reference misprints appear across the article and
+    S1 Text: (1) Fig. 5 caption (p. 11) prints '0>χ≤1.0' instead of '0<χ≤1.0'; (2) Fig. 4 caption
+    (p. 8) lists 'minus-minus, minus-plus and plus-minus' instead of plus-plus; (3) S2 Figure (p. 23)
+    is mislabeled 'S1 Figure' with x-axis typo 'Nemetic Order Parameter'; (4) S4 Figure caption
+    (p. 24) writes 'M:S' instead of 'M:A'; (5) S5 Figure caption (pp. 24-25) ends mid-sentence
+    ('In addition, we also looked at the') and inconsistently describes Type A/B catastrophes relative
+    to p. 10; (6) S6-S9 captions refer to 'Fig S4' instead of 'Fig S5'; (7) SI 2.2.1 (p. 32) cites
+    'Fig 2' instead of 'Fig 1'; (8) SI 2.4.1 (pp. 37-38) cites 'Fig S10b-d' instead of S12;
+    (9) SI 2.4.4 (p. 39) cites 'largest eigenvector of Eq. 11' instead of largest eigenvalue of
+    Eq. (S19); (10) the flexible-volume schematic on p. 40 is labeled 'Figure S10' (duplicating S10
+    on p. 35, making 13 supplemental figures despite p. 13 stating 'Twelve supplemental figures');
+    and (11) S12 Figure caption (p. 37) writes 'α:A 0.01' whereas panel headers and text show 'α:A 0.05'.
+  citation:
+    page: 11
+    printed_page: "11"
+    quote: "different ranges of treadmilling factor namely"
+    where: "Fig. 5 caption (p. 11) and S1 Text (pp. 23-40)"
+
+- id: q_fig6d_uncalibrated_yaxis
+  kind: reading
+  about: [medyan_3d_bundle_simulation]
+  text: >
+    Fig. 6D (p. 12) plots the spatial probability density P(d) of NMIIA and alpha-actinin along the
+    bundle axis (0-4000 nm) at M:A = 0.0225, chi = 1.0, and alpha:A = 0.01, 0.1, 0.4, but omits all
+    numerical tick marks and scale labels on the vertical P(d) axis. Downstream figure digitization
+    can therefore extract peak x-positions and relative profiles, but not absolute probability densities.
+  citation:
+    page: 12
+    printed_page: "12"
+    quote: "probability of finding NMIIA (dotted line) and α-actinin (solid line) along bundle axis are plotted."
+    where: "Fig. 6D caption"
+
+- id: q_audit_figS10_expansion_mass_loss
+  kind: possible_error
+  about:
+    - reaction_volume_geometry
+    - flexible_vol_sharing_fraction
+    - flexible_vol_init_compartments_x
+    - medyan_3d_bundle_simulation
+  text: >
+    In the flexible-volume expansion schematic (Figure S10 [second S10, actually S13] panel b,
+    p. 40 / SI-21), the species-transfer rule at the right boundary expanding from old compartment
+    N8 into newly added empty compartment N9 prints 'N8=N8/2' and 'N9=N9/2' instead of 'N9=N8/2'.
+    Because N9 starts empty (0 copies), N9=N9/2 leaves N9 = 0 and destroys half of N8, violating
+    particle conservation (unlike the left expansion N0=N1/2, N1=N1/2 and contraction N2=N2+N1,
+    N7=N7+N8). In addition, SI Section 2.5 (p. 39) and Figure S10 (p. 40) divide discrete integer
+    copy numbers N_i by 2 without stating how odd copy numbers are rounded to preserve conservation.
+  citation:
+    page: 40
+    printed_page: "SI-21"
+    quote: "Scenarios where reaction volume has contracted (a) and expanded (b)"
+    where: "Figure S10 [S13] panel (b) and SI Section 2.5 (pp. 39-40)"
+
+- id: q_audit_eqS14_superstall_negative_rate_and_hill_ref
+  kind: possible_error
+  about:
+    - myosin_hill_walking_rate_eqS14
+    - myosin_bound_heads_eqS11
+    - ref-S16
+    - ref-S10
+  text: >
+    Two issues affect Eq. (S14) (p. 34 / SI-15) and S1 Text references (p. 41 / SI-22):
+    (1) Printed Eq. (S14), k_walk = k^0_walk * (F_stall - F_ext)/(F_stall + F_ext/zeta), states no
+    lower clamp at zero for super-stall loads F_ext > F_stall = 12.6 pN, yielding negative walking
+    rates k_walk < 0 incompatible with Next Reaction Method waiting times tau_mu = (1/a_mu) ln(1/r_mu)
+    (p. 31); similarly Eq. (S11), N_bound = N_0 + gamma*F_ext, states no upper bound at N_total.
+    (2) To support 'Hill [16] type force-velocity relation' on p. 34, S1 Text Reference 16 (ref-S16,
+    p. 41) cites A. V. Hill's 1910 hemoglobin oxygen-binding paper (J. Physiol. 40: iv-vii) rather
+    than Hill's 1938 muscle force-velocity paper (Proc. R. Soc. B 126: 136-195), and attaches a
+    corrupted Cambridge University Press DOI (10.1017/CBO9781107415324.004) shared with corrupted
+    ref-S10 (Gardiner's Handbook of Stochastic Methods merged with a mindfulness-intervention title).
+    Main References also duplicate Meyer & Aebi (1990) as ref-15 (with mangled authors 'Resolution H,
+    Microscopy E') and ref-78, and duplicate Craig et al. (2011) as ref-34 and ref-97.
+  citation:
+    page: 34
+    printed_page: "SI-15"
+    quote: "we employ a Hill [16] type force-velocity relation"
+    where: "Eq. (S14) (p. 34) and SI References 10, 16 (p. 41)"
+
+- id: q_audit_eqS16_S17_gaussian_scope_and_omml_artifacts
+  kind: reading
+  about:
+    - jensen_shannon_divergence_eqS16
+    - kl_divergence_gaussian_eqS17
+    - hierarchical_clustering_protocol
+  text: >
+    Audit reading disagreement on model scope: kl_divergence_gaussian_eqS17 and
+    jensen_shannon_divergence_eqS16 specialize Eqs. (S16)-(S17) (p. 38 / SI-19) to 1D Gaussian
+    densities P = N(mu_1, sigma_1^2) and Q = N(mu_2, sigma_2^2) using natural logarithms, whereas
+    the paper states Eqs. (S16)-(S17) for general continuous distributions and applies them in
+    S12 Figure panel (b) (p. 37 / SI-18) to strongly non-Gaussian empirical filament-end distance
+    histograms (Dis--, Dis+-, Dis++) combined via the printed 3-term sum J_{i,j} = JS(Dis_i--|Dis_j--)
+    + JS(Dis_i+-|Dis_j+-) + JS(Dis_i++|Dis_j++). Kept unmodified per audit rules. Also note that in
+    the converted S1 Text PDF (p. 38), LibreOffice OMML conversion corrupted the divergence delimiter
+    '||' in Eqs. (S16)-(S17) into 'v|' and a red inverted question mark 'v?' in D(Q v? M).
+  citation:
+    page: 38
+    printed_page: "SI-19"
+    quote: "Jensen Shannon divergence between two continuous distributions P and Q is given by,"
+    where: "Eqs. (S16)-(S17) (p. 38) and S12 Figure panel (b) (p. 37)"
+
+- id: q_audit_eqS18_S19_undefined_symbols_and_scope_notes
+  kind: reading
+  about:
+    - nematic_order_parameter_eqS18
+    - shape_parameter_eqS19
+    - boundary_repulsion_eqS9
+    - myosin_unbinding_catch_bond_eqS12
+    - rel_excluded_volume_s5_s6_printed_rescaled
+    - cmp_nematic_aligned_printed_N1
+  text: >
+    Additional audit findings and reading notes across S1 Text and the record:
+    (1) Several equation symbols are never defined in the paper's prose: distance d in Eq. (S9)
+    (p. 33 / SI-14, where prose also states 'The repulsion energy epsilon_boundary scales
+    exponentially with characteristic length lambda' rather than the potential U_i^boundary), the
+    physical meaning of epsilon in Eq. (S12) (p. 34 / SI-15), and both unit-vector component u_{i,alpha}
+    and count N (cylinders vs. filaments) in Eq. (S18) (p. 38 / SI-19).
+    (2) In SI Section 2.4.3 (p. 39 / SI-20), Eq. (S19) defines 3 x N matrix R^T of centered bead
+    coordinates and states that eigenvalues of R^T R correspond to variance along the three principal
+    axes; strictly, R^T R is the unnormalized scatter matrix (N times the covariance matrix), though
+    N cancels in Sh = lambda_1 / sum(lambda_i), whose 3D range is [1/3, 1].
+    (3) Audit reading disagreements/notes on first-reader choices (left unmodified):
+    rel_excluded_volume_s5_s6_printed_rescaled labels the K_vol -> K_vol * L^2 mapping as
+    provenance: stated even though p. 32 equates Eqs. (S5) and (S6) with identical K_vol without
+    mentioning an L^2 rescaling; nematic_order_parameter_eqS18 symbolic() returns only the prolate
+    cos^2(theta) >= 1/3 branch (agreeing with all tested runs); and cmp_nematic_aligned_printed_N1
+    has note text saying '(not reproduced)' whereas BoxGraph's integer-precision band on printed '1'
+    classifies 2.5 vs '1' as 'close'.
+    (4) SI Section 2.2.2 (p. 31 / SI-12) states NRM 'is used to simulate unipolar actomyosin bundles
+    in this study' (omitting apolar bundles), and SI numbering duplicates Section 2.2 and Subsection
+    2.2.2 three times (pp. 20, 30-33).
+  citation:
+    page: 39
+    printed_page: "SI-20"
+    quote: "Eigen decomposition of RTR gives eigenvalues"
+    where: "SI Sections 2.2.2, 2.3.1, 2.4.2, 2.4.3 (pp. 31-39)"
+
+- id: q_figs10b_fluctuation_and_nonstationarity
+  kind: overstated_claim
+  about:
+    - figs10a_uni_ma0p675_fig
+    - figs10b_apo_ma0p0225_fig
+    - figs10b_apo_ma0p09_fig
+    - figs10b_apo_ma0p675_fig
+    - steady_state_window
+    - sim_duration
+  text: >
+    Calibrated digitization of S10 Figure (p. 35 / SI-16) refutes the caption's claim that 'Both
+    unipolar and apolar bundles at high myosin mole ratio (0.675) show higher fluctuation in
+    Rg(t)/Rg(0) due to myosin activity' for the apolar case and quantifies strong non-stationarity
+    during the 'steady state' 1500-2000 s analysis window. In S10(a) (unipolar), M:A = 0.675 indeed
+    exhibits a much wider SD band (SD = 0.062 at 1500 s rising to 0.088 at 2000 s, vs ~0.01-0.02
+    for lower M:A). In S10(b) (apolar), however, M:A = 0.675 has SD = 0.043-0.050 across 1500-2000 s
+    (0.0430 at 1500 s, 0.0495 at 1600 s, 0.0494 at 1900 s, 0.0473 at 2000 s), which is smaller than
+    M:A = 0.09 (SD = 0.053-0.056 at 1500-1600 s) and comparable to M:A = 0.0225 (SD = 0.033-0.041).
+    Furthermore, Rg(t)/Rg(0) continues to climb steeply across 1500-2000 s in unipolar M:A = 0.675
+    (1.125 -> 1.233, +9.6%) and in all six apolar traces (+1.5% to +11.1%), especially M:A = 0.0225
+    (1.361 -> 1.511, +11.1%) and M:A = 0.675 (1.541 -> 1.673, +8.6%).
+  citation:
+    page: 35
+    printed_page: "SI-16"
+    quote: "Both unipolar and apolar bundles at high myosin mole ratio (0.675) show higher fluctuation"
+    where: "S10 Figure caption (p. 35)"
+
+- id: q_figs2_apolar_bl_count_contradiction_and_eqS18_bound
+  kind: possible_error
+  about:
+    - figs2_uni_al_fig
+    - figs2_apo_al_fig
+    - n_apolar_nontread_bl
+    - nematic_order_parameter_eqS18
+    - nematic_order_parameter_eqS18_sum1toN
+  text: >
+    Calibrated inspection and digitization of S2 Figure (p. 23 / SI-4, mislabeled 'S1 Figure') reveal
+    two findings: (1) Both the main plot and zoomed inset of the apolar S2 panel color ~19-21 points
+    green (BL, spanning S = 0.85-0.99, Sh = 0.88-0.99) and only ~15-16 red (ABI), directly
+    contradicting main text p. 9 ('7/42' apolar BL cases), Fig. 4 (p. 8, exactly 7 green M:A = 0.0225
+    leaves in the apolar dendrogram), and S3 Figure (p. 23, 7 green apolar curves), suggesting the
+    unipolar (~21-case) BL color classification was mistakenly applied to the apolar S2 panel.
+    (2) Every plotted point across both S2 panels obeys S <= 0.992 <= 1.0 and Sh >= 0.470 > 1/3
+    (digitized isolated AL circles span S = 0.305-0.600, Sh = 0.478-0.526 in unipolar and S = 0.360-0.560,
+    Sh = 0.608-0.729 in apolar), confirming the authors' analysis code evaluated the corrected i = 1..N
+    sum (nematic_order_parameter_eqS18_sum1toN) rather than the misprinted i = 0..N sum in Eq. (S18)
+    (which yields S = 1.05 at N = 30).
+  citation:
+    page: 23
+    printed_page: "SI-4"
+    quote: "BL, ABI and AL morphologies are colored respectively in green, red and blue respectively."
+    where: "S2 Figure (p. 23, mislabeled 'S1 Figure') vs Fig. 4 (p. 8) and Results (p. 9)"
+
+- id: q_figs4_bound_crosslinker_local_inversions_and_steric_ceiling
+  kind: reading
+  about:
+    - figs4_uni_ma0p0225_fig
+    - figs4_uni_ma0p18_fig
+    - figs4_uni_ma0p225_fig
+    - figs4_apo_ma0p0225_fig
+    - figs4_apo_ma0p225_fig
+    - figs4_apo_ma0p675_fig
+    - binding_sites_per_cylinder
+    - l0_cylinder
+  text: >
+    Calibrated digitization of S4 Figure (p. 24 / SI-5, 65 points with SD bars across 12 series) shows
+    that bound crosslinker mole ratio alpha_bound:A saturates below the steric binding-site ceiling
+    (4 binding sites per 108 nm cylinder / 2 sites per crosslinker / ~40 actin monomers per cylinder
+    = 0.050), reaching 0.0414 +/- 0.0005 (unipolar) and 0.0376 +/- 0.0008 (apolar) at alpha:A = 0.8,
+    M:A = 0.0225. Two minor local reversals of the caption's monotonic claim ('As M:S is increased,
+    the average number of linkers bound to the network reduces') appear in the plotted means: in
+    unipolar bundles at alpha:A = 0.8, M:A = 0.225 (0.0356 +/- 0.0011) rises slightly above M:A = 0.18
+    (0.0351 +/- 0.0010, within 1 SD); and in apolar bundles at alpha:A = 0.1, M:A = 0.675 (~0.0015)
+    sits slightly above M:A = 0.225 (~0.0009) before crossing below by alpha:A = 0.25 (0.0031 +/- 0.0008
+    vs 0.0037 +/- 0.0023).
+  citation:
+    page: 24
+    printed_page: "SI-5"
+    quote: "As M:S is increased, the average number of linkers bound to the network reduces."
+    where: "S4 Figure caption (p. 24)"
+
+- id: q_figs11_s12b_treadmilling_nonmonotonic_and_pdf_units
+  kind: reading
+  about:
+    - figs11a_uni_a0p01_ma0p0225_fig
+    - figs11c_uni_a0p4_ma0p675_fig
+    - figs11d_apo_a0p01_ma0p0225_fig
+    - figs11d_apo_a0p01_ma0p225_fig
+    - figs11f_apo_a0p4_ma0p675_fig
+    - figs12b_ma0p0225_dis_mm_fig
+    - figs12b_ma0p0225_dis_pm_fig
+    - figs12b_ma0p0225_dis_pp_fig
+    - figs12b_ma0p675_dis_mm_fig
+    - figs12b_ma0p675_dis_pm_fig
+    - figs12b_ma0p675_dis_pp_fig
+  text: >
+    Calibrated digitization of S11 Figure (p. 36 / SI-17; 24 series, 108 points) and S12 Figure panel b
+    (p. 37 / SI-18; 6 curves, 63 points) clarifies two quantitative behaviors not stated in prose:
+    (1) In S11, treadmilling rates at chi = 1.0 ('in-vitro treadmilling rate', p. 6) lie at 0.46-0.58
+    monomers/(fil. s) for alpha:A = 0.01-0.1 and 0.34-0.51 for alpha:A = 0.4; at chi = 10.0, high
+    myosin and crosslinking (M:A = 0.675, alpha:A = 0.4) strongly suppress treadmilling to 1.00 +/- 0.60
+    (unipolar) and 0.97 +/- 0.59 (apolar) vs 4.60 +/- 0.91 at M:A = 0.0225 (unipolar). Moreover, in
+    apolar panels S11(d)-(e) (alpha:A = 0.01, 0.1), treadmilling at chi = 10.0 is non-monotonic in M:A,
+    with M:A = 0.0225 (3.11 +/- 1.31 and 3.47 +/- 1.37) falling below M:A = 0.09 (4.09 +/- 0.94 and
+    4.21 +/- 1.05) and M:A = 0.225 (4.25 +/- 0.81 and 4.34 +/- 0.81). All six S11 legends confirm
+    M:A = 0.09 (supporting q_treadmilling_ma_0045_vs_009). (2) In S12(b), trapezoidal integrals of the
+    digitized black mean curves are ~0.94-1.09 (bundle Dis--: 0.94, Dis+-: 1.05, Dis++: 0.98; aster
+    Dis+-: 1.09, Dis++: 1.03), demonstrating that the unstated y-axis is a normalized probability density in 1/nm
+    (integral P(d) dd = 1), with unipolar bundle Dis+- peaking at 2120 nm (0.00500 nm^-1) vs the
+    initial 2000 nm bundle length and aster Dis-- broadening across 0-4000 nm (twice the filament length).
+  citation:
+    page: 36
+    printed_page: "SI-17"
+    quote: "Mean and standard deviation of treadmilling rates of networks"
+    where: "S11 Figure (p. 36) and S12 Figure panel b (p. 37)"
+
+- id: q_popov2016_medyan_parameter_and_equation_drift
+  kind: unexplained_difference
+  about:
+    - ref-58
+    - ref-S6
+    - mesoscopic_rate_eqS2
+    - excluded_volume_eqS5
+    - excluded_volume_eqS6
+    - diffusion_coefficients_s211
+    - minifilament_binding_rate_eqS10
+    - myosin_bound_heads_eqS11
+    - myosin_unbinding_catch_bond_eqS12
+    - myosin_zero_load_walking_rate_eqS13
+    - myosin_hill_walking_rate_eqS14
+    - myosin_stall_force
+    - nematic_order_parameter_eqS18
+    - medyan_3d_bundle_simulation
+  text: >
+    Line-by-line comparison of chandrasekaran2019's MEDYAN equations (Eqs. S2-S18) and parameters
+    against its parent framework paper popov2016 (ref-58 / ref-S6) reveals four categories of
+    equation mutations, parameter drifts, and bug propagation (plus 0 cross-record validations, since
+    both records are pure MEDYAN simulations with 0 origin: measured experimental datums):
+    (1) NMIIA stall-force double error (Eq. S14 vs Popov S3 Eq. 4 & Table 2C): Popov S3 Eq. (4)
+    (p. 45) uses F_ext / N_total with single-head stall force F_stall = K_head * d_step = 2.5 * 6 =
+    15 pN (Table 2C, p. 61), giving ensemble stall force N_total * F_stall = 225-450 pN for
+    N_total = 15-30. Chandrasekaran Eq. (S14) (p. 34) algebraically absorbs N_total into F_stall
+    (verified via rel_popov2016_myosin_hill_walking_eqS14) and labels it 'the minifilament stall
+    force', but prints F_stall = 12.6 pN—literally Popov Table 2C's single-head unbinding force
+    F_NMIIA,unbind = 12.6 pN from the row immediately above F_stall = 15 pN—understating ensemble
+    stall force by 17.9x-35.7x. Eq. (S13) also omits Popov's step-size ratio d_step / l_site = 6/27
+    converting ensemble walking rate to cylinder-site hopping rate.
+    (2) Exact origin of the /pN unit transposition between Eqs. (S11) and (S12): Popov S3 Text (p. 46)
+    and Table 2C (p. 61) list alpha = 1.0, beta = 0.2 (dimensionless), gamma = 0.05 /pN, zeta = 0.1.
+    Chandrasekaran p. 33-34 silently absorbs alpha = 1.0 into Eq. (S10), renames beta to epsilon,
+    and swaps the /pN unit from gamma onto epsilon (gamma = 0.05 dimensionless, epsilon = 0.2 /pN).
+    (3) Propagated upstream bugs vs new regressions: Two printed mathematical errors were copied
+    verbatim from Popov et al. (2016)—the dropped Jacobian |l_i|*|l_j| between Popov Eqs. (3)-(4)
+    and Chandrasekaran Eqs. (S5)-(S6) (where Popov Table 2B also misprints K_vol = 10^5 pN/nm^4
+    instead of pN*nm^5, while Chandrasekaran omits K_vol's value and adds a prose typo '|r_i - r_j|^4'),
+    and the off-by-one nematic sum i = 0..N divided by N in Popov Eq. (14) copied into Eq. (S18)
+    (both refuted by S2 Figure's S <= 0.992 <= 1.0). Two additional regressions appear only in
+    Chandrasekaran: Eq. (S2) inverts Popov Table 2A's correct k_sim = k_macro / (N_A * V) into
+    k_mu * (V_r / N_A)^(n-1), and SI 2.1.1 (p. 29) corrupts Popov's Kuramoto length l_k = sqrt(6 D tau).
+    (4) Undocumented simulation-protocol drifts: diffusion ratios jump 2.5x for alpha-actinin
+    (1/10 -> 1/4) and 12.5x for NMIIA (1/100 -> 1/8) (p. 30 vs Popov p. 42 & Table 2A); binding sites
+    change from dual occupancy (Popov p. 16) to mutually exclusive occupancy (pp. 30, 32; 4 sites /
+    108 nm = 27 nm spacing); minifilament heads shift from 10-30 (Popov p. 16) to 15-30 (pp. 30, 32);
+    and myosin-to-actin ratios shift from Popov's R_m:a = 0.005-0.02 (myosin molecules to actin,
+    2-8 minifilaments in 1 um^3) to Chandrasekaran's M:A = 0.0225-0.675 (myosin heads to actin,
+    multiples of 22.5e-3, up to 33.75x higher, explaining why bundles collapse to asters here at
+    M:A >= 0.225-0.675 but never in Popov). Conversely, S11 Figure's chi = 1.0 treadmilling rates
+    (0.46-0.58 monomers/(fil. s)) closely match Popov's baseline 0.5 s^-1, and S10 Figure avoids
+    Popov's absolute R_g > sqrt(3)*L/2 scale paradox by plotting normalized R_g(t)/R_g(0).
+  citation:
+    page: 34
+    printed_page: "SI-15"
+    quote: "where F stall =12.6 pN is the minifilament stall force and"
+    where: "SI Sections 2.1-2.4 (pp. 29-39) vs Popov et al. (2016) Eqs. 1-14, S2-S3 Text, Tables 2A-D"
+
+- id: q_chandrasekaran2024_medyan_vs_cytosim_comparison_and_no_validation
+  kind: reading
+  about:
+    - crosslinker_slip_bond_unbinding_eqS15
+    - actin_stretching_eqS3
+    - actin_bending_eqS4
+    - boundary_repulsion_eqS9
+    - shape_parameter_eqS19
+    - medyan_3d_bundle_simulation
+  text: >
+    Cross-record relate and validate audit of chandrasekaran2019 (MEDYAN untethered actomyosin
+    bundles) vs chandrasekaran2024 (same first author, CytoSim + LAMMPS VASP liquid-droplet F-actin
+    rings/shells/disks): 0 cited.yaml links (2019 precedes 2024), 3 verified proposed model relations
+    (exact Bell slip-bond identity rel_chandrasekaran2024_bell_slip_bond_eqS15; LAMMPS harmonic bond
+    and small-angle bending scaling relations rel_chandrasekaran2024_actin_stretching_scales_lammps_bond
+    and rel_chandrasekaran2024_actin_bending_scales_lammps_angle), and 0 cross-record validations.
+    No validation is possible because chandrasekaran2019 has 0 origin: measured datums, while all 10
+    origin: measured datums in chandrasekaran2024 are experimental percentage abundances (shell, ring,
+    disk %) of motor-free WT and GABmut VASP phase-separated droplets encapsulating polymerizing F-actin
+    (Fig. 6D and text), which none of chandrasekaran2019's runnable equations predicts. Key framework
+    contrasts across the author's two studies: MEDYAN (2019) uses quasi-static CG minimization + RDME
+    NRM, l_0 = 108 nm, l_p = 17 um, cosine hinge bending eps*(1 - cos theta), exponential hard-wall
+    boundary repulsion, single-step alpha-actinin Bell unbinding (F_u = 17.2 pN), and active NMIIA
+    catch-bond motors; CytoSim/LAMMPS (2024) uses overdamped Langevin dynamics, l_seg = 100 nm,
+    kappa = 0.075 pN*um^2 (l_p = 18.25 um at k_B T = 4.11 pN*nm), quadratic LAMMPS harmonic bonds
+    (K_bond = 30000 k_B T/sigma^2) and angles (K_angle = 2500 k_B T/rad^2), linear harmonic droplet
+    confinement, and two-step VASP tetramer Bell unbinding (f_u = 10 pN) without molecular motors.
+  citation:
+    page: 4
+    printed_page: "4"
+    quote: "In contrast to MEDYAN, other cytoskeletal modeling strategies, such as Cytosim"
+    where: "Methods (pp. 4-5) vs chandrasekaran2024 CytoSim/LAMMPS models"
+
+- id: q_bathe2008_orthogonal_scales_and_wlb_regime
+  kind: reading
+  about:
+    - initial_bundle_length
+    - initial_filament_count
+    - hexagonal_lattice_spacing
+    - l_p_actin
+    - crosslinker_stretching_eqS8
+    - medyan_3d_bundle_simulation
+  text: >
+    Cross-record relate and validate audit of bathe2008 (continuum wormlike bundle [WLB] theory) vs
+    chandrasekaran2019 (MEDYAN 3D actomyosin bundles): neither paper cites the other (0 cited.yaml
+    links), 0 mathematical model relations exist (bathe2008 models macroscopic passive bundle bending
+    stiffness kappa_B(N, alpha) and shear coupling alpha, whereas chandrasekaran2019 models microscopic
+    single-segment potentials, stochastic RDME kinetics, NMIIA/alpha-actinin rates, and trajectory
+    order parameters JSD, S, Sh), and 0 cross-record validations exist (chandrasekaran2019 has 0
+    origin: measured datums and no model outputting bundle bending stiffness kappa_B to test against
+    bathe2008's 6 digitized Claessens 2006 fascin bundle stiffness curves). As a physical scale check,
+    evaluating Bathe's WLB coupling parameter alpha = (k_x / (E_f A_f)) * (L^2 / delta) on
+    chandrasekaran2019's initial N = 30, L = 2 um, d_lat = 35 nm alpha-actinin bundle (E_f A_f =
+    4.4e-8 N from bathe2008; axial crosslink spacing delta ~ 33-1350 nm inferred from S4 Fig's
+    alpha_bound:A = 0.001-0.0414 across 4 sites per 108 nm cylinder; geometric factor
+    chi^2 = (4/3)*((d_f + t)/d_f)^2 = 48 for t = 35 nm, d_f = 7 nm) gives alpha = 1e-4 to 0.034
+    (decoupled/weakly coupled, kappa_B/(N kappa_f) = 1.0-2.3) under Bathe's crosslink shear stiffness
+    k_x = 1e-6 to 1e-5 N/m, versus alpha = 0.73-27 (strongly coupled, kappa_B/(N kappa_f) = 29-602)
+    if MEDYAN's axial alpha-actinin spring stiffness K_alpha = 8 pN/nm = 8e-3 N/m (from Popov 2016)
+    were used as k_x—highlighting the mechanical difference between freely pivoted axial springs in
+    MEDYAN and finite-shear crosslinks in WLB theory.
+  citation:
+    page: 6
+    printed_page: "6"
+    quote: "Filaments were initially"
+    where: "Methods (pp. 5-6) and S4 Figure (p. 24) vs bathe2008 WLB theory"
+
+- id: q_freedman2019_medyan_vs_afines_comparison_and_no_validation
+  kind: reading
+  about:
+    - ref-83
+    - actin_stretching_eqS3
+    - actin_bending_eqS4
+    - crosslinker_stretching_eqS8
+    - excluded_volume_eqS6
+    - crosslinker_slip_bond_unbinding_eqS15
+    - medyan_3d_bundle_simulation
+  text: >
+    Cross-record relate and validate audit of chandrasekaran2019 (MEDYAN) vs freedman2019 (AFINES +
+    1D KMC/MC passive crosslinker sorting; bioRxiv preprint cited qualitatively on p. 7 as ref-83,
+    with AFINES also compared on p. 4 via ref-68): 0 cited.yaml links (ref-83 is discussed only
+    qualitatively for passive length-mismatch sorting), 4 verified proposed mechanical-potential
+    relations (exact stretching identities rel_freedman2019_actin_stretching_eqS3 and
+    rel_freedman2019_crosslinker_stretching_eqS8, plus exact small-angle Taylor derivation
+    rel_freedman2019_actin_bending_derived_harmonic and semiflexible approximation
+    rel_freedman2019_actin_bending_approx_harmonic), and 0 cross-record validations. No validation
+    applies because chandrasekaran2019 has 0 origin: measured datums, while freedman2019's 8 origin:
+    measured datums are 2 TIRF actin polymerization speeds (46.99 +/- 3.62 and 22.15 +/- 3.78 nm/s at
+    1.5 and 0.75 uM actin) and 6 passive fascin/alpha-actinin sorted domain lengths (um), none of which
+    is predicted by chandrasekaran2019's runnable models. Quantitative MEDYAN-vs-AFINES contrasts:
+    both adopt l_p = 17 um and ~35 nm alpha-actinin length, but AFINES softens actin stretching by
+    20,000x (k_a = 5 pN/um = 0.005 pN/nm vs MEDYAN 100 pN/nm) and crosslinker stretching by 800x
+    (k_xl = 10 pN/um = 0.01 pN/nm vs MEDYAN 8 pN/nm), uses 9.26x longer segments (l_a = 1 um vs
+    108 nm), quadratic small-angle bending vs cosine hinge bending, finite-range soft quadratic
+    excluded volume vs inverse-4th-power line-integral excluded volume, and force-independent two-step
+    MC crosslinker unbinding (0.05 s^-1) vs single-step Bell slip-bond unbinding (0.3 s^-1, 17.2 pN).
+  citation:
+    page: 7
+    printed_page: "7"
+    quote: "Freedman et al. have established that a significant"
+    where: "Results (p. 7, citing ref-83) and Methods (p. 4, citing ref-68) vs freedman2019"
+
+
+

@@ -1,0 +1,50 @@
+id: afines_parameter_mapping
+name: AFINES C++ parameter derivations (L_p, initial links, kb = s_bend/mld, Stokes mobility/diffusion, grid, molecule count)
+role: processing
+stated:
+  file: src/motor_ensemble.cpp
+  lines: "313-317"
+  quote: "double kb  = modulus/mld;"
+  where: "prog/bundles.cpp:224,325-326,333,362,378; src/motor_ensemble.cpp:42,314; src/bead.cpp:25; src/spacer.cpp:55; plots.nb:8466,14253"
+equation: "n_links_init = nmonomer - 1; L_init = n_links_init * link_length; L_p = polymer_bending_modulus / temperature; kb_s = s1_bend / l_short; kb_l = s2_bend / l_long; damp_bead = 6*pi*vis*actin_length; damp_s = 6*pi*vis*l_short; damp_l = 6*pi*vis*l_long; nm = ceil(rho * X * Y); mu_kBT = mu_lat / temperature"
+inputs:
+  nmonomer: {quantity: bead_count, unit: dimensionless}
+  link_length: {quantity: filament_link_length, unit: um}
+  nlink_max: {quantity: filament_link_count, unit: dimensionless}
+  polymer_bending_modulus: {quantity: bending_modulus, unit: pN*um^2}
+  temperature: {quantity: thermal_energy, unit: pN*um}
+  viscosity: {quantity: dynamic_viscosity, unit: Pa*s}
+  actin_length: {quantity: particle_radius, unit: um}
+  spacer1_length: {quantity: crosslinker_length, unit: um}
+  spacer2_length: {quantity: crosslinker_length, unit: um}
+  s1_bend: {quantity: crosslinker_bending_modulus, unit: pN*um^2}
+  s2_bend: {quantity: crosslinker_bending_modulus, unit: pN*um^2}
+  xrange: {quantity: assay_dimension, unit: um}
+  yrange: {quantity: assay_dimension, unit: um}
+  grid_factor: {quantity: grid_density, unit: 1/um}
+  spacer2_density: {quantity: areal_density, unit: 1/um^2}
+  nfixed: {quantity: spacer_count, unit: dimensionless}
+  lattice_mu: {quantity: chemical_potential, unit: pN*um}
+outputs:
+  n_links_init: {quantity: filament_link_count, unit: dimensionless}
+  init_filament_length: {quantity: filament_length, unit: um}
+  max_filament_length: {quantity: filament_length, unit: um}
+  persistence_length: {quantity: filament_persistence_length, unit: um}
+  kb_short_eff: {quantity: crosslinker_bending_stiffness, unit: pN*um}
+  kb_long_eff: {quantity: crosslinker_bending_stiffness, unit: pN*um}
+  kb_ratio_eff: {quantity: bending_stiffness_ratio, unit: dimensionless}
+  s_bend_ratio_raw: {quantity: bending_stiffness_ratio, unit: dimensionless}
+  damp_bead: {quantity: drag_coefficient, unit: pN*s/um}
+  mu_bead: {quantity: stokes_mobility, unit: um/(pN*s)}
+  D_bead: {quantity: diffusion_coefficient, unit: um^2/s}
+  damp_short: {quantity: drag_coefficient, unit: pN*s/um}
+  D_short: {quantity: diffusion_coefficient, unit: um^2/s}
+  damp_long: {quantity: drag_coefficient, unit: pN*s/um}
+  D_long: {quantity: diffusion_coefficient, unit: um^2/s}
+  xgrid: {quantity: grid_cell_count, unit: dimensionless}
+  ygrid: {quantity: grid_cell_count, unit: dimensionless}
+  n_spacers_total: {quantity: spacer_count, unit: dimensionless}
+  n_spacers_random: {quantity: spacer_count, unit: dimensionless}
+  lattice_mu_kBT: {quantity: chemical_potential_thermal, unit: dimensionless}
+settings: {}
+stochastic: false

@@ -1,0 +1,54 @@
+# Cross-record links from chandrasekaran2019 values to popov2016 (MEDYAN framework,
+# Popov, Komianos & Papoian, PLoS Comput. Biol. 12: e1004877, 2016; ref-58 / ref-S6).
+#
+# Notes on scope across all four partner records:
+# 1. popov2016 (ref-58 / ref-S6):
+#    - `compartment_size_medyan` (500 nm) already declares `from_source: ref-S6` in data.yaml
+#      and links here to `popov2016/l_comp_table2d` (500 nm; S2 Text p. 42 also prints 0.5 um).
+#    - Three MEDYAN mechanical/geometric parameters adopted directly from Popov et al. (2016)
+#      (`l0_cylinder` = 108 nm, `alpha_actinin_binding_distance` = 30 to 40 nm, and
+#      `myosin_mf_binding_distance` = 175 to 225 nm) carry `from_source: None` in data.yaml
+#      and are linked here with `from_source: popov2016` (all three reproduce Popov's values).
+#    - `myosin_stall_force` (12.6 pN, p. 34 Eq. S14, `from_source: None`) is linked to
+#      `popov2016/F_nmiia_stall` (15 pN, Table 2C p. 61) because Section 2.3 adopts Popov's
+#      MEDYAN NMIIA mechanochemical cycle ([6], p. 34), where `F_NMIIA,unbind = 12.6 pN` sits on
+#      the row directly above `F_stall = 15 pN` in Table 2C—exposing a genuine transcription
+#      discrepancy (see `q_popov2016_medyan_parameter_and_equation_drift`).
+#    - Unlinked intentionally:
+#      * `gamma_myosin_bound_heads_printed` (0.05, dimensionless) and
+#        `epsilon_myosin_unbind_printed` (0.2, 1/pN): printed units are transposed relative to
+#        `popov2016/nmiia_gamma` (0.05, 1/pN) and `popov2016/nmiia_beta` (0.2, dimensionless),
+#        so direct unit conversion fails; documented in `questions.yaml`.
+#      * `myosin_duty_ratio` (ref-S14), `myosin_hill_zeta` (ref-S8), `myosin_heads_per_mf_sim`
+#        (ref-S7), and `l_p_actin` (ref-75) already declare primary-literature `from_source` in
+#        data.yaml and cannot be overridden here.
+#      * `diffusion_ratio_alpha_to_actin` (0.25) and `diffusion_ratio_myosin_to_actin` (0.125)
+#        are modified simulation choices (2.5x and 12.5x faster than Popov's 1/10 and 1/100).
+# 2. chandrasekaran2024: later article (2024); 0 cited links from chandrasekaran2019.
+# 3. bathe2008: not cited in chandrasekaran2019; 0 cited links.
+# 4. freedman2019 (ref-83, bioRxiv 493841): cited qualitatively on p. 7 for passive
+#    crosslinker length-mismatch sorting; 0 numerical values taken from ref-83.
+
+- datum: compartment_size_medyan
+  from_datum: l_comp_table2d
+  evidence: "SI Section 2.1.1 (p. 29 / SI-10) states 'We choose a compartment size of 500 nm which is less than the Kuromoto length [6]' (ref-S6 = popov2016), matching Popov et al. (2016) Table 2D (p. 61) l_comp = 500 nm (and S2 Text p. 42 compartment length 0.5 um)."
+
+- datum: l0_cylinder
+  from_source: popov2016
+  from_datum: l_cyl_large
+  evidence: "Methods (p. 5, citing MEDYAN [58] = popov2016) and SI Section 2.2.1 (p. 31 / SI-12) adopt MEDYAN's coarse-grained actin cylinder equilibrium length l_0^m = 108 nm (40 monomers), matching Popov et al. (2016) Table 2B (p. 60) l_cyl = 108 nm."
+
+- datum: alpha_actinin_binding_distance
+  from_source: popov2016
+  from_datum: alpha_actinin_binding_range
+  evidence: "Methods (p. 5, citing [58]) and SI Section 2.1.2 (p. 30 / SI-11, citing [6]) adopt MEDYAN's alpha-actinin binding distance range 30-40 nm, matching Popov et al. (2016, p. 17) 35 ± 5 nm (identical interval [30, 40] nm)."
+
+- datum: myosin_mf_binding_distance
+  from_source: popov2016
+  from_datum: nmiia_binding_range
+  evidence: "Methods (p. 5, citing [58]) and SI Section 2.1.2 (p. 30 / SI-11, citing [6]) adopt MEDYAN's NMIIA minifilament binding distance range 175-225 nm, matching Popov et al. (2016, p. 16) 200 ± 25 nm (identical interval [175, 225] nm)."
+
+- datum: myosin_stall_force
+  from_source: popov2016
+  from_datum: F_nmiia_stall
+  evidence: "SI Section 2.3.1 Eq. (S14) (p. 34 / SI-15) adopts MEDYAN's NMIIA mechanochemical cycle from Popov et al. (2016) [6] (cited on the same page) but prints F_stall = 12.6 pN instead of Popov Table 2C (p. 61) F_stall = 15 pN per head (12.6 pN is F_NMIIA,unbind on the immediately preceding row of Popov Table 2C)."

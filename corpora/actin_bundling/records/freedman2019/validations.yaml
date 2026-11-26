@@ -1,0 +1,149 @@
+# ==============================================================================
+# Cross-record model validations (`validations.yaml`) for `freedman2019`
+#
+# Pairwise validation audit:
+# 1. `freedman2019` models vs `freedman2019_code/kmc_winkelman_expt_table`
+#    (exact 9-point unshifted author source table for Winkelman et al. 2016 Fig. 3H,
+#    embedded in `xlink_sorting_paper/kmc.ipynb` Cell 9):
+#    - `val_kmc_printed_vs_winkelman_expt_table` (`purpose: fit_quality`):
+#      Evaluates `kmc_growing_bundle_conc_ratio` at Freedman's printed parameters
+#      (l_b = 37 nm, Delta l_xl = 27 nm, L_p = 17 um, L_0 = 15 um, mu_grow = 40 nm/s,
+#      mu_on_B = 0.2/site/s, n_d = 4, l_d = 1 um). Marked `fit_quality` (not
+#      `validation`) because mu_on = 0.2/site/s was fitted on p. 3 / 16194 to match
+#      Ref. 16's equal-concentration domain length ("only one free parameter, mu_on").
+#    - `val_kmc_code_swap_vs_winkelman_expt_table` (`purpose: fit_quality`):
+#      Evaluates the exact same KMC model substituting `freedman2019_code`'s actual
+#      Cell 2 swapped parameters (`kmc_site_width` = 35 nm, `kmc_dxl_code` = 29 nm),
+#      quantifying how the (35 nm, 29 nm) transposition affects fit quality against
+#      the exact unshifted Winkelman source table.
+# 2. `freedman2019` models vs `winkelman2016/d_fig3h_data`:
+#    - `val_kmc_printed_vs_winkelman_fig3h` (`purpose: fit_quality`):
+#      Evaluates `kmc_growing_bundle_conc_ratio` at printed (37 nm, 27 nm) directly
+#      against Winkelman et al.'s (2016) 11-point published Fig. 3H curve (including
+#      the r = 0 and (0.197, -0.041) zero-domain points and the +0.019 Illustrator
+#      x-shift of Fig. 3H).
+#    - Other `winkelman2016` measurements (sedimentation Hill curves, TIRFM/EM
+#      spacings, single-molecule residence times, fimbrin/espin/tropomyosin sorting,
+#      and EM transition-zone length L = 142 +- 52 nm) are not outputs of any
+#      `freedman2019` model.
+# 3. `bathe2008`: 0 validations (`bathe2008`'s only measured datums are macroscopic
+#    bending stiffness kappa_B of 21-33-filament fascin bundles in Fig. 4, not
+#    predicted by `freedman2019`'s 2-filament sorting models).
+# 4. `kierfeld2005`: 0 validations (pure theory/MC paper with zero `origin: measured`
+#    datums).
+# ==============================================================================
+
+- id: val_kmc_printed_vs_winkelman_expt_table
+  model: kmc_growing_bundle_conc_ratio
+  inputs:
+    mu_grow: kmc_growth_rate_ref16
+    mu_on_B: kmc_bundling_rate_mu_on
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    conc_ratio: "freedman2019_code/kmc_winkelman_expt_table"
+  settings:
+    n_sims: 1000
+    seed: 0
+  replicates: 3
+  output: domain_length_A
+  against: "freedman2019_code/kmc_winkelman_expt_table"
+  purpose: fit_quality
+  quantities:
+    "freedman2019_code/concentration_ratio": concentration_ratio
+    "freedman2019_code/domain_length": domain_length
+  basis: >
+    Freedman et al. (2019, p. 3 / 16194 & Fig. 3C Left p. 4 / 16195) compare their growing-bundle
+    1D KMC model (`kmc_growing_bundle_conc_ratio`, with stated l_b = 37 nm, Delta l_xl = 27 nm,
+    L_p = 17 um, L_0 = 15 um, mu_grow = 40 nm/s, and single fitted bundling rate mu_on = 0.2/site/s
+    calibrated to equal-concentration experimental domain length: "there is only one free parameter,
+    mu_on ... produces domains the same size as those in experiments with equal concentration of
+    cross-linkers ... and see in Fig. 3C that the cooperative behavior of this model agrees very
+    well with data from ref. 16") against Winkelman et al.'s (2016) Fig. 3H fascin domain-length
+    measurements. `freedman2019_code/kmc_winkelman_expt_table` preserves the exact 9-point
+    unshifted author source table for Winkelman Fig. 3H embedded in `kmc.ipynb` Cell 9. Entered as
+    `purpose: fit_quality` because mu_on = 0.2/site/s was fitted to these measurements.
+  note: >
+    At printed (l_b = 37 nm, Delta l_xl = 27 nm), 7/9 points fall within 1 SE and 2/9 fall within
+    2 SE (r = 0.3125 at -1.08 SE and r = 0.625 at -1.94 SE), yielding `close` with 0/9 not reproduced.
+
+- id: val_kmc_code_swap_vs_winkelman_expt_table
+  model: kmc_growing_bundle_conc_ratio
+  inputs:
+    mu_grow: kmc_growth_rate_ref16
+    mu_on_B: kmc_bundling_rate_mu_on
+    L_0: filament_length_L0
+    l_b: "freedman2019_code/kmc_site_width"
+    L_p: actin_persistence_length
+    delta_l_xl: "freedman2019_code/kmc_dxl_code"
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    conc_ratio: "freedman2019_code/kmc_winkelman_expt_table"
+  settings:
+    n_sims: 1000
+    seed: 0
+  replicates: 3
+  output: domain_length_A
+  against: "freedman2019_code/kmc_winkelman_expt_table"
+  purpose: fit_quality
+  quantities:
+    "freedman2019_code/binding_site_spacing": binding_site_spacing
+    "freedman2019_code/crosslinker_length_difference": crosslinker_length_difference
+    "freedman2019_code/concentration_ratio": concentration_ratio
+    "freedman2019_code/domain_length": domain_length
+  basis: >
+    Evaluates `freedman2019/kmc_growing_bundle_conc_ratio` on the exact 9-point unshifted
+    Winkelman source table (`freedman2019_code/kmc_winkelman_expt_table`) using the transposed
+    parameters actually coded in `xlink_sorting_paper/kmc.ipynb` Cell 2 (`site_width = 35 nm`,
+    `dxl = 37 - 8 = 29 nm`), directly contrasting fit quality against
+    `val_kmc_printed_vs_winkelman_expt_table`. Entered as `purpose: fit_quality` because
+    mu_on = 0.2/site/s was calibrated to these Ref. 16 measurements.
+  note: >
+    Inflating the gap bending energy by +36.2% via the (35 nm, 29 nm) swap lifts predicted fascin
+    domain lengths by ~15-26% across r = 0.3..1.58 (5/9 within 1 SE, 4/9 within 2 SE, 0/9 not
+    reproduced -> `close`), slightly reducing 1-SE agreement at high r (r = 1.25: 5.66 vs 3.48 +-
+    1.25 um, +1.74 SE) compared to the paper's intended (37 nm, 27 nm) parameters.
+
+- id: val_kmc_printed_vs_winkelman_fig3h
+  model: kmc_growing_bundle_conc_ratio
+  inputs:
+    mu_grow: kmc_growth_rate_ref16
+    mu_on_B: kmc_bundling_rate_mu_on
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    conc_ratio: "winkelman2016/d_fig3h_data"
+  settings:
+    n_sims: 1000
+    seed: 0
+  replicates: 3
+  output: domain_length_A
+  against: "winkelman2016/d_fig3h_data"
+  purpose: fit_quality
+  quantities:
+    "winkelman2016/crosslinker_on_rate_ratio": concentration_ratio
+    "winkelman2016/domain_length": domain_length
+  conditions_ok: >
+    Winkelman et al. (2016, Fig. 3H, p. 5 / 2700) measured fascin domain lengths across
+    [fascin]/[alpha-actinin] = 0..1.6 at 1.5 uM actin (25 degC); Freedman et al. (2019, p. 3 /
+    16194) model those exact experiments using L_0 = 15 um, l_b = 37 nm, L_p = 17 um,
+    Delta l_xl = 27 nm, mu_grow = 40 nm/s, and fitted mu_on = 0.2/site/s.
+  basis: >
+    Directly evaluates `freedman2019/kmc_growing_bundle_conc_ratio` at its printed parameters
+    against the full 11-point published Fig. 3H curve in `winkelman2016/d_fig3h_data` (contrasting
+    with the 9-point unshifted source table `val_kmc_printed_vs_winkelman_expt_table` that omits
+    the r = 0 and (0.17895, 0.0) zero-domain points and removes Fig. 3H's +0.019 Illustrator x-shift).
+    Entered as `purpose: fit_quality` because mu_on = 0.2/site/s was fitted to Ref. 16.
+  note: >
+    Expected verdict: `not reproduced` due to the r = 0 shifted marker (y = -0.041 +- 0.027 um vs
+    0.000 um) and the (0.197, -0.041 +- 0.252 um) zero-domain point (where KMC predicts ~0.62 um,
+    > 2 SE), while the remaining 9 positive-domain points closely track `val_kmc_printed_vs_winkelman_expt_table`.

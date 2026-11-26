@@ -1,0 +1,812 @@
+# ==============================================================================
+# 1. Core Python/C++ discretization & solver constants (FibCollocationDiscretization,
+#    fiberCollection, TemporalIntegrator, CrossLinkedNetwork, DoubleEndedCrossLinkedNetwork)
+# ==============================================================================
+
+- id: code_N_cheb_default
+  quantity: chebyshev_points
+  unit: dimensionless
+  origin: reported
+  printed: "16"
+  citation:
+    file: Python/FibCollocationDiscretization.py
+    lines: "48"
+    quote: "def __init__(self, L, epsilon,Eb=1,mu=1,N=16,deltaLocal=1,NupsampleForDirect=64,nptsUniform=16,"
+  from_source: maxian2022
+  from_datum: chebyshev_N_base
+  note: "Constructor default N = 16 tangent vectors (Nx = N + 1 = 17 position nodes) in FibCollocationDiscretization.__init__ (also line 254)."
+
+- id: code_delta_local_ctor_default
+  quantity: relative_regularization_length
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: Python/FibCollocationDiscretization.py
+    lines: "48"
+    quote: "def __init__(self, L, epsilon,Eb=1,mu=1,N=16,deltaLocal=1,NupsampleForDirect=64,nptsUniform=16,"
+  from_source: maxian2022
+  from_datum: endpoint_reg_delta_rel
+  note: "Constructor default deltaLocal = 1 (ellipsoidal constant s_bar = L/2 everywhere via delta >= 0.5 branch on line 169), differing from maxian2022 p. 3 and initLocalcvals default delta = 0.1."
+
+- id: code_delta_local_init_default
+  quantity: relative_regularization_length
+  unit: dimensionless
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: Python/FibCollocationDiscretization.py
+    lines: "138"
+    quote: "def initLocalcvals(self,delta=0.1):"
+  from_source: maxian2022
+  from_datum: endpoint_reg_delta_rel
+  note: "Default regularization length delta = 0.1 L in initLocalcvals(), matching maxian2022 p. 3 and Matlab RegularizeS/StraightMobility.m."
+
+- id: code_eig_val_thres
+  quantity: eigenvalue_threshold
+  unit: um/(pN*s)
+  origin: reported
+  printed: "0.001"
+  citation:
+    file: Python/FibCollocationDiscretization.py
+    lines: "370"
+    quote: "self._EigValThres = 0.001 # Could cause convergence issues"
+  note: "Dimensional eigenvalue clamping floor in SingleFiberMobilityEvaluator.cpp (not rescaled by 1/(mu*L)); zeroed for RPYOversample/RPYDirectQuad on line 372."
+
+- id: code_eig_val_thres_zero
+  quantity: eigenvalue_threshold
+  unit: um/(pN*s)
+  origin: reported
+  printed: "0"
+  citation:
+    file: Python/FibCollocationDiscretization.py
+    lines: "372"
+    quote: "self._EigValThres = 0;"
+  note: "Eigenvalue clamping disabled (0) when RPYDirectQuad or RPYOversample is True."
+
+- id: code_svd_tol
+  quantity: svd_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-12"
+  citation:
+    file: Python/fiberCollection.py
+    lines: "14"
+    quote: "svdTolerance = 1e-12;       # tolerance for pseudo-inverse"
+
+- id: code_svd_rigid_cap
+  quantity: rigid_rotation_angle_cap
+  unit: dimensionless
+  origin: reported
+  printed: "0.25"
+  citation:
+    file: Python/fiberCollection.py
+    lines: "15"
+    quote: "svdRigid = 0.25; # Exp[||Omega|| dt ] < svdRigid for rigid Brownian fibers"
+  note: "Hidden numerical parameter setting rigid Schur-complement pseudo-inverse cutoff svdRigidTol = kbT*dt / svdRigid^2 (line 100); unstated in maxian2022."
+
+- id: code_fibcol_dt_default
+  quantity: time_step
+  unit: s
+  origin: reported
+  printed: "1 x 10^-3"
+  citation:
+    file: Python/fiberCollection.py
+    lines: "43"
+    quote: "def __init__(self,nFibs,turnovertime, fibDisc,nonLocal,mu,omega,gam0,Dom,kbT,fibDiscFat=None,nThreads=1,rigidFibs=False,dt=1e-3):"
+  note: "Default dt = 1e-3 s in fiberCollection.__init__ used for svdRigidTol; FixedDynamicLinkNetwork.py:73 omits dt, so svdRigidTol always uses 1e-3 s rather than the simulation dt."
+
+- id: code_gmres_itercap
+  quantity: gmres_iter_cap
+  unit: dimensionless
+  origin: reported
+  printed: "100"
+  citation:
+    file: Python/TemporalIntegrator.py
+    lines: "12"
+    quote: "itercap = 100; # cap on GMRES iterations if we converge all the way"
+
+- id: code_gmres_tol
+  quantity: gmres_tolerance
+  unit: dimensionless
+  origin: reported
+  printed: "1 x 10^-3"
+  citation:
+    file: Python/TemporalIntegrator.py
+    lines: "13"
+    quote: "GMREStolerance=1e-3; # larger than GPU tolerance"
+
+- id: code_clnet_kbt_global
+  quantity: thermal_energy
+  unit: pN*um
+  origin: reported
+  printed: "4.1 x 10^-3"
+  citation:
+    file: Python/CrossLinkedNetwork.py
+    lines: "9"
+    quote: "kbT = 4.1e-3;"
+  from_source: maxian2022
+  from_datum: thermal_energy_kBT_table1
+  note: "Hardcoded module-level kbT = 4.1e-3 pN*um used in non-Brownian deltaL = sqrt(kbT/kCL) (line 81), vs 4e-3 pN*um in maxian2022 Table 1 (and CrossLinkedSpeciesNetwork line 641)."
+
+- id: code_clnet_species_kbt
+  quantity: thermal_energy
+  unit: pN*um
+  origin: reported
+  printed: "4 x 10^-3"
+  citation:
+    file: Python/CrossLinkedNetwork.py
+    lines: "641"
+    quote: "self._deltaL = min(np.sqrt(4e-3/self._kCL),0.5*self._rl);"
+  from_source: maxian2022
+  from_datum: thermal_energy_kBT_table1
+  note: "CrossLinkedSpeciesNetwork hardcodes 4e-3 pN*um instead of module-level kbT = 4.1e-3 (line 9)."
+
+- id: code_sigma_rel_default
+  quantity: relative_gaussian_width
+  unit: dimensionless
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: Python/CrossLinkedNetwork.py
+    lines: "127"
+    quote: "sigma = 0.1*L;"
+  from_source: maxian2022
+  from_datum: gaussian_width_sigma_rel_base
+  note: "Default Gaussian force-spreading width sigma/L = 0.1 for N < 24 in sigmaFromNL()."
+
+- id: code_sigma_rel_N50
+  quantity: relative_gaussian_width
+  unit: dimensionless
+  origin: reported
+  printed: "0.005"
+  citation:
+    file: Python/CrossLinkedNetwork.py
+    lines: "128-129"
+    quote: "sigma = 0.005*L; # just to check point forces with more rigid fibers"
+  from_source: maxian2022
+  from_datum: gaussian_width_sigma_rel_sm_c
+  note: "Branch N >= 50 sets sigma/L = 0.005, directly matching maxian2022 SM Sec. C (p. 20)."
+
+- id: code_min_per_bundle_default
+  quantity: min_bundle_size
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    file: Python/CrossLinkedNetwork.py
+    lines: "408"
+    quote: "def BundleOrderParameters(self,fibCollection,nBundles,whichBundlePerFib,minPerBundle=2):"
+  note: "Default minimum bundle size F_B = 2 in BundleOrderParameters (matching maxian2022 p. 5)."
+
+# ==============================================================================
+# 2. Shipped input file parameters: StrainInputFile.txt (closest to maxian2022 Table 1)
+#    and SemiflexBundleInputFile.txt (later cortical-flow/motor study)
+# ==============================================================================
+
+- id: strain_nFib
+  quantity: fiber_count
+  unit: dimensionless
+  origin: reported
+  printed: "200"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "2"
+    quote: "nFib=200        # number of fibers"
+  from_source: maxian2022
+  from_datum: F_200
+
+- id: strain_N
+  quantity: chebyshev_points
+  unit: dimensionless
+  origin: reported
+  printed: "12"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "3"
+    quote: "N=12            # number of tangent vectors per fiber"
+  from_source: maxian2022
+  from_datum: chebyshev_N_base
+  note: "Shipped input files (StrainInputFile.txt:3, SemiflexBundleInputFile.txt:3) set N = 12 (Nx = 13) rather than maxian2022 Table 1's N = 16."
+
+- id: strain_Lf
+  quantity: fiber_length
+  unit: um
+  origin: reported
+  printed: "1"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "4"
+    quote: "Lf=1            # length of each fiber"
+  from_source: maxian2022
+  from_datum: fiber_length_L_1
+
+- id: strain_Ld
+  quantity: domain_extent
+  unit: um
+  origin: reported
+  printed: "2"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "6"
+    quote: "Ld=2            # length of the periodic domain"
+  from_source: maxian2022
+  from_datum: Ld_2
+
+- id: strain_mu
+  quantity: dynamic_viscosity
+  unit: Pa*s
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "7"
+    quote: "mu=0.1          # fluid viscosity"
+  from_source: maxian2022
+  from_datum: cytoplasm_viscosity_mu
+
+- id: strain_eps
+  quantity: fiber_aspect_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "4 x 10^-3"
+  conditions: {fiber_length: "1 um"}
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "8"
+    quote: "eps=4e-3/Lf     # slenderness ratio"
+  from_source: maxian2022
+  from_datum: fiber_aspect_ratio_0004_printed
+
+- id: strain_lp
+  quantity: persistence_length
+  unit: um
+  origin: reported
+  printed: "2"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "9"
+    quote: "lp = 2*Lf;      # persistence length"
+  note: "Rheology test sets l_p = 2 um (softer than actin's 17 um)."
+
+- id: strain_kbT
+  quantity: thermal_energy
+  unit: pN*um
+  origin: reported
+  printed: "4.1 x 10^-3"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "10"
+    quote: "kbT = 4.1e-3;   # thermal energy"
+  from_source: maxian2022
+  from_datum: thermal_energy_kBT_table1
+  note: "4.1e-3 pN*um (~24 C) vs maxian2022 Table 1's rounded 4e-3 pN*um (25 C)."
+
+- id: strain_dt
+  quantity: time_step
+  unit: s
+  origin: reported
+  printed: "1 x 10^-4"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "12"
+    quote: "dt = 1e-4;      # timestep"
+  from_source: maxian2022
+  from_datum: time_step_base
+
+- id: strain_Nuniformsites
+  quantity: binding_site_count
+  unit: dimensionless
+  origin: reported
+  printed: "40"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "29"
+    quote: "Nuniformsites = 40;            # Number of uniform points for CL binding."
+  note: "Exact site count N_u = 40 (also in SemiflexBundleInputFile.txt:34, ProcessPythonNetwork.m:18, BundledFibers.py:146); gives ds = 1/39 = 0.02564 um (~0.026 um) and 2*40 = 80 max links/fiber."
+
+- id: strain_Kspring
+  quantity: cl_spring_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "10"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "30"
+    quote: "Kspring = 10                   # cross linker stiffness"
+  from_source: maxian2022
+  from_datum: cl_spring_stiffness_Kc
+
+- id: strain_rl
+  quantity: cl_rest_length
+  unit: um
+  origin: reported
+  printed: "0.05"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "31"
+    quote: "rl = 0.05                      # cross linker rest length"
+  from_source: maxian2022
+  from_datum: cl_rest_length_ell
+
+- id: strain_konCL
+  quantity: cl_first_end_binding_rate
+  unit: 1/(um*s)
+  origin: reported
+  printed: "5"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "32"
+    quote: "konCL = 5;                     # first end binding rate"
+  from_source: maxian2022
+  from_datum: cl_first_end_kon_base
+
+- id: strain_konSecond
+  quantity: cl_second_end_binding_rate
+  unit: 1/(um*s)
+  origin: reported
+  printed: "50"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "33"
+    quote: "konSecond = 50;                # second end binding rate"
+  from_source: maxian2022
+  from_datum: cl_second_end_kons
+
+- id: strain_koffCL
+  quantity: cl_unbinding_rate
+  unit: 1/s
+  origin: reported
+  printed: "1"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "34"
+    quote: "koffCL = 1;                    # free end unbinding rate"
+  from_source: maxian2022
+  from_datum: cl_koff
+
+- id: strain_koffSecond
+  quantity: cl_unbinding_rate
+  unit: 1/s
+  origin: reported
+  printed: "1"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "35"
+    quote: "koffSecond = 1;                # bound CL unbinding rate"
+  from_source: maxian2022
+  from_datum: cl_koffs
+
+- id: strain_turnovertime
+  quantity: turnover_time
+  unit: s
+  origin: reported
+  printed: "2.5"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "36"
+    quote: "turnovertime = 2.5;            # mean fiber lifetime"
+
+- id: strain_bindingSiteWidth
+  quantity: binding_site_width
+  unit: um
+  origin: reported
+  printed: "20 x 10^-3"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "37"
+    quote: "bindingSiteWidth = 20e-3;      # Set to 0 for no limit, 20 nm otherwise"
+  from_source: maxian2022
+  from_datum: cl_site_width_cw
+
+- id: strain_bunddist
+  quantity: bundle_link_separation
+  unit: um
+  origin: reported
+  printed: "0.25"
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "38"
+    quote: "bunddist = 1/4                 # Distance separating 2 links to form a bundle"
+  note: "Hardcoded as 1/4 = 0.25 um (not Lf/4); equals L/4 only when Lf = 1 um."
+
+- id: bundle_nFib
+  quantity: fiber_count
+  unit: dimensionless
+  origin: reported
+  printed: "100"
+  citation:
+    file: Python/Examples/SemiflexBundleInputFile.txt
+    lines: "2"
+    quote: "nFib=100        # number of fibers"
+  note: "Shipped SemiflexBundleInputFile.txt targets a later cortical-flow/motor study (Motors=True, FluctuatingFibs=True, Ldx=5), not maxian2022's base bundling config."
+
+- id: bundle_Ldx
+  quantity: domain_extent
+  unit: um
+  origin: reported
+  printed: "5"
+  citation:
+    file: Python/Examples/SemiflexBundleInputFile.txt
+    lines: "7"
+    quote: "Ldx=5;	       # if x part of domain has diff size"
+
+- id: bundle_lp
+  quantity: persistence_length
+  unit: um
+  origin: reported
+  printed: "17"
+  citation:
+    file: Python/Examples/SemiflexBundleInputFile.txt
+    lines: "10"
+    quote: "lp = 17;         # persistence length"
+  from_source: maxian2022
+  from_datum: persistence_length_actin_printed
+
+- id: bundle_kbT
+  quantity: thermal_energy
+  unit: pN*um
+  origin: reported
+  printed: "4.1 x 10^-3"
+  citation:
+    file: Python/Examples/SemiflexBundleInputFile.txt
+    lines: "11"
+    quote: "kbT = 4.1e-3;   # thermal energy"
+  from_source: maxian2022
+  from_datum: thermal_energy_kBT_table1
+  note: "Gives Eb = kbT * lp = 0.0697 pN*um^2 on line 12 vs maxian2022 Table 1's 0.07 pN*um^2."
+
+- id: bundle_Networkdt
+  quantity: time_step
+  unit: s
+  origin: reported
+  printed: "0.01"
+  citation:
+    file: Python/Examples/SemiflexBundleInputFile.txt
+    lines: "16"
+    quote: "Networkdt = 0.01;"
+  note: "FixedDynamicLinkNetwork.py:161 subcycles CL/turnover updates every NetworkStepEvery = int(Networkdt/dt) steps (= 100 steps at dt = 1e-4 s), unmentioned in maxian2022 p. 5."
+
+- id: bundle_rl
+  quantity: cl_rest_length
+  unit: um
+  origin: reported
+  printed: "0.012"
+  citation:
+    file: Python/Examples/SemiflexBundleInputFile.txt
+    lines: "36"
+    quote: "rl = 0.012                      # cross linker rest length"
+  note: "12 nm (fascin-like) in shipped SemiflexBundleInputFile.txt vs 50 nm (alpha-actinin) in maxian2022 Table 1 and StrainInputFile.txt:31."
+
+- id: bundle_konCL
+  quantity: cl_first_end_binding_rate
+  unit: 1/(um*s)
+  origin: reported
+  printed: "0.2"
+  citation:
+    file: Python/Examples/SemiflexBundleInputFile.txt
+    lines: "37"
+    quote: "konCL = 0.2;                     # first end binding rate"
+
+- id: bundle_koffCL
+  quantity: cl_unbinding_rate
+  unit: 1/s
+  origin: reported
+  printed: "0.04"
+  citation:
+    file: Python/Examples/SemiflexBundleInputFile.txt
+    lines: "39"
+    quote: "koffCL = 0.04;                    # free end unbinding rate"
+
+# ==============================================================================
+# 3. MATLAB StraightMobility.m and ProcessPythonNetwork.m parameters
+# ==============================================================================
+
+- id: matlab_straight_N
+  quantity: chebyshev_points
+  unit: dimensionless
+  origin: reported
+  printed: "32"
+  citation:
+    file: Matlab/MainPrograms/StraightMobility.m
+    lines: "6"
+    quote: "N = 32;"
+  note: "Chebyshev kind-1 node count N = 32 used in StraightMobility.m to compute rigid mobility coefficients [alpha, beta, gamma]."
+
+- id: matlab_straight_delta
+  quantity: relative_regularization_length
+  unit: dimensionless
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: Matlab/MainPrograms/StraightMobility.m
+    lines: "20"
+    quote: "delta = 0.1;"
+  from_source: maxian2022
+  from_datum: endpoint_reg_delta_rel
+
+- id: matlab_proc_sem_mult
+  quantity: error_bar_sem_multiplier
+  unit: dimensionless
+  origin: reported
+  printed: "2"
+  citation:
+    file: Matlab/AnalyzePython/ProcessPythonNetwork.m
+    lines: "226"
+    quote: "std(nLinks(:,ErrStart*iP:ErrorEvery(iP):end))*2/sqrt(nTri),..."
+  note: "ProcessPythonNetwork.m plots 2*std/sqrt(nTri) (2x SEM / ~95% CI; also lines 245, 261, 278, 296, 313, 330, 349), whereas maxian2022 Figs. 2, 3, 6, 7 captions state 'error in the mean over five trials'."
+
+# ==============================================================================
+# 4. Target values & paper parameters copied from maxian2022 for reproduction checks
+# ==============================================================================
+
+- id: paper_table_s1_alpha
+  quantity: mobility_alpha
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied Table S1 perpendicular translational mobility coefficient alpha(epsilon) from maxian2022/table_s1_alpha (p. 20 / SI-3)."
+  from_source: maxian2022
+  from_datum: table_s1_alpha
+  table:
+    index_quantity: fiber_aspect_ratio
+    index_unit: dimensionless
+    index: ["0.01", "0.008", "0.006", "0.005", "0.004", "0.002", "0.001"]
+    values: ["0.3841", "0.4020", "0.4251", "0.4396", "0.4575", "0.5129", "0.5682"]
+
+- id: paper_table_s1_beta
+  quantity: mobility_beta
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied Table S1 anisotropic translational mobility coefficient beta(epsilon) from maxian2022/table_s1_beta (p. 20 / SI-3)."
+  from_source: maxian2022
+  from_datum: table_s1_beta
+  table:
+    index_quantity: fiber_aspect_ratio
+    index_unit: dimensionless
+    index: ["0.01", "0.008", "0.006", "0.005", "0.004", "0.002", "0.001"]
+    values: ["0.2230", "0.2413", "0.2646", "0.2793", "0.2973", "0.3530", "0.4085"]
+
+- id: paper_table_s1_gamma
+  quantity: mobility_gamma
+  unit: dimensionless
+  origin: predicted
+  citation:
+    none: "Copied Table S1 rotational mobility coefficient gamma(epsilon) from maxian2022/table_s1_gamma (p. 20 / SI-3)."
+  from_source: maxian2022
+  from_datum: table_s1_gamma
+  table:
+    index_quantity: fiber_aspect_ratio
+    index_unit: dimensionless
+    index: ["0.01", "0.008", "0.006", "0.005", "0.004", "0.002", "0.001"]
+    values: ["3.4263", "3.6412", "3.9179", "4.0931", "4.3073", "4.9721", "5.6361"]
+
+- id: paper_c_tr_eq22
+  quantity: mobility_trace_coefficient
+  unit: dimensionless
+  origin: derived
+  printed: "1.67"
+  conditions: {fiber_aspect_ratio: "0.004"}
+  citation:
+    none: "Copied translational mobility trace coefficient 1.67 from maxian2022/c_tr_eq22_printed (Eq. 22, p. 9)."
+  from_source: maxian2022
+  from_datum: c_tr_eq22_printed
+
+- id: paper_mobility_anisotropy_p9
+  quantity: mobility_anisotropy_ratio
+  unit: dimensionless
+  origin: derived
+  printed: "2"
+  conditions: {fiber_aspect_ratio: "0.004"}
+  citation:
+    none: "Copied parallel-to-perpendicular mobility ratio claim of 2 from maxian2022/mobility_anisotropy_claim_p9 (p. 9)."
+  from_source: maxian2022
+  from_datum: mobility_anisotropy_claim_p9
+
+- id: paper_six_Dt_eps0004
+  quantity: msd_slope
+  unit: um^2/s
+  origin: predicted
+  printed: "≈ 0.13"
+  conditions: {fiber_length: "1 um", fiber_aspect_ratio: "0.004"}
+  citation:
+    none: "Copied 6 D_t ≈ 0.13 um^2/s from maxian2022/six_Dt_eps0004_printed (p. 9)."
+  from_source: maxian2022
+  from_datum: six_Dt_eps0004_printed
+
+- id: paper_tau_m_L1_lm02
+  quantity: mesh_diffusion_time
+  unit: s
+  origin: predicted
+  printed: "≈ 0.30"
+  conditions: {fiber_length: "1 um", initial_mesh_size: "0.2 um"}
+  citation:
+    none: "Copied mesh diffusion time tau_m ≈ 0.30 s (L = 1 um) from maxian2022/tau_m_L1_lm02_printed (p. 12)."
+  from_source: maxian2022
+  from_datum: tau_m_L1_lm02_printed
+
+- id: paper_tau_m_L05_lm02
+  quantity: mesh_diffusion_time
+  unit: s
+  origin: predicted
+  printed: "0.17"
+  conditions: {fiber_length: "0.5 um", initial_mesh_size: "0.2 um"}
+  citation:
+    none: "Copied mesh diffusion time tau_m = 0.17 s (L = 0.5 um) from maxian2022/tau_m_L05_lm02_printed (p. 12)."
+  from_source: maxian2022
+  from_datum: tau_m_L05_lm02_printed
+
+- id: paper_fiber_length_L_05
+  quantity: fiber_length
+  unit: um
+  origin: reported
+  printed: "0.5"
+  citation:
+    none: "Copied short fiber length L = 0.5 um from maxian2022/fiber_length_L_05 (Table 1, p. 6)."
+  from_source: maxian2022
+  from_datum: fiber_length_L_05
+
+- id: paper_fiber_aspect_ratio_0008
+  quantity: fiber_aspect_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "0.008"
+  conditions: {fiber_length: "0.5 um"}
+  citation:
+    none: "Copied aspect ratio epsilon = 0.008 from maxian2022/fiber_aspect_ratio_0008_tableS1 (Table S1, p. 20)."
+  from_source: maxian2022
+  from_datum: fiber_aspect_ratio_0008_tableS1
+
+- id: paper_kBT_table1
+  quantity: thermal_energy
+  unit: pN*um
+  origin: reported
+  printed: "4 x 10^-3"
+  citation:
+    none: "Copied thermal energy 4 x 10^-3 pN*um from maxian2022/thermal_energy_kBT_table1 (Table 1, p. 6)."
+  from_source: maxian2022
+  from_datum: thermal_energy_kBT_table1
+
+- id: paper_Eb_actin
+  quantity: bending_stiffness
+  unit: pN*um^2
+  origin: reported
+  printed: "0.07"
+  citation:
+    none: "Copied actin bending stiffness 0.07 pN*um^2 from maxian2022/bending_stiffness_actin (Table 1, p. 6)."
+  from_source: maxian2022
+  from_datum: bending_stiffness_actin
+
+- id: paper_binding_site_spacing_dsu
+  quantity: binding_site_spacing
+  unit: um
+  origin: reported
+  printed: "0.026"
+  citation:
+    none: "Copied binding site spacing 0.026 um from maxian2022/binding_site_spacing_dsu (Table 1, p. 6)."
+  from_source: maxian2022
+  from_datum: binding_site_spacing_dsu
+
+- id: paper_cl_fluctuation_delta_ell
+  quantity: cl_length_fluctuation
+  unit: nm
+  origin: derived
+  printed: "20"
+  citation:
+    none: "Copied cross-linker thermal length fluctuation delta_ell = 20 nm from maxian2022/cl_fluctuation_delta_ell_printed (p. 5)."
+  from_source: maxian2022
+  from_datum: cl_fluctuation_delta_ell_printed
+
+- id: paper_max_links_per_fiber
+  quantity: max_links_per_fiber
+  unit: dimensionless
+  origin: derived
+  printed: "80"
+  conditions: {fiber_length: "1 um"}
+  citation:
+    none: "Copied maximum links per fiber = 80 from maxian2022/max_links_per_fiber_printed (p. 7)."
+  from_source: maxian2022
+  from_datum: max_links_per_fiber_printed
+
+- id: paper_ell_m_02
+  quantity: initial_mesh_size
+  unit: um
+  origin: derived
+  printed: "0.2"
+  citation:
+    none: "Copied initial mesh size ell_m = 0.2 um from maxian2022/ell_m_02_printed (p. 6)."
+  from_source: maxian2022
+  from_datum: ell_m_02_printed
+
+- id: paper_chebyshev_N_sm_c
+  quantity: chebyshev_points
+  unit: dimensionless
+  origin: reported
+  printed: "50"
+  citation:
+    none: "Copied SM Sec. C Chebyshev node count N = 50 from maxian2022/chebyshev_N_sm_c (p. 20 / SI-3)."
+  from_source: maxian2022
+  from_datum: chebyshev_N_sm_c
+
+- id: paper_dt_max_sm_c
+  quantity: time_step
+  unit: s
+  origin: predicted
+  printed: "0.005"
+  conditions: {fiber_length: "1 um", cl_spring_stiffness: "10 pN/um", dynamic_viscosity: "0.1 Pa*s"}
+  citation:
+    none: "Copied SM Sec. C maximum stable time step 0.005 s from maxian2022/dt_max_sm_c_printed (p. 20 / SI-3)."
+  from_source: maxian2022
+  from_datum: dt_max_sm_c_printed
+
+- id: paper_dt_small_sm_c
+  quantity: time_step
+  unit: s
+  origin: reported
+  printed: "0.0005"
+  citation:
+    none: "Copied SM Sec. C small time step 0.0005 s from maxian2022/dt_small_sm_c (p. 20 / SI-3)."
+  from_source: maxian2022
+  from_datum: dt_small_sm_c
+
+- id: paper_dt_large_sm_c
+  quantity: time_step
+  unit: s
+  origin: reported
+  printed: "0.0025"
+  citation:
+    none: "Copied SM Sec. C large time step 0.0025 s from maxian2022/dt_large_sm_c (p. 20 / SI-3)."
+  from_source: maxian2022
+  from_datum: dt_large_sm_c
+
+- id: paper_dt_fraction_small_sm_c
+  quantity: time_step_stability_fraction
+  unit: percent
+  origin: derived
+  printed: "10"
+  conditions: {fiber_length: "1 um", cl_spring_stiffness: "10 pN/um", dynamic_viscosity: "0.1 Pa*s"}
+  citation:
+    none: "Copied Fig. S1 caption 10% stability fraction from maxian2022/dt_fraction_small_sm_c_printed (p. 21 / SI-4)."
+  from_source: maxian2022
+  from_datum: dt_fraction_small_sm_c_printed
+
+- id: paper_dt_fraction_large_sm_c
+  quantity: time_step_stability_fraction
+  unit: percent
+  origin: derived
+  printed: "50"
+  conditions: {fiber_length: "1 um", cl_spring_stiffness: "10 pN/um", dynamic_viscosity: "0.1 Pa*s"}
+  citation:
+    none: "Copied Fig. S1 caption 50% stability fraction from maxian2022/dt_fraction_large_sm_c_printed (p. 21 / SI-4)."
+  from_source: maxian2022
+  from_datum: dt_fraction_large_sm_c_printed
+
+- id: paper_F_400_L05
+  quantity: fiber_count
+  unit: dimensionless
+  origin: reported
+  printed: "400"
+  citation:
+    none: "Copied filament count F = 400 (L = 0.5 um, Ld = 2 um, ell_m = 0.2 um) from maxian2022/F_400_L05 (p. 11)."
+  from_source: maxian2022
+  from_datum: F_400_L05
+
+- id: paper_eps_0010
+  quantity: fiber_aspect_ratio
+  unit: dimensionless
+  origin: reported
+  printed: "0.01"
+  citation:
+    none: "Copied Table S1 largest aspect ratio epsilon = 0.01 from maxian2022/table_s1_beta row 1 (p. 20 / SI-3)."
+  from_source: maxian2022
+
+- id: paper_table_s1_beta_0010
+  quantity: mobility_beta
+  unit: dimensionless
+  origin: predicted
+  printed: "0.2230"
+  conditions: {fiber_aspect_ratio: "0.01"}
+  citation:
+    none: "Copied Table S1 scalar beta(0.01) = 0.2230 from maxian2022/table_s1_beta row 1 (p. 20 / SI-3)."
+  from_source: maxian2022

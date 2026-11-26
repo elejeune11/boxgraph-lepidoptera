@@ -1,0 +1,448 @@
+# ---------------------------------------------------------------------------
+# 1. S2 Text Section A: Kuramoto length & inter-compartment diffusion rates
+# ---------------------------------------------------------------------------
+- id: cmp_tau_fastest_s2eq2
+  purpose: reproduction
+  computed: tau_fastest_computed
+  printed: tau_fastest_reaction_printed
+  note: "Checks tau = 1 / (k_actin,poly,+ * [A]) = 1 / (11.6 * 20) = 0.00431 s against printed 0.003 s (S2 Text Eq. 2, p. 42)."
+
+- id: cmp_kuramoto_from_printed_tau
+  purpose: reproduction
+  computed: kuramoto_from_printed_tau
+  printed: kuramoto_length_printed
+  note: "Checks l_k = sqrt(6 * D * tau) using printed D = 20 um^2/s and printed tau = 0.003 s (= 0.600 um) against printed 0.64 um (S2 Text Eq. 1, p. 42)."
+
+- id: cmp_kuramoto_from_computed_tau
+  purpose: consistency
+  computed: kuramoto_from_computed_tau
+  printed: kuramoto_length_printed
+  note: "Chained check of l_k = sqrt(6 * D / (k_actin,poly,+ * [A])) = 0.719 um against printed 0.64 um (S2 Text p. 42)."
+
+- id: cmp_k_diff_actin
+  purpose: reproduction
+  computed: k_diff_actin_computed
+  printed: k_diff_actin_sim
+  note: "Checks G-actin inter-compartment diffusion rate D / l_comp^2 = 20 / 0.5^2 = 80 s^-1 against printed 80 s^-1 (S2 Text p. 42, Table 2A)."
+
+- id: cmp_k_diff_alpha
+  purpose: reproduction
+  computed: k_diff_alpha_computed
+  printed: k_diff_alpha_sim
+  note: "Checks alpha-actinin inter-compartment diffusion rate (D/10) / l_comp^2 = 8 s^-1 against printed 8 s^-1 (S2 Text p. 42)."
+
+- id: cmp_k_diff_nmiia
+  purpose: reproduction
+  computed: k_diff_nmiia_computed
+  printed: k_diff_nmiia_sim
+  note: "Checks NMIIA mini-filament inter-compartment diffusion rate (D/100) / l_comp^2 = 0.8 s^-1 against printed 0.8 s^-1 (S2 Text p. 42)."
+
+# ---------------------------------------------------------------------------
+# 2. Table 2A: Compartment bimolecular rates & NMIIA head unbinding rate
+# ---------------------------------------------------------------------------
+- id: cmp_k_actin_poly_plus_sim
+  purpose: reproduction
+  computed: k_actin_poly_plus_sim_computed
+  printed: k_actin_poly_plus_sim
+  note: "Checks k_sim = 11.6 uM^-1 s^-1 / (N_A * (500 nm)^3) = 0.1541 s^-1 against Table 2A bracketed 0.151 s^-1 (p. 59)."
+
+- id: cmp_k_actin_poly_minus_sim
+  purpose: reproduction
+  computed: k_actin_poly_minus_sim_computed
+  printed: k_actin_poly_minus_sim
+  note: "Checks k_sim = 1.3 uM^-1 s^-1 / (N_A * (500 nm)^3) = 0.01727 s^-1 against Table 2A bracketed 0.017 s^-1 (p. 59)."
+
+- id: cmp_k_alpha_bind_sim
+  purpose: reproduction
+  computed: k_alpha_bind_sim_computed
+  printed: k_alpha_bind_sim
+  note: "Checks k_sim = 0.7 uM^-1 s^-1 / (N_A * (500 nm)^3) = 0.00930 s^-1 against Table 2A bracketed 0.009 s^-1 (p. 59)."
+
+- id: cmp_k_nmiia_unbind_0
+  purpose: reproduction
+  computed: k_nmiia_unbind_0_computed
+  printed: k_nmiia_unbind_0
+  conditions_ok: "Computed from zero-load duty ratio rho = 0.1 and k_NMIIA,bind = 0.2 s^-1; printed value carries external_force = 0 pN."
+  note: "Checks k_NMIIA,unbind^0 = k_NMIIA,bind * (1 - rho) / rho = 1.8 s^-1 against Table 2A printed 1.7 s^-1 (p. 59)."
+
+# ---------------------------------------------------------------------------
+# 3. Table 2B & Table 2C & S4 Text Section B: Bending energy, stall force, F_actin,poly
+# ---------------------------------------------------------------------------
+- id: cmp_eps_actin_bend_small
+  purpose: reproduction
+  computed: eps_actin_bend_small_computed
+  printed: eps_actin_bend_small
+  conditions_ok: "Run uses l_cyl = 27 nm matching the printed Table 2B condition."
+  note: "Checks eps_actin,bend = l_p * k_B T / l_cyl = 17700 * 4.1 / 27 = 2687.8 pN*nm against printed 2690 pN*nm (Table 2B, p. 60)."
+
+- id: cmp_eps_actin_bend_large
+  purpose: reproduction
+  computed: eps_actin_bend_large_computed
+  printed: eps_actin_bend_large
+  conditions_ok: "Run uses l_cyl = 108 nm matching the printed Table 2B condition."
+  note: "Checks eps_actin,bend = l_p * k_B T / l_cyl = 17700 * 4.1 / 108 = 671.94 pN*nm against printed 672 pN*nm (Table 2B, p. 60)."
+
+- id: cmp_mt_to_actin_bend_ratio_same_mon
+  purpose: reproduction
+  computed: mt_to_actin_ratio_same_mon_computed
+  printed: mt_to_actin_bend_ratio_claimed
+  note: "Checks MT/actin bending energy ratio at equal monomer count per segment ((5 mm / 2 nm) / (17.7 um / 2.7 nm) = 381.4) against S4 Text p. 52 claim of 'over 1000'."
+
+- id: cmp_mt_to_actin_bend_ratio_same_len
+  purpose: consistency
+  computed: mt_to_actin_ratio_same_len_computed
+  printed: mt_to_actin_bend_ratio_claimed
+  note: "Checks MT/actin bending energy ratio at equal physical cylinder length (5 mm / 17.7 um = 282.5) against S4 Text p. 52 claim of 'over 1000'."
+
+- id: cmp_F_nmiia_stall
+  purpose: reproduction
+  computed: F_nmiia_stall_computed
+  printed: F_nmiia_stall
+  note: "Checks F_stall = K_NMIIA,stretching * d_step = 2.5 * 6 = 15 pN against Table 2C printed 15 pN (p. 61)."
+
+- id: cmp_F_actin_poly
+  purpose: consistency
+  computed: F_actin_poly_computed
+  printed: F_actin_poly
+  note: "Checks Brownian ratchet F_actin,poly = k_B T / l_mon = 4.1 / 2.7 = 1.519 pN against Table 2C printed 1.5 pN (cited Footer et al. 2007, p. 61)."
+
+- id: cmp_actin_aspect_ratio
+  purpose: consistency
+  computed: actin_aspect_ratio_computed
+  printed: actin_aspect_ratio_printed
+  note: "Checks l_p / sigma_0 = 17.7 um / 6 nm = 2950 against p. 8 printed l_p / sigma_0 ≈ 10^3."
+
+# ---------------------------------------------------------------------------
+# 4. S3 Text Section A & S2 Text Section C: NMIIA attachment, walking, counts
+# ---------------------------------------------------------------------------
+- id: cmp_nmiia_unloaded_walk_vel
+  purpose: reproduction
+  computed: v_walk_0_computed
+  printed: nmiia_unloaded_walk_vel
+  conditions_ok: "Evaluated from S3 Text Eq. 5 (unloaded zero-force model); independent of N_total."
+  note: "Checks unloaded walking velocity v_walk^0 = ((1 - rho)/rho) * k_NMIIA,bind * d_step = 10.8 nm/s against printed 11 nm/s (S3 Text p. 46)."
+
+- id: cmp_nmiia_walk_cyl_zero_force
+  purpose: reproduction
+  computed: k_walk_cyl_0_computed
+  printed: k_walk_cyl_zero_force
+  conditions_ok: "Evaluated from S3 Text Eq. 5 rescaled by d_step / l_site = 6 / 27; independent of N_total."
+  note: "Checks unloaded cylinder-to-cylinder walking rate 1.8 * (6 / 27) = 0.400 s^-1 against S2 Text p. 43 printed 'about 0.4 s^-1'."
+
+- id: cmp_nmiia_unloaded_att_time
+  purpose: reproduction
+  computed: tau_att_unloaded_computed
+  printed: nmiia_unloaded_att_time
+  conditions_ok: "Both sides at F_ext = 0 pN; computed at added midpoint N_total = 20 (range 10-30)."
+  note: "Checks unloaded attachment time tau_att(0) = rho * N_total / (beta * k_NMIIA,unbind^0) = 5.88 s (at N_total=20; 5.00 s at N_total=17) against printed 5 s (S3 Text p. 46)."
+
+- id: cmp_nmiia_loaded_att_time_printed
+  purpose: reproduction
+  computed: tau_att_stall_printed_computed
+  printed: nmiia_loaded_att_time
+  note: "Checks loaded attachment time from S3 Text Eqs. 2-3 using literally printed stall load F_ext = rho * K_head * d_step = 1.5 pN (= 6.46 s at N_total=20) against printed 50 s (S3 Text p. 46)."
+
+- id: cmp_nmiia_loaded_walk_vel_printed
+  purpose: reproduction
+  computed: v_walk_stall_printed_computed
+  printed: nmiia_loaded_walk_vel
+  note: "Checks loaded walking velocity from S3 Text Eq. 4 using literally printed stall load F_ext = 1.5 pN (= 10.23 nm/s at N_total=20) against printed 3 nm/s (S3 Text p. 46)."
+
+- id: cmp_nmiia_loaded_att_time_variant
+  purpose: reproduction
+  computed: tau_att_stall_variant_computed
+  printed: nmiia_loaded_att_time
+  note: "Checks loaded attachment time using variant mini-filament stall load F_ext = rho * N_total * K_head * d_step = 30 pN at N_total=20 (= 20.32 s) against printed 50 s (S3 Text p. 46)."
+
+- id: cmp_nmiia_loaded_walk_vel_variant
+  purpose: reproduction
+  computed: v_walk_stall_variant_computed
+  printed: nmiia_loaded_walk_vel
+  note: "Checks loaded walking velocity using variant mini-filament stall load F_ext = 30 pN at N_total=20 (= 4.86 nm/s) against printed 3 nm/s (S3 Text p. 46)."
+
+- id: cmp_nmiia_minifil_count_min
+  purpose: reproduction
+  computed: nmiia_minifil_count_min_computed
+  printed: nmiia_minifil_count_min
+  conditions_ok: "Evaluated at R_m:a = 0.005, [A] = 20 uM, V = 1 um^3 matching the lowest simulated motor concentration."
+  note: "Checks 0.005 * 20 uM * N_A * 1 um^3 / 30 = 2.01 mini-filaments against printed 2 (S2 Text Section C, p. 43)."
+
+- id: cmp_nmiia_minifil_count_max
+  purpose: reproduction
+  computed: nmiia_minifil_count_max_computed
+  printed: nmiia_minifil_count_max
+  conditions_ok: "Evaluated at R_m:a = 0.02, [A] = 20 uM, V = 1 um^3 matching the highest simulated motor concentration."
+  note: "Checks 0.02 * 20 uM * N_A * 1 um^3 / 30 = 8.03 mini-filaments against printed 8 (S2 Text Section C, p. 43)."
+
+- id: cmp_walking_events_min
+  purpose: reproduction
+  computed: walking_events_min_computed
+  printed: walking_events_min
+  conditions_ok: "Evaluated at 2 mini-filaments, k_walk_cyl = 0.4 s^-1, t_min = 0.1 s."
+  note: "Checks 2 * 0.4 * 0.1 = 0.08 walking events/minimization against printed 0.1 (S2 Text Section C, p. 43)."
+
+- id: cmp_walking_events_max
+  purpose: reproduction
+  computed: walking_events_max_computed
+  printed: walking_events_max
+  conditions_ok: "Evaluated at 8 mini-filaments, k_walk_cyl = 0.4 s^-1, t_min = 0.1 s."
+  note: "Checks 8 * 0.4 * 0.1 = 0.32 walking events/minimization against printed 0.3 (S2 Text Section C, p. 43)."
+
+# ---------------------------------------------------------------------------
+# 5. S4 Text Eq. 1 & Main Text: [A_c], turnover rates, mean lengths, R_g bounds
+# ---------------------------------------------------------------------------
+- id: cmp_actin_critical_conc
+  purpose: reproduction
+  computed: actin_crit_conc_computed
+  printed: actin_crit_conc_analytical
+  note: "Checks [A_c] = (1.4 + 0.8) / (11.6 + 1.3) = 0.1705 uM against printed 0.17 uM (S4 Text Eq. 1, p. 50)."
+
+- id: cmp_turnover_chi_low_analytical
+  purpose: reproduction
+  computed: turnover_chi_low_analytical_computed
+  printed: turnover_rate_chi_low
+  conditions_ok: "Evaluated at chi = 0.125 using analytical [A_c] = 0.1705 uM."
+  note: "Checks analytical steady-state treadmilling rate at chi = 0.125 (= 0.0723 monomers/s) against printed 0.07 monomers/s (p. 22)."
+
+- id: cmp_turnover_chi_base_analytical
+  purpose: reproduction
+  computed: turnover_chi_base_analytical_computed
+  printed: turnover_rate_chi_baseline
+  conditions_ok: "Evaluated at chi = 1 using analytical [A_c] = 0.1705 uM."
+  note: "Checks analytical steady-state treadmilling rate at chi = 1 (= 0.578 monomers/s) against printed 0.5 monomers/s (p. 24)."
+
+- id: cmp_turnover_chi_high_analytical
+  purpose: reproduction
+  computed: turnover_chi_high_analytical_computed
+  printed: turnover_rate_chi_high
+  conditions_ok: "Evaluated at chi = 8 using analytical [A_c] = 0.1705 uM."
+  note: "Checks analytical steady-state treadmilling rate at chi = 8 (= 4.626 monomers/s) against printed 4.4 monomers/s (p. 22)."
+
+- id: cmp_turnover_chi_low_minus_ss
+  purpose: consistency
+  computed: turnover_chi_low_minus_ss_computed
+  printed: turnover_rate_chi_low
+  conditions_ok: "Evaluated at chi = 0.125 via minus-end depolymerization at simulated steady-state [G] ~ 0.2 uM."
+  note: "Checks minus-end turnover flux at [G] = 0.2 uM (= 0.0675 monomers/s) against printed 0.07 monomers/s (p. 22)."
+
+- id: cmp_turnover_chi_base_minus_ss
+  purpose: consistency
+  computed: turnover_chi_base_minus_ss_computed
+  printed: turnover_rate_chi_baseline
+  conditions_ok: "Evaluated at chi = 1 via minus-end depolymerization at simulated steady-state [G] ~ 0.2 uM."
+  note: "Checks minus-end turnover flux at [G] = 0.2 uM (= 0.54 monomers/s) against printed 0.5 monomers/s (p. 24)."
+
+- id: cmp_turnover_chi_high_minus_ss
+  purpose: consistency
+  computed: turnover_chi_high_minus_ss_computed
+  printed: turnover_rate_chi_high
+  conditions_ok: "Evaluated at chi = 8 via minus-end depolymerization at simulated steady-state [G] ~ 0.2 uM."
+  note: "Checks minus-end turnover flux at [G] = 0.2 uM (= 4.32 monomers/s) against printed 4.4 monomers/s (p. 22)."
+
+- id: cmp_mean_length_small_mass_balance
+  purpose: consistency
+  computed: mean_length_small_mass_balance_computed
+  printed: mean_filament_length_small
+  conditions_ok: "Evaluated at V = 1 um^3, [A]_tot = 20 uM, [A]_ss = 0.2 uM, N_fil = 50."
+  note: "Mass conservation predicts mean length 0.644 um for 50 filaments in 1 um^3 at 20 uM actin (2.7 nm/monomer), ~19.5% below printed 0.8 um (p. 17)."
+
+- id: cmp_mean_length_large_mass_balance
+  purpose: consistency
+  computed: mean_length_large_mass_balance_computed
+  printed: mean_filament_length_large
+  conditions_ok: "Evaluated at V = 27 um^3, [A]_tot = 12 uM, [A]_ss = 0.2 uM, N_fil = 400."
+  note: "Mass conservation predicts mean length 1.295 um for 400 filaments in 27 um^3 at 12 uM actin (2.7 nm/monomer), ~7.5% below printed 1.4 um (p. 25)."
+
+- id: cmp_s1fig_rg_a_vs_1um_bound
+  purpose: consistency
+  computed: rg_max_1um_computed
+  printed: s1fig_rg_a
+  note: "Popoviciu upper bound on Eq. 13 R_g inside a 1x1x1 um^3 cube is sqrt(3)/2 = 0.866 um (uniform = 0.500 um), yet Fig. 6 (p. 19) plots R_g in 1.0-1.8 um and S1 Fig (p. 29) prints R_g = 1.77, 1.51, 1.22 um."
+
+- id: cmp_s1fig_rg_b_vs_1um_bound
+  purpose: consistency
+  computed: rg_max_1um_computed
+  printed: s1fig_rg_b
+  note: "Popoviciu upper bound on Eq. 13 R_g inside a 1x1x1 um^3 cube is 0.866 um, which S1 Fig panel B (p. 29, printed 1.51 um) also exceeds."
+
+- id: cmp_s1fig_rg_c_vs_1um_bound
+  purpose: consistency
+  computed: rg_max_1um_computed
+  printed: s1fig_rg_c
+  note: "Popoviciu upper bound on Eq. 13 R_g inside a 1x1x1 um^3 cube is 0.866 um, which even the most contracted S1 Fig panel C (p. 29, printed 1.22 um) exceeds."
+
+- id: cmp_actin_crit_conc_sim
+  purpose: consistency
+  computed: actin_crit_conc_computed
+  printed: actin_crit_conc_sim
+  note: "Checks analytical [A_c] = 0.1705 uM (S4 Text Eq. 1) against the 10 s NRM/Gillespie benchmark printed 'about 0.4 uM' (S4 Text Section A, p. 50), which the paper expects to be higher due to boundary Brownian-ratchet slowdown (no verdict due to 'about')."
+
+- id: cmp_actin_conc_ss_s2
+  purpose: consistency
+  computed: actin_crit_conc_computed
+  printed: actin_conc_ss_s2
+  note: "Checks analytical [A_c] = 0.1705 uM (S4 Text Eq. 1) against the long-time steady-state diffusing actin concentration '~ 0.2 uM' stated in S2 Text Section A (p. 42) (no verdict due to '~')."
+
+# ---------------------------------------------------------------------------
+# 6. Digitized figure comparisons (Main Figs. 6, 8, 12A-B; S4 Text Figs. 1-4)
+# ---------------------------------------------------------------------------
+- id: cmp_fig6_rma0p005_vs_1um_bound
+  purpose: consistency
+  computed: fig6_rg_max_1um_rma0p005_computed
+  printed: fig6_rg_rma0p005_fig
+  conditions_ok: "Evaluates the strict [0, 1 um]^3 Popoviciu upper bound (0.866 um) across all 6 R_alpha:a columns of Fig. 6 row R_m:a = 0.005."
+  note: "All 6 cells of Fig. 6 row R_m:a = 0.005 (1.38-1.80 um) exceed the 0.866 um geometric upper bound for a 1x1x1 um^3 cube."
+
+- id: cmp_fig6_rma0p01_vs_1um_bound
+  purpose: consistency
+  computed: fig6_rg_max_1um_rma0p01_computed
+  printed: fig6_rg_rma0p01_fig
+  conditions_ok: "Evaluates the strict [0, 1 um]^3 Popoviciu upper bound (0.866 um) across all 6 R_alpha:a columns of Fig. 6 row R_m:a = 0.01."
+  note: "All 6 cells of Fig. 6 row R_m:a = 0.01 (1.20-1.64 um) exceed the 0.866 um geometric upper bound for a 1x1x1 um^3 cube."
+
+- id: cmp_fig6_rma0p02_vs_1um_bound
+  purpose: consistency
+  computed: fig6_rg_max_1um_rma0p02_computed
+  printed: fig6_rg_rma0p02_fig
+  conditions_ok: "Evaluates the strict [0, 1 um]^3 Popoviciu upper bound (0.866 um) across all 6 R_alpha:a columns of Fig. 6 row R_m:a = 0.02."
+  note: "All 6 cells of Fig. 6 row R_m:a = 0.02 (1.00-1.46 um) exceed the 0.866 um geometric upper bound for a 1x1x1 um^3 cube."
+
+- id: cmp_fig6_vs_fig8_unif_1um
+  purpose: consistency
+  computed: fig6_from_fig8_unif_1um_computed
+  printed: fig6_rg_rma0p01_fig
+  conditions_ok: "Combines uniform 1 um^3 initial R_g,i = 0.500 um with Fig. 8 R_g,f/R_g,i(2000 s) ratios at R_m:a = 0.01 against Fig. 6 row R_m:a = 0.01."
+  note: "Using the physical 1 um^3 uniform initial R_g,i = 0.500 um predicts 0.41-0.51 um, ~3x smaller than Fig. 6's plotted 1.20-1.64 um."
+
+- id: cmp_fig6_vs_fig8_unif_3um
+  purpose: consistency
+  computed: fig6_from_fig8_unif_3um_computed
+  printed: fig6_rg_rma0p01_fig
+  conditions_ok: "Tests the 3x scaling hypothesis by multiplying uniform 3 um^3 initial R_g,i = 1.500 um by Fig. 8 R_g,f/R_g,i(2000 s) ratios against Fig. 6 row R_m:a = 0.01."
+  note: "Multiplying 1.500 um by Fig. 8 terminal ratios yields 1.24-1.53 um, closely tracking Fig. 6's 1.20-1.64 um (implied R_g,i = 1.53 +- 0.06 um across all 6 columns)."
+
+- id: cmp_fig12b_nu_vs_fig12a_fit
+  purpose: consistency
+  computed: fig12a_nu_fitted_computed
+  printed: fig12b_nu_vs_chi_fig
+  conditions_ok: "Compares log-log OLS slopes of digitized Fig. 12A MSD curves over t <= 1000 s against Fig. 12B printed exponents nu(chi)."
+  note: "Agrees closely at chi = 0.5 and 0.125 but deviates at high chi (2, 4, 8) where kinetic arrest starts before 1000 s and the unstated minimum fit time t_min shifts OLS slope."
+
+- id: cmp_eq15_msd_chi0p125
+  purpose: fit_quality
+  computed: eq15_msd_chi0p125_computed
+  printed: fig12a_msd_chi0p125_fig
+  conditions_ok: "Tests Eq. 15 power-law scaling (prefactor: unknown) with Fig. 12B nu(0.125) = 1.124 against digitized Fig. 12A MSD for chi = 0.125."
+  note: "Shape check of Eq. 15 over the unoccluded range 700-2000 s (4/4 points inside band for t <= 1000 s)."
+
+- id: cmp_eq15_msd_chi0p25
+  purpose: fit_quality
+  computed: eq15_msd_chi0p25_computed
+  printed: fig12a_msd_chi0p25_fig
+  conditions_ok: "Tests Eq. 15 power-law scaling (prefactor: unknown) with Fig. 12B nu(0.25) = 1.278 against digitized Fig. 12A MSD for chi = 0.25."
+  note: "Shape check of Eq. 15 over 200-2000 s using Fig. 12B nu = 1.278."
+
+- id: cmp_eq15_msd_chi0p5
+  purpose: fit_quality
+  computed: eq15_msd_chi0p5_computed
+  printed: fig12a_msd_chi0p5_fig
+  conditions_ok: "Tests Eq. 15 power-law scaling (prefactor: unknown) with Fig. 12B nu(0.5) = 1.411 against digitized Fig. 12A MSD for chi = 0.5."
+  note: "Shape check of Eq. 15 over 200-2000 s (follows t^1.411 closely up to 1000 s before sub-diffusive arrest)."
+
+- id: cmp_eq15_msd_chi1
+  purpose: fit_quality
+  computed: eq15_msd_chi1_computed
+  printed: fig12a_msd_chi1_fig
+  conditions_ok: "Tests Eq. 15 power-law scaling (prefactor: unknown) with Fig. 12B nu(1) = 1.381 against digitized Fig. 12A MSD for chi = 1."
+  note: "Shape check of Eq. 15 over 100-1200 s using Fig. 12B nu = 1.381."
+
+- id: cmp_eq15_msd_chi2
+  purpose: fit_quality
+  computed: eq15_msd_chi2_computed
+  printed: fig12a_msd_chi2_fig
+  conditions_ok: "Tests Eq. 15 power-law scaling (prefactor: unknown) with Fig. 12B nu(2) = 1.337 against digitized Fig. 12A MSD for chi = 2."
+  note: "Shape check of Eq. 15 over 100-1200 s using Fig. 12B nu = 1.337."
+
+- id: cmp_eq15_msd_chi4
+  purpose: fit_quality
+  computed: eq15_msd_chi4_computed
+  printed: fig12a_msd_chi4_fig
+  conditions_ok: "Tests Eq. 15 power-law scaling (prefactor: unknown) with Fig. 12B nu(4) = 1.169 against digitized Fig. 12A MSD for chi = 4."
+  note: "Shape check of Eq. 15 over 100-1200 s; curve bends downward starting around 700-800 s prior to the 1000 s cutoff."
+
+- id: cmp_eq15_msd_chi8
+  purpose: fit_quality
+  computed: eq15_msd_chi8_computed
+  printed: fig12a_msd_chi8_fig
+  conditions_ok: "Tests Eq. 15 power-law scaling (prefactor: unknown) with Fig. 12B nu(8) = 1.050 against digitized Fig. 12A MSD for chi = 8."
+  note: "Shape check of Eq. 15 over 100-1200 s; curve peaks near 900 s and declines before 1000 s, departing strongly from a single power law."
+
+- id: cmp_s4fig1_nrm_final_vs_printed
+  purpose: consistency
+  computed: s4fig1_nrm_final_length
+  printed: mean_filament_length_small
+  conditions_ok: "Both represent 1 um^3, 20 uM actin, 50 nucleated filaments (S4 Fig. 1 at t = 10 s without cross-linkers/motors vs Main Text p. 17 steady state)."
+  note: "Digitized S4 Fig. 1 NRM terminal length (0.790 um) reproduces Main Text p. 17 printed 0.8 um."
+
+- id: cmp_s4fig1_gillespie_final_vs_printed
+  purpose: consistency
+  computed: s4fig1_gillespie_final_length
+  printed: mean_filament_length_small
+  conditions_ok: "Both represent 1 um^3, 20 uM actin, 50 nucleated filaments (S4 Fig. 1 Gillespie DM at t = 10 s vs Main Text p. 17)."
+  note: "Digitized S4 Fig. 1 Gillespie DM terminal length (0.790 um) reproduces Main Text p. 17 printed 0.8 um."
+
+- id: cmp_s4fig2_nrm_final_vs_analytical_Ac
+  purpose: consistency
+  computed: s4fig2_nrm_final_conc
+  printed: actin_crit_conc_analytical
+  conditions_ok: "Compares digitized S4 Fig. 2 NRM diffusing G-actin at t = 10 s (0.492 uM) against S4 Text Eq. 1 analytical critical concentration (0.17 uM)."
+  note: "At t = 10 s, simulated diffusing G-actin (0.492 uM) remains nearly 3x above analytical [A_c] = 0.17 uM and is still declining."
+
+- id: cmp_s4fig2_nrm_final_vs_sim_claim
+  purpose: consistency
+  computed: s4fig2_nrm_final_conc
+  printed: actin_crit_conc_sim
+  conditions_ok: "Compares digitized S4 Fig. 2 NRM terminal concentration (0.492 uM) against S4 Text p. 50 printed 'about 0.4 uM'."
+  note: "S4 Fig. 2 reaches 0.492 uM at t = 10 s (+0.092 uM above the text's 'about 0.4 uM'; no verdict due to 'about')."
+
+- id: cmp_s4fig2_gillespie_final_vs_analytical_Ac
+  purpose: consistency
+  computed: s4fig2_gillespie_final_conc
+  printed: actin_crit_conc_analytical
+  conditions_ok: "Compares digitized S4 Fig. 2 Gillespie DM diffusing G-actin at t = 10 s (0.492 uM) against S4 Text Eq. 1 analytical [A_c] (0.17 uM)."
+  note: "At t = 10 s, Gillespie DM diffusing G-actin (0.492 uM) matches NRM and sits nearly 3x above analytical [A_c] = 0.17 uM."
+
+- id: cmp_s4fig3_speedup_t10_vs_claim
+  purpose: reproduction
+  computed: s4fig3_speedup_t10_computed
+  printed: s4_nrm_speedup_claimed
+  conditions_ok: "Compares Gillespie-to-NRM wall-clock computation-time ratio at t = 10 s from digitized S4 Fig. 3 (59.8x) against the '> 100' claim on pp. 50 & 52."
+  note: "Digitized S4 Fig. 3 yields t_Gillespie / t_NRM = 6000.7 / 100.3 = 59.8-fold at t = 10 s (40.2 below 100; no verdict due to '>')."
+
+- id: cmp_s4fig3_speedup_max_vs_claim
+  purpose: consistency
+  computed: s4fig3_speedup_max_computed
+  printed: s4_nrm_speedup_claimed
+  conditions_ok: "Compares peak Gillespie-to-NRM wall-clock speedup ratio across t = 1..10 s from digitized S4 Fig. 3 (62.9x at t = 4 s) against the '> 100' claim."
+  note: "Even at its maximum across t = 1..10 s (t = 4 s: 4377.5 / 69.6 = 62.9-fold), S4 Fig. 3 never approaches 100-fold speedup."
+
+- id: cmp_s4fig4_peak_actin_5pN_vs_claim
+  purpose: consistency
+  computed: s4fig4_peak_actin_5pN_computed
+  printed: s4_max_displacement_error_claimed
+  conditions_ok: "Compares peak midpoint displacement error of Actin filament (5 pN tolerance) in S4 Fig. 4 (6.64% at 40 monomers; 6.08% at 20 monomers) against the caption's '< 5%' claim."
+  note: "Directly refutes the S4 Fig. 4 caption claim: Actin 5 pN reaches 6.64% (+1.64% above the 5% ceiling; no verdict due to '<')."
+
+- id: cmp_s4fig4_peak_actin_1pN_vs_claim
+  purpose: consistency
+  computed: s4fig4_peak_actin_1pN_computed
+  printed: s4_max_displacement_error_claimed
+  conditions_ok: "Compares peak midpoint displacement error of Actin filament (1 pN tolerance) in S4 Fig. 4 (4.32% at 40 monomers) against the caption's '< 5%' claim."
+  note: "Actin 1 pN stays under 5% across all coarse-graining levels (max 4.32%, -0.68% below 5%)."
+
+- id: cmp_s4fig4_peak_mt_1pN_vs_claim
+  purpose: consistency
+  computed: s4fig4_peak_mt_1pN_computed
+  printed: s4_max_displacement_error_claimed
+  conditions_ok: "Compares peak midpoint displacement error of Microtubule (1 pN tolerance) in S4 Fig. 4 (3.95% at 40 monomers) against the caption's '< 5%' claim."
+  note: "Microtubule 1 pN stays under 5% across all coarse-graining levels (max 3.95%, -1.05% below 5%)."

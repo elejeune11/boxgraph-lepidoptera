@@ -1,0 +1,517 @@
+- id: q_semiflexible_sim_not_runnable
+  kind: unstated_model
+  about: [semiflexible_actin_network_sim]
+  text: >
+    The full 3D periodic semiflexible inextensible fiber + nonlocal slender-body theory + Gillespie
+    dynamic cross-linking simulation (Eqs. 1-7, Figs. 1-2, S2-S3) requires HPC execution (up to
+    F = 1600 fibers, 6e5 time steps x 5 trials on NYU Greene cluster) and depends on unprinted
+    numerical details cited to Maxian et al. (2021) [refs. 3, 21], including the endpoint
+    regularization function for Eq. 5 (Sec. 2.1 of ref. 21), matrix discretization of M (Sec. 4.2
+    of ref. 21), backward Euler inextensible update, and SSA implementation.
+  citation:
+    page: 3
+    printed_page: "1232"
+    quote: "This section reviews our algorithm for simulating the dynamic cross-linking"
+    where: "Methods"
+
+- id: q_rigid_brownian_sim_not_runnable
+  kind: unstated_model
+  about: [rigid_brownian_actin_network_sim]
+  text: >
+    The full 3D periodic rigid Brownian fiber + detailed-balance Gillespie cross-linking + turnover
+    simulation (Eqs. 6-20, Figs. 3-7, S4-S8) requires HPC execution (F = 338-675 fibers, 3e5-6e5
+    steps x 5 trials) and omits the Gillespie SSA and filament turnover algorithms (cited to ref. 3).
+  citation:
+    page: 4
+    printed_page: "1233"
+    quote: "For Brownian dynamics simulations, we need to solve the overdamped Ito"
+    where: "Methods, Eq. 13"
+
+- id: q_sbt_endpoint_regularization_unstated
+  kind: unstated_model
+  about: [sbt_rigid_mobility_reconstructed, table_s1_alpha, table_s1_beta, table_s1_gamma, cmp_table_s1_alpha, cmp_table_s1_beta, cmp_table_s1_gamma]
+  text: >
+    Page 3 states that Eq. 5 (c(s) = ln(4(L-s)s/a^2)) is regularized near the endpoints over
+    delta = 0.1 L as discussed in Sec. 2.1 of Maxian et al. (2021) [ref. 21], and p. 4 cites
+    Sec. 4.2 of ref. 21 for the discretization of M, without printing either in this paper.
+    Our reconstructed C^1 ellipsoidal-cap endpoint regularization over delta = 0.1 L reproduces
+    Table S1 across all 7 aspect ratios to within 0.0008-0.0010 in alpha (~0.2%), 0.0010-0.0014
+    in beta (~0.4%), and 0.025-0.027 in gamma (~0.6%), confirming the exact finite-part operator
+    while isolating the small residual offset to the unprinted Sec. 2.1 regularization profile.
+  citation:
+    page: 3
+    printed_page: "1232"
+    quote: "Near the endpoints, we regularize Eq. 5 over a distance d = 0:1L"
+    where: "text"
+
+- id: q_max_links_per_fiber_discrepancy
+  kind: possible_error
+  about: [max_links_per_fiber_p7, max_links_per_fiber_exact_sites, max_links_per_fiber_printed, cmp_max_links_p7_printed, cmp_max_links_exact_sites_variant]
+  text: >
+    Page 7 writes that the number of links per fiber approaches the maximum
+    ceil(Delta s_u / c_w) * L / Delta s_u = 80. Using Table 1 values (Delta s_u = 0.026 um,
+    c_w = 20 nm, L = 1 um), the printed formula gives 2 * (1 / 0.026) = 76.92 (even across
+    Table 1's rounding range [0.0255, 0.0265] um it spans [75.47, 78.43], never reaching 80).
+    However, p. 4 defines Delta s_u = L / (N_u - 1), so there are N_u = L / Delta s_u + 1
+    binding sites including both endpoints: for N_u = 40 sites, Delta s_u = 1/39 = 0.02564 um
+    (rounding to 0.026 um in Table 1) and 2 * N_u = 80 exactly. Our variant
+    max_links_per_fiber_exact_sites reproduces 80 within Table 1's rounding. Note also a minor
+    dimensional slip: p. 5 defines 'Link density = 2C/(LF)' (units 1/um), whereas p. 7 and
+    Figs. 2-3 treat it as dimensionless links per fiber (numerically identical only for L = 1 um).
+  citation:
+    page: 7
+    printed_page: "1236"
+    quote: "approach the maximum of dDsu =cw e L=Dsu = 80"
+    where: "text"
+
+- id: q_figS5_exponent_sign_misprint
+  kind: possible_error
+  about: [bundle_density_exp_decay_figS5_printed, bundle_density_exp_decay_figS5_corrected, cmp_figS5_nb_printed_at_t0, cmp_figS5_b_printed_at_t0]
+  text: >
+    The legend of Fig. S5 (p. 24) prints 1.4 e^{(-t-30)/60} and 1.4 e^{(-t-10)/25}, omitting
+    parentheses around (t - t_0) so that the exponent evaluates to -(t + t_0)/tau instead of
+    -(t - t_0)/tau. At t = t_0 (30 s and 10 s), the printed formulas yield 0.515 and 0.629 um^-3,
+    contradicting the plotted curves in Fig. S5 which start at 1.4 um^-3 (matching Fig. 3's
+    4.7 e^{-(t-16)/40} and 4.7 e^{-(t-5)/20}). The corrected variant
+    bundle_density_exp_decay_figS5_corrected restores rho_B(t_0) = 1.4 um^-3.
+  citation:
+    page: 24
+    printed_page: "SI-7"
+    quote: "Comparing Brownian and non-Brownian filaments with a minimum of FB = 5"
+    where: "Fig. S5 legend"
+
+- id: q_kon_unit_misprint_p10_p11
+  kind: possible_error
+  about: [cl_first_end_kon_low, cl_first_end_kon_high, cl_first_end_kon_base]
+  text: >
+    Both p. 10 ('single-end binding rates k_on = 1.25, 5 (the base value), and 20 (um*s)') and
+    the Fig. 4 caption on p. 11 ('k_on = k_on^(0) = 5 (um*s)') omit the reciprocal / inverse
+    exponent, printing units of (um*s) instead of 1/(um*s) as defined on p. 4 ('units
+    1/(length x time)') and in Table 1 ('1/(um*s)').
+  citation:
+    page: 10
+    printed_page: "1239"
+    quote: "single-end binding rates kon = 1:25, 5 (the base value), and 20"
+    where: "text"
+
+- id: q_p2_mesh_size_direction_inverted
+  kind: possible_error
+  about: [ell_m_02_printed, ell_m_04_printed, ell_m_08_printed]
+  text: >
+    Introduction p. 2 (right column) states: 'We find that the relative CL-to-actin ratio required
+    to achieve the same bundling time decreases with increasing actin network mesh size.' This is
+    inverted relative to the Abstract (p. 1), Results (p. 6, p. 11, Fig. 4), and Conclusion (p. 14),
+    which all show that the required CL-to-actin ratio decreases as actin concentration increases
+    (i.e. as mesh size ell_m = sqrt(L_d^3/(FL)) DECREASES). Specifically, in Fig. 4, decreasing
+    ell_m from 0.8 to 0.2 um allows k_on to drop 16-fold while actin concentration rises 16-fold
+    (a 256-fold drop in relative CL-to-actin ratio for similar tau_c). Page 11 ('decreases with
+    the mesh size') is similarly ambiguous.
+  citation:
+    page: 2
+    printed_page: "1231"
+    quote: "increasing actin network mesh size. Finally, we show that"
+    where: "text"
+
+- id: q_sm_p19_alpha1_sign_misprint
+  kind: possible_error
+  about: [rigid_brownian_actin_network_sim]
+  text: >
+    In Supporting Material Sec. A (p. 19, immediately below Eq. S8), the text states that Eq. S8
+    (K_r alpha = U_hat_c + s(-(Omega . n_1) n_2 + (Omega . n_2) n_1)) matches Eq. S3
+    (K_s alpha = U_bar + alpha_1 n_1 s + alpha_2 n_2 s) with 'alpha_1 = -Omega . n_2 and
+    alpha_2 = -Omega . n_1'. From Eq. S8, the coefficient of s n_1 is +Omega . n_2, not -Omega . n_2.
+  citation:
+    page: 19
+    printed_page: "SI-2"
+    quote: "This is exactly the form of Ks in (S3) with α1 = −Ω · n2 and α2 = −Ω · n1"
+    where: "Sec. A, below Eq. S8"
+
+- id: q_p5_cross_reference_misprints
+  kind: possible_error
+  about: [detailed_balance_binding_rate_eq20, rigid_brownian_actin_network_sim]
+  text: >
+    Two equation cross-reference misprints appear on p. 5: (1) top-left refers to 'Eq. S10 in the
+    supporting text' for generating N_tt^{1/2} and N_rr^{1/2}, whereas those formulas are Eq. (S12)
+    on p. 19 (Eq. S10 is an intermediate step in the torque-constraint proof); (2) left column writes
+    'To satisfy Eq. 19 for every choice of C and C' ... we must have [Eq. 19]', referring to Eq. 18.
+  citation:
+    page: 5
+    printed_page: "1234"
+    quote: "To satisfy Eq. 19 for every choice of C and C0 with binding and unbinding rates"
+    where: "text"
+
+- id: q_fb5_ratio_p10_vs_figS5
+  kind: unexplained_difference
+  about: [speedup_tau_c_FB5_p10_claim, speedup_tau_c_FB5_caption_printed, cmp_speedup_peak_FB5_p10_claim, cmp_speedup_peak_FB5_caption]
+  text: >
+    Page 10 states that increasing F_B from 2 to 5 increases tau_c 'but the ratio of tau_c between
+    the Brownian and non-Brownian system remains the same' (i.e. factor of 4, as for F_B = 2).
+    However, Fig. S5 (p. 24) shows peak times of ~30 s (non-Brownian) vs ~10 s (Brownian), and
+    its caption explicitly reports 'the peak occurring three-fold faster' (ratio 3, not 4).
+    Similarly, p. 12 claims the peak occurs 'about a factor of two later' in both cases when F_B = 5,
+    whereas 10 s / 4 s = 2.5x for Brownian vs 30 s / 16 s = 1.88x for non-Brownian.
+  citation:
+    page: 10
+    printed_page: "1239"
+    quote: "as we show in Fig. S5 by setting FB = 5, but the ratio"
+    where: "text"
+
+- id: q_mobility_anisotropy_finite_aspect_ratio
+  kind: overstated_claim
+  about: [rigid_mobility_trace_eq12, mobility_anisotropy_claim_p9, cmp_mobility_anisotropy_p9]
+  text: >
+    Page 9 states that N_tt 'has an eigenvalue in the parallel direction that is twice as large as
+    the perpendicular directions'. While lambda_par / lambda_perp -> 2 asymptotically as epsilon -> 0,
+    for the simulated actin aspect ratio epsilon = 0.004 in Table S1 (alpha = 0.4575, beta = 0.2973),
+    the actual ratio is (alpha + beta) / alpha = 1.650 (and 1.600 for L = 0.5 um, epsilon = 0.008).
+  citation:
+    page: 9
+    printed_page: "1238"
+    quote: "is twice as large as the perpendicular directions"
+    where: "text"
+
+- id: q_small_kon_lm2_scaling_deviation
+  kind: overstated_claim
+  about: [diffusion_limited_bundling_scaling, tau_c_small_kon_vs_lm, cmp_scaling_small_kon_lm2]
+  text: >
+    Pages 10-11 state that at small k_on = 1.25 1/(um*s), tau_c increases 'from 9 s to 17 s, then
+    to 56 s as the mesh size doubles, scaling approximately as ell_m^2'. Quantitatively, doubling
+    ell_m from 0.2 to 0.4 um increases tau_c by only 1.89x (exponent 0.92, nearly linear rather
+    than 4x), while doubling from 0.4 to 0.8 um increases tau_c by 3.29x (exponent 1.72). Over the
+    4x span in ell_m, tau_c rises 6.22x rather than 16x, so a pure ell_m^2 power law cannot fit all
+    three points simultaneously (likely because the CL capture length ell + delta_ell ~ 0.09 um is
+    comparable to ell_m = 0.2 um).
+  citation:
+    page: 11
+    printed_page: "1240"
+    quote: "9 s to 17 s, then to 56 s as the mesh size doubles, scaling"
+    where: "text"
+
+- id: q_sm_c_large_dt_broadening
+  kind: numerics
+  about: [two_fiber_brownian_strang_sim, gibbs_boltzmann_spring_pdf_eqS13, ref_two_fiber_bd_dt_std, cmp_bd_large_dt_std_vs_eqS13]
+  text: >
+    Supporting Material Sec. C (pp. 20-21) claims that Fig. S1 (right, Delta t = 2.5e-3 s = 50% of
+    the stability limit) 'shows that our temporal integrator can still reproduce the correct
+    distribution with a larger time step size'. Both Fig. S1 (right, where the histogram peak drops
+    from ~22 to ~17.5 um^-1) and our Strang-splitting Brownian dynamics simulation + refinement
+    (ref_two_fiber_bd_dt_std) show a substantial O(Delta t) broadening bias at the midpoint: at
+    Delta t = 0.0025 s, std_x is ~0.0222 um (24-25% wider than exact Eq. S13's 0.01786 um), and
+    only converges toward Eq. S13 as Delta t is refined by 4x-8x (matching the analytical 1D OU
+    midpoint variance inflation 1 / (1 - Delta t / Delta t_max)).
+  citation:
+    page: 21
+    printed_page: "SI-4"
+    quote: "shows that our temporal integrator can still reproduce the correct distribution with a larger time step size"
+    where: "Sec. C"
+
+- id: q_table1_domain_range_and_minor_inconsistencies
+  kind: reading
+  about: [domain_extent_range, Ld_6, tau_c_nb_FB2_printed, tau_c_lm04_kon_high_fig5, tau_c_high_kon_lm02_04, gaussian_width_sigma_rel_sm_c]
+  text: >
+    Several minor numerical/terminology inconsistencies occur across text and captions:
+    (1) Table 1 (p. 6) lists domain extent L_d = 2-4 um, whereas p. 10 simulates L_d = 6 um for
+    ell_m = 0.8 um; (2) the non-Brownian base critical time is reported as tau_c ≈ 16 s across
+    pp. 7-10, 13-14, 23, 25-26, but as tau_c ≈ 15 s on p. 11 and tau_c ≈ 20 s in Fig. 6 caption
+    (p. 13); (3) for ell_m = 0.4 um at high k_on = 4 k_on^(0), p. 10 reports tau_c ≈ 3 s whereas
+    Fig. 5 caption (p. 12) reports tau_c ≈ 2.5 s; (4) SM Sec. C (pp. 20-21) calls sigma/L = 0.005
+    the 'CL variance' even though p. 4 defines sigma as the Gaussian standard deviation; (5) the
+    length-shortening mesh-diffusion speedup ratio tau_m(L=1)/tau_m(L=0.5) = 0.2994/0.1727 = 1.733
+    (log-linear SBT correction) is rounded to 'a factor of two' on p. 12.
+  citation:
+    page: 6
+    printed_page: "1235"
+    quote: "simulated volume's extent 2-4 mm cubic unit cell"
+    where: "Table 1"
+
+- id: q_eq17_detailed_balance_unit_mismatch
+  kind: possible_error
+  about: [detailed_balance_binding_rate_eq20, cl_second_end_kons, cl_koffs]
+  text: >
+    Table 1 (p. 6) gives k_on,s = 50 1/(um*s) (a rate per unit length) and k_off,s = 1 1/s
+    (a rate per second). On p. 4, the text explicitly multiplies the first-end binding rate by
+    binding-site spacing (k_on * Delta s_u per second), but omits Delta s_u for the second end
+    ('can bind to a nearby fiber with rate k_on,s'). Likewise, detailed balance Eq. 17 (p. 5),
+    P_eq(C, x) k_on,s(ell_k') = P_eq(C', x) k_off,s(ell_k'), equates probabilities of discrete
+    link configurations C and C' at fixed fiber positions x, requiring both transition rates to
+    have dimensions 1/s (i.e. site-level rate k_on,s * Delta s_u) unless the prefactor ratio
+    zeta(C')/zeta(C) in Eq. 18 absorbs Delta s_u.
+  citation:
+    page: 4
+    printed_page: "1233"
+    quote: "the second end can bind to a nearby fiber with rate kon;s"
+    where: "text; Eq. 17 (p. 5)"
+
+- id: q_sm_c_two_fiber_sim_choices
+  kind: choice
+  about: [two_fiber_brownian_strang_sim, run_two_fiber_bd_small_dt, run_two_fiber_bd_large_dt]
+  text: >
+    Supporting Material Sec. C (pp. 20-21) specifies t_max = 100 s, N = 50, sigma/L = 0.005, and
+    Delta t = 0.0005 s and 0.0025 s for Fig. S1, but does not state the steady-state burn-in
+    duration, number of stochastic replicates, or random seed. The reconstructed model
+    two_fiber_brownian_strang_sim uses burn_t = 1.0 s, replicates = 5, seed = 0, and treats the
+    endpoint spring in the point-force limit (sigma -> 0) rather than integrating the finite
+    Gaussian kernel sigma/L = 0.005 on N = 50 Chebyshev nodes.
+  citation:
+    page: 20
+    printed_page: "SI-3"
+    quote: "We simulate until t = 100 seconds in both cases and verify"
+    where: "Sec. C"
+
+- id: q_fig3_t0_and_turnover_domain_and_minor_slips
+  kind: reading
+  about: [fit_fig3_t0_b, tau_c_b_FB2_exact, fiber_aspect_ratio_0008_tableS1, pct_in_bundles_tc_nb_printed]
+  text: >
+    Additional minor inconsistencies and reading ambiguities identified during independent audit:
+    (1) Fig. 3 top-right legend (p. 9) starts the Brownian exponential decay fit at t_0 = 5 s
+    (4.7 e^{-(t-5)/20}), whereas the Fig. 3 caption (p. 9) and text (p. 10) report tau_c ≈ 4 s;
+    (2) Main text turnover simulations in Fig. 7 (pp. 12-13) omit the simulated domain size L_d
+    and fiber count F (after p. 6 states results henceforth use F = 675, L_d = 3 um), whereas
+    Fig. S8 caption (p. 26) reveals the turnover snapshots use L_d = 2 um, ell_m = 0.2 um
+    (F = 200);
+    (3) Page 7 states that at t = tau_c, '>50%' of fibers are in bundles of size 11 or less and
+    '<10%' in size 10-20 (overlapping at sizes 10-11), whereas Fig. S3 caption (p. 23) states
+    'about 50%' in size 10 or less;
+    (4) Page 5 ('Network statistics') states that a bundle of F_B filaments contributes weight
+    ~ 1/F_B to bundle density and ~ F_B to percentage of fibers in bundles, mixing per-filament
+    weights (1/b vs 1) with per-bundle weights (1 vs b) and reusing the minimum-size threshold
+    symbol F_B for bundle size;
+    (5) Table S1 (p. 20) tabulates epsilon = 0.008 without explicitly printing L = 0.5 um
+    (inferred by the first reader as condition fiber_length = 0.5 um on
+    fiber_aspect_ratio_0008_tableS1 from a/L = 4 nm / 0.5 um = 0.008).
+  citation:
+    page: 5
+    printed_page: "1234"
+    quote: "bundle density but a weight FB to the percentage of fibers"
+    where: "text; Fig. 3 (p. 9); Fig. 7 (p. 13); Table S1 (p. 20); Fig. S3 (p. 23); Fig. S8 (p. 26)"
+
+
+- id: q_digitize_fig3_double_exp_tau1_rounding
+  kind: unexplained_difference
+  about: [percent_in_bundles_double_exp, data_fig3_pct_fit_b, data_fig3_pct_b, data_fig3_pct_inset_b, cmp_fig3_pct_fit_b, cmp_fig3_pct_b_fit]
+  text: >
+    Calibrated digitization of the black dotted fit curve in Fig. 3 middle-left (p. 9 / 1238,
+    data_fig3_pct_fit_b) reveals that the plotted curve sits 2.2-3.5 percentage points ABOVE the
+    legend formula 100(1 - 0.64 e^{-t/3} - 0.36 e^{-t/13}) at early times t = 2, 4, 6, 8 s
+    (plotted 39.3%, 59.7%, 70.9%, 77.6% vs printed formula 36.3%, 56.7%, 68.7%, 76.1%), while
+    agreeing to < 0.1% for t >= 18 s (90.9%, 94.3%, 96.1%). The plotted curve matches an unrounded
+    fast timescale tau_1 ≈ 2.6 s (giving 39.5%, 59.8%, 70.9%, 77.6% and t_50 = 2.88 s), which the
+    authors rounded to 3 s in the legend and p. 10 text (shifting the printed formula's t_50 to
+    3.22 s and t_80 to 9.51 s, whereas the digitized simulation curves data_fig3_pct_b and
+    data_fig6b_pct_L1 reach 50% at t ≈ 2.73 s and 80% around t ≈ 8.4 s).
+  citation:
+    page: 9
+    printed_page: "1238"
+    quote: "Statistics for the bundling process with and without thermal fluctuations"
+    where: "Fig. 3 (middle-left)"
+
+- id: q_digitize_fig4_high_kon_nonmonotonic_tauc
+  kind: overstated_claim
+  about: [data_fig4_tauc_kon025_vs_lm, data_fig4_tauc_kon1_vs_lm, data_fig4_tauc_kon4_vs_lm, data_fig4_lm02_kon4, data_fig4_lm04_kon4, tau_c_high_kon_lm02_04, tau_c_lm04_kon_high_fig5]
+  text: >
+    Log-colorbar decoding of Fig. 4's bottom-right 3x3 tau_c heatmap (p. 11 / 1240; 5-tick log10
+    colorbar fit residual 0.90 px) recovers all 9 critical bundling times: for k_on/k_on^(0) = 0.25,
+    tau_c = [9.23, 17.16, 56.14] s (matching p. 11's 9, 17, 56 s); for k_on/k_on^(0) = 1,
+    tau_c = [3.88, 4.86, 10.49] s; and for high k_on/k_on^(0) = 4, tau_c = [3.53, 2.40, 4.57] s.
+    This settles the p. 10 (~3 s) vs Fig. 5 caption (~2.5 s) discrepancy at ell_m = 0.4 um in favor
+    of 2.40 s, and reveals that at high k_on, tau_c is non-monotonic in mesh size: ell_m = 0.2 um
+    (3.53 s, confirmed by Fig. 4 top-left yellow peak at t = 3.5 s) is ~47% slower than ell_m = 0.4 um
+    (2.40 s, confirmed by Fig. 4 top-right yellow peak at t = 2.0-2.5 s), rather than plateauing at
+    ~3 s for small mesh sizes as described on p. 10.
+  citation:
+    page: 11
+    printed_page: "1240"
+    quote: "Bundling timescales for a range of initial mesh sizes"
+    where: "Fig. 4 (bottom-right heatmap; top-left & top-right panels)"
+
+- id: q_digitize_fig7_turnover_bd_mismatch_2tauc
+  kind: overstated_claim
+  about: [data_fig7_bd_b_two, data_fig7_bd_nb_two, data_fig7_pct_b_two]
+  text: >
+    Fig. 7 caption (p. 13 / 1242) and p. 12 text state that 'the steady-state bundling statistics
+    are roughly the same when tau_f / tau_c is matched' between Brownian and non-Brownian filaments.
+    Calibrated digitization shows that while steady-state % of fibers in bundles agrees closely
+    (~14-16%, ~33-35%, ~53-56%), steady-state bundle density at tau_f = 2 tau_c (Fig. 7 left)
+    differs substantially: Brownian filaments (data_fig7_bd_b_two) plateau at 3.0-3.2 um^-3 for
+    t/tau_f = 2-4.5, ~25% higher than non-Brownian filaments (data_fig7_bd_nb_two, 2.35-2.55 um^-3),
+    well outside their non-overlapping 5-trial SEM error bars.
+  citation:
+    page: 13
+    printed_page: "1242"
+    quote: "bundling statistics are roughly the same when"
+    where: "Fig. 7 (left)"
+
+- id: q_digitize_figS3_t60_and_fig6a_peaks
+  kind: overstated_claim
+  about: [data_figS3_t60_rigid, data_figS3_t60_k007, data_fig6a_bd_L1, data_fig6a_bd_L05]
+  text: >
+    Two minor quantitative overstatements are resolved by calibrated figure digitization: (1) p. 8
+    (journal p. 1237) claims Fig. S3 shows 'at least 75% of the fibers are in bundles of size 30 or
+    larger' by t = 60 s (Fig. S3 caption softens this to 'about 75%'), whereas summing the calibrated
+    Fig. S3 (t = 60 s) bins centered at sizes 34, 66, 131, 258, 509 yields 68.6% for rigid filaments
+    (data_figS3_t60_rigid; total binned 97.0%) and ~72.8% for base semiflexible filaments kappa = 0.07
+    (data_figS3_t60_k007 plus ~6% at size 131), both slightly below 75%; (2) Fig. 6 caption (p. 13)
+    refers to non-Brownian critical bundling time as tau_c ≈ 20 s, whereas digitized Fig. 6a bundle
+    density peaks occur at t ≈ 10-14 s for L = 0.5 um (data_fig6a_bd_L05, ~9.05 um^-3) and t ≈ 16 s
+    for L = 1 um (data_fig6a_bd_L1, ~4.59 um^-3), consistent with p. 11's ~15 s and p. 7's ~16 s.
+  citation:
+    page: 8
+    printed_page: "1237"
+    quote: "at least 75% of the fibers are"
+    where: "text; Fig. S3 (p. 23); Fig. 6a (p. 13)"
+
+- id: q_digitize_figS1_left_shift_and_right_broadening
+  kind: numerics
+  about: [data_figS1_left_eqS13, data_figS1_left_hist, data_figS1_right_eqS13, data_figS1_right_hist, cmp_figS1_left_hist_vs_eqS13, cmp_figS1_right_hist_vs_eqS13]
+  text: >
+    Calibrated digitization of both Fig. S1 panels (p. 21 / SI-4; x-tick residual <= 0.29 px, y-tick
+    residual 0.76 px; exact 0.01 um histogram bins centered at 0.015..0.125 um, summing to 0.997 and
+    0.993 probability mass) quantitatively confirms exact plotting of Eq. (S13) (cmp_figS1_left_eqS13
+    and cmp_figS1_right_eqS13 both reproduced; peak 22.10 vs 22.11 um^-1) while exposing two
+    quantitative discrepancies in the plotted simulation histograms: (1) at Delta t = 2.5e-3 s
+    (right), the histogram peak drops 21% to 17.44/17.16 um^-1 (vs 22.11 um^-1) with ~2x tail
+    inflation and digitized bin standard deviation 0.0218 um (+22% above Eq. S13's 0.01786 um,
+    closely matching our reconstructed Strang-splitting model's 0.02227 um in q_sm_c_large_dt_broadening);
+    (2) even at Delta t = 5e-4 s (left, cmp_figS1_left_hist_vs_eqS13 = not reproduced), the entire
+    histogram sits systematically ~2.1 nm left of Eq. (S13) (bins at 0.035, 0.045 um read 8.01, 15.39
+    vs Eq. S13's 6.39, 13.55 um^-1, while bins at 0.075, 0.085 um read 15.71, 8.90 vs 17.70, 10.72
+    um^-1; digitized histogram mean 0.0617 um vs Eq. S13's 0.06381 um), likely reflecting finite
+    100 s trajectory sampling noise and/or the finite Gaussian force-spreading kernel sigma/L = 0.005.
+  citation:
+    page: 21
+    printed_page: "SI-4"
+    quote: "Steady state spring length distribution for two stiff fibers connected by a spring"
+    where: "Fig. S1 (left and right)"
+
+- id: q_code_resolves_paper_open_questions
+  kind: unexplained_difference
+  about:
+    - sbt_rigid_mobility_reconstructed
+    - table_s1_alpha
+    - table_s1_beta
+    - table_s1_gamma
+    - max_links_per_fiber_p7
+    - max_links_per_fiber_exact_sites
+    - detailed_balance_binding_rate_eq20
+    - two_fiber_brownian_strang_sim
+    - data_figS1_left_hist
+    - data_figS1_right_hist
+    - thermal_energy_kBT_table1
+    - bending_stiffness_actin
+    - maxian2022_code/straight_mobility_sbt_matlab_port
+    - maxian2022_code/cpp_sbt_mobility_port
+    - maxian2022_code/sm_c_two_fiber_lie_trotter_port
+    - maxian2022_code/sm_c_two_fiber_strang_variant
+    - maxian2022_code/cl_network_params_adapter
+    - maxian2022_code/cpp_cl_kinetics_ssa_port
+  text: >
+    Cross-record audit against the companion repository maxian2022_code (`stochasticHydroTools/SlenderBody`,
+    commit 38c2fc8) settles all five major open questions of maxian2022 while quantifying how the
+    digitized Fig. S1 histograms and Table S1 map onto the actual code:
+    (1) Table S1 endpoint regularization (`q_sbt_endpoint_regularization_unstated`):
+    `RegularizeS.m` / `FibCollocationDiscretization.py:168-176` defines the unprinted tanh profile
+    s_bar(s) = w(s)*s + (1 - w(s)^2)*delta*L/2 with w(s) = tanh((eta+1)/delta) - tanh((eta-1)/delta) - 1,
+    delta = 0.1. `maxian2022_code/straight_mobility_sbt_matlab_port` (N=32) reproduces all 21 Table S1
+    entries (`table_s1_alpha/beta/gamma`) to every printed 4th decimal (max |err| = 4.70e-5 alpha,
+    4.71e-5 beta, 4.93e-5 gamma), whereas maxian2022's reconstructed C^1 ellipsoidal cap differs by
+    0.33%-0.92% (`rel_code_matlab_sbt_approx_reconstructed_*`). In C++ SBT mode
+    (`cpp_sbt_mobility_port`), actin aspect ratios eps <= 0.008 match Table S1 within 2.5e-3, while
+    eps = 0.010 collapses beta from 0.2230 to 0.0020 (-99.1%) due to the dimensional eigenvalue floor
+    `_EigValThres = 0.001`.
+    (2) Maximum links per fiber = 80 (`q_max_links_per_fiber_discrepancy`):
+    `StrainInputFile.txt:29` and live `cl_network_params_adapter` confirm `Nuniformsites = 40`
+    (endpoints included), giving exact ds = 1/39 = 0.025641 um (Table 1's rounded 0.026 um),
+    `maxPerSite = ceil(ds/0.020) = 2`, and exact `2 * 40 = 80` (`rel_code_clnet_same_as_max_links_exact_sites`,
+    exact vs p. 7 formula's 2.50% omission of the +1 endpoint site).
+    (3) Eq. 17 detailed-balance unit mismatch (`q_eq17_detailed_balance_unit_mismatch`):
+    `DoubleEndedCrossLinkedNetwork.py:96-99` multiplies BOTH `kon` and `konSecond` by `ds` before
+    passing per-site rates [1/s] to `EndedCrossLinkers.cpp` (`rel_code_cpp_ssa_scales_as_eq20`
+    verifies exact Eq. 20 Boltzmann scaling inside the 2-sigma capture window [10, 90] nm, while
+    `cpp_cl_kinetics_ssa_port` reveals an undisclosed 100% binding cutoff outside [10, 90] nm).
+    (4) Lie-Trotter vs Strang splitting & Fig. S1 digitized histogram cross-check
+    (`q_sm_c_large_dt_broadening`, `q_digitize_figS1_left_shift_and_right_broadening`):
+    `TemporalIntegrator.py:441-499` implements 1st-order Lie-Trotter (`BrownianUpdate(dt)` then
+    deterministic `updateAllFibers(dt)`, with NO second Brownian half-step), contradicting Sec. 2.4's
+    3-step Strang description. Bin-by-bin comparison against maxian2022's newly digitized Fig. S1 right
+    histogram (`data_figS1_right_hist`, dt = 2.5e-3 s: digitized peak = 17.44 um^-1, mean = 0.06221 um,
+    std_raw = 0.02206 um, Sheppard-corrected std = 0.02187 um) proves the published Fig. S1 right panel
+    was sampled immediately AFTER the Brownian step (`sm_c_two_fiber_lie_trotter_port` after_bd: peak
+    17.66 um^-1, std 0.02215 um, L1 = 0.105, RMSE = 1.00 um^-1; `sm_c_two_fiber_strang_variant` midpoint
+    sharing the identical stationary Markov chain: peak 17.43 um^-1, std 0.02209 um, L1 = 0.108,
+    RMSE = 1.05 um^-1), ruling out both Lie-Trotter end-of-step (peak 56.03 um^-1, std 0.00690 um,
+    L1 = 0.979, RMSE = 12.83 um^-1 — where `FixedDynamicLinkNetwork.py:208` actually logs `LinkStrains`!)
+    and Strang full-step endpoint (peak 22.41 um^-1, std 0.01711 um, L1 = 0.265, RMSE = 2.55 um^-1).
+    At dt = 5e-4 s (`data_figS1_left_hist`, peak 21.28 um^-1, mean 0.06153 um, std_raw 0.01801 um),
+    both panels exhibit an unexplained ~2.5 nm leftward mean shift relative to post-BD simulations
+    (0.0641-0.0647 um). The three `approximated_by` relations (`rel_code_lie_trotter_end_approx_eqS13_std`
+    13.9%, `rel_code_lie_trotter_after_bd_approx_eqS13_std` 5.6%, `rel_code_strang_end_approx_eqS13_std`
+    3.0%) quantify this splitting-order separation across the parameter regime.
+    (5) Thermal energy `kbT = 4.1e-3` vs Table 1 `4e-3 pN*um`:
+    `CrossLinkedNetwork.py:9`, `StrainInputFile.txt:10`, and `SemiflexBundleInputFile.txt:11` all set
+    `kbT = 4.1e-3 pN*um` (~24 C), explaining Table 1's `E_b = 4.1e-3 * 17 = 0.0697 -> 0.07 pN*um^2`
+    (whereas `4e-3 * 17 = 0.068 pN*um^2`), shifting non-Brownian delta_ell to 20.25 nm, and shifting
+    6*D_t and tau_m by 2.5%. Additional code-only defects documented in maxian2022_code include
+    `ProcessPythonNetwork.m` plotting 2x SEM error bars (vs captions' "error in the mean"),
+    `FixedDynamicLinkNetwork.py` pre-equilibrating before t=0 and subcycling CL updates every
+    `NetworkStepEvery = 100` steps, `CrossLinkedNetwork.py:382-383` using strict `>` with hardcoded
+    `bunddist = 1/4`, and `FibCollocationDiscretization.py:164`'s duplicate `_RPYDirectQuad` bug.
+  citation:
+    page: 15
+    printed_page: "1244"
+    quote: "Code and input files for the simulations are available at https://github.com/stochasticHydroTools/SlenderBody."
+    where: "Acknowledgments"
+
+- id: q_val_audit_all_nine_partners
+  kind: choice
+  about:
+    - rigid_brownian_actin_network_sim
+    - semiflexible_actin_network_sim
+    - persistence_length_actin
+    - translational_diffusion_eq22
+    - mesh_diffusion_time
+    - detailed_balance_binding_rate_eq20
+    - maxian2022_code/bundle_detection_adapter
+    - bathe2008/wlb_bending_stiffness_eq2
+    - borukhov2005/bundle_onset_curve
+    - claessens2006/bending_stiffness_persistence
+    - kierfeld2005/persistence_length_def
+    - weirich2017/stokes_einstein_ellipsoid_diffusion
+    - chandrasekaran2019/nematic_order_parameter_eqS18
+    - freedman2019/switching_rate_1d_model
+    - popov2016/kuramoto_length_s2eq1
+  text: >
+    Cross-record relate and validate audit across all 9 paired actin_bundling records finds 28 verified
+    ModelAtlas relations in `relations.yaml` (22 with maxian2022_code, 1 with kierfeld2005, 2 with
+    weirich2017, 3 with freedman2019), 0 new `cited.yaml` links, and 0 genuine `validations.yaml`
+    entries:
+    (1) Why 0 `validations.yaml` entries: 5 partners (maxian2022_code, borukhov2005, kierfeld2005,
+    chandrasekaran2019, popov2016) have 0 `origin: measured` empirical datums; bathe2008 (6 measured)
+    and claessens2006 (18 measured) measure wormlike-bundle bending stiffness kappa_B(N) and droplet
+    ring radii/fuzzy diameters/equilibration times; weirich2017 (35 measured) measures liquid-crystal
+    tactoid aspect ratios, coalescence lengths/times, capillary wavelengths, and FRAP fluorescence
+    intensity (its `D_frap_est` and `mesh_size_dilute_main` are `origin: estimated` with `~` and no
+    precision, and `eta_frap_est` was inferred from `D_frap_est`); freedman2019 (8 measured) measures
+    TIRF polymerization rates and fascin/alpha-actinin sorting domain lengths. None of maxian2022's
+    models predicts any of these experimental observables.
+    (2) Key shared-physics links that cannot be entered as same-output runnable relations:
+    (a) `maxian2022` Eq. (21) orientation parameter `q = max eig((1/(b L)) sum int tau tau^T ds)` in
+    `[1/3, 1]` (non-runnable in maxian2022; audited in `maxian2022_code/bundle_detection_adapter`) maps
+    linearly to the traceless 3D nematic order parameter `S = (3/2)(q - 1/3)` in `[0, 1]` of
+    `popov2016/nematic_order_parameter_eq14` and `chandrasekaran2019/nematic_order_parameter_eqS18`;
+    (b) `maxian2022/persistence_length_actin` (`l_p = kappa / k_B T`, output `[length]`) is the exact
+    algebraic inverse of `claessens2006/bending_stiffness_persistence` (`kappa_a = l_p * k_B T`, output
+    `[force]*[length]^2`), and similarly `maxian2022/mesh_diffusion_time` (`tau_m = ell_m^2 / (6 D_t)`,
+    output `[time]`) is the inverse of `popov2016/kuramoto_length_s2eq1` (`l_k = sqrt(6 D tau)`, output
+    `[length]`), while F-actin mass balance `F*L/V = c_F * N_A * l_mon` links `maxian2022` (`ell_m`, `c_G`)
+    with `claessens2006/droplet_filament_count` (`L_tot`) and `popov2016/mean_filament_length_mass_balance`
+    (`L_mean`) across complementary solved variables;
+    (c) `popov2016/alpha_actinin_slip_bond_s3eq6` and `chandrasekaran2019/crosslinker_slip_bond_unbinding_eqS15`
+    model force-enhanced Bell slip-bond unbinding (`k_off ~ exp(F / F_0)`), physically contrasting with
+    `maxian2022` Eq. (20)'s force-independent `k_off` and harmonic Boltzmann binding penalty
+    `k_on ~ exp(-K_c (r - ell)^2 / (2 k_B T))`.
+  citation:
+    page: 5
+    printed_page: "1234"
+    quote: "For a bundle of b filaments, we define an orientation parameter as the"
+    where: "Sec. 2.5, Eq. 21; Sec. 2.3, Eq. 20"
+

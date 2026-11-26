@@ -1,0 +1,257 @@
+# ---- Analytical / derived parameter checks ----
+- id: run_vca_density
+  model: vca_surface_density
+  inputs: {c_VCA: VCA_conc, R: R_vesicle_avg}
+  outputs: {V0: V0_pred}
+
+- id: run_cone_r_40nM
+  model: cone_disk_radius
+  inputs: {R: R_vesicle_avg, N_domains: N_domains_40nM_sim}
+  outputs: {r_cone: r_cone_40nM_pred}
+
+- id: run_cone_r_80nM
+  model: cone_disk_radius
+  inputs: {R: R_vesicle_avg, N_domains: N_domains_80nM_sim}
+  outputs: {r_cone: r_cone_80nM_pred}
+
+- id: run_se_cp
+  model: stokes_einstein_scaling
+  inputs: {D_ref: D_G, M_ref: mw_actin_added, M: mw_cp_added}
+  outputs: {D: D_CP_pred}
+
+- id: run_se_arp
+  model: stokes_einstein_scaling
+  inputs: {D_ref: D_G, M_ref: mw_actin_added, M: mw_arp23_added}
+  outputs: {D: D_Arp_pred}
+
+- id: run_se_vstar
+  model: stokes_einstein_scaling
+  inputs: {D_ref: D_V, M_ref: mw_vca_added, M: mw_vcag_added}
+  outputs: {D: D_Vstar_pred}
+
+- id: run_se_a
+  model: stokes_einstein_scaling
+  inputs: {D_ref: D_V, M_ref: mw_vca_added, M: mw_arpstar_added}
+  outputs: {D: D_A_pred}
+
+- id: run_kdeg_cp
+  model: degradation_equivalent_cp
+  inputs: {k_Deg: k_Deg, k_Cap: k_Cap}
+  outputs: {CP_eq: cp_equiv_kdeg_pred}
+
+- id: run_frac_sum_20nM
+  model: vesicle_fraction_sum
+  inputs: {f_domains: frac_domains_20nM, f_cortex: frac_cortex_20nM}
+  outputs: {f_total: frac_membrane_20nM_sum}
+
+# ---- Infinite-pool 1D steady state: printed Eqs. (6)-(16) ----
+- id: run_ss_printed_40nM
+  model: kinetic_ss_infinite_pool_eq6_16
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, h: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP}
+  outputs: {B_ss: ss_printed_B_40nM, A_star_ss: ss_printed_A_40nM, branching_rate_ss: ss_printed_br_40nM}
+
+- id: run_ss_printed_80nM
+  model: kinetic_ss_infinite_pool_eq6_16
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, h: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP}
+  outputs: {B_ss: ss_printed_B_80nM, A_star_ss: ss_printed_A_80nM, branching_rate_ss: ss_printed_br_80nM}
+
+- id: run_ss_printed_120nM
+  model: kinetic_ss_infinite_pool_eq6_16
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, h: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP}
+  outputs: {B_ss: ss_printed_B_120nM, A_star_ss: ss_printed_A_120nM, branching_rate_ss: ss_printed_br_120nM}
+
+# ---- Infinite-pool 1D steady state: mass-conserving variant ----
+- id: run_ss_conserved_40nM
+  model: kinetic_ss_infinite_pool_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, h: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP}
+  outputs: {B_ss: ss_conserved_B_40nM, A_star_ss: ss_conserved_A_40nM, branching_rate_ss: ss_conserved_br_40nM}
+
+- id: run_ss_conserved_80nM
+  model: kinetic_ss_infinite_pool_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, h: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP}
+  outputs: {B_ss: ss_conserved_B_80nM, A_star_ss: ss_conserved_A_80nM, branching_rate_ss: ss_conserved_br_80nM}
+
+- id: run_ss_conserved_120nM
+  model: kinetic_ss_infinite_pool_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, h: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP}
+  outputs: {B_ss: ss_conserved_B_120nM, A_star_ss: ss_conserved_A_120nM, branching_rate_ss: ss_conserved_br_120nM}
+
+# ---- Infinite-pool cylinder PDE (Fig. 5c-e, Supp Fig. 11): printed Eqs. (6)-(16) ----
+- id: run_cyl_printed_40nM
+  model: kinetic_pde_cylinder_eq6_16
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cyl_printed_Bpk_40nM, B_100: cyl_printed_B100_40nM, branching_rate_peak: cyl_printed_brpk_40nM}
+
+- id: run_cyl_printed_80nM
+  model: kinetic_pde_cylinder_eq6_16
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cyl_printed_Bpk_80nM, B_100: cyl_printed_B100_80nM, A_star_40: cyl_printed_A40_80nM, branching_rate_peak: cyl_printed_brpk_80nM, branching_rate_40: cyl_printed_br40_80nM}
+
+- id: run_cyl_printed_120nM
+  model: kinetic_pde_cylinder_eq6_16
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cyl_printed_Bpk_120nM, B_100: cyl_printed_B100_120nM, A_star_40: cyl_printed_A40_120nM, branching_rate_peak: cyl_printed_brpk_120nM}
+
+# ---- Infinite-pool cylinder PDE: mass-conserving axisymmetric variant ----
+- id: run_cyl_conserved_40nM
+  model: kinetic_pde_cylinder_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cyl_cons_Bpk_40nM, B_40: cyl_cons_B40_40nM, B_100: cyl_cons_B100_40nM, branching_rate_peak: cyl_cons_brpk_40nM}
+
+- id: run_cyl_conserved_80nM
+  model: kinetic_pde_cylinder_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cyl_cons_Bpk_80nM, B_40: cyl_cons_B40_80nM, B_100: cyl_cons_B100_80nM, A_star_40: cyl_cons_A40_80nM, branching_rate_peak: cyl_cons_brpk_80nM, branching_rate_40: cyl_cons_br40_80nM}
+
+- id: run_cyl_conserved_120nM
+  model: kinetic_pde_cylinder_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cyl_cons_Bpk_120nM, B_40: cyl_cons_B40_120nM, B_100: cyl_cons_B100_120nM, A_star_40: cyl_cons_A40_120nM, branching_rate_peak: cyl_cons_brpk_120nM}
+
+# ---- Infinite-pool cylinder PDE: mass-conserving + 1D Cartesian membrane variant ----
+- id: run_cyl_cart_40nM
+  model: kinetic_pde_cylinder_conserved_cartesian_mem
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cyl_cart_Bpk_40nM, B_40: cyl_cart_B40_40nM, B_100: cyl_cart_B100_40nM, branching_rate_peak: cyl_cart_brpk_40nM}
+
+- id: run_cyl_cart_80nM
+  model: kinetic_pde_cylinder_conserved_cartesian_mem
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cyl_cart_Bpk_80nM, B_40: cyl_cart_B40_80nM, B_100: cyl_cart_B100_80nM, A_star_40: cyl_cart_A40_80nM, branching_rate_peak: cyl_cart_brpk_80nM, branching_rate_40: cyl_cart_br40_80nM}
+
+- id: run_cyl_cart_120nM
+  model: kinetic_pde_cylinder_conserved_cartesian_mem
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cyl_cart_Bpk_120nM, B_40: cyl_cart_B40_120nM, B_100: cyl_cart_B100_120nM, A_star_40: cyl_cart_A40_120nM, branching_rate_peak: cyl_cart_brpk_120nM}
+
+# ---- Finite-pool cone PDE (Fig. 5f, Supp Fig. 14): printed Eqs. (6)-(16) ----
+- id: run_cone_printed_40nM
+  model: kinetic_pde_cone_eq6_16
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_40nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cone_printed_Bpk_40nM, V_tot_final_center: cone_printed_V40_40nM, vca_fold_enrichment: cone_printed_vca_fold_40nM}
+
+- id: run_cone_printed_80nM
+  model: kinetic_pde_cone_eq6_16
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_80nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cone_printed_Bpk_80nM, V_tot_final_center: cone_printed_V40_80nM, rim_to_center_ratio: cone_printed_ratio_80nM}
+
+- id: run_cone_printed_120nM
+  model: kinetic_pde_cone_eq6_16
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_120nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cone_printed_Bpk_120nM, V_tot_final_center: cone_printed_V40_120nM}
+
+# ---- Finite-pool cone PDE: mass-conserving axisymmetric variant ----
+- id: run_cone_conserved_40nM
+  model: kinetic_pde_cone_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_40nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cone_cons_Bpk_40nM, rim_to_center_ratio: cone_cons_ratio_40nM, V_tot_final_center: cone_cons_V40_40nM, vca_fold_enrichment: cone_cons_vca_fold_40s_40nM}
+
+- id: run_cone_conserved_40nM_100s
+  model: kinetic_pde_cone_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_40nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  settings: {t_end: 100.0}
+  outputs: {vca_fold_enrichment: cone_cons_vca_fold_100s_40nM}
+  note: "Extended to t_end = 100 s to test the ~4-fold 'final domain' VCA enrichment claim (SI p. 13)."
+
+- id: run_cone_conserved_80nM
+  model: kinetic_pde_cone_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_80nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cone_cons_Bpk_80nM, r_peak_final: cone_cons_rpk_80nM, rim_to_center_ratio: cone_cons_ratio_80nM, V_tot_final_center: cone_cons_V40_80nM}
+
+- id: run_cone_conserved_80nM_nopause
+  model: kinetic_pde_cone_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_80nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {rim_to_center_ratio: cone_cons_ratio_80nM_nopause, r_peak_final: cone_cons_rpk_80nM_nopause}
+  note: "Tests SI p. 13 claim that double-peaked concave pattern still forms at 80 nM CP without the paused VCA state (k_re = 1000 /s)."
+
+- id: run_cone_conserved_120nM
+  model: kinetic_pde_cone_conserved
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_120nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cone_cons_Bpk_120nM, rim_to_center_ratio: cone_cons_ratio_120nM, V_tot_final_center: cone_cons_V40_120nM}
+
+# ---- Finite-pool cone PDE: mass-conserving + 1D Cartesian membrane variant ----
+- id: run_cone_cart_40nM
+  model: kinetic_pde_cone_conserved_cartesian_mem
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_40nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cone_cart_Bpk_40nM, rim_to_center_ratio: cone_cart_ratio_40nM, V_tot_final_center: cone_cart_V40_40nM, vca_fold_enrichment: cone_cart_vca_fold_40s_40nM}
+
+- id: run_cone_cart_40nM_100s
+  model: kinetic_pde_cone_conserved_cartesian_mem
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_40nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  settings: {t_end: 100.0}
+  outputs: {vca_fold_enrichment: cone_cart_vca_fold_100s_40nM}
+
+- id: run_cone_cart_80nM
+  model: kinetic_pde_cone_conserved_cartesian_mem
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_80nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cone_cart_Bpk_80nM, r_peak_final: cone_cart_rpk_80nM, rim_to_center_ratio: cone_cart_ratio_80nM, V_tot_final_center: cone_cart_V40_80nM}
+
+- id: run_cone_cart_120nM
+  model: kinetic_pde_cone_conserved_cartesian_mem
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cone: r_cone_120nM, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak: cone_cart_Bpk_120nM, rim_to_center_ratio: cone_cart_ratio_120nM, V_tot_final_center: cone_cart_V40_120nM}
+
+# ---- Digitized full-curve runs: Infinite-pool cylinder PDEs (Fig. 5c-e, Supp Fig. 11) ----
+- id: run_cyl_printed_curves_40nM
+  model: kinetic_pde_cylinder_eq6_16_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_curve: cyl_printed_fig5c_40nM, A_star_curve: cyl_printed_fig5d_40nM, branching_rate_curve: cyl_printed_fig5e_br_40nM, capping_rate_curve: cyl_printed_fig5e_cap_40nM, B_100_curve: cyl_printed_sfig11_40nM}
+
+- id: run_cyl_printed_curves_80nM
+  model: kinetic_pde_cylinder_eq6_16_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_curve: cyl_printed_fig5c_80nM, A_star_curve: cyl_printed_fig5d_80nM, A_star_ss_curve: cyl_printed_fig5d_ss_80nM, branching_rate_curve: cyl_printed_fig5e_br_80nM, capping_rate_curve: cyl_printed_fig5e_cap_80nM, B_100_curve: cyl_printed_sfig11_80nM}
+
+- id: run_cyl_printed_curves_120nM
+  model: kinetic_pde_cylinder_eq6_16_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  settings: {t_A: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0]}
+  outputs: {B_curve: cyl_printed_fig5c_120nM, A_star_curve: cyl_printed_fig5d_120nM, A_star_ss_curve: cyl_printed_fig5d_ss_120nM, branching_rate_curve: cyl_printed_fig5e_br_120nM, capping_rate_curve: cyl_printed_fig5e_cap_120nM, B_100_curve: cyl_printed_sfig11_120nM}
+
+- id: run_cyl_cons_curves_40nM
+  model: kinetic_pde_cylinder_conserved_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_curve: cyl_cons_fig5c_40nM, A_star_curve: cyl_cons_fig5d_40nM, branching_rate_curve: cyl_cons_fig5e_br_40nM, capping_rate_curve: cyl_cons_fig5e_cap_40nM, B_100_curve: cyl_cons_sfig11_40nM}
+
+- id: run_cyl_cons_curves_80nM
+  model: kinetic_pde_cylinder_conserved_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_curve: cyl_cons_fig5c_80nM, A_star_curve: cyl_cons_fig5d_80nM, A_star_ss_curve: cyl_cons_fig5d_ss_80nM, branching_rate_curve: cyl_cons_fig5e_br_80nM, capping_rate_curve: cyl_cons_fig5e_cap_80nM, B_100_curve: cyl_cons_sfig11_80nM}
+
+- id: run_cyl_cons_curves_120nM
+  model: kinetic_pde_cylinder_conserved_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  settings: {t_A: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0]}
+  outputs: {B_curve: cyl_cons_fig5c_120nM, A_star_curve: cyl_cons_fig5d_120nM, A_star_ss_curve: cyl_cons_fig5d_ss_120nM, branching_rate_curve: cyl_cons_fig5e_br_120nM, capping_rate_curve: cyl_cons_fig5e_cap_120nM, B_100_curve: cyl_cons_sfig11_120nM}
+
+- id: run_cyl_cart_curves_40nM
+  model: kinetic_pde_cylinder_conserved_cartesian_mem_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_40nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_curve: cyl_cart_fig5c_40nM, A_star_curve: cyl_cart_fig5d_40nM, branching_rate_curve: cyl_cart_fig5e_br_40nM, capping_rate_curve: cyl_cart_fig5e_cap_40nM, B_100_curve: cyl_cart_sfig11_40nM}
+
+- id: run_cyl_cart_curves_80nM
+  model: kinetic_pde_cylinder_conserved_cartesian_mem_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_80nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_curve: cyl_cart_fig5c_80nM, A_star_curve: cyl_cart_fig5d_80nM, A_star_ss_curve: cyl_cart_fig5d_ss_80nM, branching_rate_curve: cyl_cart_fig5e_br_80nM, capping_rate_curve: cyl_cart_fig5e_cap_80nM, B_100_curve: cyl_cart_sfig11_80nM}
+
+- id: run_cyl_cart_curves_120nM
+  model: kinetic_pde_cylinder_conserved_cartesian_mem_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, CP_0: CP_120nM, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, r_cyl: r_cyl, h_cyl: h_cyl, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_infinite, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  settings: {t_A: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0]}
+  outputs: {B_curve: cyl_cart_fig5c_120nM, A_star_curve: cyl_cart_fig5d_120nM, A_star_ss_curve: cyl_cart_fig5d_ss_120nM, branching_rate_curve: cyl_cart_fig5e_br_120nM, capping_rate_curve: cyl_cart_fig5e_cap_120nM, B_100_curve: cyl_cart_sfig11_120nM}
+
+# ---- Digitized full-curve runs: Finite-pool cone PDEs (Fig. 5f, Supp Fig. 14) ----
+- id: run_cone_printed_curves
+  model: kinetic_pde_cone_eq6_16_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, r_cone_by_cp: r_cone_table, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak_vs_CP: cone_printed_fig5f_Bpk, V_tot_max_vs_CP: cone_printed_sfig14_Vmax, V_tot_min_vs_CP: cone_printed_sfig14_Vmin, B_80nM_t40_profile: cone_printed_fig5f_80nM_prof}
+
+- id: run_cone_cons_curves
+  model: kinetic_pde_cone_conserved_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, r_cone_by_cp: r_cone_table, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak_vs_CP: cone_cons_fig5f_Bpk, V_tot_max_vs_CP: cone_cons_sfig14_Vmax, V_tot_min_vs_CP: cone_cons_sfig14_Vmin, B_80nM_t40_profile: cone_cons_fig5f_80nM_prof}
+
+- id: run_cone_cart_curves
+  model: kinetic_pde_cone_conserved_cartesian_mem_curves
+  inputs: {G_0: G_init, Arp_0: Arp_init, r_cone_by_cp: r_cone_table, V_0: V0_printed, B_0_norm: B0_seed_norm, sigma: sigma_seed, h_cone: R_vesicle_avg, k_on: k_on, k_off: k_off, k_1: k_1, k_2: k_2, k_3: k_3, k_3_reduction: k_3_reduction, k_4: k_4, k_Cap: k_Cap, k_Arp: k_Arp, k_re: k_re_paused, k_Deg: k_Deg, D_G: D_G, D_Arp: D_Arp, D_CP: D_CP, D_V: D_V, D_Vstar: D_Vstar, D_A: D_A, D_B: D_B}
+  outputs: {B_peak_vs_CP: cone_cart_fig5f_Bpk, V_tot_max_vs_CP: cone_cart_sfig14_Vmax, V_tot_min_vs_CP: cone_cart_sfig14_Vmin, B_80nM_t40_profile: cone_cart_fig5f_80nM_prof}

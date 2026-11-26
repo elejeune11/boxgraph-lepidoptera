@@ -1,0 +1,69 @@
+- id: ref_matlab_table_s1_N
+  run: run_matlab_eps0004
+  setting: N
+  factors: [1, 2, 4]
+  mode: multiply
+  output: alpha
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies StraightMobility.m Chebyshev quadrature (N = 32 -> 64 -> 128) is spectrally converged well beyond Table S1's 4 printed decimal places"
+  tolerance_added: true
+
+- id: ref_smc_stab_N
+  run: run_smc_stab_smooth
+  setting: N
+  factors: [1, 2, 4]
+  mode: multiply
+  output: dt_max
+  tolerance: "0.1%"
+  tolerance_basis: "added: verifies SM Sec. C local-drag stability limit dt_max and Gaussian lever arm are quadrature-converged at N = 50 (refined to 100, 200)"
+  tolerance_added: true
+
+- id: ref_cl_ssa_tsim
+  run: run_cl_ssa_inside
+  setting: t_sim
+  factors: [1, 2, 4]
+  mode: multiply
+  output: mean_double_links
+  tolerance: "3%"
+  tolerance_basis: "added: verifies 5-replicate Gillespie SSA equilibrium double-link occupancy at r = 0.07 um is converged to within 3% across t_sim = 10000, 20000, 40000 s"
+  tolerance_added: true
+
+- id: ref_smc_lt_dt_end
+  run: run_smc_lt_large
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: std_x_end
+  tolerance: "5%"
+  tolerance_basis: "added: tracks convergence of released code's 1st-order Lie-Trotter end-of-step std_x from SM Sec. C large step dt = 0.0025 s down to 0.0003125 s (exposes severe non-convergence at dt = 0.0025 s)"
+  tolerance_added: true
+
+- id: ref_smc_lt_dt_bd
+  run: run_smc_lt_large
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: std_x_after_bd
+  tolerance: "5%"
+  tolerance_basis: "added: tracks convergence of Lie-Trotter post-Brownian std_x from dt = 0.0025 s down to 0.0003125 s as +23% splitting inflation decays"
+  tolerance_added: true
+
+- id: ref_smc_strang_dt_end
+  run: run_smc_strang_large
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: std_x_end
+  tolerance: "5%"
+  tolerance_basis: "added: verifies 2nd-order convergence of true full-step Strang-splitting endpoint std_x across dt = 0.0025 -> 0.0003125 s"
+  tolerance_added: true
+
+- id: ref_smc_strang_dt_mid
+  run: run_smc_strang_large
+  setting: dt
+  factors: [1, 2, 4, 8]
+  mode: divide
+  output: std_x_after_bd
+  tolerance: "5%"
+  tolerance_basis: "added: tracks convergence of Fig. S1's midpoint-sampled Strang std_x across dt = 0.0025 -> 0.0003125 s, showing midpoint sampling remains O(dt) biased at dt = 0.0025 s"
+  tolerance_added: true

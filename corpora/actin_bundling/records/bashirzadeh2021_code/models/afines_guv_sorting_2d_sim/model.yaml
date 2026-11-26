@@ -1,0 +1,55 @@
+id: afines_guv_sorting_2d_sim
+name: Full 2D AFINES C++ overdamped Langevin + KMC simulation of actin, fascin, and alpha-actinin in circular confinement (prog/network.cpp)
+role: model
+stated:
+  file: prog/network.cpp
+  lines: "509-772"
+  quote: "for (count = 0, t = tinit; t <= tfinal; count++, t += dt) {"
+  where: "prog/network.cpp:29-793, crosslinker_sorting_in_GUVs/sorting_kinetics.cfg, aster_initial_condition_grid_conda_freeze.py:241-271"
+equation: "Overdamped 2D Leimkuhler-Matthews Langevin dynamics for 50 x 35-bead WLC actin filaments and ~7,068 two-headed crosslinkers (fascin = a_motor with v=0, alpha-actinin = p_motor) with ext_circle confinement, parallel alignment penalty, detailed-balance KMC binding/unbinding, and 1D contour steric occlusion occ = 0.15 um"
+inputs:
+  xrange: {quantity: simulation_box_length, unit: um}
+  yrange: {quantity: simulation_box_length, unit: um}
+  r_c: {quantity: confinement_radius, unit: um}
+  k_c: {quantity: confinement_stiffness, unit: pN/um}
+  npolymer: {quantity: polymer_count, unit: dimensionless}
+  nmonomer: {quantity: beads_per_polymer, unit: dimensionless}
+  link_length: {quantity: filament_link_length, unit: um}
+  kappa_b: {quantity: polymer_bending_modulus, unit: pN*um^2}
+  k_s: {quantity: link_stretching_stiffness, unit: pN/um}
+  r_bead: {quantity: bead_radius, unit: um}
+  viscosity: {quantity: dynamic_viscosity, unit: mg/(um*s)}
+  temperature: {quantity: thermal_energy, unit: pN*um}
+  occ: {quantity: steric_occlusion_distance, unit: um}
+  r_cut: {quantity: binding_cutoff_distance, unit: um}
+  l_fascin: {quantity: crosslinker_length, unit: um}
+  k_fascin: {quantity: crosslinker_stiffness, unit: pN/um}
+  kon_fascin: {quantity: crosslinker_on_rate, unit: 1/s}
+  koff_fascin: {quantity: crosslinker_off_rate, unit: 1/s}
+  kalign_fascin: {quantity: alignment_penalty, unit: pN*um}
+  rho_fascin: {quantity: crosslinker_areal_density, unit: 1/um^2}
+  l_alpha: {quantity: crosslinker_length, unit: um}
+  k_alpha: {quantity: crosslinker_stiffness, unit: pN/um}
+  kon_alpha: {quantity: crosslinker_on_rate, unit: 1/s}
+  koff_alpha: {quantity: crosslinker_off_rate, unit: 1/s}
+  rho_alpha: {quantity: crosslinker_areal_density, unit: 1/um^2}
+  tfinal: {quantity: simulation_time, unit: s}
+outputs:
+  final_energy: {quantity: potential_energy, unit: pN*um}
+settings:
+  dt: 2.0e-5
+  nframes: 50
+  n_replicates: 5
+  grid_factor: 2.5
+  seed: 0
+runnable: false
+not_runnable_reason: >
+  The full 2D many-body AFINES simulation is implemented in C++ (prog/network.cpp + src/*.cpp,
+  requiring Boost and fmt compilation) and evolves 1,750 filament beads and 7,068 two-headed
+  crosslinkers over 5 x 10^6 integration/KMC steps (tfinal = 100 s, dt = 2e-5 s) per replicate
+  (configured for 36 h SLURM jobs in aster_initial_condition_grid_conda_freeze.py:232). Moreover,
+  no Fig. 4g 2D PDF histogram or Fig. 4h Binder cumulant post-processing script is released in
+  this repository. Each individual C++ physics kernel, KMC/occlusion rule, Leimkuhler-Matthews
+  integrator, and live Python initial-condition generator is ported/wrapped and executed in
+  companion models of this record.
+stochastic: true

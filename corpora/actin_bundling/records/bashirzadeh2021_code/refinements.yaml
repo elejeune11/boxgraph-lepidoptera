@@ -1,0 +1,31 @@
+# Numerical / Monte Carlo refinements for stochastic models in bashirzadeh2021_code
+
+- id: ref_live_init_nseeds
+  run: run_live_init_combined_hh2
+  setting: n_seeds
+  factors: [1, 2, 4]
+  mode: multiply
+  output: actin_center_std_x
+  tolerance: "5%"
+  tolerance_basis: "added: well below the 42% discrepancy between code Uniform(-3,3) std dev (1.73 um) and paper Gaussian std dev (3 um)"
+  tolerance_added: true
+
+- id: ref_langevin_fascin_particles
+  run: run_cpp_langevin_fascin
+  setting: n_particles
+  factors: [1, 2, 4]
+  mode: multiply
+  output: D_sim
+  tolerance: "5%"
+  tolerance_basis: "added: tighter than stochastic 1/sqrt(N) sampling spread at 2000-8000 particles to verify convergence toward Einstein D = 0.2122 um^2/s"
+  tolerance_added: true
+
+- id: ref_langevin_alpha_particles
+  run: run_cpp_langevin_alpha
+  setting: n_particles
+  factors: [1, 2, 4]
+  mode: multiply
+  output: var_x_sim
+  tolerance: "5%"
+  tolerance_basis: "added: verifies stationary harmonic variance convergence to exact Boltzmann kT/k = 2.0e-4 um^2"
+  tolerance_added: true

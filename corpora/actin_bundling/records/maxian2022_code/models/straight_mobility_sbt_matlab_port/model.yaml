@@ -1,0 +1,23 @@
+id: straight_mobility_sbt_matlab_port
+name: MATLAB StraightMobility.m nonlocal SBT rigid-rod mobility port (Table S1)
+role: model
+stated:
+  file: Matlab/MainPrograms/StraightMobility.m
+  lines: "20-45"
+  quote: "tableline(3*doFp+1:3*(doFp+1))= [GMob(2,2) GMob(1,1)-GMob(2,2) GMob(5,5)];"
+  where: "Port of Matlab/MainPrograms/StraightMobility.m:1-45 with RegularizeS.m:5-20, AsymptoticLocalMobility.m:8-62 (renamed from broken getGrandMloc call), precomputeStokesletInts.m:7-50, StokesletFinitePartMatrix.m:6-39"
+equation: "M = (1/(8*pi*mu))*[4*I + ln(s_bar*(L-s_bar)/(4*a_RPY^2))*(I + tau*tau)] + M_FP; N = pinv(K^T M^-1 K); alpha = mu*L*N_yy, beta = mu*L*(N_xx - N_yy), gamma = mu*L^3*N_rr"
+inputs:
+  eps: {quantity: fiber_aspect_ratio, unit: dimensionless}
+  delta: {quantity: relative_regularization_length, unit: dimensionless}
+outputs:
+  alpha: {quantity: mobility_alpha, unit: dimensionless}
+  beta: {quantity: mobility_beta, unit: dimensionless}
+  gamma: {quantity: mobility_gamma, unit: dimensionless}
+  c_tr: {quantity: mobility_trace_coefficient, unit: dimensionless}
+  anisotropy_ratio: {quantity: mobility_anisotropy_ratio, unit: dimensionless}
+settings:
+  N: 32
+  kind: 1
+  include_fp: true
+stochastic: false

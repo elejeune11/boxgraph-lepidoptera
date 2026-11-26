@@ -1,0 +1,61 @@
+id: kinetic_pde_cylinder_conserved
+name: time-dependent infinite-pool cylinder kinetic PDEs with mass-conserving BCs (axisymmetric)
+role: model
+variant_of: kinetic_pde_cylinder_eq6_16
+built_from: [kinetic_pde_cylinder_eq6_16]
+corrections:
+  - equation: "Eq. 14"
+    change: "Add reverse dissociation term +k_2*V* to the G-actin membrane flux boundary condition: -D_G d_z G|_{z=0} = -k_1 G|_0 V + k_2 V* - k_on G|_0 B + k_off B"
+    evidence: "Reaction Eq. (3) and surface Eqs. (6)-(7) include reversible V + G <-> V* dissociation at rate k_2*V*; omitting +k_2*V* in Eq. (14) violates actin mass conservation, suppressing 1D steady-state B_ss by 7-14x (64.5, 12.6, 0 /um^2) and cylinder PDE outputs (B_40 = 143.6, 0.34, 5.6e-4 /um^2; B_100 = 143.2, 70.2, 2.4e-5 /um^2), whereas restoring it reproduces Fig. 5c-e and Supp Fig. 11 steady states (B_100 = 471.5, 176.8, 98.7 /um^2)."
+  - equation: "Eq. 15"
+    change: "Add reverse dissociation term +k_4*A* to the Arp2/3 membrane flux boundary condition: -D_Arp d_z Arp|_{z=0} = -k_3_eff Arp|_0 V* + k_4 A*"
+    evidence: "Reaction Eq. (3) and surface Eqs. (7)-(8) include reversible V* + Arp2/3 <-> A* dissociation at rate k_4*A*; restoring +k_4*A* enforces Arp2/3 conservation."
+stated:
+  page: 23
+  printed_page: "SI 12"
+  quote: "Membrane bound 2d species:"
+  where: "Eqs. 6-16 (Supplementary Note 2, cylinder geometry SI p. 11)"
+equation: "Axisymmetric 2D(r,z) cylinder PDEs Eqs. (6)-(13), (16) with mass-conserving flux BCs Eqs. (14)-(15) (+k_2*V*, +k_4*A*)"
+inputs:
+  G_0: {quantity: actin_concentration, unit: uM}
+  Arp_0: {quantity: arp_concentration, unit: uM}
+  CP_0: {quantity: cp_concentration, unit: nM}
+  V_0: {quantity: vca_surface_density, unit: 1/um^2}
+  B_0_norm: {quantity: barbed_end_density, unit: 1/um^2}
+  sigma: {quantity: seed_width, unit: nm}
+  r_cyl: {quantity: cylinder_radius, unit: um}
+  h_cyl: {quantity: cylinder_height, unit: um}
+  k_on: {quantity: elongation_on_rate, unit: uM^-1*s^-1}
+  k_off: {quantity: elongation_off_rate, unit: 1/s}
+  k_1: {quantity: vca_actin_on_rate, unit: uM^-1*s^-1}
+  k_2: {quantity: vca_actin_off_rate, unit: 1/s}
+  k_3: {quantity: arp_activation_on_rate, unit: uM^-1*s^-1}
+  k_3_reduction: {quantity: rate_scaling_factor, unit: dimensionless}
+  k_4: {quantity: arp_activation_off_rate, unit: 1/s}
+  k_Cap: {quantity: cp_binding_rate, unit: uM^-1*s^-1}
+  k_Arp: {quantity: branching_rate_constant, unit: um^2/s}
+  k_re: {quantity: vca_recovery_rate, unit: 1/s}
+  k_Deg: {quantity: barbed_end_degradation_rate, unit: 1/s}
+  D_G: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_Arp: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_CP: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_V: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_Vstar: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_A: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_B: {quantity: network_spreading_diffusivity, unit: um^2/s}
+outputs:
+  B_peak: {quantity: barbed_end_density, unit: 1/um^2}
+  B_40: {quantity: barbed_end_density, unit: 1/um^2}
+  B_100: {quantity: barbed_end_density, unit: 1/um^2}
+  A_star_peak: {quantity: activated_arp_density, unit: 1/um^2}
+  A_star_40: {quantity: activated_arp_density, unit: 1/um^2}
+  branching_rate_peak: {quantity: branching_rate, unit: 1/(um^2*s)}
+  branching_rate_40: {quantity: branching_rate, unit: 1/(um^2*s)}
+settings:
+  mesh_n: 24
+  r_stretch: 5.5
+  z_stretch: 2.5
+  t_end: 100.0
+  rtol: 1.0e-5
+  atol: 1.0e-7
+stochastic: false

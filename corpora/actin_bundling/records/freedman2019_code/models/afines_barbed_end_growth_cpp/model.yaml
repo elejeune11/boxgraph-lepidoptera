@@ -1,0 +1,24 @@
+id: afines_barbed_end_growth_cpp
+name: AFINES C++ barbed-end filament growth and link-splitting rule (src/filament.cpp:673-736)
+role: model
+stated:
+  file: src/filament.cpp
+  lines: "673-736"
+  quote: "if ( lb + dL < l0_max ){"
+  where: "filament::grow(double dL) and filament::update_length()"
+equation: "if lb + dL < l0_max: lb <- lb + dL; else: split into two links of rest length spring_l0 (discarding remainder lb + dL - l0_max); n_steps = ceil((l0_max - spring_l0)/dL); k_grow_realized = kgrow * (l0_max - spring_l0) / n_steps"
+inputs:
+  kgrow: {quantity: segment_addition_rate, unit: 1/s}
+  lgrow: {quantity: segment_growth_increment, unit: um}
+  spring_l0: {quantity: filament_link_length, unit: um}
+  l0_max: {quantity: filament_link_length, unit: um}
+  n_links_init: {quantity: filament_link_count, unit: dimensionless}
+  nlink_max: {quantity: filament_link_count, unit: dimensionless}
+outputs:
+  k_grow_nominal: {quantity: polymerization_rate, unit: nm/s}
+  k_grow_realized: {quantity: polymerization_rate, unit: nm/s}
+  steps_per_split: {quantity: growth_steps_per_split, unit: dimensionless}
+  overshoot_per_split: {quantity: segment_growth_increment, unit: um}
+  mean_time_to_max_length: {quantity: observation_time, unit: s}
+settings: {}
+stochastic: false

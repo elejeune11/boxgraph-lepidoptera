@@ -1,0 +1,353 @@
+# ==========================================================================
+# Droplet coalescence, inverse capillary velocity, and viscosity
+# ==========================================================================
+
+- id: run_inverse_capillary_velocity
+  model: inverse_capillary_velocity
+  inputs: {tau: tau_coalescence_figS1, d: d_coalesced_figS1}
+  settings: {}
+  outputs: {v_inv: v_inv_pred}
+
+- id: run_viscosity_from_printed_vinv
+  model: viscosity_from_capillary_velocity
+  inputs: {v_inv: v_inv_main, gamma: gamma_coacervate_eq1}
+  settings: {}
+  outputs: {eta: eta_pred_from_printed_vinv}
+
+- id: run_viscosity_e2e
+  model: viscosity_from_capillary_velocity
+  inputs: {v_inv: v_inv_pred, gamma: gamma_coacervate_eq1}
+  settings: {}
+  outputs: {eta: eta_pred_e2e}
+
+- id: run_viscosity_ratio_water
+  model: viscosity_ratio_to_water
+  inputs: {eta: eta_coacervate_main, eta_water: eta_water_added}
+  settings: {}
+  outputs: {eta_ratio: eta_ratio_pred}
+
+# ==========================================================================
+# Polypeptide charge-equivalent <-> chain concentration conversions
+# ==========================================================================
+
+- id: run_chain_conc_example
+  model: polypeptide_chain_concentration
+  inputs: {c_res: c_res_pLK_example, N_res: N_res_pLK100}
+  settings: {}
+  outputs: {c_chain: c_chain_example_pred}
+
+- id: run_chain_conc_dilute_bound
+  model: polypeptide_chain_concentration
+  inputs: {c_res: c_res_phase_sep_BSA, N_res: N_res_pLK100}
+  settings: {}
+  outputs: {c_chain: c_chain_dilute_pred}
+
+# ==========================================================================
+# Partitioning-shifted critical actin concentration & Fig. 4F boundary
+# ==========================================================================
+
+- id: run_global_critical_conc
+  model: actin_global_critical_concentration
+  inputs: {c_star: c_star_actin_exact, RAM: RAM_actin_main}
+  settings: {}
+  outputs: {c_global_crit: c_global_crit_calc}
+
+- id: run_filament_boundary_005uM
+  model: filament_boundary_ram
+  inputs: {c_star: c_star_actin_exact, c_global: c_global_min_observed}
+  settings: {}
+  outputs: {RAM_crit: RAM_crit_005uM_calc}
+
+- id: run_filament_boundary_001uM
+  model: filament_boundary_ram
+  inputs: {c_star: c_star_actin_exact, c_global: c_global_lowest_tested}
+  settings: {}
+  outputs: {RAM_crit: RAM_crit_001uM_calc}
+
+# ==========================================================================
+# Filament buckling Eq. (1) and 250-nm subunit count (p. 7)
+# ==========================================================================
+
+- id: run_droplet_radius_eq1
+  model: droplet_radius_from_diameter
+  inputs: {D: D_droplet_eq1}
+  settings: {}
+  outputs: {R: R_droplet_eq1_calc}
+
+- id: run_buckling_length_eq1
+  model: filament_buckling_length_eq1
+  inputs:
+    R: R_droplet_eq1_calc
+    l_p: lp_actin
+    d: d_actin_added
+    gamma: gamma_coacervate_eq1
+    T: T_room_added
+  settings: {}
+  outputs: {L_star: L_star_eq1_calc}
+
+- id: run_subunit_count_250nm
+  model: filament_subunit_count
+  inputs: {L: L_short_filament, delta_L: delta_L_actin_added}
+  settings: {}
+  outputs: {N_subunits: N_subunits_250nm_calc}
+
+# ==========================================================================
+# Osmotic crowding: methylcellulose van 't Hoff & de Gennes mesh scaling
+# ==========================================================================
+
+- id: run_mc_molar_conc
+  model: methylcellulose_molar_concentration
+  inputs: {c_wv: c_wv_methylcellulose, M_W: MW_methylcellulose}
+  settings: {}
+  outputs: {c: c_mc_molar_calc}
+
+- id: run_vant_hoff_exact_c
+  model: vant_hoff_osmotic_pressure
+  inputs: {c: c_mc_molar_calc, T: T_room_added}
+  settings: {}
+  outputs: {Pi: Pi_star_exact_c_calc}
+
+- id: run_vant_hoff_printed_c
+  model: vant_hoff_osmotic_pressure
+  inputs: {c: c_molar_methylcellulose, T: T_room_added}
+  settings: {}
+  outputs: {Pi: Pi_star_from_180uM_calc}
+
+- id: run_crowding_threshold_mesh_printed_Pi
+  model: crowding_threshold_mesh_size
+  inputs: {Pi_star: Pi_star_crowding_SI, T: T_room_added}
+  settings: {}
+  outputs: {xi_star: xi_star_from_450_calc}
+
+- id: run_crowding_threshold_mesh_e2e
+  model: crowding_threshold_mesh_size
+  inputs: {Pi_star: Pi_star_exact_c_calc, T: T_room_added}
+  settings: {}
+  outputs: {xi_star: xi_star_e2e_calc}
+
+- id: run_coacervate_osmotic_pressure
+  model: coacervate_osmotic_pressure_mesh
+  inputs: {xi: xi_coac_SI_p21, T: T_room_added}
+  settings: {}
+  outputs: {Pi: Pi_coac_2p1nm_calc}
+
+- id: run_osmotic_pressure_ratio
+  model: osmotic_pressure_ratio
+  inputs: {Pi_coac: Pi_coac_2p1nm_calc, Pi_star: Pi_star_crowding_SI}
+  settings: {}
+  outputs: {ratio: Pi_ratio_calc}
+
+# ==========================================================================
+# Coacervate composition, polypeptide concentration, volume fraction, mesh size
+# ==========================================================================
+
+- id: run_species_mass_fraction
+  model: species_mass_fraction_from_total
+  inputs: {f_tot: f_pp_total}
+  settings: {}
+  outputs: {f_sp: f_pp_species_calc}
+
+- id: run_water_mass_fraction
+  model: coacervate_water_mass_fraction
+  inputs: {f_pp: f_pp_total}
+  settings: {}
+  outputs: {f_water: f_water_calc}
+
+- id: run_coacervate_chain_conc_printed_eq
+  model: coacervate_polypeptide_conc_printed
+  inputs: {rho_pp: rho_pp_glutamic, f_pp: f_pp_species, M_W: MW_pp_approx}
+  settings: {}
+  outputs: {c: c_chain_coac_calc}
+
+- id: run_coacervate_res_conc_from_calc_chain
+  model: polypeptide_residue_concentration
+  inputs: {c_chain: c_chain_coac_calc, N_res: N_res_pRE100}
+  settings: {}
+  outputs: {c_res: c_res_coac_from_calc_chain}
+
+- id: run_coacervate_res_conc_from_printed_chain
+  model: polypeptide_residue_concentration
+  inputs: {c_chain: c_chain_coac_printed, N_res: N_res_pRE100}
+  settings: {}
+  outputs: {c_res: c_res_coac_from_printed_chain}
+
+- id: run_volume_fraction_eq6
+  model: coacervate_volume_fraction_eq6
+  inputs: {f_pp: f_pp_total, rho_pp: rho_pp_glutamic, rho_solvent: rho_solvent_water}
+  settings: {}
+  outputs: {Phi_pp: Phi_pp_eq6_calc}
+
+- id: run_mesh_size_from_printed_Phi
+  model: coacervate_mesh_size
+  inputs: {a: a_kuhn_SI_p20, Phi_pp: Phi_pp_SI}
+  settings: {}
+  outputs: {xi: xi_coac_from_028_calc}
+
+- id: run_mesh_size_e2e
+  model: coacervate_mesh_size
+  inputs: {a: a_kuhn_SI_p20, Phi_pp: Phi_pp_eq6_calc}
+  settings: {}
+  outputs: {xi: xi_coac_e2e_calc}
+
+- id: run_mesh_size_overlap_check
+  model: coacervate_mesh_size_overlap
+  inputs: {a: a_kuhn_SI_p20, N: N_res_pLK100, Phi_pp: Phi_pp_SI}
+  settings: {}
+  outputs: {xi: xi_coac_overlap_calc}
+
+# ==========================================================================
+# Polyelectrolyte electrostatic persistence length & lower-bound mesh size
+# ==========================================================================
+
+- id: run_debye_eq8_saltfree_2M
+  model: debye_inverse_length_sq_eq8
+  inputs:
+    l_B: l_B_water_added
+    Z_c: Z_c_counterion_added
+    c_c: c_m_coac_2M
+    S_salt: S_salt_zero_added
+  settings: {}
+  outputs: {kappa_sq: kappa_sq_saltfree_2M_calc}
+
+- id: run_lE_eq7_saltfree_2M
+  model: electrostatic_persistence_length_eq7
+  inputs:
+    l_B: l_B_water_added
+    f: f_charge_full
+    kappa_sq: kappa_sq_saltfree_2M_calc
+    b: b_bond_polypeptide
+  settings: {}
+  outputs: {l_E: l_E_eq7_2M_calc}
+
+- id: run_lE_eq9_saltfree_2M
+  model: electrostatic_persistence_length_eq9
+  inputs:
+    f: f_charge_full
+    Z_c: Z_c_counterion_added
+    c_c: c_m_coac_2M
+    S_salt: S_salt_zero_added
+    b: b_bond_polypeptide
+  settings: {}
+  outputs: {l_E: l_E_eq9_2M_calc}
+
+- id: run_lE_eq10_saltfree_2M
+  model: electrostatic_persistence_length_eq10
+  inputs: {c_m: c_m_coac_2M, b: b_bond_polypeptide}
+  settings: {}
+  outputs: {A_E: A_E_eq10_calc, l_E: l_E_eq10_2M_calc}
+
+- id: run_lT_saltfree_2M_eq10
+  model: total_persistence_length
+  inputs: {l_0: l0_chosen, l_E: l_E_eq10_2M_calc}
+  settings: {}
+  outputs: {l_T: l_T_saltfree_2M_calc}
+
+- id: run_lT_saltfree_2M_eq7_eq8
+  model: total_persistence_length
+  inputs: {l_0: l0_chosen, l_E: l_E_eq7_2M_calc}
+  settings: {}
+  outputs: {l_T: l_T_eq7_eq8_2M_calc}
+
+- id: run_lT_saltfree_2M_eq9
+  model: total_persistence_length
+  inputs: {l_0: l0_chosen, l_E: l_E_eq9_2M_calc}
+  settings: {}
+  outputs: {l_T: l_T_eq9_2M_calc}
+
+- id: run_lE_eq9_screened_coac
+  model: electrostatic_persistence_length_eq9
+  inputs:
+    f: f_charge_full
+    Z_c: Z_c_counterion_added
+    c_c: c_m_coac_2M
+    S_salt: S_salt_screened_added
+    b: b_bond_polypeptide
+  settings: {}
+  outputs: {l_E: l_E_screened_coac_calc}
+
+- id: run_lT_screened_coac
+  model: total_persistence_length
+  inputs: {l_0: l0_chosen, l_E: l_E_screened_coac_calc}
+  settings: {}
+  outputs: {l_T: l_T_screened_coac_calc}
+
+- id: run_kuhn_from_04nm
+  model: kuhn_length_from_persistence_length
+  inputs: {l_T: l_T_screened_used}
+  settings: {}
+  outputs: {b_Kuhn: b_kuhn_from_04nm_calc}
+
+- id: run_lE_eq10_lower_bound_1M
+  model: electrostatic_persistence_length_eq10
+  inputs: {c_m: c_m_lower_bound, b: b_bond_polypeptide}
+  settings: {}
+  outputs: {A_E: A_E_eq10_1M_calc, l_E: l_E_eq10_1M_calc}
+
+- id: run_lT_lower_bound_1M
+  model: total_persistence_length
+  inputs: {l_0: l0_chosen, l_E: l_E_eq10_1M_calc}
+  settings: {}
+  outputs: {l_T: l_T_lower_bound_1M_calc}
+
+- id: run_kuhn_lower_bound_1M
+  model: kuhn_length_from_persistence_length
+  inputs: {l_T: l_T_lower_bound_1M_calc}
+  settings: {}
+  outputs: {b_Kuhn: b_kuhn_lower_bound_1M_calc}
+
+- id: run_mesh_lower_bound_fixed_Phi
+  model: coacervate_mesh_size
+  inputs: {a: b_kuhn_lower_bound_1M_calc, Phi_pp: Phi_pp_SI}
+  settings: {}
+  outputs: {xi: xi_lower_bound_fixed_phi_calc}
+  note: "Evaluates xi at c_m = 1 mol/L (a = 1.276 nm) holding Phi_pp fixed at the paper's only stated value 0.28."
+
+- id: run_volume_fraction_lower_bound
+  model: coacervate_volume_fraction_eq6
+  inputs: {f_pp: f_pp_lower_bound_added, rho_pp: rho_pp_glutamic, rho_solvent: rho_solvent_water}
+  settings: {}
+  outputs: {Phi_pp: Phi_pp_lower_bound_calc}
+  note: "Recomputes Phi_pp via SI Eq. (6) when f_pp is halved from 0.38 to 0.19 (proportional to halving c_m from ~2 to 1 mol/L)."
+
+- id: run_mesh_lower_bound_halved_fpp
+  model: coacervate_mesh_size
+  inputs: {a: b_kuhn_lower_bound_1M_calc, Phi_pp: Phi_pp_lower_bound_calc}
+  settings: {}
+  outputs: {xi: xi_lower_bound_halved_fpp_calc}
+  note: "Evaluates xi at c_m = 1 mol/L with Phi_pp recomputed from halved mass fraction f_pp = 0.19 (alternatives: 0.38, 0.1678)."
+
+# ==========================================================================
+# Digitized figure curve runs (Figs. 4E-F and Fig. S1B)
+# ==========================================================================
+
+- id: run_filament_boundary_fig4f
+  model: filament_boundary_ram
+  inputs: {c_star: c_star_actin_exact}
+  sweep: {c_global: RAM_filament_boundary_fig4f}
+  settings: {}
+  outputs: {RAM_crit: RAM_filament_boundary_fig4f_pred}
+
+- id: run_aux_ram_periphery_fig4ef
+  model: auxiliary_ram_ratio
+  inputs: {I_region: I_periph_fig4e, I_exterior: I_ext_fig4e}
+  settings: {}
+  outputs: {RAM_aux: RAM_periph_from_fig4e_calc}
+
+- id: run_aux_ram_interior_fig4ef
+  model: auxiliary_ram_ratio
+  inputs: {I_region: I_int_fig4e, I_exterior: I_ext_fig4e}
+  settings: {}
+  outputs: {RAM_aux: RAM_int_from_fig4e_calc}
+
+- id: run_coalescence_fit_curve
+  model: coalescence_aspect_ratio_fit
+  inputs: {tau: tau_coalescence_figS1, ref_curve: AR_fit_figS1b, x_grid: AR_fit_figS1b}
+  settings: {}
+  outputs: {AR: AR_fit_figS1b_pred}
+
+- id: run_coalescence_fit_at_data
+  model: coalescence_aspect_ratio_fit
+  inputs: {tau: tau_coalescence_figS1, ref_curve: AR_fit_figS1b, x_grid: AR_data_figS1b}
+  settings: {}
+  outputs: {AR: AR_data_figS1b_pred}
+

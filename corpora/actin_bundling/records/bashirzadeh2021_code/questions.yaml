@@ -1,0 +1,386 @@
+# Open questions, verified code-vs-paper discrepancies, hidden parameters, and bugs in bashirzadeh2021_code
+
+- id: q_full_afines_sim_and_missing_analysis
+  kind: unstated_model
+  about:
+    - afines_guv_sorting_2d_sim
+  text: >
+    The full 2D many-body AFINES C++ simulation (prog/network.cpp, 1,750 filament beads + 7,068
+    crosslinkers over 5 x 10^6 steps across 5 replicates, budgeted at 36 h SLURM runtime per
+    condition) cannot be run inside BoxGraph validation; individual C++ physics kernels, KMC/occlusion
+    rules, Leimkuhler-Matthews integration, and live Python initial-condition generation are executed
+    separately. Crucially, an exhaustive audit of the entire released repository
+    (dinner-group/AFINES branch sorting_guv commit a34e602) confirms that NO post-processing scripts
+    for the Fig. 4g 2D crosslinker PDF histograms, Fig. 4h Binder cumulant U_4 (Eq. 5), or
+    Supplementary Fig. 12 Cytosim verification simulations were released anywhere in the repository
+    (crosslinker_sorting_in_GUVs/ contains only README.txt, sorting_kinetics.cfg, and
+    aster_initial_condition_grid_conda_freeze.py; python/output.py provides only I/O helpers;
+    analysis/ contains older scripts from prior AFINES papers). Consequently, the released code
+    cannot settle bashirzadeh2021's q_binder_cumulant_eq5_vs_fig4h_and_prose (whether Fig. 4h used
+    spatial sums instead of spatial means, or what spatial histogram window was used) or
+    q_cytosim_unstated.
+  citation:
+    file: crosslinker_sorting_in_GUVs/README.txt
+    lines: "1-3"
+    quote: "This folder contains the configuration files and initial condition generating scripts"
+
+- id: q_cfg_vs_cli_parameter_mismatches
+  kind: unexplained_difference
+  about:
+    - cfg_circle_radius
+    - py_circle_radius
+    - cfg_nmonomer
+    - py_nbeads
+    - cfg_a_motor_density
+    - py_fasc_conc
+    - cfg_p_motor_density
+    - py_alpha_conc_baseline
+    - cmp_cfg_standalone_nfil_vs_paper
+  text: >
+    crosslinker_sorting_in_GUVs/README.txt states that sorting_kinetics.cfg "is the configuration
+    file used to run the simulations from the paper", yet standalone sorting_kinetics.cfg disagrees
+    with bashirzadeh2021 Methods p. 9 and Supplementary Tables 2-3 on four core parameters:
+    circle_radius = 12 um (vs 15 um), nmonomer = 27 (26 um filaments vs 35 beads = 34 um),
+    a_motor_density = 1 um^-2 (vs 5 um^-2), and p_motor_density = 1 um^-2 (vs 5 um^-2). These four
+    values are only restored to the paper's parameters via CLI flag overrides in
+    aster_initial_condition_grid_conda_freeze.py:249-258 (which take precedence over the config file
+    because prog/network.cpp:319 calls parse_command_line before parse_config_file on line 333).
+    Running AFINES directly with sorting_kinetics.cfg alone simulates a 12-um GUV with 26-um
+    filaments and ~452 crosslinkers per species instead of 3,534.
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "10-46"
+    quote: "circle_radius=12"
+
+- id: q_hidden_nondefault_parameters_contradict_paper
+  kind: unstated_input
+  about:
+    - py_occc
+    - cpp_default_occ
+    - cfg_link_stretching_stiffness
+    - cpp_default_link_stretching_stiffness
+    - cfg_viscosity
+    - cpp_default_viscosity
+    - cfg_a_m_bend
+    - cpp_default_a_m_bend
+    - cfg_p_m_bend
+    - cpp_default_p_m_bend
+    - cfg_temperature
+    - cfg_actin_length
+    - cpp_default_a_m_cut
+    - cpp_default_p_m_cut
+    - cfg_kexv
+    - cpp_default_kexv
+    - cfg_grid_factor
+    - cfg_nframes
+    - py_fil_dens
+  text: >
+    bashirzadeh2021 Methods p. 9 states "Default values^42 were used for all parameters not listed",
+    yet the released config and CLI script silently override several critical AFINES C++ defaults
+    (prog/network.cpp) without reporting them in the paper: (1) steric occlusion distance o_c (named
+    on p. 9 without a value) is set to --occ 0.15 um in aster_initial_condition_grid_conda_freeze.py:65,259,
+    overriding C++ default occ = 0 (disabled); (2) filament link stretching stiffness is set to
+    link_stretching_stiffness = 10 pN/um in sorting_kinetics.cfg:8, 10x stiffer than C++ default 1 pN/um;
+    (3) solvent viscosity is set to viscosity = 0.01 mg/(um*s) (= 0.01 Pa*s = 10 cP) in
+    sorting_kinetics.cfg:38, 10x higher than C++ default water viscosity 0.001 mg/(um*s);
+    (4) crosslinker-filament bending stiffnesses are set to a_m_bend = 0 and p_m_bend = 0
+    (sorting_kinetics.cfg:23,33), disabling C++ defaults of 0.04 pN; (5) filament excluded volume is
+    explicitly disabled via kexv = 0 (default 1.0 pN/um); (6) thermal energy is temperature = 0.004 pN*um
+    (= 4.0 pN*nm, ~290 K), yielding single-filament L_p = 0.068/0.004 = 17.0 um; (7) hidden C++ default
+    binding capture cutoffs a_m_cut = p_m_cut = 0.063 um and bead hydrodynamic radius actin_length = 0.5 um
+    (hardcoded in actin_*.txt) govern binding and Stokes drag (gamma_bead = 0.09425, gamma_fascin = 0.01885,
+    gamma_alpha = 0.09425 pN*s/um, giving 5x faster free diffusion for fascin than alpha-actinin); and
+    (8) grid_factor = 2.5 um^-1 (default 2), nframes = 50 (default 1000, 2 s intervals), bnd_cnd = LEES-EDWARDS
+    (default PERIODIC), and fil_dens = 0.071 um^-2 are unstated.
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "8-38"
+    quote: "viscosity=0.01"
+
+- id: q_init_filament_translation_uniform_vs_gaussian
+  kind: possible_error
+  about:
+    - py_r_rand
+    - paper_init_displacement_sd
+    - cmp_live_actin_center_std_vs_paper
+    - cmp_analytical_actin_center_std_vs_paper
+  text: >
+    bashirzadeh2021 Methods p. 9 states that initial filament centers were displaced in x and y from
+    "a Gaussian distribution centered at zero with a standard deviation of 3 um". In the released
+    generator (aster_initial_condition_grid_conda_freeze.py:47,111-112), xkick and ykick are instead
+    drawn from random.uniform(-3, 3), which is strictly bounded within [-3, 3] um and has standard
+    deviation 3/sqrt(3) = 1.7321 um (1.73x smaller; 3x smaller variance). This reduces the initial
+    fraction of filament beads outside r_c = 15 um from ~18.5% (Gaussian) to ~15.4% (Uniform) and
+    substantially lowers t=0 confinement energy.
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "111-112"
+    quote: "xkick = random.uniform(-r_rand,r_rand)"
+
+- id: q_init_filament_bend_and_shared_arm_bug
+  kind: possible_error
+  about:
+    - init_condition_script_adapter
+    - cmp_live_mean_hinge_angle_vs_paper
+    - cmp_live_frac_bend_gt_pi4_vs_paper
+    - cmp_live_shared_arm_vs_paper
+  text: >
+    bashirzadeh2021 Methods p. 9 states that each 35-bead filament has one half rotated uniformly in
+    [0, 2*pi] and the other half offset by an angle uniformly drawn from [-pi/4, +pi/4] (mean
+    midpoint bend angle pi/8 = 0.3927 rad, 0% exceeding pi/4, independent across filaments). In
+    aster_initial_condition_grid_conda_freeze.py:24,98-117, bent = True instead draws BOTH ang1 and
+    ang2 independently from Uniform(0, 2*pi) (with opposite y-rotation signs -sin(ang1) vs +sin(ang2)),
+    producing midpoint bend angles uniformly distributed across [0, pi] (mean pi/2 = 1.5708 rad, 4x
+    larger than the paper's pi/8, with 75% of filaments exceeding pi/4 and sharp hairpin bends up to
+    180 deg storing up to 0.5*0.068*pi^2 = 0.336 pN*um = 84 kT per hinge!). Furthermore, lines 102-105
+    only resample ang2 on even ii and ang1 on odd ii, forcing 100% (49/49) of consecutive initial
+    filaments to share an identical arm orientation. Even the inactive bent = False branch (line 108)
+    draws from [-pi, +pi] rather than [-pi/4, +pi/4].
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "98-108"
+    quote: "elif ii%2 == 0:"
+
+- id: q_init_crosslinker_circle_nonuniform_sampling_bug
+  kind: possible_error
+  about:
+    - init_condition_script_adapter
+    - cpp_init_sampling_bias_analytical
+    - cmp_live_fascin_center_density_vs_paper
+    - cmp_live_fascin_edge_density_vs_paper
+    - cmp_analytical_origin_density_vs_paper
+    - cmp_live_fascin_anisotropy_vs_isotropic
+    - cmp_live_fascin_rc_box_vs_paper
+  text: >
+    bashirzadeh2021 Methods p. 9 states that crosslinker initial positions "were drawn with uniform
+    probability from the box centered on the origin with dimensions r_c x r_c". The released script
+    (aster_initial_condition_grid_conda_freeze.py:43-45,155-196) instead places N = round(5 * pi * 15^2)
+    = 3,534 crosslinkers per species inside the circular disk r <= 15 um (only pi/12 = 26.18% fall
+    inside [-7.5, 7.5]^2), settling bashirzadeh2021's q_crosslinker_init_box_and_histogram_domain
+    count ambiguity. However, the script contains a classic non-uniform disk sampling bug: drawing
+    x ~ Uniform(-r, r) and then y | x ~ Uniform(-sqrt(r^2 - x^2), +sqrt(r^2 - x^2)) produces joint
+    PDF p(x, y) = 1 / (4 * r * sqrt(r^2 - x^2)), which diverges near x = +/- r. Consequently, initial
+    crosslinker density at the center is depleted to (pi/4)*5 = 3.927 um^-2 (-21.5%), lateral caps
+    |x| > 12 um are enriched to ~9.7 um^-2 (+94%, ~2.5x denser than center), and the spatial second
+    moments are strongly anisotropic (<x^2> = r^2/3 = 75.0 um^2 vs <y^2> = 2*r^2/9 = 50.0 um^2,
+    ratio 1.50 instead of 1.0). Additionally, head 1 is placed at (x + dx, y + dy), so ~1% of fascin
+    and ~3.2% of alpha-actinin head-1 positions start slightly outside r_c = 15 um.
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "155-158"
+    quote: "ymax = np.sqrt(np.square(r) - np.square(x))"
+
+- id: q_cpp_allowed_bind_same_filament_and_ubind_omission
+  kind: unexplained_difference
+  about:
+    - cpp_kmc_metropolis_occlusion
+    - cfg_a_m_bend
+    - cfg_p_m_bend
+    - py_occc
+  text: >
+    Three C++ AFINES implementation details in src/motor.cpp diverge from or are omitted by
+    bashirzadeh2021 Methods p. 9: (1) Because sorting_kinetics.cfg sets a_m_bend = 0 and p_m_bend = 0
+    (kb = 0), motor::allowed_bind() (src/motor.cpp:696-700) executes the else branch
+    (fl[0] != fl_idx[0] || fl[1] != fl_idx[1]), allowing a single crosslinker to bind BOTH heads onto
+    different springs of the SAME actin filament (whereas kb > 0 forbids same-filament binding);
+    (2) Eq. 2 writes an explicit U_xl^bind potential energy term, yet src/motor.cpp:534-616 contains
+    no binding energy parameter — binding affinity enters purely through kinetic rates k_on / k_off
+    (effective dF_bind = -k_B T ln(k_on/k_off) = -0.01476 pN*um = -3.69 k_B T for fascin,
+    -0.005545 pN*um = -1.39 k_B T for alpha-actinin); and (3) bound crosslinker heads outside r_c
+    still experience ext_circle confinement forces (src/motor.cpp:352-359) and transmit them via the
+    lever rule to filament beads (lines 459-465), adding to the beads' own confinement restoring force.
+  citation:
+    file: src/motor.cpp
+    lines: "696-700"
+    quote: "if (kb > 0.0) return fl_idx[0] != fl[0];"
+
+- id: q_script_packaging_bugs_and_cpp_quirks
+  kind: possible_error
+  about:
+    - init_condition_script_adapter
+    - cpp_motor_alignment_potential
+    - py_dead_p_m_stf
+    - py_dead_a_m_bend
+    - cfg_a_m_kend
+  text: >
+    Multiple software-packaging bugs and dormant C++ bugs exist in the released snapshot:
+    (1) aster_initial_condition_grid_conda_freeze.py:241 invokes binary 'afines-ring', whereas
+    CMakeLists.txt:27, makefile:49, and conda.recipe/build.sh:5 build 'network' / 'afines' (though
+    prog/network.cpp does implement --a_m_ring_flag, --p_m_ring_flag, --occ, and --freeze_filaments);
+    (2) the script hardcodes UChicago cluster paths /project2/gardel/steven/AFINES/... (lines 22, 211),
+    loops over an unused variable 'scale' (line 28) generating 5 identical blocks of 16 conditions,
+    omits fasc_conc = 0 (cannot generate alpha-actinin-only runs without manual editing), fails to
+    scale a_m_kend = 0.5 when scl > 1 (lines 247-248), leaves dead overrides p_m_stf = 0.5 and
+    a_m_bend = 0.06 commented out (lines 56, 64, 251, 254), writes float '0.0' for filament index
+    (lines 87, 135) causing python/output.py actins_dtype ('f_index', int) to fail under numpy loadtxt,
+    and is misspelled in README.txt:3 as 'aster_initial_condition_conda_freeze.py';
+    (3) in C++, src/motor.cpp:619-620 comments falsely claim alignment_penalty is in [0, kalign] when
+    kalign*(1 - cos(theta)) actually spans [0, 2*kalign] (max 0.666 pN*um = 166.5 k_B T at theta = pi);
+    prog/network.cpp:533,552 double-negates set_antipar(-a_m_kalign) (inactive here); src/exv.cpp:17
+    passes l2 twice instead of (l1, l2) (inactive since kexv=0); src/quadrants.cpp:41 loops on i instead
+    of j when quad_off_flag is true (inactive); and filament_ensemble.cpp:61-62 & motor_ensemble.cpp:43
+    invert null checks in destructors ('if (!ext) delete ext;').
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "241-250"
+    quote: "afines-ring -c config/sorting_kinetics.cfg"
+
+- id: q_afines_branch_evolution_and_bugs
+  kind: unexplained_difference
+  about:
+    - cpp_filament_potentials
+    - cpp_kmc_metropolis_occlusion
+    - cpp_leimkuhler_langevin_diffusion
+    - cfg_a_m_bend
+    - cfg_p_m_bend
+    - cfg_kexv
+    - py_dead_a_m_bend
+    - freedman2019_code/afines_filament_mechanics_cpp
+    - freedman2019_code/afines_spacer_mechanics_and_mc_cpp
+    - freedman2019_code/afines_excluded_volume_cpp
+  text: >
+    Line-by-line forensic diff of dinner-group/AFINES@sorting_guv (bashirzadeh2021_code, commit
+    a34e602, 2021) against Simfreed/AFINES@growing_spacer_exv (freedman2019_code, commit 0c6c349,
+    2019) exposes both direct lineage and divergent bugs across the two AFINES branches:
+    (1) Verbatim legacy artifacts: bashirzadeh2021_code/xlink_sorting_paper/ is byte-for-byte
+    identical to freedman2019_code/xlink_sorting_paper/ (plus an extra afines.tar), and
+    bashirzadeh2021_code/prog/bundles.cpp is byte-for-byte identical to freedman2019_code/prog/bundles.cpp
+    (carrying the s2_kend/s2_kend bug on lines 372, 376, while uncompilable because src/spacer.cpp
+    and include/spacer.h were deleted during the spacer -> motor merge). Even the dead commented-out
+    a_m_bend = 0.06 in aster_initial_condition_grid_conda_freeze.py:64 matches grow.cfg:35's
+    s2_bend = 0.06.
+    (2) Bugs FIXED in sorting_guv vs growing_spacer_exv: (a) prv_rnd is initialized to vec_randn()
+    in src/filament.cpp:49,63,80,445 and src/motor.cpp:97-98 (fixing zero-init first-step cooling);
+    (b) filament::grow() (src/filament.cpp:457) sets springs[0]->set_l0(lb + dL - spring_l0)
+    (fixing freedman2019_code's barbed-end split remainder-discard loss, though kgrow = 0 here);
+    (c) motor::update_force() (src/motor.cpp:325) clears b_eng[0] = b_eng[1] = 0.0 (fixing
+    spacer.cpp's stale b_eng subtraction); (d) motor::metropolis_prob() (src/motor.cpp:548-575)
+    sums BOTH heads' bending energies and uses get_disp() rather than stale pos_a_end = 0; and
+    (e) prog/network.cpp:523-524,541-542 passes koff, kend cleanly (unlike bundles.cpp:372,376).
+    (3) Bugs REMAINING or NEWLY INTRODUCED in sorting_guv: (a) motor::allowed_bind()
+    (src/motor.cpp:696-700) regressed from spacer::allowed_bind() (fl_idx[0] != f_index[pr(hd)])
+    by gating same-filament exclusion on `if (kb > 0.0)`, so setting a_m_bend = p_m_bend = 0
+    unintentionally permits both heads on different springs of the SAME filament;
+    (b) motor::metropolis_prob() (src/motor.cpp:551,557, dormant since kb = 0) STILL uses
+    pre-attachment `disp` instead of proposed `newpos - h[pr(hd)]` when computing candidate
+    bending angles; (c) src/exv.cpp:17 (dormant since kexv = 0) passes l2 twice
+    (`update_force_between_filaments(network, f1, l2, f2, l2)`), and src/exv.cpp:88-90 still
+    guards intersection detection inside `if (r < rmax)` so midpoint crossings go undetected
+    (while replacing the 45-deg doubled-force hack with a runtime_error); and (d) shared unit-tag
+    bugs across both branches: src/motor_ensemble.cpp:70 and :314 both divide `kb = modulus / mld`
+    (requiring modulus in pN*um^2) while CLI help strings mislabel a_m_bend/s1_bend as `(pN)`, and
+    both src/exv.cpp:123 and freedman2019_code/src/filament_ensemble.cpp:673 evaluate
+    `pe_exv += kexv*pow(1 - r*b, 2)` (requiring kexv in energy units pN*um, contradicting both
+    freedman2019 Table S1's pN*um^2 and bashirzadeh2021_code/data.yaml's pN/um tag).
+  citation:
+    file: src/motor.cpp
+    lines: "550-558"
+    quote: "delr2 = pow(-1, hd) * disp;"
+
+- id: q_freedman2019_vs_sorting_guv_mechanisms_and_units
+  kind: unexplained_difference
+  about:
+    - afines_config_derived_quantities
+    - cpp_motor_alignment_potential
+    - cpp_kmc_metropolis_occlusion
+    - cfg_temperature
+    - cfg_viscosity
+    - freedman2019/crosslinker_potential_si_eq4
+    - freedman2019/stokes_mobility_si_eq6
+  text: >
+    Comparing bashirzadeh2021_code (sorting_guv) against Freedman et al., PNAS 2019 (freedman2019)
+    reveals both shared hidden AFINES conventions and a complete mechanistic pivot:
+    (1) Shared undocumented defaults across both papers: hardcoded temperature = 0.004 pN*um
+    (equivalent to T = 289.72 K, 3.43% below freedman2019 Table S1's 300 K = 0.004142 pN*um,
+    giving exact L_p = 17.0 um in both papers), hidden actin_length = 0.5 um bead Stokes radius,
+    hidden binding cutoff cut = 0.063 um, crosslinker drag gamma = 6*pi*vis*mld, and absent
+    explicit U_xl^bind potential in C++ (written in both freedman2019 SI Eq. 4 and bashirzadeh2021
+    Eq. 2, yet implemented purely via kinetic rates k_on/k_off).
+    (2) Factor-of-2 mismatch in freedman2019 SI Eq. 4 vs BOTH AFINES C++ branches: SI Eq. 4 writes
+    U_xl^bend = kappa_xl^B * sum (alpha_i - pi/2)^2 without a 1/2 prefactor, whereas both
+    freedman2019_code/src/spacer.cpp:373 (`kb*dth*dth/2`) and bashirzadeh2021_code/src/potentials.cpp:108
+    (`0.5 * kb * theta * theta`) include 1/2 (combining with kb = modulus/mld to give 2.5x the
+    printed stiffness coefficient at mld = 0.2 um).
+    (3) Sorting-mechanism & parameter pivot: freedman2019 sorts crosslinkers on growing 2-filament
+    bundles (kgrow = 1 s^-1, kexv = 0.08 pN*um in Fig. 2D, perpendicular bending s1_bend = 0.005,
+    s2_bend = 0.06, length ratio 0.3/0.2 = 1.5, viscosity = 0.001 Pa*s, k_xl = 10 pN/um,
+    rho = 0.25 um^-2, tfinal = 2000 s, no alignment penalty, no steric occlusion, periodic box).
+    bashirzadeh2021_code disables growth (kgrow = 0), excluded volume (kexv = 0), and perpendicular
+    bending (a_m_bend = p_m_bend = 0), instead driving sorting in a circular GUV (r_c = 15 um) via
+    parallel filament alignment (kalign = 0.333 pN*um for fascin), 1D contour steric occlusion
+    (occ = 0.15 um), 5x rest-length ratio (0.5/0.1 um), 100x-weaker alpha-actinin stiffness
+    (0.1 pN/um vs 1 pN/um fascin), 100x faster fascin on-rate (20 vs 0.2 s^-1), 10x higher
+    viscosity (0.01 Pa*s), 20x higher density (5 um^-2), and 20x shorter runtime (100 s).
+  citation:
+    file: src/potentials.cpp
+    lines: "108"
+    quote: "result.energy = 0.5 * kb * theta * theta;"
+
+- id: q_source_data_missing_afines_and_parameter_mismatch
+  kind: unstated_model
+  about:
+    - afines_guv_sorting_2d_sim
+    - afines_config_derived_quantities
+    - init_condition_script_adapter
+    - py_circle_radius
+    - cfg_circle_radius
+    - bashirzadeh2021_source_data/fig4e_persistence_length_reader
+    - bashirzadeh2021_source_data/fig4c_line_profile_reader
+    - bashirzadeh2021_source_data/fig3_cluster_localization_reader
+  text: >
+    Cross-auditing bashirzadeh2021_code against bashirzadeh2021_source_data (Figshare DOI
+    10.6084/m9.figshare.16337442.v1: Source_data.xlsx, Figs_1_and_2_Pvalues.xlsx,
+    Fig4e_persistence_length_data.xlsx, Fig4c-d.mat) confirms:
+    (1) Total absence of AFINES simulation outputs in BOTH public repositories: none of the four
+    Figshare files contain any AFINES trajectories, Fig. 4g 20x20 crosslinker PDF histograms,
+    Fig. 4h Binder cumulant U_4 numbers, Supp. Fig. 11 outputs, or Cytosim data, leaving
+    bashirzadeh2021's q_binder_cumulant_eq5_vs_fig4h_and_prose unresolvable from public files.
+    (2) Regime and parameter mismatches between AFINES code and Figshare experiments:
+    (a) GUV diameter: CLI-overridden r_c = 15 um (30 um diameter) falls in Fig. 3d's >24 um
+    central-aster regime (57.7% central clusters in Source_data.xlsx Sheet4), whereas standalone
+    sorting_kinetics.cfg r_c = 12 um (24 um diameter) sits on the 17-24 vs >24 um boundary, and
+    Fig4c-d.mat's line scan spans 49.30 um (~45-50 um GUV);
+    (b) Single-filament vs bundle persistence length: AFINES's fixed single-filament L_p = 17.0 um
+    lies 2.0x-5.9x below Fig4e_persistence_length_data.xlsx's crosslinked bundle L_p (33.37 to
+    99.71 um across [alpha:fascin:actin] = [0:1:10]..[1:3:10]), with no bare-actin [0:0:10]
+    measurement in Figshare;
+    (c) Sweep axis mismatch: aster_initial_condition_grid_conda_freeze.py:29,41 varies
+    alpha_conc in {0, 5, 10, 15} at fixed fasc_conc = 5 (cannot generate the alpha-actinin-only
+    control fasc_conc = 0 of Figs. 1 & 3c NoFascin without editing), whereas Fig. 4e varies fascin
+    at fixed alpha-actinin;
+    (d) Opposite radial gradient at t=0: Fig4c-d.mat shows central alpha-actinin enrichment
+    (1.911x vs fascin 1.469x) and peripheral fascin-actin arm correlation (r = +0.421 vs +0.170),
+    whereas AFINES's buggy disk sampler depletes BOTH crosslinkers at the center (3.93 um^-2,
+    -21.5%) and piles them up at lateral caps |x| > 12 um (9.61 um^-2, +92%).
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "29-41"
+    quote: "for alpha_conc in range(0,16,5):"
+
+- id: q_val_audit_source_data_and_freedman2019
+  kind: unstated_model
+  about:
+    - afines_guv_sorting_2d_sim
+    - afines_config_derived_quantities
+    - bashirzadeh2021_source_data/paper_Lp_0_1_10
+    - freedman2019/fig4b_fascin_datum
+    - freedman2019_code/kmc_winkelman_expt_table
+  text: >
+    Cross-record validation audit across bashirzadeh2021_source_data (44 origin: measured datums),
+    freedman2019 (8 origin: measured datums), and freedman2019_code (1 origin: measured datum)
+    yields 0 valid cross-record entries for bashirzadeh2021_code/validations.yaml:
+    (1) bashirzadeh2021_code itself has 0 empirical measurements;
+    (2) bashirzadeh2021_source_data measures experimental GUV morphology counts/percentages, cluster
+    localization counts, confocal fluorescence profile lengths, and crosslinked actin bundle
+    persistence lengths (33.3-99.7 um), none of which are predicted by any runnable model in
+    bashirzadeh2021_code (L_p_code = 17.0 um is a fixed single-filament input parameter, not a
+    crosslinked bundle L_p prediction, and afines_guv_sorting_2d_sim is runnable: false);
+    (3) freedman2019 and freedman2019_code measure TIRF barbed-end polymerization rates (22.15 &
+    46.99 nm/s) and 1D growing-bundle crosslinker domain lengths (um), whereas bashirzadeh2021_code
+    disables filament growth (kgrow = 0) and has no runnable model predicting polymerization rates
+    or 1D bundle domain lengths.
+  citation:
+    file: prog/network.cpp
+    lines: "140-141"
+    quote: '("kgrow", po::value<double>(&kgrow)->default_value(0), "rate of filament growth")'
+

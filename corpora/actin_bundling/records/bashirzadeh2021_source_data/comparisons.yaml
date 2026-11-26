@@ -1,0 +1,328 @@
+# Intra-record reproduction and consistency comparisons auditing all four Figshare Source Data
+# files (Source_data.xlsx, Figs_1_and_2_Pvalues.xlsx, Fig4e_persistence_length_data.xlsx,
+# Fig4c-d.mat) against bashirzadeh2021 printed claims and stored workbook summary cells.
+
+# ==============================================================================
+# 1. Fig. 4e & Supp. Fig. 9c persistence lengths, SEMs, sample counts, and p-values
+# ==============================================================================
+- id: cmp_fig4e_wb_identical_to_source_data
+  purpose: consistency
+  computed: comp_fig4e_wb_match
+  printed: expected_exact_match_one
+  note: "Verifies that Fig4e_persistence_length_data.xlsx ('Sheet5' and 'P_PL') is cell-for-cell identical to Source_data.xlsx ('Sheet5' and 'P_PL')."
+
+- id: cmp_lp_0110_mean
+  purpose: reproduction
+  computed: comp_lp_0110_mean
+  printed: paper_Lp_0_1_10
+  note: "Raw A2:A23 mean = 33.3665 um (truncated to 33.3 in Fig. 4e caption; within +/-10)."
+
+- id: cmp_lp_0310_mean
+  purpose: reproduction
+  computed: comp_lp_0310_mean
+  printed: paper_Lp_0_3_10
+  note: "Raw G2:G15 mean = 39.3762 um (truncated to 39.3 in Fig. 4e caption)."
+
+- id: cmp_lp_1110_mean
+  purpose: reproduction
+  computed: comp_lp_1110_mean
+  printed: paper_Lp_1_1_10
+  note: "Raw K2:K19 mean = 54.2510 um (truncated to 54.2 in Fig. 4e caption)."
+
+- id: cmp_lp_1210_mean
+  purpose: reproduction
+  computed: comp_lp_1210_mean
+  printed: paper_Lp_1_2_10
+  note: "Raw Q2:Q15 mean = 77.8319 um (matches 77.8 in Fig. 4e caption)."
+
+- id: cmp_lp_1310_mean
+  purpose: reproduction
+  computed: comp_lp_1310_mean
+  printed: paper_Lp_1_3_10
+  note: "Raw X2:X27 mean = 99.7095 um (matches 99.7 in Fig. 4e caption)."
+
+# True SEMs (SD/sqrt(N)) vs Fig. 4e caption +/- values — EXPOSES 3 FORMULA BUGS!
+- id: cmp_lp_0110_sem_true
+  purpose: reproduction
+  computed: comp_lp_0110_sem_true
+  printed: paper_Lp_sem_0_1_10
+  note: "DISCREPANCY: true SEM of A2:A23 (N=22) is 36.0375/sqrt(22) = 7.6832 um (matching Fig. 4e Bar 1's plotted error bar), NOT 10 um printed in caption."
+
+- id: cmp_lp_0110_sem_sheet_bug
+  purpose: consistency
+  computed: comp_lp_0110_sem_sheet
+  printed: paper_Lp_sem_0_1_10
+  note: "Reproduces caption +/-10 um via Sheet5 buggy formula A32 = A33/SQRT(13) = 9.9950 um (wrong denominator 13 instead of 22)."
+
+- id: cmp_lp_0310_sem_true
+  purpose: reproduction
+  computed: comp_lp_0310_sem_true
+  printed: paper_Lp_sem_0_3_10
+  note: "True SEM of G2:G15 (N=14) = 9.1256 um (matches caption +/-9 um)."
+
+- id: cmp_lp_1110_sem_true
+  purpose: reproduction
+  computed: comp_lp_1110_sem_true
+  printed: paper_Lp_sem_1_1_10
+  note: "DISCREPANCY: true SEM of K2:K19 (N=18) is 44.2067/sqrt(18) = 10.4196 um (matching Fig. 4e Bar 3's plotted error bar), NOT 11.4 um printed in caption."
+
+- id: cmp_lp_1110_sem_sheet_bug
+  purpose: consistency
+  computed: comp_lp_1110_sem_sheet
+  printed: paper_Lp_sem_1_1_10
+  note: "Reproduces caption +/-11.4 um via Sheet5 buggy formula K32 = K33/SQRT(15) = 11.4141 um (wrong denominator 15 instead of 18)."
+
+- id: cmp_lp_1210_sem_true
+  purpose: reproduction
+  computed: comp_lp_1210_sem_true
+  printed: paper_Lp_sem_1_2_10
+  note: "True SEM of Q2:Q15 (N=14) = 19.0536 um (matches caption +/-19 um)."
+
+- id: cmp_lp_1310_sem_true
+  purpose: reproduction
+  computed: comp_lp_1310_sem_true
+  printed: paper_Lp_sem_1_3_10
+  note: "DISCREPANCY: true full-sample SEM of X2:X27 (N=26) is 71.2350/sqrt(26) = 13.9703 um (matching Fig. 4e Bar 5's plotted error bar), NOT 15 um printed in caption."
+
+- id: cmp_lp_1310_sem_sheet_bug
+  purpose: consistency
+  computed: comp_lp_1310_sem_sheet
+  printed: paper_Lp_sem_1_3_10
+  note: "Reproduces caption +/-15 um via Sheet5 buggy formulas X33 = STDEV(X2:X25) (omitting X26:X27) and X32 = X33/SQRT(24) = 15.0257 um."
+
+# Bundle sample counts N_bundles vs captions (Fig. 4e & Supp. Fig. 9c) + deduplication checks
+- id: cmp_nbundles_0110
+  purpose: reproduction
+  computed: comp_lp_0110_n
+  printed: paper_nbundles_0_1_10
+
+- id: cmp_nbundles_0310
+  purpose: reproduction
+  computed: comp_lp_0310_n
+  printed: paper_nbundles_0_3_10
+
+- id: cmp_nbundles_1110_raw
+  purpose: reproduction
+  computed: comp_lp_1110_n
+  printed: paper_nbundles_1_1_10
+  note: "DISCREPANCY: Sheet5 K2:K19 and P_PL both contain N = 18 bundles (not 17 as printed in Fig. 4e caption)."
+
+- id: cmp_nbundles_1110_unique
+  purpose: consistency
+  computed: comp_lp_1110_n_uniq
+  printed: paper_nbundles_1_1_10
+  note: "Diagnostic: removing the exact duplicate pair (K3,L3) == (K10,L10) leaves 17 unique bundles."
+
+- id: cmp_nbundles_1210
+  purpose: reproduction
+  computed: comp_lp_1210_n
+  printed: paper_nbundles_1_2_10
+
+- id: cmp_nbundles_1310_raw
+  purpose: reproduction
+  computed: comp_lp_1310_n
+  printed: paper_nbundles_1_3_10
+
+- id: cmp_nbundles_1310_unique
+  purpose: consistency
+  computed: comp_lp_1310_n_uniq
+  printed: paper_nbundles_1_3_10
+  note: "DISCREPANCY: X2:X27 contains 5 exact 15-digit duplicate L_p entries (4 duplicated (L_p,L) rows R4=R22, R5=R21, R6=R19, R7=R18 plus X15=X16), leaving only 21 unique bundles out of 26."
+
+- id: cmp_nbundles_s9c_3310
+  purpose: reproduction
+  computed: comp_lp_3310_n
+  printed: paper_nbundles_3_3_10
+  note: "DISCREPANCY: Supp. Fig. 9c caption prints N_bundles = 16, whereas Sheet5 AG3:AG17 contains only 15 bundles and AG39 divides by SQRT(15)."
+
+- id: cmp_s9c_3310_mean_stored
+  purpose: reproduction
+  computed: comp_lp_3310_mean
+  printed: sheet5_s9c_mean_stored
+
+- id: cmp_s9c_3310_sem_stored
+  purpose: reproduction
+  computed: comp_lp_3310_sem_true
+  printed: sheet5_s9c_sem_stored
+
+# Fig. 4e Welch t-test p-values: exact reproduction from raw Sheet5 + diagnostic checks
+- id: cmp_fig4e_p_0110_vs_1110_excel
+  purpose: reproduction
+  computed: comp_f4e_p_ex_1
+  printed: paper_fig4e_p_0110_vs_1110
+  note: "REPRODUCED from raw Sheet5 (N=22 vs N=18): Excel integer-rounded df=33 Welch two-tail gives p = 0.116226 (exact df=32.69 gives 0.116316), matching printed p = 0.1162."
+
+- id: cmp_fig4e_p_0110_vs_1110_mw
+  purpose: consistency
+  computed: comp_f4e_p_mw_1
+  printed: paper_fig4e_p_0110_vs_1110
+  note: "Diagnostic: because L_p is right-skewed, nonparametric Mann-Whitney U gives significant p = 0.01496 (and log-Welch gives p = 0.01619) vs non-significant raw Welch p = 0.1162."
+
+- id: cmp_fig4e_p_1110_vs_1310_excel
+  purpose: reproduction
+  computed: comp_f4e_p_ex_2
+  printed: paper_fig4e_p_1110_vs_1310
+  note: "REPRODUCED from raw Sheet5 (N=18 vs N=26): Excel integer-rounded df=42 Welch two-tail gives p = 0.012547 (exact df=41.61 gives 0.012581), matching printed p = 0.0125."
+
+- id: cmp_fig4e_p_1110_vs_1310_dedup
+  purpose: consistency
+  computed: comp_f4e_p_dedup_2
+  printed: paper_fig4e_p_1110_vs_1310
+  note: "Diagnostic: deduplicating K2:K19 (17) and X2:X27 (21) raises Welch p from 0.01255 to 0.01707 (remains < 0.05)."
+
+- id: cmp_fig4e_p_0310_vs_1310_excel_vs_printed
+  purpose: reproduction
+  computed: comp_f4e_p_ex_3
+  printed: paper_fig4e_p_0310_vs_1310
+  note: "Excel df=38 Welch two-tail on raw Sheet5 (N=14 vs N=26) gives p = 0.00086695 (exact df=37.69 gives 0.00087322), which rounds to 0.0009 but was TRUNCATED to 0.0008 on Fig. 4e."
+
+- id: cmp_fig4e_p_0310_vs_1310_excel_vs_ppl
+  purpose: reproduction
+  computed: comp_f4e_p_ex_3
+  printed: ppl_p_0310_vs_1310_stored
+  note: "Reproduces P_PL cell C28 (8.669454E-4) to full floating-point precision."
+
+- id: cmp_fig4e_p_0310_vs_1310_dedup
+  purpose: consistency
+  computed: comp_f4e_p_dedup_3
+  printed: paper_fig4e_p_0310_vs_1310
+  note: "Diagnostic: deduplicating X2:X27 (N=21) raises Welch p from 0.000867 to 0.001353 (remains < 0.002)."
+
+# ==============================================================================
+# 2. Figs. 1 & 2 GUV counts (exposing per-replicate vs diameter-bin caption error)
+# ==============================================================================
+# Fig. 1 true diameter-bin counts vs caption claims (ALL 9 FAIL as diameter-bin counts!)
+- {id: cmp_f1_01_small_true_vs_caption, purpose: reproduction, computed: comp_f1_01_n_small, printed: paper_fig1_nguv_01_small, note: "DISCREPANCY: true 7-12 um total is 314, NOT 389 (389 is Rep 3 total across all sizes)."}
+- {id: cmp_f1_01_med_true_vs_caption, purpose: reproduction, computed: comp_f1_01_n_med, printed: paper_fig1_nguv_01_medium, note: "DISCREPANCY: true 12-16 um total is 70, NOT 42 (42 is Rep 1 total across all sizes)."}
+- {id: cmp_f1_01_large_true_vs_caption, purpose: reproduction, computed: comp_f1_01_n_large, printed: paper_fig1_nguv_01_large, note: "DISCREPANCY: true >16 um total is 70 (resolving Fig. 1g's 35 asters!), NOT 23 (23 is Rep 2 total across all sizes)."}
+- {id: cmp_f1_02_small_true_vs_caption, purpose: reproduction, computed: comp_f1_02_n_small, printed: paper_fig1_nguv_02_small, note: "DISCREPANCY: true 7-12 um total is 48, NOT 67 (67 is unused extra block J1:L3)."}
+- {id: cmp_f1_02_med_true_vs_caption, purpose: reproduction, computed: comp_f1_02_n_med, printed: paper_fig1_nguv_02_medium, note: "DISCREPANCY: true 12-16 um total is 35, NOT 45 (45 is Rep 1 total across all sizes)."}
+- {id: cmp_f1_02_large_true_vs_caption, purpose: reproduction, computed: comp_f1_02_n_large, printed: paper_fig1_nguv_02_large, note: "DISCREPANCY: true >16 um total is 25, NOT 38 (38 is Rep 2 total across all sizes)."}
+- {id: cmp_f1_03_small_true_vs_caption, purpose: reproduction, computed: comp_f1_03_n_small, printed: paper_fig1_nguv_03_small, note: "DISCREPANCY: true 7-12 um total is 155, NOT 188 (188 is unused extra block F1:H3)."}
+- {id: cmp_f1_03_med_true_vs_caption, purpose: reproduction, computed: comp_f1_03_n_med, printed: paper_fig1_nguv_03_medium, note: "DISCREPANCY: true 12-16 um total is 121, NOT 145 (145 is Rep 1 total across all sizes)."}
+- {id: cmp_f1_03_large_true_vs_caption, purpose: reproduction, computed: comp_f1_03_n_large, printed: paper_fig1_nguv_03_large, note: "DISCREPANCY: true >16 um total is 88, NOT 128 (128 is Rep 2 total across all sizes)."}
+- {id: cmp_f1f_01_7to16_true_vs_caption, purpose: reproduction, computed: comp_f1_01_n_7to16, printed: paper_fig1f_nguv_01_7to16, note: "DISCREPANCY: true 7-16 um total is 384; caption 429 came from mis-adding Rep3+Rep1 totals (389+42=431)."}
+
+# Diagnostic proof that Fig. 1 caption numbers are per-replicate all-size totals!
+- {id: cmp_f1_01_rep3_matches_caption_389, purpose: consistency, computed: comp_f1_01_n_rep3, printed: paper_fig1_nguv_01_small, note: "Proves caption '389' is Rep 3 total across all diameters (Q11:S13 = 283+58+48 = 389)."}
+- {id: cmp_f1_01_rep1_matches_caption_42, purpose: consistency, computed: comp_f1_01_n_rep1, printed: paper_fig1_nguv_01_medium, note: "Proves caption '42' is Rep 1 total across all diameters (N1:P3 = 23+8+11 = 42)."}
+- {id: cmp_f1_01_rep2_matches_caption_23, purpose: consistency, computed: comp_f1_01_n_rep2, printed: paper_fig1_nguv_01_large, note: "Proves caption '23' is Rep 2 total across all diameters (N5:P7 = 8+4+11 = 23)."}
+- {id: cmp_f1_02_rep1_matches_caption_45, purpose: consistency, computed: comp_f1_02_n_rep1, printed: paper_fig1_nguv_02_medium, note: "Proves caption '45' is Rep 1 total across all diameters (J4:L6 = 45)."}
+- {id: cmp_f1_02_rep2_matches_caption_38, purpose: consistency, computed: comp_f1_02_n_rep2, printed: paper_fig1_nguv_02_large, note: "Proves caption '38' is Rep 2 total across all diameters (J7:L9 = 38)."}
+- {id: cmp_f1_03_rep1_matches_caption_145, purpose: consistency, computed: comp_f1_03_n_rep1, printed: paper_fig1_nguv_03_medium, note: "Proves caption '145' is Rep 1 total across all diameters (F4:H6 = 145)."}
+- {id: cmp_f1_03_rep2_matches_caption_128, purpose: consistency, computed: comp_f1_03_n_rep2, printed: paper_fig1_nguv_03_large, note: "Proves caption '128' is Rep 2 total across all diameters (F7:H9 = 128)."}
+
+# Fig. 1g peripheral aster denominator counts
+- {id: cmp_f1g_01_denom, purpose: reproduction, computed: comp_f1g_01_denom, printed: paper_fig1g_aster_count_01, note: "Matches Sheet2 M48 denominator 35 (though Fig. 1f numerators 5+8+23 sum to 36)."}
+- {id: cmp_f1g_02_denom, purpose: reproduction, computed: comp_f1g_02_denom, printed: paper_fig1g_aster_count_02, note: "DISCREPANCY: Sheet2 M49/N49 uses 5/12 and 7/12 (denominator 12; Fig. 1f numerators 3+4+6 sum to 13), NOT 14 as printed in Fig. 1g caption."}
+- {id: cmp_f1g_03_denom, purpose: reproduction, computed: comp_f1g_03_denom, printed: paper_fig1g_aster_count_03, note: "Matches Sheet2 M50 denominator 53 (though Fig. 1f numerators 20+13+23 sum to 56)."}
+
+# Fig. 2 true diameter-bin counts vs caption claims + 9/9 proof they are replicate totals!
+- {id: cmp_f2_01_small_true_vs_caption, purpose: reproduction, computed: comp_f2_01_n_small, printed: paper_fig2_nguv_01_small, note: "DISCREPANCY: true 7-12 um total is 127, NOT 101 (101 is Rep 1 total across all sizes)."}
+- {id: cmp_f2_01_med_true_vs_caption, purpose: reproduction, computed: comp_f2_01_n_med, printed: paper_fig2_nguv_01_medium, note: "DISCREPANCY: true 12-16 um total is 57, NOT 98 (98 is Rep 2 total across all sizes)."}
+- {id: cmp_f2_01_large_true_vs_caption, purpose: reproduction, computed: comp_f2_01_n_large, printed: paper_fig2_nguv_01_large, note: "DISCREPANCY: true >16 um total is 44, NOT 29 (29 is Rep 3 total across all sizes)."}
+- {id: cmp_f2_02_small_true_vs_caption, purpose: reproduction, computed: comp_f2_02_n_small, printed: paper_fig2_nguv_02_small, note: "DISCREPANCY: true 7-12 um total is 176, NOT 147 (147 is Rep 1 total across all sizes)."}
+- {id: cmp_f2_02_med_true_vs_caption, purpose: reproduction, computed: comp_f2_02_n_med, printed: paper_fig2_nguv_02_medium, note: "DISCREPANCY: true 12-16 um total is 59 vs caption 58 (58 is Rep 2 total across all sizes)."}
+- {id: cmp_f2_02_large_true_vs_caption, purpose: reproduction, computed: comp_f2_02_n_large, printed: paper_fig2_nguv_02_large, note: "DISCREPANCY: true >16 um total is 41, NOT 71 (71 is Rep 3 total across all sizes)."}
+- {id: cmp_f2_03_small_true_vs_caption, purpose: reproduction, computed: comp_f2_03_n_small, printed: paper_fig2_nguv_03_small, note: "DISCREPANCY: true 7-12 um total is 182, NOT 137 (137 is Rep 3 total across all sizes)."}
+- {id: cmp_f2_03_med_true_vs_caption, purpose: reproduction, computed: comp_f2_03_n_med, printed: paper_fig2_nguv_03_medium, note: "DISCREPANCY: true 12-16 um total is 33, NOT 82 (82 is Rep 2 total across all sizes)."}
+- {id: cmp_f2_03_large_true_vs_caption, purpose: reproduction, computed: comp_f2_03_n_large, printed: paper_fig2_nguv_03_large, note: "DISCREPANCY: true >16 um total is 28, NOT 24 (24 is Rep 1 total across all sizes)."}
+- {id: cmp_f2f_01_7to16_true_vs_caption, purpose: reproduction, computed: comp_f2_01_n_7to16, printed: paper_fig2f_nguv_01_7to16, note: "DISCREPANCY: true 7-16 um total is 184; caption 199 came from adding Rep1+Rep2 all-size totals (101+98)."}
+
+- {id: cmp_f2_01_rep1_matches_101, purpose: consistency, computed: comp_f2_01_n_rep1, printed: paper_fig2_nguv_01_small}
+- {id: cmp_f2_01_rep2_matches_98, purpose: consistency, computed: comp_f2_01_n_rep2, printed: paper_fig2_nguv_01_medium}
+- {id: cmp_f2_01_rep3_matches_29, purpose: consistency, computed: comp_f2_01_n_rep3, printed: paper_fig2_nguv_01_large}
+- {id: cmp_f2_02_rep1_matches_147, purpose: consistency, computed: comp_f2_02_n_rep1, printed: paper_fig2_nguv_02_small}
+- {id: cmp_f2_02_rep2_matches_58, purpose: consistency, computed: comp_f2_02_n_rep2, printed: paper_fig2_nguv_02_medium}
+- {id: cmp_f2_02_rep3_matches_71, purpose: consistency, computed: comp_f2_02_n_rep3, printed: paper_fig2_nguv_02_large}
+- {id: cmp_f2_03_rep3_matches_137, purpose: consistency, computed: comp_f2_03_n_rep3, printed: paper_fig2_nguv_03_small}
+- {id: cmp_f2_03_rep2_matches_82, purpose: consistency, computed: comp_f2_03_n_rep2, printed: paper_fig2_nguv_03_medium}
+- {id: cmp_f2_03_rep1_matches_24, purpose: consistency, computed: comp_f2_03_n_rep1, printed: paper_fig2_nguv_03_large}
+
+# Sheet2 & Sheet3 A6/A9 omission of cell J11 (affecting Fig. 1b and Fig. 2b medium Ring bar!)
+- {id: cmp_f1b_med_ring_correct_vs_a9, purpose: consistency, computed: comp_f1b_med_ring_correct, printed: sheet2_fig1b_med_ring_a9_stored, note: "Sheet2 A6 omits J11=2 rings, shifting medium Ring cumulative probability from 115/226 = 0.5088 to 113/224 = 0.5045."}
+- {id: cmp_f2b_med_ring_correct_vs_a9, purpose: reproduction, computed: comp_f2b_med_ring_correct, printed: sheet3_fig2b_med_ring_a9_stored, note: "DISCREPANCY: Sheet3 A6 omits J11=6 rings, shifting medium Ring cumulative probability from 23/149 = 0.1544 (T2) down to 17/143 = 0.1189 (A9, which is what Fig. 2b plotted!)."}
+- {id: cmp_f2b_med_ring_correct_vs_t2, purpose: reproduction, computed: comp_f2b_med_ring_correct, printed: sheet3_fig2b_med_ring_t2_stored, note: "True pooled medium Ring probability 23/149 = 0.15436 reproduces Sheet3 T2 exactly."}
+
+# ==============================================================================
+# 3. ALL 18 Figs. 1 & 2 p-values — PROVING COMPLETE FIG. 1 <-> FIG. 2 SWAP!
+# ==============================================================================
+# Literal check (each figure's OWN data vs its printed p-values — ALL 18 FAIL!)
+- {id: cmp_fig1c_01_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f1c_01, printed: printed_fig1c_p_01, note: "SWAPPED: Fig. 1c [0.1] data gives p = 0.006397 (Sheet12), NOT 0.0185 printed on Fig. 1c (which is Fig. 2d Sheet3!)."}
+- {id: cmp_fig1c_02_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f1c_02, printed: printed_fig1c_p_02, note: "SWAPPED: Fig. 1c [0.2] data gives p = 0.003430 (Sheet13), NOT 0.0009 printed on Fig. 1c (which is Fig. 2d Sheet4!)."}
+- {id: cmp_fig1c_03_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f1c_03, printed: printed_fig1c_p_03, note: "SWAPPED: Fig. 1c [0.3] data gives p = 0.007912 (Sheet14), NOT 0.0018 printed on Fig. 1c (which is Fig. 2d Sheet5!)."}
+- {id: cmp_fig1d_01_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f1d_01, printed: printed_fig1d_p_01, note: "SWAPPED: Fig. 1d [0.1] data gives p = 0.033802 (Sheet15), NOT 0.0382 printed on Fig. 1d (which is Fig. 2e Sheet6!)."}
+- {id: cmp_fig1d_02_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f1d_02, printed: printed_fig1d_p_02, note: "SWAPPED: Fig. 1d [0.2] data gives p = 0.026163 (Sheet16), NOT 0.0150 printed on Fig. 1d (which is Fig. 2e Sheet7!)."}
+- {id: cmp_fig1d_03_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f1d_03, printed: printed_fig1d_p_03, note: "SWAPPED: Fig. 1d [0.3] data gives p = 0.021749 (Sheet17), NOT 0.0266 printed on Fig. 1d (which is Fig. 2e Sheet8!)."}
+- {id: cmp_fig1f_01_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f1f_01, printed: printed_fig1f_p_01, note: "SWAPPED: Fig. 1f [0.1] data gives p = 0.024161 (Sheet18), NOT 0.0392 printed on Fig. 1f (which is Fig. 2f Sheet9!)."}
+- {id: cmp_fig1f_02_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f1f_02, printed: printed_fig1f_p_02, note: "SWAPPED: Fig. 1f [0.2] data gives p = 0.016814 (Sheet19), NOT 0.0004 printed on Fig. 1f (which is Fig. 2f Sheet10!)."}
+- {id: cmp_fig1f_03_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f1f_03, printed: printed_fig1f_p_03, note: "SWAPPED: Fig. 1f [0.3] data gives p = 0.043513 (Sheet20), NOT 0.0364 printed on Fig. 1f (which is Fig. 2f Sheet11!)."}
+
+- {id: cmp_fig2d_01_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f2d_01, printed: printed_fig2d_p_01, note: "SWAPPED + 10x TYPO: Fig. 2d [0.1] data gives p = 0.018545 (Sheet3), NOT 0.0006 printed on Fig. 2d (which is a 10x typo of Fig. 1c Sheet12 = 0.006397!)."}
+- {id: cmp_fig2d_02_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f2d_02, printed: printed_fig2d_p_02, note: "SWAPPED: Fig. 2d [0.2] data gives p = 0.000925 (Sheet4), NOT 0.0034 printed on Fig. 2d (which is Fig. 1c Sheet13!)."}
+- {id: cmp_fig2d_03_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f2d_03, printed: printed_fig2d_p_03, note: "SWAPPED: Fig. 2d [0.3] data gives p = 0.001836 (Sheet5), NOT 0.0079 printed on Fig. 2d (which is Fig. 1c Sheet14!)."}
+- {id: cmp_fig2e_01_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f2e_01, printed: printed_fig2e_p_01, note: "SWAPPED: Fig. 2e [0.1] data gives p = 0.038234 (Sheet6), NOT 0.0338 printed on Fig. 2e (which is Fig. 1d Sheet15!)."}
+- {id: cmp_fig2e_02_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f2e_02, printed: printed_fig2e_p_02, note: "SWAPPED: Fig. 2e [0.2] data gives p = 0.015065 (Sheet7), NOT 0.0261 printed on Fig. 2e (which is Fig. 1d Sheet16!)."}
+- {id: cmp_fig2e_03_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f2e_03, printed: printed_fig2e_p_03, note: "SWAPPED: Fig. 2e [0.3] data gives p = 0.026628 (Sheet8), NOT 0.0217 printed on Fig. 2e (which is Fig. 1d Sheet17!)."}
+- {id: cmp_fig2f_01_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f2f_01, printed: printed_fig2f_p_01, note: "SWAPPED: Fig. 2f [0.1] data gives p = 0.039231 (Sheet9), NOT 0.0241 printed on Fig. 2f (which is Fig. 1f Sheet18!)."}
+- {id: cmp_fig2f_02_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f2f_02, printed: printed_fig2f_p_02, note: "SWAPPED: Fig. 2f [0.2] data gives p = 0.000472 (Sheet10), NOT 0.0168 printed on Fig. 2f (which is Fig. 1f Sheet19!)."}
+- {id: cmp_fig2f_03_own_data_vs_printed, purpose: reproduction, computed: comp_pv_f2f_03, printed: printed_fig2f_p_03, note: "SWAPPED: Fig. 2f [0.3] data gives p = 0.036426 (Sheet11), NOT 0.0435 printed on Fig. 2f (which is Fig. 1f Sheet20!)."}
+
+# Swapped verification checks (proving exact origin of all 18 printed p-values + 10x typo on Sheet12!)
+- {id: cmp_swap_f2d01_matches_f1c01, purpose: consistency, computed: comp_pv_f2d_01, printed: printed_fig1c_p_01}
+- {id: cmp_swap_f2d02_matches_f1c02, purpose: consistency, computed: comp_pv_f2d_02, printed: printed_fig1c_p_02}
+- {id: cmp_swap_f2d03_matches_f1c03, purpose: consistency, computed: comp_pv_f2d_03, printed: printed_fig1c_p_03}
+- {id: cmp_swap_f2e01_matches_f1d01, purpose: consistency, computed: comp_pv_f2e_01, printed: printed_fig1d_p_01}
+- {id: cmp_swap_f2e02_matches_f1d02, purpose: consistency, computed: comp_pv_f2e_02, printed: printed_fig1d_p_02, note: "Truncated from 0.015065 to 0.0150."}
+- {id: cmp_swap_f2e03_matches_f1d03, purpose: consistency, computed: comp_pv_f2e_03, printed: printed_fig1d_p_03}
+- {id: cmp_swap_f2f01_matches_f1f01, purpose: consistency, computed: comp_pv_f2f_01, printed: printed_fig1f_p_01}
+- {id: cmp_swap_f2f02_matches_f1f02, purpose: consistency, computed: comp_pv_f2f_02, printed: printed_fig1f_p_02, note: "Truncated from 0.000472 to 0.0004 (would round to 0.0005)."}
+- {id: cmp_swap_f2f03_matches_f1f03, purpose: consistency, computed: comp_pv_f2f_03, printed: printed_fig1f_p_03}
+- {id: cmp_swap_f1c01_vs_sheet12_stored, purpose: reproduction, computed: comp_pv_f1c_01, printed: sheet12_fig1c_p_01_stored, note: "Exact match to Sheet12 B12 = 0.006397 (which was misprinted 10x smaller as 0.0006 on Fig. 2d!)."}
+- {id: cmp_swap_f1c01_vs_printed_f2d01_10x_typo, purpose: consistency, computed: comp_pv_f1c_01, printed: printed_fig2d_p_01, note: "Even after swapping Fig. 1 and Fig. 2, Sheet12 = 0.006397 is 10.66x larger than 0.0006 printed on Fig. 2d."}
+- {id: cmp_swap_f1c02_matches_f2d02, purpose: consistency, computed: comp_pv_f1c_02, printed: printed_fig2d_p_02}
+- {id: cmp_swap_f1c03_matches_f2d03, purpose: consistency, computed: comp_pv_f1c_03, printed: printed_fig2d_p_03}
+- {id: cmp_swap_f1d01_matches_f2e01, purpose: consistency, computed: comp_pv_f1d_01, printed: printed_fig2e_p_01}
+- {id: cmp_swap_f1d02_matches_f2e02, purpose: consistency, computed: comp_pv_f1d_02, printed: printed_fig2e_p_02, note: "Truncated from 0.026163 to 0.0261."}
+- {id: cmp_swap_f1d03_matches_f2e03, purpose: consistency, computed: comp_pv_f1d_03, printed: printed_fig2e_p_03, note: "Truncated from 0.021749 to 0.0217."}
+- {id: cmp_swap_f1f01_matches_f2f01, purpose: consistency, computed: comp_pv_f1f_01, printed: printed_fig2f_p_01, note: "Truncated from 0.024161 to 0.0241 (fixing Sheet2 Q43 +1 bug shifts it to 0.03534)."}
+- {id: cmp_swap_f1f02_matches_f2f02, purpose: consistency, computed: comp_pv_f1f_02, printed: printed_fig2f_p_02}
+- {id: cmp_swap_f1f03_matches_f2f03, purpose: consistency, computed: comp_pv_f1f_03, printed: printed_fig2f_p_03}
+
+# ==============================================================================
+# 4. Fig. 3c & Fig. 3d cluster localization (Source_data.xlsx Sheet4)
+# ==============================================================================
+- {id: cmp_f3d_n_16_24, purpose: reproduction, computed: comp_f3d_n_16_24, printed: paper_fig3d_nguv_17to24}
+- {id: cmp_f3d_n_gt24, purpose: reproduction, computed: comp_f3d_n_gt24, printed: paper_fig3d_nguv_gt24}
+- {id: cmp_f3d_n_total, purpose: reproduction, computed: comp_f3d_n_total, printed: paper_fig3d_nguv_total}
+- {id: cmp_f3c_n_total, purpose: reproduction, computed: comp_f3c_n_total, printed: paper_fig3c_nguv_total}
+
+- id: cmp_f3c_n_alpha_only_vs_caption
+  purpose: reproduction
+  computed: comp_f3c_n_nofascin
+  printed: paper_fig3c_nguv_alpha_only
+  note: "SWAPPED CAPTION: Sheet4 NoFascin>16um has N = 80 (3+50+27), NOT 87 as printed in Fig. 3c caption."
+
+- id: cmp_f3c_n_alpha_fascin_vs_caption
+  purpose: reproduction
+  computed: comp_f3c_n_fascin
+  printed: paper_fig3c_nguv_alpha_fascin
+  note: "SWAPPED CAPTION: Sheet4 fascin (>16 um) has N = 87 (= 61 + 26, identical to Fig. 3d), NOT 80 as printed in Fig. 3c caption."
+
+- {id: cmp_f3c_n_swap_check_87, purpose: consistency, computed: comp_f3c_n_fascin, printed: paper_fig3c_nguv_alpha_only, note: "Proves caption 87 belongs to alpha-actinin+fascin."}
+- {id: cmp_f3c_n_swap_check_80, purpose: consistency, computed: comp_f3c_n_nofascin, printed: paper_fig3c_nguv_alpha_fascin, note: "Proves caption 80 belongs to alpha-actinin without fascin."}
+- {id: cmp_f3_raw_16_25_vs_61, purpose: consistency, computed: comp_f3_raw_n_16_25, printed: paper_fig3d_nguv_17to24, note: "Diagnostic: raw table B4:G6 sums to 62 (11 center, 42 pole, 9 none), differing from hardcoded K4=34, L4=16 (n=61)."}
+- {id: cmp_f3_raw_gt25_vs_26, purpose: consistency, computed: comp_f3_raw_n_gt25, printed: paper_fig3d_nguv_gt24, note: "Diagnostic: raw table B4:G6 >25 um sums to 11 (6,3,2), whereas hardcoded row 6 (J6:L6 = 15,7,4) gives 26 for >24 um."}
+- {id: cmp_f3c_fascin_center_stored, purpose: reproduction, computed: comp_f3c_fascin_center, printed: sheet4_fig3c_fascin_center_stored}
+- {id: cmp_f3c_nofascin_pole_stored, purpose: reproduction, computed: comp_f3c_nofascin_periph, printed: sheet4_fig3c_nofascin_pole_stored}
+- {id: cmp_f3d_gt24_center_stored, purpose: reproduction, computed: comp_f3d_gt24_center, printed: sheet4_fig3d_gt24_center_stored}
+
+# ==============================================================================
+# 5. Fig4c-d.mat profile verifications (Fig. 4c, Fig. 4d, Supp. Fig. 8e)
+# ==============================================================================
+- {id: cmp_mat_fig4c_npoints, purpose: reproduction, computed: comp_mat_4c_n, printed: mat_fig4c_npoints}
+- {id: cmp_mat_fig4c_alpha_peak, purpose: reproduction, computed: comp_mat_4c_alpha_peak, printed: mat_fig4c_alpha_peak_norm}
+- {id: cmp_mat_fig4c_fascin_peak, purpose: reproduction, computed: comp_mat_4c_fascin_peak, printed: mat_fig4c_fascin_peak_norm}
+- {id: cmp_mat_fig4d_npoints, purpose: reproduction, computed: comp_mat_4d_n, printed: mat_fig4d_npoints}
+- {id: cmp_mat_s8e_npoints, purpose: reproduction, computed: comp_mat_s8e_n, printed: mat_s8e_ring_npoints}
+- {id: cmp_mat_s8e_actin_peak, purpose: reproduction, computed: comp_mat_s8e_actin_peak, printed: mat_s8e_actin_peak_norm}

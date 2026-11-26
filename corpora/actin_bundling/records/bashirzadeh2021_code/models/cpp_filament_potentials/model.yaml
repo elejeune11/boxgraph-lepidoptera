@@ -1,0 +1,24 @@
+id: cpp_filament_potentials
+name: Line-by-line Python port of C++ filament spring stretching and harmonic hinge bending (src/spring.cpp, src/filament.cpp, src/potentials.cpp)
+role: model
+stated:
+  file: src/potentials.cpp
+  lines: "91-117"
+  quote: "result.energy = 0.5 * kb * theta * theta;"
+  where: "src/spring.cpp:54-58,185-188; src/filament.cpp:320-345; src/potentials.cpp:91-132; prog/network.cpp:449; include/globals.h:61"
+equation: "U_stretch = 0.5 * k_s * (l - l_0)^2; F_stretch = k_s * (l - l_0); k_b = kappa_b / l_0; U_bend = 0.5 * k_b * theta^2; tau_bend = k_b * theta * sin(theta) / max(sin(theta), maxSmallAngle)"
+inputs:
+  k_s: {quantity: link_stretching_stiffness, unit: pN/um}
+  l_0: {quantity: filament_link_length, unit: um}
+  l_cur: {quantity: filament_link_length, unit: um}
+  kappa_b: {quantity: polymer_bending_modulus, unit: pN*um^2}
+  theta: {quantity: filament_pair_angle, unit: rad}
+  max_small_angle: {quantity: small_angle_clamp, unit: dimensionless}
+outputs:
+  U_stretch: {quantity: potential_energy, unit: pN*um}
+  F_stretch: {quantity: force, unit: pN}
+  k_b: {quantity: link_bending_stiffness, unit: pN*um}
+  U_bend: {quantity: potential_energy, unit: pN*um}
+  tau_bend: {quantity: torque, unit: pN*um}
+settings: {}
+stochastic: false

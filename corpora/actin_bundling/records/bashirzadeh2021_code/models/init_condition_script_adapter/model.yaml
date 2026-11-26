@@ -1,0 +1,40 @@
+id: init_condition_script_adapter
+name: Live Python adapter executing unmodified aster_initial_condition_grid_conda_freeze.py and python/output.py
+role: processing
+software: true
+stated:
+  file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+  lines: "27-286"
+  quote: "for scl in range(1,5,1):"
+  where: "crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py:18-286 & python/output.py:329-414,530-557"
+equation: "Executes the unmodified initial-condition and SLURM batch generator in memory up to condition target_hh, parses actin/fascin/alpha outputs via unmodified python/output.py (actins2coords, motors2coords), and measures empirical initial filament geometry, t=0 confinement energy, and crosslinker spatial distribution statistics"
+inputs:
+  target_hh: {quantity: condition_index, unit: dimensionless}
+  r_c: {quantity: confinement_radius, unit: um}
+  k_c: {quantity: confinement_stiffness, unit: pN/um}
+outputs:
+  n_filaments: {quantity: polymer_count, unit: dimensionless}
+  n_beads_per_fil: {quantity: beads_per_polymer, unit: dimensionless}
+  n_replicates: {quantity: replicate_count, unit: dimensionless}
+  n_fascin: {quantity: crosslinker_count, unit: dimensionless}
+  n_alpha: {quantity: crosslinker_count, unit: dimensionless}
+  mean_fascin_len: {quantity: crosslinker_length, unit: um}
+  mean_alpha_len: {quantity: crosslinker_length, unit: um}
+  actin_center_std_x: {quantity: displacement_stddev, unit: um}
+  actin_mean_hinge_angle: {quantity: mean_hinge_bend_angle, unit: rad}
+  actin_frac_bend_gt_pi4: {quantity: fraction, unit: dimensionless}
+  actin_frac_shared_arm: {quantity: fraction, unit: dimensionless}
+  actin_frac_beads_outside: {quantity: fraction_beads_outside, unit: dimensionless}
+  actin_mean_U_confine: {quantity: potential_energy, unit: pN*um}
+  fascin_global_density: {quantity: crosslinker_areal_density, unit: 1/um^2}
+  fascin_center_density: {quantity: crosslinker_areal_density, unit: 1/um^2}
+  fascin_edge_density: {quantity: crosslinker_areal_density, unit: 1/um^2}
+  fascin_ex2: {quantity: position_variance, unit: um^2}
+  fascin_ey2: {quantity: position_variance, unit: um^2}
+  fascin_anisotropy_x2_y2: {quantity: anisotropy_ratio, unit: dimensionless}
+  fascin_frac_in_rc_box: {quantity: fraction, unit: dimensionless}
+  cli_fascin_kon_koff_ratio: {quantity: crosslinker_affinity_ratio, unit: dimensionless}
+settings:
+  seed: 42
+  n_seeds: 2
+stochastic: true

@@ -1,0 +1,269 @@
+# Cross-record validations of winkelman2016's cooperative kinetic lattice models against
+# measurements in the six ready partner records (claessens2008, freedman2019, freedman2019_code,
+# nastkolb2022, pelletier2003, shin2009).
+#
+# Audit summary across all six pairs:
+# 1. freedman2019 + winkelman2016:
+#    - 4 independent validations (`purpose: validation`): Winkelman's rate-independent,
+#      constant-barrier KMC model (eps = 4.8 k_B T, a = 37 nm, N = 400, r = 1.0, predicting
+#      symmetric l_F = l_alpha = 3.74 um [exp_fit] / 3.49 um [mean] independent of [actin])
+#      tested against Freedman et al.'s (2019, Fig. 4B) NEW independent TIRFM measurements of
+#      fascin and alpha-actinin domain lengths at 1.5 uM (46.99 nm/s) and 0.75 uM (22.15 nm/s)
+#      labeled actin (150 nM fascin + 150 nM alpha-actinin, r = 1.0). All 4 are decisively
+#      refuted (`not reproduced`), directly quantifying the polymerization-rate dependence and
+#      6.1x low-actin symmetry breaking (1.35 vs 8.29 um) that motivated Freedman et al. (2019).
+#    - 1 `purpose: fit_quality` cross-check against `freedman2019/fig5b_expt_fascin_datum`
+#      (all 10 unshifted positive-r Ref. 16 points re-plotted in Freedman Fig. 5B, exposing the
+#      sole failure at the (0.179, 0.0) zero-domain point).
+#    - Excluded: `freedman2019/figS4c_fascin_datum` and `figS4c_alpha_actinin_datum` (unlabeled
+#      actin + labeled alpha-actinin), because Freedman et al. (p. 13 / SI-7 caption) explicitly
+#      caution that cross-linker affinities differ from Winkelman (2016) under those labeling
+#      conditions (logged in `q_freedman2019_fig4b_refutes_rate_independence_and_figs4c_excluded`).
+# 2. freedman2019_code + winkelman2016:
+#    - 2 `purpose: fit_quality` checks (`kmc_domain_length_exp_fit` and `kmc_domain_length_mean`
+#      at eps = 4.8) and 1 zero-free-parameter `purpose: validation` null baseline (`eps = 0`)
+#      evaluated against `freedman2019_code/kmc_winkelman_expt_table` — the exact 9-point
+#      unshifted author source table for Winkelman Fig. 3H embedded in `kmc.ipynb` Cell 9
+#      (removing both the +0.019 Illustrator x-shift of Fig. 3H and the omitted (0.17895, 0.0)
+#      point; both eps = 4.8 readouts improve from `not reproduced` on Fig. 3H to `close` with
+#      7/9 reproduced and 0 not reproduced!).
+# 3. claessens2008 + winkelman2016: 0 validations (single-species fascin TEM diameters, SAXS
+#    spacing/overtwist, and droplet counts; none predicted by winkelman2016's models; see
+#    `q_claessens2008_no_relation_and_no_validation`).
+# 4. shin2009 + winkelman2016: 0 validations (single-species fascin/espin SAXS peaks and
+#    helical overtwist; none predicted by winkelman2016's models; see
+#    `q_shin2009_no_relation_and_no_validation`).
+# 5. pelletier2003 + winkelman2016: 0 validations (single-species alpha-actinin SAXS peaks,
+#    widths, mesh size, and bundle diameter; none predicted by winkelman2016's models; see
+#    `q_pelletier2003_square_lattice_30nm_vs_33nm_and_no_validation`).
+# 6. nastkolb2022 + winkelman2016: 0 validations (2D VASP lipid-bilayer bundle widths, pore
+#    sizes, and FRAP traces; none predicted by winkelman2016's models; see
+#    `q_nastkolb2022_no_relation_and_no_validation`).
+
+# ==========================================================================
+# Independent validations against Freedman et al. (2019) Fig. 4B TIRF data
+# ==========================================================================
+
+- id: val_kmc_expfit_vs_freedman_fig4b_fascin
+  model: kmc_domain_length_vs_actin
+  inputs:
+    l_dom_const: l_F_expfit_r1p0
+  sweep:
+    c_actin: "freedman2019/fig4b_fascin_datum"
+  output: l_dom
+  against: "freedman2019/fig4b_fascin_datum"
+  purpose: validation
+  quantities:
+    "freedman2019/molar_concentration": actin_concentration
+    "freedman2019/domain_length": domain_length
+  conditions_ok: >
+    Freedman et al. (2019, Fig. 4A-B, p. 4 / 16195) use the exact same two-color TIRFM assay
+    (rabbit skeletal muscle labeled actin, labeled human fascin-1, unlabeled human alpha-actinin-4)
+    as Winkelman et al. (2016, Fig. 3H), at equimolar 150 nM fascin + 150 nM alpha-actinin
+    (r = [fascin]/[alpha-actinin] = 1.0) and actin concentrations 1.5 uM (matching Winkelman's
+    1.5 uM actin) and 0.75 uM. Because Winkelman et al. (Fig. S3B caption, p. 18) state that
+    actin filament growth is "not part of the model" and parameterize domain length solely by
+    the ratio r = [Fascin]/[alpha-Actinin], Winkelman's KMC model (eps = 4.8 k_B T, a = 37 nm,
+    N = 400, r = 1.0) predicts the same l_F = 3.74 um at both actin concentrations.
+  basis: >
+    Freedman et al. (2019, p. 4 / 16195, Fig. 4B) performed new independent TIRF measurements at
+    1.5 uM (46.99 +- 3.62 nm/s) and 0.75 uM (22.15 +- 3.78 nm/s) actin specifically to test
+    whether fascin and alpha-actinin domain lengths depend on actin polymerization rate, in
+    contrast to Winkelman et al.'s (2016, Fig. S3B caption p. 18; Fig. 3H p. 5) constant-barrier
+    rate-independent KMC model (eps = 4.8 k_B T fitted to Fig. 3H, exponential-fit readout
+    l_F = 3.74 um at r = 1.0).
+  note: >
+    Expected verdict: not reproduced (0/2). Winkelman's rate-independent exp-fit KMC predicts
+    l_F = 3.74 um at both actin concentrations, strongly overpredicting Freedman's independent
+    Fig. 4B fascin measurements at both 1.5 uM (2.64 +- 0.20 um; +5.5 SEM) and 0.75 uM
+    (1.35 +- 0.057 um; +42 SEM).
+
+- id: val_kmc_expfit_vs_freedman_fig4b_actinin
+  model: kmc_domain_length_vs_actin
+  inputs:
+    l_dom_const: l_alpha_expfit_r1p0
+  sweep:
+    c_actin: "freedman2019/fig4b_alpha_actinin_datum"
+  output: l_dom
+  against: "freedman2019/fig4b_alpha_actinin_datum"
+  purpose: validation
+  quantities:
+    "freedman2019/molar_concentration": actin_concentration
+    "freedman2019/domain_length": domain_length
+  conditions_ok: >
+    Freedman et al. (2019, Fig. 4A-B, p. 4 / 16195) use the exact same two-color TIRFM assay
+    as Winkelman et al. (2016, Fig. 3H) at equimolar 150 nM fascin + 150 nM alpha-actinin
+    (r = 1.0) and actin concentrations 1.5 uM and 0.75 uM; alpha-actinin domains are measured
+    from double-actin regions devoid of fascin fluorescence. Winkelman's symmetric,
+    rate-independent KMC model (eps = 4.8 k_B T, r = 1.0) predicts l_alpha = 3.73 um across
+    both actin concentrations.
+  basis: >
+    Tests Winkelman et al.'s (2016, Fig. S3C p. 17-18; SI pp. 27-28) symmetric,
+    polymerization-rate-independent KMC prediction for alpha-actinin domains (l_alpha = 3.73 um
+    at r = 1.0, eps = 4.8 k_B T, exp-fit readout) against Freedman et al.'s (2019, Fig. 4B,
+    p. 4 / 16195) independent TIRFM measurements at 1.5 uM and 0.75 uM actin.
+  note: >
+    Expected verdict: not reproduced (0/2). Winkelman's symmetric KMC overpredicts 1.5 uM
+    alpha-actinin domains (3.73 vs 2.21 +- 0.15 um; +10 SEM) and severely underpredicts the
+    3.7x expansion of alpha-actinin domains at slow 0.75 uM polymerization (3.73 vs 8.29 +- 0.15
+    um; -30 SEM), failing to capture both polymerization-rate sensitivity and the 6.1x low-actin
+    alpha-actinin/fascin asymmetry.
+
+- id: val_kmc_mean_vs_freedman_fig4b_fascin
+  model: kmc_domain_length_vs_actin
+  inputs:
+    l_dom_const: l_F_mean_r1p0
+  sweep:
+    c_actin: "freedman2019/fig4b_fascin_datum"
+  output: l_dom
+  against: "freedman2019/fig4b_fascin_datum"
+  purpose: validation
+  quantities:
+    "freedman2019/molar_concentration": actin_concentration
+    "freedman2019/domain_length": domain_length
+  conditions_ok: >
+    Same TIRFM assay conditions as val_kmc_expfit_vs_freedman_fig4b_fascin (Freedman 2019
+    Fig. 4B: 150 nM fascin + 150 nM alpha-actinin, r = 1.0, at 1.5 uM and 0.75 uM labeled
+    actin), testing Winkelman's SI p. 28 direct arithmetic-mean KMC readout (l_F = 3.49 um)
+    rather than the Fig. S3C exponential-fit readout (3.74 um).
+  basis: >
+    Confirms that the refutation of Winkelman et al.'s (2016) rate-independent KMC model by
+    Freedman et al.'s (2019, Fig. 4B) independent TIRFM data is not an artifact of the
+    exponential-fit readout: SI p. 28's direct arithmetic-mean readout (`kmc_domain_length_mean`,
+    l_F = 3.49 um at r = 1.0, eps = 4.8 k_B T) likewise fails at both 1.5 uM and 0.75 uM actin.
+  note: >
+    Expected verdict: not reproduced (0/2; 3.49 um vs 2.64 +- 0.20 um [+4.3 SEM] and
+    1.35 +- 0.057 um [+37 SEM]).
+
+- id: val_kmc_mean_vs_freedman_fig4b_actinin
+  model: kmc_domain_length_vs_actin
+  inputs:
+    l_dom_const: l_alpha_mean_r1p0
+  sweep:
+    c_actin: "freedman2019/fig4b_alpha_actinin_datum"
+  output: l_dom
+  against: "freedman2019/fig4b_alpha_actinin_datum"
+  purpose: validation
+  quantities:
+    "freedman2019/molar_concentration": actin_concentration
+    "freedman2019/domain_length": domain_length
+  conditions_ok: >
+    Same TIRFM assay conditions as val_kmc_expfit_vs_freedman_fig4b_actinin (Freedman 2019
+    Fig. 4B: 150 nM fascin + 150 nM alpha-actinin, r = 1.0, at 1.5 uM and 0.75 uM labeled
+    actin), testing Winkelman's SI p. 28 direct arithmetic-mean KMC readout (l_alpha = 3.49 um).
+  basis: >
+    Tests Winkelman et al.'s (2016, SI p. 28) direct arithmetic-mean KMC prediction for
+    alpha-actinin domains (l_alpha = 3.49 um at r = 1.0, eps = 4.8 k_B T) against Freedman
+    et al.'s (2019, Fig. 4B) independent TIRFM measurements at 1.5 uM and 0.75 uM actin.
+  note: >
+    Expected verdict: not reproduced (0/2; 3.49 um vs 2.21 +- 0.15 um [+8.5 SEM] and
+    8.29 +- 0.15 um [-32 SEM]).
+
+# ==========================================================================
+# Cross-record fit-quality & null-baseline checks on the exact unshifted
+# author source table (freedman2019_code) and 10-point Fig. 5B re-plot
+# ==========================================================================
+
+- id: val_kmc_expfit_vs_freedman_code_expt_table
+  model: kmc_domain_length_exp_fit
+  inputs:
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  sweep:
+    r: "freedman2019_code/kmc_winkelman_expt_table"
+  settings: {n_sites: 400, n_sims: 5000, bin_width_sites: 10, seed: 0}
+  replicates: 5
+  output: l_F
+  against: "freedman2019_code/kmc_winkelman_expt_table"
+  purpose: fit_quality
+  quantities:
+    "freedman2019_code/concentration_ratio": crosslinker_on_rate_ratio
+    "freedman2019_code/domain_length": domain_length
+  basis: >
+    `freedman2019_code/kmc_winkelman_expt_table` (xlink_sorting_paper/kmc.ipynb Cell 9
+    `expt_data_txt`, labeled "#winkelman curr biol 2016 paper") preserves the exact unshifted
+    9-point author source table for Winkelman et al. (2016) Fig. 3H (without the constant
+    +0.019 x-shift / -0.04 um y-shift present in published Fig. 3H, and omitting the
+    (0.17895, 0.0) zero-domain point). Because eps = 4.8 k_B T was fitted to these Fig. 3H
+    measurements (SI p. 28), this is entered as purpose: fit_quality to evaluate Winkelman's
+    exp-fit KMC on the exact unshifted author numbers.
+  note: >
+    Improves from `not reproduced` on shifted 11-point Fig. 3H (`cmp_expfit_fig3h_data`) to
+    `close` (7/9 reproduced within 1 SE, 2/9 close at r = 0.263 [1.43 SE] and r = 0.789
+    [1.50 SE], 0 not reproduced).
+
+- id: val_kmc_mean_vs_freedman_code_expt_table
+  model: kmc_domain_length_mean
+  inputs:
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  sweep:
+    r: "freedman2019_code/kmc_winkelman_expt_table"
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  output: l_F
+  against: "freedman2019_code/kmc_winkelman_expt_table"
+  purpose: fit_quality
+  quantities:
+    "freedman2019_code/concentration_ratio": crosslinker_on_rate_ratio
+    "freedman2019_code/domain_length": domain_length
+  basis: >
+    Evaluates Winkelman et al.'s (2016, SI p. 28) direct arithmetic-mean KMC readout
+    (eps = 4.8 k_B T, fitted to Fig. 3H) on the exact 9-point unshifted author source table
+    in `freedman2019_code/kmc_winkelman_expt_table` (purpose: fit_quality).
+  note: >
+    Yields `close` (7/9 reproduced within 1 SE, 2/9 close at r = 0.263 [1.34 SE] and r = 0.789
+    [1.35 SE], 0 not reproduced), confirming that on the 9-point table without the omitted
+    (0.17895, 0.0) point both KMC readouts fit within 1.5 SE across all points.
+
+- id: val_kmc_simple_vs_freedman_code_expt_table
+  model: kmc_domain_length_mean
+  inputs:
+    eps_kBT: eps_barrier_simple
+    a: a_binding_site_spacing
+  sweep:
+    r: "freedman2019_code/kmc_winkelman_expt_table"
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  output: l_F
+  against: "freedman2019_code/kmc_winkelman_expt_table"
+  purpose: validation
+  quantities:
+    "freedman2019_code/concentration_ratio": crosslinker_on_rate_ratio
+    "freedman2019_code/domain_length": domain_length
+  basis: >
+    Evaluates Winkelman et al.'s (2016, Fig. 3H dashed blue line) zero-free-parameter simple
+    mass-action competition null model (eps = 0, no parameter fitted to the data) against the
+    exact 9-point unshifted author source table `freedman2019_code/kmc_winkelman_expt_table`.
+  note: >
+    Decisively rejected (`not reproduced`, 0/9; predicts 0.042-0.095 um vs measured 0.56-6.23 um).
+
+- id: val_kmc_expfit_vs_freedman_fig5b_ref16
+  model: kmc_domain_length_exp_fit
+  inputs:
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  sweep:
+    r: "freedman2019/fig5b_expt_fascin_datum"
+  settings: {n_sites: 400, n_sims: 5000, bin_width_sites: 10, seed: 0}
+  replicates: 5
+  output: l_F
+  against: "freedman2019/fig5b_expt_fascin_datum"
+  purpose: fit_quality
+  quantities:
+    "freedman2019/concentration_ratio": crosslinker_on_rate_ratio
+    "freedman2019/domain_length": domain_length
+  conditions_ok: >
+    `freedman2019/fig5b_expt_fascin_datum` re-plots all 10 positive-r experimental fascin
+    domain-length points from Winkelman et al. (2016) Fig. 3H (matching plots.nb's 10-point
+    unshifted table, including the zero-length point (0.17895, 0.0) omitted from kmc.ipynb
+    Cell 9). The physical conditions attached in freedman2019 (polymerization_rate = 40 nm/s,
+    L_p = 17 um, Delta l_xl = 27 nm, L_0 = 15 um) describe the same Winkelman (2016) assay.
+  basis: >
+    Contrasts `val_kmc_expfit_vs_freedman_code_expt_table` (9 points, `close`) with the full
+    10-point unshifted Ref. 16 dataset plotted in Freedman et al. (2019, Fig. 5B, p. 5 / 16196),
+    where eps = 4.8 k_B T was fitted to these same measurements (purpose: fit_quality).
+  note: >
+    Verdict: `not reproduced` solely because of the single (0.1787, -0.008 +- 0 um) zero-domain
+    point omitted from `kmc.ipynb` (where KMC predicts 0.80 um); the remaining 9 points match
+    `val_kmc_expfit_vs_freedman_code_expt_table` (7 reproduced, 2 close).

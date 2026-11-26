@@ -1,0 +1,391 @@
+# ==========================================================================
+# Virtual lattice bundle length and Fig. S3B rate ratios
+# ==========================================================================
+
+- id: run_bundle_length
+  model: bundle_lattice_length
+  inputs:
+    N: N_lattice_sites
+    a: a_binding_site_spacing
+  outputs:
+    L: L_bundle_calc
+
+- id: run_r_S3B_top
+  model: rate_ratio_r
+  inputs:
+    k_on_F: k_on_F_S3B_top
+    k_on_alpha: k_on_alpha_S3B_top
+  outputs:
+    r: r_S3B_top_calc
+
+- id: run_r_S3B_mid
+  model: rate_ratio_r
+  inputs:
+    k_on_F: k_on_F_S3B_mid
+    k_on_alpha: k_on_alpha_S3B_mid
+  outputs:
+    r: r_S3B_mid_calc
+
+- id: run_r_S3B_bot
+  model: rate_ratio_r
+  inputs:
+    k_on_F: k_on_F_S3B_bot
+    k_on_alpha: k_on_alpha_S3B_bot
+  outputs:
+    r: r_S3B_bot_calc
+
+# ==========================================================================
+# Cooperative kinetic model — exponential-fit readout (Fig. S3C caption p. 18)
+# ==========================================================================
+
+- id: run_kmc_expfit_r0p5
+  model: kmc_domain_length_exp_fit
+  inputs:
+    r: r_S3C_0p5
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  settings: {n_sites: 400, n_sims: 5000, bin_width_sites: 10, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_expfit_r0p5
+    l_alpha: l_alpha_expfit_r0p5
+
+- id: run_kmc_expfit_r1p0
+  model: kmc_domain_length_exp_fit
+  inputs:
+    r: r_S3C_1p0
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  settings: {n_sites: 400, n_sims: 5000, bin_width_sites: 10, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_expfit_r1p0
+    l_alpha: l_alpha_expfit_r1p0
+
+- id: run_kmc_expfit_r2p0
+  model: kmc_domain_length_exp_fit
+  inputs:
+    r: r_S3C_2p0
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  settings: {n_sites: 400, n_sims: 5000, bin_width_sites: 10, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_expfit_r2p0
+    l_alpha: l_alpha_expfit_r2p0
+
+- id: run_kmc_expfit_coop_50x
+  model: kmc_domain_length_exp_fit
+  inputs:
+    r: r_50x_eval_added
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  settings: {n_sites: 400, n_sims: 5000, bin_width_sites: 10, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_expfit_coop_50x
+    l_alpha: l_alpha_expfit_coop_50x
+
+# ==========================================================================
+# Cooperative kinetic model — direct arithmetic mean readout (SI p. 28)
+# ==========================================================================
+
+- id: run_kmc_mean_r0p5
+  model: kmc_domain_length_mean
+  inputs:
+    r: r_S3C_0p5
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_mean_r0p5
+    l_alpha: l_alpha_mean_r0p5
+
+- id: run_kmc_mean_r1p0
+  model: kmc_domain_length_mean
+  inputs:
+    r: r_S3C_1p0
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_mean_r1p0
+    l_alpha: l_alpha_mean_r1p0
+
+- id: run_kmc_mean_r2p0
+  model: kmc_domain_length_mean
+  inputs:
+    r: r_S3C_2p0
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_mean_r2p0
+    l_alpha: l_alpha_mean_r2p0
+
+- id: run_kmc_mean_coop_50x
+  model: kmc_domain_length_mean
+  inputs:
+    r: r_50x_eval_added
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_mean_coop_50x
+    l_alpha: l_alpha_mean_coop_50x
+
+- id: run_kmc_mean_simple_50x
+  model: kmc_domain_length_mean
+  inputs:
+    r: r_50x_eval_added
+    eps_kBT: eps_barrier_simple
+    a: a_binding_site_spacing
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_mean_simple_50x
+    l_alpha: l_alpha_mean_simple_50x
+
+# ==========================================================================
+# Reconstructed exact infinite-lattice asymptote (N -> infinity)
+# ==========================================================================
+
+- id: run_kmc_inf_r0p5
+  model: kmc_infinite_lattice_limit
+  inputs:
+    r: r_S3C_0p5
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  outputs:
+    l_F: l_F_inf_r0p5
+    l_alpha: l_alpha_inf_r0p5
+
+- id: run_kmc_inf_r1p0
+  model: kmc_infinite_lattice_limit
+  inputs:
+    r: r_S3C_1p0
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  outputs:
+    l_F: l_F_inf_r1p0
+    l_alpha: l_alpha_inf_r1p0
+
+- id: run_kmc_inf_r2p0
+  model: kmc_infinite_lattice_limit
+  inputs:
+    r: r_S3C_2p0
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  outputs:
+    l_F: l_F_inf_r2p0
+    l_alpha: l_alpha_inf_r2p0
+
+- id: run_kmc_inf_coop_50x
+  model: kmc_infinite_lattice_limit
+  inputs:
+    r: r_50x_eval_added
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  outputs:
+    l_F: l_F_inf_coop_50x
+    l_alpha: l_alpha_inf_coop_50x
+
+- id: run_kmc_inf_simple_50x
+  model: kmc_infinite_lattice_limit
+  inputs:
+    r: r_50x_eval_added
+    eps_kBT: eps_barrier_simple
+    a: a_binding_site_spacing
+  outputs:
+    l_F: l_F_inf_simple_50x
+    l_alpha: l_alpha_inf_simple_50x
+
+# ==========================================================================
+# Cooperative vs simple mass-action run-length enhancement (~50x claim, p. 7)
+# ==========================================================================
+
+- id: run_ratio_coop_mean
+  model: cooperativity_length_ratio
+  inputs:
+    l_coop: l_F_mean_coop_50x
+    l_simple: l_F_mean_simple_50x
+  outputs:
+    R: R_coop_mean_calc
+
+- id: run_ratio_coop_expfit_over_mean
+  model: cooperativity_length_ratio
+  inputs:
+    l_coop: l_F_expfit_coop_50x
+    l_simple: l_F_mean_simple_50x
+  outputs:
+    R: R_coop_expfit_over_mean_calc
+
+- id: run_ratio_coop_inf
+  model: cooperativity_length_ratio
+  inputs:
+    l_coop: l_F_inf_coop_50x
+    l_simple: l_F_inf_simple_50x
+  outputs:
+    R: R_coop_inf_calc
+
+# ==========================================================================
+# Single-molecule residence times tau = 1 / k_off (Fig. S5D-E pp. 21-22)
+# ==========================================================================
+
+- id: run_tau_fascin_control
+  model: residence_time_from_koff
+  inputs:
+    k_off: k_off_fascin_control
+  outputs:
+    tau: tau_fascin_control_calc
+
+- id: run_tau_fascin_domains
+  model: residence_time_from_koff
+  inputs:
+    k_off: k_off_fascin_domains
+  outputs:
+    tau: tau_fascin_domains_calc
+
+- id: run_tau_actinin_control
+  model: residence_time_from_koff
+  inputs:
+    k_off: k_off_actinin_control
+  outputs:
+    tau: tau_actinin_control_calc
+
+- id: run_tau_actinin_domains
+  model: residence_time_from_koff
+  inputs:
+    k_off: k_off_actinin_domains
+  outputs:
+    tau: tau_actinin_domains_calc
+
+# ==========================================================================
+# Illustrative filament growth speed (Fig. S3B caption p. 18) &
+# Trailing barbed-end elongation rate reduction (Fig. S1B & Main Text p. 4)
+# ==========================================================================
+
+- id: run_filament_growth_S3B
+  model: filament_growth_speed
+  inputs:
+    k_elong: k_elong_S3B_illustrative
+    d_sub: d_actin_subunit_added
+  outputs:
+    v: v_elong_S3B_calc
+
+- id: run_trailing_barbed_end_fascin
+  model: trailing_barbed_end_relative_rate
+  inputs:
+    v_leading: v_elong_leading_S1B
+    v_trailing: v_elong_trailing_fascin_S1B
+  outputs:
+    f_rel: f_rel_trailing_fascin_calc
+    f_red: f_red_trailing_fascin_calc
+
+# ==========================================================================
+# Sweeps over digitized Fig. 3H model curves and experimental measurements
+# ==========================================================================
+
+- id: run_kmc_expfit_fig3h_coop
+  model: kmc_domain_length_exp_fit
+  inputs:
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  sweep:
+    r: d_fig3h_coop_model
+  settings: {n_sites: 400, n_sims: 5000, bin_width_sites: 10, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_expfit_fig3h_coop
+    l_alpha: l_alpha_expfit_fig3h_coop
+
+- id: run_kmc_mean_fig3h_coop
+  model: kmc_domain_length_mean
+  inputs:
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  sweep:
+    r: d_fig3h_coop_model
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_mean_fig3h_coop
+    l_alpha: l_alpha_mean_fig3h_coop
+
+- id: run_kmc_inf_fig3h_coop
+  model: kmc_infinite_lattice_limit
+  inputs:
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  sweep:
+    r: d_fig3h_coop_model
+  outputs:
+    l_F: l_F_inf_fig3h_coop
+    l_alpha: l_alpha_inf_fig3h_coop
+
+- id: run_kmc_mean_fig3h_simple
+  model: kmc_domain_length_mean
+  inputs:
+    eps_kBT: eps_barrier_simple
+    a: a_binding_site_spacing
+  sweep:
+    r: d_fig3h_simple_model
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_mean_fig3h_simple
+    l_alpha: l_alpha_mean_fig3h_simple
+
+- id: run_kmc_inf_fig3h_simple
+  model: kmc_infinite_lattice_limit
+  inputs:
+    eps_kBT: eps_barrier_simple
+    a: a_binding_site_spacing
+  sweep:
+    r: d_fig3h_simple_model
+  outputs:
+    l_F: l_F_inf_fig3h_simple
+    l_alpha: l_alpha_inf_fig3h_simple
+
+- id: run_kmc_expfit_fig3h_data
+  model: kmc_domain_length_exp_fit
+  inputs:
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  sweep:
+    r: d_fig3h_data
+  settings: {n_sites: 400, n_sims: 5000, bin_width_sites: 10, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_expfit_fig3h_data
+    l_alpha: l_alpha_expfit_fig3h_data
+
+- id: run_kmc_mean_fig3h_data
+  model: kmc_domain_length_mean
+  inputs:
+    eps_kBT: eps_barrier_coop
+    a: a_binding_site_spacing
+  sweep:
+    r: d_fig3h_data
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_mean_fig3h_data
+    l_alpha: l_alpha_mean_fig3h_data
+
+- id: run_kmc_mean_fig3h_data_simple
+  model: kmc_domain_length_mean
+  inputs:
+    eps_kBT: eps_barrier_simple
+    a: a_binding_site_spacing
+  sweep:
+    r: d_fig3h_data
+  settings: {n_sites: 400, n_sims: 5000, seed: 0}
+  replicates: 5
+  outputs:
+    l_F: l_F_mean_fig3h_data_simple
+    l_alpha: l_alpha_mean_fig3h_data_simple

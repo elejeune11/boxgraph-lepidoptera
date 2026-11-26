@@ -1,0 +1,59 @@
+id: afines_config_derived_quantities
+name: Derived geometric, kinetic, hydrodynamic, and output-cadence quantities from AFINES C++ and GUV config/script formulas
+role: processing
+stated:
+  file: prog/network.cpp
+  lines: "379-462"
+  quote: "double link_bending_stiffness    = polymer_bending_modulus / link_length;"
+  where: "prog/network.cpp:379-380,449,460; src/bead.cpp:20-22; src/filament.cpp:67; src/motor.cpp:35-36; aster_initial_condition_grid_conda_freeze.py:43-45,54-55,68-69"
+equation: "n_fil = round(pi*r_c^2*fil_dens); n_xl = round(pi*r_c^2*rho); L_f = (n_beads - 1)*l_link; k_b = kappa_b/l_link; L_p = kappa_b/kT; N_steps = tfinal/dt; n_bw_print = floor(tfinal/(dt*nframes)); dt_frame = tfinal/nframes; xgrid = round(grid_factor*xrange); K_xl = (k_on/scl)/(k_off/scl); dF_bind = -kT*ln(K_xl); gamma = 6*pi*vis*r; D = kT/gamma; bd_pref = sqrt(kT/(2*gamma*dt))"
+inputs:
+  xrange: {quantity: simulation_box_length, unit: um}
+  grid_factor: {quantity: grid_factor, unit: 1/um}
+  r_c: {quantity: confinement_radius, unit: um}
+  fil_dens: {quantity: filament_areal_density, unit: 1/um^2}
+  n_beads: {quantity: beads_per_polymer, unit: dimensionless}
+  l_link: {quantity: filament_link_length, unit: um}
+  r_bead: {quantity: bead_radius, unit: um}
+  kappa_b: {quantity: polymer_bending_modulus, unit: pN*um^2}
+  temperature: {quantity: thermal_energy, unit: pN*um}
+  viscosity: {quantity: dynamic_viscosity, unit: mg/(um*s)}
+  dt: {quantity: time_step, unit: s}
+  tfinal: {quantity: simulation_time, unit: s}
+  nframes: {quantity: frame_count, unit: dimensionless}
+  rho_fascin: {quantity: crosslinker_areal_density, unit: 1/um^2}
+  rho_alpha: {quantity: crosslinker_areal_density, unit: 1/um^2}
+  l_fascin: {quantity: crosslinker_length, unit: um}
+  l_alpha: {quantity: crosslinker_length, unit: um}
+  kon_fascin: {quantity: crosslinker_on_rate, unit: 1/s}
+  koff_fascin: {quantity: crosslinker_off_rate, unit: 1/s}
+  scl: {quantity: kinetics_scale_factor, unit: dimensionless}
+  kon_alpha: {quantity: crosslinker_on_rate, unit: 1/s}
+  koff_alpha: {quantity: crosslinker_off_rate, unit: 1/s}
+outputs:
+  n_fil_from_dens: {quantity: polymer_count, unit: dimensionless}
+  n_fascin: {quantity: crosslinker_count, unit: dimensionless}
+  n_alpha: {quantity: crosslinker_count, unit: dimensionless}
+  L_contour: {quantity: filament_contour_length, unit: um}
+  k_b_link: {quantity: link_bending_stiffness, unit: pN*um}
+  L_p_code: {quantity: bundle_persistence_length, unit: um}
+  n_steps: {quantity: step_count, unit: dimensionless}
+  n_bw_print: {quantity: step_count, unit: dimensionless}
+  dt_frame: {quantity: frame_interval, unit: s}
+  xgrid: {quantity: quadrant_count_per_axis, unit: dimensionless}
+  K_fascin: {quantity: crosslinker_affinity_ratio, unit: dimensionless}
+  K_alpha: {quantity: crosslinker_affinity_ratio, unit: dimensionless}
+  size_ratio: {quantity: crosslinker_size_ratio, unit: dimensionless}
+  dF_bind_fascin: {quantity: binding_free_energy, unit: pN*um}
+  dF_bind_alpha: {quantity: binding_free_energy, unit: pN*um}
+  gamma_bead: {quantity: drag_coefficient, unit: pN*s/um}
+  D_bead: {quantity: diffusion_coefficient, unit: um^2/s}
+  gamma_fascin: {quantity: drag_coefficient, unit: pN*s/um}
+  D_fascin: {quantity: diffusion_coefficient, unit: um^2/s}
+  gamma_alpha: {quantity: drag_coefficient, unit: pN*s/um}
+  D_alpha: {quantity: diffusion_coefficient, unit: um^2/s}
+  bd_prefactor_bead: {quantity: brownian_velocity_prefactor, unit: um/s}
+  bd_prefactor_fascin: {quantity: brownian_velocity_prefactor, unit: um/s}
+  bd_prefactor_alpha: {quantity: brownian_velocity_prefactor, unit: um/s}
+settings: {}
+stochastic: false

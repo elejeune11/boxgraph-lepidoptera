@@ -1,0 +1,102 @@
+# ==============================================================================
+# Cross-record cited-value links for bashirzadeh2021 (Commun. Biol. 4, 1136, 2021)
+# across all 13 ready corpus pairs.
+#
+# Pairwise provenance audit summary:
+# 1. bashirzadeh2021_code (dinner-group/AFINES@sorting_guv, 2021): 0 links here.
+#    All 42 paper-reported simulation parameters in bashirzadeh2021_code/data.yaml
+#    already declare inline `from_source: bashirzadeh2021` + `from_datum` (exposing
+#    standalone sorting_kinetics.cfg mismatches r_c=12 vs 15, nmonomer=27 vs 35,
+#    density=1 vs 5); reverse links are omitted to avoid circularity.
+#    `sim_init_displacement_sd` (3 um Gaussian SD) is intentionally NOT linked to
+#    `py_r_rand` (3 um Uniform[-3,3] half-range, actual SD = 1.732 um) because they
+#    are distinct statistical parameters (see q_code_audit_bugs_hidden_params_and_missing_scripts).
+# 2. bashirzadeh2021_source_data (Figshare 10.6084/m9.figshare.16337442.v1, 2021):
+#    1 direct non-circular link below (`fig4e_p_0310_vs_1310` -> `ppl_p_0310_vs_1310_stored`),
+#    exposing truncation of 0.00086695 to 0.0008. All 45 `paper_*` targets in
+#    bashirzadeh2021_source_data/data.yaml already declare inline `from_source: bashirzadeh2021`
+#    + `from_datum`. Digitized figure curves (`*_fig`) cannot be linked via `_cited_table`
+#    because bashirzadeh2021_source_data declares 0 table datums (reading .xlsx/.mat live via
+#    7 software: true reader models); full reconciliation is logged in questions.yaml & notes.md.
+# 3. winkelman2016 (Curr. Biol. 26, 2697-2706, 2016; ref-9):
+#    - 1 of the 3 `from_source: ref-9` datums in bashirzadeh2021/data.yaml is linked below
+#      (`fascin_bundle_spacing_exp` = "about 6" nm -> `d_interfil_fascin_EM` = "~8" nm, omitting
+#      `from_source` so BoxGraph resolves ref-9 -> winkelman2016).
+#    - The other 2 `from_source: ref-9` datums stay UNLINKED because winkelman2016 never prints
+#      those numbers: (a) `crosslinker_size_ratio_exp_printed` ("~6", p. 9) is Bashirzadeh et al.'s
+#      ratio of ~35 nm alpha-actinin to ~6 nm fascin; (b) `sim_alpha_kon_koff_ratio_printed` ("4",
+#      p. 7) is Bashirzadeh et al.'s tuned AFINES kinetic ratio 0.2/0.05 = 4 justified qualitatively
+#      by ref-9's similar bundling K_D (272 vs 290 nM), not a value printed by Winkelman et al.
+# 4. freedman2019 (PNAS 116, 16192-16197, 2019; ref-14): 3 inherited baseline AFINES parameters
+#    linked below (`sim_link_length`, `sim_time_step`, `sim_alpha_koff`).
+# 5. freedman2019_code (Simfreed/AFINES@growing_spacer_exv, 2019): 1 inherited baseline AFINES
+#    filament bending modulus linked below (`sim_polymer_bending_modulus` = 0.068 pN*um^2 ->
+#    `cfg_polymer_bending_modulus`, which sets L_p = 0.068 / 0.004 = 17.0 um).
+# 6-10. claessens2008 (ref-39), gov2008, haviv2008 (ref-40), liu2008 (ref-20), pelletier2003
+#       (ref-54): 0 links. Cited purely qualitatively (gov2008 uncited); no numerical datum in
+#       bashirzadeh2021/data.yaml is taken from any of these five papers.
+# 11-13. graham2023, graham2024, chandrasekaran2024: 0 links (published 2-3 years after
+#        bashirzadeh2021; graham2024's ref-12/ref-44 is Wubshet, Bashirzadeh & Liu MBoC 2021).
+# ==============================================================================
+
+# --- Link to winkelman2016 (resolves via data.yaml from_source: ref-9) --------
+
+- datum: fascin_bundle_spacing_exp
+  from_datum: d_interfil_fascin_EM
+  evidence: >
+    Bashirzadeh et al. (p. 2) write "tight parallel actin bundles with about 6-nm spacing^8,9",
+    citing Jansen et al. (2011) [ref-8] and Winkelman et al. (2016) [ref-9 / winkelman2016].
+    Winkelman et al. report ~8 nm interfilament spacing for fascin bundles both from prior
+    literature (p. 6 / 2701, d_interfil_fascin_lit) and by their own EM measurement (p. 7 /
+    2702, d_interfil_fascin_EM = "~8" nm), ~5 nm average TIRFM spacing (p. 6,
+    d_interfil_fascin_TIRFM; one Fig. 4B example is 6 nm), and ~5-6 nm for fascin's globular
+    molecular diameter (p. 3 / 2698, size_fascin_lit). Bashirzadeh et al.'s "about 6-nm spacing"
+    appears to conflate fascin's ~5-6 nm molecular diameter (or Fig. 4B's single 6 nm TIRFM
+    example) with Winkelman's ~8 nm EM interfilament spacing.
+
+# --- Link to bashirzadeh2021_source_data (Figshare raw P_PL cell) -------------
+
+- datum: fig4e_p_0310_vs_1310
+  from_source: bashirzadeh2021_source_data
+  from_datum: ppl_p_0310_vs_1310_stored
+  evidence: >
+    Fig. 4e (p. 6) prints p = 0.0008 for the Welch two-sample t-test comparing [0:3:10] vs
+    [1:3:10] bundle persistence lengths. The companion Figshare workbook
+    (Fig4e_persistence_length_data.xlsx & Source_data.xlsx, sheet P_PL cell D28) stores
+    P(T<=t) two-tail = 0.00086695 (df = 38), exposing that 0.0008 was truncated rather than
+    rounded (0.0009).
+
+# --- Links to freedman2019 & freedman2019_code (inherited AFINES parameters) --
+
+- datum: sim_link_length
+  from_source: freedman2019
+  from_datum: afines_link_length_la
+  evidence: >
+    Methods (p. 9) states "We used the simulation package AFINES^14,42,43 ... taking cues from
+    previous simulations of similar systems^14"; Supplementary Table 3 (p. 30) retains AFINES's
+    baseline filament discretization link length 1 um (Freedman et al. 2019 Table S1, l_a = 1 um).
+
+- datum: sim_time_step
+  from_source: freedman2019
+  from_datum: afines_dt
+  evidence: >
+    Methods (p. 9) and Supplementary Table 3 (p. 30) retain AFINES's identical overdamped
+    Langevin integration time step dt = 2 x 10^-5 s from Freedman et al. (2019) Table S1
+    (afines_dt = 0.00002 s).
+
+- datum: sim_alpha_koff
+  from_source: freedman2019
+  from_datum: afines_k_off_1_long
+  evidence: >
+    Supplementary Table 2 (p. 29) retains AFINES's baseline alpha-actinin (long crosslinker)
+    unbinding rate k_off = 0.05 s^-1 from Freedman et al. (2019) Table S1
+    (afines_k_off_1_long = afines_k_off_2_long = 0.05 s^-1).
+
+- datum: sim_polymer_bending_modulus
+  from_source: freedman2019_code
+  from_datum: cfg_polymer_bending_modulus
+  evidence: >
+    Supplementary Table 3 (p. 30) retains AFINES's exact single-filament bending modulus
+    0.068 pN*um^2 inherited from the upstream AFINES configuration
+    (freedman2019_code xlink_sorting_paper/config/grow.cfg:7, cfg_polymer_bending_modulus = 0.068,
+    yielding L_p = 0.068 / 0.004 = 17.0 um matching Freedman et al. 2019 p. 16193).

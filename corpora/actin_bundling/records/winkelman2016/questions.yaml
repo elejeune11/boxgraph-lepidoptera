@@ -1,0 +1,656 @@
+- id: q_figs5e_actinin_domains_tau_koff_mismatch
+  kind: possible_error
+  about:
+    - residence_time_from_koff
+    - k_off_actinin_domains
+    - tau_actinin_domains
+    - cmp_tau_actinin_domains
+  text: >
+    In Fig. S5E (p. 21 PNG; caption p. 22), the inset for single TMR-alpha-actinin molecules
+    bound to alpha-actinin domains prints k_off = 0.251 s^-1 together with tau = 4.9 sec
+    (R^2 = 0.997). However, for a single-exponential dwell-time distribution, tau = 1 / k_off =
+    1 / 0.251 = 3.984 s (~4.0 s), disagreeing with the printed 4.9 sec by 0.92 s (23%). The
+    other three insets in Fig. S5D-E all satisfy tau = 1 / k_off to two significant figures:
+    Fascin Control (0.203 s^-1 -> 4.926 vs 4.9), Fascin domains (0.198 s^-1 -> 5.051 vs 5.1),
+    and alpha-Actinin Control (0.217 s^-1 -> 4.608 vs 4.6 sec). Thus either tau = 4.9 sec is
+    a transcription error (e.g., mistyped from 4.0 sec or copied from Fascin Control's 4.9)
+    or k_off = 0.251 s^-1 is misprinted (tau = 4.9 s would correspond to k_off = 0.204 s^-1).
+  citation: {page: 22, printed_page: "SI-10", quote: "Single exponential fits of the fraction of single TMR-α-actinin", where: "Fig. S5E caption"}
+
+- id: q_kmc_finite_size_edge_effects
+  kind: overstated_claim
+  about:
+    - kmc_domain_length_exp_fit
+    - kmc_domain_length_mean
+    - kmc_infinite_lattice_limit
+    - N_lattice_sites
+    - eps_barrier_coop
+    - ref_kmc_expfit_nsites
+    - ref_kmc_mean_nsites
+    - cmp_inf_lF_r1p0
+    - cmp_inf_lF_r2p0
+  text: >
+    SI p. 27 states that the virtual lattice of N = 400 binding sites (~15 um, exact 14.8 um)
+    "was long enough to remove edge effects". Both the lattice-size refinement series
+    (n_sites = 400 -> 800 -> 1600 -> 3200 in refinements.yaml) and the exact analytical
+    N -> infinity Markov-chain limit (l_F = a * (1 + r * exp(epsilon / k_B T))) contradict
+    this claim. At epsilon = 4.8 k_B T, the edge-effect-free infinite-lattice domain lengths
+    are 2.285 um (r = 0.5), 4.533 um (r = 1.0), and 9.029 um (r = 2.0), whereas N = 400
+    truncates domains at the bundle ends (producing the prominent spike at l = 400 sites in
+    Fig. S3C and a (1 - l / L_box) finite-size factor across interior lengths). At r = 1.0,
+    N = 400 depresses the arithmetic mean by 23% (3.49 vs 4.533 um) and the exponential-fit
+    decay length by 18% (3.73 vs 4.533 um); at r = 2.0 (or l_alpha at r = 0.5), the arithmetic
+    mean is depressed by 38% (5.57 vs 9.029 um). Consequently, the fitted switching barrier
+    epsilon = 4.8 k_B T is itself modestly inflated by finite-size truncation (on an infinite
+    lattice, epsilon ~= 4.60 k_B T already yields l_F = 3.7 um at r = 1.0).
+  citation: {page: 27, printed_page: "SI-15", quote: "was long enough to remove edge effects occurring in experiments", where: "SI Cooperative kinetic model"}
+
+- id: q_kmc_readout_ambiguity_mean_vs_expfit
+  kind: choice
+  about:
+    - kmc_domain_length_exp_fit
+    - kmc_domain_length_mean
+    - ref_kmc_expfit_binwidth
+    - l_F_S3C_r0p5
+    - l_alpha_S3C_r0p5
+    - l_F_S3C_r1p0
+    - l_alpha_S3C_r1p0
+    - l_F_S3C_r2p0
+    - l_alpha_S3C_r2p0
+    - cmp_mean_lalpha_r0p5
+    - cmp_mean_lF_r2p0
+  text: >
+    The paper describes two different summary statistics for extracting domain lengths from
+    the 5000 KMC simulations on N = 400 sites: SI p. 28 states "From these runs we compute the
+    average repeat length of A's and B's" (direct arithmetic mean), whereas Fig. S3C caption
+    (p. 18) states "average domain lengths from exponential fits for fascin and alpha-actinin
+    given in the inset", without specifying histogram binning, whether the boundary-truncated
+    spike at l = 400 sites is retained in the fit, or whether fitting is done in linear or
+    log space. On N = 400 sites, the direct arithmetic mean fails to reproduce the long-domain
+    Fig. S3C values by ~30% (5.57 um vs printed 8.2 and 7.8 um), whereas an unweighted
+    2-parameter exponential fit A * exp(-l / L) to the 40-bin histogram P(l) including the
+    l = 400 spike (matching the ~40 plotted bins of width 10 sites in Fig. S3C) yields
+    ~2.03-2.15, ~8.00-8.27 (r = 0.5), ~3.70-3.85 (r = 1.0), and ~7.98-8.25, ~2.04-2.15 um
+    (r = 2.0), matching all six printed numbers closely and accounting for the 0.4 um
+    stochastic difference between the exact-symmetry pairs (l_alpha = 8.2 at r = 0.5 vs
+    l_F = 7.8 at r = 2.0) through the ~0.22 um seed-to-seed standard deviation of the fit.
+    Excluding the l = 400 spike drops the r = 2.0 fit to ~6.9-7.1 um (below both 7.8 and 8.2).
+  citation: {page: 18, printed_page: "SI-6", quote: "with average domain lengths from exponential fits for fascin", where: "Fig. S3C caption"}
+
+- id: q_figs3c_top_axis_scale_misprint
+  kind: possible_error
+  about:
+    - N_lattice_sites
+    - a_binding_site_spacing
+    - L_bundle_printed_main
+  text: >
+    In Fig. S3C (p. 17 PNG), the top x-axis labeled "l (lattice sites)" runs from 0 to 400
+    in exact vertical alignment with the bottom x-axis "l (um)" running from 0 to 16 (50 sites
+    aligned with 2 um, 200 with 8 um, 400 with 16 um), implying 40 nm/site instead of the
+    model's 37 nm/site (400 * 37 nm = 14.8 um). As a result, the finite-lattice boundary spike
+    at N = 400 sites (14.6-14.8 um on the bottom axis) visually aligns near ~365 on the
+    misscaled top lattice-site axis rather than at 400.
+  citation: {page: 17, printed_page: "SI-5", quote: "Figure S3", where: "Fig. S3C axes (image p. 17; caption p. 18)"}
+
+- id: q_kmc_rate_ratio_notation_and_50x_r
+  kind: unstated_input
+  about:
+    - cooperativity_length_ratio
+    - r_50x_eval_added
+    - run_length_enhancement_main
+    - cmp_enhancement_mean
+    - cmp_enhancement_expfit
+    - cmp_enhancement_inf
+  text: >
+    Main Text p. 7 states that alpha-actinin-4 and fascin 1 bind in exclusive runs that are
+    ~50x longer than predicted by simple mass-action competition simulations (Fig. 3H), without
+    specifying the concentration/on-rate ratio r at which the ratio is evaluated. At the
+    symmetric equimolar ratio r = 1.0, the cooperative-to-simple ratio is 47.2x using finite-
+    lattice KMC means, 50.4x comparing the cooperative exponential fit (3.73 um) to the simple
+    KMC mean (0.074 um), and 61.3x in the infinite-lattice limit (1 + exp(4.8))/2; across
+    r = 0.5 to 2.0 the ratio spans 36x to 81x. Separately, SI p. 28 writes the model's
+    dimensionless rate ratio parameter as k_on^B / k_on^A while Fig. S3C defines
+    r = k_on^Fascin / k_on^alpha-Actinin (equivalent upon taking A = alpha-actinin, B = fascin).
+  citation: {page: 7, printed_page: "2702", quote: "runs that are 503 longer than predicted by simulations based", where: text}
+
+- id: q_figs3b_growth_speed_axial_rise
+  kind: unstated_input
+  about:
+    - filament_growth_speed
+    - d_actin_subunit_added
+    - k_elong_S3B_illustrative
+    - v_elong_S3B_illustrative
+    - cmp_filament_growth_S3B
+  text: >
+    Fig. S3B caption (p. 18) converts an illustrative preformed actin filament growth rate of
+    20 subunits/sec to (~53 nm/sec) without stating the axial rise per actin monomer. Using the
+    canonical 2.7 nm/subunit gives 54 nm/s, whereas dividing the model's 37 nm helical half-
+    pitch by 14 subunits (2.643 nm/subunit) gives 52.86 nm/s (~53 nm/s), and 2.65 nm/subunit
+    gives exact 53.0 nm/s.
+  citation: {page: 18, printed_page: "SI-6", quote: "A preformed actin filament growing at 20 subunits/sec (~53 nm/sec)", where: "Fig. S3B caption"}
+
+- id: q_fig1bc_caption_vs_axes
+  kind: possible_error
+  about:
+    - KD_fascin_bundling
+    - hill_fascin_bundling
+    - KD_actinin_bundling
+    - hill_actinin_bundling
+  text: >
+    Fig. 1B-C caption (p. 3) describes the bottom panels as "graphs (bottom) of the amount of
+    actin in pellets", whereas the printed y-axis labels actually plot molar bound bundler per
+    F-actin ("Bound Fascin/F-actin" and "Bound alpha-Actinin/F-actin") as a function of
+    "[Free Fascin], uM" and "[Free alpha-Actinin dimers], uM". In addition, the Hill fit
+    equation and fitted maximum binding stoichiometry B_max are not printed in text or SI.
+  citation: {page: 3, printed_page: "2698", quote: "graphs (bottom) of the amount of actin in pellets", where: "Fig. 1B-C caption"}
+
+- id: q_fig3i_yaxis_tick_typo
+  kind: possible_error
+  about:
+    - eps_barrier_coop
+  text: >
+    In Fig. 3I (p. 5 PNG), the y-axis ticks are labeled 0, 4, 8, and 1.2 (an evident decimal-
+    point misprint for 12) and the axis label prints "Fascin Fluor./um, a..u".
+  citation: {page: 5, printed_page: "2700", quote: "Fascin Fluor./μm, a..u", where: "Fig. 3I"}
+
+- id: q_fig4f_transition_uncertainty_and_em_conc
+  kind: unstated_input
+  about:
+    - L_transition_zone_EM
+    - d_interfil_fascin_EM
+    - d_interfil_actinin_EM
+  text: >
+    Fig. 4F (p. 6 PNG) prints the fascin-to-alpha-actinin domain transition zone length as
+    "L = 142 +/- 52 nm" directly on the micrograph, without stating whether +/- 52 nm is SD
+    or SEM or reporting the number of transitions measured. Separately, Fig. 4F caption lists
+    EM protein concentrations as 1 uM fascin, 800 nM alpha-actinin, or 1 uM alpha-actinin +
+    0.25 uM fascin, whereas Experimental Procedures (p. 10) and SI (p. 27) state 250-500 nM
+    alpha-actinin and 1-2 uM fascin.
+  citation: {page: 6, printed_page: "2701", quote: "L = 142 +/- 52 nm", where: "Fig. 4F"}
+
+- id: q_fig2_and_si_bead_assay_discrepancies
+  kind: possible_error
+  about:
+    - actin_concentration
+    - fascin_concentration
+    - alpha_actinin_concentration
+  text: >
+    Protein concentrations and buffer units for the biomimetic bead motility assay differ
+    between Fig. 2B-G caption (p. 4) and Supplemental Experimental Procedures (p. 26). Fig. 2
+    caption lists 5 uM profilin and 150 nM Cy5-fascin (+/- 50 nM TMR-alpha-actinin), whereas
+    SI p. 26 lists 4 uM human profilin 1 and 50 nM TMR-labeled-alpha-actinin and Cy5-labeled-
+    fascin. Furthermore, the TIRF polymerization buffer printed under "Bead motility assay" on
+    SI p. 26 lists "50 mM DTT", "50 mM CaCl2", "20 mg/mL catalase", and "100 mg/mL glucose
+    oxidase", compared to "0.5 mM DTT", "50 uM CaCl2", "20 ug/mL catalase", and "100 ug/mL
+    glucose oxidase" in "TIRFM assay" on the same page (a 1000x u -> m prefix misprint and a
+    100x DTT discrepancy).
+  citation: {page: 26, printed_page: "SI-14", quote: "50 mM DTT, 0.2 mM ATP, 50", where: "SI Bead motility assay"}
+
+- id: q_fig5_dye_label_swaps
+  kind: possible_error
+  about:
+    - fimbrin_fascin_enrichment_fold
+  text: >
+    In Fig. 5 caption (p. 8), fluorophore labels are internally swapped between overview and
+    subpanel descriptions: (B and C) states "75 nM Cy5-fascin (red), and 15 nM TMR-fimbrin
+    (cyan)" in the overview, then reverses them to "TMR-fascin (middle), and Cy5-fimbrin
+    (bottom)" and "Cy5-fimbrin molecules" in (B) and (C) (matching Main Text p. 7). Similarly,
+    (D-F) states "100 nM Cy5-fascin (red)" together with "SNAP-647-espin-2B (cyan)" (both ~647 nm
+    far-red dyes) in the overview, then describes "TMR-fascin" in (D) and (F).
+  citation: {page: 8, printed_page: "2703", quote: "75 nM Cy5-fascin (red), and 15 nM TMR-fimbrin (cyan)", where: "Fig. 5B-C caption"}
+
+- id: q_figs2a_and_figs4cd_caption_vs_image
+  kind: possible_error
+  about:
+    - fascin_concentration
+    - alpha_actinin_concentration
+  text: >
+    Two supplemental figures contain label-vs-caption discrepancies: (1) Fig. S2A image header
+    (p. 15 PNG) prints "150 nM TMR-Fascin + 1 uM C. elegans alpha-Actinin", whereas Fig. S2
+    caption (p. 16) prints "100 nM TMR-fascin and 400 nM C. elegans alpha-actinin dimers";
+    (2) Fig. S4C-D bar chart x-axes (p. 19 PNG) are labeled "Background", "Single Filament",
+    and "Parallel Bundle", whereas Fig. S4 caption (p. 20) describes panels (C and D) as
+    quantification on "single and anti-parallel bundled filaments".
+  citation: {page: 20, printed_page: "SI-8", quote: "fascin fluorescence on single and anti-parallel", where: "Fig. S4C-D caption"}
+
+- id: q_figs6a_color_label_swap_and_s6b_fit
+  kind: possible_error
+  about:
+    - IC50_fimbrin_fascin_comp
+    - fimbrin_fascin_enrichment_fold
+  text: >
+    In Fig. S6A (p. 23 PNG), the image labels and fluorescence micrographs show 75 nM fascin in
+    red (bright in "No Fimbrin" and progressively displaced at +26 nM and +260 nM fimbrin) and
+    fimbrin in cyan (absent in "No Fimbrin" and bright at +260 nM). However, Fig. S6A caption
+    (p. 24) assigns the opposite colors: "75 nM Cy5-fascin (cyan, bottom)" and "TMR-fimbrin
+    (red, bottom)". In addition, Fig. S6B prints IC50 = 47.4 nM TMR-Fimbrin with a fitted curve
+    but omits the fitting equation, Hill slope (or decay parameter), sample size n, and error bars.
+  citation: {page: 24, printed_page: "SI-12", quote: "75 nM Cy5-fascin (cyan, bottom), and either in the absence", where: "Fig. S6A caption"}
+
+- id: q_figs5de_offset_concentrations_and_unit_typo
+  kind: unstated_model
+  about:
+    - residence_time_from_koff
+    - k_off_fascin_domains
+    - tau_fascin_control
+    - tau_fascin_domains
+    - k_off_actinin_control
+    - k_off_actinin_domains
+    - tau_actinin_domains
+    - tau_residence_main_text
+    - cmp_tau_main_actinin_domains
+  text: >
+    Three additional omissions/typos appear in Fig. S5D-E (p. 21 PNG; caption p. 22) beyond the
+    tau vs 1/k_off mismatch in q_figs5e_actinin_domains_tau_koff_mismatch: (1) Both single-
+    exponential fit curves in Fig. S5E (alpha-actinin) plateau at substantial nonzero vertical
+    offsets at t = 20-50 s (~0.05 for Control and ~0.08-0.10 for alpha-actinin domains, unlike
+    Fig. S5D which decays to 0), indicating an unstated baseline offset y0 (or immobile fraction)
+    in y(t) = y0 + A*exp(-k_off*t). With y0 ~= 0.08, the faster initial decay k_off = 0.251 s^-1
+    (tau = 3.98 s) matches the plotted blue curve, reinforcing that printed tau = 4.9 sec is a
+    misprint and that the main-text summary "~5 s" (p. 6) overlooks this ~4.0 s lifetime.
+    (2) Protein concentrations for Fig. S5E (single-molecule TMR-alpha-actinin, unlabeled
+    alpha-actinin, and Cy5-fascin) are never stated in the caption or Methods (only Fig. S5A
+    gives concentrations for the Cy5-fascin experiment). (3) Fig. S5D Fascin domains inset prints
+    "k_off = 0.198 s^1" (missing the minus sign in s^-1) and omits the "sec" unit on tau = 4.9
+    and tau = 5.1.
+  citation: {page: 22, printed_page: "SI-10", quote: "Single exponential fits of the fraction of single TMR-α-actinin", where: "Fig. S5E caption"}
+
+- id: q_kmc_lattice_spacing_37nm_vs_em_35nm
+  kind: choice
+  about:
+    - a_binding_site_spacing
+    - d_transverse_repeat_EM
+    - kmc_domain_length_exp_fit
+    - kmc_domain_length_mean
+    - kmc_infinite_lattice_limit
+  text: >
+    The cooperative kinetic lattice model fixes the axial binding-site spacing at a = 37 nm
+    (p. 10, Fig. S3A p. 17, SI p. 27), whereas the paper's own negative-stain EM transverse-
+    repeat measurements in Fig. 4G (p. 6 PNG; text p. 7) give "about 35 nm" (plotted bars ~32.5
+    nm for alpha-actinin and ~34.5 nm for fascin). Using a = 35 nm instead of 37 nm uniformly
+    scales all simulated domain lengths down by 5.4% (e.g., 3.73 -> 3.53 um at r = 1.0), shifting
+    the fitted switching barrier epsilon. Note also that p. 7 ("a turn of F-actin") and Fig. 6B
+    caption p. 9 ("a complete turn of the actin filament") describe the ~35-37 nm crossover repeat,
+    which is one 180-deg helical half-pitch of two-stranded F-actin (a full 360-deg helical turn
+    is ~72-74 nm).
+  citation: {page: 7, printed_page: "2702", quote: "about 35 nm, corresponding to a turn of F-actin", where: "text / Fig. 4G"}
+
+- id: q_sedimentation_protocol_gaps_and_fig1c_label
+  kind: unstated_input
+  about:
+    - KD_fascin_bundling
+    - KD_actinin_bundling
+    - actin_concentration
+  text: >
+    Several assay protocol details and figure labels are inconsistent or unstated across Main Text
+    and SI: (1) Experimental Procedures (p. 10) and SI (p. 25) state that F-actin was preassembled
+    from 15 uM Mg-ATP-actin monomers and spun at 10,000 x g (low-speed), without stating the
+    dilution step to the 3.0 uM F-actin in Fig. 1B-C and Fig. 2A captions (pp. 3-4) or the 5 uM
+    F-actin in Fig. 5I (p. 8), and never state the centrifugation speed/time, sample size n, or
+    single-exponential decay fit parameters for the "High-speed co-sedimentation assays" of
+    Fig. 5I. (2) Fig. 1B-C caption (p. 3) mislabels alpha-actinin as "(C) alpha-actinin (A)",
+    whereas the gel in Fig. 1C labels alpha-actinin as "alpha" and actin as "A". (3) Fig. 5H
+    (p. 8) omits sample size n and normalizes the Single filaments bar to 1.0 with no error bar;
+    similarly, Fig. S1A (p. 13 PNG) plots the Leading barbed end bar at exactly 10 sub/s with no
+    error bar, leaving unclear whether trailing rates were normalized to leading = 10 sub/s or
+    whether the leading SEM was omitted.
+  citation: {page: 10, printed_page: "2705", quote: "preassembled for 45 min at 25  C from 15 mM Mg-ATP-", where: "Experimental Procedures"}
+
+- id: q_figs4d_parallel_bar_confirms_missing_antiparallel_quant
+  kind: reading
+  about:
+    - fascin_concentration
+    - alpha_actinin_concentration
+  text: >
+    Extending q_figs2a_and_figs4cd_caption_vs_image, inspection of Fig. S4D (p. 19 PNG) shows
+    that the third bar ("Parallel Bundle") has high TMR-fascin fluorescence (~2.5 x 10^4 a.u.),
+    whereas the main text (p. 6) and Fig. S4B kymograph state that fascin does not bind
+    anti-parallel bundles. This confirms the plotted bar genuinely measures Parallel Bundle as a
+    positive control (rather than mislabeled anti-parallel bundle data), meaning anti-parallel
+    bundle fluorescence is not quantified in Fig. S4C-D despite the caption's description.
+  citation: {page: 20, printed_page: "SI-8", quote: "fascin fluorescence on single and anti-parallel", where: "Fig. S4C-D caption"}
+
+- id: q_fig3h_coop_curve_vs_kmc_and_figs3c
+  kind: unexplained_difference
+  about:
+    - kmc_domain_length_exp_fit
+    - kmc_domain_length_mean
+    - d_fig3h_coop_model
+    - d_fig3h_simple_model
+    - d_fig3h_data
+    - l_F_S3C_r1p0
+    - cmp_expfit_fig3h_coop
+    - cmp_mean_fig3h_coop
+    - cmp_expfit_fig3h_data
+  text: >
+    Digitizing the solid blue "Coop. model" curve in Fig. 3H (d_fig3h_coop_model) yields
+    l_F = 0.98, 1.84, 2.13, 3.19, 4.07, 4.78, 5.40, and 5.87 um at r = 0.2, 0.4, 0.5, 0.8,
+    1.0, 1.2, 1.4, and 1.55 (reading half-width ~0.11 um). Across the entire curve, the
+    plotted line lies ~4-12% above kmc_domain_length_exp_fit (0.88, 1.64, 2.03, 3.06, 3.75,
+    4.33, 5.12, and 5.70 um) and at r = 1.0 reads 4.07 +/- 0.12 um, exceeding Fig. S3C's own
+    printed inset value l_F = 3.6 um by +0.47 um (+13%) despite Fig. S3C caption (p. 18)
+    stating that Fig. 3H extracts domain lengths "in this manner". Notably, the ratio
+    (mean ~1.08) closely matches the 40/37 = 1.081 misprint factor on Fig. S3C's top
+    lattice-site axis (q_figs3c_top_axis_scale_misprint). The digitized Fig. 3H curve also
+    decisively rules out the direct arithmetic mean described on SI p. 28
+    (kmc_domain_length_mean gives 3.49 um at r = 1.0 and 4.76 um at r = 1.55). Against the
+    digitized experimental data (d_fig3h_data), kmc_domain_length_exp_fit falls inside the
+    printed SEM bars at 8 of 10 positive r points (missing r = 0.197 and r = 0.810), while
+    the epsilon = 0 model matches d_fig3h_simple_model (0.025-0.090 um) and fails to fit
+    the experimental domain lengths.
+  citation: {page: 18, printed_page: "SI-6", quote: "Fascin domain lengths extracted in this manner for a wider range of parameters", where: "Fig. S3C caption & Fig. 3H"}
+
+- id: q_figs5e_digitized_data_vs_curve_and_r2
+  kind: unexplained_difference
+  about:
+    - d_figS5e_actinin_domains_data
+    - d_figS5e_actinin_domains_fit
+    - d_figS5e_actinin_control_data
+    - d_figS5d_fascin_control_data
+    - k_off_actinin_domains
+    - tau_actinin_domains
+    - q_figs5e_actinin_domains_tau_koff_mismatch
+    - q_figs5de_offset_concentrations_and_unit_typo
+  text: >
+    Exact pixel digitization of Fig. S5E (p. 21 PNG; caption p. 22) resolves the
+    k_off = 0.251 s^-1 vs tau = 4.9 sec discrepancy (q_figs5e_actinin_domains_tau_koff_mismatch)
+    in an unexpected direction and uncovers an R^2 contradiction plus a horizontal layer shift:
+    (1) The entire plotted marker and fit-curve layer in Fig. S5E is shifted left by 24.5 px
+    (~0.48 s) relative to the 0, 10, 20, 30, 40, 50 x-axis ticks, placing the initial t = 0
+    triangle directly on the y-spine (t_tick = -0.39 s) and subsequent 2.0-s points at
+    1.51, 3.49, ..., 49.44 s. (2) In its own data frame (dt = t_tick + 0.484 s), the plotted
+    blue fit curve (d_figS5e_actinin_domains_fit) obeys y(dt) = 0.0859 + 0.9100*exp(-0.2064*dt)
+    (y(0) = 0.996, tau = 4.84 s, k_off = 0.206 s^-1, RMSE = 0.0013 vs 0.0193 for fixed
+    k_off = 0.251 s^-1) — closely matching printed tau = 4.9 sec (1/4.9 = 0.204 s^-1) rather
+    than k_off = 0.251 s^-1 (revising the eye-based supposition in
+    q_figs5de_offset_concentrations_and_unit_typo). (3) The 26 digitized blue data points
+    (d_figS5e_actinin_domains_data, quantized in ~0.021 steps corresponding to N ~= 47 tracked
+    molecules) have prominent plateaus at dt = 12-16 s (0.181) and 20-28 s (0.138); an
+    unconstrained 3-parameter exponential fit gives y0 = 0.111, k_off = 0.223 s^-1
+    (tau = 4.49 s), R^2 = 0.986, while evaluating the plotted blue curve directly against
+    the 26 points yields only R^2 = 0.976 (max residual 0.071 at dt = 4 s), contradicting
+    the printed R^2 = 0.997. By contrast, digitized Fig. S5D Fascin Control data
+    (d_figS5d_fascin_control_data) cleanly reproduce y0 = 0.002, k_off = 0.209 s^-1
+    (tau = 4.79 s), R^2 = 0.998.
+  citation: {page: 22, printed_page: "SI-10", quote: "Single exponential fits of the fraction of single TMR-α-actinin molecules bound", where: "Fig. S5E"}
+
+- id: q_figs2f_offset_crossover_and_figs6b_exp_fit
+  kind: unstated_model
+  about:
+    - d_figS2e_domain_hist
+    - d_figS2f_50nM
+    - d_figS2f_125nM
+    - d_figS2f_500nM
+    - d_fig3h_data
+    - d_figS6b_data
+    - d_figS6b_fit
+    - IC50_fimbrin_fascin_comp
+    - d_fig5i_actinin_fit
+    - d_fig5i_fascin_fit
+  text: >
+    Digitization of the empirical fit curves in Fig. S2F, Fig. S6B, and Fig. 5I recovers
+    unstated fitting equations and parameters: (1) Fig. S2E (d_figS2e_domain_hist; 14
+    non-empty 0.64-um bins summing to exact N = 56 domains at 125 nM fascin + 400 nM
+    alpha-actinin) has sample mean 2.388 um, closely matching Fig. 3H at r = 0.3125
+    (2.37 +/- 1.53 um). However, the three plotted single-exponential 1-CDF curves in
+    Fig. S2F (d_figS2f_50nM, d_figS2f_125nM, d_figS2f_500nM) include unstated free vertical
+    offsets y0 = +0.027, +0.035, and -0.099 (decay lengths 0.433, 2.202, and 4.458 um vs
+    zero-offset fits 0.491, 2.491, and 3.554 um); the unphysical negative offset y0 = -0.099
+    causes the 500 nM curve to cross below the 125 nM curve near l = 9 um. (2) Digitizing
+    Fig. S6B (d_figS6b_fit) shows that the unstated competition curve is a single-exponential
+    decay y(c) = 0.004 + 1.009*exp(-15.21*c) (c in uM, RMSE = 0.0016), whose half-decay
+    ln(2)/k = 45.6 nM matches printed IC50 = 47.4 nM (rather than a Hill/Langmuir
+    hyperbola), and reveals an unremarked outlier point in d_figS6b_data at (0.134 uM, 0.602).
+    (3) Digitizing Fig. 5I recovers the unstated single-exponential co-sedimentation fit
+    parameters: alpha-actinin y0 = 0.150, A = 0.924 (y(0) = 1.074 > 1), decay constant
+    3.80 uM (half-decay 2.63 uM); fascin y0 = 0.067, A = 0.908, decay constant 2.23 uM
+    (half-decay 1.55 uM).
+  citation: {page: 16, printed_page: "SI-4", quote: "1-cumulative frequency of TMR-fascin domain lengths in reactions with 400 nM", where: "Fig. S2F, Fig. S6B, Fig. 5I"}
+
+- id: q_fig4gh_fig2f_axis_label_shifts_and_fig5c_ratio
+  kind: reading
+  about:
+    - d_fig4g_em_repeat
+    - d_fig4h_em_spacing
+    - d_fig2f_protrusions
+    - d_fig5c_fimbrin_density
+    - d_fig4d_og_actin
+    - d_fig4d_phalloidin
+    - d_transverse_repeat_EM
+    - fimbrin_fascin_enrichment_fold
+    - q_kmc_lattice_spacing_37nm_vs_em_35nm
+  text: >
+    Calibrated pixel digitization reveals Illustrator label-vs-tick placement offsets on three
+    bar charts and quantifies two minor text-vs-plot differences: (1) In Fig. 4G
+    (d_fig4g_em_repeat), the printed y-axis numbers 0..35 are stretched upward (249.6 px per
+    5 nm) relative to the actual spine tick marks (241.2 px per 5 nm), sitting ~85 px (1.8 nm)
+    high at 35; calibrated on the actual spine ticks, the bars read 34.33 +/- 1.06 nm
+    (alpha-actinin) and 36.01 +/- 0.39 nm (fascin), whose mean 35.17 nm matches the text's
+    "about 35 nm" (refining the ~32.5 / ~34.5 nm eye estimate in
+    q_kmc_lattice_spacing_37nm_vs_em_35nm). (2) In Fig. 4H (d_fig4h_em_spacing), printed
+    y-labels are shifted ~68 px (1.3 nm) above the spine ticks; on actual ticks, alpha-actinin
+    spacing reads 30.51 +/- 1.17 nm (only) and 32.93 +/- 0.15 nm (mixed; mean 31.7 nm vs
+    "~32 nm") and fascin reads 8.10 +/- 0.64 nm (only) and 9.36 +/- 0.21 nm (mixed; vs "~8 nm").
+    (3) In Fig. 2F (d_fig2f_protrusions), the x-spine sits ~65 px (0.037 a.u.) above the
+    extrapolated y = 0 position of the 5 regular ticks 0.2..1.0. (4) In Fig. 5C
+    (d_fig5c_fimbrin_density), bar heights are 0.61 +/- 0.12 (Single), 0.76 +/- 0.16
+    (Parallel alpha-Actinin), and 3.89 +/- 0.30 molecules/um (Parallel Fascin), giving a
+    Fascin/alpha-Actinin ratio of 5.09-fold (within 1 SEM of the text's "6-fold";
+    Fascin/Single is 6.41-fold). (5) Gaussian fits to digitized Fig. 4B and 4D profiles yield
+    centroid separations of 5.8 nm (printed 6 nm) and 42.8 nm (printed 37 nm), respectively.
+  citation: {page: 6, printed_page: "2701", quote: "Distance of transverse repeat in fascin and a-actinin bundles.", where: "Fig. 4G-H, Fig. 2F, Fig. 5C"}
+
+- id: q_pelletier2003_square_lattice_30nm_vs_33nm_and_no_validation
+  kind: possible_error
+  about:
+    - d_interfil_actinin_square_lit
+    - d_interfil_actinin_EM
+    - d_fig4h_em_spacing
+    - ref-33
+    - pelletier2003/lattice_spacing_printed
+    - pelletier2003/alpha_actinin_length
+  text: >
+    Cross-record audit of pelletier2003 + winkelman2016: (1) Citation discrepancy (linked in
+    cited.yaml): Winkelman et al. (2016, p. 9 / 2704) write "alpha-actinin generates a square
+    lattice with filaments spaced 30 nm apart [33]", citing Pelletier et al. (2003) [ref-33 /
+    pelletier2003]. However, Pelletier et al. (2003, p. 3 / 148102-3) actually derive a 33 nm
+    distorted-square lattice spacing from SAXS (d = 2*pi / q_1 = 2*pi / 0.19 nm^-1 = 33.1 nm,
+    pelletier2003/lattice_spacing_printed), while printing "~30 nm [2]" on p. 1 solely as the
+    literature EM length of an alpha-actinin dimer (pelletier2003/alpha_actinin_length).
+    Winkelman et al. thus misstate Pelletier's 33 nm square-lattice spacing as 30 nm (note that
+    Pelletier's actual 33 nm spacing agrees closely with Winkelman's own negative-stain EM
+    interfilament spacing of ~32 nm / 32.9 +/- 0.15 nm in mixed bundles, Fig. 4H).
+    (2) Zero mathematical relations and zero cross-record validations exist between the two
+    records: pelletier2003 models single-species alpha-actinin SAXS Bragg peaks (d = 2*pi/q_1,
+    q_2 = sqrt(2)*q_1, Delta_q ~ q^2, Scherrer domain size), whereas winkelman2016 models
+    two-species 1D KMC domain lengths, single-molecule residence times, and trailing barbed-end
+    elongation rates, with no overlapping predicted/measured model quantities.
+  citation: {page: 9, printed_page: "2704", quote: "square lattice with filaments spaced 30 nm apart", where: text}
+
+- id: q_freedman2019_fig3h_layer_shift_omitted_point_and_kmc_cross_check
+  kind: unexplained_difference
+  about:
+    - d_fig3h_data
+    - d_fig3h_coop_model
+    - d_transverse_repeat_EM
+    - a_binding_site_spacing
+    - kmc_domain_length_exp_fit
+    - kmc_domain_length_mean
+    - rel_freedman2019_kmc_reduces_to_winkelman_kmc_mean
+    - rel_freedman2019_kmc_phys_approx_winkelman_kmc_expfit_lF
+    - rel_freedman2019_kmc_phys_approx_winkelman_kmc_mean_lalpha
+    - freedman2019/fig3c_left_expt_fascin_datum
+    - freedman2019/fig5b_expt_fascin_datum
+    - freedman2019_code/kmc_winkelman_expt_table
+  text: >
+    Cross-record forensic comparison of Winkelman (2016) Fig. 3H against Freedman et al. (2019,
+    Figs. 3C & 5B Ref. 16) and the authors' released repository freedman2019_code
+    (xlink_sorting_paper/kmc.ipynb Cell 9 `expt_data_txt` and process/plots.nb lines 11802-11806)
+    reveals five quantitative discrepancies and mechanistic connections:
+    (1) Illustrator layer shift in winkelman2016 Fig. 3H: all 11 red markers in published Fig. 3H
+    (`d_fig3h_data`) are shifted by a constant (+0.0192 +/- 0.0016 in r, -0.039 +/- 0.010 um in y)
+    relative to the exact author table embedded in plots.nb / kmc.ipynb and re-plotted in Freedman
+    Figs. 3C & 5B (including the r = 0 negative control sitting at y = -0.0405 um); after removing
+    this constant offset, all 10 positive-r points agree with Freedman Fig. 5B and plots.nb to
+    <= 0.002 in r and <= 0.02 um in y. Moreover, the exact rational x-values in kmc.ipynb / plots.nb
+    reveal two distinct alpha-actinin concentrations behind Fig. 3H: 400 nM for 4 points (50, 125,
+    250, 500 nM fascin -> r = 0.125, 0.3125, 0.625, 1.25) and 380 nM for 6 points (r = 0.17895,
+    0.26316, 0.52632, 0.78947, 1.0526, 1.5789).
+    (2) Silent omission of the zero-domain point in kmc.ipynb: published Fig. 3H plots 11 points
+    and plots.nb / Freedman Fig. 5B plot 10 positive-r points including (r = 0.17895, l_F = 0.0 um),
+    whereas kmc.ipynb Cell 9 `expt_data_txt` (`freedman2019_code/kmc_winkelman_expt_table`) silently
+    drops (0.17895, 0.0), leaving 9 points. Consequently, Winkelman's eps = 4.8 KMC models
+    (both exp-fit and mean readouts) yield `close` (7/9 reproduced, 2/9 close, 0 not reproduced) on
+    the 9-point kmc.ipynb table, vs `not reproduced` on the 10-point Fig. 5B and 11-point Fig. 3H
+    datasets solely because of the (0.17895, 0.0) point.
+    (3) Cross-check of Freedman KMC (37 nm, 27 nm) and kmc.ipynb's swapped (35 nm, 29 nm) against
+    winkelman2016/d_fig3h_data (partner-owned validations belong in freedman2019 / freedman2019_code):
+    at paper parameters (l_b = 37 nm, Delta l_xl = 27 nm), Freedman's KMC matches 8/10 positive-r
+    Fig. 3H points within 1 SE (1 close at r = 0.644 [1.66 SE], 1 miss at r = 0.197 [2.54 SE]);
+    at kmc.ipynb's transposed parameters (35 nm, 29 nm), it matches 6/10 within 1 SE (3 close, 1 miss
+    at r = 0.197 [2.79 SE]). Ironically, kmc.ipynb's transposed site_width = 35 nm matches
+    Winkelman's own Fig. 4G EM transverse repeat ("about 35 nm", digitized 35.17 nm;
+    q_kmc_lattice_spacing_37nm_vs_em_35nm) rather than the 37 nm lattice spacing, whereas
+    dxl = 37 - 8 = 29 nm matches neither Winkelman's EM spacing difference (32 - 8 = 24 nm, Fig. 4H)
+    nor the cited literature difference (35 - 8 = 27 nm).
+    (4) Why Freedman's KMC matches Winkelman's ~3.5-3.7 um domains at a lower per-event barrier
+    (eps_eff = 3.81 at r = 1.0 vs eps = 4.8): in Freedman's growing-bundle KMC, homotypic cross-linkers
+    bind across an average gap <d_same> ~= 2.4 vacant sites, multiplying domain lengths by <d_same>
+    and lowering the required barrier by ln(<d_same>) ~= 0.9 k_B T. Across r = 0.3..2.0, Freedman's
+    emergent barrier is U-shaped (4.15 -> 3.69 -> 4.96 k_B T), causing super-linear fascin domain
+    growth (0.76 to 8.57 um) that diverges by up to 36.3% from Winkelman's constant-barrier mean
+    KMC (`kmc_domain_length_mean`) on r in [0.5, 1.5], while agreeing with `kmc_domain_length_exp_fit`
+    within 23.7% on r in [0.8, 2.0] and with `kmc_domain_length_mean` on l_alpha within 11.3% across
+    all r in [0.3, 2.0].
+    (5) Slow-growth reduction of kmc.ipynb: `freedman2019_code/kmc_notebook_growing_bundle` satisfies
+    the exact same slow-growth reduction (extension_rate -> 0) to `winkelman2016/kmc_domain_length_mean`
+    as `rel_freedman2019_kmc_reduces_to_winkelman_kmc_mean` (verified at eps = 3.484, r = 1.0:
+    1.135 vs 1.151 um [1.4%], eps_eff = 3.466 vs 3.484), but is omitted from relations.yaml solely
+    because each default 1000-trial Python notebook execution takes ~20-30 s (~33 min for 80 limit
+    samples).
+  citation: {page: 5, printed_page: "2700", quote: "Dependence of TMR-fascin domain length on TMR-fascin concentration.", where: "Fig. 3H & cross-check with freedman2019 / freedman2019_code"}
+
+- id: q_freedman2019_fig4b_refutes_rate_independence_and_figs4c_excluded
+  kind: choice
+  about:
+    - kmc_domain_length_vs_actin
+    - kmc_domain_length_exp_fit
+    - kmc_domain_length_mean
+    - v_elong_leading_S1B
+    - freedman2019/fig4b_fascin_datum
+    - freedman2019/fig4b_alpha_actinin_datum
+    - freedman2019/figS4c_fascin_datum
+    - freedman2019/figS4c_alpha_actinin_datum
+  text: >
+    Cross-record validation design for freedman2019 + winkelman2016: (1) Winkelman et al.'s (2016,
+    Fig. S3B caption p. 18) constant-barrier KMC model explicitly excludes actin polymerization rate
+    ("not part of the model") and predicts symmetric domain lengths l_F = l_alpha = 3.74 um (exp_fit)
+    or 3.49 um (mean) at r = 1.0 regardless of actin concentration. Validating this rate-independent
+    prediction via `kmc_domain_length_vs_actin` against Freedman et al.'s (2019, Fig. 4B) independent
+    two-color TIRFM experiments (exact same labeled actin + labeled fascin + unlabeled alpha-actinin
+    protocol, 150 nM each, r = 1.0) refutes Winkelman's model on both species (`not reproduced` across
+    all 4 validations): even at 1.5 uM actin (46.99 +/- 3.62 nm/s), measured domains are shorter
+    (fascin 2.64 +/- 0.20 um, alpha-actinin 2.21 +/- 0.15 um), and slowing polymerization at 0.75 uM
+    actin (22.15 +/- 3.78 nm/s) triggers a 6.1x symmetry breaking (fascin 1.35 +/- 0.057 um vs
+    alpha-actinin 8.29 +/- 0.15 um) that Winkelman's symmetric KMC structurally cannot capture.
+    (2) Freedman's Fig. S4C (`figS4c_fascin_datum`, `figS4c_alpha_actinin_datum`, unlabeled actin +
+    labeled alpha-actinin at 3 uM and 1.5 uM actin) was intentionally excluded from validations.yaml
+    because Freedman et al. (p. 13 / SI-7 caption) explicitly warn that "it is harder to compare these
+    results to Ref. (6) [Winkelman 2016], since the affinities of the crosslinkers to actin are
+    different under these conditions" (note: Winkelman's KMC would also be refuted on Fig. S4C,
+    3.74 um vs 1.83/1.81 um fascin and 1.62/2.48 um alpha-actinin).
+    (3) Experimental growth-rate tension between papers at the same nominal 1.5 uM actin concentration:
+    Freedman et al. (2019, Fig. 4 caption) measure 46.99 +/- 3.62 nm/s (~17.4 sub/s at 2.7 nm/sub),
+    whereas Winkelman et al. (2016, Fig. S1A-B) measure 10 sub/s (~27 nm/s) for leading barbed ends
+    at 1.5 uM actin.
+  citation: {page: 18, printed_page: "SI-6", quote: "shown only for illustrative purposes and is not part of the", where: "Fig. S3B caption & cross-validation with freedman2019 Fig. 4B"}
+
+- id: q_claessens2008_no_relation_and_no_validation
+  kind: choice
+  about:
+    - ref-18
+    - KD_fascin_bundling
+    - hill_fascin_bundling
+    - d_fig1b_fascin_data
+    - d_interfil_fascin_EM
+    - d_interfil_fascin_TIRFM
+    - f_red_trailing_fascin_main
+    - claessens2008/effective_bound_ratio
+    - claessens2008/hexagonal_lattice_spacing
+  text: >
+    Cross-record audit of claessens2008 + winkelman2016: 0 cited.yaml links, 0 mathematical
+    relations, and 0 cross-record validations from winkelman2016 models. Winkelman et al. (2016,
+    p. 4 / 2699) cite Claessens et al. (2008) [ref-18] solely qualitatively ("perhaps because of a
+    structural difference in fascin bundles [18, 19]") when discussing the ~10% trailing barbed-end
+    elongation slowdown in fascin domains. Claessens et al. model equilibrium single-species fascin
+    multi-filament bundling (helical twist energy, hexagonal SAXS spacing a_H = 12.4 nm, bundle
+    diameter scaling D ~ (R*)^0.3, droplet confinement rings, 1:1 Langmuir depletion R*), whereas
+    Winkelman et al. model irreversible two-species fascin/alpha-actinin 1D KMC domain segregation,
+    single-molecule residence times, and trailing barbed-end elongation rates; none of Winkelman's
+    models predicts any measured Claessens quantity or shares a mathematical reduction with Claessens's
+    models. Notable physical cross-comparisons between the two papers' independent fascin measurements:
+    (1) Winkelman Fig. 1B low-speed sedimentation yields cooperative fascin bundling (K_D = 272 nM,
+    Hill n_H = 2.3, saturated Bound Fascin/F-actin ~= 0.16-0.18 mol/mol at 3 uM actin), whereas
+    Claessens uses non-cooperative Langmuir K_d = 150 nM (or 300 nM) and observes a higher
+    saturated effective bound ratio R*_plateau ~= 0.25 in multi-filament hexagonal bundles;
+    (2) Winkelman measures fascin interfilament spacing of ~8 nm (EM, Fig. 4H) and ~5 nm (TIRFM,
+    Fig. 4E), consistent with Claessens's center-to-center hexagonal SAXS spacing a_H = 12.4 nm
+    minus ~7-8 nm F-actin diameter (~4.4-5.4 nm edge-to-edge gap).
+  citation: {page: 4, printed_page: "2699", quote: "perhaps because of a structural difference in fascin bundles", where: text}
+
+- id: q_shin2009_no_relation_and_no_validation
+  kind: choice
+  about:
+    - ref-19
+    - KD_fascin_bundling
+    - hill_fascin_bundling
+    - d_fig1b_fascin_data
+    - d_fig5e_espin_density
+    - kmc_infinite_lattice_limit
+    - shin2009/mean_field_eos
+    - shin2009/composite_28_13_packing
+  text: >
+    Cross-record audit of shin2009 + winkelman2016: 0 cited.yaml links, 0 mathematical relations,
+    and 0 cross-record validations from winkelman2016 models. Winkelman et al. (2016, p. 4 / 2699)
+    cite Shin et al. (2009) [ref-19] solely qualitatively alongside Claessens [18] ("perhaps because
+    of a structural difference in fascin bundles [18, 19]"). Although both papers study cooperative
+    fascin (and espin) bundling on helical F-actin, their mathematical models describe distinct
+    physical regimes and quantities with no algebraic reduction or shared scaling law: Shin et al.
+    model equilibrium single-species twist-mediated cooperativity in infinite 3D hexagonal 28/13
+    bundles via the implicit grand-canonical mean-field EOS rho = (1 + z^-1 * exp(-u*rho))^-1
+    (bounded occupancy rho in (0, 1)) and perturbative/transfer-matrix helical overtwist Im[ln g],
+    whereas Winkelman et al. model irreversible two-species fascin/alpha-actinin domain run lengths
+    l_F = a * (1 + r * exp(eps_kBT)) (unbounded length in um) on a 1D 2-filament lattice with a
+    phenomenological heterologous switching barrier eps = 4.8 k_B T (and Winkelman does not print a
+    Hill-equation model for Fig. 1B's n_H = 2.3 sedimentation cooperativity). None of Winkelman's
+    models predicts Shin's measured SAXS Bragg peaks (q_10, q_11) or helical overtwist Delta_theta(R).
+    Physical cross-comparison: Shin's composite 28/13 packing gives f_bound = 6/28 = 0.214 bound
+    monomers/actin (= 0.107 cross-links/actin in hexagonal multi-filament packing) and fascin linker
+    size d_linker = 12.1 - 7.5 = 4.6 nm (espin 5.0 nm), matching Winkelman's compact bundler
+    dimensions (5-6 nm fascin, Fig. 1A; ~5 nm TIRFM / ~8 nm EM spacing, Fig. 4E/H) and Fig. 5E's
+    strong selective enrichment of espin on fascin bundles vs alpha-actinin bundles.
+  citation: {page: 4, printed_page: "2699", quote: "perhaps because of a structural difference in fascin bundles", where: text}
+
+- id: q_nastkolb2022_no_relation_and_no_validation
+  kind: choice
+  about:
+    - d_interfil_fascin_EM
+    - d_interfil_actinin_EM
+    - residence_time_from_koff
+    - bundle_lattice_length
+    - nastkolb2022/bundle_filament_count_2d_spacing
+    - nastkolb2022/frap_recovery_fit
+  text: >
+    Cross-record audit of nastkolb2022 + winkelman2016: 0 cited.yaml links, 0 mathematical
+    relations, and 0 cross-record validations. Nast-Kolb et al. (2022, p. 9) cite Winkelman et al.
+    (2016) once qualitatively ("since VASP and fascin achieve a different filament spacing"),
+    taking zero numerical values from winkelman2016. Nast-Kolb et al. study 2D lipid-bilayer
+    VASP-polymerized multi-filament actin bundles (measuring bundle widths 0.58-3.2 um, pore sizes,
+    bilayer decoration, and bulk VASP FRAP recovery curves), with models for transverse 2D filament
+    counts (N_f = W / d_spacing), linear width scaling (W ~ c_VASP), and bulk FRAP single-exponential
+    recovery (y = a*(1 - exp(-t/tau)) + c). None of winkelman2016's models (1D two-species
+    fascin/alpha-actinin KMC domain lengths, single-molecule cross-linker dwell time tau = 1/k_off,
+    trailing barbed-end elongation rate) relates mathematically to nastkolb2022's models or predicts
+    any measurement in nastkolb2022.
+  citation: {page: 7, printed_page: "2702", quote: "spacing of  8 nm for fascin and  32 nm for a-actinin", where: text}
+

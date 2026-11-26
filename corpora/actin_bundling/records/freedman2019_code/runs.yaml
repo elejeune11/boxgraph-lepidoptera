@@ -1,0 +1,444 @@
+# ==============================================================================
+# 1. Live kmc.ipynb runs (software: true)
+# ==============================================================================
+- id: run_kmc_code_params_fig3b
+  model: kmc_notebook_bending_and_switching
+  inputs:
+    site_width: kmc_site_width
+    l_long: kmc_alpha_actinin_len
+    l_short: kmc_fascin_len
+    Lp: kmc_Lp
+    x_sites: kmc_n_binding_sites_fig3b
+    max_filament_length: kmc_max_filament_length
+  settings: {}
+  outputs:
+    dxl: kmc_code_dxl_out
+    max_n_sites: kmc_code_max_n_sites_out
+    gap_distance: kmc_code_gap20_out
+    U_kBT: kmc_code_U20_out
+    p_switch: kmc_code_pswitch20_out
+  note: "Live kmc.ipynb Cell 2-4 evaluation at the code's actual transposed parameters (site_width=35 nm, dxl=37-8=29 nm)."
+
+- id: run_kmc_figs3a_code_exact
+  model: kmc_notebook_growing_bundle
+  inputs:
+    site_width: kmc_site_width
+    dxl: kmc_dxl_code
+    max_filament_length: kmc_max_filament_length
+    extension_rate: kmc_figs3a_extension_rate
+    kon2: kmc_figs3a_kon
+    kratio: probe_kratio_one
+    Lp: kmc_Lp
+  settings:
+    seed: 1
+    num_trials: 1000
+    max_extensions: 200
+    warmup_trial: true
+  replicates: 1
+  outputs:
+    switching_ratio: kmc_figs3a_code_ratio
+    effective_barrier: kmc_figs3a_code_eps
+    mean_domain_length_A: kmc_figs3a_code_dl_A
+    mean_domain_length_B: kmc_figs3a_code_dl_B
+    max_n_sites: kmc_figs3a_code_nsites
+  note: "Exact seeded reproduction of kmc.ipynb Cell 5 (1 warmup trial) + Cell 6 (1000 trials, seed=1) with code parameters site_width=35 nm, dxl=29 nm."
+
+- id: run_kmc_figs3a_paper_params
+  model: kmc_notebook_growing_bundle
+  inputs:
+    site_width: paper_binding_site_spacing_lb
+    dxl: paper_delta_l_xl_physiological
+    max_filament_length: kmc_max_filament_length
+    extension_rate: kmc_figs3a_extension_rate
+    kon2: kmc_figs3a_kon
+    kratio: probe_kratio_one
+    Lp: kmc_Lp
+  settings:
+    seed: 1
+    num_trials: 1000
+    max_extensions: 200
+    warmup_trial: true
+  replicates: 1
+  outputs:
+    switching_ratio: kmc_figs3a_paper_ratio
+    effective_barrier: kmc_figs3a_paper_eps
+    mean_domain_length_A: kmc_figs3a_paper_dl_A
+    mean_domain_length_B: kmc_figs3a_paper_dl_B
+    max_n_sites: kmc_figs3a_paper_nsites
+  note: "Live kmc.ipynb run at the companion paper's stated parameters (l_b=37 nm, Delta l_xl=27 nm), quantifying the 39% switching-ratio discrepancy caused by the Cell 2 35/37 transposition."
+
+- id: run_kmc_cell9_kratio_sweep
+  model: kmc_notebook_growing_bundle
+  inputs:
+    site_width: kmc_site_width
+    dxl: kmc_dxl_code
+    max_filament_length: kmc_max_filament_length
+    extension_rate: kmc_figs3a_extension_rate
+    kon2: kmc_figs3a_kon
+    Lp: kmc_Lp
+  sweep:
+    kratio: kmc_cell9_eps_table
+  settings:
+    seed: 10
+    num_trials: 150
+    max_extensions: 200
+    warmup_trial: false
+  replicates: 3
+  outputs:
+    switching_ratio: kmc_cell9_ratio_pred
+    effective_barrier: kmc_cell9_eps_pred
+    mean_domain_length_A: kmc_cell9_dl_A_pred
+    mean_domain_length_B: kmc_cell9_dl_B_pred
+    max_n_sites: kmc_cell9_nsites_pred
+  note: "Reduced-trial sweep (150 trials x 3 replicates vs 1000 trials in Cell 9) across kratio in {0.3, 0.5, 1.0, 1.5, 2.0, 2.5} to validate Cell 9 stdout table within runtime budget."
+
+- id: run_kmc_figs3a_refine_base
+  model: kmc_notebook_growing_bundle
+  inputs:
+    site_width: kmc_site_width
+    dxl: kmc_dxl_code
+    max_filament_length: kmc_max_filament_length
+    extension_rate: kmc_figs3a_extension_rate
+    kon2: kmc_figs3a_kon
+    kratio: probe_kratio_one
+    Lp: kmc_Lp
+  settings:
+    seed: 101
+    num_trials: 100
+    max_extensions: 200
+    warmup_trial: false
+  replicates: 1
+  outputs:
+    switching_ratio: kmc_refine_ratio
+    effective_barrier: kmc_refine_eps
+    mean_domain_length_A: kmc_refine_dl_A
+    mean_domain_length_B: kmc_refine_dl_B
+    max_n_sites: kmc_refine_nsites
+  note: "Base run for num_trials refinement (100 -> 200 -> 400 trials) verifying statistical convergence of kmc_notebook_growing_bundle."
+
+# ==============================================================================
+# 2. AFINES C++ derived parameter mapping runs
+# ==============================================================================
+- id: run_afines_params_grow_cfg
+  model: afines_parameter_mapping
+  inputs:
+    nmonomer: cfg_nmonomer_grow
+    link_length: cfg_link_length
+    nlink_max: cfg_nlink_max
+    polymer_bending_modulus: cfg_polymer_bending_modulus
+    temperature: cfg_temperature_kBT
+    viscosity: cfg_viscosity
+    actin_length: cfg_actin_length_radius
+    spacer1_length: cfg_spacer1_length
+    spacer2_length: cfg_spacer2_length
+    s1_bend: cfg_s1_bend
+    s2_bend: cfg_s2_bend
+    xrange: cfg_xrange
+    yrange: cfg_yrange
+    grid_factor: cfg_grid_factor
+    spacer2_density: cfg_spacer2_density
+    nfixed: readme_nfixed
+    lattice_mu: readme_lattice_mu
+  settings: {}
+  outputs:
+    n_links_init: afines_grow_nlinks_init
+    init_filament_length: afines_grow_init_len
+    max_filament_length: afines_grow_max_len
+    persistence_length: afines_grow_Lp_default
+    kb_short_eff: afines_grow_kb_short_eff
+    kb_long_eff: afines_grow_kb_long_eff
+    kb_ratio_eff: afines_grow_kb_ratio_eff
+    s_bend_ratio_raw: afines_grow_sbend_ratio_raw
+    damp_bead: afines_grow_damp_bead
+    mu_bead: afines_grow_mu_bead
+    D_bead: afines_grow_D_bead
+    damp_short: afines_grow_damp_short
+    D_short: afines_grow_D_short
+    damp_long: afines_grow_damp_long
+    D_long: afines_grow_D_long
+    xgrid: afines_grow_xgrid
+    ygrid: afines_grow_ygrid
+    n_spacers_total: afines_grow_ntot
+    n_spacers_random: afines_grow_nrand
+    lattice_mu_kBT: afines_grow_mu_kBT
+  note: "Derived AFINES parameters for grow.cfg (nmonomer=2, s1_bend=0.005, s2_bend=0.06, temperature=0.004)."
+
+- id: run_afines_params_lkb_min
+  model: afines_parameter_mapping
+  inputs:
+    nmonomer: cfg_nmonomer_nogrow
+    link_length: cfg_link_length
+    nlink_max: cfg_nlink_max
+    polymer_bending_modulus: readme_lkb_min
+    temperature: cfg_temperature_kBT
+    viscosity: cfg_viscosity
+    actin_length: cfg_actin_length_radius
+    spacer1_length: cfg_spacer1_length
+    spacer2_length: cfg_spacer2_length
+    s1_bend: cfg_s1_bend
+    s2_bend: cfg_s2_bend
+    xrange: cfg_xrange
+    yrange: cfg_yrange
+    grid_factor: cfg_grid_factor
+    spacer2_density: cfg_spacer2_density
+    nfixed: readme_nfixed
+    lattice_mu: readme_lattice_mu
+  settings: {}
+  outputs:
+    n_links_init: afines_nogrow_nlinks_init
+    init_filament_length: afines_nogrow_init_len
+    max_filament_length: afines_nogrow_max_len
+    persistence_length: afines_lp_min_code
+    kb_short_eff: afines_lkbmin_kb_short_eff
+    kb_long_eff: afines_lkbmin_kb_long_eff
+    kb_ratio_eff: afines_lkbmin_kb_ratio_eff
+    s_bend_ratio_raw: afines_lkbmin_sbend_ratio_raw
+    damp_bead: afines_lkbmin_damp_bead
+    mu_bead: afines_lkbmin_mu_bead
+    D_bead: afines_lkbmin_D_bead
+    damp_short: afines_lkbmin_damp_short
+    D_short: afines_lkbmin_D_short
+    damp_long: afines_lkbmin_damp_long
+    D_long: afines_lkbmin_D_long
+    xgrid: afines_lkbmin_xgrid
+    ygrid: afines_lkbmin_ygrid
+    n_spacers_total: afines_lkbmin_ntot
+    n_spacers_random: afines_lkbmin_nrand
+    lattice_mu_kBT: afines_lkbmin_mu_kBT
+  note: "Checks nogrow.cfg (nmonomer=16 -> 15 links) and minimum bending modulus 0.01 pN*um^2 / 0.004 pN*um = 2.5 um."
+
+- id: run_afines_params_lkb_max_fig5kb
+  model: afines_parameter_mapping
+  inputs:
+    nmonomer: cfg_nmonomer_grow
+    link_length: cfg_link_length
+    nlink_max: cfg_nlink_max
+    polymer_bending_modulus: readme_lkb_max
+    temperature: cfg_temperature_kBT
+    viscosity: cfg_viscosity
+    actin_length: cfg_actin_length_radius
+    spacer1_length: cfg_spacer1_length
+    spacer2_length: cfg_spacer2_length
+    s1_bend: cfg_s1_bend
+    s2_bend: plots_s2kb_fig5
+    xrange: cfg_xrange
+    yrange: cfg_yrange
+    grid_factor: cfg_grid_factor
+    spacer2_density: cfg_spacer2_density
+    nfixed: readme_nfixed
+    lattice_mu: readme_lattice_mu
+  settings: {}
+  outputs:
+    n_links_init: afines_fig5kb_nlinks_init
+    init_filament_length: afines_fig5kb_init_len
+    max_filament_length: afines_fig5kb_max_len
+    persistence_length: afines_lp_max_code
+    kb_short_eff: afines_fig5kb_kb_short_eff
+    kb_long_eff: afines_fig5kb_kb_long_eff
+    kb_ratio_eff: afines_fig5kb_kb_ratio_eff
+    s_bend_ratio_raw: afines_fig5kb_sbend_ratio_raw
+    damp_bead: afines_fig5kb_damp_bead
+    mu_bead: afines_fig5kb_mu_bead
+    D_bead: afines_fig5kb_D_bead
+    damp_short: afines_fig5kb_damp_short
+    D_short: afines_fig5kb_D_short
+    damp_long: afines_fig5kb_damp_long
+    D_long: afines_fig5kb_D_long
+    xgrid: afines_fig5kb_xgrid
+    ygrid: afines_fig5kb_ygrid
+    n_spacers_total: afines_fig5kb_ntot
+    n_spacers_random: afines_fig5kb_nrand
+    lattice_mu_kBT: afines_fig5kb_mu_kBT
+  note: "Checks maximum bending modulus 0.5 pN*um^2 / 0.004 pN*um = 125 um and plots.nb Fig. 5C/5E s2kb=0.0675 ratio (kb_ratio_eff=9.0, raw=13.5)."
+
+# ==============================================================================
+# 3. AFINES C++ barbed-end growth & link-splitting runs
+# ==============================================================================
+- id: run_growth_min_00025
+  model: afines_barbed_end_growth_cpp
+  inputs:
+    kgrow: cfg_kgrow
+    lgrow: readme_lgrow_min
+    spring_l0: cfg_link_length
+    l0_max: cfg_l0max
+    n_links_init: afines_grow_nlinks_init
+    nlink_max: cfg_nlink_max
+  settings: {}
+  outputs:
+    k_grow_nominal: growth_min_nominal
+    k_grow_realized: growth_min_realized
+    steps_per_split: growth_min_steps
+    overshoot_per_split: growth_min_overshoot
+    mean_time_to_max_length: growth_min_t_done
+  note: "Tests Fig. 5C / Movie S6 minimum growth increment lgrow = 0.0025 um (401 IEEE-754 steps per split, ~5614 s to reach 15 um)."
+
+- id: run_growth_max_010
+  model: afines_barbed_end_growth_cpp
+  inputs:
+    kgrow: cfg_kgrow
+    lgrow: readme_lgrow_max
+    spring_l0: cfg_link_length
+    l0_max: cfg_l0max
+    n_links_init: afines_grow_nlinks_init
+    nlink_max: cfg_nlink_max
+  settings: {}
+  outputs:
+    k_grow_nominal: growth_max_nominal
+    k_grow_realized: growth_max_realized
+    steps_per_split: growth_max_steps
+    overshoot_per_split: growth_max_overshoot
+    mean_time_to_max_length: growth_max_t_done
+  note: "Tests maximum growth increment lgrow = 0.1 um (exact 10 steps per split, zero overshoot, 100 nm/s)."
+
+- id: run_growth_nondivisor_003
+  model: afines_barbed_end_growth_cpp
+  inputs:
+    kgrow: cfg_kgrow
+    lgrow: readme_lgrow_003
+    spring_l0: cfg_link_length
+    l0_max: cfg_l0max
+    n_links_init: afines_grow_nlinks_init
+    nlink_max: cfg_nlink_max
+  settings: {}
+  outputs:
+    k_grow_nominal: growth_003_nominal
+    k_grow_realized: growth_003_realized
+    steps_per_split: growth_003_steps
+    overshoot_per_split: growth_003_overshoot
+    mean_time_to_max_length: growth_003_t_done
+  note: "Quantifies discarded 0.02 um split overshoot at lgrow = 0.03 um (34 steps -> 29.41 nm/s realized vs 30 nm/s nominal)."
+
+- id: run_growth_nondivisor_007
+  model: afines_barbed_end_growth_cpp
+  inputs:
+    kgrow: cfg_kgrow
+    lgrow: readme_lgrow_007
+    spring_l0: cfg_link_length
+    l0_max: cfg_l0max
+    n_links_init: afines_grow_nlinks_init
+    nlink_max: cfg_nlink_max
+  settings: {}
+  outputs:
+    k_grow_nominal: growth_007_nominal
+    k_grow_realized: growth_007_realized
+    steps_per_split: growth_007_steps
+    overshoot_per_split: growth_007_overshoot
+    mean_time_to_max_length: growth_007_t_done
+  note: "Quantifies discarded 0.05 um split overshoot at lgrow = 0.07 um (15 steps -> 66.67 nm/s realized vs 70 nm/s nominal)."
+
+# ==============================================================================
+# 4. AFINES C++ excluded volume, filament mechanics, spacer mechanics/MC, & Mathematica processing runs
+# ==============================================================================
+- id: run_exv_fig2d
+  model: afines_excluded_volume_cpp
+  inputs:
+    kexv: plots_kexv_fig2d
+    rmax: cfg_rmax
+    sep_parallel: probe_exv_sep_half_rmax
+    link_length: cfg_link_length
+  settings: {}
+  outputs:
+    U_parallel: exv_U_par
+    F_parallel_code: exv_F_par_code
+    F_parallel_analytic_neg_grad: exv_F_par_analytic
+    F_crossing_midpoint_code: exv_F_cross_mid
+    F_crossing_near_end_total_code: exv_F_cross_end
+  note: "Verifies exact -grad U consistency for kexv=0.08 pN*um and exposes the midpoint crossing zero-force bug and near-end 45-degree doubled-force bug."
+
+- id: run_filament_mech_default
+  model: afines_filament_mechanics_cpp
+  inputs:
+    kl: cfg_link_stretching_stiffness
+    l0: cfg_link_length
+    llen: probe_filament_stretch_len
+    polymer_bending_modulus: cfg_polymer_bending_modulus
+    bend_angle: probe_filament_bend_angle
+    max_small_angle: cpp_max_small_angle
+    temperature: cfg_temperature_kBT
+    viscosity: cfg_viscosity
+    actin_length: cfg_actin_length_radius
+    dt: cfg_dt
+  settings: {}
+  outputs:
+    U_stretch: fil_U_stretch
+    F_stretch: fil_F_stretch
+    U_bend: fil_U_bend
+    F_bend_end_bead: fil_F_bend_end
+    F_bend_net_residual: fil_F_bend_net_res
+    D_bead_lm: fil_D_bead_lm
+  note: "Verifies Hookean stretching, LAMMPS bending force conservation, and Leimkuhler-Matthews diffusion equivalence D = kT / (6*pi*vis*rad)."
+
+- id: run_spacer_mc_short_bug
+  model: afines_spacer_mechanics_and_mc_cpp
+  inputs:
+    mld: cfg_spacer1_length
+    mk: cfg_spacer1_stiffness
+    s_bend: cfg_s1_bend
+    th0: cpp_s1_ang_default
+    link_length: cfg_link_length
+    head_sep_y: probe_spacer_head_sep_y
+    tilt_dx: probe_spacer_tilt_dx
+    pre_bind_dy: probe_spacer_pre_bind_dy
+    pos_a_end: probe_spacer_pos_a_end
+    stale_b_eng: probe_spacer_stale_b_eng
+    kon: cfg_s1_kon
+    dt: cfg_dt
+    temperature: cfg_temperature_kBT
+  settings: {}
+  outputs:
+    kb_eff: spacer_short_kb_eff
+    U_bend_both_heads: spacer_short_U_bend_both
+    F_total_residual: spacer_short_F_res
+    delE_code_buggy: spacer_short_delE_buggy
+    delE_true_physical: spacer_short_delE_true
+    delE_discrepancy: spacer_short_delE_diff
+    prob_attach_code_buggy: spacer_short_prob_buggy
+    prob_attach_true_physical: spacer_short_prob_true
+  note: "Verifies doubly-bound spacer force balance and quantifies the stale-position/single-head/unreset-b_eng bugs in src/spacer.cpp:220-224,355-378."
+
+- id: run_lattice_domain_proc
+  model: afines_lattice_and_domain_processing
+  inputs:
+    l0: proc_lattice_l0
+    lmax: kmc_max_filament_length
+    nc: proc_domain_nc
+    rc: proc_domain_rc
+  settings: {}
+  outputs:
+    min_domain_length: proc_min_dom_len
+    merged_short_domain_length: proc_merged_len
+    unmerged_long_domain_length: proc_unmerged_len
+    tied_bin_label: proc_tied_label
+    n_bins_total: proc_n_bins
+  note: "Verifies Mathematica afines2lattice.m (37 nm bins -> 405 sites, ties -> 0) and LatticeDomainMerge (nc=4, rc=1 um, span = x_last - x_first)."
+
+# ==============================================================================
+# 5. Integrated mini-trajectory AFINES bundle port run
+# ==============================================================================
+- id: run_bundle_port_short_relax
+  model: afines_two_filament_bundle_port
+  inputs:
+    link_length: cfg_link_length
+    link_stretching_stiffness: cfg_link_stretching_stiffness
+    polymer_bending_modulus: cfg_polymer_bending_modulus
+    actin_length: cfg_actin_length_radius
+    spacer_length: cfg_spacer1_length
+    spacer_stiffness: cfg_spacer1_stiffness
+    spacer_bend: cfg_s1_bend
+    kexv: plots_kexv_fig2d
+    rmax: cfg_rmax
+    temperature: cfg_temperature_kBT
+    viscosity: cfg_viscosity
+    dt: cfg_dt
+    nfixed: readme_nfixed
+  settings:
+    seed: 1
+    t_sim_s: 0.01
+    n_links: 3
+    dt_scale: 1.0
+  replicates: 1
+  outputs:
+    final_alignment: bundle_port_alignment
+    final_mean_separation: bundle_port_mean_sep
+    final_total_pe: bundle_port_total_pe
+  note: "Short-horizon (0.01 s = 500 steps at dt=2e-5 s) integrated 2-filament bundle relaxation with 9 seed spacers, LAMMPS bending, and excluded volume."

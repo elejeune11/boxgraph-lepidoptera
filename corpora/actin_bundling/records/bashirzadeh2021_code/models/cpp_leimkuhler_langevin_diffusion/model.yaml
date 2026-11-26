@@ -1,0 +1,25 @@
+id: cpp_leimkuhler_langevin_diffusion
+name: Line-by-line Python port of C++ Leimkuhler-Matthews overdamped Langevin integrator (src/filament.cpp:67,92-105; src/motor.cpp:35-36,485-491)
+role: model
+stated:
+  file: src/motor.cpp
+  lines: "485-491"
+  quote: "vec_type v = force[hd] / damp + bd_prefactor * (new_rnd + prv_rnd[hd]);"
+  where: "src/motor.cpp:35-36,97-98,485-491; src/filament.cpp:67,92-105; src/bead.cpp:20-22; src/ext.cpp:11-22"
+equation: "damp = 6*pi*vis*r_hydro; bd_prefactor = sqrt(kT/(2*damp*dt)); v_n = F_n/damp + bd_prefactor*(R_n + R_{n-1}); x_{n+1} = x_n + v_n*dt; verifies free 2D MSD diffusivity D = <dr^2>/(4*t) = kT/damp and harmonic Boltzmann variance <x^2> = kT/k_trap"
+inputs:
+  viscosity: {quantity: dynamic_viscosity, unit: mg/(um*s)}
+  r_hydro: {quantity: crosslinker_length, unit: um}
+  temperature: {quantity: thermal_energy, unit: pN*um}
+  k_trap: {quantity: confinement_stiffness, unit: pN/um}
+  dt: {quantity: time_step, unit: s}
+outputs:
+  D_theory: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_sim: {quantity: diffusion_coefficient, unit: um^2/s}
+  var_x_boltzmann: {quantity: position_variance, unit: um^2}
+  var_x_sim: {quantity: position_variance, unit: um^2}
+settings:
+  n_steps: 2000
+  n_particles: 2000
+  seed: 42
+stochastic: true

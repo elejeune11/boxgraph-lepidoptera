@@ -1,0 +1,597 @@
+- id: q_eq14_15_missing_dissociation
+  kind: possible_error
+  about:
+    - kinetic_ss_infinite_pool_eq6_16
+    - kinetic_ss_infinite_pool_conserved
+    - kinetic_pde_cylinder_eq6_16
+    - kinetic_pde_cylinder_conserved
+    - kinetic_pde_cone_eq6_16
+    - kinetic_pde_cone_conserved
+  text: >
+    Printed boundary conditions Eqs. (14) and (15) (SI p. 12, PDF p. 23) omit the reverse
+    dissociation release terms +k_2*V* (for G-actin) and +k_4*A* (for Arp2/3), despite
+    reaction Eq. (3) and surface PDEs Eqs. (6)-(8) explicitly treating V + G <-> V* and
+    V* + Arp2/3 <-> A* as reversible. Omitting +k_2*V* and +k_4*A* breaks mass conservation
+    and turns the membrane into a massive one-way monomer sink even at B = 0 (collapsing
+    G|_0 from 3 to 0.15 uM in the infinite-pool cylinder and draining G to 0 in the closed
+    cone), yielding total extinction (B = 0) in the finite-pool cone and 7-14x suppressed
+    steady states (64.5, 12.6, 0 /um^2 vs ~470, ~175, ~98 /um^2) in the cylinder. Restoring
+    +k_2*V* and +k_4*A* in the conserved variants immediately reproduces Fig. 5c-f, Supp
+    Fig. 11, and Supp Fig. 14.
+  citation: {page: 23, printed_page: "SI 12", quote: "But appear as boundary conditions", where: "Eqs. 14-16"}
+
+- id: q_membrane_laplacian_comsol
+  kind: choice
+  about:
+    - kinetic_pde_cylinder_conserved
+    - kinetic_pde_cylinder_conserved_cartesian_mem
+    - kinetic_pde_cone_conserved
+    - kinetic_pde_cone_conserved_cartesian_mem
+  text: >
+    With mass-conserving BCs restored, the mathematically faithful 2D axisymmetric membrane
+    Laplacian (1/r) d_r(r d_r u) reproduces all steady states (B_100 = 471, 177, 99 /um^2)
+    and qualitative cone patterns (flat at 40 and 120 nM, double-peaked ring at 80 nM), but
+    produces transient center peaks ~25-50% above Fig. 5c, 5e, 5f and Supp Fig. 14 (e.g.
+    cylinder B_peak = 524, 360, 262 /um^2; branching peak = 227, 202, 177 /um^2/s). In
+    contrast, replacing the membrane Laplacian with 1D Cartesian d^2u/dr^2 while keeping 3D
+    axisymmetric bulk diffusion (as occurs in COMSOL Multiphysics 5.3 if a Coefficient Form
+    Boundary PDE on a 2D axisymmetric boundary line omits the cylindrical Jacobian r)
+    reproduces every transient peak height and colorbar maximum across Fig. 5c-f and Supp
+    Fig. 14 (cylinder B_peak = 415, 258, 187; branching peak = 148, 134, 119; cone B_peak =
+    371, 233, 145; cone V_tot max = 2072, 1924, 1513). Both variants are retained because
+    the COMSOL source file is not published.
+  citation: {page: 23, printed_page: "SI 12", quote: "denotes the diffusion operator at the membrane", where: "Eqs. 6-9"}
+
+- id: q_b0_seed_normalization
+  kind: reading
+  about:
+    - B0_seed_norm
+    - sigma_seed
+    - kinetic_pde_cylinder_eq6_16
+    - kinetic_pde_cone_eq6_16
+  text: >
+    SI p. 13 states that the initial barbed-end distribution B_0(r, 0) is a Gaussian around
+    r = 0 with sigma = 10 nm "normalized to 1/um^2". Literally, a 2D area-normalized
+    Gaussian (integral = 1 barbed end) has peak 1/(2*pi*sigma^2) ~ 1592 /um^2 at r = 0,
+    producing an initial spike not visible in Fig. 5c, whereas a Gaussian with peak
+    amplitude 1 /um^2 (exp(-r^2/(2*sigma^2))) starts visually at 0 and reproduces the
+    delay and peak timing of Fig. 5c-e (~4.5 s for A*_max, ~10-14 s for B_max). The models
+    adopt peak amplitude 1 /um^2.
+  citation: {page: 24, printed_page: "SI 13", quote: "normalized to 1/µm2 to describe the seeding event", where: "Supplementary Note 2"}
+
+- id: q_dv_missing_asterisk
+  kind: possible_error
+  about: [D_V, D_Vstar]
+  text: >
+    SI p. 12 first states "DV=1.59 um^2/s, determined by FRAP" and in the next sentence
+    prints "DV=0.96 um^2/s" without a superscript asterisk, colliding with D_V and omitting
+    the symbol D_V* required by Eq. (7). From physical ordering (V* = VCAG is larger than V)
+    and Einstein-Stokes scaling, 0.96 um^2/s clearly denotes D_V*.
+  citation: {page: 23, printed_page: "SI 12", quote: "DArp=17 µm²/s, DV=0.96 µm²/s, DA=0.84 µm²/s)", where: "Supplementary Note 2"}
+
+- id: q_stokes_einstein_mw_and_da
+  kind: unstated_input
+  about:
+    - stokes_einstein_scaling
+    - D_CP
+    - D_Arp
+    - D_Vstar
+    - D_A
+    - mw_actin_added
+    - mw_cp_added
+    - mw_arp23_added
+    - mw_vca_added
+    - mw_vcag_added
+    - mw_arpstar_added
+  text: >
+    SI p. 12 derives D_CP, D_Arp, D_V*, and D_A by Einstein-Stokes globular protein scaling
+    from D_G = 30 um^2/s and D_V = 1.59 um^2/s without reporting any protein molecular
+    weights or the membrane drag formula. Using standard molecular weights (actin 42 kDa,
+    CP 64 kDa, Arp2/3 224 kDa, His-VCA 12 kDa, VCAG 54 kDa, Arp* 278 kDa), 3D M^(-1/3)
+    scaling reproduces D_CP = 26, D_Arp = 17, and D_V* = 0.96 um^2/s, but predicts D_A =
+    0.56 um^2/s rather than the printed 0.84 um^2/s (an unexplained 50% discrepancy,
+    cmp_se_D_A).
+  citation: {page: 23, printed_page: "SI 12", quote: "scaled from these values according to the Einstein-Stokes equation", where: "Supplementary Note 2"}
+
+- id: q_cone_radius_40nM
+  kind: unexplained_difference
+  about:
+    - cone_disk_radius
+    - r_cone_40nM
+    - r_cone_80nM
+    - N_domains_40nM_sim
+    - N_domains_80nM_sim
+  text: >
+    Equal-area and equal-volume conical partitioning of a sphere of radius R = 18 um into N
+    domains gives r_cone = 2*R/sqrt(N) = 6.09 um for N = 35 (reproducing 6 um at 80 nM CP)
+    but 9.00 um for N = 16 (or 9.14 um for the protrusion median 15.5 in Supp Fig. 6) rather
+    than the printed 10 um at 40 nM CP (cmp_r_cone_40nM). Also note that 80 nM CP was not
+    measured in the Supp Fig. 4 GUV morphology assay (which tested 40, 60, 120, 180 nM CP),
+    yet 35 domains (the flat-domain median in Supp Fig. 6) is used for 80 nM CP.
+  citation: {page: 22, printed_page: "SI 11", quote: "We use 10 µm at 40 nM CP (16 domains)", where: "Supplementary Note 2"}
+
+- id: q_kdeg_equiv_cp_factor4
+  kind: possible_error
+  about: [degradation_equivalent_cp, k_Deg, k_Cap, cp_equiv_kdeg]
+  text: >
+    SI p. 13 describes k_Deg = 0.001 /s as "comparable to 1 nM CP", whereas dividing by
+    k_Cap = 4 /(uM*s) gives k_Deg / k_Cap = 0.25 nM CP (4-fold smaller; 1 nM CP corresponds
+    to a capping rate of 0.004 /s).
+  citation: {page: 24, printed_page: "SI 13", quote: "choose a small rate kDeg=0.001 /s, that is comparable to 1 nM CP", where: "Supplementary Note 2"}
+
+- id: q_fig5d_yaxis_unit_typo
+  kind: possible_error
+  about: [Astar_ss_80nM_fig5d, Astar_ss_120nM_fig5d]
+  text: >
+    Fig. 5d (p. 7) prints the y-axis label "Activated Arp2/3* (1/um^2 s)", which is a rate
+    unit rather than a surface density. In Eq. (8), A* is an areal density in 1/um^2,
+    matching the plotted steady-state values A*_ss = (k_Cap*CP|_0 + k_Deg)/k_Arp ~ 11.4 and
+    19.6 /um^2 at 80 and 120 nM CP.
+  citation: {page: 7, printed_page: "7", quote: "Activated Arp2/3*", where: "Fig. 5d"}
+
+- id: q_b_max_450_vs_suppfig11
+  kind: possible_error
+  about: [B_max_model_text, B_ss_40nM_suppfig11, kinetic_ss_infinite_pool_conserved]
+  text: >
+    Discussion (p. 8) states that barbed-end density in the model system is "<=450/um^2".
+    While this holds for t <= 40 s in Fig. 5c and 5f, Supp Fig. 11 (p. 18) and the
+    mass-conserving steady-state model reach ~470-475 /um^2 at t = 100 s for 40 nM CP.
+  citation: {page: 8, printed_page: "8", quote: "barbed ends in our model system is low (<=450/µm2) and", where: "Discussion"}
+
+- id: q_vca_4fold_time_window
+  kind: reading
+  about:
+    - vca_fold_enrichment_claimed
+    - Vtot_cone_peak_40nM_suppfig14
+    - run_cone_conserved_40nM
+    - run_cone_conserved_40nM_100s
+  text: >
+    SI p. 13 cites Supp Fig. 14 for an "approximately 4-fold higher VCA concentration in
+    the final domain compared to its environment", but Supp Fig. 14 plots t = 0 to 40 s
+    (with negative tick labels "0, -20, -40" on the time axis) where the center-to-edge
+    ratio is ~2.5-2.9x. Integrating the mass-conserving cone PDE to t = 100-200 s yields
+    4.0-4.1x enrichment at 40 and 80 nM CP.
+  citation: {page: 24, printed_page: "SI 13", quote: "approximately 4-fold higher VCA concentration in the final domain", where: "Supplementary Note 2"}
+
+- id: q_in_vivo_concave_convex_reversal
+  kind: possible_error
+  about: [vesicle_increase_cp_dox, lamellipodium_thick_cp_dox]
+  text: >
+    Main text p. 7 writes that increasing CP concentration is sufficient "to induce and
+    shift membrane deformations from concave to convex in vivo", reversing the direction
+    demonstrated throughout the rest of the paper (low CP favors convex outward
+    protrusions/microspikes; high CP shifts deformations from convex to concave inward
+    invaginations and intracellular vesicles).
+  citation: {page: 7, printed_page: "7", quote: "deformations from concave to convex in vivo, but further implies", where: "Results"}
+
+- id: q_fig6d_vesicle_50pct_vs_2fold
+  kind: possible_error
+  about: [vesicle_increase_cp_dox]
+  text: >
+    Main text p. 7 claims CP overexpression produced "a substantial increase of
+    actin-containing vesicles by about 50% (Fig. 6d)", whereas Fig. 6d (p. 8) shows the
+    median rising from ~0.12-0.13 in controls (no CP Dox, CP no Dox) to ~0.29 in CP Dox,
+    which is roughly a ~130% (>2-fold) increase rather than 50%. In addition, Fig. 6d
+    labels its y-axis "N_Vesicles/cell" while the caption states the count was "normalized
+    to cell area" without specifying area units. Quantitative resolution awaits the
+    downstream digitize stage.
+  citation: {page: 7, printed_page: "7", quote: "actin-containing vesicles by about 50% (Fig. 6d)", where: "Results"}
+
+- id: q_doxycycline_concentration_mismatch
+  kind: possible_error
+  about: [dox_conc_main, dox_conc_suppfig12]
+  text: >
+    Fig. 6 caption (p. 8) and Methods (p. 10) report doxycycline induction at 1 ug/ml
+    (~2.25 uM for MW 444.4 g/mol), whereas Supp Fig. 12 caption (p. 18) prints "1 uM
+    Doxycyclin".
+  citation: {page: 18, printed_page: "SI 7", quote: "before and after induction with 1 µM Doxycyclin", where: "Supp Fig. 12"}
+
+- id: q_curvature_sign_convention
+  kind: reading
+  about:
+    - domain_curv_40nM_suppfig9
+    - domain_curv_60nM_nomyosin
+    - domain_curv_120nM_nomyosin
+    - domain_curv_60nM_myosin
+    - domain_curv_120nM_myosin
+  text: >
+    Curvatures of concavely bent actin domains are reported with negative signs in the main
+    text (p. 4) and Fig. 4b-c axes (-0.1 to -0.5 um^-1), but printed as positive magnitudes
+    in Fig. 4 caption (p. 6: 0.1, 0.13, 0.12, 0.22, 0.5 um^-1) and Supp Fig. 9 (p. 17:
+    0.07 um^-1).
+  citation: {page: 6, printed_page: "6", quote: "The median curvature increased from 0.1", where: "Fig. 4 caption"}
+
+- id: q_closed_cortex_40nM_and_20nM
+  kind: possible_error
+  about: [frac_cortex_20nM, frac_cortex_120nM]
+  text: >
+    Main text p. 3 states "Only at low (20 nM) and high (120 and 180 nM) CP concentrations
+    closed cortex formation was observable (40% and 60%, respectively)", rounding the 20 nM
+    cortex fraction from 42% (p. 2 and Supp Fig. 2) to 40% and overlooking the ~10% closed
+    cortex bar visible at 40 nM CP in Supp Fig. 4 (p. 13).
+  citation: {page: 3, printed_page: "3", quote: "concentrations closed cortex formation was observable (40%", where: "Results"}
+
+- id: q_citation_and_figure_typos
+  kind: possible_error
+  about: [kinetic_pde_cylinder_eq6_16, kinetic_pde_cone_eq6_16]
+  text: >
+    Three cross-reference misprints appear in the text: (i) p. 5 cites Ref. 33 (Simunovic
+    et al. 2017, BAR protein scission) instead of Ref. 17 (Mogilner & Edelstein-Keshet
+    2002) for the kinetic reaction equations; (ii) p. 8 cites Ref. 17 instead of Ref. 29
+    (Mejillano et al. 2004) for filopodia induction by CP depletion; and (iii) SI p. 13
+    cites "(Fig. 5c)" instead of "(Fig. 5f)" for approximately linear radial spreading in
+    the r-direction.
+  citation: {page: 24, printed_page: "SI 13", quote: "linear growth regime in r-direction, despite the assumption of diffusive branching", where: "Supplementary Note 2"}
+
+- id: q_comsol_code_and_mesh_unstated
+  kind: unstated_input
+  about: [kinetic_pde_cylinder_eq6_16, kinetic_pde_cone_eq6_16]
+  text: >
+    The COMSOL Multiphysics 5.3 simulation code is not publicly archived ("available from
+    A.R.B. upon reasonable request", p. 10), and spatial mesh discretization, finite-element
+    order, and ODE solver tolerances are not specified in Supplementary Note 2. Our P1-FEM
+    solver with analytical sparse Jacobian checks spatial and temporal convergence in
+    refinements.yaml.
+  citation: {page: 10, printed_page: "10", quote: "The COMSOL code for the simulations is available from A.R.B.", where: "Code availability"}
+
+- id: q_ss_branching_rate_nonmonotonic
+  kind: possible_error
+  about:
+    - kinetic_ss_infinite_pool_conserved
+    - branching_ss_80nM_fig5e
+    - branching_peak_40nM_fig5e
+    - branching_peak_80nM_fig5e
+    - branching_peak_120nM_fig5e
+  text: >
+    Main text p. 5 states that "The steady-state concentration of available Arp2/3* was
+    higher with increasing CP, as the available barbed end density was decreased, which in
+    turn resulted in a lower branching rate (Fig. 5d, e)." However, both the paper's own
+    Fig. 5e (p. 7) and the mass-conserving 1D steady-state solution show that the
+    steady-state branching (and capping) rate is nearly invariant and slightly non-monotonic
+    across CP concentrations (36.81, 40.40, and 38.70 /(um^2*s) at 40, 80, and 120 nM CP,
+    all converging near ~40 /(um^2*s) by t = 40 s in Fig. 5e); only the transient peak
+    branching rate decreases monotonically with CP.
+  citation: {page: 5, printed_page: "5", quote: "decreased, which in turn resulted in a lower branching rate", where: "Results"}
+
+- id: q_audit_reading_seed_norm_and_40nM_peak
+  kind: reading
+  about:
+    - B0_seed_norm
+    - kinetic_pde_cylinder_conserved_cartesian_mem
+    - kinetic_pde_cone_conserved_cartesian_mem
+    - run_cyl_cart_40nM
+    - run_cone_conserved_40nM_100s
+    - run_cone_cart_40nM_100s
+  text: >
+    Independent audit reading note on the first reader's initial-seed choice (peak amplitude
+    1 /um^2, exp(-r^2/(2*sigma^2))) and Cartesian-membrane variants: (1) At 40 nM CP in
+    kinetic_pde_cylinder_conserved_cartesian_mem, the early transient peak at t <= 20 s is
+    only 406.2 /um^2 (407.2 at mesh_n = 48), lower than B(40 s) = 417.1 /um^2 (407.7 at
+    mesh_n = 48, a -2.3% mesh shift), and all three Fig. 5c peaks (407, 258, 182 vs ~440,
+    ~285, ~200 /um^2) and Fig. 5f cone peaks (351, 225, 145 vs ~400, ~250, ~150 /um^2) sit
+    ~8-12% below the plots. Interpreting "normalized to 1/um^2" as a 1D-normalized Gaussian
+    (1/(sqrt(2*pi)*sigma))*exp(-r^2/(2*sigma^2)) (peak 39.89 /um^2) on the Cartesian-membrane
+    PDE reproduces Fig. 5c (B_peak = 448.5, 288.2, 203.2; B_40 = 416.0, 172.8, 97.8) and
+    Fig. 5f (B_peak = 393.4, 255.1, 164.6) closely, while slightly underpredicting Fig. 5d
+    A*_peak (73.5-79.0 vs ~83 /um^2) and overpredicting Supp Fig. 14 V_tot by ~8-11%.
+    (2) Prose in q_membrane_laplacian_comsol and q_vca_4fold_time_window reflects earlier
+    pre-refinement numbers (e.g. cone B_peak 371, 233, 145 vs actual 351.3, 225.5, 145.2;
+    V_tot 2072, 1924, 1513 vs actual 1978, 1877, 1513); cone center-to-edge VCA enrichment
+    is 2.3-2.7x at t = 40 s, 3.5-3.8x at t = 100 s, and 4.4-5.4x at t = 200 s (crossing ~4x
+    around t = 110-140 s, where finite-pool CP depletion also causes a secondary B surge).
+    First-reader models and questions are preserved unchanged.
+  citation: {page: 24, printed_page: "SI 13", quote: "around r=0 with =10 nm normalized to 1/µm2", where: "Supplementary Note 2"}
+
+- id: q_audit_reading_cone_radius_tangent_geometry
+  kind: reading
+  about: [cone_disk_radius, r_cone_40nM, r_cone_80nM, N_domains_40nM_sim, N_domains_80nM_sim]
+  text: >
+    Independent audit reading note on cone_disk_radius: the first reader formalized the
+    conical base radius via equal-area / equal-volume spherical partitioning r_cone =
+    2*R/sqrt(N) (giving 9.00 um at N = 16 and 6.09 um at N = 35). An alternative geometric
+    reading — a right circular cone of height R = 18 um tangent to the vesicle sphere and
+    subtending solid angle 4*pi/N (half-angle theta = arccos(1 - 2/N)) — gives base radius
+    r_cone = R * tan(theta) = 9.96 um at N = 16 (10.14 um at protrusion median 15.5) and
+    6.36 um at N = 35, matching the printed 10 um and 6 um to 1 significant figure (at the
+    cost of a slightly larger cone volume than V_sphere/N). First-reader model preserved.
+  citation: {page: 22, printed_page: "SI 11", quote: "We use 10 µm at 40 nM CP (16 domains)", where: "Supplementary Note 2"}
+
+- id: q_audit_reading_quantity_and_180nM_cortex
+  kind: reading
+  about: [vesicle_increase_cp_dox, cp_beta2_overexpr_fold, expression_fold_change, frac_cortex_120nM]
+  text: >
+    Two minor audit reading disagreements preserved without altering first-reader entries:
+    (1) vesicle_increase_cp_dox (~50% relative increase, (X_2 - X_1)/X_1) shares the quantity
+    expression_fold_change with cp_beta2_overexpr_fold (2.1-fold ratio, X_2/X_1), whereas a
+    fold-ratio and a relative percentage increase are distinct dimensionless quantities.
+    (2) Main text p. 3 groups 120 and 180 nM CP together under "60%" closed cortex formation
+    (recorded as frac_cortex_120nM), whereas Supp Fig. 4 (p. 13 / SI 2) shows ~60% closed
+    cortex at 120 nM (~28% flat + ~32% concave) and ~68% (all flat) at 180 nM CP.
+  citation: {page: 3, printed_page: "3", quote: "and 60%, respectively) (Fig. 2d and Supplementary Figure 4)", where: "Results"}
+
+- id: q_digitize_fig5_timing_and_seed_discrepancy
+  kind: unexplained_difference
+  about:
+    - fig5c_B_40nM_data
+    - fig5c_B_80nM_data
+    - fig5c_B_120nM_data
+    - fig5d_Astar_40nM_data
+    - fig5d_Astar_80nM_data
+    - fig5d_Astar_120nM_data
+    - fig5e_branch_40nM_data
+    - fig5e_branch_80nM_data
+    - fig5e_branch_120nM_data
+    - fig5e_cap_40nM_data
+    - fig5e_cap_80nM_data
+    - fig5e_cap_120nM_data
+    - suppfig11_B_40nM_data
+    - suppfig11_B_80nM_data
+    - suppfig11_B_120nM_data
+    - fig5f_B_peak_data
+    - suppfig14_Vtot_max_data
+    - suppfig14_Vtot_min_data
+    - kinetic_pde_cylinder_conserved_curves
+    - kinetic_pde_cylinder_conserved_cartesian_mem_curves
+    - kinetic_pde_cone_conserved_curves
+    - kinetic_pde_cone_conserved_cartesian_mem_curves
+  text: >
+    Calibrated full-curve digitization of all 21 PDE plots (Fig. 5c-f, Supp Figs. 11 and 14)
+    quantitatively separates the printed Eqs. (6)-(16) (1/21 reproduced), mass-conserving
+    axisymmetric membrane (2/21 reproduced: steady-state lines only; all 15 cylinder transient
+    curves not reproduced, peaking +3.1-3.7 s late and +29-51% too high with Fig. 5c RMSE
+    89-133 /um^2), and mass-conserving 1D Cartesian membrane (14/21 reproduced + 5/21 close,
+    cutting RMSE ~2-3x across every panel and reproducing all 5 Fig. 5d curves, all 3 Fig. 5e
+    capping curves, all 3 Supp Fig. 11 curves, and both Supp Fig. 14 V_tot extrema curves within
+    input rounding). However, even on the 1D Cartesian membrane model with peak-1 seed
+    (B_0 = 1 /um^2), rising transients remain +1.2-1.7 s late relative to digitized Fig. 5c/5e
+    (yielding 'close' on Fig. 5c 80/120 nM and Fig. 5e branching), and all three calibrated
+    Fig. 5f colorbar peaks (404.2, 254.4, 163.6 /um^2; note 120 nM is 163.6 rather than the
+    eye-read ~150) exceed the peak-1 Cartesian cone predictions (351.3, 225.5, 145.2 /um^2) by
+    8-13% ('not reproduced' in cmp_fig5f_Bpk_cart). Since a 1D-normalized Gaussian seed
+    (B_0 = 39.89 /um^2) peaks -0.6-1.1 s early while closely matching Fig. 5f peaks (393.4,
+    255.1, 164.6), the paper's curves sit at an intermediate effective seed mass (~10x peak-1),
+    consistent with coarse COMSOL meshing around r = 0 relative to sigma = 10 nm.
+  citation: {page: 7, printed_page: "7", quote: "The temporal evolution of barbed ends (c), activated Arp2/3 complex (Arp2/3*) (d), branching and capping events (e)", where: "Fig. 5c-f"}
+
+- id: q_digitize_fig5f_80nM_ring_radius_discrepancy
+  kind: unexplained_difference
+  about:
+    - fig5f_80nM_t40_profile_data
+    - kinetic_pde_cone_conserved_curves
+    - kinetic_pde_cone_conserved_cartesian_mem_curves
+    - cmp_fig5f_80nM_prof_cons
+    - cmp_fig5f_80nM_prof_cart
+  text: >
+    Calibrated 3D orthographic front-plane digitization of Fig. 5f (80 nM CP, t = 40 s; all 5
+    r-axis ticks calibrated with 0.20 px residual, z-axis with 1.29 px residual) measures the
+    double-peaked ring wave crest at |r| = 2.0 um (B = 131.2 /um^2, center B(0) = 96.2 /um^2,
+    rim/center ratio 1.36), dropping steeply to 96.0 /um^2 at |r| = 2.5 um and 28.4 /um^2 at
+    |r| = 3.0 um. In contrast, both mass-conserving cone PDE variants with the printed
+    D_B = 0.0077 um^2/s spread ~0.9-1.0 um (+45-50%) farther radially by t = 40 s, placing
+    the ring crest at r_peak = 3.02 um (axisymmetric, B(3.0) = 164.9 /um^2) and 2.91 um
+    (1D Cartesian membrane, B(3.0) = 108.4 /um^2) — 3.8-5.8x above Fig. 5f at r = -3.0 um
+    (causing both cmp_fig5f_80nM_prof_cons and cmp_fig5f_80nM_prof_cart to fail at r = -3.0 um).
+    Reducing D_B alone by ~0.35x shifts r_peak inward to ~2.0 um but drives B_peak (360-667
+    /um^2) and V_tot_max (2642-3548 /um^2) far above both calibrated colorbars, revealing an
+    unexplained radial-spreading discrepancy between the published equations and Fig. 5f.
+  citation: {page: 7, printed_page: "7", quote: "The spatio-temporal network growth was modelled along the membrane", where: "Fig. 5f"}
+
+- id: q_digitize_fig5d_ss_dashed_lines_offset
+  kind: possible_error
+  about:
+    - fig5d_Astar_ss_80nM_data
+    - fig5d_Astar_ss_120nM_data
+    - fig5d_Astar_80nM_data
+    - fig5d_Astar_120nM_data
+    - kinetic_ss_infinite_pool_conserved
+  text: >
+    Calibrated digitization of Fig. 5d shows that the printed horizontal dashed steady-state
+    guide lines Arp2/3*_ss sit at 12.33 /um^2 (80 nM CP) and 20.74 /um^2 (120 nM CP), which
+    are +4.8% and +3.4% above the plotted t = 40 s curves in the same panel (11.77 and 20.06
+    /um^2) and +7.9% and +5.8% above the exact mass-conserving 1D steady-state values (11.43
+    and 19.61 /um^2, though still encompassed by input-rounding uncertainty in cmp_fig5d_*_ss).
+    Additionally, digitized Fig. 5e t = 40 s branching rates (37.43, 40.73, 39.03 /(um^2*s) at
+    40, 80, 120 nM CP) directly confirm the non-monotonic ordering (80 > 120 > 40 nM) identified
+    in q_ss_branching_rate_nonmonotonic (vs analytical 36.81, 40.40, 38.70 /(um^2*s)).
+  citation: {page: 7, printed_page: "7", quote: "Arp2/3*ss 80 nM CP", where: "Fig. 5d"}
+
+- id: q_digitize_fig6d_vesicle_increase_resolved
+  kind: possible_error
+  about:
+    - fig6d_vesicles_per_cell_data
+    - vesicle_increase_cp_dox
+    - q_fig6d_vesicle_50pct_vs_2fold
+  text: >
+    Calibrated digitization of Fig. 6d settles q_fig6d_vesicle_50pct_vs_2fold quantitatively:
+    area-normalized N_Vesicles/cell medians [non-outlier whisker ranges] are 0.291 [0.216, 0.380]
+    for CP Dox (Q1 = 0.246, Q3 = 0.349), 0.126 [0.012, 0.213] for no CP Dox, and 0.119
+    [0.044, 0.169] for CP no Dox. The median increase upon CP overexpression is +131% (2.31-fold)
+    relative to no CP Dox and +145% (2.45-fold) relative to CP no Dox, refuting the main text
+    p. 7 statement of "an increase of actin-containing vesicles by about 50%" (consistent with
+    confusing (0.291 - 0.119)/0.291 = 59% with relative increase over control).
+  citation: {page: 8, printed_page: "8", quote: "Formation of actin-containing vesicle was increased in CP overexpressing cells.", where: "Fig. 6d"}
+
+- id: q_digitize_suppfig4_cortex_percentages_resolved
+  kind: possible_error
+  about:
+    - suppfig4_cortex_total_data
+    - suppfig4_flat_cortex_data
+    - suppfig4_concave_cortex_data
+    - suppfig2_cortex_data
+    - frac_cortex_20nM
+    - frac_cortex_120nM
+    - q_closed_cortex_40nM_and_20nM
+    - q_audit_reading_quantity_and_180nM_cortex
+  text: >
+    Calibrated digitization of Supp Fig. 2 and Supp Fig. 4 settles q_closed_cortex_40nM_and_20nM
+    and q_audit_reading_quantity_and_180nM_cortex quantitatively: closed-cortex vesicle
+    percentages are 4.0% at 0 nM (1/24), 41.5% at 20 nM (40/96; rounded to 42% on p. 2 and 40%
+    on p. 3), 10.2% at 40 nM (2.9% flat + 7.4% concave, overlooked by p. 3's "Only at low (20 nM)
+    and high (120 and 180 nM) CP concentrations closed cortex formation was observable"), 1.0%
+    at 60 nM, 59.9% at 120 nM (28.7% flat + 31.2% concave), and 67.7% (all flat) at 180 nM
+    (lumped with 120 nM as "60%" on p. 3). Across all four CP concentrations in Supp Fig. 4, the
+    independently digitized Domains + Closed Cortex + Bulk totals sum to 100.0-100.6%.
+  citation: {page: 13, printed_page: "SI 2", quote: "A quantitative analysis of the appearing shape deformations", where: "Supp Fig. 4"}
+
+- id: q_liu2008_cp_switch_ratchet_and_no_cross_validation
+  kind: overstated_claim
+  about:
+    - ref-21
+    - kinetic_ss_infinite_pool_conserved
+    - B_max_model_text
+    - protrusion_length_max
+    - suppfig4_protrusion_data
+    - suppfig4_concave_domain_data
+    - suppfig4_cortex_total_data
+    - liu2008/filopodium_growth_eq12_dimensional
+    - liu2008/vesicle_protrusion_prevalence
+    - liu2008/protrusion_stationary_length_range
+  text: >
+    Cross-record audit with liu2008 (cited qualitatively as ref-21 on p. 2; 0 cited links, 0
+    ModelAtlas relations, 0 cross-validations across liu2008's 18 measured datums because the two
+    papers solve strictly complementary halves — pure reaction-diffusion kinetics neglecting
+    membrane mechanics vs Helfrich/WLC filament-membrane mechanics and a fixed-N Brownian-ratchet
+    tube ODE): (1) On nearly identical Egg-PC/Ni-NTA GUVs, liu2008 assembles externally in an
+    infinite bath without CP or profilin (8.5 uM G-actin, 160 nM Arp2/3, 400 nM His-N-WASP) and
+    gets thin parallel-filament inward tubes (1-25 um, N ~ 10) in ~95% of GUVs — explicitly
+    inhibiting protrusions if CP is added — whereas durre2018 encapsulates internally in a finite
+    pool (3 uM G-actin, 300 nM Arp2/3, 300 nM His-VCA, 13.5 uM profilin) where 0 nM CP gives 96%
+    bulk networks (4% cortex, 0% protrusions), 40 nM CP peaks broad convex dendritic protrusions
+    (24.3% of GUVs, <= 4 um), and 60-180 nM CP switches to concave domains (38.0% at 60 nM) and
+    re-entrant closed cortices (59.9% at 120 nM, 67.7% flat at 180 nM). Evaluating durre2018's
+    mass-conserving 1D steady state at liu2008's CP = 0 concentrations gives B_ss = 10,576 /um^2
+    (97.0% boundary-layer monomer depletion, G_mem = 0.256 uM), jumping 2.32x to 24,528 /um^2
+    under liu2008's 3x Arp2/3 increase (which reduced filopodia ~60%) and staying active at 1,366
+    /um^2 down to 10 nM Arp2/3. (2) Discussion p. 8 claims that because B <= 450 /um^2,
+    "protrusion velocities are not dominated by monomer depletion, but rather by membrane tension"
+    and "the protrusion velocity increases exponentially with an increasing number of barbed ends."
+    Both statements conflict quantitatively with the models: in the Brownian ratchet (liu2008
+    Eq. 12), velocity scales as exp(-f_mem*delta/(N*k_B*T)), which increases sub-exponentially
+    and saturates as N grows (for f_mem = 20 pN, delta = 2.7 nm, k_B*T = 4.114 pN*nm, the factor
+    rises from 0.269 at N = 10 to 0.769 at N = 50, 0.877 at N = 100, and 0.971 at N = 450 — only
+    +11% across 100 -> 450 filaments); meanwhile durre2018's own conserved 1D steady state already
+    suffers 85.1%, 70.5%, 48.8%, and 35.3% local G-actin depletion at the membrane at 20, 40, 80,
+    and 120 nM CP (G_mem_ss = 0.448, 0.884, 1.535, 1.942 uM vs 3.0 uM bulk).
+  citation: {page: 8, printed_page: "8", quote: "exponentially with an increasing number of barbed ends", where: "Discussion"}
+
+- id: q_gov2018_curvature_sorting_vs_kinetic_enrichment_and_concave_mode
+  kind: overstated_claim
+  about:
+    - ref-1
+    - kinetic_pde_cone_conserved
+    - stokes_einstein_scaling
+    - vca_fold_enrichment_claimed
+    - D_V
+    - D_A
+    - domain_curv_120nM_nomyosin
+    - domain_curv_120nM_myosin
+    - frac_fission_120nM_myosin
+    - gov2018/cmc_steady_state_enrichment_eq2_9
+    - gov2018/cmc_diffusion_einstein
+    - gov2018/flat_membrane_dispersion
+  text: >
+    Cross-record audit with gov2018 (contemporaneous 2018 review of ref-1 Gov & Gopinathan 2006 =
+    gov2018/ref-34; 0 cited links, 0 ModelAtlas relations, 0 cross-validations as gov2018 has 0
+    measured datums): (1) Discussion p. 8 cites ref-1 to claim that the observed ~4-fold VCA
+    up-concentration inside actin domains "is in agreement with experimental and theoretical work."
+    However, evaluating gov2018's passive curvature-sorting Boltzmann law Eq. (2.9)
+    (n/n_0 = exp[(kappa/k_B*T)*(a/R)]) across durre2018's measured domain curvatures |H| =
+    0.07-0.50 /um (R = 2-14.3 um) with Egg-PC kappa/k_B*T = 20 and molecular scale a = 5-10 nm
+    gives only 1.007x-1.051x (a = 5 nm) or 1.014x-1.105x (a = 10 nm) enrichment — and even at
+    gov2018's extreme upper bound kappa/k_B*T = 100 with a = 10 nm, only 1.139x at the 120 nM
+    median (|H| = 0.13 /um) and 1.649x at |H| = 0.50 /um, 1-2 orders of magnitude too weak in
+    chi = ln(n/n_0) to produce ~4x enrichment (chi = 1.386). Indeed VCA without actin remains
+    homogeneous (Fig. 2e-f), and durre2018's own cone PDE achieves ~4x enrichment at zero
+    curvature via kinetic paused-state immobilization (V+, k_re = 0.001 /s). (2) In gov2018's
+    single-CMC linear stability framework, protrusive actin coupled to concave proteins (H_0 > 0,
+    A > 0) is linearly stable (negative feedback), requiring contractile myosin (A < 0) for static
+    inward invaginations; durre2018's myosin-free concave domains (-0.07 to -0.50 /um, 38.0% at
+    60 nM CP) therefore represent a distinct reaction-diffusion rim-over-center growth mechanism
+    outside gov2018's uniform-A CMC theory, while adding 5 uM NMM II at 120 nM CP doubles
+    curvature (-0.13 -> -0.22 /um) and yields 27.5% fission, entering gov2018's contractile
+    constriction regime. (3) stokes_einstein_scaling (D = D_ref*(M_ref/M)^(1/3)) is intentionally
+    not linked to gov2018/cmc_diffusion_einstein (D = Lambda*k_B*T, a 1-op `too_plain` relation
+    lacking mass M; converting durre2018's FRAP D_V = 1.59 um^2/s gives Einstein mobility
+    Lambda_V = 386.5 um/(pN*s), whereas 2D membrane inclusions obey logarithmic Saffman-Delbruck
+    drag rather than 3D M^(-1/3) scaling, matching durre2018's 50% D_A discrepancy).
+  citation: {page: 8, printed_page: "8", quote: "concentration of the Arp2/3 activator during polymerization,", where: "Discussion, ref. 1"}
+
+- id: q_graham2023_confinement_shell_ring_vs_cp_cortex_and_no_validation
+  kind: reading
+  about:
+    - vca_surface_density
+    - cone_disk_radius
+    - frac_cortex_20nM
+    - frac_cortex_120nM
+    - suppfig4_cortex_total_data
+    - k_on
+    - k_off
+    - graham2023/ring_thickness_scaling_eqS25
+    - graham2023/power_law_thickness_fit
+    - graham2023/elongation_rate_mean_text
+  text: >
+    Cross-record audit with graham2023 (uncited 2023 study, 0 shared references, 0 cited links, 0
+    ModelAtlas relations, 0 cross-validations across graham2023's 38 measured datums because
+    graham2023 models membraneless, Arp2/3-free, VCA-free, CP-free VASP condensates with WLC
+    ring bending and droplet wetting minimization): (1) Peripheral shell/cortex assembly follows
+    opposite physical routes in the two confined spherical systems. In graham2023, tiny VASP
+    droplets (D = 1-4 um, R = 0.5-2 um << L_p = 17.7 um; ~12.6x actin partitioning, 0 nM CP)
+    force actin mechanically to the periphery and into equatorial rings (T_ring ~ D^1.72-1.97)
+    that stretch droplets outward into rods (AR > 9-15). In durre2018's 10x larger GUVs (D =
+    20-50 um, R = 10-25 um >= L_p), CP-free assembly (0 nM CP) produces 96% bulk volume-spanning
+    networks (only 4.0% cortex) rather than peripheral rings; peripheral cortex formation is
+    instead biochemically gated by membrane-tethered VCA + CP in a re-entrant window (41.5% closed
+    cortex at 20 nM, collapsing to 10.2% at 40 nM and 1.0% at 60 nM as discrete patches dominate,
+    then rebounding to 59.9% at 120 nM and 67.7% flat cortex at 180 nM). (2) Encapsulated mass
+    conservation onto a 2D spherical shell (durre2018/vca_surface_density, V_sphere/A_sphere =
+    R/3 ~ R^1) contrasts with condensation into a 1D equatorial ring (V_sphere/(2*pi*R) ~ R^2,
+    matching graham2023 Fig. 3e's empirical spherical-ring exponent 1.97 vs Eq. S25's 1.5). (3)
+    durre2018's Pollard-2000 free barbed-end kinetics (k_on = 11.6 uM^-1 s^-1, k_off = 1.4 s^-1)
+    predict 33.4 mon/s (90.2 nm/s) at 3 uM and 21.8 mon/s (58.9 nm/s) at 2 uM G-actin — 2.56x
+    faster than graham2023's measured VASP-droplet bundle elongation rate (23 +/- 3 nm/s, 8-9 mon/s
+    at 2 uM bulk actin).
+  citation: {page: 2, printed_page: "2", quote: "By reconstitution of actin cortices inside of", where: "Introduction"}
+
+- id: q_nastkolb2022_same_lab_cp_ratio_frap_and_enrichment_audit
+  kind: reading
+  about:
+    - stokes_einstein_scaling
+    - kinetic_pde_cone_conserved
+    - D_V
+    - D_A
+    - G_init
+    - profilin_conc
+    - CP_60nM
+    - CP_80nM
+    - vca_fold_enrichment_claimed
+    - nastkolb2022/cp_to_actin_ratio
+    - nastkolb2022/frap_t_half_vasp_slb
+    - nastkolb2022/frap_mobile_fraction_slb_pol30
+    - nastkolb2022/vasp_enrichment_kinetics_fig5c
+  text: >
+    Cross-record audit with same-lab follow-up nastkolb2022 (Bausch lab; cites durre2018 on pp. 2
+    and 9 for profilin+CP bulk suppression and membrane nucleator clustering, using the identical
+    87.45% Egg-PC / 10% DOGS-Ni-NTA / 2.5% PEG2000-PE lipid recipe; 0 cited links, 0 ModelAtlas
+    relations, 0 cross-validations across nastkolb2022's 66 measured datums because nastkolb2022
+    replaces His-VCA+Arp2/3 with Arp2/3-free His-VASP on planar SLBs/MLs and models only FRAP
+    exponentials and 2D ribbon filament packing): (1) nastkolb2022's standard bulk-suppression
+    stoichiometry (50 nM CP, 2 uM actin, 10 uM profilin -> R_CP = 0.025, profilin:actin = 5.0:1)
+    sits directly inside durre2018's concave-domain switching window (60-80 nM CP, 3 uM actin,
+    13.5 uM profilin -> R_CP = 0.020-0.0267, profilin:actin = 4.5:1), yet membrane-tethered VASP
+    resists CP and assembles up to 3 um-wide apolar bundles (45 +/- 12 filaments/um) rather than
+    dendritic concave patches. Note also that durre2018 Supp Fig. 7 uses a lipid monolayer for
+    TIRF domain-growth controls (0-120 nM CP), whereas nastkolb2022 demonstrates 4-fold lower
+    nucleator mobility on lipid monolayers vs fluid SLBs (t_1/2 = 0.399 vs 0.102 min, mobile
+    fraction 0.61 vs 0.97). (2) Converting nastkolb2022's circular-spot FRAP (w = 2.48 um, D ~
+    0.224*w^2/t_1/2) gives D_VASP,SLB ~ 0.225 um^2/s (7.1x slower than durre2018's His-VCA D_V =
+    1.59 um^2/s) and D_VASP,ML ~ 0.058 um^2/s (27.6x slower); durre2018/stokes_einstein_scaling
+    from 12 kDa His-VCA to ~160 kDa tetrameric His6-VASP predicts D = 0.671 um^2/s (2.98x too
+    fast), confirming that multivalent Ni-NTA lipid anchoring (4 anchors) and SLB friction
+    dominate over 3D M^(-1/3) globular scaling. (3) Both papers observe polymerization-coupled
+    up-concentration of the Ni-NTA-tethered nucleator: nastkolb2022 directly measures the
+    filament-binding immobilization postulated for durre2018's paused state V+ (SI p. 13), with
+    VASP SLB mobile fraction dropping from 0.97 to 0.65 after 30 min polymerization and VASP
+    enriching to 1.95x on bundles at 5.1 min (fig5c_vasp, vs ~4x VCA enrichment in durre2018)
+    while depleting unbound tracer lipids by ~9% (fig5c_lipids).
+  citation: {page: 23, printed_page: "SI 12", quote: "scaled from these values according to the Einstein-Stokes equation, approximating them as globular proteins", where: "Supplementary Note 2"}
+

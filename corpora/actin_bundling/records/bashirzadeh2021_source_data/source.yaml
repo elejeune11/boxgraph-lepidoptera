@@ -1,0 +1,132 @@
+id: bashirzadeh2021_source_data
+kind: software
+title: >
+  Figshare Source Data for "Actin crosslinker competition and sorting drive emergent
+  GUV size-dependent actin network architecture" (Source_data.xlsx,
+  Figs_1_and_2_Pvalues.xlsx, Fig4e_persistence_length_data.xlsx, Fig4c-d.mat)
+authors:
+  - Yashar Bashirzadeh
+  - Steven A. Redford
+  - Chatipat Lorpaiboon
+  - Alessandro Groaz
+  - Hossein Moghimianavval
+  - Thomas Litschel
+  - Petra Schwille
+  - Glen M. Hocky
+  - Aaron R. Dinner
+  - Allen P. Liu
+year: 2021
+venue: "Figshare / Communications Biology 4, 1136 (Source Data)"
+doi: "10.6084/m9.figshare.16337442.v1"
+url: "https://doi.org/10.6084/m9.figshare.16337442.v1"
+file: corpus/actin_bundling/code/bashirzadeh2021_source_data
+version: "sha256:91d1fc377e02543f187fa459028698f6497d54212d773761f250a93f59f292b3"
+licence: "CC BY 4.0"
+language: "Excel (.xlsx) workbooks and MATLAB v5 (.mat) data read via Python (stdlib zipfile+xml, scipy.io.loadmat)"
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1+source_data"
+  date: "2026-11-26"
+notes: >
+  Complete BoxGraph forensic audit record of all four public Figshare Source Data files
+  (DOI 10.6084/m9.figshare.16337442.v1; 156,518 bytes total) released with Bashirzadeh et al.,
+  Communications Biology 4, 1136 (2021) (companion record `bashirzadeh2021`):
+  `Source_data.xlsx` (78,335 B, 7 sheets, 1,305 formulas), `Figs_1_and_2_Pvalues.xlsx`
+  (27,438 B, 19 sheets, 0 formulas), `Fig4e_persistence_length_data.xlsx` (22,092 B, 2 sheets,
+  23 formulas), and `Fig4c-d.mat` (28,653 B, 15 MATLAB v5 double arrays).
+  No third-party `.xlsx` or `.mat` files are copied into this record; 6 live `software: true`
+  Python reader models under `models/` read directly from `$BOXGRAPH_SOURCE` via stdlib
+  `zipfile + xml.etree.ElementTree`, `scipy.io.loadmat`, `numpy`, and `scipy.stats`.
+
+  KEY FORENSIC DISCOVERIES RESOLVING OPEN QUESTIONS IN `bashirzadeh2021`:
+  1. **Complete resolution of all three failed Fig. 4e Welch p-values (`Fig4e_persistence_length_data.xlsx`
+     and identical `Source_data.xlsx` sheets `Sheet5` + `P_PL`)**:
+     - `bashirzadeh2021/q_welch_pvalues_fig4e` failed on all three Fig. 4e Welch t-tests when using
+       the caption's printed `mean ± SEM` and `N_bundles = [22 14 17 14 26]`.
+     - Live audit of `Sheet5` proves why: (a) THREE of five caption `±` values come from buggy Excel
+       row-32 SEM formulas using wrong denominators or truncated SD ranges: `[0:1:10]` cell
+       `A32 = A33/SQRT(13) = 9.995` (printed `± 10`; true `SD/sqrt(22) = 7.683`, +30.1% inflated),
+       `[1:1:10]` cell `K32 = K33/SQRT(15) = 11.414` (printed `± 11.4`; true `SD/sqrt(18) = 10.420`,
+       +9.5% inflated), and `[1:3:10]` cell `X33 = STDEV(X2:X25) = 73.610` (omitting `X26:X27`) with
+       `X32 = X33/SQRT(24) = 15.026` (printed `± 15`; true 26-bundle `SD/sqrt(26) = 13.970`, +7.6%
+       inflated). Remarkably, Fig. 4e's plotted error bars draw the TRUE SEMs (`±7.68`, `±10.42`,
+       `±13.97 um`), confirming why `bashirzadeh2021` visually noticed Bar 1's error bar was ~±7.5 um.
+     - (b) Sample count errors: `[1:1:10]` contains `N = 18` bundles in both `Sheet5` (`K2:K19`) and
+       `P_PL` (`Observations = 18`), NOT `17` as printed in the Fig. 4e caption; Supplementary
+       Fig. 9c's `[3:3:10]` (`Sheet5` col `AG`, `AG3:AG17`) contains `N = 15` bundles
+       (`95.62 ± 21.86 um`), NOT `16` as printed in the Supp. Fig. 9c caption.
+     - (c) Running Excel Analysis ToolPak's Welch t-test (integer-rounded Welch-Satterthwaite `df`)
+       on the raw `Sheet5` columns reproduces `P_PL` to 15 digits and all three printed Fig. 4e
+       p-values: `0:1:10 (22)` vs `1:1:10 (18)` -> `p = 0.1162255` (`df=33`, printed `0.1162`);
+       `1:1:10 (18)` vs `1:3:10 (26)` -> `p = 0.0125473` (`df=42`, printed `0.0125`); and
+       `0:3:10 (14)` vs `1:3:10 (26)` -> `p = 0.00086695` (`df=38`, truncated [not rounded] to
+       `0.0008`). Means in the Fig. 4e caption are likewise truncated (`33.366->33.3`, `39.376->39.3`,
+       `54.251->54.2`).
+     - (d) **Duplicate bundles & Methods criterion violation**: `[1:3:10]` (`X2:Y27`) contains 5 exact
+       15-digit duplicate `L_p` rows (4 identical `(L_p, L)` pairs `R4=R22`, `R5=R21`, `R6=R19`,
+       `R7=R18` plus `X15=X16`), and `[1:1:10]` (`K2:L19`) contains 1 exact `(L_p, L)` duplicate
+       (`R3=R10`). Deduplication (`N = 21, 17`) shifts Welch p-values to `0.1305`, `0.0171`, `0.00135`.
+       Furthermore, 25/73 bundles with recorded lengths `L` (34.2%; 20 with `L < 8 um`, 5 with
+       `L > 20 um`, spanning `4.43–52.74 um`) violate Methods p. 8's `"8 < L < 20 um"` criterion.
+       Because `L_p` is strongly right-skewed, nonparametric Mann-Whitney U (`p = 0.0150`) and
+       log-transformed Welch t-test (`p = 0.0162`) are significant for `[0:1:10]` vs `[1:1:10]`
+       where raw Welch (`p = 0.1162`) is not.
+  2. **ALL 18 p-values printed on Figs. 1c, 1d, 1f and Figs. 2d, 2e, 2f are swapped between Fig. 1 and
+     Fig. 2 (`Figs_1_and_2_Pvalues.xlsx`)**:
+     - `Figs_1_and_2_Pvalues.xlsx` `Sheet1` matches `Source_data.xlsx` `Sheet2` (Fig. 1, α-actinin)
+       and `Sheet3` (Fig. 2, α-actinin+fascin) to `< 1e-4` across all 144 replicate cells, and
+       `Sheet3`–`Sheet20` reproduce all 18 Excel-rounded-df Welch t-tests to machine precision.
+     - Every single one of the 9 p-values printed on **Fig. 1** (`1c: 0.0185, 0.0009, 0.0018`;
+       `1d: 0.0382, 0.0150, 0.0266`; `1f: 0.0392, 0.0004, 0.0364`) comes from **Sheets 3–11**
+       (which test **Fig. 2** α-actinin+fascin!), while all 9 p-values printed on **Fig. 2**
+       (`2d: 0.0006, 0.0034, 0.0079`; `2e: 0.0338, 0.0261, 0.0217`; `2f: 0.0241, 0.0168, 0.0435`)
+       come from **Sheets 12–20** (which test **Fig. 1** α-actinin-only!), WITH an additional 10x
+       transcription error on Fig. 2d `[0.1]` (`0.006397` printed as `0.0006`) and systematic
+       4-decimal truncation (`0.000472->0.0004`, `0.02616->0.0261`, `0.02175->0.0217`, `0.02416->0.0241`).
+  3. **Complete resolution of Fig. 1 & Fig. 2 GUV count paradoxes (`Source_data.xlsx` `Sheet2`, `Sheet3`)**:
+     - Captions of Figs. 1c, d (`[389 42 23], [67 45 38], [188 145 128]`) and Figs. 2d, e
+       (`[101 98 29], [147 58 71], [137 82 24]`) falsely state "(numbers in brackets are arranged
+       in order of ascending GUV diameter)". In fact, those are **per-replicate total GUV counts
+       across all diameters** (and for Fig. 1 `0.2`/`0.3` cite unused extra blocks `J1:L3=67` and
+       `F1:H3=188` instead of analyzed replicate 3 counts `25` and `91`!). True pooled counts by
+       size bin `[7-12, 12-16, >16 um]` are `[314, 70, 70]`, `[48, 35, 25]`, `[155, 121, 88]` in
+       Fig. 1 (`Sheet2`) and `[127, 57, 44]`, `[176, 59, 41]`, `[182, 33, 28]` in Fig. 2 (`Sheet3`).
+     - For Figs. 1f and 2f, the authors summed the first two replicate totals (`389+42=431` mis-added
+       as `429`, `67+45=112`, `188+145=333`; `101+98=199`, `147+58=205`, `137+82=219`), resolving
+       both `q_fig1f_sample_count_mismatch` and `q_fig1g_vs_fig1f_aster_count_paradox` (`35` large
+       peripheral asters at `0.1` come from `70` large GUVs, not `23`!).
+     - Additional workbook formula bugs: (i) `A6` in BOTH `Sheet2` and `Sheet3` omits cell `J11`
+       (`2` rings in Fig. 1b; `6` rings in Fig. 2b, shifting medium Ring probability from `0.1544`
+       to `0.1189` as plotted in Fig. 2b); (ii) `Q43` and `O44` in both `Sheet2` and `Sheet3` add
+       a spurious `+1` to the denominator (`8/(SUM(N3:P3)+1)`, `4/(SUM(J10:L11)+1)`), changing
+       Fig. 1f `0.1` p-value from `0.0242` to `0.0353`; (iii) Fig. 1g `0.2` uses `5/12` & `7/12`
+       (`N = 12`, not `14` as printed in caption), and `0.1` uses `20/35` & `15/35` vs `21/35` &
+       `14/35` in `H43:I43`/`G47:H47`; (iv) `Sheet3` `Q48` stores `'=7/13'` as text; and (v)
+       `Sheet1` / `Sheet1 (2)` are earlier drafts while rows 42–89 (`Sheet2`) / 52–72 (`Sheet3`)
+       contain unrelated myosin/shape-change scratch tables.
+  4. **Fig. 3c & 3d caption swap and diameter-threshold mismatch (`Source_data.xlsx` `Sheet4`)**:
+     - `Sheet4` proves Fig. 3c's caption (`N_GUVs>20 um = 167 [87 (α-actinin), 80 (α-actinin+fascin)]`)
+       BOTH **swaps the two counts** (`80` is `NoFascin>16um` α-actinin-only [`3/80 = 3.75%` center,
+       `50/80 = 62.50%` pole], while `87` is `fascin` α-actinin+fascin [`26/87 = 29.89%` center,
+       `41/87 = 47.13%` pole] = exact union of Fig. 3d's `61 + 26 = 87`) AND **misstates the
+       diameter threshold** as `>20 um` when `Sheet4` explicitly labels and computes it on `>16 um`
+       GUVs (`A1: 'cluster location, >16 um GUVs'`, `M10: 'NoFascin>16um'`). Hardcoded summary
+       cells `K4=34, L4=16` and `J6:L6=(15,7,4)` also diverge from stale raw table `B4:G6`
+       (`16_25`: `11, 42, 9`; `>25`: `6, 3, 2`).
+  5. **MATLAB intensity profiles (`Fig4c-d.mat`)**:
+     - Contains 15 `(N, 2)` float64 arrays covering **Fig. 4c** (`ValuesAlpha`, `ValuesFascin`,
+       n=213, 0–49.30 um; plus `ValuesActin` n=209 and second scan `*2` n=209), **Fig. 4d**
+       (`ValuesAlphaoval`, `ValuesFascinoval`, plus unplotted `ValuesActinoval`, n=360, 0–359 deg,
+       and second circle `*2oval`), and **Supplementary Fig. 8e** (`ValuesActinRing`,
+       `ValuesAlphaRing`, `ValuesFascinRing`, n=18, 0–3.953 um — undocumented in filename).
+     - Quantitatively confirms crosslinker sorting: in Fig. 4c, mean-normalized α-actinin peaks
+       higher at the central cluster (`1.911x` at `25.35 um`) than fascin (`1.469x` at `25.58 um`);
+       around the Fig. 4d outer circle, both crosslinkers show small relative modulation
+       (`CV = 3.17%` α-actinin vs `2.55%` fascin), so sorting is demonstrated quantitatively by
+       correlation against the unplotted actin arm profile (`r(actin, fascin) = +0.421` vs
+       `r(actin, α-actinin) = +0.170`; second circle `+0.430` vs `+0.078`); across the Supp.
+       Fig. 8e ring all three strongly colocalize (`r = +0.791` to `+0.921`).
+  6. **Missing panels absent from all Figshare files**: Fig. 3b, Fig. 4g (20x20 AFINES PDFs),
+     Fig. 4h (AFINES Binder cumulant — also absent from `bashirzadeh2021_code`), Supp. Fig. 3c,
+     Supp. Fig. 7b/7d, Supp. Fig. 8b/8c, Supp. Fig. 9b, and Supp. Fig. 11.

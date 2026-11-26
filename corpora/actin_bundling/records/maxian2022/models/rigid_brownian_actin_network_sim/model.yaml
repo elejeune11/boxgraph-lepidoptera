@@ -1,0 +1,41 @@
+id: rigid_brownian_actin_network_sim
+name: 3D rigid Brownian actin network with detailed-balance dynamic cross-linking and turnover (Eqs. 6-20, S1-S12)
+role: model
+stated:
+  page: 4
+  printed_page: "1233"
+  quote: "For Brownian dynamics simulations, we need to solve the overdamped Ito"
+  where: "Eqs. 8-20"
+equation: "dX/dt = K_r N K_r^* f^(CL) + sqrt(2 k_B T) K_r N^(1/2) W; Strang splitting (Eq. 15); detailed-balance k_on,s(ell_k') = k_on,s^0 exp(-K_c (ell_k' - ell)^2 / (2 k_B T)) (Eq. 20); optional filament turnover tau_f"
+inputs:
+  a: {quantity: fiber_radius, unit: nm}
+  L: {quantity: fiber_length, unit: um}
+  F: {quantity: fiber_count, unit: dimensionless}
+  Ld: {quantity: domain_extent, unit: um}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  Kc: {quantity: cl_spring_stiffness, unit: pN/um}
+  ell: {quantity: cl_rest_length, unit: nm}
+  kon: {quantity: cl_first_end_binding_rate, unit: 1/(um*s)}
+  kons: {quantity: cl_second_end_binding_rate, unit: 1/(um*s)}
+  koff: {quantity: cl_unbinding_rate, unit: 1/s}
+  koffs: {quantity: cl_unbinding_rate, unit: 1/s}
+  cw: {quantity: binding_site_width, unit: nm}
+  kBT: {quantity: thermal_energy, unit: pN*um}
+  dsu: {quantity: binding_site_spacing, unit: um}
+outputs:
+  tau_c: {quantity: bundling_time, unit: s}
+  bundle_density: {quantity: bundle_density, unit: 1/um^3}
+  percent_in_bundles: {quantity: percent_in_bundles, unit: percent}
+settings:
+  N: 16
+  dt: 0.0001
+  sigma_rel: 0.1
+  n_trials: 5
+  seed: 0
+runnable: false
+stochastic: true
+not_runnable_reason: >
+  Full 3D periodic Brownian dynamics + detailed-balance Gillespie SSA simulation (F = 338-675
+  rigid fibers, t = 30-60 s, dt = 10^-4 s, 5 trials per parameter set) run on NYU Greene HPC
+  supercomputer, and relies on unprinted Gillespie SSA and filament turnover algorithms cited to
+  Maxian et al. (2021) [ref. 3].

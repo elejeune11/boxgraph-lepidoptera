@@ -1,0 +1,169 @@
+# Cross-record ModelAtlas relations for winkelman2016 across all six ready partner records
+# (claessens2008, freedman2019, freedman2019_code, nastkolb2022, pelletier2003, shin2009).
+#
+# Summary by pair:
+# 1. freedman2019 + winkelman2016: 4 verified relations below (entered with provenance: proposed
+#    in winkelman2016 because freedman2019 is the later 2019 paper extending winkelman2016's 1D
+#    constant-barrier KMC model; exact freedman2019 quotes and pages are given in each `reason`).
+# 2. freedman2019_code + winkelman2016: the live notebook model `kmc_notebook_growing_bundle`
+#    (kmc.ipynb Cells 5-6) satisfies the same slow-growth reduction (extension_rate -> 0) to
+#    `winkelman2016/kmc_domain_length_mean` (verified independently at eps = 3.484: 1.135 vs
+#    1.151 um, 1.4% agreement, eps_eff = 3.466 vs 3.484), but is omitted from automated
+#    relations.yaml testing because each default 1000-trial Python notebook call takes ~20-30 s
+#    (~33 min for 80 limit samples); documented in `q_freedman2019_fig3h_layer_shift_omitted_point_and_kmc_cross_check`.
+# 3. claessens2008 + winkelman2016: 0 relations (equilibrium single-species fascin helical-twist
+#    and hexagonal thickness-saturation models vs two-species competitive 1D KMC domain-length model;
+#    see q_claessens2008_no_relation_and_no_validation).
+# 4. shin2009 + winkelman2016: 0 relations (single-species grand-canonical helical-twist
+#    cooperativity EOS rho(z, u) and 28/13 packing vs two-species irreversible 1D KMC domain
+#    lengths l_F, l_alpha; see q_shin2009_no_relation_and_no_validation).
+# 5. pelletier2003 + winkelman2016: 0 relations (SAXS Bragg-peak/Scherrer diffraction models vs
+#    1D KMC domain-length and single-molecule residence-time models; see
+#    q_pelletier2003_square_lattice_30nm_vs_33nm_and_no_validation).
+# 6. nastkolb2022 + winkelman2016: 0 relations (2D VASP bilayer bundle-width scaling and bulk
+#    FRAP recovery models vs 1D two-species KMC domain-length and single-molecule dwell-time
+#    models; see q_nastkolb2022_no_relation_and_no_validation).
+
+- id: rel_freedman2019_kmc_reduces_to_winkelman_kmc_mean
+  kind: reduces_to
+  a: freedman2019/kmc_growing_bundle_conc_ratio
+  b: winkelman2016/kmc_domain_length_mean
+  mapping:
+    r: "conc_ratio"
+    eps_kBT: "(1000 * L_p / l_b) * asin(delta_l_xl / l_b)**2"
+    a: "l_b"
+  output_map:
+    l_F: domain_length_A
+  limit:
+    mu_grow: "0"
+  regime:
+    conc_ratio: [0.8, 1.5]
+    mu_grow: [1000.0, 5000.0]
+    mu_on_B: [1.0, 2.0]
+    L_0: [14.8, 14.8]
+    l_b: [37.0, 37.0]
+    L_p: [1.0, 1.4]
+    delta_l_xl: [13.0, 14.0]
+    n_d: [1.0, 1.0]
+    l_d: [100.0, 100.0]
+  tolerance: 0.05
+  provenance: proposed
+  reason: >
+    Freedman et al. (2019, pp. 2-4 / 16193-16195) explicitly generalize Winkelman et al.'s (2016,
+    Ref. 16) 1D constant-barrier kinetic Monte Carlo model by coupling barbed-end lattice growth
+    (rate mu_grow / l_b) to the worm-like chain gap bending energy Eq. (1),
+    U(d * l_b) / (k_B T) = (L_p / (d * l_b)) * arcsin^2(Delta l_xl / (d * l_b)). In the
+    slow-growth, single-site-filling limit mu_grow -> 0 (with n_d = 1, l_d = 100 um removing
+    SI Section B domain filtering, L_0 = 400 * l_b = 14.8 um matching Winkelman's N = 400 sites,
+    and Delta l_xl < l_b so d = 1 is geometrically allowed), each newly grown vacant site binds
+    immediately before a second site opens; same-type binding occurs at rate mu_on_same and
+    dissimilar switching occurs across a 1-site gap at rate mu_on_other * exp(-U(l_b) / (k_B T)).
+    Freedman's growing-bundle KMC thus reduces directly to Winkelman's constant-barrier KMC
+    arithmetic-mean model (`kmc_domain_length_mean`) with exact barrier
+    eps_kBT = (1000 * L_p / l_b) * asin(delta_l_xl / l_b)^2 (tested across eps_kBT in ~[3.4, 5.5]
+    and r in [0.8, 1.5]; residual ~2.2% arises from Freedman's (last_pos - first_pos)*l_b
+    endpoint convention vs Winkelman's count*a plus 1000-trial Monte Carlo noise).
+  assumptions:
+    - "Slow-growth single-site-filling limit mu_grow / (l_b * mu_on) -> 0 so binding always occurs at gap d = 1."
+    - "Unfiltered domain definition (n_d = 1, l_d = 100 um) and matched lattice length L_0 = 400 * l_b = 14.8 um."
+    - "Moderate single-site WLC bending barrier (Delta l_xl < l_b, eps_kBT in [3.4, 5.5]) so runs span >= 30 sites and the 1-site endpoint convention contributes < 3%."
+
+- id: rel_freedman2019_kmc_phys_approx_winkelman_kmc_expfit_lF
+  kind: approximated_by
+  a: freedman2019/kmc_growing_bundle_conc_ratio
+  b: winkelman2016/kmc_domain_length_exp_fit
+  mapping:
+    r: "conc_ratio"
+    eps_kBT: "4.8"
+    a: "l_b"
+  output_map:
+    l_F: domain_length_A
+  regime:
+    conc_ratio: [0.8, 2.0]
+    mu_grow: [40.0, 40.0]
+    mu_on_B: [0.2, 0.2]
+    L_0: [15.0, 15.0]
+    l_b: [37.0, 37.0]
+    L_p: [17.0, 17.0]
+    delta_l_xl: [27.0, 27.0]
+    n_d: [4.0, 4.0]
+    l_d: [1.0, 1.0]
+  tolerance: 0.25
+  provenance: proposed
+  reason: >
+    In Freedman et al.'s (2019, p. 4 / 16195, Fig. 3C Left & Fig. S3C) physiological growing-bundle
+    regime (mu_grow = 40 nm/s, mu_on_B = 0.2/site/s, L_p = 17 um, Delta l_xl = 27 nm, l_b = 37 nm,
+    L_0 = 15 um, n_d = 4, l_d = 1 um), Freedman et al. state that their growing-bundle KMC model
+    reproduces the cooperative competition behavior of Winkelman et al.'s (2016) constant-barrier
+    model (eps = 4.8 k_B T, Fig. 3H / Fig. S3C). Quantitatively across r = [fascin]/[alpha-actinin]
+    in [0.8, 2.0], Freedman's domain_length_A is approximated by Winkelman's exponential-fit KMC
+    readout `kmc_domain_length_exp_fit` at eps = 4.8 within ~23.7% (tolerance 0.25). Notably,
+    even though Freedman's per-event switching barrier at r = 1.0 is lower (eps_eff = 3.81 vs 4.8),
+    multi-site homotypic jumps (<d_same> ~= 2.4 vacant sites) multiply domain lengths back up to
+    ~3.3 um; across wider r = [0.3, 2.0], Freedman's emergent barrier is U-shaped (eps_eff = 4.15
+    at r = 0.3, 3.69 at r = 0.8, 4.96 at r = 2.0), causing super-linear fascin domain growth
+    (0.76 to 8.57 um) that diverges by up to 36-40% from Winkelman's constant-barrier KMC at low r.
+  assumptions:
+    - "Evaluated at Freedman et al.'s (2019) printed Fig. 3C Left physiological parameters (l_b = 37 nm, Delta l_xl = 27 nm, L_p = 17 um, mu_grow = 40 nm/s, mu_on_B = 0.2/site/s)."
+    - "Restricted to r in [0.8, 2.0] where both models are within 25%; at r = 0.3-0.5 Freedman's lower effective barrier yields 36-40% shorter fascin domains than Winkelman's eps = 4.8 model."
+
+- id: rel_freedman2019_kmc_phys_approx_winkelman_kmc_mean_lalpha
+  kind: approximated_by
+  a: freedman2019/kmc_growing_bundle_conc_ratio
+  b: winkelman2016/kmc_domain_length_mean
+  mapping:
+    r: "conc_ratio"
+    eps_kBT: "4.8"
+    a: "l_b"
+  output_map:
+    l_alpha: domain_length_B
+  regime:
+    conc_ratio: [0.3, 2.0]
+    mu_grow: [40.0, 40.0]
+    mu_on_B: [0.2, 0.2]
+    L_0: [15.0, 15.0]
+    l_b: [37.0, 37.0]
+    L_p: [17.0, 17.0]
+    delta_l_xl: [27.0, 27.0]
+    n_d: [4.0, 4.0]
+    l_d: [1.0, 1.0]
+  tolerance: 0.15
+  provenance: proposed
+  reason: >
+    In Freedman et al.'s (2019, p. 4 / 16195, Fig. 3C Left) physiological growing-bundle regime
+    across the full concentration-ratio sweep r = [fascin]/[alpha-actinin] in [0.3, 2.0] at fixed
+    mu_on_B = 0.2/site/s, alpha-actinin domain lengths (`domain_length_B`: 6.51 um at r = 0.3 down
+    to 2.08 um at r = 2.0) closely track Winkelman et al.'s (2016) constant-barrier arithmetic-mean
+    KMC model (`kmc_domain_length_mean` at eps = 4.8: 7.38 down to 2.00 um) with max relative error
+    11.3% (within tolerance 0.15). Agreement is much tighter for alpha-actinin than for fascin
+    (where max error vs `kmc_domain_length_mean` reaches 36.3% on r in [0.5, 1.5]) because
+    mu_on_B = 0.2/site/s is held constant while mu_on_A = r * mu_on_B varies.
+  assumptions:
+    - "Evaluated at Freedman et al.'s (2019) printed Fig. 3C Left physiological parameters (l_b = 37 nm, Delta l_xl = 27 nm, L_p = 17 um, mu_grow = 40 nm/s, mu_on_B = 0.2/site/s)."
+    - "Compared against Winkelman's finite-lattice arithmetic-mean readout (`kmc_domain_length_mean`, N = 400, eps = 4.8)."
+
+- id: rel_winkelman_inf_scales_as_freedman_switching_1d
+  kind: scales_as
+  a: winkelman2016/kmc_infinite_lattice_limit
+  b: freedman2019/switching_rate_1d_model
+  mapping:
+    mu_on_same: "1.0"
+    epsilon_kBT: "eps_kBT"
+  output_map:
+    fold_reduction: l_F
+  regime:
+    r: [2.0, 10.0]
+    eps_kBT: [6.0, 10.0]
+    a: [30.0, 40.0]
+  provenance: proposed
+  reason: >
+    Freedman et al. (2019, p. 2 / 16193, `switching_rate_1d_model`, described_from: ref-16)
+    restate Winkelman et al.'s (2016) constant-barrier 1D switching kinetics as
+    mu_on^diff = mu_on^same * exp(-epsilon / (k_B T)), defining the switching-rate fold reduction
+    exp(epsilon / (k_B T)) (~120-fold at epsilon = 4.8 k_B T). In Winkelman's exact infinite-lattice
+    Markov-chain limit (`kmc_infinite_lattice_limit`), l_F = a * (1 + r * exp(eps_kBT)), so in the
+    high-barrier cooperative regime (r * exp(eps_kBT) >> 1) the fascin domain length l_F scales
+    identically in the barrier parameter eps_kBT with Freedman's switching fold-reduction
+    exp(epsilon_kBT) (log-slopes agree within ~1e-3).
+  assumptions:
+    - "High-barrier cooperative regime r * exp(eps_kBT) >> 1 (r in [2, 10], eps_kBT in [6, 10]) where the single-site +1 floor in l_F = a * (1 + r * exp(eps_kBT)) is negligible (< 0.2%)."

@@ -1,0 +1,388 @@
+- id: q_lie_trotter_vs_strang_splitting
+  kind: unexplained_difference
+  about:
+    - sm_c_two_fiber_lie_trotter_port
+    - sm_c_two_fiber_strang_variant
+    - run_smc_lt_large
+    - run_smc_strang_large
+    - cmp_lt_large_std_end_vs_gibbs
+    - cmp_lt_large_std_bd_vs_gibbs
+    - cmp_strang_large_std_end_vs_gibbs
+    - cmp_strang_large_std_mid_vs_gibbs
+    - ref_smc_lt_dt_end
+    - ref_smc_strang_dt_end
+  text: >
+    Critical integrator divergence between the released code and companion paper maxian2022:
+    maxian2022 Sec. 2.4 (p. 5) claims a 2nd-order 3-step Strang splitting (Brownian dt/2 ->
+    CL + deterministic dt -> Brownian dt/2), and Fig. S1 caption (p. 21) explicitly states that
+    spring lengths were measured at the midpoint after step 1. In contrast, the released code
+    (TemporalIntegrator.py:441-499) explicitly comments `# Brownian update (always first order)`
+    and executes a 1st-order Lie-Trotter splitting: a single full-step `BrownianUpdate(dt)`
+    followed by deterministic `updateAllFibers(dt)`, with NO second Brownian half-step anywhere
+    in the codebase. Consequences verified quantitatively on the SM Sec. C two-fiber benchmark
+    (dt = 0.0025 s vs exact Eq. S13 mean = 0.06381 um, std = 0.01786 um):
+    (1) At the end of each step (where FixedDynamicLinkNetwork.py:208 records LinkStrains),
+    the released code's Lie-Trotter splitting contracts the spring severely, collapsing std_x
+    to ~0.0069 um (-61.3% narrower than Eq. S13) and mean_x to 0.0543 um (-14.9%); even at
+    dt = 0.0005 s, end-of-step std_x is still ~0.0160 um (-10.3%).
+    (2) Measured immediately after BrownianUpdate(dt) (or at Strang's midpoint after step 1,
+    which shares the identical stationary Markov chain), std_x inflates to ~0.0221 um (+24%
+    broader than Eq. S13), directly reproducing both the lowered peak in maxian2022 Fig. S1
+    right and the +24.7% variance inflation flagged in maxian2022/q_sm_c_dt_stability_and_strang_splitting.
+    (3) When the paper's true 3-step Strang splitting is implemented and sampled at the full-step
+    endpoint after step 3 (sm_c_two_fiber_strang_variant), std_x stays within -4.5% of Eq. S13
+    even at dt = 0.0025 s (0.0171 um) and -2.3% at dt = 0.0005 s (0.0175 um).
+  citation:
+    file: Python/TemporalIntegrator.py
+    lines: "441-445"
+    quote: "# Brownian update (always first order)"
+
+- id: q_rigid_body_displacements_untested_dead_code
+  kind: possible_error
+  about:
+    - code_svd_rigid_cap
+    - code_fibcol_dt_default
+    - sm_c_two_fiber_lie_trotter_port
+  text: >
+    Three defects in the released rigid-rod Brownian implementation
+    (Python/cppmodules/SingleFiberSaddlePointSolver.cpp:137-161, Python/fiberCollection.py:43,100,
+    and Python/Examples/FixedDynamicLinkNetwork.py:73):
+    (1) RigidBodyDisplacements() prints `std::cout << "Rigid fiber displacements not really tested -- check"`
+    on every single fiber at every single time step (line 148) and solves the full dense
+    3*N_x x 3*N_x mobility matrix per fiber rather than using maxian2022 Eq. 12 / Eq. S12's
+    precomputed analytical (alpha, beta, gamma) coefficients.
+    (2) Lines 156-157 compute `SymmetrizeAndDecomposePositive(6, SchurComplement, 0.0, SchurEigVecs, SchurEigVals)`
+    and discard both output arrays (`SchurEigVecs`, `SchurEigVals` are never read on lines 158-161),
+    passing the unsymmetrized `SchurComplement` into `SolveWithPseudoInverse`.
+    (3) fiberCollection.__init__ computes the hidden rigid rotation cutoff
+    `svdRigidTol = kbT * dt / svdRigid^2` (line 100, with undocumented `svdRigid = 0.25` on line 15),
+    but FixedDynamicLinkNetwork.py:73 omits `dt` when constructing `fiberCollection`, so
+    `svdRigidTol` always silently uses the constructor default `dt = 1e-3 s` (line 43) rather
+    than the actual simulation time step (e.g., `1e-4 s`, shifting the cutoff by 10x).
+  citation:
+    file: Python/cppmodules/SingleFiberSaddlePointSolver.cpp
+    lines: "148-160"
+    quote: 'std::cout << "Rigid fiber displacements not really tested -- check" << std::endl;'
+
+- id: q_cpp_sbt_eigval_clamping_bug
+  kind: possible_error
+  about:
+    - code_eig_val_thres
+    - cpp_sbt_mobility_port
+    - run_cpp_table_s1
+    - run_cpp_eps0010
+    - cmp_cpp_table_s1_beta
+    - cmp_cpp_eps0010_beta
+    - cmp_cpp_table_s1_gamma
+  text: >
+    In C++ SBT mode (SingleFiberMobilityEvaluator.cpp:134-135, VectorMethods.cpp:228-244), the
+    matrix M_SBT * W_tilde^-1 is symmetrized and its eigenvalues are clamped from below at a
+    hardcoded DIMENSIONAL floor `_EigValThres = 0.001` (FibCollocationDiscretization.py:370,
+    commented `# Could cause convergence issues`) that is NOT rescaled by 1/(mu*L). At eps = 0.010,
+    N_tau = 16 (N_x = 17), delta = 0.1, symmetrized M_par * W_tilde^-1 develops negative
+    eigenvalues (-0.478 at mu = 1 Pa*s; -4.776 at cytoplasm viscosity mu = 0.1 Pa*s). Clamping
+    these negative modes to +0.001 creates a spurious 1/0.001 = 1000 spike in MForce^-1,
+    collapsing the Table S1 parallel mobility coefficient beta(0.010) from 0.2230 to 0.0020
+    (-99.1%) at mu = 0.1 Pa*s (and to 0.1905, -14.6%, at mu = 1.0 Pa*s; directly fails scalar
+    cmp_cpp_eps0010_beta, while table-wide cmp_cpp_table_s1_beta is masked by 1-sig-fig input
+    rounding on delta = 0.1). For actin aspect ratios (eps <= 0.008), all raw eigenvalues stay
+    >= 8.89 um/(pN*s) >> 0.001, so clamping never triggers and C++ SBT agrees with Table S1
+    within 2.5e-3 (with small residual -0.0006 differences in gamma(0.004) from retained
+    O(a_RPY^2/s_bar^2) RPY doublet terms on lines 268, 325).
+  citation:
+    file: Python/FibCollocationDiscretization.py
+    lines: "370"
+    quote: "self._EigValThres = 0.001 # Could cause convergence issues"
+
+- id: q_matlab_table_s1_exact_and_broken_call
+  kind: possible_error
+  about:
+    - straight_mobility_sbt_matlab_port
+    - matlab_straight_N
+    - matlab_straight_delta
+    - run_matlab_table_s1
+    - cmp_matlab_table_s1_alpha
+    - cmp_matlab_table_s1_beta
+    - cmp_matlab_table_s1_gamma
+    - cmp_matlab_c_tr_eq22
+    - cmp_matlab_anisotropy_p9
+  text: >
+    Resolves companion paper maxian2022/q_sbt_endpoint_regularization_unstated while uncovering a
+    broken MATLAB function reference in commit 38c2fc8:
+    (1) Exact Table S1 formula: RegularizeS.m:9-19 (= FibCollocationDiscretization.py:168-176)
+    defines the unprinted Sec. 2.1 endpoint regularization s_bar(s) = w(s)*s + (1-w(s)^2)*delta*L/2
+    with w(s) = tanh((eta+1)/delta) - tanh((eta-1)/delta) - 1, eta = 2s/L - 1, delta = 0.1 (reflected
+    symmetrically on s > L/2). Coupled with AsymptoticLocalMobility.m:51 (algebraically identical to
+    Keller-Rubinow c(s_bar)(I+tau*tau)+(I-3*tau*tau)) and StokesletFinitePartMatrix.m (N = 32,
+    Chebyshev kind 1), StraightMobility.m reproduces ALL 21 Table S1 values (alpha, beta, gamma
+    for eps = 0.01..0.001) to all 4 printed decimals (max error <= 5e-5), gives 3*alpha+beta = 1.6698
+    (reproducing Eq. 22's 1.67), and confirms anisotropy (alpha+beta)/alpha = 1.650 (17.5% below
+    maxian2022 p. 9's slender-asymptotic claim of 2).
+    (2) Broken call: Matlab/MainPrograms/StraightMobility.m:21 (as well as TemporalIntegrator.m:97,106
+    and KirchoffFiberRectangularKeav_Twist.m:48) calls `getGrandMloc(...)`, which does not exist
+    anywhere in commit 38c2fc8 (the function was renamed to `AsymptoticLocalMobility.m`), so
+    StraightMobility.m errors out immediately if executed unmodified in MATLAB.
+  citation:
+    file: Matlab/MainPrograms/StraightMobility.m
+    lines: "21"
+    quote: "Mloc = getGrandMloc(N,Xs,zeros(3*N,1),a,L,mu,s,delta);"
+
+- id: q_fibdisc_duplicate_condition_bug
+  kind: possible_error
+  about:
+    - cheb_sbt_discretization_adapter
+    - run_cheb_rpy_oversample_bug
+    - cmp_cheb_rpy_oversample_sreg_bug
+  text: >
+    Confirmed typo bug in Python/FibCollocationDiscretization.py line 164:
+    `if (self._RPYSpecialQuad or self._RPYDirectQuad or self._RPYDirectQuad):` checks
+    `self._RPYDirectQuad` twice and omits `self._RPYOversample` (contrast line 371 which checks
+    `self._RPYDirectQuad or self._RPYOversample`). Consequently, live run_cheb_rpy_oversample_bug
+    shows that instantiating ChebyshevDiscretization with `RPYOversample=True` (the exact mode
+    selected by FixedDynamicLinkNetwork.py:57 whenever `RPYQuad=False`) still applies SBT endpoint
+    regularization to `self._sRegularized` (`min = 0.05 um` instead of intended `0.0000 um`, failing
+    cmp_cheb_rpy_oversample_sreg_bug) while zeroing `self._EigValThres`.
+  citation:
+    file: Python/FibCollocationDiscretization.py
+    lines: "164"
+    quote: "if (self._RPYSpecialQuad or self._RPYDirectQuad or self._RPYDirectQuad):"
+
+- id: q_delta_local_default_and_sbt_unreachable
+  kind: choice
+  about:
+    - code_delta_local_ctor_default
+    - code_delta_local_init_default
+    - run_cheb_sbt_ctor_delta1
+    - run_matlab_eps0004_delta1
+    - run_smc_stab_delta1
+    - cmp_smc_dtmax_smooth_vs_paper
+    - cmp_smc_dtmax_delta1_vs_paper
+  text: >
+    Two silent configuration discrepancies affecting SBT regularization and mode selection:
+    (1) FibCollocationDiscretization.__init__ (lines 48, 254), StrainInputFile.txt:28, and
+    SemiflexBundleInputFile.txt:31 all default `deltaLocal = 1`, which hits the `delta >= 0.5`
+    branch of initLocalcvals (line 169) and sets constant ellipsoidal `s_bar = L/2 = 0.5 um`
+    everywhere (verified by run_cheb_sbt_ctor_delta1), whereas initLocalcvals default (line 138),
+    StraightMobility.m:20, and maxian2022 p. 3 specify `delta = 0.1`. For eps = 0.004, `deltaLocal = 1`
+    shifts rigid mobility from Table S1 (0.4575, 0.2973, 4.3073) to (0.4783, 0.2994, 4.7873) and
+    lowers SM Sec. C local-drag stability limit dt_max from 0.00570 s (smooth) / 0.00563 s (point)
+    to 0.00522 s (point, closer to maxian2022 p. 20's printed 0.005 s).
+    (2) FixedDynamicLinkNetwork.py:56-57 hardcodes `RPYSpecialQuad=RPYQuad` and
+    `RPYOversample=(not RPYQuad)`, making pure SBT mode (`RPYSpecialQuad=RPYDirectQuad=RPYOversample=False`)
+    unreachable via the input file without editing the driver script.
+  citation:
+    file: Python/Examples/FixedDynamicLinkNetwork.py
+    lines: "56-57"
+    quote: "RPYOversample=(not RPYQuad),NupsampleForDirect=NupsampleForDirect,nptsUniform=Nuniformsites);"
+
+- id: q_kbt_41e3_vs_4e3_mismatch
+  kind: unexplained_difference
+  about:
+    - code_clnet_kbt_global
+    - code_clnet_species_kbt
+    - strain_kbT
+    - bundle_kbT
+    - run_clnet_nonbrownian
+    - run_clnet_brownian_41e3
+    - run_derived_code_L1
+    - run_derived_paper_L1
+    - cmp_clnet_nb_delta_ell_vs_paper
+    - cmp_code_Eb_vs_paper
+    - cmp_paper_Eb_from_4e3
+  text: >
+    Inconsistent thermal energy k_B T across the codebase and companion paper maxian2022:
+    CrossLinkedNetwork.py:9 (`kbT = 4.1e-3`), StrainInputFile.txt:10, and SemiflexBundleInputFile.txt:11
+    all use k_B T = 4.1e-3 pN*um (~24 C), whereas CrossLinkedSpeciesNetwork (CrossLinkedNetwork.py:641)
+    and maxian2022 Table 1 (p. 6) state 4e-3 pN*um (25 C). Quantified consequences:
+    (1) Explains Table 1's E_b = 0.07 pN*um^2 with l_p = 17 um: code's 4.1e-3 * 17 = 0.0697 pN*um^2
+    (rounds to 0.07), whereas 4e-3 * 17 = 0.068 pN*um^2 (-2.9%).
+    (2) Shifts non-Brownian cross-linker search half-window delta_ell = sqrt(kbT/K_c) in live
+    DoubleEndedCrossLinkedNetwork (kT=0) to 20.25 nm (vs p. 5's 20 nm) and Brownian capture window
+    to [9.50, 90.50] nm (vs [10, 90] nm at 4e-3).
+    (3) Shifts rigid-fiber diffusion 6*D_t from 0.1336 to 0.1369 um^2/s and mesh diffusion time
+    tau_m(L=1) from 0.2994 s to 0.2921 s (+2.5%).
+  citation:
+    file: Python/CrossLinkedNetwork.py
+    lines: "9"
+    quote: "kbT = 4.1e-3;"
+
+- id: q_cl_detailed_balance_units_docstring_cutoff
+  kind: possible_error
+  about:
+    - cl_network_params_adapter
+    - cpp_cl_kinetics_ssa_port
+    - run_clnet_nonbrownian
+    - run_cl_ssa_inside
+    - run_cl_ssa_outside
+    - cmp_ssa_inside_vs_gibbs
+    - cmp_ssa_inside_rel_err
+    - cmp_ssa_outside_vs_gibbs
+    - cmp_ssa_outside_rel_err
+  text: >
+    Three findings on cross-linker kinetics and detailed balance (DoubleEndedCrossLinkedNetwork.py
+    and EndedCrossLinkers.cpp):
+    (1) Settles companion paper maxian2022/q_eq17_detailed_balance_unit_mismatch: lines 96-99 of
+    DoubleEndedCrossLinkedNetwork.py multiply BOTH `self._kon = kon * self._ds` AND
+    `self._konSecond = konsecond * self._ds`, converting both per-length binding rates (1/(um*s))
+    into per-site rates (1/s) before passing them to C++ EndedCrossLinkers.cpp (which preserves
+    detailed balance dimensionally).
+    (2) Docstring misprint vs C++: DoubleEndedCrossLinkedNetwork.py:165 docstring omits the factor
+    of 1/2 (`exp(-K_c (r-l)^2 / (k_B T))`), while the actual C++ implementation in
+    EndedCrossLinkers.cpp:528 correctly computes `Energy = 0.5*_KStiffness*(r-_restlen)*(r-_restlen)`,
+    matching maxian2022 Eq. 20.
+    (3) Undisclosed detailed-balance tail truncation: DoubleEndedCrossLinkedNetwork.py:109-112
+    truncates second-end binding to `CLBounds = [rl - 2*sqrt(kT/Kc), rl + 2*sqrt(kT/Kc)]`
+    ([10, 90] nm at k_B T = 4e-3 pN*um), while EndedCrossLinkers.cpp:532-539 leaves unbinding
+    active at all distances. As run_cl_ssa_inside and run_cl_ssa_outside verify, the 4-reaction
+    Gillespie SSA satisfies exact truncated-Poisson Gibbs-Boltzmann equilibrium inside [10, 90] nm
+    (reproducing cmp_ssa_inside_rel_err) but collapses to 0 outside (e.g. at r = 0.095 um vs exact
+    Gibbs 0.01285, failing cmp_ssa_outside_rel_err with 100% truncation error and missing ~4.6% of
+    the 1D Boltzmann tail).
+  citation:
+    file: Python/DoubleEndedCrossLinkedNetwork.py
+    lines: "96-112"
+    quote: "self._konSecond = konsecond*self._ds;"
+
+- id: q_max_links_80_resolved
+  kind: reading
+  about:
+    - strain_Nuniformsites
+    - cl_network_params_adapter
+    - run_clnet_nonbrownian
+    - cmp_clnet_ds_vs_paper
+    - cmp_clnet_max_per_site
+    - cmp_clnet_max_links_vs_paper
+  text: >
+    Settles companion paper maxian2022/q_max_links_per_fiber_discrepancy (76.92 vs 80 max links
+    per fiber): StrainInputFile.txt:29, SemiflexBundleInputFile.txt:34, ProcessPythonNetwork.m:18,
+    and BundledFibers.py:146 all set `Nuniformsites = 40` discrete binding sites along L = 1 um
+    (endpoints included), yielding exact spacing ds = L/(N_u - 1) = 1/39 = 0.025641 um (printed as
+    rounded 0.026 um in maxian2022 Table 1), `maxPerSite = ceil(ds / 0.020) = 2`
+    (DoubleEndedCrossLinkedNetwork.py:119), and exactly `maxPerSite * N_u = 2 * 40 = 80` maximum
+    bound ends per fiber (not `2 * (L / 0.026) = 76.92`).
+  citation:
+    file: Python/Examples/StrainInputFile.txt
+    lines: "29"
+    quote: "Nuniformsites = 40;            # Number of uniform points for CL binding."
+
+- id: q_undisclosed_preequilibration_and_subcycling
+  kind: choice
+  about:
+    - bundle_Networkdt
+    - code_input_derived_checks
+    - run_derived_code_L1
+    - cmp_network_step_every_vs_paper
+    - full_3d_network_bundling_sim
+  text: >
+    Two undisclosed temporal algorithmic choices in Python/Examples/FixedDynamicLinkNetwork.py
+    absent from maxian2022 Sec. 2.4 (p. 5):
+    (1) Pre-equilibration before t = 0: line 111 runs
+    `CLNet.updateNetwork(allFibers, Dom, 100.0/min(konCL*Lf, konSecond*Lf, koffCL, koffSecond))`
+    at fixed initial fiber positions before entering the time loop, so networks do NOT start
+    completely unlinked at t = 0 (unless disabled outside this driver).
+    (2) Cross-linker & turnover subcycling: SemiflexBundleInputFile.txt:16 sets `Networkdt = 0.01 s`,
+    and FixedDynamicLinkNetwork.py:161 computes `NetworkStepEvery = int(Networkdt / dt)` (= 100
+    at dt = 1e-4 s; cmp_network_step_every_vs_paper), passed as `dtFactor` into
+    TemporalIntegrator.py:422-437 so both FiberBirthAndDeath and NetworkUpdate execute only once
+    every 100 fiber time steps (with step `dt * dtFactor = 0.01 s`), rather than every fiber
+    time step `dt` as described in maxian2022 p. 5.
+  citation:
+    file: Python/Examples/FixedDynamicLinkNetwork.py
+    lines: "161"
+    quote: "NetworkStepEvery = int(Networkdt/dt);"
+
+- id: q_bundle_criterion_strict_gt_and_hardcoded_quarter
+  kind: possible_error
+  about:
+    - strain_bunddist
+    - bundle_detection_adapter
+    - run_bundle_detect
+    - cmp_bundle_strict_inequality
+  text: >
+    Two subtle discrepancies in bundle detection relative to maxian2022 Sec. 2.5 (p. 5):
+    (1) CrossLinkedNetwork.py:382-383 tests strict inequality `max(s_iSites) - min(s_iSites) > bundleDist`
+    on both filaments, whereas maxian2022 p. 5 defines two filaments as bundled when connected by
+    two links "at least L/4 apart" (>= d_bund). Live run_bundle_detect confirms 0 bundles are
+    detected when two links sit exactly 0.25 um apart (cmp_bundle_strict_inequality).
+    (2) Both StrainInputFile.txt:38 and SemiflexBundleInputFile.txt:43 hardcode `bunddist = 1/4`
+    (0.25 um) rather than `Lf/4`. If a user changes `Lf = 0.5` (as in maxian2022 Fig. 6) without
+    manually updating `bunddist`, the code silently enforces `L/2` instead of `L/4`.
+  citation:
+    file: Python/CrossLinkedNetwork.py
+    lines: "382-383"
+    quote: "if (max(s_iSites)-min(s_iSites) > bundleDist and"
+
+- id: q_process_matlab_2sem_and_link_density_units
+  kind: unexplained_difference
+  about:
+    - matlab_proc_sem_mult
+    - bundle_detection_adapter
+    - full_3d_network_bundling_sim
+  text: >
+    Inspection of Matlab/AnalyzePython/ProcessPythonNetwork.m resolves two ambiguities in
+    maxian2022's plotted diagnostics:
+    (1) Error bar definition: lines 226, 245, 261, 278, 296, 313, 330, and 349 all plot error
+    bars of half-width `2 * std(...) / sqrt(nTri)` (i.e., 2x SEM, approximately a 95% confidence
+    interval), whereas maxian2022 Figs. 2, 3, 6, and 7 captions describe the shaded/error bars
+    simply as "error in the mean over five trials" (standardly 1x SEM).
+    (2) Link-density normalization and label: line 168 computes `nLinksPerT * 2 / (F * L)`
+    (dimensions 1/length, matching maxian2022 p. 5's definition "average number of links per unit
+    fiber length") yet line 230 labels the y-axis `'Link density (per fiber)'` (matching Figs. 2-3
+    where L = 1 um makes the two numerically equal, while differing by 2x for L = 0.5 um in Fig. 6).
+    Line 138 also confirms the Fig. S5 threshold F_B = 5 (`numFibs > 4.5`).
+  citation:
+    file: Matlab/AnalyzePython/ProcessPythonNetwork.m
+    lines: "226"
+    quote: "std(nLinks(:,ErrStart*iP:ErrorEvery(iP):end))*2/sqrt(nTri),..."
+
+- id: q_missing_paper_scripts_and_readme_drift
+  kind: unstated_model
+  about:
+    - full_3d_network_bundling_sim
+    - bundle_nFib
+    - bundle_Ldx
+    - bundle_rl
+    - bundle_konCL
+    - strain_N
+    - strain_lp
+  text: >
+    Repository commit 38c2fc8 (`stochasticHydroTools/SlenderBody`) omits all figure-reproduction
+    drivers, parameter-sweep scripts, and input decks for maxian2022 (Figs. 1-7, S1-S8, Fig. 4
+    (ell_m, k_on) grid, Fig. 6 L = 0.5 um comparison, Fig. 7 tau_f/tau_c turnover sweeps,
+    Fig. S5 F_B = 5 fits, and SM Sec. C's two-fiber benchmark). Of the two shipped input files:
+    SemiflexBundleInputFile.txt targets a later cortical-flow/motor paper (nFib=100, N=12, Ldx=5,
+    rl=0.012 um, konCL=0.2, koffCL=0.04, Motors=True, FluctuatingFibs=True, ZConfSpring=0.5),
+    and StrainInputFile.txt preserves most maxian2022 Table 1 bundling parameters but changes
+    N=12, lp=2 um, kbT=4.1e-3, RPYQuad=True, smForce=False. Additionally, top-level README.md:35
+    contains stale citation numbering after a Nov 2024 paper was prepended as `[1]`, claiming
+    "Matlab: ... These are the only codes used in [4], [5], and [7]" (where [4] is now
+    maxian2022, directly contradicting Python/Examples/README.md:30-35 which states maxian2022
+    used the Python/C++ codebase).
+  citation:
+    file: README.md
+    lines: "35"
+    quote: "Matlab: ... These are the only codes used in [4], [5], and [7]"
+
+- id: q_sm_c_port_simulation_choices
+  kind: choice
+  about:
+    - sm_c_two_fiber_lie_trotter_port
+    - sm_c_two_fiber_strang_variant
+    - run_smc_lt_small
+    - run_smc_lt_large
+    - run_smc_strang_small
+    - run_smc_strang_large
+  text: >
+    In porting TemporalIntegrator.py:441-499 + FiberCollectionC.cpp:444-486, 837-962 +
+    CrossLinkForceEvaluator.cpp:65-148 to reproduce maxian2022 SM Sec. C (which omits its driver
+    script and total trajectory length t_sim), we set t_sim = 40 s with burn_t = 1 s (~14,000
+    spring relaxation times tau_spring = dt_max/2 = 0.00285 s) over 5 independent seeds and
+    evaluated the spring separation at the Gaussian force centroid arm = 0.4960 um (smooth_force =
+    True, sigma/L = 0.005, N = 50) so that the dt -> 0 invariant measure converges to exact Eq. S13
+    without the ~0.0002 um centroid-to-endpoint offset. Alternative choices (t_sim = 100 s or
+    smooth_force = False with arm = 0.5000 um) change std_x by < 1% and do not alter any
+    Lie-Trotter vs Strang conclusions.
+  citation:
+    file: Python/CrossLinkedNetwork.py
+    lines: "128-129"
+    quote: "sigma = 0.005*L; # just to check point forces with more rigid fibers"

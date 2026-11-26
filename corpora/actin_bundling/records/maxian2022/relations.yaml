@@ -1,0 +1,813 @@
+- id: rel_eq22_general_same_as_trace_coeff
+  kind: same_as
+  a: maxian2022/translational_diffusion_eq22
+  b: maxian2022/translational_diffusion_eq22_printed_coeff
+  mapping:
+    kBT: "kBT"
+    mu: "mu"
+    L: "L"
+    c_tr: "3 * alpha + beta"
+  output_map:
+    D_t: D_t
+  regime:
+    kBT: [0.003, 0.005]
+    mu: [0.001, 1.0]
+    L: [0.5, 2.0]
+    alpha: [0.35, 0.60]
+    beta: [0.20, 0.45]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "1238"
+    quote: "translational diffusion coefficient of a straight fiber, derived in (33)"
+    where: "Eq. 22"
+
+- id: rel_brownian_cutoff_scales_as_eq7
+  kind: scales_as
+  a: maxian2022/cl_binding_cutoff_brownian
+  b: maxian2022/cl_spring_fluctuation_eq7
+  mapping:
+    kBT: "kBT"
+    Kc: "Kc"
+  output_map:
+    delta_ell: delta_ell_B
+  regime:
+    kBT: [0.003, 0.005]
+    Kc: [1.0, 100.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "1234"
+    quote: "two standard deviations of the Gaussian in Eq. 20"
+    where: "text"
+
+- id: rel_double_to_single_exp_bundles
+  kind: reduces_to
+  a: maxian2022/percent_in_bundles_double_exp
+  b: maxian2022/percent_in_bundles_single_exp
+  mapping:
+    t: "t"
+    tau1: "tau1"
+  output_map:
+    percent: percent
+  limit:
+    w1: "1"
+  regime:
+    t: [0.5, 60.0]
+    w1: [0.5, 0.999]
+    tau1: [2.0, 20.0]
+    tau2: [5.0, 30.0]
+  provenance: stated
+  citation:
+    page: 10
+    printed_page: "1239"
+    quote: "case, where a single timescale fits the data, the Brownian"
+    where: "text"
+
+- id: rel_figS5_corrected_same_as_fig3_decay
+  kind: same_as
+  a: maxian2022/bundle_density_exp_decay_figS5_corrected
+  b: maxian2022/bundle_density_exp_decay
+  mapping:
+    t: "t"
+    A: "A"
+    t0: "t0"
+    tau_dec: "tau_dec"
+  output_map:
+    rho_B: rho_B
+  regime:
+    t: [5.0, 60.0]
+    A: [1.0, 6.0]
+    t0: [4.0, 35.0]
+    tau_dec: [15.0, 70.0]
+  provenance: stated
+  citation:
+    page: 24
+    printed_page: "SI-7"
+    quote: "we observe the same characteristic growth and decay as with FB = 2"
+    where: "Fig. S5 caption"
+
+- id: rel_mesh_diffusion_scales_as_lm2
+  kind: scales_as
+  a: maxian2022/mesh_diffusion_time
+  b: maxian2022/diffusion_limited_bundling_scaling
+  mapping:
+    ell_m: "ell_m"
+  output_map:
+    tau_c: tau_m
+  regime:
+    ell_m: [0.1, 1.0]
+    six_D_t: [0.05, 0.5]
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "1240"
+    quote: "9 s to 17 s, then to 56 s as the mesh size doubles, scaling"
+    where: "text"
+
+# ==============================================================================
+# Cross-record relations: maxian2022 <-> maxian2022_code (companion repository)
+# ==============================================================================
+
+- id: rel_code_matlab_sbt_approx_reconstructed_alpha
+  kind: approximated_by
+  a: maxian2022/sbt_rigid_mobility_reconstructed
+  b: maxian2022_code/straight_mobility_sbt_matlab_port
+  mapping:
+    eps: "epsilon"
+    delta: "delta_rel"
+  output_map:
+    alpha: alpha
+  regime:
+    epsilon: [0.001, 0.01]
+    delta_rel: [0.08, 0.15]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    Compares maxian2022's reconstructed C^1 ellipsoidal-cap endpoint regularization (N=16) against
+    the actual MATLAB RegularizeS.m tanh regularization in maxian2022_code/straight_mobility_sbt_matlab_port
+    (N=32, which reproduces all 21 Table S1 entries to <= 4.9e-5). The regularization profile difference
+    shifts perpendicular translational mobility alpha by <= 0.33% across eps in [0.001, 0.01].
+
+- id: rel_code_matlab_sbt_approx_reconstructed_beta
+  kind: approximated_by
+  a: maxian2022/sbt_rigid_mobility_reconstructed
+  b: maxian2022_code/straight_mobility_sbt_matlab_port
+  mapping:
+    eps: "epsilon"
+    delta: "delta_rel"
+  output_map:
+    beta: beta
+  regime:
+    epsilon: [0.001, 0.01]
+    delta_rel: [0.08, 0.15]
+  tolerance: 0.01
+  provenance: proposed
+  reason: >
+    Quantifies the anisotropic translational mobility coefficient beta difference (<= 0.58%) between
+    maxian2022's reconstructed C^1 ellipsoidal-cap regularization and maxian2022_code's actual
+    RegularizeS.m tanh regularization used to generate Table S1.
+
+- id: rel_code_matlab_sbt_approx_reconstructed_gamma
+  kind: approximated_by
+  a: maxian2022/sbt_rigid_mobility_reconstructed
+  b: maxian2022_code/straight_mobility_sbt_matlab_port
+  mapping:
+    eps: "epsilon"
+    delta: "delta_rel"
+  output_map:
+    gamma: gamma
+  regime:
+    epsilon: [0.001, 0.01]
+    delta_rel: [0.08, 0.15]
+  tolerance: 0.015
+  provenance: proposed
+  reason: >
+    Quantifies the rotational mobility coefficient gamma difference (<= 0.92%) between maxian2022's
+    reconstructed C^1 ellipsoidal-cap regularization and maxian2022_code's actual RegularizeS.m
+    tanh regularization used to generate Table S1.
+
+- id: rel_code_cpp_sbt_approx_reconstructed_alpha
+  kind: approximated_by
+  a: maxian2022_code/cpp_sbt_mobility_port
+  b: maxian2022/sbt_rigid_mobility_reconstructed
+  mapping:
+    epsilon: "eps"
+    delta_rel: "delta"
+  output_map:
+    alpha: alpha
+  regime:
+    eps: [0.001, 0.008]
+    L: [0.5, 2.0]
+    mu: [0.05, 0.5]
+    delta: [0.08, 0.15]
+    eig_val_thres: [0.0, 0.001]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    Compares C++ SingleFiberMobilityEvaluator SBT mode (N_tau=16, Chebyshev kind-2, W_tilde^-1
+    symmetrization, retained O(a_RPY^2/s_bar^2) doublet terms) against maxian2022's reconstructed
+    SBT model for alpha across the actin regime eps <= 0.008 (below the eps = 0.010 negative-eigenvalue
+    clamping collapse triggered by dimensional _EigValThres = 0.001).
+
+- id: rel_code_cpp_sbt_approx_reconstructed_beta
+  kind: approximated_by
+  a: maxian2022_code/cpp_sbt_mobility_port
+  b: maxian2022/sbt_rigid_mobility_reconstructed
+  mapping:
+    epsilon: "eps"
+    delta_rel: "delta"
+  output_map:
+    beta: beta
+  regime:
+    eps: [0.001, 0.008]
+    L: [0.5, 2.0]
+    mu: [0.05, 0.5]
+    delta: [0.08, 0.15]
+    eig_val_thres: [0.0, 0.001]
+  tolerance: 0.01
+  provenance: proposed
+  reason: >
+    Compares C++ SingleFiberMobilityEvaluator SBT mode against maxian2022's reconstructed SBT model
+    for beta across the safe actin regime eps <= 0.008 (agreeing within <= 0.56%, whereas at eps = 0.010
+    C++ clamping collapses beta by -99.1%).
+
+- id: rel_code_cpp_sbt_approx_reconstructed_gamma
+  kind: approximated_by
+  a: maxian2022_code/cpp_sbt_mobility_port
+  b: maxian2022/sbt_rigid_mobility_reconstructed
+  mapping:
+    epsilon: "eps"
+    delta_rel: "delta"
+  output_map:
+    gamma: gamma
+  regime:
+    eps: [0.001, 0.008]
+    L: [0.5, 2.0]
+    mu: [0.05, 0.5]
+    delta: [0.08, 0.15]
+    eig_val_thres: [0.0, 0.001]
+  tolerance: 0.015
+  provenance: proposed
+  reason: >
+    Compares C++ SingleFiberMobilityEvaluator SBT mode against maxian2022's reconstructed SBT model
+    for rotational mobility coefficient gamma across eps <= 0.008 (agreeing within <= 0.93%).
+
+- id: rel_code_gibbs_eqS13_same_mean
+  kind: same_as
+  a: maxian2022/gibbs_boltzmann_spring_pdf_eqS13
+  b: maxian2022_code/gibbs_boltzmann_spring_pdf_ref
+  mapping:
+    K_c: "Kc"
+    ell: "ell"
+    kBT: "kBT"
+  output_map:
+    mean_x: mean_x
+  regime:
+    x: [0.02, 0.08]
+    Kc: [5.0, 50.0]
+    ell: [0.03, 0.10]
+    kBT: [0.003, 0.005]
+  tolerance: 1e-5
+  provenance: proposed
+  reason: >
+    Both models evaluate the identical Eq. (S13) 3D Gibbs-Boltzmann spring-extension equilibrium
+    mean <x> = int_0^inf x * Z * x^2 * exp(-K_c (x - ell)^2 / (2 k_B T)) dx (adaptive quad in
+    maxian2022 vs 20001-point trapezoidal quadrature in maxian2022_code).
+
+- id: rel_code_gibbs_eqS13_same_std
+  kind: same_as
+  a: maxian2022/gibbs_boltzmann_spring_pdf_eqS13
+  b: maxian2022_code/gibbs_boltzmann_spring_pdf_ref
+  mapping:
+    K_c: "Kc"
+    ell: "ell"
+    kBT: "kBT"
+  output_map:
+    std_x: std_x
+  regime:
+    x: [0.02, 0.08]
+    Kc: [5.0, 50.0]
+    ell: [0.03, 0.10]
+    kBT: [0.003, 0.005]
+  tolerance: 1e-5
+  provenance: proposed
+  reason: >
+    Both models evaluate the identical Eq. (S13) 3D Gibbs-Boltzmann spring-extension standard
+    deviation std_x = sqrt(<(x - <x>)^2>).
+
+- id: rel_code_smc_local_drag_approx_dt_max
+  kind: approximated_by
+  a: maxian2022_code/sm_c_local_drag_stability_port
+  b: maxian2022/two_fiber_local_drag_stability
+  mapping:
+    epsilon: "eps"
+    delta_rel: "delta"
+    Kc: "K_c"
+    mu: "mu"
+    L: "L"
+  output_map:
+    dt_max: dt_max
+  regime:
+    L: [0.5, 2.0]
+    eps: [0.002, 0.008]
+    mu: [0.05, 0.2]
+    K_c: [5.0, 20.0]
+    delta: [0.08, 0.15]
+    sigma_rel: [0.005, 0.005]
+    dt_small: [0.0005, 0.0005]
+    dt_large: [0.0025, 0.0025]
+  tolerance: 0.03
+  provenance: proposed
+  reason: >
+    Compares maxian2022_code's exact SM Sec. C local-drag stability limit (RegularizeS.m tanh
+    regularization + CrossLinkForceEvaluator.cpp Gaussian lever arm at sigma/L = 0.005, arm = 0.4960 L)
+    against maxian2022's reconstructed C^1 ellipsoidal-cap point-force stability limit (arm = 0.5 L);
+    the two agree within <= 1.8% across the regime.
+
+- id: rel_code_smc_local_drag_approx_alpha
+  kind: approximated_by
+  a: maxian2022_code/sm_c_local_drag_stability_port
+  b: maxian2022/two_fiber_local_drag_stability
+  mapping:
+    epsilon: "eps"
+    delta_rel: "delta"
+    Kc: "K_c"
+    mu: "mu"
+    L: "L"
+  output_map:
+    alpha: alpha_ld
+  regime:
+    L: [0.5, 2.0]
+    eps: [0.002, 0.008]
+    mu: [0.05, 0.2]
+    K_c: [5.0, 20.0]
+    delta: [0.08, 0.15]
+    sigma_rel: [0.005, 0.005]
+    dt_small: [0.0005, 0.0005]
+    dt_large: [0.0025, 0.0025]
+  tolerance: 0.01
+  provenance: proposed
+  reason: >
+    Compares local-drag perpendicular mobility alpha_ld between maxian2022_code's RegularizeS.m
+    tanh profile and maxian2022's reconstructed C^1 ellipsoidal-cap profile (<= 0.31% difference).
+
+- id: rel_code_smc_local_drag_approx_gamma
+  kind: approximated_by
+  a: maxian2022_code/sm_c_local_drag_stability_port
+  b: maxian2022/two_fiber_local_drag_stability
+  mapping:
+    epsilon: "eps"
+    delta_rel: "delta"
+    Kc: "K_c"
+    mu: "mu"
+    L: "L"
+  output_map:
+    gamma: gamma_ld
+  regime:
+    L: [0.5, 2.0]
+    eps: [0.002, 0.008]
+    mu: [0.05, 0.2]
+    K_c: [5.0, 20.0]
+    delta: [0.08, 0.15]
+    sigma_rel: [0.005, 0.005]
+    dt_small: [0.0005, 0.0005]
+    dt_large: [0.0025, 0.0025]
+  tolerance: 0.02
+  provenance: proposed
+  reason: >
+    Compares local-drag rotational mobility gamma_ld between maxian2022_code's RegularizeS.m tanh
+    profile and maxian2022's reconstructed C^1 ellipsoidal-cap profile (<= 0.67% difference).
+
+- id: rel_code_clnet_same_as_brownian_cutoff
+  kind: same_as
+  a: maxian2022_code/cl_network_params_adapter
+  b: maxian2022/cl_binding_cutoff_brownian
+  mapping:
+    kBT: "kT"
+    Kc: "K_c"
+  output_map:
+    delta_ell_B: delta_ell
+  regime:
+    L: [0.8, 1.5]
+    N: [16, 16]
+    N_u: [40, 40]
+    K_c: [10.0, 50.0]
+    ell: [0.05, 0.10]
+    k_on: [5.0, 5.0]
+    k_off: [1.0, 1.0]
+    k_on_s: [50.0, 50.0]
+    k_off_s: [1.0, 1.0]
+    c_w: [0.02, 0.02]
+    kT: [0.003, 0.005]
+  provenance: proposed
+  reason: >
+    Live unmodified DoubleEndedCrossLinkedNetwork.py (line 108, kT > 0 Brownian branch) computes
+    self._deltaL = 2 * sqrt(kT / K_c), identical to maxian2022's two-standard-deviation Brownian
+    binding cutoff delta_ell_B = 2 * sqrt(k_B T / K_c) (p. 5) after nm <-> um conversion.
+
+- id: rel_code_clnet_scales_as_eq7
+  kind: scales_as
+  a: maxian2022_code/cl_network_params_adapter
+  b: maxian2022/cl_spring_fluctuation_eq7
+  mapping:
+    kBT: "kT"
+    Kc: "K_c"
+  output_map:
+    delta_ell: delta_ell
+  regime:
+    L: [0.8, 1.5]
+    N: [16, 16]
+    N_u: [40, 40]
+    K_c: [10.0, 50.0]
+    ell: [0.05, 0.10]
+    k_on: [5.0, 5.0]
+    k_off: [1.0, 1.0]
+    k_on_s: [50.0, 50.0]
+    k_off_s: [1.0, 1.0]
+    c_w: [0.02, 0.02]
+    kT: [0.003, 0.005]
+  provenance: proposed
+  reason: >
+    In Brownian mode (kT > 0), live DoubleEndedCrossLinkedNetwork.py's binding half-window
+    2 * sqrt(kT / K_c) scales identically as sqrt(k_B T / K_c) with maxian2022 Eq. (7)
+    (exact constant factor of 2).
+
+- id: rel_code_clnet_same_as_max_links_exact_sites
+  kind: same_as
+  a: maxian2022_code/cl_network_params_adapter
+  b: maxian2022/max_links_per_fiber_exact_sites
+  mapping:
+    dsu: "L / (N_u - 1)"
+    cw: "c_w"
+    L: "L"
+  output_map:
+    n_max: max_links_per_fiber
+  regime:
+    L: [0.8, 1.5]
+    N: [16, 16]
+    N_u: [40, 40]
+    K_c: [10.0, 10.0]
+    ell: [0.05, 0.05]
+    k_on: [5.0, 5.0]
+    k_off: [1.0, 1.0]
+    k_on_s: [50.0, 50.0]
+    k_off_s: [1.0, 1.0]
+    c_w: [0.015, 0.030]
+    kT: [0.004, 0.004]
+  provenance: proposed
+  reason: >
+    Live unmodified DoubleEndedCrossLinkedNetwork.py (line 119) with Nuniformsites = 40 (including
+    both endpoints, ds = L / (N_u - 1)) computes maxPerSite * N_u = ceil(ds / c_w) * (L / ds + 1) = 80,
+    identically matching maxian2022's corrected variant max_links_per_fiber_exact_sites and settling
+    q_max_links_per_fiber_discrepancy.
+
+- id: rel_code_clnet_approx_max_links_p7
+  kind: approximated_by
+  a: maxian2022_code/cl_network_params_adapter
+  b: maxian2022/max_links_per_fiber_p7
+  mapping:
+    dsu: "L / (N_u - 1)"
+    cw: "c_w"
+    L: "L"
+  output_map:
+    n_max: max_links_per_fiber
+  regime:
+    L: [0.8, 1.5]
+    N: [16, 16]
+    N_u: [40, 40]
+    K_c: [10.0, 10.0]
+    ell: [0.05, 0.05]
+    k_on: [5.0, 5.0]
+    k_off: [1.0, 1.0]
+    k_on_s: [50.0, 50.0]
+    k_off_s: [1.0, 1.0]
+    c_w: [0.015, 0.030]
+    kT: [0.004, 0.004]
+  tolerance: 0.03
+  provenance: proposed
+  reason: >
+    maxian2022 p. 7's printed formula ceil(Delta s_u / c_w) * (L / Delta s_u) omits the +1 endpoint
+    site from N_u = L / Delta s_u + 1 = 40, underestimating the live code's max_links_per_fiber = 80
+    by the exact factor 1 / N_u = 2.50% (78 vs 80 before rounding ds = 1/39 to Table 1's 0.026 um).
+
+- id: rel_code_cpp_ssa_scales_as_eq20
+  kind: scales_as
+  a: maxian2022_code/cpp_cl_kinetics_ssa_port
+  b: maxian2022/detailed_balance_binding_rate_eq20
+  mapping:
+    kons0: "k_on_s"
+    koffs0: "k_off_s"
+    Kc: "K_c"
+    ell: "ell"
+    ell_k: "r_sep"
+    kBT: "kBT"
+  output_map:
+    kons: site_binding_rate_at_r
+  regime:
+    k_on: [5.0, 5.0]
+    k_off: [1.0, 1.0]
+    k_on_s: [20.0, 80.0]
+    k_off_s: [1.0, 1.0]
+    ds: [0.025641025641, 0.025641025641]
+    c_w: [0.02, 0.02]
+    K_c: [8.0, 15.0]
+    ell: [0.048, 0.052]
+    kBT: [0.0038, 0.0044]
+    r_sep: [0.055, 0.075]
+  provenance: proposed
+  reason: >
+    Inside the 2-sigma Brownian capture window (|r_sep - ell| < 2 * sqrt(k_B T / K_c)), C++
+    EndedCrossLinkers.cpp:524-530 paired with DoubleEndedCrossLinkedNetwork.py:98-99 computes the
+    per-site binding rate (k_on,s * ds) * exp(-K_c (r_sep - ell)^2 / (2 k_B T)) [1/s], scaling
+    identically with maxian2022 Eq. (20)'s per-length rate k_on,s(ell_k') [1/(um*s)] up to the
+    constant site-spacing factor ds (settling q_eq17_detailed_balance_unit_mismatch).
+
+- id: rel_code_derived_same_as_initial_mesh_size
+  kind: same_as
+  a: maxian2022/initial_mesh_size
+  b: maxian2022_code/code_input_derived_checks
+  mapping:
+    Ldx: "Ld"
+    Ld: "Ld"
+    F: "F"
+    L: "L"
+    kbT: "0.004"
+    lp: "17"
+    mu: "0.1"
+    c_tr: "1.67"
+    Networkdt: "0.01"
+    dt: "0.0001"
+  output_map:
+    ell_m: ell_m
+  regime:
+    Ld: [2.0, 6.0]
+    F: [100.0, 1600.0]
+    L: [0.5, 2.0]
+  provenance: proposed
+  reason: >
+    For cubic periodic domains (Ldx = Ld, as in maxian2022 Table 1 and StrainInputFile.txt),
+    maxian2022_code/code_input_derived_checks reproduces maxian2022's initial mesh size formula
+    ell_m = sqrt(L_d^3 / (F * L)) identically.
+
+- id: rel_code_derived_same_as_eq22_six_Dt
+  kind: same_as
+  a: maxian2022/translational_diffusion_eq22_printed_coeff
+  b: maxian2022_code/code_input_derived_checks
+  mapping:
+    kbT: "kBT"
+    mu: "mu"
+    L: "L"
+    c_tr: "c_tr"
+    lp: "17"
+    Ldx: "2"
+    Ld: "2"
+    F: "200"
+    Networkdt: "0.01"
+    dt: "0.0001"
+  output_map:
+    six_Dt: six_D_t
+  regime:
+    kBT: [0.003, 0.005]
+    mu: [0.01, 1.0]
+    L: [0.5, 2.0]
+    c_tr: [1.2, 2.2]
+  provenance: proposed
+  reason: >
+    Both models compute the identical 3D rigid-fiber MSD slope 6 * D_t = 2 * k_B T * c_tr / (mu * L)
+    from maxian2022 Eq. (22).
+
+- id: rel_code_derived_same_as_mesh_diffusion_time
+  kind: same_as
+  a: maxian2022_code/code_input_derived_checks
+  b: maxian2022/mesh_diffusion_time
+  mapping:
+    ell_m: "sqrt(Ldx * Ld**2 / (F * L))"
+    six_D_t: "2 * kbT * c_tr / (mu * L)"
+  output_map:
+    tau_m: tau_m
+  regime:
+    kbT: [0.003, 0.005]
+    lp: [10.0, 20.0]
+    Ldx: [2.0, 5.0]
+    Ld: [2.0, 5.0]
+    F: [100.0, 800.0]
+    L: [0.5, 2.0]
+    mu: [0.05, 0.5]
+    c_tr: [1.2, 2.0]
+    Networkdt: [0.01, 0.01]
+    dt: [0.0001, 0.0001]
+  provenance: proposed
+  reason: >
+    Composing ell_m and 6 * D_t in maxian2022_code/code_input_derived_checks yields the exact mesh
+    diffusion timescale tau_m = ell_m^2 / (6 * D_t) defined in maxian2022 p. 12.
+
+- id: rel_code_lie_trotter_end_approx_eqS13_std
+  kind: approximated_by
+  a: maxian2022_code/sm_c_two_fiber_lie_trotter_port
+  b: maxian2022/gibbs_boltzmann_spring_pdf_eqS13
+  mapping:
+    x: "ell"
+    Kc: "K_c"
+    ell: "ell"
+    kBT: "kBT"
+  output_map:
+    std_x: std_x_end
+  regime:
+    L: [0.9, 1.1]
+    eps: [0.003, 0.005]
+    mu: [0.09, 0.12]
+    K_c: [8.0, 12.0]
+    ell: [0.045, 0.055]
+    kBT: [0.0038, 0.0042]
+    delta: [0.1, 0.1]
+    sigma_rel: [0.005, 0.005]
+  tolerance: 0.15
+  provenance: proposed
+  reason: >
+    Quantifies the O(dt) end-of-step spring-contraction bias of TemporalIntegrator.py:441-499's
+    1st-order Lie-Trotter splitting (single BrownianUpdate(dt) then deterministic updateAllFibers(dt),
+    sampled at end of step where FixedDynamicLinkNetwork.py:208 records LinkStrains) relative to
+    exact Eq. (S13) equilibrium std_x at dt = 0.0005 s (max relative error 13.9%, worsening to -61%
+    at dt = 0.0025 s).
+
+- id: rel_code_lie_trotter_after_bd_approx_eqS13_std
+  kind: approximated_by
+  a: maxian2022_code/sm_c_two_fiber_lie_trotter_port
+  b: maxian2022/gibbs_boltzmann_spring_pdf_eqS13
+  mapping:
+    x: "ell"
+    Kc: "K_c"
+    ell: "ell"
+    kBT: "kBT"
+  output_map:
+    std_x: std_x_after_bd
+  regime:
+    L: [0.9, 1.1]
+    eps: [0.003, 0.005]
+    mu: [0.09, 0.12]
+    K_c: [8.0, 12.0]
+    ell: [0.045, 0.055]
+    kBT: [0.0038, 0.0042]
+    delta: [0.1, 0.1]
+    sigma_rel: [0.005, 0.005]
+  tolerance: 0.07
+  provenance: proposed
+  reason: >
+    Quantifies the O(dt) broadening bias of TemporalIntegrator.py's 1st-order Lie-Trotter splitting
+    when sampled immediately after BrownianUpdate(dt) (which shares the identical stationary Markov
+    chain with Strang's midpoint after step 1 cited in Fig. S1 caption) relative to exact Eq. (S13)
+    equilibrium std_x at dt = 0.0005 s (max relative error 5.6%, rising to +24% at dt = 0.0025 s and
+    matching digitized Fig. S1 right).
+
+- id: rel_code_strang_end_approx_eqS13_std
+  kind: approximated_by
+  a: maxian2022_code/sm_c_two_fiber_strang_variant
+  b: maxian2022/gibbs_boltzmann_spring_pdf_eqS13
+  mapping:
+    x: "ell"
+    Kc: "K_c"
+    ell: "ell"
+    kBT: "kBT"
+  output_map:
+    std_x: std_x_end
+  regime:
+    L: [0.9, 1.1]
+    eps: [0.003, 0.005]
+    mu: [0.09, 0.12]
+    K_c: [8.0, 12.0]
+    ell: [0.045, 0.055]
+    kBT: [0.0038, 0.0042]
+    delta: [0.1, 0.1]
+    sigma_rel: [0.005, 0.005]
+  tolerance: 0.05
+  provenance: proposed
+  reason: >
+    Demonstrates that the paper's true 2nd-order 3-step Strang splitting (Sec. 2.4, p. 5) sampled at
+    the full-step endpoint after step 3 agrees with exact Eq. (S13) equilibrium std_x within <= 3.1%
+    across the regime at dt = 0.0005 s (4.6x more accurate than Lie-Trotter end-of-step).
+
+# ==============================================================================
+# Cross-record relations: paper-paper pairs (kierfeld2005, weirich2017, freedman2019)
+# ==============================================================================
+
+- id: rel_kierfeld2005_persistence_length_scales_as_actin
+  kind: scales_as
+  a: maxian2022/persistence_length_actin
+  b: kierfeld2005/persistence_length_def
+  mapping:
+    kappa: "1000000 * kappa"
+    T: "1000 * kBT"
+  output_map:
+    L_p: l_p
+  regime:
+    kappa: [0.01, 0.2]
+    kBT: [0.003, 0.005]
+  provenance: proposed
+  reason: >
+    Both models relate semiflexible filament persistence length to bending rigidity and thermal energy
+    with identical scaling exponents (+1 in kappa, -1 in k_B T), while differing by the exact factor-of-2
+    dimensionality convention between 3D wormlike chains in maxian2022 (l_p = kappa / (k_B T)) and
+    2D planar (d = 1+1) wormlike chains in kierfeld2005 (L_p = 2 * kappa / T).
+  assumptions:
+    - "Unit conversion: 1 pN*um^2 = 10^6 pN*nm^2 and 1 pN*um = 10^3 pN*nm."
+    - "Dimensionality factor L_p^(2D) / l_p^(3D) = 2."
+
+- id: rel_weirich2017_ellipsoid_diff_same_as_eq22_coeff
+  kind: same_as
+  a: weirich2017/stokes_einstein_ellipsoid_diffusion
+  b: maxian2022/translational_diffusion_eq22_printed_coeff
+  mapping:
+    kBT: "1.380649e-5 * T"
+    mu: "eta"
+    L: "2 * L / 1000"
+    c_tr: "log(2 * L / r) / pi"
+  output_map:
+    D_t: D
+  regime:
+    T: [290.0, 310.0]
+    L: [50.0, 1000.0]
+    r: [2.0, 6.0]
+    eta: [0.001, 5.0]
+  provenance: proposed
+  reason: >
+    Identifies Weirich et al. (2017)'s prolate-ellipsoid Stokes-Einstein diffusivity
+    D = k_B T * ln(2 L / r) / (6 pi eta L) (with semi-major half-length L = L_f / 2) as the
+    leading-order slender-body limit c_tr = ln(L_f / r) / pi = ln(1 / epsilon) / pi of
+    Maxian et al. (2022) Eq. (22) D_t = (k_B T / (3 mu L_f)) * c_tr. For Table S1 actin
+    (eps = 0.004), ln(250)/pi = 1.7575 exceeds the full regularized-SBT value c_tr = 1.6698 by +5.3%
+    due to O(1) finite-part hydrodynamic drag corrections.
+  assumptions:
+    - "Weirich et al. L denotes filament half-length L_f / 2 (in nm); Maxian et al. L denotes full length L_f (in um)."
+    - "k_B = 1.380649e-5 pN*um/K."
+
+- id: rel_weirich2017_ellipsoid_diff_same_as_eq22_asymptotic
+  kind: same_as
+  a: weirich2017/stokes_einstein_ellipsoid_diffusion
+  b: maxian2022/translational_diffusion_eq22
+  mapping:
+    kBT: "1.380649e-5 * T"
+    mu: "eta"
+    L: "2 * L / 1000"
+    alpha: "log(2 * L / r) / (4 * pi)"
+    beta: "log(2 * L / r) / (4 * pi)"
+  output_map:
+    D_t: D
+  regime:
+    T: [290.0, 310.0]
+    L: [50.0, 1000.0]
+    r: [2.0, 6.0]
+    eta: [0.001, 5.0]
+  provenance: proposed
+  reason: >
+    Maps Weirich et al. (2017)'s prolate-ellipsoid diffusivity directly onto Maxian et al. (2022)
+    Eq. (22)'s anisotropic (alpha, beta) decomposition in the leading-order slender-rod limit
+    alpha = beta = ln(1 / eps) / (4 pi) (where parallel/perpendicular mobility ratio (alpha + beta)/alpha = 2,
+    matching the asymptotic limit invoked on maxian2022 p. 9, vs finite-eps Table S1 ratio 1.650 at eps = 0.004).
+  assumptions:
+    - "Leading-order slender-rod asymptotic limit alpha = beta = ln(L_f / r) / (4 pi)."
+
+- id: rel_freedman2019_persistence_length_same_as_actin
+  kind: same_as
+  a: freedman2019/persistence_length_from_kappa_b
+  b: maxian2022/persistence_length_actin
+  mapping:
+    kappa: "kappa_B"
+    kBT: "1.380649e-5 * T"
+  output_map:
+    l_p: L_p
+  regime:
+    kappa_B: [0.01, 0.5]
+    T: [290.0, 310.0]
+  provenance: proposed
+  reason: >
+    Identical 3D wormlike-chain persistence-length relation L_p = kappa / (k_B T) used for F-actin
+    (l_p = 17 um) in both Freedman et al. (2019) and Maxian et al. (2022).
+
+- id: rel_freedman2019_stokes_diff_same_as_eq22_hydrodynamic_radius
+  kind: same_as
+  a: maxian2022/translational_diffusion_eq22_printed_coeff
+  b: freedman2019/stokes_mobility_si_eq6
+  mapping:
+    R: "L / (2 * pi * c_tr)"
+    nu: "mu"
+    T: "kBT / 1.380649e-5"
+  output_map:
+    D: D_t
+  regime:
+    kBT: [0.003, 0.005]
+    mu: [0.001, 1.0]
+    L: [0.5, 2.0]
+    c_tr: [1.2, 2.2]
+  provenance: proposed
+  reason: >
+    Both models express 3D overdamped translational diffusion via the Stokes-Einstein relation
+    D = k_B T * M; matching Maxian et al. (2022) Eq. (22)'s orientation-averaged slender-rod
+    diffusivity D_t = k_B T * c_tr / (3 mu L) to Freedman et al. (2019) SI Eq. (6)'s spherical bead
+    diffusivity D = k_B T / (6 pi nu R) defines the exact equivalent hydrodynamic radius
+    R_H = L / (2 pi c_tr) (giving R_H = 0.0953 um for L = 1 um, c_tr = 1.67 actin filaments).
+
+- id: rel_freedman2019_switching_rate_scales_as_eq20
+  kind: scales_as
+  a: maxian2022/detailed_balance_binding_rate_eq20
+  b: freedman2019/switching_rate_1d_model
+  mapping:
+    mu_on_same: "kons0"
+    epsilon_kBT: "Kc * (ell_k - ell)**2 / (2 * kBT)"
+  output_map:
+    mu_on_diff: kons
+  regime:
+    kons0: [10.0, 100.0]
+    koffs0: [0.5, 2.0]
+    Kc: [5.0, 20.0]
+    ell: [0.04, 0.06]
+    ell_k: [0.065, 0.09]
+    kBT: [0.003, 0.005]
+  provenance: proposed
+  reason: >
+    Both Maxian et al. (2022) Eq. (20) (cross-linker spring stretching energy U_stretch / k_B T =
+    K_c (ell_k - ell)^2 / (2 k_B T)) and Freedman et al. (2019) 1D switching kinetics (filament
+    gap-bending energy barrier epsilon / k_B T) suppress cross-linker binding via the identical
+    Boltzmann kinetic factor k_on = k_on^0 * exp(-Delta U_mech / k_B T), differing only in rate
+    normalization (per-length 1/(um*s) in maxian2022 Eq. 20 vs per-site 1/s in freedman2019).
+

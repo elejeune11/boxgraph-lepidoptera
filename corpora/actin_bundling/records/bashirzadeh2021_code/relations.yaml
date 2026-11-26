@@ -1,0 +1,699 @@
+# Cross-record ModelAtlas relations for bashirzadeh2021_code
+# (dinner-group/AFINES@sorting_guv, commit a34e602, 2021).
+#
+# Pairwise audit summary (all 3 ready non-bashirzadeh2021 partners):
+# - bashirzadeh2021_source_data (9 x 7 = 63 model pairs): 0 mathematical relations.
+#   All 7 bashirzadeh2021_source_data models are `role: processing`, `software: true`
+#   readers of experimental microscopy Excel workbooks and Fig4c-d.mat fluorescence
+#   profiles (no AFINES simulation outputs, Fig. 4g PDFs, or Fig. 4h Binder cumulants
+#   exist in the Figshare deposit).
+# - freedman2019_code (9 x 10 = 90 model pairs): 10 verified proposed relations below
+#   linking shared AFINES C++ physics kernels (Hookean filament stretching, LAMMPS
+#   harmonic filament bending, contour length, WLC persistence length, Stokes-Einstein
+#   bead and crosslinker diffusion, Leimkuhler-Matthews Langevin diffusion, and the
+#   shared stretching Metropolis KMC limit joining spacer bending in freedman2019_code
+#   with filament-alignment penalties in bashirzadeh2021_code).
+# - freedman2019 (9 x 29 = 261 model pairs): 6 verified proposed relations below
+#   linking bashirzadeh2021_code's C++ kernels to freedman2019's AFINES SI Equations
+#   (SI Eq. 1 filament stretching/bending, SI Eq. 4 crosslinker stretching & effective
+#   binding free energy, and SI Eq. 6 Stokes mobility & Leimkuhler-Matthews Brownian
+#   dynamics, making explicit the Kelvin equivalence 0.004 pN*um <-> 289.72 K).
+
+# =============================================================================
+# 1. AFINES-to-AFINES code relations: bashirzadeh2021_code <-> freedman2019_code
+# =============================================================================
+- id: rel_freedman2019_code_filament_stretch_energy_same
+  kind: same_as
+  a: bashirzadeh2021_code/cpp_filament_potentials
+  b: freedman2019_code/afines_filament_mechanics_cpp
+  mapping:
+    kl: "k_s"
+    l0: "l_0"
+    llen: "l_cur"
+    polymer_bending_modulus: "kappa_b"
+    bend_angle: "theta"
+    max_small_angle: "max_small_angle"
+    temperature: "0.004"
+    viscosity: "0.001"
+    actin_length: "0.5"
+    dt: "0.00002"
+  output_map:
+    U_stretch: U_stretch
+  regime:
+    k_s: [1.0, 100.0]
+    l_0: [0.5, 2.0]
+    l_cur: [0.7, 1.8]
+    kappa_b: [0.01, 0.5]
+    theta: [0.02, 3.0]
+    max_small_angle: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Both AFINES branches (dinner-group/AFINES@sorting_guv src/spring.cpp:187 and
+    Simfreed/AFINES@growing_spacer_exv src/spring.cpp:377) implement the identical
+    Hookean actin link stretching potential U_stretch = 0.5 * k_s * (l - l_0)^2.
+
+- id: rel_freedman2019_code_filament_stretch_force_same
+  kind: same_as
+  a: bashirzadeh2021_code/cpp_filament_potentials
+  b: freedman2019_code/afines_filament_mechanics_cpp
+  mapping:
+    kl: "k_s"
+    l0: "l_0"
+    llen: "l_cur"
+    polymer_bending_modulus: "kappa_b"
+    bend_angle: "theta"
+    max_small_angle: "max_small_angle"
+    temperature: "0.004"
+    viscosity: "0.001"
+    actin_length: "0.5"
+    dt: "0.00002"
+  output_map:
+    F_stretch: F_stretch
+  regime:
+    k_s: [1.0, 100.0]
+    l_0: [0.5, 2.0]
+    l_cur: [0.7, 1.8]
+    kappa_b: [0.01, 0.5]
+    theta: [0.02, 3.0]
+    max_small_angle: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Both AFINES branches (src/spring.cpp:56 in bashirzadeh2021_code and
+    src/spring.cpp:79-80 in freedman2019_code) compute the identical Hookean link
+    tension F_stretch = k_s * (l - l_0).
+
+- id: rel_freedman2019_code_filament_bend_energy_same
+  kind: same_as
+  a: bashirzadeh2021_code/cpp_filament_potentials
+  b: freedman2019_code/afines_filament_mechanics_cpp
+  mapping:
+    kl: "k_s"
+    l0: "l_0"
+    llen: "l_cur"
+    polymer_bending_modulus: "kappa_b"
+    bend_angle: "theta"
+    max_small_angle: "max_small_angle"
+    temperature: "0.004"
+    viscosity: "0.001"
+    actin_length: "0.5"
+    dt: "0.00002"
+  output_map:
+    U_bend: U_bend
+  regime:
+    k_s: [1.0, 100.0]
+    l_0: [0.5, 2.0]
+    l_cur: [0.7, 1.8]
+    kappa_b: [0.01, 0.5]
+    theta: [0.02, 3.0]
+    max_small_angle: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Although bashirzadeh2021_code refactored filament bending into bend_harmonic(kb, 0.0,
+    spring[n], spring[n+1]) (src/filament.cpp:328-333, src/potentials.cpp:91-117) whereas
+    freedman2019_code computed inline LAMMPS harmonic bending on (-spring[n], spring[n+1])
+    with rest angle pi (src/filament.cpp:518-575), both branches set kb = kappa_b / l_0
+    and yield the identical hinge bending energy U_bend = 0.5 * (kappa_b / l_0) * theta^2.
+
+- id: rel_freedman2019_code_contour_length_same
+  kind: same_as
+  a: bashirzadeh2021_code/afines_config_derived_quantities
+  b: freedman2019_code/afines_parameter_mapping
+  mapping:
+    nmonomer: "n_beads"
+    link_length: "l_link"
+    nlink_max: "15"
+    polymer_bending_modulus: "kappa_b"
+    temperature: "temperature"
+    viscosity: "viscosity"
+    actin_length: "r_bead"
+    spacer1_length: "l_fascin"
+    spacer2_length: "l_alpha"
+    s1_bend: "0.005"
+    s2_bend: "0.06"
+    xrange: "xrange"
+    yrange: "xrange"
+    grid_factor: "grid_factor"
+    spacer2_density: "rho_alpha"
+    nfixed: "9"
+    lattice_mu: "-0.008"
+  output_map:
+    init_filament_length: L_contour
+  regime:
+    xrange: [20.0, 100.0]
+    grid_factor: [2.0, 3.0]
+    r_c: [10.0, 20.0]
+    fil_dens: [0.05, 0.1]
+    n_beads: [2.0, 40.0]
+    l_link: [0.5, 2.0]
+    r_bead: [0.2, 1.0]
+    kappa_b: [0.01, 0.5]
+    temperature: [0.003, 0.005]
+    viscosity: [0.001, 0.02]
+    dt: [0.00001, 0.00005]
+    tfinal: [100.0, 2000.0]
+    nframes: [50.0, 2000.0]
+    rho_fascin: [0.25, 10.0]
+    rho_alpha: [0.25, 10.0]
+    l_fascin: [0.1, 0.3]
+    l_alpha: [0.2, 0.8]
+    kon_fascin: [1.0, 20.0]
+    koff_fascin: [0.05, 1.0]
+    scl: [1.0, 4.0]
+    kon_alpha: [0.1, 2.0]
+    koff_alpha: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    Both AFINES branches construct each filament of nmonomer beads with (nmonomer - 1)
+    springs of rest length link_length, yielding identical initial contour length
+    L = (n_beads - 1) * l_link.
+
+- id: rel_freedman2019_code_persistence_length_same
+  kind: same_as
+  a: bashirzadeh2021_code/afines_config_derived_quantities
+  b: freedman2019_code/afines_parameter_mapping
+  mapping:
+    nmonomer: "n_beads"
+    link_length: "l_link"
+    nlink_max: "15"
+    polymer_bending_modulus: "kappa_b"
+    temperature: "temperature"
+    viscosity: "viscosity"
+    actin_length: "r_bead"
+    spacer1_length: "l_fascin"
+    spacer2_length: "l_alpha"
+    s1_bend: "0.005"
+    s2_bend: "0.06"
+    xrange: "xrange"
+    yrange: "xrange"
+    grid_factor: "grid_factor"
+    spacer2_density: "rho_alpha"
+    nfixed: "9"
+    lattice_mu: "-0.008"
+  output_map:
+    persistence_length: L_p_code
+  regime:
+    xrange: [20.0, 100.0]
+    grid_factor: [2.0, 3.0]
+    r_c: [10.0, 20.0]
+    fil_dens: [0.05, 0.1]
+    n_beads: [2.0, 40.0]
+    l_link: [0.5, 2.0]
+    r_bead: [0.2, 1.0]
+    kappa_b: [0.01, 0.5]
+    temperature: [0.003, 0.005]
+    viscosity: [0.001, 0.02]
+    dt: [0.00001, 0.00005]
+    tfinal: [100.0, 2000.0]
+    nframes: [50.0, 2000.0]
+    rho_fascin: [0.25, 10.0]
+    rho_alpha: [0.25, 10.0]
+    l_fascin: [0.1, 0.3]
+    l_alpha: [0.2, 0.8]
+    kon_fascin: [1.0, 20.0]
+    koff_fascin: [0.05, 1.0]
+    scl: [1.0, 4.0]
+    kon_alpha: [0.1, 2.0]
+    koff_alpha: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    Both AFINES branches define single-filament persistence length L_p = kappa_b / temperature
+    using thermal energy directly in pN*um (both hardcoding temperature = 0.004 pN*um and
+    polymer_bending_modulus = 0.068 pN*um^2 to obtain exact L_p = 17.0 um).
+
+- id: rel_freedman2019_code_stokes_bead_diffusion_same
+  kind: same_as
+  a: bashirzadeh2021_code/afines_config_derived_quantities
+  b: freedman2019_code/afines_parameter_mapping
+  mapping:
+    nmonomer: "n_beads"
+    link_length: "l_link"
+    nlink_max: "15"
+    polymer_bending_modulus: "kappa_b"
+    temperature: "temperature"
+    viscosity: "viscosity"
+    actin_length: "r_bead"
+    spacer1_length: "l_fascin"
+    spacer2_length: "l_alpha"
+    s1_bend: "0.005"
+    s2_bend: "0.06"
+    xrange: "xrange"
+    yrange: "xrange"
+    grid_factor: "grid_factor"
+    spacer2_density: "rho_alpha"
+    nfixed: "9"
+    lattice_mu: "-0.008"
+  output_map:
+    D_bead: D_bead
+  regime:
+    xrange: [20.0, 100.0]
+    grid_factor: [2.0, 3.0]
+    r_c: [10.0, 20.0]
+    fil_dens: [0.05, 0.1]
+    n_beads: [2.0, 40.0]
+    l_link: [0.5, 2.0]
+    r_bead: [0.2, 1.0]
+    kappa_b: [0.01, 0.5]
+    temperature: [0.003, 0.005]
+    viscosity: [0.001, 0.02]
+    dt: [0.00001, 0.00005]
+    tfinal: [100.0, 2000.0]
+    nframes: [50.0, 2000.0]
+    rho_fascin: [0.25, 10.0]
+    rho_alpha: [0.25, 10.0]
+    l_fascin: [0.1, 0.3]
+    l_alpha: [0.2, 0.8]
+    kon_fascin: [1.0, 20.0]
+    koff_fascin: [0.05, 1.0]
+    scl: [1.0, 4.0]
+    kon_alpha: [0.1, 2.0]
+    koff_alpha: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    Both AFINES branches set actin bead Stokes drag to 6 * pi * visc * actin_length
+    (src/bead.cpp:22 in bashirzadeh2021_code; src/bead.cpp:25 in freedman2019_code;
+    1 mg/(um*s) = 1 Pa*s = 1 pN*s/um^2) and thermal diffusivity D_bead = temperature / damp_bead,
+    both using the hidden default actin_length = 0.5 um.
+
+- id: rel_freedman2019_code_stokes_xl_diffusion_same
+  kind: same_as
+  a: bashirzadeh2021_code/afines_config_derived_quantities
+  b: freedman2019_code/afines_parameter_mapping
+  mapping:
+    nmonomer: "n_beads"
+    link_length: "l_link"
+    nlink_max: "15"
+    polymer_bending_modulus: "kappa_b"
+    temperature: "temperature"
+    viscosity: "viscosity"
+    actin_length: "r_bead"
+    spacer1_length: "l_fascin"
+    spacer2_length: "l_alpha"
+    s1_bend: "0.005"
+    s2_bend: "0.06"
+    xrange: "xrange"
+    yrange: "xrange"
+    grid_factor: "grid_factor"
+    spacer2_density: "rho_alpha"
+    nfixed: "9"
+    lattice_mu: "-0.008"
+  output_map:
+    D_short: D_fascin
+  regime:
+    xrange: [20.0, 100.0]
+    grid_factor: [2.0, 3.0]
+    r_c: [10.0, 20.0]
+    fil_dens: [0.05, 0.1]
+    n_beads: [2.0, 40.0]
+    l_link: [0.5, 2.0]
+    r_bead: [0.2, 1.0]
+    kappa_b: [0.01, 0.5]
+    temperature: [0.003, 0.005]
+    viscosity: [0.001, 0.02]
+    dt: [0.00001, 0.00005]
+    tfinal: [100.0, 2000.0]
+    nframes: [50.0, 2000.0]
+    rho_fascin: [0.25, 10.0]
+    rho_alpha: [0.25, 10.0]
+    l_fascin: [0.1, 0.3]
+    l_alpha: [0.2, 0.8]
+    kon_fascin: [1.0, 20.0]
+    koff_fascin: [0.05, 1.0]
+    scl: [1.0, 4.0]
+    kon_alpha: [0.1, 2.0]
+    koff_alpha: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    Both AFINES branches set crosslinker Stokes hydrodynamic radius equal to crosslinker
+    rest length mld (src/motor.cpp:35 in bashirzadeh2021_code; src/spacer.cpp:55 in
+    freedman2019_code), giving identical species-dependent free diffusivity
+    D = temperature / (6 * pi * visc * mld) (5x faster for fascin vs alpha-actinin in
+    bashirzadeh2021_code; 1.5x faster for short vs long spacers in freedman2019_code).
+
+- id: rel_freedman2019_code_lm_diffusion_sim_approx
+  kind: approximated_by
+  a: bashirzadeh2021_code/cpp_leimkuhler_langevin_diffusion
+  b: freedman2019_code/afines_filament_mechanics_cpp
+  mapping:
+    kl: "10"
+    l0: "1.0"
+    llen: "1.0"
+    polymer_bending_modulus: "0.068"
+    bend_angle: "0.1"
+    max_small_angle: "0.001"
+    temperature: "temperature"
+    viscosity: "viscosity"
+    actin_length: "r_hydro"
+    dt: "dt"
+  output_map:
+    D_bead_lm: D_sim
+  regime:
+    viscosity: [0.001, 0.02]
+    r_hydro: [0.1, 0.5]
+    temperature: [0.003, 0.005]
+    k_trap: [5.0, 30.0]
+    dt: [0.00001, 0.00004]
+  tolerance: 0.08
+  provenance: proposed
+  reason: >
+    The stochastic 2D Leimkuhler-Matthews (2013) Langevin trajectory simulation ported
+    from bashirzadeh2021_code (src/filament.cpp:67,92-105 & src/motor.cpp:35-36,485-491;
+    2000 particles x 2000 steps) reproduces freedman2019_code's analytical Leimkuhler-Matthews
+    diffusivity D_bead_lm = 2 * bd_prefactor^2 * dt = temperature / (6*pi*vis*r_hydro)
+    (src/filament.cpp:80-83,206-242) within finite-sample Monte Carlo variance (~4.6% error).
+
+- id: rel_freedman2019_code_spacer_mc_reduces_to_kmc_stretch
+  kind: reduces_to
+  a: freedman2019_code/afines_spacer_mechanics_and_mc_cpp
+  b: bashirzadeh2021_code/cpp_kmc_metropolis_occlusion
+  mapping:
+    k_on: "kon"
+    k_off: "0.05"
+    dt: "dt"
+    temperature: "temperature"
+    mk: "mk"
+    mld: "mld"
+    len_old: "sqrt(tilt_dx**2 + (head_sep_y - pre_bind_dy)**2)"
+    len_new: "sqrt(tilt_dx**2 + head_sep_y**2)"
+    kalign: "0"
+    par_flag: "1"
+    theta: "0"
+    kb_motor: "0"
+    same_filament: "0"
+    same_spring: "0"
+    occ: "0"
+    nearest_head_dist: "1.0"
+  output_map:
+    p_attach_step: prob_attach_code_buggy
+  limit:
+    s_bend: "0"
+    stale_b_eng: "0"
+  regime:
+    mld: [0.15, 0.35]
+    mk: [0.5, 10.0]
+    s_bend: [0.005, 0.06]
+    th0: [1.5707963267948966, 1.5707963267948966]
+    link_length: [1.0, 1.5]
+    head_sep_y: [0.25, 0.50]
+    tilt_dx: [0.02, 0.15]
+    pre_bind_dy: [0.01, 0.06]
+    pos_a_end: [0.30, 0.45]
+    stale_b_eng: [0.0005, 0.01]
+    kon: [0.2, 20.0]
+    dt: [0.00001, 0.00005]
+    temperature: [0.003, 0.005]
+  tolerance: 0.0001
+  provenance: proposed
+  reason: >
+    When freedman2019_code's perpendicular crosslinker-filament bending (s_bend -> 0) and
+    unreset stale bending energy (stale_b_eng -> 0) vanish — the exact regime adopted by
+    bashirzadeh2021_code's sorting_kinetics.cfg (a_m_bend = p_m_bend = 0) — all three
+    bending-related Metropolis bugs in freedman2019_code/src/spacer.cpp:220-224,355-378
+    disappear and spacer::metropolis_prob() reduces identically to bashirzadeh2021_code's
+    stretching-only Metropolis attachment probability (src/motor.cpp:534-616 with kalign = 0,
+    occ = 0, inter-filament binding).
+  assumptions:
+    - "Inter-filament binding (same_filament = 0) with steric occlusion disabled (occ = 0) and zero alignment penalty (kalign = 0)."
+    - "Tolerance 1e-4 accounts for 1/kT = 250 amplification of the 1e-8 numeric limit perturbation in exp(-dE/kT)."
+
+- id: rel_freedman2019_code_kmc_align_reduces_to_spacer_nobend
+  kind: reduces_to
+  a: bashirzadeh2021_code/cpp_kmc_metropolis_occlusion
+  b: freedman2019_code/afines_spacer_mechanics_and_mc_cpp
+  mapping:
+    mld: "mld"
+    mk: "mk"
+    s_bend: "0"
+    th0: "1.5707963267948966"
+    link_length: "1.0"
+    head_sep_y: "len_new"
+    tilt_dx: "0"
+    pre_bind_dy: "len_new - len_old"
+    pos_a_end: "0.4"
+    stale_b_eng: "0"
+    kon: "k_on"
+    dt: "dt"
+    temperature: "temperature"
+  output_map:
+    prob_attach_true_physical: p_attach_step
+  limit:
+    kalign: "0"
+  regime:
+    k_on: [0.2, 20.0]
+    k_off: [0.05, 0.5]
+    dt: [0.00001, 0.00005]
+    temperature: [0.003, 0.005]
+    mk: [0.1, 5.0]
+    mld: [0.1, 0.5]
+    len_old: [0.08, 0.55]
+    len_new: [0.08, 0.55]
+    kalign: [0.05, 0.5]
+    par_flag: [1.0, 1.0]
+    theta: [0.2, 3.0]
+    kb_motor: [0.0, 0.0]
+    same_filament: [0.0, 0.0]
+    same_spring: [0.0, 0.0]
+    occ: [0.0, 0.0]
+    nearest_head_dist: [0.5, 1.0]
+  tolerance: 0.0001
+  provenance: proposed
+  reason: >
+    Converse limit: disabling bashirzadeh2021_code's parallel filament-alignment penalty
+    (kalign -> 0, with occ = 0 and inter-filament binding) reduces src/motor.cpp:534-616's
+    Metropolis second-head attachment probability identically to freedman2019_code's
+    stretching-only spacer Metropolis attachment probability (s_bend = 0, stale_b_eng = 0).
+  assumptions:
+    - "Inter-filament binding (same_filament = 0) with steric occlusion disabled (occ = 0) and zero spacer bending (s_bend = 0)."
+    - "Tolerance 1e-4 accounts for 1/kT = 250 amplification of the 1e-8 numeric limit perturbation in exp(-dE/kT)."
+
+# =============================================================================
+# 2. Code-to-paper AFINES relations: bashirzadeh2021_code <-> freedman2019
+# =============================================================================
+- id: rel_freedman2019_filament_stretch_si_eq1_same
+  kind: same_as
+  a: bashirzadeh2021_code/cpp_filament_potentials
+  b: freedman2019/filament_potential_si_eq1
+  mapping:
+    k_a: "k_s"
+    r: "l_cur"
+    l_a: "l_0"
+    kappa_B: "kappa_b"
+    theta: "theta"
+  output_map:
+    U_stretch: U_stretch
+  regime:
+    k_s: [1.0, 100.0]
+    l_0: [0.5, 2.0]
+    l_cur: [0.7, 1.8]
+    kappa_b: [0.01, 0.5]
+    theta: [0.02, 3.0]
+    max_small_angle: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    bashirzadeh2021_code's AFINES filament stretching potential (src/spring.cpp:187)
+    implements the exact stretching term (k_a / 2) * (r - l_a)^2 of Freedman et al. (2019)
+    SI Appendix Eq. (1).
+
+- id: rel_freedman2019_filament_bend_si_eq1_same
+  kind: same_as
+  a: bashirzadeh2021_code/cpp_filament_potentials
+  b: freedman2019/filament_potential_si_eq1
+  mapping:
+    k_a: "k_s"
+    r: "l_cur"
+    l_a: "l_0"
+    kappa_B: "kappa_b"
+    theta: "theta"
+  output_map:
+    U_bend: U_bend
+  regime:
+    k_s: [1.0, 100.0]
+    l_0: [0.5, 2.0]
+    l_cur: [0.7, 1.8]
+    kappa_b: [0.01, 0.5]
+    theta: [0.02, 3.0]
+    max_small_angle: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    bashirzadeh2021_code's AFINES filament hinge bending potential (prog/network.cpp:449,
+    src/filament.cpp:320-345, src/potentials.cpp:91-117) implements the exact bending term
+    (kappa_B / (2 * l_a)) * theta^2 of Freedman et al. (2019) SI Appendix Eq. (1).
+
+- id: rel_freedman2019_stokes_mobility_si_eq6_same
+  kind: same_as
+  a: bashirzadeh2021_code/afines_config_derived_quantities
+  b: freedman2019/stokes_mobility_si_eq6
+  mapping:
+    R: "r_bead"
+    nu: "viscosity"
+    T: "temperature / 1.380649e-5"
+  output_map:
+    D: D_bead
+  regime:
+    xrange: [20.0, 100.0]
+    grid_factor: [2.0, 3.0]
+    r_c: [10.0, 20.0]
+    fil_dens: [0.05, 0.1]
+    n_beads: [2.0, 40.0]
+    l_link: [0.5, 2.0]
+    r_bead: [0.1, 1.0]
+    kappa_b: [0.01, 0.5]
+    temperature: [0.003, 0.005]
+    viscosity: [0.001, 0.02]
+    dt: [0.00001, 0.00005]
+    tfinal: [100.0, 2000.0]
+    nframes: [50.0, 2000.0]
+    rho_fascin: [0.25, 10.0]
+    rho_alpha: [0.25, 10.0]
+    l_fascin: [0.1, 0.3]
+    l_alpha: [0.2, 0.8]
+    kon_fascin: [1.0, 20.0]
+    koff_fascin: [0.05, 1.0]
+    scl: [1.0, 4.0]
+    kon_alpha: [0.1, 2.0]
+    koff_alpha: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    bashirzadeh2021_code's Stokes-Einstein bead diffusivity (src/bead.cpp:22, src/filament.cpp:67;
+    1 mg/(um*s) = 1 Pa*s) matches Freedman et al. (2019) SI Eq. (6)'s D = k_B * T / (6*pi*R*nu)
+    under the exact Boltzmann-constant mapping T = temperature / 1.380649e-5 K/(pN*um). At
+    AFINES's hardcoded temperature = 0.004 pN*um, this corresponds to T = 289.72 K rather
+    than freedman2019 Table S1's printed 300 K (3.43% difference).
+
+- id: rel_freedman2019_brownian_step_si_eq6_approx
+  kind: approximated_by
+  a: freedman2019/brownian_step_si_eq6
+  b: bashirzadeh2021_code/afines_config_derived_quantities
+  mapping:
+    xrange: "100"
+    grid_factor: "2.5"
+    r_c: "15"
+    fil_dens: "0.071"
+    n_beads: "35"
+    l_link: "1"
+    r_bead: "1 / (6 * pi * 0.01 * mu)"
+    kappa_b: "0.068"
+    temperature: "1.380649e-5 * T"
+    viscosity: "0.01"
+    dt: "0.00002"
+    tfinal: "100"
+    nframes: "50"
+    rho_fascin: "5"
+    rho_alpha: "5"
+    l_fascin: "0.1"
+    l_alpha: "0.5"
+    kon_fascin: "20"
+    koff_fascin: "0.5"
+    scl: "1"
+    kon_alpha: "0.2"
+    koff_alpha: "0.05"
+  output_map:
+    D_bead: D_eff
+  regime:
+    F: [0.0, 2.0]
+    mu: [10.0, 200.0]
+    T: [280.0, 310.0]
+    t_total: [0.02, 0.06]
+  tolerance: 0.08
+  provenance: proposed
+  reason: >
+    Freedman et al. (2019) SI Eq. (6)'s stochastic 1D Leimkuhler-Matthews Brownian dynamics
+    integrator (2000 trajectories at dt = 2e-5 s) recovers bashirzadeh2021_code's exact C++
+    Einstein diffusivity D_bead = temperature / (6 * pi * viscosity * r_bead) under the
+    mobility-radius mapping R = 1 / (6*pi*vis*mu) and k_B T = 1.380649e-5 * T within
+    finite-sample Monte Carlo variance.
+
+- id: rel_freedman2019_xl_stretch_si_eq4_same
+  kind: same_as
+  a: freedman2019/crosslinker_potential_si_eq4
+  b: bashirzadeh2021_code/cpp_kmc_metropolis_occlusion
+  mapping:
+    k_on: "k_on_1"
+    k_off: "k_off_1"
+    dt: "0.00002"
+    temperature: "1.380649e-5 * T"
+    mk: "k_xl"
+    mld: "l_xl"
+    len_old: "l_xl"
+    len_new: "r"
+    kalign: "0"
+    par_flag: "1"
+    theta: "0"
+    kb_motor: "0"
+    same_filament: "0"
+    same_spring: "0"
+    occ: "0"
+    nearest_head_dist: "1.0"
+  output_map:
+    dE_attach: U_stretch
+  regime:
+    k_xl: [0.1, 10.0]
+    r: [0.05, 0.8]
+    l_xl: [0.1, 0.5]
+    kappa_xl_B: [0.0, 0.1]
+    alpha_L: [1.0, 2.0]
+    alpha_R: [1.0, 2.0]
+    I_L: [0.0, 1.0]
+    I_R: [0.0, 1.0]
+    k_on_1: [0.2, 20.0]
+    k_off_1: [0.05, 0.5]
+    k_on_2: [0.2, 20.0]
+    k_off_2: [0.05, 0.5]
+    T: [280.0, 310.0]
+  provenance: proposed
+  reason: >
+    For an initially unstretched crosslinker (len_old = l_xl) with zero alignment penalty
+    (kalign = 0), bashirzadeh2021_code's Metropolis stretching energy change
+    dE_attach = 0.5 * mk * (len_new - mld)^2 (src/motor.cpp:537-539) is identical to
+    Freedman et al. (2019) SI Eq. (4)'s U_xl^stretch = (1/2) * k_xl * (r - l_xl)^2.
+
+- id: rel_freedman2019_xl_bind_si_eq4_same
+  kind: same_as
+  a: bashirzadeh2021_code/afines_config_derived_quantities
+  b: freedman2019/crosslinker_potential_si_eq4
+  mapping:
+    k_xl: "1.0"
+    r: "l_fascin"
+    l_xl: "l_fascin"
+    kappa_xl_B: "0"
+    alpha_L: "1.5707963267948966"
+    alpha_R: "1.5707963267948966"
+    I_L: "1"
+    I_R: "0"
+    k_on_1: "kon_fascin"
+    k_off_1: "koff_fascin"
+    k_on_2: "kon_fascin"
+    k_off_2: "koff_fascin"
+    T: "temperature / 1.380649e-5"
+  output_map:
+    U_bind: dF_bind_fascin
+  regime:
+    xrange: [20.0, 100.0]
+    grid_factor: [2.0, 3.0]
+    r_c: [10.0, 20.0]
+    fil_dens: [0.05, 0.1]
+    n_beads: [2.0, 40.0]
+    l_link: [0.5, 2.0]
+    r_bead: [0.2, 1.0]
+    kappa_b: [0.01, 0.5]
+    temperature: [0.003, 0.005]
+    viscosity: [0.001, 0.02]
+    dt: [0.00001, 0.00005]
+    tfinal: [100.0, 2000.0]
+    nframes: [50.0, 2000.0]
+    rho_fascin: [0.25, 10.0]
+    rho_alpha: [0.25, 10.0]
+    l_fascin: [0.1, 0.3]
+    l_alpha: [0.2, 0.8]
+    kon_fascin: [1.0, 20.0]
+    koff_fascin: [0.05, 1.0]
+    scl: [1.0, 4.0]
+    kon_alpha: [0.1, 2.0]
+    koff_alpha: [0.05, 0.5]
+  provenance: proposed
+  reason: >
+    Both bashirzadeh2021 (Eq. 2) and freedman2019 (SI Eq. 4) write an explicit binding
+    energy U_xl^bind = -k_B T ln(k_on / k_off), yet neither AFINES C++ branch includes an
+    explicit binding-energy potential term in src/motor.cpp or src/spacer.cpp; in both
+    codebases, affinity enters strictly kinetically via k_on / k_off, whose effective
+    single-head free energy dF_bind = -temperature * ln(k_on / k_off) matches SI Eq. (4)'s
+    singly-bound U_bind identically under T = temperature / 1.380649e-5.

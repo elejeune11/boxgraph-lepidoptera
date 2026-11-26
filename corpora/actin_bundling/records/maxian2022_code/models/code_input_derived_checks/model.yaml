@@ -1,0 +1,28 @@
+id: code_input_derived_checks
+name: code-input derived bending stiffness, mesh size, diffusion, and subcycling checks
+role: processing
+stated:
+  file: Python/Examples/FixedDynamicLinkNetwork.py
+  lines: "161"
+  quote: "NetworkStepEvery = int(Networkdt/dt);"
+  where: "Derived algebraic relations in Python/Examples/SemiflexBundleInputFile.txt:12 (Eb = kbT*lp), FixedDynamicLinkNetwork.py:161 (NetworkStepEvery = int(Networkdt/dt)), and maxian2022 Eq. 22 / p. 6 / p. 12 using code-computed mobility coefficients"
+equation: "Eb = k_B T * l_p; ell_m = sqrt(L_dx * L_d^2 / (F * L)); 6*D_t = 2*k_B T*c_tr/(mu*L); tau_m = ell_m^2 / (6*D_t); NetworkStepEvery = int(Networkdt / dt)"
+inputs:
+  kbT: {quantity: thermal_energy, unit: pN*um}
+  lp: {quantity: persistence_length, unit: um}
+  Ldx: {quantity: domain_extent, unit: um}
+  Ld: {quantity: domain_extent, unit: um}
+  F: {quantity: fiber_count, unit: dimensionless}
+  L: {quantity: fiber_length, unit: um}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  c_tr: {quantity: mobility_trace_coefficient, unit: dimensionless}
+  Networkdt: {quantity: time_step, unit: s}
+  dt: {quantity: time_step, unit: s}
+outputs:
+  Eb: {quantity: bending_stiffness, unit: pN*um^2}
+  ell_m: {quantity: initial_mesh_size, unit: um}
+  six_Dt: {quantity: msd_slope, unit: um^2/s}
+  tau_m: {quantity: mesh_diffusion_time, unit: s}
+  network_step_every: {quantity: time_step_ratio, unit: dimensionless}
+settings: {}
+stochastic: false

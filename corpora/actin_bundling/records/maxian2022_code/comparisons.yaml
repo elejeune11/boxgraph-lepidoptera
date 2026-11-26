@@ -1,0 +1,271 @@
+# ==============================================================================
+# 1. Table S1 SBT rigid-rod mobility reproductions (MATLAB vs C++ SBT port)
+# ==============================================================================
+
+- id: cmp_matlab_table_s1_alpha
+  purpose: reproduction
+  computed: mat_ts1_alpha
+  printed: paper_table_s1_alpha
+  note: "MATLAB StraightMobility.m port (RegularizeS delta=0.1, AsymptoticLocalMobility, StokesletFinitePartMatrix, N=32) reproduces all 7 Table S1 alpha(epsilon) values to all 4 printed decimal places (max |err| <= 5e-5)."
+
+- id: cmp_matlab_table_s1_beta
+  purpose: reproduction
+  computed: mat_ts1_beta
+  printed: paper_table_s1_beta
+  note: "MATLAB StraightMobility.m port reproduces all 7 Table S1 beta(epsilon) values to all 4 printed decimal places (max |err| <= 5e-5)."
+
+- id: cmp_matlab_table_s1_gamma
+  purpose: reproduction
+  computed: mat_ts1_gamma
+  printed: paper_table_s1_gamma
+  note: "MATLAB StraightMobility.m port reproduces all 7 Table S1 gamma(epsilon) values to all 4 printed decimal places (max |err| <= 5e-5)."
+
+- id: cmp_cpp_table_s1_alpha
+  purpose: reproduction
+  computed: cpp_ts1_alpha
+  printed: paper_table_s1_alpha
+  note: "C++ SingleFiberMobilityEvaluator SBT mode (N_tau=16, kind-2, mu=0.1, EigValThres=0.001) reproduces Table S1 alpha(epsilon) within 2e-4 across all 7 aspect ratios."
+
+- id: cmp_cpp_table_s1_beta
+  purpose: reproduction
+  computed: cpp_ts1_beta
+  printed: paper_table_s1_beta
+  note: "C++ SingleFiberMobilityEvaluator SBT mode (N_tau=16, kind-2, mu=0.1, EigValThres=0.001): matches Table S1 within 3e-4 for eps <= 0.008, while collapsing to 0.0020 vs 0.2230 (-99.1%) at eps=0.010 (masked in the 7-point table verdict by 1-sig-fig input-rounding propagation on delta=0.1, exposed directly as not reproduced by scalar cmp_cpp_eps0010_beta)."
+
+- id: cmp_cpp_eps0010_beta
+  purpose: reproduction
+  computed: cpp_0010_beta
+  printed: paper_table_s1_beta_0010
+  conditions_ok: "Both at eps = 0.010; symmetrized M_par*W_tilde^-1 has negative eigenvalue -4.776 um/(pN*s) clamped to dimensional floor _EigValThres=0.001, collapsing beta(0.010) from 0.2230 to 0.00197 (-99.1%)."
+
+- id: cmp_cpp_table_s1_gamma
+  purpose: reproduction
+  computed: cpp_ts1_gamma
+  printed: paper_table_s1_gamma
+  note: "C++ SingleFiberMobilityEvaluator SBT mode retains O(a_RPY^2/s_bar^2) RPY doublet endpoint terms, shifting gamma(eps) by -0.0039 at eps=0.010 and -0.0006 at eps=0.004 relative to Table S1."
+
+- id: cmp_matlab_c_tr_eq22
+  purpose: reproduction
+  computed: mat_0004_c_tr
+  printed: paper_c_tr_eq22
+  conditions_ok: "Both evaluated at eps = 0.004 (L = 1 um, a = 4 nm); StraightMobility gives 3*alpha + beta = 1.6698 vs Eq. 22 printed 1.67."
+
+- id: cmp_matlab_anisotropy_p9
+  purpose: approximation
+  computed: mat_0004_aniso
+  printed: paper_mobility_anisotropy_p9
+  conditions_ok: "Both evaluated at eps = 0.004; exact SBT eigenvalue ratio (alpha+beta)/alpha = 1.650 vs p. 9 slender-asymptotic claim of 2 (-17.5%; within 1-sig-fig rounding of '2')."
+
+# ==============================================================================
+# 2. Live Python adapter audits (discretization, CL parameters, bundle graph)
+# ==============================================================================
+
+- id: cmp_cheb_rpy_oversample_sreg_bug
+  purpose: consistency
+  computed: cheb_s_reg_min_ov
+  printed: expected_sreg_min_unreg
+  note: "Exposes FibCollocationDiscretization.py:164 duplicate `_RPYDirectQuad` bug: with RPYOversample=True, min(_sRegularized) = 0.05 um instead of intended unregularized 0.0000 um."
+
+- id: cmp_clnet_ds_vs_paper
+  purpose: reproduction
+  computed: clnet_nb_ds
+  printed: paper_binding_site_spacing_dsu
+  note: "Live DoubleEndedCrossLinkedNetwork with Nuniformsites=40 gives ds = 1/39 = 0.025641 um, matching Table 1's rounded 0.026 um."
+
+- id: cmp_clnet_max_per_site
+  purpose: consistency
+  computed: clnet_nb_max_per_site
+  printed: expected_max_per_site_2
+  note: "Live DoubleEndedCrossLinkedNetwork computes maxPerSite = ceil((1/39)/0.020) = 2."
+
+- id: cmp_clnet_max_links_vs_paper
+  purpose: reproduction
+  computed: clnet_nb_max_links
+  printed: paper_max_links_per_fiber
+  conditions_ok: "Both at L = 1 um; Nuniformsites = 40 and maxPerSite = 2 yield exactly 80 max links/fiber, resolving maxian2022/q_max_links_per_fiber_discrepancy (76.92 vs 80)."
+
+- id: cmp_clnet_nb_delta_ell_vs_paper
+  purpose: reproduction
+  computed: clnet_nb_delta_ell
+  printed: paper_cl_fluctuation_delta_ell
+  note: "Live non-Brownian DoubleEndedCrossLinkedNetwork uses hardcoded CrossLinkedNetwork.py:9 kbT = 4.1e-3 pN*um, giving deltaL = sqrt(4.1e-3/10) = 20.25 nm vs paper p. 5's 20 nm (from 4e-3 pN*um)."
+
+- id: cmp_clnet_sigma_N16_vs_code
+  purpose: consistency
+  computed: clnet_nb_sigma_rel
+  printed: code_sigma_rel_default
+  note: "Live sigmaFromNL(N_x = 17, L = 1) returns sigma/L = 0.1."
+
+- id: cmp_clnet_sigma_N50_vs_code
+  purpose: consistency
+  computed: clnet_smc_sigma_rel
+  printed: code_sigma_rel_N50
+  note: "Live sigmaFromNL(N_x = 51, L = 1) returns sigma/L = 0.005, matching SM Sec. C."
+
+- id: cmp_bundle_order_parallel
+  purpose: consistency
+  computed: bund_q_par
+  printed: expected_parallel_order_param
+  note: "Live BundleOrderParameters returns exact 1.0 for parallel bundled filaments (Eq. 21 upper bound)."
+
+- id: cmp_bundle_order_isotropic
+  purpose: consistency
+  computed: bund_q_iso
+  printed: expected_isotropic_order_param
+  note: "Live BundleOrderParameters returns exact 1/3 for three mutually orthogonal filaments (Eq. 21 lower bound)."
+
+- id: cmp_bundle_strict_inequality
+  purpose: consistency
+  computed: bund_n_eq
+  printed: expected_bundle_at_boundary
+  note: "Live ConnectionMatrix (CrossLinkedNetwork.py:382-383) uses strict '>' rather than paper p. 5's '>=', detecting 0 bundles instead of 1 when two cross-links sit exactly d_bund = L/4 apart."
+
+# ==============================================================================
+# 3. C++ EndedCrossLinkers.cpp SSA detailed balance (inside vs outside cutoff)
+# ==============================================================================
+
+- id: cmp_ssa_inside_vs_gibbs
+  purpose: approximation
+  computed: ssa_in_dbl
+  printed: ssa_in_gibbs
+  note: "Inside Brownian capture window (r = 0.07 um <= 0.09 um), 5-replicate 4-reaction Gillespie SSA reproduces exact truncated-Poisson Gibbs-Boltzmann double-link occupancy."
+
+- id: cmp_ssa_inside_rel_err
+  purpose: consistency
+  computed: ssa_in_err
+  printed: zero_tolerance_target
+  note: "Relative detailed-balance deviation of 4-reaction SSA inside capture window (Monte Carlo sampling noise ~1-2% at t_sim = 10000 s)."
+
+- id: cmp_ssa_outside_vs_gibbs
+  purpose: approximation
+  computed: ssa_out_dbl
+  printed: ssa_out_gibbs
+  note: "Outside 2-sigma Brownian capture cutoff (r = 0.095 um > 0.090 um), DoubleEndedCrossLinkedNetwork.py:109-112 disables binding while unbinding stays active, driving occupancy to 0 vs nonzero Gibbs-Boltzmann occupancy 0.01285."
+
+- id: cmp_ssa_outside_rel_err
+  purpose: consistency
+  computed: ssa_out_err
+  printed: zero_tolerance_target
+  note: "Relative detailed-balance deviation of 4-reaction SSA outside capture cutoff (r = 0.095 um): db_rel_error = 1.000 (100% truncation failure vs 0.0 target)."
+
+# ==============================================================================
+# 4. SM Sec. C stability limit and Lie-Trotter vs Strang time integration
+# ==============================================================================
+
+- id: cmp_smc_dtmax_smooth_vs_paper
+  purpose: reproduction
+  computed: smc_stab_dtmax
+  printed: paper_dt_max_sm_c
+  conditions_ok: "Both at L = 1 um, K_c = 10 pN/um, mu = 0.1 Pa*s; code local drag (delta = 0.1) with calcCLForces Gaussian arm = 0.4960 um gives dt_max = 0.00570 s (+14.0% vs printed 0.005 s)."
+
+- id: cmp_smc_dtmax_delta1_vs_paper
+  purpose: reproduction
+  computed: smc_d1_dtmax
+  printed: paper_dt_max_sm_c
+  conditions_ok: "Under FibCollocationDiscretization constructor default deltaLocal = 1 (point force arm = 0.5 um), dt_max = 0.00522 s (+4.3% vs printed 0.005 s)."
+
+- id: cmp_smc_small_pct_vs_paper
+  purpose: reproduction
+  computed: smc_stab_small_pct
+  printed: paper_dt_fraction_small_sm_c
+  conditions_ok: "dt = 0.0005 s is 8.77% of exact code dt_max = 0.00570 s (vs Fig. S1 caption's rounded 10% based on dt_max = 0.005 s)."
+
+- id: cmp_smc_large_pct_vs_paper
+  purpose: reproduction
+  computed: smc_stab_large_pct
+  printed: paper_dt_fraction_large_sm_c
+  conditions_ok: "dt = 0.0025 s is 43.85% of exact code dt_max = 0.00570 s (vs Fig. S1 caption's rounded 50% based on dt_max = 0.005 s)."
+
+- id: cmp_lt_small_std_end_vs_gibbs
+  purpose: approximation
+  computed: lt_small_std_end
+  printed: gibbs_4e3_std
+  note: "Released code 1st-order Lie-Trotter at dt = 0.0005 s (end-of-step measurement, as in FixedDynamicLinkNetwork.py:208): std_x is biased ~10% below Eq. S13 equilibrium."
+
+- id: cmp_lt_large_std_end_vs_gibbs
+  purpose: approximation
+  computed: lt_large_std_end
+  printed: gibbs_4e3_std
+  note: "Released code 1st-order Lie-Trotter at dt = 0.0025 s (end-of-step measurement): deterministic spring step contracts the distribution severely, collapsing std_x by -61% relative to Eq. S13."
+
+- id: cmp_lt_large_mean_end_vs_gibbs
+  purpose: approximation
+  computed: lt_large_mean_end
+  printed: gibbs_4e3_mean
+  note: "Released code 1st-order Lie-Trotter at dt = 0.0025 s (end-of-step measurement): mean_x contracts from 0.06381 um to 0.0543 um (-14.9%)."
+
+- id: cmp_lt_large_std_bd_vs_gibbs
+  purpose: approximation
+  computed: lt_large_std_bd
+  printed: gibbs_4e3_std
+  note: "Released code 1st-order Lie-Trotter at dt = 0.0025 s measured right after BrownianUpdate(dt): std_x inflates by +23.5% relative to Eq. S13 (identical Markov chain to Strang midpoint)."
+
+- id: cmp_strang_small_std_end_vs_gibbs
+  purpose: approximation
+  computed: st_small_std_end
+  printed: gibbs_4e3_std
+  note: "Paper Sec. 2.4 2nd-order Strang variant at dt = 0.0005 s (true full-step endpoint after step 3): std_x stays within ~2% of Eq. S13."
+
+- id: cmp_strang_large_std_end_vs_gibbs
+  purpose: approximation
+  computed: st_large_std_end
+  printed: gibbs_4e3_std
+  note: "Paper Sec. 2.4 2nd-order Strang variant at dt = 0.0025 s (true full-step endpoint after step 3): std_x stays within ~4.5% of Eq. S13 (orders of magnitude more accurate than Lie-Trotter end or Strang midpoint)."
+
+- id: cmp_strang_large_std_mid_vs_gibbs
+  purpose: approximation
+  computed: st_large_std_bd
+  printed: gibbs_4e3_std
+  note: "Paper Sec. 2.4 2nd-order Strang variant at dt = 0.0025 s sampled at midpoint after step 1 (Fig. S1 caption): std_x inflates by +24%, reproducing the lowered peak in Fig. S1 right and maxian2022's audit finding."
+
+# ==============================================================================
+# 5. Derived code-input algebraic comparisons (Eb, ell_m, 6*D_t, tau_m, subcycling)
+# ==============================================================================
+
+- id: cmp_code_Eb_vs_paper
+  purpose: reproduction
+  computed: code_L1_Eb
+  printed: paper_Eb_actin
+  note: "SemiflexBundleInputFile.txt:11-12 sets kbT = 4.1e-3, lp = 17 -> Eb = 0.0697 pN*um^2 (matches Table 1's 0.07 pN*um^2 to 2 significant figures, -0.4%)."
+
+- id: cmp_paper_Eb_from_4e3
+  purpose: consistency
+  computed: paper_L1_Eb
+  printed: paper_Eb_actin
+  note: "Using Table 1's rounded kbT = 4e-3 pN*um with lp = 17 um yields Eb = 0.068 pN*um^2 (-2.9% below Table 1's 0.07 pN*um^2); code's 4.1e-3 explains how 0.07 was rounded."
+
+- id: cmp_code_ell_m_vs_paper
+  purpose: reproduction
+  computed: code_L1_ell_m
+  printed: paper_ell_m_02
+  note: "StrainInputFile.txt F = 200, Ld = 2 um, L = 1 um gives exact ell_m = 0.2 um."
+
+- id: cmp_code_six_Dt_vs_paper
+  purpose: reproduction
+  computed: code_L1_six_Dt
+  printed: paper_six_Dt_eps0004
+  conditions_ok: "Evaluated at L = 1 um, eps = 0.004, mu = 0.1 Pa*s using code kbT = 4.1e-3 pN*um (gives 0.1369 um^2/s vs p. 9's '≈ 0.13')."
+
+- id: cmp_paper_six_Dt_vs_paper
+  purpose: reproduction
+  computed: paper_L1_six_Dt
+  printed: paper_six_Dt_eps0004
+  conditions_ok: "Evaluated at L = 1 um, eps = 0.004, mu = 0.1 Pa*s using paper Table 1 kbT = 4e-3 pN*um (gives 0.1336 um^2/s vs p. 9's '≈ 0.13')."
+
+- id: cmp_paper_tau_m_L1_vs_paper
+  purpose: reproduction
+  computed: paper_L1_tau_m
+  printed: paper_tau_m_L1_lm02
+  conditions_ok: "Evaluated at L = 1 um, ell_m = 0.2 um using paper Table 1 kbT = 4e-3 pN*um and StraightMobility c_tr = 1.6698 (gives 0.2994 s vs p. 12's '≈ 0.30 s')."
+
+- id: cmp_paper_tau_m_L05_vs_paper
+  purpose: reproduction
+  computed: paper_L05_tau_m
+  printed: paper_tau_m_L05_lm02
+  conditions_ok: "Evaluated at L = 0.5 um, F = 400, Ld = 2 um (ell_m = 0.2 um), kbT = 4e-3 pN*um, StraightMobility c_tr(0.008) = 1.4473 (gives 0.1727 s vs p. 12's 0.17 s)."
+
+- id: cmp_network_step_every_vs_paper
+  purpose: consistency
+  computed: code_L1_net_step_every
+  printed: unit_step_factor_target
+  note: "FixedDynamicLinkNetwork.py:161 + SemiflexBundleInputFile.txt:16 subcycle CL/turnover updates every NetworkStepEvery = int(0.01/1e-4) = 100 steps, contrasting with maxian2022 p. 5's per-step (dtFactor = 1) description."

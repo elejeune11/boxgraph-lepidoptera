@@ -1,0 +1,44 @@
+id: semiflexible_actin_network_sim
+name: 3D semiflexible inextensible actin network with nonlocal SBT and dynamic cross-linking (Eqs. 1-7)
+role: model
+stated:
+  page: 3
+  printed_page: "1232"
+  quote: "This section reviews our algorithm for simulating the dynamic cross-linking"
+  where: "Eqs. 1-7"
+equation: "K[X] alpha = M[X](f^kappa[X] + lambda + f^(CL)), K*[X] lambda = 0; (8 pi mu) M[X] f from nonlocal SBT (Eq. 4-5); Gaussian CL springs (Eq. 6); Gillespie SSA binding/unbinding in (ell - delta_ell, ell + delta_ell)"
+inputs:
+  a: {quantity: fiber_radius, unit: nm}
+  L: {quantity: fiber_length, unit: um}
+  F: {quantity: fiber_count, unit: dimensionless}
+  Ld: {quantity: domain_extent, unit: um}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  kappa: {quantity: bending_stiffness, unit: pN*um^2}
+  Kc: {quantity: cl_spring_stiffness, unit: pN/um}
+  ell: {quantity: cl_rest_length, unit: nm}
+  kon: {quantity: cl_first_end_binding_rate, unit: 1/(um*s)}
+  kons: {quantity: cl_second_end_binding_rate, unit: 1/(um*s)}
+  koff: {quantity: cl_unbinding_rate, unit: 1/s}
+  koffs: {quantity: cl_unbinding_rate, unit: 1/s}
+  cw: {quantity: binding_site_width, unit: nm}
+  kBT: {quantity: thermal_energy, unit: pN*um}
+  dsu: {quantity: binding_site_spacing, unit: um}
+outputs:
+  tau_c: {quantity: bundling_time, unit: s}
+  bundle_density: {quantity: bundle_density, unit: 1/um^3}
+  percent_in_bundles: {quantity: percent_in_bundles, unit: percent}
+settings:
+  N: 16
+  dt: 0.0001
+  delta_rel: 0.1
+  sigma_rel: 0.1
+  n_trials: 5
+  seed: 0
+runnable: false
+stochastic: true
+not_runnable_reason: >
+  Full 3D periodic spectral many-fiber Stokes-flow + Gillespie SSA simulation (F = 200-1600 fibers,
+  t = 60 s, dt = 10^-4 s, 5 trials per case) run on NYU Greene HPC supercomputer, and depends on
+  unprinted numerical algorithms cited to Maxian et al. (2021) [refs. 3, 21] (Sec. 2.1 endpoint
+  regularization of Eq. 5, Sec. 4.2 discretization of M, backward Euler inextensible fiber update,
+  and SSA implementation details).

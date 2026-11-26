@@ -1,0 +1,33 @@
+id: afines_two_filament_bundle_port
+name: Faithful mini-trajectory Python port of AFINES 2-filament bundle Brownian dynamics loop (prog/bundles.cpp:410-485)
+role: model
+stated:
+  file: prog/bundles.cpp
+  lines: "410-485"
+  quote: "while (t < tfinal) {"
+  where: "prog/bundles.cpp main time loop + src/filament.cpp + src/spacer.cpp + src/filament_ensemble.cpp"
+equation: "Integrated 2-filament overdamped Leimkuhler-Matthews BD with Hookean springs, LAMMPS bending, 9 seed cross-linkers (kb = s_bend/mld), and segment excluded volume over short horizon t_sim"
+inputs:
+  link_length: {quantity: filament_link_length, unit: um}
+  link_stretching_stiffness: {quantity: stretching_stiffness, unit: pN/um}
+  polymer_bending_modulus: {quantity: bending_modulus, unit: pN*um^2}
+  actin_length: {quantity: particle_radius, unit: um}
+  spacer_length: {quantity: crosslinker_length, unit: um}
+  spacer_stiffness: {quantity: stretching_stiffness, unit: pN/um}
+  spacer_bend: {quantity: crosslinker_bending_modulus, unit: pN*um^2}
+  kexv: {quantity: excluded_volume_energy_scale, unit: pN*um}
+  rmax: {quantity: capture_radius, unit: um}
+  temperature: {quantity: thermal_energy, unit: pN*um}
+  viscosity: {quantity: dynamic_viscosity, unit: Pa*s}
+  dt: {quantity: observation_time, unit: s}
+  nfixed: {quantity: spacer_count, unit: dimensionless}
+outputs:
+  final_alignment: {quantity: filament_alignment, unit: dimensionless}
+  final_mean_separation: {quantity: spatial_coordinate, unit: um}
+  final_total_pe: {quantity: mechanical_energy, unit: pN*um}
+settings:
+  seed: 1
+  t_sim_s: 0.01
+  n_links: 3
+  dt_scale: 1.0
+stochastic: true

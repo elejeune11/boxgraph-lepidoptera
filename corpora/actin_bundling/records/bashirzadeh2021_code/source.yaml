@@ -1,0 +1,141 @@
+id: bashirzadeh2021_code
+kind: software
+title: "AFINES (sorting_guv branch): Active Filament Network Simulation C++ engine and GUV crosslinker sorting configs and initial-condition scripts (Bashirzadeh et al., 2021)"
+authors:
+  - Simon L. Freedman
+  - Shiladitya Banerjee
+  - Glen M. Hocky
+  - Aaron R. Dinner
+  - Steven A. Redford
+  - Chatipat Lorpaiboon
+year: 2021
+url: "https://github.com/dinner-group/AFINES/tree/sorting_guv/crosslinker_sorting_in_GUVs"
+file: corpus/actin_bundling/code/bashirzadeh2021_code
+version: "sha256:e63040561ac76609bb81f8bc86d79c1703e1fffd31f11631c605ce867cde1302"
+licence: GPL-3.0-or-later
+language: "C++, Python"
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1"
+  date: "2026-11-26"
+notes: |
+  Full software audit of `corpus/actin_bundling/code/bashirzadeh2021_code` (GitHub
+  `dinner-group/AFINES` branch `sorting_guv`, commit `a34e602`; GPL-3.0-or-later; tree digest
+  `sha256:e63040561ac76609bb81f8bc86d79c1703e1fffd31f11631c605ce867cde1302`) against the paper
+  record `bashirzadeh2021` (Communications Biology 4, 1136, 2021).
+
+  Repository contents and entry points audited:
+  (1) `crosslinker_sorting_in_GUVs/`: `README.txt` (4 lines), `sorting_kinetics.cfg` (52 lines),
+      and `aster_initial_condition_grid_conda_freeze.py` (291 lines: generates initial actin,
+      fascin, and alpha-actinin coordinate files and 80 SLURM `.csh` batch scripts).
+  (2) Core C++ AFINES engine: `prog/network.cpp` (794 lines: CLI/config parsing, setup, main
+      Langevin/KMC loop), `src/ext.cpp` & `include/ext.h` (`ext_circle`, `ext_ring`),
+      `src/motor.cpp` & `include/motor.h` (stretching, bending, alignment, Metropolis KMC,
+      steric occlusion `occ`, Leimkuhler-Matthews Brownian dynamics), `src/motor_ensemble.cpp`,
+      `src/filament.cpp`, `src/filament_ensemble.cpp`, `src/bead.cpp`, `src/spring.cpp`,
+      `src/potentials.cpp` (`bend_angle`, `bend_harmonic`), `src/exv.cpp`, `src/box.cpp`,
+      `src/quadrants.cpp`, `src/generate.cpp`, `src/globals.cpp`, `include/globals.h`,
+      `CMakeLists.txt`, `makefile`, and `conda.recipe/{meta.yaml,build.sh}`.
+  (3) `python/output.py` (558 lines: NumPy AFINES I/O and `actins2coords`/`motors2coords` helpers)
+      and legacy `analysis/` scripts from earlier AFINES papers.
+
+  Record inventory: 63 quantities, 77 data (67 parameters/defaults cited directly from `.cfg`,
+  Python, and C++ source + 10 paper targets copied from `bashirzadeh2021`; 42 cross-linked to
+  `bashirzadeh2021` via `from_source`/`from_datum`), 21 added probe inputs and analytical
+  benchmarks, 9 models (1 live `software: true` adapter executing unmodified
+  `aster_initial_condition_grid_conda_freeze.py` and `python/output.py` in memory; 7 faithful
+  line-by-line Python ports of C++ physics kernels, KMC/occlusion kinetics, Leimkuhler-Matthews
+  Brownian dynamics, derived parameters, and exact initial-condition moments; 1 non-runnable full
+  2D C++ many-body simulation), 18 runs, 29 comparisons (10 reproduced, 7 not reproduced, 4 close,
+  8 approximation/internal-consistency no-verdict), 3 stochastic refinements (all 3 settling within
+  5% tolerance: shifts 0.74%, 1.14%, 0.16%), and 8 open questions.
+
+  What the code REPRODUCES from `bashirzadeh2021` (10/10 baseline parameter/count checks):
+  - Under the CLI-overridden combined baseline (`hh = 2`: `scl = 1`, `alpha_conc = 5`,
+    `fasc_conc = 5` in `aster_initial_condition_grid_conda_freeze.py` + `sorting_kinetics.cfg`),
+    the code matches all reported Supplementary Table 2 & 3 simulation parameters: box `100 x 100 um`,
+    `r_c = 15 um`, `k_c = 20 pN/um`, `link_length = 1 um`, `polymer_bending_modulus = 0.068 pN*um^2`,
+    `npolymer = 50` (reproduced via `int(round(pi*15^2*0.071)) = 50`), `nmonomer = 35` (`L = 34 um`),
+    `dt = 2e-5 s`, `tfinal = 100 s` (`5 x 10^6` steps), `nrep = 5`, fascin (`a_motor` with `v = 0`)
+    `l = 0.1 um`, `kappa = 1 pN/um`, `k_on = 20 s^-1`, `k_off = 0.5 s^-1` (`k_on/k_off = 40`, also
+    preserved across `scl = 1..4`), `k_align = 0.333 pN*um` (`par_flag = 1`), and alpha-actinin
+    (`p_motor`) `l = 0.5 um`, `kappa = 0.1 pN/um`, `k_on = 0.2 s^-1`, `k_off = 0.05 s^-1`
+    (`k_on/k_off = 4`), `k_align = 0`.
+  - C++ physics equations exactly match `bashirzadeh2021` Eqs. 3 & 4: `ext_circle::compute()`
+    (`src/ext.cpp:11-22`) implements `0.5 * k_c * (r - r_c)^2` for `r >= r_c` (applied to filament
+    beads and crosslinker heads), and `motor::update_alignment()` / `alignment_penalty()`
+    (`src/motor.cpp:408-410,628-629`) implements `kalign * (1 - cos(theta))` for fascin (`a_m_align=1`),
+    giving antiparallel barrier `0.666 pN*um = 166.5 k_B T` (Metropolis factor `4.90e-73`).
+  - Live `aster_initial_condition_grid_conda_freeze.py` + `python/output.py` reproduces `50`
+    filaments, `35` beads/filament, `5` replicates, `3,534` crosslinkers/species (`4.9996 um^-2`
+    global circular vesicle density), and rest lengths `0.1000 um` (fascin) and `0.5000 um`
+    (alpha-actinin), while `hh = 1` generates `0` alpha-actinin for fascin-only runs.
+  - Ported C++ Leimkuhler-Matthews Langevin updates (`src/filament.cpp:67,92-105`,
+    `src/motor.cpp:35-36,485-491`) accurately recover exact Einstein diffusion (`0.2145 vs 0.2122 um^2/s`
+    fascin; `0.04256 vs 0.04244 um^2/s` alpha-actinin) and exact Boltzmann variance
+    (`1.999e-4` and `2.000e-4` vs `2.000e-4 um^2` at `k = 20 pN/um`).
+
+  What the code DOES NOT reproduce and every discrepancy / hidden choice found vs `bashirzadeh2021`:
+  (1) Missing post-processing & Cytosim code (CRITICAL): NO Fig. 4h Binder cumulant (`U_4`, Eq. 5)
+      script, NO Fig. 4g / Supp. Fig. 11 2D PDF histogram script, and NO Supp. Fig. 12 Cytosim
+      configuration/analysis code exist anywhere in `dinner-group/AFINES@sorting_guv` (commit `a34e602`).
+      The released repository therefore cannot settle `bashirzadeh2021`'s
+      `q_binder_cumulant_eq5_vs_fig4h_and_prose` (sum-vs-mean formula or histogram domain) or
+      `q_cytosim_unstated`.
+  (2) Standalone `sorting_kinetics.cfg` disagrees with the paper on 4 core parameters:
+      `circle_radius = 12` (vs `15 um`), `nmonomer = 27` (`26 um` vs `35` beads = `34 um`),
+      `a_motor_density = 1` (vs `5 um^-2`), and `p_motor_density = 1` (vs `5 um^-2`). Only CLI flags
+      in `aster_initial_condition_grid_conda_freeze.py:249-258` restore the paper values (`32`
+      filaments and `452` crosslinkers without CLI overrides; `cmp_cfg_standalone_nfil_vs_paper` not
+      reproduced).
+  (3) Hidden NON-DEFAULT parameters contradicting Methods p. 9 ("Default values^42 were used for all
+      parameters not listed"):
+      - `occ = 0.15 um` (settles unprinted `o_c` on p. 9; C++ default is `0` disabled; applied as 1D
+        contour distance across BOTH species via shuffled `motor_ix` in `prog/network.cpp:753-761`).
+      - `link_stretching_stiffness = 10 pN/um` (10x stiffer than C++ default `1 pN/um`).
+      - `viscosity = 0.01 mg/(um*s)` (= `0.01 Pa*s = 10 cP`, 10x C++ default water `0.001`).
+      - `a_m_bend = 0`, `p_m_bend = 0` (disables C++ default `0.04 pN` perpendicular bending).
+      - `kexv = 0` (disables C++ default `1.0 pN/um` excluded volume).
+      - `temperature = 0.004 pN*um` (= `4.0 pN*nm`, ~290 K -> exact single-filament `L_p = 17.0 um`).
+      - Hidden C++ defaults `a_m_cut = p_m_cut = 0.063 um` and bead radius `actin_length = 0.5 um`
+        (hardcoded in `actin_*.txt`), plus `damp = 6*pi*vis*mlen` giving 5x faster fascin diffusion
+        (`0.2122 um^2/s`) than alpha-actinin (`0.04244 um^2/s`).
+      - Unstated `grid_factor = 2.5 um^-1` (default `2`, `250 x 250` quadrants), `nframes = 50`
+        (default `1000`, `2 s` frame spacing), `bnd_cnd = LEES-EDWARDS`, and `fil_dens = 0.071 um^-2`.
+  (4) Filament initial translation distribution mismatch (`cmp_live_actin_center_std_vs_paper` and
+      `cmp_analytical_actin_center_std_vs_paper` close, -42.5%): `aster_initial_condition_grid_conda_freeze.py:47,111-112`
+      draws `xkick, ykick ~ Uniform(-3, 3)` (`std = 3/sqrt(3) = 1.732 um`, live `1.724 +/- 0.020 um`),
+      NOT a Gaussian with `sigma = 3 um` (3x smaller variance; lowers initial beads outside `r_c` to
+      `15.0%` and `mean U_confine` to `269.2 pN*um`).
+  (5) Filament initial bend angle & consecutive shared-arm bug (`cmp_live_mean_hinge_angle_vs_paper`,
+      `cmp_live_frac_bend_gt_pi4_vs_paper`, `cmp_live_shared_arm_vs_paper` all NOT reproduced):
+      `bent = True` (lines 24, 98-117) draws independent `U[0, 2*pi]` arm angles (with opposite
+      y-rotation signs), giving mean hinge bend `1.603 rad` (~`pi/2`, 4x larger than Methods p. 9's
+      `pi/8 = 0.3927 rad`), `77.1%` (theory `75%`) exceeding `pi/4` (vs `0%`), and 100% (`49/49`) of
+      consecutive filament pairs sharing an identical arm orientation because lines 102-105 update only
+      one angle per filament. Even the unused `bent = False` branch (line 108) uses `[-pi, pi]`.
+  (6) Crosslinker initial box vs circle AND non-uniform sampling bug
+      (`cmp_live_fascin_edge_density_vs_paper`, `cmp_live_fascin_anisotropy_vs_isotropic`,
+      `cmp_live_fascin_rc_box_vs_paper` NOT reproduced; center/origin density close at -21.5%):
+      Crosslinkers are placed inside `r <= 15 um` (only `25.8%`, exact `pi/12 = 26.2%`, lie inside
+      Methods p. 9's stated `r_c x r_c` box `[-7.5, 7.5]^2`), settling the `3,534` count ambiguity.
+      However, sampling `x ~ U[-r, r]` and `y | x ~ U[-sqrt(r^2 - x^2), +sqrt(r^2 - x^2)]` (lines
+      156-158, 181-183) yields non-uniform PDF `1 / (4*r*sqrt(r^2 - x^2))`: central `[-3,3]^2`
+      density drops to `3.91 um^-2` (exact origin `(pi/4)*5 = 3.927 um^-2`, -21.5%), lateral caps
+      `|x| > 12 um` concentrate to `9.61 um^-2` (+92%, ~2.5x center density), and `<x^2>/<y^2>` is
+      `1.503` (exact `3/2 = 1.500` vs isotropic `1.000`).
+  (7) C++ `allowed_bind`, absent `U_xl^bind`, and bound-head confinement: Because `a_m_bend = p_m_bend = 0`,
+      `motor::allowed_bind()` (`src/motor.cpp:696-700`) permits BOTH heads of a crosslinker to bind
+      different springs on the SAME filament (`kmc_same_fil_allowed_kb0 = 1`); Eq. 2's `U_xl^bind` does
+      not exist as a potential energy term in `src/motor.cpp` (affinity is encoded solely by `k_on/k_off`,
+      effective `dF_bind = -0.01476 pN*um` fascin, `-0.005545 pN*um` alpha-actinin); and bound crosslinker
+      heads outside `r_c` transfer additional `ext_circle` force to filament beads via the lever rule.
+  (8) Script/C++ packaging bugs: `aster_initial_condition_grid_conda_freeze.py` calls nonexistent binary
+      `afines-ring` (builds produce `network`/`afines`), hardcodes `/project2/gardel/steven/AFINES/...`,
+      repeats 5 identical 16-condition blocks via unused loop variable `scale`, cannot generate
+      alpha-only (`fasc_conc = 0`) runs without editing, leaves `a_m_kend = 0.5` unscaled for `scl > 1`,
+      writes float `'0.0'` filament indices incompatible with `python/output.py`'s integer `actins_dtype`,
+      and is misspelled in `README.txt:3`; C++ comments in `src/motor.cpp:619-620` misstate alignment
+      range as `[0, kalign]` instead of `[0, 2*kalign]`, and dormant bugs exist in `prog/network.cpp:533,552`,
+      `src/exv.cpp:17`, `src/quadrants.cpp:41`, and ensemble destructors.

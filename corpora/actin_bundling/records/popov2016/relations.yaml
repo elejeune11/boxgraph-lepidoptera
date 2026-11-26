@@ -1,0 +1,434 @@
+# Cross-record ModelAtlas relations for popov2016 (MEDYAN) across its four
+# remaining ready pairs: bathe2008, chandrasekaran2024, freedman2019, graham2023.
+# (chandrasekaran2019+popov2016 and maxian2022+popov2016 are handled in those
+# partner records.)
+#
+# Pair summary:
+#   - bathe2008 + popov2016: 0 relations (WLB continuum bundle bending elasticity vs
+#     MEDYAN discrete 3D active mechanochemical potentials share no algebraic/asymptotic
+#     model form; cross-framework comparison logged in questions.yaml and notes.md).
+#   - chandrasekaran2024 + popov2016: 7 relations (Bell slip bond, Brownian ratchet,
+#     LAMMPS harmonic bond/angle potentials, 3D-vs-1D Brownian length, molecule count).
+#   - freedman2019 + popov2016: 5 relations (filament stretching, small-angle bending
+#     derivation & approximation, crosslinker stretching, 2-hinge gap bending approx).
+#   - graham2023 + popov2016: 3 relations (discrete cylinder bending constant at N_fil=1,
+#     continuum circular-arc small-angle derivation & finite-segment discretization approx).
+
+# ===========================================================================
+# 1. chandrasekaran2024 + popov2016 (MEDYAN vs CytoSim / LAMMPS)
+# ===========================================================================
+
+- id: rel_chandrasekaran2024_bell_slip_bond
+  kind: same_as
+  a: popov2016/alpha_actinin_slip_bond_s3eq6
+  b: chandrasekaran2024/bell_slip_bond_unbinding
+  mapping:
+    k_unbind0: "k_unbind_0"
+    f: "F_ext"
+    f_u: "F_unbind"
+  output_map:
+    k_unbind: k_unbind
+  regime:
+    k_unbind_0: [0.05, 5.0]
+    F_ext: [0.1, 30.0]
+    F_unbind: [5.0, 25.0]
+  provenance: proposed
+  reason: >
+    Both MEDYAN (Popov et al. 2016 S3 Text Eq. 6 for alpha-actinin crosslinkers,
+    k_unbind^0 = 0.3 s^-1, F_unbind = 17.2 pN) and CytoSim (Chandrasekaran et al. 2024
+    Methods p. 10 / Supp. Table 2 for VASP crosslinkers, k_unbind^0 = 0.1-1.75 s^-1,
+    f_u = 10 pN) implement the identical Bell slip-bond unbinding law
+    k_unbind(F) = k_unbind^0 * exp(F / F_u).
+  assumptions:
+    - "Extensional (positive) tensile load F_ext > 0 across both crosslinker models."
+
+- id: rel_chandrasekaran2024_brownian_ratchet_scales
+  kind: scales_as
+  a: popov2016/actin_brownian_ratchet_s3eq7
+  b: chandrasekaran2024/brownian_ratchet_growth_rate
+  mapping:
+    k_grow: "2.7 * k_poly_0"
+    f: "F_ext"
+    f_grow: "F_actin_poly"
+  output_map:
+    v: k_poly
+  regime:
+    k_poly_0: [1.0, 50.0]
+    F_ext: [0.1, 10.0]
+    F_actin_poly: [1.0, 15.0]
+  provenance: proposed
+  reason: >
+    Both MEDYAN (Popov et al. 2016 S3 Text Eq. 7, k_poly = k_poly^0 * exp(-F_ext / F_actin,poly)
+    in monomers/s) and CytoSim (Chandrasekaran et al. 2024 Supp. Table 2,
+    v = k_grow * exp(-f / f_grow) in nm/s) implement the identical exponential Brownian-ratchet
+    barbed-end polymerization law, differing only by the constant actin monomer increment
+    l_mon = 2.7 nm converting monomer addition rate [1/s] to elongation speed [nm/s].
+    Log-slopes agree identically in all three variables (+1 in k_poly_0, -F_ext/F_actin_poly
+    in F_ext, +F_ext/F_actin_poly in F_actin_poly), despite a 6.67x parameterization gap
+    (F_actin,poly = k_B T / l_mon = 1.5 pN in MEDYAN vs f_grow = 10 pN in CytoSim).
+  assumptions:
+    - "Constant actin monomer length increment l_mon = 2.7 nm converting rate [1/s] to speed [nm/s]."
+
+- id: rel_chandrasekaran2024_lammps_bond_scales_filament_stretch
+  kind: scales_as
+  a: popov2016/filament_stretching_energy_eq2
+  b: chandrasekaran2024/lammps_harmonic_bond_potential
+  mapping:
+    K_bond: "(K_str / 2) * (30**2 / 4.11)"
+    r: "l / 30"
+    r0: "l_0 / 30"
+  output_map:
+    U_bond: U_str
+  regime:
+    K_str: [10.0, 500.0]
+    l_0: [25.0, 110.0]
+    l: [115.0, 150.0]
+  provenance: proposed
+  reason: >
+    MEDYAN Eq. 2 (U_str = (1/2) * K_str * (l - l_0)^2 in physical units [pN*nm]) and
+    Chandrasekaran et al.'s LAMMPS bond_style harmonic potential (U_bond = K_bond * (r - r0)^2
+    in dimensionless LJ thermal units k_B T, absorbing the 1/2 prefactor into K_bond) share the
+    exact same quadratic stretching form for F-actin segments. Because U_bond is dimensionless
+    while U_str carries physical energy units [pN*nm], scales_as verifies exact agreement of
+    log-slopes in all three variables (+1 in K_str, 2*l/(l - l_0) in l, and -2*l_0/(l - l_0)
+    in l_0) across the strictly stretched regime l > l_0.
+  assumptions:
+    - "Strictly stretched regime l > l_0 (l_0 in [25, 110] nm, l in [115, 150] nm) so U_str > 0 and log-slopes are well-defined."
+    - "Anchored at sigma = 30 nm and k_B T = 4.11 pN*nm (constant scale factors leave all log-slopes invariant)."
+
+- id: rel_chandrasekaran2024_lammps_bond_scales_crosslinker_stretch
+  kind: scales_as
+  a: popov2016/motor_crosslinker_stretching_energy_eq9
+  b: chandrasekaran2024/lammps_harmonic_bond_potential
+  mapping:
+    K_bond: "(K_motor / 2) * (30**2 / 4.11)"
+    r: "l_m / 30"
+    r0: "l_0m / 30"
+  output_map:
+    U_bond: U_motor
+  regime:
+    K_motor: [1.0, 100.0]
+    l_0m: [25.0, 50.0]
+    l_m: [55.0, 80.0]
+  provenance: proposed
+  reason: >
+    MEDYAN Eq. 9 models both alpha-actinin crosslinkers and NMIIA minifilaments as Hookean
+    springs U_motor = (1/2) * K_motor * (l_m - l_0m)^2 [pN*nm], while Chandrasekaran et al.
+    use LAMMPS bond_style harmonic U_bond = K_bond * (r - r0)^2 [dimensionless k_B T] for
+    both F-actin segment bonds and permanent crosslinks. Across the stretched regime l_m > l_0m,
+    log-slopes in K_motor, l_m, and l_0m agree identically.
+  assumptions:
+    - "Strictly stretched regime l_m > l_0m (l_0m in [25, 50] nm, l_m in [55, 80] nm) so U_motor > 0."
+    - "Anchored at sigma = 30 nm and k_B T = 4.11 pN*nm."
+
+- id: rel_chandrasekaran2024_lammps_angle_scales_filament_bend
+  kind: scales_as
+  a: popov2016/filament_bending_energy_eq1
+  b: chandrasekaran2024/lammps_harmonic_angle_potential
+  mapping:
+    K_angle: "eps_bend / (2 * 4.11)"
+    theta: "pi - theta"
+    theta0: "pi"
+  output_map:
+    U_angle: U_bend
+  regime:
+    eps_bend: [500.0, 12000.0]
+    theta: [0.01, 0.2]
+  provenance: proposed
+  reason: >
+    In the small-angle bending regime (theta <= 0.2 rad, ~11.5 deg), MEDYAN's discrete cosine
+    bending potential Eq. 1 (U_bend = eps_bend * (1 - cos(theta)) [pN*nm]) expands as
+    (eps_bend / 2) * theta^2 * (1 - theta^2 / 12 + ...), matching Chandrasekaran et al.'s
+    LAMMPS angle_style harmonic potential U_angle = K_angle * (theta_interior - pi)^2
+    [dimensionless k_B T] with equilibrium interior angle theta0 = pi and K_angle = eps_bend / (2 k_B T).
+    Over theta in [0.01, 0.2] rad, the log-slope in eps_bend is identically +1 and the log-slope
+    in theta agrees within theta^2 / 6 <= 6.7e-3 < 1e-2 (while finite-angle deviations grow as theta^2 / 6).
+  assumptions:
+    - "Small deflection angle theta in [0.01, 0.2] rad so 1 - cos(theta) follows quadratic theta^2 scaling within 1%."
+    - "Interior bead angle theta_interior = pi - theta relative to straight equilibrium theta0 = pi; k_B T = 4.11 pN*nm."
+
+- id: rel_chandrasekaran2024_kuramoto_scales_brownian_noise
+  kind: scales_as
+  a: popov2016/kuramoto_length_s2eq1
+  b: chandrasekaran2024/brownian_noise_stddev
+  mapping:
+    D: "D"
+    dt: "tau"
+  output_map:
+    sigma_B: l_k
+  regime:
+    D: [0.1, 25.0]
+    tau: [0.0001, 1.0]
+  provenance: proposed
+  reason: >
+    MEDYAN's Kuramoto diffusive mixing length l_k = sqrt(6 * D * tau) (S2 Text Eq. 1, 3D RMS
+    Brownian excursion over the fastest reaction timescale tau) and CytoSim's 1D Brownian noise
+    standard deviation sigma_B = sqrt(2 * D * dt) share identical square-root diffusive scaling
+    (log-slopes 0.5 in D and 0.5 in time), differing by the exact dimensionality factor
+    l_k / sigma_B = sqrt(3) (3D vs 1D isotropic diffusion) at dt = tau.
+  assumptions:
+    - "Isotropic translational diffusion in 3D (6 D tau) vs 1D projection (2 D dt) evaluated at equal time interval dt = tau."
+
+- id: rel_chandrasekaran2024_molecule_count_same_as_nmiia_count
+  kind: same_as
+  a: popov2016/nmiia_minifilament_count_from_ratio
+  b: chandrasekaran2024/molecule_count_from_concentration
+  mapping:
+    C: "1000 * R_ma * A_tot / N_mol"
+    R_drop: "(3 * V / (4 * pi))**(1/3)"
+  output_map:
+    N: N_minifil
+  regime:
+    R_ma: [0.005, 0.05]
+    A_tot: [5.0, 50.0]
+    V: [0.5, 10.0]
+    N_mol: [10.0, 30.0]
+  provenance: proposed
+  reason: >
+    Both models perform exact discrete copy-number conversion N = C * N_A * V using the CODATA
+    2018 Avogadro constant (6.02214076e23 mol^-1): popov2016 computes NMIIA mini-filament copy
+    number from motor:actin stoichiometry R_ma, total actin concentration A_tot [uM], heads per
+    mini-filament N_mol, and cubic box volume V [um^3], while chandrasekaran2024 computes discrete
+    species copy number from molar concentration C [nM] inside a spherical droplet of volume
+    (4/3) * pi * R_drop^3. Mapping C = 1000 * R_ma * A_tot / N_mol [nM] and equivalent-volume
+    radius R_drop = (3 * V / (4 * pi))^(1/3) makes the two formulas identical.
+  assumptions:
+    - "Volume-matched mapping V = (4/3) * pi * R_drop^3 between cubic simulation box and spherical droplet."
+
+# ===========================================================================
+# 2. freedman2019 + popov2016 (MEDYAN vs AFINES)
+# ===========================================================================
+
+- id: rel_freedman2019_filament_stretching_same_as
+  kind: same_as
+  a: freedman2019/filament_potential_si_eq1
+  b: popov2016/filament_stretching_energy_eq2
+  mapping:
+    K_str: "k_a / 1000"
+    l: "r * 1000"
+    l_0: "l_a * 1000"
+  output_map:
+    U_str: U_stretch
+  regime:
+    k_a: [5.0, 100000.0]
+    r: [0.05, 1.2]
+    l_a: [0.025, 1.0]
+    kappa_B: [0.01, 0.5]
+    theta: [0.01, 0.5]
+  provenance: proposed
+  reason: >
+    AFINES (Freedman et al. 2019 SI Eq. 1, U_stretch = (k_a / 2) * (r - l_a)^2 in [pN*um]) and
+    MEDYAN (Popov et al. 2016 Main Text Eq. 2, U_str = (1/2) * K_str * (l - l_0)^2 in [pN*nm])
+    use the exact same Hookean stretching potential for discretized actin filament segments,
+    differing only in length units (um vs nm) and in their chosen coarse-grained stiffness
+    (AFINES k_a = 5 pN/um at l_a = 1 um vs MEDYAN K_str = 100 pN/nm = 100,000 pN/um at
+    l_0 = 27-108 nm — a 20,000x spring-constant and 2,160x extensional-rigidity difference).
+  assumptions:
+    - "Unit conversion 1 um = 1000 nm (K_str [pN/nm] = k_a [pN/um] / 1000; U_stretch [pN*um] = U_str [pN*nm] / 1000)."
+
+- id: rel_freedman2019_filament_bending_derived_small_angle
+  kind: derived_from
+  a: popov2016/filament_bending_energy_eq1
+  b: freedman2019/filament_potential_si_eq1
+  steps:
+    - "series: theta -> 0, 3"
+  mapping:
+    k_a: "1"
+    r: "1"
+    l_a: "1"
+    kappa_B: "eps_bend / 1000"
+    theta: "theta"
+  output_map:
+    U_bend: U_bend
+  regime:
+    eps_bend: [100.0, 5000.0]
+    theta: [0.01, 0.35]
+  provenance: proposed
+  reason: >
+    Second-order Taylor expansion of MEDYAN's discrete cosine bending energy Eq. 1
+    (U_bend = eps_bend * (1 - cos(theta)) = (eps_bend / 2) * theta^2 + O(theta^4)) yields
+    AFINES's quadratic angular bending energy SI Eq. 1 (U_bend = (kappa_B / (2 * l_a)) * theta^2)
+    under the discrete wormlike-chain identification eps_bend = kappa_B / l_a = l_p * k_B T / l_a
+    (Popov Table 2B footnote b). Setting l_a = 1 um (AFINES Table S1) maps kappa_B [pN*um^2] =
+    eps_bend [pN*nm] / 1000, while k_a and r do not enter U_bend.
+  assumptions:
+    - "Small inter-segment bending angle theta << 1 so O(theta^4) cosine corrections are neglected."
+    - "Discrete WLC hinge bending stiffness identification eps_bend = kappa_B / l_a (evaluated at l_a = 1 um)."
+
+- id: rel_freedman2019_filament_bending_approx_medyan
+  kind: approximated_by
+  a: freedman2019/filament_potential_si_eq1
+  b: popov2016/filament_bending_energy_eq1
+  mapping:
+    eps_bend: "1000 * kappa_B / l_a"
+    theta: "theta"
+  output_map:
+    U_bend: U_bend
+  regime:
+    k_a: [5.0, 100000.0]
+    r: [0.05, 1.2]
+    l_a: [0.025, 1.0]
+    kappa_B: [0.01, 0.5]
+    theta: [0.01, 0.35]
+  tolerance: 0.015
+  provenance: proposed
+  reason: >
+    Quantifies the finite-angle discrepancy between AFINES's quadratic bending term
+    U_bend = (kappa_B / (2 * l_a)) * theta^2 (SI Eq. 1) and MEDYAN's cosine bending potential
+    U_bend = eps_bend * (1 - cos(theta)) (Eq. 1) under the exact parameter mapping
+    eps_bend = 1000 * kappa_B / l_a [pN*nm] (requiring zero dummy inputs). Across physiological
+    inter-segment bends theta in [0.01, 0.35] rad (up to ~20 deg), the relative difference
+    1 - 2*(1 - cos(theta))/theta^2 ~ theta^2 / 12 stays below 1.03% (within tolerance 1.5%).
+  assumptions:
+    - "Moderate bending angles theta in [0.01, 0.35] rad (~0.6 to 20 deg)."
+
+- id: rel_freedman2019_crosslinker_stretching_same_as
+  kind: same_as
+  a: freedman2019/crosslinker_potential_si_eq4
+  b: popov2016/motor_crosslinker_stretching_energy_eq9
+  mapping:
+    K_motor: "k_xl / 1000"
+    l_m: "r * 1000"
+    l_0m: "l_xl * 1000"
+  output_map:
+    U_motor: U_stretch
+  regime:
+    k_xl: [10.0, 10000.0]
+    r: [0.03, 0.5]
+    l_xl: [0.03, 0.4]
+    kappa_xl_B: [0.005, 0.02]
+    alpha_L: [1.0, 2.0]
+    alpha_R: [1.0, 2.0]
+    I_L: [0.0, 1.0]
+    I_R: [0.0, 1.0]
+    k_on_1: [1.0, 5.0]
+    k_off_1: [0.01, 0.5]
+    k_on_2: [1.0, 5.0]
+    k_off_2: [0.01, 0.5]
+    T: [295.0, 310.0]
+  provenance: proposed
+  reason: >
+    The Hookean stretching component U_xl^stretch = (1/2) * k_xl * (r - l_xl)^2 [pN*um] of
+    AFINES's crosslinker potential (Freedman et al. 2019 SI Eq. 4) is identical to MEDYAN's
+    motor/crosslinker stretching potential U_ij^motor = (1/2) * K_motor * (l_m - l_0m)^2 [pN*nm]
+    (Popov et al. 2016 Eq. 9) after um-to-nm unit conversion. Unlike MEDYAN (which uses a pure
+    central-force spring with K_alpha = 8 pN/nm = 8000 pN/um and Bell slip-bond unbinding),
+    AFINES uses an 800x softer spring (k_xl = 10 pN/um) augmented by crosslinker angular bending
+    U_xl^bend and detailed-balance chemical binding energy U_xl^bind.
+  assumptions:
+    - "Compares the stretching sub-potential U_stretch of SI Eq. 4 (independent of U_bend and U_bind)."
+
+- id: rel_freedman2019_gap_bending_approx_two_medyan_hinges
+  kind: approximated_by
+  a: freedman2019/gap_bending_energy_eq1
+  b: popov2016/filament_bending_energy_eq1
+  mapping:
+    eps_bend: "2 * 0.01380649 * T * (1000 * L_p) / l_g"
+    theta: "asin(delta_l_xl / l_g)"
+  output_map:
+    U_bend: U
+  regime:
+    L_p: [5.0, 25.0]
+    delta_l_xl: [5.0, 35.0]
+    l_g: [100.0, 1000.0]
+    T: [295.0, 310.0]
+  tolerance: 0.015
+  provenance: proposed
+  reason: >
+    Freedman et al. (2019) Main Text Eq. 1 derives the filament bending cost of switching
+    crosslinker domains across a gap l_g by noting that one filament bends twice through angle
+    theta = arcsin(Delta l_xl / l_g), giving U(l_g) = 2 * (1/2) * (k_B T * L_p / l_g) * theta^2.
+    Evaluating two MEDYAN cosine bending hinges (Eq. 1 with combined hinge prefactor
+    eps_bend = 2 * k_B T * L_p / l_g, where k_B = 0.01380649 pN*nm/K) at theta = arcsin(Delta l_xl / l_g)
+    agrees with Eq. 1 up to O(theta^2 / 12) across physiological domain-switching gaps
+    (Delta l_xl in [5, 35] nm, l_g in [100, 1000] nm, covering fascin/alpha-actinin Delta l_xl = 27 nm
+    where theta <= 0.358 rad and relative difference stays <= 1.07%; numeric reduces_to as
+    delta_l_xl -> 0 is avoided because popov2016 computes 1 - cos(theta) in float64, which
+    suffers catastrophic cancellation for theta ~ 1e-9).
+  assumptions:
+    - "Physiological domain-switch regime Delta l_xl in [5, 35] nm, l_g in [100, 1000] nm (theta <= 0.358 rad)."
+    - "CODATA 2018 Boltzmann constant k_B = 0.01380649 pN*nm/K matching freedman2019/gap_bending_energy_eq1."
+
+# ===========================================================================
+# 3. graham2023 + popov2016 (Graham Discrete-Ring vs MEDYAN)
+# ===========================================================================
+
+- id: rel_graham2023_discrete_bending_constant_derived
+  kind: derived_from
+  a: graham2023/discrete_bending_constant
+  b: popov2016/actin_cylinder_bending_energy_table2b
+  steps:
+    - "subs: N_fil = 1"
+  mapping:
+    l_p: "1000 * L_p"
+    k_B_T: "kBT"
+    l_cyl: "L_cyl"
+  regime:
+    N_fil: [1.0, 30.0]
+    L_p: [10.0, 25.0]
+    kBT: [3.8, 4.4]
+    L_cyl: [25.0, 150.0]
+  provenance: proposed
+  reason: >
+    Graham et al. (2023) SI Table 1 (p. 39) discretizes an N_fil-filament VASP-crosslinked
+    actin bundle into cylindrical segments of length L_cyl = 100 nm with decoupled linear
+    bending constant k_bend = N_fil * L_p * k_B T / L_cyl (and explicitly cites Popov et al.
+    2016 [SI ref 10] on the immediately preceding row for k_stretch = N_fil * 100 pN/nm).
+    Setting N_fil = 1 reduces graham2023/discrete_bending_constant symbolically to MEDYAN's
+    single-filament cylindrical bending energy parameter eps_actin,bending = l_p * k_B T / l_cyl
+    (Popov et al. 2016 Table 2B footnote b, p. 60).
+  assumptions:
+    - "Single-filament limit N_fil = 1 (decoupled bundle rigidity reduces to one actin filament)."
+
+- id: rel_graham2023_ring_confinement_derived_medyan_bend
+  kind: derived_from
+  a: popov2016/filament_bending_energy_eq1
+  b: graham2023/ring_confinement_bending_energy
+  steps:
+    - "series: theta -> 0, 3"
+  mapping:
+    k_b: "100 * eps_bend"
+    L: "1/10"
+    R: "1 / (10 * theta)"
+  output_map:
+    E_bend_0: U_bend
+  regime:
+    eps_bend: [500.0, 50000.0]
+    theta: [0.02, 0.3]
+  provenance: proposed
+  reason: >
+    Second-order Taylor expansion of MEDYAN's discrete cosine bending energy Eq. 1
+    (U_bend = eps_bend * (1 - cos(theta)), which Graham et al. SI Eq. S2 also adopts as
+    k_bend * (1 - u_i . u_{i+1}) for each 100 nm bundle segment) yields Graham et al.'s
+    continuum circular-ring confinement bending energy E_bend_0 = (k_b / 2) * (L / R^2)
+    per segment under L = L_cyl = 0.1 um (= 100 nm), k_b = eps_bend * L_cyl = 100 * eps_bend [pN*nm^2],
+    and circular turning angle theta = L_cyl / R (independent of segment length L_cyl).
+  assumptions:
+    - "Small turning angle per discretized segment theta = L_cyl / R << 1 (continuum limit)."
+    - "Evaluated at Graham et al.'s segment length L_cyl = 0.1 um = 100 nm."
+
+- id: rel_graham2023_ring_confinement_approx_medyan_bend
+  kind: approximated_by
+  a: graham2023/ring_confinement_bending_energy
+  b: popov2016/filament_bending_energy_eq1
+  mapping:
+    eps_bend: "k_b / (1000 * L)"
+    theta: "L / R"
+  output_map:
+    U_bend: E_bend_0
+  regime:
+    k_b: [50000.0, 500000.0]
+    L: [0.05, 0.15]
+    R: [0.5, 4.0]
+  tolerance: 0.01
+  provenance: proposed
+  reason: >
+    Quantifies the finite-segment discretization error between Graham et al.'s continuum
+    circular-ring bending energy E_bend_0 = (k_b / 2) * (L / R^2) for one segment of length L
+    and MEDYAN's discrete cosine hinge energy Eq. 1 U_bend = (k_b / L) * (1 - cos(L / R))
+    (zero dummy constants). Across Graham et al.'s droplet radii R in [0.5, 4.0] um and segment
+    lengths L in [0.05, 0.15] um (covering L_cyl = 0.1 um, theta = L / R <= 0.30 rad), the
+    relative discretization difference (L / R)^2 / 12 stays below 0.75% (within tolerance 1%;
+    numeric reduces_to as L -> 0 is avoided because 1 - cos(theta) cancels in float64 at theta ~ 1e-9).
+  assumptions:
+    - "Circular arc of uniform curvature 1 / R with L in [0.05, 0.15] um and R in [0.5, 4.0] um (theta <= 0.30 rad)."

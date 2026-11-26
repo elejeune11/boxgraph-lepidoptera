@@ -1,0 +1,488 @@
+- id: q_coacervate_chain_conc_10x_error
+  kind: possible_error
+  about:
+    - coacervate_polypeptide_conc_printed
+    - c_chain_coac_printed
+    - c_res_coac_SI
+    - c_res_coac_main
+    - cmp_coacervate_chain_conc
+    - cmp_coacervate_res_conc_main_from_printed_chain
+  text: >
+    In SI Section I.h.3 (p. 19 / SI-8), evaluating the paper's own printed formula
+    c = rho_pp * f_pp / M_W with its stated inputs (rho_E = 1538 mg/mL = 1538 g/L,
+    f_pp = 0.19 per species, M_W = 12.9 kDa = 12900 g/mol) yields a polypeptide chain
+    concentration of 22.65 mM per species, which is 11.3-fold larger than the printed
+    "~2 mM per species". Multiplying 22.65 mM by 100 residues/chain reproduces the next
+    clause's "~ 2 M per species" (2.265 M) and Main Text p. 4 "1-3 M", whereas multiplying
+    the printed "~2 mM" by 100 residues/chain gives only 0.2 M (failing "1-3 M" by a factor
+    of 10). Thus "~2 mM" is almost certainly a 10x arithmetic/unit-prefix misprint (e.g.
+    dividing 2 M by 1000 instead of 100, or misreading 0.0227 M as ~2 mM instead of ~20 mM).
+    Separately, using solid polypeptide density rho_pp = 1538 mg/mL in c = rho_pp * f_pp / M_W
+    rather than the ideal-volume coacervate mixture density rho_coac = rho_pp * Phi_pp / f_pp_tot
+    = 1153.3 mg/mL implied by SI Eq. (6) overestimates concentration by 33% (giving 17.0 mM
+    chains and 1.70 M residues, still ~8.5x above printed "~2 mM" and within 1-3 M).
+  citation: {page: 19, printed_page: "SI-8", quote: "yields a polypeptide chain concentration of ~2 mM per species", where: "SI I.h.3"}
+
+- id: q_volume_fraction_40_vs_28_percent
+  kind: possible_error
+  about: [coacervate_volume_fraction_eq6, Phi_pp_SI, Phi_pp_main_p8, f_pp_total, cmp_Phi_pp_main_p8]
+  text: >
+    Main Text p. 8 (1643) states "because the coacervate-phase volume fraction (40%) and
+    viscosity (2 Pa-s) are similar to those of the cytoplasm", whereas SI Section I.h.4 Eq. (6)
+    (p. 20 / SI-9) explicitly calculates the polypeptide volume fraction as Phi_pp = 0.28
+    (exact 0.2850, i.e., 28.5%) from the total polypeptide mass fraction f_pp = 0.38 (~40%
+    mass fraction) and solid/solvent densities 1538 and 1000 mg/mL. The main-text 40% figure
+    appears to conflate the polypeptide mass fraction (~38%) with the volume fraction (28%).
+  citation: {page: 8, printed_page: "1643", quote: "ume fraction (40%) and viscosity (2 Pa-s) are similar to", where: text}
+
+- id: q_lower_bound_mesh_5p8nm_unstated_fpp
+  kind: unstated_input
+  about:
+    - coacervate_mesh_size
+    - coacervate_volume_fraction_eq6
+    - f_pp_lower_bound_added
+    - xi_lower_bound_SI
+    - cmp_xi_lower_bound_fixed_Phi
+    - cmp_xi_lower_bound_halved_fpp
+  text: >
+    SI Section I.h.5 (p. 21 / SI-10) states that "The mesh size is linear in the persistence
+    length... using our lower bound monomer concentration c_m = 1 mol/L and still neglecting
+    salt in order to maximize the persistence length only increases the mesh size to 5.8 nm."
+    At c_m = 1 mol/L, Eq. (10) gives l_E = 2.48 A, l_T = 6.38 A, and Kuhn length a = 2*l_T =
+    1.276 nm. Holding Phi_pp fixed at the paper's only stated value 0.28 gives xi = 3.315 nm
+    (not 5.8 nm). Reproducing 5.8 nm requires also reducing Phi_pp, which the text does not
+    state: halving total mass fraction f_pp from 0.38 (associated with c_m ~ 2 M) to 0.19 gives
+    Phi_pp = 0.1323 via Eq. (6) and xi = 5.815 nm (reproducing 5.8 nm), whereas solving SI I.h.3
+    analytically for c_m = 1 mol/L per species gives f_pp = 0.1678, Phi_pp = 0.1159, and xi =
+    6.425 nm (failing 5.8 nm).
+  citation: {page: 21, printed_page: "SI-10", quote: "maximize the persistence length only increases the mesh size to 5.8 nm", where: "SI I.h.5"}
+
+- id: q_eq1_unstated_diameter_and_bundles
+  kind: unstated_input
+  about: [filament_buckling_length_eq1, d_actin_added, L_star_buckling_pred, cmp_buckling_length_eq1]
+  text: >
+    Main Text Eq. (1) (p. 7 / 1642) includes the filament diameter d explicitly in
+    L* = 2*R / (1 - k_B*T*l_p / (2*pi*d*gamma*R^2)), but never states the numerical value of d
+    (or temperature T) used to obtain L* ~ 1 um for a 1-um-diameter droplet. For canonical
+    single F-actin diameters d = 6-10 nm (added as 7 nm) and R = 0.5 um, the dimensionless
+    denominator correction is tiny (0.0026-0.0044), so L* = 1.003-1.004 um ~ 1 um is insensitive
+    to d. However, p. 4 notes that the structures visible in Figs. 1-2 are presumed to be F-actin
+    bundles rather than single filaments; for bundles of N crosslinked filaments, bending stiffness
+    (l_p) scales much faster with N than diameter d, which would increase the buckling correction
+    substantially beyond the single-filament estimate evaluated in Eq. (1).
+  citation: {page: 7, printed_page: "1642", quote: "In a 1-mm-diameter coacervate droplet with the surface tension", where: "Eq. (1)"}
+
+- id: q_crowding_threshold_mesh_20_vs_21nm
+  kind: reading
+  about: [crowding_threshold_mesh_size, xi_star_crowding_SI, xi_star_crowding_main, cmp_xi_star_SI_from_450, cmp_xi_star_SI_e2e]
+  text: >
+    Inverting Pi = k_B*T / xi^3 at room temperature (T = 297.15 K = 24 degC) gives xi* = 20.89 nm
+    at the printed Pi* = 450 Pa (or 21.03 nm from unrounded van 't Hoff Pi* = 441.2 Pa; across
+    22-27 degC, xi* = 20.84-20.96 nm). This rounds to 21 nm at two significant figures or 20 nm
+    at one significant figure, explaining the verdict 'close' against the exact-digit printed
+    "20 nm" on SI p. 21 (and matching the order-of-magnitude bound "xi <= 20 nm" on p. 7).
+  citation: {page: 21, printed_page: "SI-10", quote: "In terms of mesh size, the threshold for crowding is 20 nm", where: "SI I.h.5"}
+
+- id: q_viscosity_ratio_1600_vs_1000
+  kind: reading
+  about: [viscosity_ratio_to_water, eta_coacervate_main, eta_water_added, eta_ratio_water, cmp_eta_ratio_water]
+  text: >
+    Comparing the derived coacervate viscosity eta = 1.6 Pa*s (p. 3) to water viscosity at
+    room temperature (0.91 mPa*s at 24 degC; 1.0 mPa*s at 20 degC) yields a viscosity ratio of
+    1758 (or 1600 at 1.0 mPa*s), which p. 3 rounds down to an order-of-magnitude "~1000-fold
+    higher than water".
+  citation: {page: 3, printed_page: "1638", quote: "This yields a viscosity of h ¼ 1.6 Pa$s,  1000-fold higher", where: text}
+
+- id: q_screened_lE_negligibility
+  kind: unexplained_difference
+  about:
+    - electrostatic_persistence_length_eq9
+    - total_persistence_length
+    - S_salt_screened_added
+    - l_T_screened_used
+    - cmp_lT_screened_vs_04nm
+  text: >
+    SI Section I.h.5 (p. 21 / SI-10) argues that screening by oppositely charged polypeptide
+    chains (c_m ~ 2 mol/L) and ~140 mM salt renders l_E negligible, justifying l_T = 0.4 nm.
+    Evaluating SI Eq. (9) numerically with c_c = 2 mol/L plus S_salt = 2.28 mol/L (counting both
+    2 mol/L opposite residues and 2*0.14 = 0.28 mol/L monovalent salt ions) still yields
+    l_E = 0.58 A (15% of l_0 = 3.9 A), giving l_T = 4.48 A = 0.448 nm (barely inside 1-digit
+    rounding of 0.4 nm); counting only the 140 mM salt ions (S_salt = 0.28 mol/L) yields
+    l_E = 1.09 A and l_T = 4.99 A = 0.499 nm (~25% above 0.4 nm). Also on p. 20, the chosen
+    l_0 = 3.9 A is within 20% of the polyglycine bounds relative to 3.9 A (18.5% and 14.6%),
+    though 22.6% above the lower bound 3.18 A itself.
+  citation: {page: 21, printed_page: "SI-10", quote: "expect the contribution from the electrostatic persistence length to be negligible", where: "SI I.h.5"}
+
+- id: q_figs4d_ram_magnitude_and_sem_vs_sd
+  kind: possible_error
+  about: [RAM_actin_post_phase_sep, RAM_actin_main, r_ram_vs_radius]
+  text: >
+    Fig. S4D (p. 29 / SI-18) reports an average actin RAM of 70.3 +/- 15.9 (N = 117 droplets)
+    when 0.5 uM TMR-actin is added immediately after phase separation, yet p. 3 states that
+    partitioning is "robust to the order of addition" even though Fig. 1E (~32-36 RAM) is less
+    than half as large. Furthermore, the Fig. S4 caption states "Error bars denote the standard
+    error of the mean", but Fig. S4D is a scatter plot with no error bars and droplet values
+    spanning RAM ~ 40-120 around ~70; the dispersion +/- 15.9 matches the sample standard
+    deviation rather than SEM (which for N = 117 would be 15.9 / sqrt(117) ~= 1.5).
+  citation: {page: 29, printed_page: "SI-18", quote: "The average RAM is 70.3 +/- 15.9. Error bars denote", where: "Fig. S4D"}
+
+- id: q_figs6c_time_unit_misprint
+  kind: possible_error
+  about: [R_droplet_range]
+  text: >
+    In Fig. S6C (p. 31 / SI-20), the horizontal axis ticks run from 0 to 2400 and the axis is
+    labeled "Time (min)", whereas the corresponding timelapse montage in Fig. S6A runs from 0 s
+    to 2220 s and the kymograph scale bar in Fig. S6B is 300 s. The Fig. S6C x-axis unit
+    "(min)" is an evident misprint for "(s)". Additionally, SI Section I.f.2 (p. 17) swaps
+    citations to Fig. 4E and Fig. 4F, SI Section I.f.3 (p. 17) cites Fig. 2C instead of Fig. 2E,
+    and SI Section I.b (p. 14) writes actin Cys-347 instead of canonical Cys-374.
+  citation: {page: 31, printed_page: "SI-20", quote: "Intensity along yellow line scan in (B). Step-like increases indicate", where: "Fig. S6C"}
+
+- id: q_turbidity_threshold_10uM_vs_1mM
+  kind: possible_error
+  about: [c_res_turbid_main, c_res_turbid_SI, c_res_phase_sep_DIC]
+  text: >
+    Main Text p. 2 (1637) states that aqueous solutions "become visibly turbid in seconds upon
+    mixing of pLK- and pRE-containing solutions at total polypeptide concentrations of 10 uM or
+    more (Movie S1)" (note: OCR renders uM as mM, but page-002.png clearly prints 10 uM). This
+    directly contradicts SI Section I.d (p. 15 / SI-4), which states "Samples with ~ 1 mM or more
+    total polypeptide are visibly turbid < 2 s after addition of Tube B to Tube A" (100-fold
+    higher), and SI Section I.h.2 (p. 19 / SI-8), which reports that coacervate droplets are only
+    visible by DIC at >= 30 uM per polypeptide (60 uM total) and are not discernible even by DIC
+    at 3 uM per polypeptide (6 uM total). Moreover, Movie S1 cited immediately after "10 uM or
+    more" on p. 2 uses 5 mM pLK + 5 mM pRE = 10 mM total polypeptide (p. 32 / SI-21), suggesting
+    "10 uM" on p. 2 is likely a unit-prefix misprint for "10 mM" (or inconsistent with "~1 mM").
+  citation: {page: 2, printed_page: "1637", quote: "tions of 10 mM or more (Movie S1), and this is driven", where: text}
+
+- id: q_audit_reading_140mM_salt_origin
+  kind: reading
+  about:
+    - c_salt_coac
+    - S_salt_screened_added
+    - S_salt_zero_added
+    - electrostatic_persistence_length_eq9
+    - cmp_lT_screened_vs_04nm
+  text: >
+    SI Section I.h.5 (p. 21 / SI-10) states that coacervate charges are screened by opposite-chain
+    residues (c_m ~= 2 mol/L) "and ~= 140 mM salt", without deriving or citing 140 mM. Throughout
+    the paper (Figs. 1-4, S1-S6, SI I.d), the experimental buffer is 50 mM KCl, 1 mM MgCl2, 1 mM
+    EGTA, 10 mM imidazole (pH 7.0), and 72-150 uM ATP, plus 5 mM each of Na+ and Cl- counterions
+    from 5 mM pLK*HCl + 5 mM pRE*Na (~55-65 mM monovalent salt equivalent; ionic strength I ~ 65-70
+    mM; total charge-squared ion sum sum_gamma Z_gamma^2 * c_gamma = 2*I ~= 135-140 mM). In
+    added.yaml, S_salt_screened_added = 2.28 mol/L (= 2.0 + 2*0.14) and S_salt_zero_added
+    alternative 0.28 mol/L treat 140 mM as a monovalent salt molarity (doubling it to 0.28 mol/L)
+    and treat covalently linked opposite-chain monomers (2 mol/L) as free mobile screening ions in
+    Eq. (9). If 140 mM instead already represents sum_gamma Z_gamma^2 * c_gamma = 0.14 mol/L, then
+    Eq. (9) gives l_E = 0.599 A and l_T = 4.499 A = 0.450 nm (with opposite-chain screening,
+    S_salt = 2.14 mol/L, on the boundary of rounding to 0.4 nm) or l_E = 1.159 A and l_T = 5.059 A
+    = 0.506 nm (salt-only screening, S_salt = 0.14 mol/L). Preserved first-reader added.yaml values
+    and logged this reading disagreement here.
+  citation: {page: 21, printed_page: "SI-10", quote: "and ≈ 140 mM salt. Therefore, we expect", where: "SI I.h.5"}
+
+- id: q_fig1e_actin_ram_alone_vs_bsa_and_30_rounding
+  kind: overstated_claim
+  about: [RAM_actin_fig1e, PC_bsa_fig1e, RAM_actin_main, PC_avg_BSA, RAM_ratio_actin_bsa]
+  text: >
+    Main Text p. 3 (1638) states that "the RAM of BSA and actin are the same whether one or both
+    proteins are present in solution (Fig. 1 E; Fig. S2)" and quotes actin RAM as "~30" (pp. 1, 6, 8)
+    and BSA PC_avg ~= 8 (p. 3). Calibrated digitization of Fig. 1E bars and SEM error bars yields
+    647-BSA RAM = 8.88 +/- 0.11 (with actin, n=214) vs 8.76 +/- 0.13 (alone, n=287), which agree
+    within 0.7 SEM (~10% above printed "~8"), whereas TMR-actin RAM is 33.23 +/- 0.28 (with BSA,
+    n=171, 0.25 uM actin + 0.25 uM BSA) vs 36.45 +/- 0.57 (alone, n=117, 0.5 uM actin), a 9.7%
+    difference separating the two bars by 5.0 combined SEMs (p < 1e-6). Note also that the global
+    actin concentration doubled between the two conditions (0.25 vs 0.5 uM) while Fig. 4F shows
+    interior auxiliary RAM rising from 5.69 (0.25 uM) to 7.44 (0.5 uM). Using exact Fig. 1E bars
+    gives actin/BSA ratios of 3.74x (with BSA) and 4.16x (alone), averaging 3.95x (matching printed
+    "fourfold").
+  citation: {page: 3, printed_page: "1638", quote: "RAM of BSA and actin are the same whether one or both", where: text}
+
+- id: q_fig3c_saturation_above_30uM_overstated
+  kind: overstated_claim
+  about: [assembly_rate_coacervate_fig3c, assembly_rate_control_coacervate_fig3c, assembly_rate_low, assembly_rate_high, assembly_rate_enhancement_max]
+  text: >
+    Main Text p. 4 (1639) states that "The actin assembly rate 1/t_1/2 increases from 0.03 to
+    >1 min^-1 as the total pLK concentration increases from 0.3 to 30 uM, while maintaining a
+    pLK/pRE ratio of 1 (Fig. 3 C). Above 30 uM, the assembly rate saturates." Calibrated
+    digitization of all 13 red markers in Fig. 3C shows that 1/t_1/2 is 0.040 min^-1 at 0.3 uM
+    (with "0.03" matching the red dashed 0-uM actin-only control baseline 0.0281 min^-1), rises to
+    1.20 min^-1 at 30 uM (42.9x control) and 1.44 min^-1 at 300 uM (51.1x control), and continues
+    rising to 2.85 min^-1 at 3000 uM (101.7x control) — a further 2.37-fold increase above 30 uM
+    rather than a flat saturation plateau.
+  citation: {page: 4, printed_page: "1639", quote: "Above 30 mM, the assembly rate saturates.", where: text}
+
+- id: q_fig3b_vs_fig3c_halftime_discrepancy
+  kind: unexplained_difference
+  about: [pyrene_actin_alone_fig3b, pyrene_plus_coacervate_fig3b, pyrene_plus_plk_fig3b, assembly_rate_coacervate_fig3c, assembly_rate_plk_alone_fig3c]
+  text: >
+    Applying SI Eq. (5) (I_1/2 = (I_max + I_0)/2, p. 18) directly to the digitized 3 uM polypeptide
+    pyrene fluorescence traces in Fig. 3B (using I_0 = 3.35 a.u. from the 1.5 uM actin-only control)
+    gives t_1/2 = 3.21 min (1/t_1/2 = 0.312 min^-1, I_max = 34.56) for +3 uM pLK + 3 uM pRE and
+    t_1/2 = 4.35 min (1/t_1/2 = 0.230 min^-1, I_max = 35.21) for +3 uM pLK alone. By contrast,
+    the corresponding 3.0 uM points plotted in Fig. 3C are 0.215 min^-1 (t_1/2 = 4.66 min) for
+    +(pLK + pRE) and 0.150 min^-1 (t_1/2 = 6.68 min) for +pLK alone — 45% to 53% slower
+    (+1.45 to +2.33 min longer t_1/2). This systematic offset suggests either an unstated ~1.5-2 min
+    mixing/plate-loading dead time included in Fig. 3C t_1/2 (not plotted on the Fig. 3B time axis)
+    or replicate-to-replicate variation between separate pyrene assays.
+  citation: {page: 4, printed_page: "1639", quote: "Spontaneous assembly is shown of", where: "Fig. 3B-C"}
+
+- id: q_figs4d_digitized_confirms_sd_not_sem
+  kind: reading
+  about: [RAM_vs_radius_figS4d, RAM_actin_post_phase_sep, r_ram_vs_radius]
+  text: >
+    Digitization of Fig. S4D resolves 95 distinct droplet scatter centers (out of N = 117 reported,
+    with ~22 partially overlapping in the dense R = 1.5-3 um cluster) yielding sample mean RAM =
+    70.26 (printed 70.3), sample SD = 16.59 (printed 15.9), sample SEM = 1.70 (1.47 for N = 117),
+    and Pearson r = -0.448 (printed -0.427). This quantitatively settles
+    q_figs4d_ram_magnitude_and_sem_vs_sd: the printed +/- 15.9 is definitively the sample standard
+    deviation rather than the standard error of the mean stated in the Fig. S4 caption.
+  citation: {page: 29, printed_page: "SI-18", quote: "The average RAM is 70.3 +/- 15.9. Error bars denote", where: "Fig. S4D"}
+
+- id: q_feigeles2025_relate_validate_audit
+  kind: unexplained_difference
+  about:
+    - inverse_capillary_velocity
+    - viscosity_from_capillary_velocity
+    - filament_buckling_length_eq1
+    - coalescence_aspect_ratio_fit
+    - gamma_coacervate
+    - eta_coacervate_main
+    - v_inv_main
+    - feigeles2025/coalescence_surface_tension_figS6C
+    - feigeles2025/coalescence_capillary_velocity_figS6C
+    - feigeles2025/coalescence_deltaL_linear_scaling
+    - feigeles2025/surface_tension_coalescence_si
+    - feigeles2025/surface_tension_assumed_lit
+    - feigeles2025/fus_viscosity_assumed_si
+    - feigeles2025/bundle_thickness_avg
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for feigeles2025 + mccall2018
+    (0 direct scalar-model relations, 0 cited.yaml links, 0 CrossValidation entries in
+    mccall2018/validations.yaml): (1) Citations: Feigeles et al. (2025, p. 6, ref-36) cite
+    McCall et al. (2018) qualitatively when contrasting external FUS condensate wetting of
+    pre-formed actin bundles with internal actin assembly in polyelectrolyte coacervates;
+    neither paper borrows a numerical datum from the other. (2) Why 0 direct ModelAtlas
+    relations and 0 CrossValidation entries: both papers use the low-Reynolds viscocapillary
+    coalescence law eta/gamma = tau/ell, but solve it for algebraically inverse outputs
+    (mccall2018/inverse_capillary_velocity outputs v_inv = tau/d and
+    viscosity_from_capillary_velocity outputs eta = v_inv * gamma, whereas feigeles2025 solves
+    for gamma = eta * slope, v_cap = gamma/eta, and Delta_L = (gamma/eta)*tau); mccall2018's
+    coalescence_aspect_ratio_fit uses curve ports and relaxes to spherical AR = 1 rather than
+    Feigeles Fig. 2B's barrel spreading asymptote AR = 0.7. Moreover, feigeles2025 never
+    independently measures viscosity (fus_viscosity_assumed_si = 1.2 Pa*s is assumed from
+    Ijavi et al. 2021) or scalar v_inv, and does not measure a buckling length L*. (3) Quantitative
+    viscocapillary and buckling-vs-wetting contrast: while pLK/pRE coacervates (eta = 1.6 Pa*s,
+    gamma ~ 1 mN/m = 1000 uN/m) and FUS condensates (eta = 1.2 Pa*s, gamma ~ 40-90 uN/m) have
+    similar viscosities, FUS interfacial tension is 11-25x lower. In addition, the two papers
+    use different coalescence length conventions: for two equal spheres merging into diameter d,
+    Feigeles's major-axis contraction Delta_L = L_i - L_f = (2^(2/3) - 1)*d = 0.5874*d gives a
+    1.702x larger eta/gamma than McCall's tau/d convention. Evaluating mccall2018 Eq. (1)
+    (alpha = k_B*T*l_p / (2*pi*d*gamma*R^2)) at FUS tensions (40-90 uN/m, R = 1.4-2.4 um) gives
+    alpha = 0.0018-0.012 << 1 for a single actin filament (d = 7 nm, l_p = 10 um, R_crit =
+    0.10-0.15 um), but for Feigeles's stiff actin bundles (d ~ 230 nm, straightness > 40 um;
+    e.g., N = 50 tightly cross-linked filaments with l_p ~ 25,000 um), R_crit rises to ~1.33 um
+    (alpha = 0.44 at R = 2 um, exceeding 1 for smaller droplets or higher N), consistent with
+    rigid bundles passing straight through wetting FUS barrels rather than buckling inside.
+  citation: {page: 7, printed_page: "1642", quote: "F-actin does not appear to protrude from micron-sized", where: "p. 7 / Eq. (1)"}
+
+- id: q_graham2023_relate_validate_audit
+  kind: unexplained_difference
+  about:
+    - filament_buckling_length_eq1
+    - droplet_radius_from_diameter
+    - rel_graham2023_buckling_length_reduces_eff_diam
+    - rel_graham2023_buckling_length_scales_ring_circumference
+    - rel_graham2023_ellipse_axes_reduces_droplet_radius
+    - gamma_coacervate_eq1
+    - RAM_actin_main
+    - RAM_periph_plateau
+    - RAM_int_plateau
+    - graham2023/ring_confinement_bending_energy
+    - graham2023/effective_spherical_diameter
+    - graham2023/circular_ring_contour_length
+    - graham2023/ellipse_axes_constant_area
+    - graham2023/edfig3e_actin_partition_fig
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for graham2023 + mccall2018
+    (3 proposed verified relations, 0 cited.yaml links, 0 CrossValidation entries in
+    mccall2018/validations.yaml): (1) Citations & shared bending physics: Graham et al. (2023,
+    p. 3 / 576, ref-25) explicitly cite McCall et al. (2018) when attributing surface-localized
+    actin polymerization on VASP-mutFAB droplets to non-specific surfactant-like effects,
+    without quoting a numerical value. Both papers independently use the identical circular-arc
+    confinement bending energy E_Bend = (k_B*T*l_p / 2) * (L / R^2) (McCall p. 7 deriving Eq. 1;
+    Graham Eq. 1 / ring_confinement_bending_energy with k_b = L_p*k_B*T), while
+    rel_graham2023_buckling_length_reduces_eff_diam, rel_graham2023_buckling_length_scales_ring_circumference,
+    and rel_graham2023_ellipse_axes_reduces_droplet_radius formally link McCall's Eq. (1)
+    buckling length and droplet radius to Graham's spherical diameter, ring circumference, and
+    area-conserving ellipse axes in the rigid high-tension sphere limit. (2) Why 0 CrossValidation
+    entries: Graham 2023 measures VASP droplet diameters, ring thicknesses, aspect ratios,
+    morphology fractions, FRAP recoveries, partition coefficients, and linear bundle elongation
+    rates (23 +/- 3 nm/s), but never measures coalescence viscosity/tension, polyelectrolyte mesh
+    size/persistence length, global critical concentration, or single-filament buckling length L*.
+    (3) Quantitative tension & partitioning contrast: evaluating McCall Eq. (1)'s dimensionless
+    bending-to-capillary ratio alpha = k_B*T*l_p / (2*pi*d*gamma*R^2) explains why actin rings
+    leave McCall's pLK/pRE coacervates strictly spherical (gamma = 1000 uN/m, l_p = 10 um ->
+    alpha = 0.0037 at R = 0.5 um, R_crit = 0.031 um) yet deform Graham's VASP condensates into
+    discs, ellipsoids, and rods: at Graham's effective 3D surface tensions (~1-15 uN/m for
+    1-15 pN 2D line tension across D ~ 1 um) and l_p = 17.73 um, even a single filament reaches
+    alpha = 0.44 (gamma = 15 uN/m) to alpha = 1.32 > 1 (gamma = 5 uN/m, R_crit = 0.58 um) in a
+    1-um droplet, and multi-filament rings (T_ring = 5-480 nm, N_fil = 1-32) overwhelm droplet
+    surface tension completely. Meanwhile, actin partitioning in pLK/pRE coacervates (whole-droplet
+    RAM ~ 33-36, periphery ~ 45, interior ~ 10) is 2.6-3x stronger than in WT VASP condensates
+    (Extended Data Fig. 3e: ~12.6) and ~6-7x stronger than in non-binding VASP-mutGAB-mutFAB
+    droplets (~5.25).
+  citation: {page: 7, printed_page: "1642", quote: "g ¼ 1 mN/m (22) at room temperature, bending is prefer-", where: "p. 7 / Eq. (1)"}
+
+- id: q_scheff2020_relate_validate_audit
+  kind: unexplained_difference
+  about:
+    - filament_boundary_ram
+    - actin_global_critical_concentration
+    - filament_buckling_length_eq1
+    - droplet_radius_from_diameter
+    - inverse_capillary_velocity
+    - rel_scheff2020_partition_ratio_same_as_filament_boundary
+    - rel_scheff2020_buckling_length_scales_sphere_radius
+    - rel_scheff2020_tactoid_semiminor_reduces_droplet_radius
+    - RAM_periph_fig4f
+    - RAM_int_fig4f
+    - L_short_filament
+    - v_inv_main
+    - scheff2020/partition_intensity_ratio
+    - scheff2020/partition_ratio_270nm_fig1d
+    - scheff2020/eta_over_gamma_vs_actin_fig2d
+    - scheff2020/coalescence_relaxation_time_scaling
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for mccall2018 + scheff2020
+    (3 proposed verified relations, 0 cited.yaml links, 0 CrossValidation entries in
+    mccall2018/validations.yaml): (1) Citations & partitioning threshold consistency: Scheff et al.
+    (2020, p. 4, ref-37) explicitly cite McCall et al. (2018) twice for fluorescence-ratio actin
+    partitioning (P_I = I_inside/I_outside) increasing at low actin concentration before plateauing
+    (linked via rel_scheff2020_partition_ratio_same_as_filament_boundary), without borrowing a
+    scalar datum. Remarkably, McCall's Fig. 4F critical assembly boundary RAM_crit = c*/c_global
+    (c* = 0.1 uM) quantitatively mirrors Scheff's Fig. 1D/Fig. 3D transition: at c_global = 0.01 uM,
+    Scheff measures P_I = 7.21 (~7), giving local concentration 0.072 uM < c* (below RAM_crit = 10,
+    and matching McCall's 0.01 uM RAM_Periph = 5.04 / RAM_Int = 2.16), where Scheff's droplets stay
+    strictly spherical (AR ~ 1) with baseline eta/gamma; at 0.1 uM and 1.0 uM, Scheff measures
+    P_I = 24-58 (far above RAM_crit = 1.0 and 0.1), driving nematic tactoid formation and a jump
+    in eta/gamma. Furthermore, Scheff's pre-polymerized capped filaments of length 90-270 nm
+    distribute homogeneously throughout FUS droplets (Fig. 1b-c), directly supporting McCall's
+    p. 7 hypothesis that unresolved ~250-nm short filaments can occupy a droplet's interior rather
+    than localizing exclusively to the periphery. (2) Why 0 CrossValidation entries: McCall's
+    filament_boundary_ram defines a lower-bound phase boundary rather than a point prediction of
+    P_I(c_global); Scheff does not measure a critical concentration c_global_crit datum (sampling
+    only 0.01, 0.1, 1.0 uM) nor scalar (tau, d) pairs or separate eta/gamma values for
+    mccall2018/inverse_capillary_velocity or viscosity_from_capillary_velocity. (3) Coalescence
+    timescale & length-convention discrepancy: Scheff Fig. 2D reports pure-FUS eta/gamma = 0.91 s/um
+    (~570x larger than McCall's pLK/pRE v_inv = 1.6 ms/um = 0.0016 s/um) and 18.9 s/um at 1 uM
+    actin (~11,800x larger). Part of this gap arises from incompatible coalescence length
+    conventions: for two equal spheres merging to diameter d, Scheff's area-root length change
+    Delta_l = sqrt(A_i) - sqrt(A_f) = (sqrt(pi)/2)*(2^(1/6) - 1)*d = 0.10853*d is 9.214x smaller
+    than McCall's final diameter d, inflating Scheff's reported eta/gamma = tau/Delta_l by a
+    purely geometric factor of 9.21x relative to McCall's v_inv = tau/d even for identical droplets;
+    the remaining ~60x (pure FUS) to ~1300x (1 uM actin) gap reflects FUS's much lower interfacial
+    tension and actin-elevated viscosity.
+  citation: {page: 6, printed_page: "1641", quote: "vates at global actin concentrations of  0.003 mM", where: "p. 6 / Fig. 4F"}
+
+- id: q_tang1996_relate_validate_audit
+  kind: unexplained_difference
+  about:
+    - methylcellulose_molar_concentration
+    - coacervate_polypeptide_conc_printed
+    - electrostatic_persistence_length_eq7
+    - electrostatic_persistence_length_eq9
+    - electrostatic_persistence_length_eq10
+    - rel_tang1996_molar_conc_same_as_methylcellulose
+    - rel_tang1996_molar_conc_same_as_coacervate_conc
+    - c_res_coac_main
+    - c_res_coac_SI
+    - b_bond_polypeptide
+    - l_B_water_added
+    - l_T_saltfree_2M
+    - tang1996/actin_molar_from_mass
+    - tang1996/manning_charge_parameter
+    - tang1996/manning_condensation_eq1
+    - tang1996/lys18_onset_vs_actin_fig3b
+    - tang1996/chemical_binding_atp_eq5
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for mccall2018 + tang1996
+    (2 proposed verified relations, 0 cited.yaml links, 0 CrossValidation entries in
+    mccall2018/validations.yaml): (1) Citations & why 0 cited.yaml links or CrossValidation
+    entries: McCall et al. (2018, p. 4, ref-26) cite Tang & Janmey (1996) qualitatively to argue
+    that polycation (pLK) concentrations lower than those in the coacervate phase (1-3 M) suffice
+    to bundle F-actin, without quoting a numerical value from tang1996. None of mccall2018's 29
+    models predicts polycation-induced F-actin bundling thresholds or light-scattering curves
+    (tang1996's measured data), while rel_tang1996_molar_conc_same_as_methylcellulose and
+    rel_tang1996_molar_conc_same_as_coacervate_conc establish exact symbolic equivalence for
+    mass-to-molar concentration conversions across units. (2) Unaccounted polyanion competition in
+    McCall's p. 4 bundling inference: Tang & Janmey (1996, Fig. 3B & Fig. 7, 150 mM KCl) measure
+    F-actin bundling onset at 19.79 uM chains (356 uM lysine residues) for Lys_18 at 1.5 uM actin
+    and ~0.5-1 uM chains (~21-42 uM residues) for Lys_42. While McCall's interior pLK residue
+    concentration (~2 M) is ~5,600x above Tang's Lys_18 threshold and ~50,000x above Lys_42
+    (and McCall Fig. 3C's >= 30 uM pLK_126 in 50 mM KCl also exceeds Lys_42 onset), Tang & Janmey
+    Fig. 6 (chemical_binding_atp_eq5) demonstrate that adding polyanions (ATP) sequesters
+    polylysine and dissolves F-actin bundles. McCall's p. 4 appeal to ref-26 ignores that pLK
+    inside pLK/pRE coacervates is stoichiometrically complexed 1:1 with ~2 M polyanionic pRE,
+    leaving free uncomplexed pLK availability unquantified. (3) Missing Manning counterion
+    condensation in McCall SI I.h.5: McCall evaluates electrostatic persistence length
+    (SI Eqs. 7, 9, 10) for fully charged pLK/pRE (f = 1, b = 3.65 A) without Manning condensation.
+    Applying Tang & Janmey's Manning theory (manning_charge_parameter, manning_condensation_eq1)
+    with lambda_B = 7.1 A and b = 3.65 A yields zeta = 1.945 > 1, predicting theta = 48.6%
+    monovalent counterion condensation (f_eff = 1/zeta = 0.514), which lowers l_E by zeta^2 = 3.78x
+    (salt-free at c_m = 2 M: l_E drops from 1.24 A to 0.33 A and l_T from 5.14 A to 4.23 A; at
+    c_m = 1 M: l_E drops from 2.48 A to 0.66 A and l_T from 6.38 A to 4.56 A) -- strengthening
+    McCall's conclusion that electrostatic stiffening is negligible inside the coacervate.
+  citation: {page: 4, printed_page: "1639", quote: "are sufficient to bundle F-actin (26), we presume that the", where: "p. 4 / ref-26"}
+
+- id: q_weirich2017_relate_validate_audit
+  kind: unexplained_difference
+  about:
+    - filament_buckling_length_eq1
+    - filament_boundary_ram
+    - inverse_capillary_velocity
+    - viscosity_from_capillary_velocity
+    - coacervate_mesh_size
+    - rel_weirich2017_buckling_length_reduces_tactoid_sphere_diameter
+    - rel_weirich2017_enrichment_ratio_same_as_filament_boundary
+    - gamma_coacervate
+    - eta_coacervate_main
+    - v_inv_main
+    - xi_coac_SI_p21
+    - weirich2017/tactoid_geometry_circular_arc
+    - weirich2017/concentration_enrichment_ratio
+    - weirich2017/actin_mesh_size
+    - weirich2017/gamma_I_est_main
+    - weirich2017/eta_frap_est
+    - weirich2017/tableS1_coal_5_gamma_eta
+    - weirich2017/tableS1_coal_10_gamma_eta
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for mccall2018 + weirich2017
+    (2 proposed verified relations, 0 cited.yaml links, 0 CrossValidation entries in
+    mccall2018/validations.yaml): (1) Citations & why 0 cited.yaml links or CrossValidation
+    entries: neither paper cites the other (McCall et al. 2018 and Weirich et al. 2017 come from
+    the same Gardel group but study polypeptide coacervates vs filamin-crosslinked actin tactoids).
+    rel_weirich2017_buckling_length_reduces_tactoid_sphere_diameter links McCall Eq. (1) in the
+    rigid gamma -> oo limit to Weirich's spherical tactoid diameter L = 2*R*sin(pi/2), and
+    rel_weirich2017_enrichment_ratio_same_as_filament_boundary links their uM/uM concentration
+    enrichment ratios. No genuine CrossValidation exists in mccall2018/validations.yaml:
+    weirich2017's Table S1 reports capillary velocity v_cap = gamma/eta [um/s] (reciprocal of
+    mccall2018/viscosity_from_capillary_velocity's input v_inv [ms/um]), gamma_I_est_main (~300 nN/m)
+    is itself derived from eta_frap_est * v_cap (so inverting it back to eta_frap_est would be
+    circular), and mccall2018's curve-port coalescence_aspect_ratio_fit outputs dimensionless AR(t)
+    relaxing to 1 rather than Weirich Fig. 3B's dimensional length L(t) relaxing to L_f = 6 um.
+    (2) 3,300x interfacial-tension & coalescence-speed contrast: both condensed actin phases have
+    nearly identical viscosities (McCall pLK/pRE: 1.6 Pa*s; Weirich filamin-actin tactoids: ~3 Pa*s),
+    yet Weirich's isotropic surface tension (gamma_I ~ 300 nN/m = 0.3 uN/m) is 3,333x smaller than
+    McCall's coacervate surface tension (1 mN/m = 1000 uN/m), producing 4,500-5,700x slower
+    coalescence (1/v_cap = 7.14-9.09 s/um vs McCall's 0.0016 s/um, alongside the 1.702x geometric
+    factor between Delta_L and d for equal spheres). Evaluating McCall Eq. (1) at gamma_I = 300 nN/m
+    (l_p = 10 um, d = 7 nm, T = 293.15 K) gives a critical buckling radius R_crit = 1.75 um
+    (alpha = 1.36 > 1 at R = 1.5 um), proving that filamin-actin tactoid tension is too weak to
+    buckle even a single actin filament into a peripheral ring -- matching the observed nematic
+    spindle morphology of short (~180 nm) enriched (~96x: 250 uM vs 2.6 uM) filaments. (3) Polymer
+    vs rod mesh-size scaling contrast: McCall's semidilute flexible polypeptide mesh size scales
+    as xi = a*Phi^(-3/4) (2.1 nm at Phi = 0.28), whereas Weirich's rigid-rod F-actin mesh size
+    scales as xi = 0.3*c^(-1/2) (~0.91 um at 2.6 uM dilute, ~93 nm at 250 uM inside tactoids),
+    a 0.25 exponent gap reflecting flexible-chain vs rigid-rod polymer statistics.
+  citation: {page: 3, printed_page: "1638", quote: "cosity of h ¼ 1.6 Pa$s,  1000-fold higher than water. Thus,", where: "p. 3 / coalescence viscosity"}
+
+

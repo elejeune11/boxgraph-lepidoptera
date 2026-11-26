@@ -1,0 +1,294 @@
+- id: binding_site_spacing
+  name: actin cross-linker binding site spacing
+  dimension: "[length]"
+  description: Spacing l_b (site_width in kmc.ipynb, l0 in afines2lattice.m) between discrete binding sites along an actin bundle.
+
+- id: crosslinker_length
+  name: cross-linker rest length or filament spacing
+  dimension: "[length]"
+  description: Equilibrium rest length of a cross-linker species (fascin, alpha-actinin, spacer1_length, spacer2_length).
+
+- id: crosslinker_length_difference
+  name: cross-linker length difference
+  dimension: "[length]"
+  description: Length difference dxl = l_long - l_short between long and short cross-linkers.
+
+- id: filament_persistence_length
+  name: F-actin filament persistence length
+  dimension: "[length]"
+  description: Bending persistence length L_p = polymer_bending_modulus / temperature of an actin filament.
+
+- id: filament_length
+  name: actin filament contour length
+  dimension: "[length]"
+  description: Initial or maximum contour length of an actin filament in KMC or AFINES.
+
+- id: lattice_site_count
+  name: number of lattice binding sites
+  dimension: "dimensionless"
+  description: Integer number of binding sites max_n_sites = int(max_filament_length / site_width) along the 1D bundle lattice.
+
+- id: gap_length_sites
+  name: gap length in lattice binding sites
+  dimension: "dimensionless"
+  description: Integer site offset x between a candidate binding site and the previously bound cross-linker.
+
+- id: gap_length
+  name: inter-cross-linker gap contour length
+  dimension: "[length]"
+  description: Physical contour distance x * site_width across a cross-linker switching gap.
+
+- id: gap_bending_energy_thermal
+  name: dimensionless gap bending energy
+  dimension: "dimensionless"
+  description: Bending energy penalty f(x, Lp) = (Lp / site_width / x) * arcsin(dxl / (site_width * x))^2 in units of k_B T.
+
+- id: site_switching_probability
+  name: conditional probability of binding dissimilar cross-linker
+  dimension: "dimensionless"
+  description: Conditional probability dist_ratio / (1 + dist_ratio) of binding a dissimilar cross-linker at gap x (Fig. 3B).
+
+- id: polymerization_rate
+  name: actin filament polymerization growth rate
+  dimension: "[length]/[time]"
+  description: Barbed-end elongation velocity (extension_rate in kmc.ipynb; nominal kgrow * lgrow or realized split-cycle velocity in AFINES).
+
+- id: binding_rate_per_site
+  name: per-site cross-linker bundling rate
+  dimension: "1/[time]"
+  description: Per-site KMC cross-linker binding rate kon1 or kon2 (mu_on in freedman2019).
+
+- id: concentration_ratio
+  name: cross-linker concentration or density ratio
+  dimension: "dimensionless"
+  description: Ratio kratio = kon1 / kon2 (or spacer1_density / spacer2_density) between short and long cross-linkers.
+
+- id: switching_rate_ratio
+  name: cross-linker switching rate ratio
+  dimension: "dimensionless"
+  description: Ratio swap_ratio = mean(n_swap / n_keep) of dissimilar-to-similar binding events in KMC.
+
+- id: switching_barrier_thermal
+  name: dimensionless domain-switching energy barrier
+  dimension: "dimensionless"
+  description: Effective switching barrier epsilon = -ln(swap_ratio) in units of k_B T (called competition parameter in kmc.ipynb).
+
+- id: domain_length
+  name: cross-linker domain length
+  dimension: "[length]"
+  description: Contiguous single-species domain length along a 2-filament bundle.
+
+- id: simulation_seed_count
+  name: number of independent simulation realizations
+  dimension: "dimensionless"
+  description: Number of trials (num_trials in kmc.ipynb) or random seeds (20 per initialization = 40 total in AFINES).
+
+- id: random_seed
+  name: pseudorandom number generator seed
+  dimension: "dimensionless"
+  description: Integer seed passed to np.random.seed (kmc.ipynb) or myseed (bundles.cpp).
+
+- id: max_extensions_cutoff
+  name: maximum unbound site extensions cutoff
+  dimension: "dimensionless"
+  description: Hardcoded cap max_extensions = 200 on unbound barbed-end sites in kmc.ipynb.
+
+- id: assay_dimension
+  name: 2D simulation box dimension
+  dimension: "[length]"
+  description: Periodic 2D simulation box width xrange or height yrange in AFINES.
+
+- id: grid_density
+  name: spatial neighbor-search grid density
+  dimension: "1/[length]"
+  description: Number of neighbor-list grid boxes per micron (grid_factor in bundles.cpp / cfg).
+
+- id: grid_cell_count
+  name: neighbor-list grid cell count
+  dimension: "dimensionless"
+  description: Integer number of neighbor-list cells xgrid = round(grid_factor * xrange) or ygrid = round(grid_factor * yrange).
+
+- id: update_period_steps
+  name: simulation step interval or frame count
+  dimension: "dimensionless"
+  description: Timestep count between neighbor-list updates (quad_update_period) or recorded trajectory frames (nframes).
+
+- id: filament_count
+  name: number of actin filaments
+  dimension: "dimensionless"
+  description: Number of actin filaments npolymer in the AFINES simulation box.
+
+- id: bead_count
+  name: number of beads per actin filament
+  dimension: "dimensionless"
+  description: Initial number of beads nmonomer per actin filament (equals initial links + 1).
+
+- id: filament_link_count
+  name: number of links per filament
+  dimension: "dimensionless"
+  description: Initial (nmonomer - 1) or maximum (nlink_max) number of bead-spring links per actin filament.
+
+- id: filament_link_length
+  name: actin filament link rest length or split threshold
+  dimension: "[length]"
+  description: Equilibrium link length link_length (l_a) or maximum barbed-end link split threshold l0max.
+
+- id: particle_radius
+  name: hydrodynamic particle radius
+  dimension: "[length]"
+  description: Effective Stokes radius R in damp = 6 * pi * viscosity * R (actin_length for filament beads; mld for spacer heads).
+
+- id: stretching_stiffness
+  name: harmonic spring stretching stiffness
+  dimension: "[force]/[length]"
+  description: Hookean spring constant of filament links (link_stretching_stiffness) or cross-linkers (spacer1_stiffness, spacer2_stiffness).
+
+- id: bending_modulus
+  name: filament bending modulus
+  dimension: "[force]*[length]**2"
+  description: Flexural rigidity polymer_bending_modulus (kappa_B) of an actin filament; divided by link_length to obtain discrete angle stiffness.
+
+- id: crosslinker_bending_modulus
+  name: cross-linker bending modulus code parameter
+  dimension: "[force]*[length]**2"
+  description: Raw input s1_bend or s2_bend passed to spacer_ensemble::set_bending(modulus, ang), which divides by rest length mld to obtain kb in pN*um.
+
+- id: crosslinker_bending_stiffness
+  name: cross-linker angular bending stiffness
+  dimension: "[energy]"
+  description: Effective harmonic angular stiffness kb = s_bend / mld entering U_bend = 0.5 * kb * (alpha - th0)^2 in src/spacer.cpp.
+
+- id: bending_stiffness_ratio
+  name: long-to-short cross-linker bending stiffness ratio
+  dimension: "dimensionless"
+  description: Ratio kb_long / kb_short (effective) or s2_bend / s1_bend (raw code parameter).
+
+- id: crosslinker_rest_angle
+  name: cross-linker equilibrium attachment angle
+  dimension: "dimensionless"
+  description: Equilibrium angle th0 (s1_ang, s2_ang = pi/2 rad) between a doubly-bound spacer and its filament link.
+
+- id: filament_bend_angle
+  name: filament bending angle or small-angle cutoff
+  dimension: "dimensionless"
+  description: Bending angle theta or LAMMPS small-angle sine clamp maxSmallAngle (rad).
+
+- id: segment_addition_rate
+  name: barbed-end segment addition rate
+  dimension: "1/[time]"
+  description: Markovian rate kgrow of barbed-end growth events in filament::update_length().
+
+- id: segment_growth_increment
+  name: barbed-end growth length increment or overshoot
+  dimension: "[length]"
+  description: Rest-length increment lgrow (dL) added per growth event, or discarded split overshoot in filament::grow().
+
+- id: growth_steps_per_split
+  name: growth events per barbed-end link split
+  dimension: "dimensionless"
+  description: Number of discrete growth increments required for lb + dL >= l0_max to trigger a link split.
+
+- id: areal_density
+  name: 2D cross-linker areal number density
+  dimension: "1/[length]**2"
+  description: 2D number density spacer1_density or spacer2_density in the AFINES box.
+
+- id: spacer_count
+  name: number of cross-linker molecules
+  dimension: "dimensionless"
+  description: Total, fixed seed (nfixed), or random bulk (nrand) cross-linker count in AFINES initialization.
+
+- id: head_binding_rate
+  name: cross-linker head attachment or detachment rate constant
+  dimension: "1/[time]"
+  description: Maximum MC attachment (s1_kon, s2_kon) or detachment (s1_koff, s1_koff2, s1_kend, s2_koff, s2_koff2, s2_kend) rate constant.
+
+- id: capture_radius
+  name: interaction or binding capture cutoff distance
+  dimension: "[length]"
+  description: Maximum head-to-filament binding distance (s1_cut, s2_cut) or filament excluded-volume cutoff (rmax).
+
+- id: excluded_volume_energy_scale
+  name: excluded volume interaction energy scale
+  dimension: "[energy]"
+  description: Energy scale kexv (pN*um) in src/filament_ensemble.cpp pe_exv = kexv * (1 - r / rmax)^2.
+
+- id: mechanical_energy
+  name: mechanical or potential energy
+  dimension: "[energy]"
+  description: Stretching, bending, excluded-volume, or Metropolis delE energy in AFINES (pN*um).
+
+- id: mechanical_force
+  name: mechanical force
+  dimension: "[force]"
+  description: Spring, bending, excluded-volume, fracture, or stall force in AFINES (pN).
+
+- id: thermal_energy
+  name: thermal energy k_B T
+  dimension: "[energy]"
+  description: Thermal energy scale temperature = 0.004 pN*um hardcoded in AFINES configs and plots.nb.
+
+- id: chemical_potential
+  name: dimensional lattice cross-linker chemical potential
+  dimension: "[energy]"
+  description: Dimensional chemical potential mu = -0.008 pN*um passed to lattice.py (equals -2 * 0.004 pN*um = -2 k_B T).
+
+- id: chemical_potential_thermal
+  name: dimensionless cross-linker chemical potential
+  dimension: "dimensionless"
+  description: Dimensionless chemical potential mu / k_B T in the 1D equilibrium lattice model.
+
+- id: observation_time
+  name: simulation time, timestep, or averaging window
+  dimension: "[time]"
+  description: Timestep dt, total duration tfinal, window start ti / tDoneGrowing, or averaging window winlen.
+
+- id: dynamic_viscosity
+  name: solvent dynamic viscosity
+  dimension: "[mass]/[length]/[time]"
+  description: Solvent viscosity (0.001 Pa*s = 0.001 pN*s/um^2) in Stokes drag.
+
+- id: drag_coefficient
+  name: Stokes hydrodynamic drag coefficient
+  dimension: "[force]*[time]/[length]"
+  description: Overdamped friction coefficient damp = 6 * pi * viscosity * R.
+
+- id: stokes_mobility
+  name: Stokes hydrodynamic mobility
+  dimension: "[length]/[force]/[time]"
+  description: Mobility mu = 1 / damp relating force to overdamped drift velocity.
+
+- id: diffusion_coefficient
+  name: translational diffusion coefficient
+  dimension: "[length]**2/[time]"
+  description: Overdamped Brownian translational diffusion coefficient D = temperature / damp.
+
+- id: metropolis_probability
+  name: single-timestep MC transition probability
+  dimension: "dimensionless"
+  description: Probability returned by spacer::metropolis_prob() in a single timestep dt.
+
+- id: domain_min_crosslinkers
+  name: minimum cross-linkers per domain
+  dimension: "dimensionless"
+  description: Minimum consecutive cross-linker run length nc = 4 in LatticeDomainMerge (domain_length.m).
+
+- id: domain_max_gap
+  name: maximum intra-domain cross-linker gap
+  dimension: "[length]"
+  description: Maximum empty gap rc = 1 um merged inside a domain by LatticeDomainMerge (domain_length.m).
+
+- id: filament_alignment
+  name: filament end-to-end alignment dot product
+  dimension: "dimensionless"
+  description: Cosine of angle between filament end-to-end vectors (angThresh = 0.8 in plots.nb and afines2lattice.m).
+
+- id: spatial_coordinate
+  name: spatial position or separation distance
+  dimension: "[length]"
+  description: 2D position coordinate, initial filament separation, seed spacing, or inter-segment separation distance.
+
+- id: fene_extension_ratio
+  name: FENE maximum extension ratio parameter
+  dimension: "dimensionless"
+  description: Fractional extension parameter fene_pct = 0.5 parsed in bundles.cpp (unused in active Hookean update_force).

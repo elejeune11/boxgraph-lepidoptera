@@ -1,0 +1,557 @@
+- id: rel_fig3b_uses_eq1_energy
+  kind: same_as
+  a: freedman2019/site_binding_probability_fig3b
+  b: freedman2019/gap_bending_energy_eq1
+  mapping:
+    L_p: L_p
+    delta_l_xl: delta_l_xl
+    l_g: "n_g * l_b"
+    T: "300"
+  output_map:
+    U_kBT: U_kBT
+  regime:
+    n_g: [3.0, 20.0]
+    l_b: [30.0, 45.0]
+    L_p: [5.0, 50.0]
+    delta_l_xl: [10.0, 50.0]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "16195"
+    quote: "binding sites from the interface governed by Eq. 1"
+    where: Fig. 3B caption
+
+- id: rel_eq2_uses_eq1_energy
+  kind: reduces_to
+  a: freedman2019/equilibrium_lattice_energy_eq2
+  b: freedman2019/gap_bending_energy_eq1
+  limit:
+    mu_S_kBT: "0"
+    mu_L_kBT: "0"
+  mapping:
+    L_p: L_p
+    delta_l_xl: delta_l_xl
+    l_g: "n_g * l_b"
+    T: "300"
+  output_map:
+    U_kBT: U_lat_kBT
+  regime:
+    N_S: [1.0, 5.0]
+    N_L: [1.0, 5.0]
+    mu_S_kBT: [-2.0, -0.1]
+    mu_L_kBT: [-2.0, -0.1]
+    n_g: [4.0, 10.0]
+    l_b: [30.0, 45.0]
+    L_p: [10.0, 50.0]
+    delta_l_xl: [25.0, 50.0]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "16194"
+    quote: "U (lg ) uses Eq. 1"
+    where: Eq. 2 text
+
+# ==============================================================================
+# Cross-record ModelAtlas relations for `freedman2019`
+#
+# Pairwise audit across uncovered corpus partners (`freedman2019_code`,
+# `kierfeld2005`, `bathe2008`; note `winkelman2016` and `popov2016` already
+# author their relations with `freedman2019` inside their own records):
+#
+# 1. `freedman2019 + freedman2019_code` (companion AFINES/KMC repository,
+#    Simfreed/AFINES@growing_spacer_exv, Ref. 39): 12 verified relations below
+#    connecting live `kmc.ipynb` Cell 3 (`software: true`) and exact C++/
+#    Mathematica ports against `freedman2019`'s printed Main Text & SI equations.
+#    Note: the live 1000-trial Gillespie notebook adapter
+#    `kmc_notebook_growing_bundle` (`kmc.ipynb` Cells 5-6) is omitted from
+#    automated 40-sample `relations.yaml` sweeps because its default
+#    `num_trials = 1000` takes ~8-9 s per sample (~6 min cold per relation);
+#    direct 15-um cross-checks at both (35 nm, 29 nm) and (37 nm, 27 nm) are
+#    documented in `questions.yaml` (`q_code_kmc_swap_and_notebook_equivalence`)
+#    and `notes.md`.
+# 2. `freedman2019 + kierfeld2005` (PRL 95, 038102, 2005): 2 verified relations
+#    (exact symbolic identity of grand-canonical 2-state Langmuir site occupancy
+#    `X_1 = K*c_x/(1 + K*c_x)` with Freedman SI Section C's `N_b = N/(1 + exp(-mu/k_B T))`,
+#    and `scales_as` comparison exposing the 2x 2D-vs-3D persistence length
+#    convention between Kierfeld's `L_p = 2*kappa/T` and AFINES's 2D use of
+#    `L_p = kappa_B/(k_B T)`).
+# 3. `bathe2008 + freedman2019` (Biophys. J. 94, 2955-2964, 2008): honest 0
+#    direct relations (continuum N-filament wormlike-bundle bending stiffness
+#    `kappa_B(N, alpha)` & peristaltic wavelength vs 2-filament domain-sorting
+#    bending gap energy & KMC/AFINES models; reciprocal Langmuir duality
+#    `delta = delta_min/X` vs `N_b = N*X` and 8,800x filament stretching
+#    softness gap logged in `q_bathe2008_no_direct_relation_and_physics_contrast`).
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. `freedman2019 + freedman2019_code` (12 relations)
+# ------------------------------------------------------------------------------
+
+- id: rel_code_kmc_nb_bending_same_as_eq1
+  kind: same_as
+  a: freedman2019_code/kmc_notebook_bending_and_switching
+  b: freedman2019/gap_bending_energy_eq1
+  mapping:
+    L_p: "Lp"
+    delta_l_xl: "l_long - l_short"
+    l_g: "x_sites * site_width"
+    T: "300"
+  output_map:
+    U_kBT: U_kBT
+  regime:
+    site_width: [30.0, 45.0]
+    l_long: [30.0, 50.0]
+    l_short: [5.0, 15.0]
+    Lp: [5.0, 50.0]
+    x_sites: [3.0, 20.0]
+    max_filament_length: [10000.0, 20000.0]
+  provenance: proposed
+  reason: >
+    The live `software: true` adapter `freedman2019_code/kmc_notebook_bending_and_switching`
+    executes unmodified `f(x, Lp)` from `xlink_sorting_paper/kmc.ipynb` Cell 3 directly against
+    `$BOXGRAPH_SOURCE`: `(Lp*1e3/site_width)/x * arcsin((dxl/site_width)/x)^2`. This is
+    algebraically identical to `freedman2019/gap_bending_energy_eq1` (`U_kBT = (L_p/l_g)*arcsin^2(Delta l_xl/l_g)`
+    with `l_g = x_sites * site_width` and `dxl = l_long - l_short`), proving that the 36.2%
+    bending-energy discrepancy in Figs. 3B, 3C, and S3A-C arises solely from Cell 2's transposed
+    inputs (`site_width = 35 nm`, `dxl = 37 - 8 = 29 nm` instead of `37 nm`, `27 nm`), not from
+    a different formula.
+  assumptions:
+    - "Geometrically valid gap regime `x_sites * site_width > l_long - l_short` so `arcsin` is real-valued."
+
+- id: rel_code_kmc_nb_pswitch_same_as_fig3b
+  kind: same_as
+  a: freedman2019_code/kmc_notebook_bending_and_switching
+  b: freedman2019/site_binding_probability_fig3b
+  mapping:
+    n_g: "x_sites"
+    l_b: "site_width"
+    L_p: "Lp"
+    delta_l_xl: "l_long - l_short"
+  output_map:
+    P_diff: p_switch
+  regime:
+    site_width: [30.0, 45.0]
+    l_long: [30.0, 50.0]
+    l_short: [5.0, 15.0]
+    Lp: [5.0, 50.0]
+    x_sites: [4.0, 20.0]
+    max_filament_length: [10000.0, 20000.0]
+  provenance: proposed
+  reason: >
+    Live `kmc.ipynb` Cell 3 `ratio_at_dist(x, onleft=1, kon1=1, kon2=1, Lp)` converted to
+    conditional switching probability `p_switch = r / (1 + r) = exp(-U_kBT)/(1 + exp(-U_kBT))`
+    matches `freedman2019/site_binding_probability_fig3b` (`P_diff`, Fig. 3B) identically across
+    all gap distances `n_g >= 4`, confirming that `freedman2019`'s independent pixel deduction of
+    `(l_b = 35 nm, Delta l_xl = 29 nm)` in `q_kmc_35nm_37nm_parameter_swap` reflects Cell 2's
+    transposed parameters inside an otherwise exact Eq. (1) implementation.
+  assumptions:
+    - "Evaluated for `x_sites in [4, 20]` where `P_diff` stays above numerical underflow."
+
+- id: rel_code_afines_exv_same_as_si_eq3_energy
+  kind: same_as
+  a: freedman2019_code/afines_excluded_volume_cpp
+  b: freedman2019/excluded_volume_si_eq3_energy_units
+  mapping:
+    k_exv: "kexv"
+    r_ij: "sep_parallel"
+    r_max: "rmax"
+  output_map:
+    U_ij: U_parallel
+  regime:
+    kexv: [0.01, 0.5]
+    rmax: [0.05, 0.2]
+    sep_parallel: [0.005, 0.045]
+    link_length: [0.5, 2.0]
+  provenance: proposed
+  reason: >
+    AFINES C++ `filament_ensemble::update_force_between_filaments()` (`src/filament_ensemble.cpp:668-673`)
+    computes `pe_exv = kexv * (1 - r / rmax)^2` and exact negative gradient
+    `F = 2*kexv*(dist/rmax)*(1/r - 1/rmax)` for non-intersecting links within `r < rmax`.
+    This matches `freedman2019/excluded_volume_si_eq3_energy_units` identically and confirms
+    that `kexv` has physical energy units `pN*um` (`0.08 pN*um = 20 k_B T` at `temperature = 0.004`),
+    resolving Table S1 and Fig. 2D's misprinted units `pN*um^2` (`q_kexv_units_and_vector_eq3`).
+  assumptions:
+    - "Non-intersecting parallel links separated by `sep_parallel < rmax` (C++ midpoint-crossing zero-force and near-end 45-degree doubled-force bugs occur only for intersecting segments)."
+
+- id: rel_code_afines_filament_stretch_same_as_si_eq1
+  kind: same_as
+  a: freedman2019_code/afines_filament_mechanics_cpp
+  b: freedman2019/filament_potential_si_eq1
+  mapping:
+    k_a: "kl"
+    r: "llen"
+    l_a: "l0"
+    kappa_B: "polymer_bending_modulus"
+    theta: "bend_angle"
+  output_map:
+    U_stretch: U_stretch
+  regime:
+    kl: [1.0, 50.0]
+    l0: [0.5, 1.0]
+    llen: [1.05, 1.5]
+    polymer_bending_modulus: [0.01, 0.5]
+    bend_angle: [0.01, 1.0]
+    max_small_angle: [0.001, 0.001]
+    temperature: [0.004, 0.0042]
+    viscosity: [0.001, 0.001]
+    actin_length: [0.5, 0.5]
+    dt: [2.0e-5, 2.0e-5]
+  provenance: proposed
+  reason: >
+    AFINES C++ `spring::update_force()` (`src/spring.cpp:79-80, 377`) evaluates
+    `U_stretch = (kl*(llen - l0))^2 / (2*kl) = (1/2)*kl*(llen - l0)^2`, matching the Hookean
+    stretching term of `freedman2019/filament_potential_si_eq1` (SI Eq. 1, p. 8 / SI-2) identically.
+  assumptions:
+    - "Hookean actin link regime (FENE blowup code is commented out in `src/filament.cpp:621`)."
+
+- id: rel_code_afines_filament_bend_same_as_si_eq1
+  kind: same_as
+  a: freedman2019_code/afines_filament_mechanics_cpp
+  b: freedman2019/filament_potential_si_eq1
+  mapping:
+    k_a: "kl"
+    r: "llen"
+    l_a: "l0"
+    kappa_B: "polymer_bending_modulus"
+    theta: "bend_angle"
+  output_map:
+    U_bend: U_bend
+  regime:
+    kl: [1.0, 50.0]
+    l0: [0.5, 1.0]
+    llen: [1.05, 1.5]
+    polymer_bending_modulus: [0.01, 0.5]
+    bend_angle: [0.01, 1.0]
+    max_small_angle: [0.001, 0.001]
+    temperature: [0.004, 0.0042]
+    viscosity: [0.001, 0.001]
+    actin_length: [0.5, 0.5]
+    dt: [2.0e-5, 2.0e-5]
+  provenance: proposed
+  reason: >
+    AFINES C++ `filament::update_bending()` (`src/filament.cpp:518-575`, `prog/bundles.cpp:224`)
+    sets `kb = polymer_bending_modulus / l0` and computes LAMMPS harmonic angle energy
+    `U_bend = (1/2) * kb * (acos(c) - pi)^2`, matching the angular bending term
+    `(kappa_B / (2*l_a)) * theta^2` of `freedman2019/filament_potential_si_eq1` (SI Eq. 1,
+    p. 8 / SI-2) identically for deflection angle `theta = bend_angle in (0, pi)`.
+  assumptions:
+    - "Planar 3-bead deflection angle `bend_angle in [0.01, 1.0] rad`."
+
+- id: rel_code_afines_bead_diffusion_same_as_si_eq6
+  kind: same_as
+  a: freedman2019_code/afines_filament_mechanics_cpp
+  b: freedman2019/stokes_mobility_si_eq6
+  mapping:
+    R: "actin_length"
+    nu: "viscosity"
+    T: "temperature / 1.380649e-5"
+  output_map:
+    D: D_bead_lm
+  regime:
+    kl: [5.0, 5.0]
+    l0: [1.0, 1.0]
+    llen: [1.05, 1.05]
+    polymer_bending_modulus: [0.068, 0.068]
+    bend_angle: [0.1, 0.1]
+    max_small_angle: [0.001, 0.001]
+    temperature: [0.0038, 0.0044]
+    viscosity: [0.0005, 0.005]
+    actin_length: [0.1, 1.0]
+    dt: [1.0e-5, 5.0e-5]
+  provenance: proposed
+  reason: >
+    The long-time free translational diffusivity `D_bead_lm = kT / (6*pi*actin_length*viscosity)`
+    generated by AFINES's Leimkuhler-Matthews integrator (`src/filament.cpp:80-83, 222-233`,
+    `src/bead.cpp:23-25`) is identical to `freedman2019/stokes_mobility_si_eq6` (`D = k_B T / (6*pi*R*nu)`,
+    SI Eq. 6, p. 9 / SI-3) once the unstated hydrodynamic radius `R` (`q_unstated_stokes_radius`)
+    is identified with `actin_length = 0.5 um` (`grow.cfg:8`) and `T = temperature / k_B`
+    (`0.004 pN*um` -> `289.72 K`, 3.4% below Table S1's `300 K`).
+  assumptions:
+    - "Maps C++ energy parameter `temperature` [pN*um] to Kelvin via CODATA 2018 `k_B = 1.380649e-5 pN*um/K`."
+    - "Identifies unstated SI Eq. (6) bead Stokes radius `R` with C++ `actin_length` (`0.5 um`)."
+
+- id: rel_code_param_map_bead_mobility_same_as_si_eq6
+  kind: same_as
+  a: freedman2019_code/afines_parameter_mapping
+  b: freedman2019/stokes_mobility_si_eq6
+  mapping:
+    R: "actin_length"
+    nu: "viscosity"
+    T: "temperature / 1.380649e-5"
+  output_map:
+    mu: mu_bead
+  regime:
+    nmonomer: [2.0, 16.0]
+    link_length: [1.0, 1.0]
+    nlink_max: [15.0, 15.0]
+    polymer_bending_modulus: [0.01, 0.5]
+    temperature: [0.0038, 0.0044]
+    viscosity: [0.0005, 0.005]
+    actin_length: [0.1, 1.0]
+    spacer1_length: [0.15, 0.3]
+    spacer2_length: [0.2, 0.5]
+    s1_bend: [0.005, 0.005]
+    s2_bend: [0.06, 0.06]
+    xrange: [35.0, 35.0]
+    yrange: [20.0, 20.0]
+    grid_factor: [3.0, 3.0]
+    spacer2_density: [0.25, 0.25]
+    nfixed: [9.0, 9.0]
+    lattice_mu: [-0.008, -0.008]
+  provenance: proposed
+  reason: >
+    `freedman2019_code/afines_parameter_mapping` (`src/bead.cpp:25`, `prog/bundles.cpp:333`)
+    computes bead hydrodynamic mobility `mu_bead = 1 / (6*pi*viscosity*actin_length)`, matching
+    `freedman2019/stokes_mobility_si_eq6` (`mu`) identically and confirming the unstated bead
+    Stokes radius `R = actin_length = 0.5 um` (`mu_bead = 106.10 um/(pN*s)` at `nu = 0.001 Pa*s`).
+  assumptions:
+    - "1 Pa*s = 1 pN*s/um^2; bead hydrodynamic radius `R = actin_length`."
+
+- id: rel_code_param_map_spacer_diffusion_same_as_si_eq6
+  kind: same_as
+  a: freedman2019_code/afines_parameter_mapping
+  b: freedman2019/stokes_mobility_si_eq6
+  mapping:
+    R: "spacer1_length"
+    nu: "viscosity"
+    T: "temperature / 1.380649e-5"
+  output_map:
+    D: D_short
+  regime:
+    nmonomer: [2.0, 16.0]
+    link_length: [1.0, 1.0]
+    nlink_max: [15.0, 15.0]
+    polymer_bending_modulus: [0.01, 0.5]
+    temperature: [0.0038, 0.0044]
+    viscosity: [0.0005, 0.005]
+    actin_length: [0.5, 0.5]
+    spacer1_length: [0.1, 0.5]
+    spacer2_length: [0.2, 1.2]
+    s1_bend: [0.005, 0.005]
+    s2_bend: [0.06, 0.06]
+    xrange: [35.0, 35.0]
+    yrange: [20.0, 20.0]
+    grid_factor: [3.0, 3.0]
+    spacer2_density: [0.25, 0.25]
+    nfixed: [9.0, 9.0]
+    lattice_mu: [-0.008, -0.008]
+  provenance: proposed
+  reason: >
+    In `src/spacer.cpp:55, 151`, AFINES sets every cross-linker head's Stokes drag radius equal to
+    its rest length `mld` (`damp = 6*pi*vis*mld`), matching `freedman2019/stokes_mobility_si_eq6`
+    with `R = spacer1_length` (and analogously `R = spacer2_length` for `D_long`). Because
+    `l_short = 0.2 um` vs `l_long = 0.3..1.2 um`, short cross-linkers diffuse `1.5x` to `6.0x`
+    faster than long cross-linkers in AFINES (`D_short = 1.061` vs `D_long = 0.707 um^2/s` at
+    `0.3 um`) — an undocumented species-dependent mobility asymmetry omitted from SI Section A.
+  assumptions:
+    - "Cross-linker hydrodynamic radius `R = mld` (`src/spacer.cpp:55`), with `T = temperature / 1.380649e-5`."
+
+- id: rel_code_param_map_lp_approx_kbt300
+  kind: approximated_by
+  a: freedman2019_code/afines_parameter_mapping
+  b: freedman2019/persistence_length_from_kappa_b
+  mapping:
+    kappa_B: "polymer_bending_modulus"
+    T: "300"
+  output_map:
+    L_p: persistence_length
+  regime:
+    nmonomer: [2.0, 16.0]
+    link_length: [1.0, 1.0]
+    nlink_max: [15.0, 15.0]
+    polymer_bending_modulus: [0.01, 0.5]
+    temperature: [0.004, 0.004]
+    viscosity: [0.001, 0.001]
+    actin_length: [0.5, 0.5]
+    spacer1_length: [0.2, 0.2]
+    spacer2_length: [0.3, 0.3]
+    s1_bend: [0.005, 0.005]
+    s2_bend: [0.06, 0.06]
+    xrange: [35.0, 35.0]
+    yrange: [20.0, 20.0]
+    grid_factor: [3.0, 3.0]
+    spacer2_density: [0.25, 0.25]
+    nfixed: [9.0, 9.0]
+    lattice_mu: [-0.008, -0.008]
+  tolerance: 0.04
+  provenance: proposed
+  reason: >
+    Quantifies the exact 3.55% thermal-energy rounding offset between AFINES's hardcoded
+    `temperature = 0.004 pN*um` (`grow.cfg:46`, `nogrow.cfg:46`, `plots.nb:8466`, yielding
+    Movie S3's exact `L_p = {2.5, 17.0, 125.0} um` for `kappa_B = {0.01, 0.068, 0.5} pN*um^2`)
+    and `freedman2019/persistence_length_from_kappa_b` evaluated at Table S1's `T = 300 K`
+    (`k_B * 300 K = 0.0041419 pN*um`, giving `{2.414, 16.417, 120.716} um`), resolving
+    `q_lp_kbt_rounding_movies3`.
+  assumptions:
+    - "AFINES `temperature` fixed at its config value `0.004 pN*um` vs Table S1's `T = 300 K`."
+
+- id: rel_code_spacer_bend_rescaled_same_as_si_eq4
+  kind: same_as
+  a: freedman2019_code/afines_spacer_mechanics_and_mc_cpp
+  b: freedman2019/crosslinker_potential_si_eq4
+  mapping:
+    k_xl: "mk"
+    r: "sqrt(head_sep_y**2 + tilt_dx**2)"
+    l_xl: "mld"
+    kappa_xl_B: "0.5 * s_bend / mld"
+    alpha_L: "pi/2 + atan(tilt_dx / head_sep_y)"
+    alpha_R: "pi/2 - atan(tilt_dx / head_sep_y)"
+    I_L: "1"
+    I_R: "1"
+    k_on_1: "kon"
+    k_off_1: "0.05"
+    k_on_2: "kon"
+    k_off_2: "0.05"
+    T: "temperature / 1.380649e-5"
+  output_map:
+    U_bend: U_bend_both_heads
+  regime:
+    mld: [0.15, 0.5]
+    mk: [10.0, 10.0]
+    s_bend: [0.002, 0.08]
+    th0: [1.5707963267948966, 1.5707963267948966]
+    link_length: [1.0, 1.0]
+    head_sep_y: [0.15, 0.4]
+    tilt_dx: [0.02, 0.15]
+    pre_bind_dy: [0.01, 0.05]
+    pos_a_end: [0.2, 0.8]
+    stale_b_eng: [0.0, 0.01]
+    kon: [2.0, 2.0]
+    dt: [2.0e-5, 2.0e-5]
+    temperature: [0.004, 0.004]
+  provenance: proposed
+  reason: >
+    Exposes TWO simultaneous stiffness-convention discrepancies between AFINES C++ and
+    `freedman2019` SI Eq. (4) / Table S1: (1) `spacer_ensemble::set_bending(modulus, ang)`
+    (`src/motor_ensemble.cpp:314`) divides the input parameter `s_bend` by spacer rest length
+    `mld` (`kb_eff = s_bend / mld`, a `5x` inflation for `l_short = 0.2 um`: `0.005 -> 0.025 pN*um`),
+    and (2) `spacer::update_bending()` (`src/spacer.cpp:277`) computes `0.5 * kb_eff * (alpha - th0)^2`
+    per head, whereas printed SI Eq. (4) (p. 8 / SI-2) omits the factor of `1/2`, writing
+    `U_xl^bend = kappa_xl^B * sum (alpha_i - pi/2)^2 * I_i`. Consequently, the C++ doubly-bound
+    bending energy `U_bend_both_heads` equals SI Eq. (4)'s `U_bend` identically ONLY under
+    the rescaled mapping `kappa_xl^B = 0.5 * s_bend / mld` (net `2.5x` stiffer for short
+    cross-linkers at `mld = 0.2 um`, and `1.67x` stiffer for long cross-linkers at `mld = 0.3 um`).
+  assumptions:
+    - "Parallel horizontal filament links with perpendicular equilibrium attachment angle `th0 = pi/2` and both heads bound (`I_L = I_R = 1`)."
+    - "Note: this compares equilibrium `U_bend_both_heads`; `src/spacer.cpp:220-224, 355-378` additionally contains three Metropolis detailed-balance bugs (`delE_code_buggy` != `delE_true_physical`, inflating attachment probability by ~1.90x at the probe configuration)."
+
+- id: rel_code_barbed_growth_approx_si_eq2
+  kind: approximated_by
+  a: freedman2019_code/afines_barbed_end_growth_cpp
+  b: freedman2019/filament_growth_rate_si_eq2
+  mapping:
+    k_g: "kgrow"
+    delta_l_a: "lgrow"
+    dt: "0.00002"
+  output_map:
+    k_grow: k_grow_realized
+  regime:
+    kgrow: [0.5, 2.0]
+    lgrow: [0.0025, 0.1]
+    spring_l0: [1.0, 1.0]
+    l0_max: [2.0, 2.0]
+    n_links_init: [1.0, 1.0]
+    nlink_max: [15.0, 15.0]
+  tolerance: 0.10
+  provenance: proposed
+  reason: >
+    Resolves `q_si_eq2_barbed_end_split_remainder` and `q_table_s1_growth_length_lower_bound`:
+    AFINES C++ `filament::grow()` (`src/filament.cpp:673-736`) tests `if (lb + dL < l0_max)`
+    (splitting at `>= 2*l_a` rather than SI Section A's strict `> 2*l_a`), so exact divisors of
+    `1.0 um` (`0.01, 0.02, 0.04, 0.05, 0.10 um`) realize exact `k_g * Delta l_a`, whereas
+    non-divisors discard overshoot upon resetting both split links to `1.0 um` (e.g., `-2.0%` at
+    `lgrow = 0.03 um`, `-4.8%` at `lgrow = 0.07 um`, up to `-9.1%` just below `0.10 um`, plus
+    `-0.25%` from IEEE-754 double accumulation at `lgrow = 0.0025 um`, which itself proves Table S1's
+    `0.008 um` lower bound is a misprint). Across the full Fig. 5C growth sweep `lgrow in [0.0025, 0.1] um`,
+    realized contour elongation rate `k_grow_realized` is approximated by SI Eq. (2)'s nominal
+    `k_grow = k_g * Delta l_a` within 9.1% (tolerance 0.10).
+  assumptions:
+    - "Standard AFINES link rest length `spring_l0 = 1.0 um` and split threshold `l0_max = 2.0 um` (`grow.cfg:9,16`)."
+
+- id: rel_code_lattice_bins_approx_site_count
+  kind: approximated_by
+  a: freedman2019_code/afines_lattice_and_domain_processing
+  b: freedman2019/lattice_site_count
+  mapping:
+    L_0: "lmax"
+    l_b: "1000 * l0"
+  output_map:
+    N: n_bins_total
+  regime:
+    l0: [0.030, 0.045]
+    lmax: [10.0, 20.0]
+    nc: [4.0, 4.0]
+    rc: [1.0, 1.0]
+  tolerance: 0.005
+  provenance: proposed
+  reason: >
+    Mathematica post-processing `xlink_sorting_paper/process/afines2lattice.m:10,36,48` bins
+    AFINES cross-linkers into `n_bins_total = floor(lmax / l0)` discrete segments of width
+    `l0 = 0.037 um` (yielding exactly `405` bins for `lmax = 15 um`, consistent with `freedman2019`
+    p. 3 / SI Section B — unlike `kmc.ipynb`'s `35 nm` / `428` sites). Compared against the
+    continuous ratio `N = L_0 / l_b` (`405.405` at `15 um / 37 nm`) in `freedman2019/lattice_site_count`,
+    integer floor truncation introduces relative error `< l0 / lmax <= 0.45%` (within tolerance 0.005).
+  assumptions:
+    - "Filament contour length `lmax in [10, 20] um` and bin width `l0 in [0.030, 0.045] um` (`n_bins_total >= 222`)."
+
+# ------------------------------------------------------------------------------
+# 2. `freedman2019 + kierfeld2005` (2 relations)
+# ------------------------------------------------------------------------------
+
+- id: rel_kierfeld2005_langmuir_same_as_chem_pot
+  kind: same_as
+  a: kierfeld2005/linker_site_occupancy
+  b: freedman2019/chemical_potential_from_occupancy
+  mapping:
+    N: "1"
+    mu_kBT: "log(K * c_x)"
+  output_map:
+    N_b: X_1
+  regime:
+    K: [1.0e5, 1.0e7]
+    c_x: [1.0e-8, 1.0e-5]
+  provenance: proposed
+  reason: >
+    Both Kierfeld et al. (2005, p. 2 col. 2, `linker_site_occupancy`: `X_1 = K*c_x / (1 + K*c_x)`)
+    and Freedman et al. (2019, SI Section C p. 9 / SI-3, `chemical_potential_from_occupancy`:
+    `N_b = N / (1 + exp(-mu / (k_B T)))`) model equilibrium cross-linker adsorption onto
+    independent actin binding sites in the non-depleted grand-canonical reservoir ensemble using
+    the exact same two-state Langmuir / Fermi-Dirac isotherm. Identifying a single binding site
+    (`N = 1`) and the ideal-solution chemical potential `mu / (k_B T) = ln(K * c_x)` makes the
+    two expressions symbolically identical (`1 / (1 + (K*c_x)^-1) = K*c_x / (1 + K*c_x)`).
+    In Freedman SI Section C, the calibrated single-species chemical potential `mu = -1.5 to -2 k_B T`
+    corresponds to `K * c_x = exp(-1.5) to exp(-2) = 0.223 to 0.135`, i.e., fractional site
+    occupancy `X_1 = 0.182 to 0.119`.
+  assumptions:
+    - "Independent binding sites (`N = 1` per-site occupancy `X_1 = N_b / N`) equilibrated with an undepleted cross-linker bath at chemical potential `mu / (k_B T) = ln(K * c_x)`."
+
+- id: rel_kierfeld2005_lp_2d_scales_as_3d
+  kind: scales_as
+  a: freedman2019/persistence_length_from_kappa_b
+  b: kierfeld2005/persistence_length_def
+  mapping:
+    kappa: "1e6 * kappa_B"
+    T: "0.01380649 * T"
+  output_map:
+    L_p: L_p
+  regime:
+    kappa_B: [0.01, 0.5]
+    T: [290.0, 310.0]
+  provenance: proposed
+  reason: >
+    Both models relate semiflexible polymer persistence length `L_p` linearly to bending rigidity
+    `kappa` and inversely to thermal energy `k_B T` (identical log-slopes `+1` in `kappa_B` and
+    `-1` in `T`), but with an important factor-of-2 dimensional convention difference: Kierfeld
+    et al. (2005, p. 2 col. 1) model a planar (1+1D / 2D) worm-like chain with one transverse
+    bending mode per segment and correctly write `L_p^(2D) = 2 * kappa / T`, whereas Freedman et al.
+    (2019, SI Section A p. 8 / SI-2) simulate AFINES filaments in 2D with one scalar bending
+    angle `theta_i` per hinge (`U_bend = (kappa_B / (2*l_a)) * sum theta_i^2`) yet define
+    `L_p = kappa_B / (k_B T)` (the 3D formula, which counts two orthogonal bending modes).
+    Consequently, 2D AFINES filaments parameterized with `kappa_B = 0.068 pN*um^2` and
+    `k_B T = 0.004 pN*um` have deterministic bending modulus `kappa_B` matching 3D F-actin
+    (`L_p^(3D) = 17 um`), but an actual 2D thermal tangent-correlation persistence length of
+    `2 * kappa_B / (k_B T) = 34 um` (2x longer than stated).
+  assumptions:
+    - "Unit conversions `1 pN*um^2 = 1e6 pN*nm^2` and CODATA 2018 `k_B = 0.01380649 pN*nm/K`."
+    - "Exact 2x prefactor difference reflects 2D planar (`2*kappa/k_B T`) vs 3D (`kappa/k_B T`) WLC tangent-correlation persistence length."
+

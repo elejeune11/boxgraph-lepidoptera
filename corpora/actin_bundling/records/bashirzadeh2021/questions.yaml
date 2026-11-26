@@ -1,0 +1,630 @@
+# Open questions, verified discrepancies, unstated inputs, and reading notes for bashirzadeh2021
+
+- id: q_afines_not_runnable
+  kind: unstated_input
+  about: [afines_crosslinker_sorting_2d, sim_polymer_bending_modulus]
+  text: >
+    The full 2D AFINES simulation (pp. 7, 9; Eqs. 1-4; Supplementary Tables 2-3) cannot be run
+    from the paper alone because several required model parameters are omitted ("Default
+    values^42 were used for all parameters not listed"): filament stretching spring constant,
+    crosslinker occupancy exclusion distance o_c (explicitly named on p. 9 without any value),
+    crosslinker binding capture range and U_xl^bind energy, thermal energy k_B T / temperature,
+    solvent viscosity / bead drag coefficient, and KMC kinetic step interval. Full reproduction
+    requires the released C++ AFINES repository (separate BoxGraph record bashirzadeh2021_code).
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "Default values42 were used for all parameters not listed"
+    where: "Methods, Simulation methods and analysis"
+
+- id: q_cytosim_unstated
+  kind: unstated_input
+  about: [cytosim_crosslinker_sorting, cytosim_end_time]
+  text: >
+    Supplementary Fig. 12a (p. 28) refers to "(see Methods)" for the Cytosim verification
+    simulations (50 s duration, with and without the Cytosim fork feature), yet Methods (p. 9)
+    contains no description of Cytosim parameters (filament count/length/rigidity, viscosity,
+    confinement stiffness, crosslinker counts/rates, fork angle/stiffness, or time step).
+  citation:
+    page: 28
+    printed_page: "SI-17"
+    quote: "description in the Cytosim fork feature (see Methods)"
+    where: "Supplementary Fig. 12 caption"
+
+- id: q_binder_cumulant_eq5_vs_fig4h_and_prose
+  kind: possible_error
+  about:
+    - binder_cumulant_eq5
+    - binder_cumulant_eq5_2d_grid
+    - binder_cumulant_sum_2d_grid
+    - binder_cumulant_gaussian_claim
+    - fig4h_binder_range_printed
+    - cmp_eq5_binder_gaussian_claim
+    - cmp_eq5_binder_uniform_supremum_vs_fig4h
+    - cmp_eq5_2d_grid_vs_fig4h_range
+    - ref_binder_sum_variant_grid_bins
+  text: >
+    Three mathematical inconsistencies affect Eq. 5 (p. 9), its prose interpretation (p. 7),
+    and Fig. 4h (p. 6): (1) By the Cauchy-Schwarz inequality (<s^4> >= <s^2>^2), printed Eq. 5
+    (U_4 = 1 - <s^4>/(3<s^2>^2) where <> denotes a spatial average) obeys a strict upper bound
+    U_4 <= 2/3 ~ 0.6667 for every non-zero distribution s, making it mathematically impossible
+    for printed Eq. 5 to produce Fig. 4h's plotted range [0.97, 1.0]. (2) Page 7 claims "A
+    Binder cumulant value of one indicates that a distribution is close to Gaussian", whereas
+    printed Eq. 5 gives U_4 = 1 - 3/3 = 0 for a zero-mean Gaussian (<s^4> = 3<s^2>^2) and
+    gives negative values for a centrally peaked non-negative 2D Gaussian PDF on a 20x20 grid
+    (e.g., U_4 = -4.305 at sigma = 3 um). (3) Replacing spatial averages <> with unnormalized
+    spatial sums (variant binder_cumulant_sum_2d_grid: U_4 = 1 - sum(s^4)/(3*(sum(s^2))^2),
+    which suppresses the subtracted term by 1/N = 1/400 on a 20x20 grid) places realistic aster
+    PDFs squarely in [0.986, 0.999], matching Fig. 4h; however, grid refinement from 20x20 to
+    160x160 (ref_binder_sum_variant_grid_bins) shows that a sum-based cumulant drifts toward 1
+    as O(1/N_bins^2), making its plotted numerical scale an artifact of the 20x20 histogram
+    discretization rather than an intrinsic continuum quantity.
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "We also compute the Binder cumulant72, a measure of the kurtosis"
+    where: "Eq. 5 (p. 9), text (p. 7), Fig. 4h (p. 6)"
+
+- id: q_welch_pvalues_fig4e
+  kind: unexplained_difference
+  about:
+    - welch_two_sample_t_test
+    - Lp_0_1_10
+    - Lp_0_3_10
+    - Lp_1_1_10
+    - Lp_1_3_10
+    - fig4e_p_0110_vs_1110
+    - fig4e_p_1110_vs_1310
+    - fig4e_p_0310_vs_1310
+    - cmp_fig4e_p_0110_vs_1110
+    - cmp_fig4e_p_1110_vs_1310
+    - cmp_fig4e_p_0310_vs_1310
+  text: >
+    Running the stated two-sided unpaired two-sample Student t-test assuming unequal variances
+    (Welch's t-test, Methods pp. 8-9) on the means, SEMs, and bundle counts printed in the
+    Fig. 4e caption (p. 7) fails to reproduce any of the three p-values printed on Fig. 4e
+    (p. 6): [0:1:10] vs [1:1:10] yields p = 0.1770 (rounding range 0.1671-0.1871) vs printed
+    0.1162; [1:1:10] vs [1:3:10] yields p = 0.0203 (0.0177-0.0231) vs printed 0.0125; and
+    [0:3:10] vs [1:3:10] yields p = 0.00140 (rounding range 0.00095-0.00201) vs printed 0.0008. Equal-variance
+    pooled t-tests (p = 0.1763, 0.0341, 0.0080) and one-sided Welch tests (p = 0.0885, 0.0101,
+    0.00070) also fail to match all three printed values. Additionally, the Fig. 4e caption does
+    not explicitly state whether +/- denotes SEM (stated globally in Methods p. 8 and Supp.
+    Fig. 9c), and visual inspection of Fig. 4e (pages/page-006.png) suggests Bar 1's plotted
+    error bar (~+/-7.5 um) is narrower than the caption's +/-10 um. Resolution requires checking
+    the bundle-level dataset (separate record bashirzadeh2021_source_data).
+  citation:
+    page: 7
+    printed_page: "7"
+    quote: "33.3 ± 10 μm [0:1:10], 39.3 ± 9 μm [0:3:10]"
+    where: "Fig. 4e (pp. 6-7) & Methods (pp. 8-9)"
+
+- id: q_cdice_rpm_to_hz_error
+  kind: possible_error
+  about:
+    - rotational_frequency_from_rpm
+    - cdice_rotation_rpm
+    - cdice_rotation_hz_printed
+    - cmp_cdice_rotation_hz
+  text: >
+    Methods (p. 8) states that the cDICE rotor chamber was "rotated at 1200 rpm (60 Hz)^36".
+    1200 revolutions per minute equals 1200 / 60 = 20 Hz, not 60 Hz (60 Hz corresponds to
+    3600 rpm), a 3-fold unit conversion error.
+  citation:
+    page: 8
+    printed_page: "8"
+    quote: "rotated at 1200 rpm (60 Hz)36"
+    where: "Methods, GUV generation and microscopy"
+
+- id: q_lp_regression_log_average_misprint
+  kind: possible_error
+  about: [orientational_correlation_3d, lp_max_abs_ln_C0]
+  text: >
+    Methods ("Calculation of persistence length", p. 8) writes that linear regression was
+    performed on data points "(s, <Ln(C(s))>)" rather than "(s, Ln(<C(s)>))". Because
+    C(s) = cos(theta(s)) can take zero or negative values for individual bond pairs (making
+    ln(C(s)) undefined) and because E[ln(C)] <= ln(E[C]) by Jensen's inequality, taking the
+    ensemble average outside the logarithm does not match the stated exponential decay model
+    <C(s)> = C_0 exp(-s/L_p'). This is likely a notational misprint for ln(<C(s)>).
+  citation:
+    page: 8
+    printed_page: "8"
+    quote: "we ﬁtted lines by linear regression to data points (s, <Ln(C(s)) >)"
+    where: "Methods, Calculation of persistence length"
+
+- id: q_fig1f_sample_count_mismatch
+  kind: possible_error
+  about: [fig1_nguv_01_small, fig1_nguv_01_medium, fig1f_nguv_01_7to16, cmp_fig1f_sum_01]
+  text: >
+    For alpha-actinin/actin = 0.1, Fig. 1c, d (p. 3) prints NGUVs = [389 42 23] for small
+    (7-12 um), medium (12-16 um), and large (>16 um) GUVs, whose small+medium sum is
+    389 + 42 = 431, whereas Fig. 1f (p. 3) prints [429 23] for 7-16 um and >16 um (off by 2
+    GUVs). The 0.2 and 0.3 ratios sum exactly (67 + 45 = 112; 188 + 145 = 333), as do all three
+    alpha-actinin + fascin ratios in Fig. 2d-f (101 + 98 = 199; 147 + 58 = 205; 137 + 82 = 219).
+  citation:
+    page: 3
+    printed_page: "3"
+    quote: "NGUVs per experiment = [429 23], [112 38], [333 128]"
+    where: "Fig. 1c, d, f captions"
+
+- id: q_fig1g_vs_fig1f_aster_count_paradox
+  kind: possible_error
+  about:
+    - fig1_nguv_01_large
+    - fig1_nguv_02_large
+    - fig1_nguv_03_large
+    - fig1g_periph_aster_count_01
+    - fig1g_periph_aster_count_02
+    - fig1g_periph_aster_count_03
+    - fig3c_nguv_alpha_fascin
+    - fig3d_nguv_total
+  text: >
+    Fig. 1g (p. 3) reports "Cumulative (three experiments) ... Number of large GUVs with
+    peripheral asters = [35, 14, 53]" (ascending alpha-actinin concentration), whereas Fig. 1c,
+    d, f report "NGUVs per experiment" for large (>16 um) GUVs as [23, 38, 128]. At 0.1,
+    35 peripheral asters exceeds 23 large GUVs, which is impossible if [23, 38, 128] are totals
+    across 3 experiments; conversely, if [23, 38, 128] are per-experiment counts (totals ~69,
+    ~114, ~384), then 14/114 = 12% (at 0.2) and 53/384 = 14% (at 0.3) contradict Fig. 1f's
+    plotted ~55% and ~63% peripheral aster formation probabilities. Similarly, across Fig. 2d-f
+    large (>16 um) alpha-actinin+fascin GUV counts total 29 + 71 + 24 = 124, whereas Fig. 3d
+    analyzes 87 GUVs (>16 um) and Fig. 3c analyzes 80 alpha-actinin+fascin GUVs (>20 um),
+    leaving how the Fig. 1g and Fig. 3c-d subsets map onto Figs. 1-2 unstated.
+  citation:
+    page: 3
+    printed_page: "3"
+    quote: "Number of large GUVs with peripheral asters = [35, 14, 53]"
+    where: "Fig. 1f, g captions (p. 3) & Fig. 3c, d captions (p. 5)"
+
+- id: q_supp_fig12_legend_caption_swap
+  kind: possible_error
+  about: [cytosim_crosslinker_sorting]
+  text: >
+    Supplementary Fig. 12 (pages/page-028.png) contains a color-legend contradiction: the
+    in-panel legends on both panels (a) and (b) label green as "alpha-actinin" and blue as
+    "Fascin", whereas the figure caption directly below states "alpha-actinin (blue) and fascin
+    (green)". Because the central cluster is blue and the radial arms are green, the caption
+    matches the paper's text while the embedded figure legend is swapped.
+  citation:
+    page: 28
+    printed_page: "SI-17"
+    quote: "α-actinin (blue) and fascin (green) after 50 s of simulation"
+    where: "Supplementary Fig. 12"
+
+- id: q_fig4b_caption_fascin_label_typo
+  kind: possible_error
+  about: [exp_fascin_conc_low]
+  text: >
+    Fig. 4b caption (p. 7) reads "α-Actinin, 1.5 μM (including 13 mol% TMR α-actinin). Fascin,
+    0.5 μM (including 16 mol% TMR α-actinin)", evidently a copy-paste typo for the fluorescently
+    labeled fascin conjugate (AF647-fascin or sfGFP-fascin; compare Fig. 4a "50 mol% AF647
+    Fascin" and Methods p. 8).
+  citation:
+    page: 7
+    printed_page: "7"
+    quote: "Fascin, 0.5 μM (including 16 mol% TMR α-actinin)"
+    where: "Fig. 4b caption"
+
+- id: q_crosslinker_init_box_and_histogram_domain
+  kind: unstated_input
+  about:
+    - vesicle_crosslinker_count
+    - histogram_pdf_normalization
+    - hist_domain_width_added
+    - sim_crosslinker_density
+    - sim_confinement_radius
+  text: >
+    Two spatial-domain specifications in Methods (p. 9) are ambiguous or unstated: (1) Crosslinker
+    initial positions are stated to be drawn uniformly from an "r_c x r_c" box (15 x 15 =
+    225 um^2) centered at the origin, while density is stated as "5 um^-2 within the vesicle"
+    (circular area pi * r_c^2 = 706.86 um^2 -> ~3534 crosslinkers per species, vs 1125 in an
+    r_c x r_c box or 4500 in a 2*r_c x 2*r_c box); (2) the spatial span of the 20x20 2D PDF
+    histogram (Fig. 4g) is not printed in text and must be inferred as 2*r_c = 30 um (bin area
+    2.25 um^2, uniform circular disk PDF 1.41 x 10^-3 um^-2, consistent with Fig. 4g colorbar
+    maxima 3 x 10^-3 to 1.25 x 10^-2 um^-2).
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "Both cross-linkers are simulated at a density of 5 μm−2 within the vesicle"
+    where: "Methods, Simulation methods and analysis"
+
+- id: q_filament_length_exceeds_confinement_diameter
+  kind: choice
+  about:
+    - filament_contour_length
+    - afines_initial_filament_confinement
+    - sim_beads_per_polymer
+    - sim_link_length
+    - sim_confinement_radius
+  text: >
+    With 35 beads per polymer and 1 um link length (Supplementary Table 3, p. 30), every
+    simulated actin filament has contour length L_f = (35 - 1) * 1 = 34 um, exceeding the
+    confining circle diameter 2 * r_c = 30 um. Combined with the Gaussian center-of-mass
+    displacement (sigma = 3 um, p. 9), ~18-20% of filament beads start outside r_c = 15 um
+    (visibly confirmed in Supplementary Fig. 10a) and experience an immediate large restoring
+    energy from Eq. 3 (k_c = 20 pN/um) at t = 0.
+  citation:
+    page: 30
+    printed_page: "SI-19"
+    quote: "beads per polymer 35"
+    where: "Supplementary Table 3 & Supplementary Fig. 10a"
+
+- id: q_figure_labels_and_stacked_diamonds_gt100
+  kind: reading
+  about: [guv_diameter_small, fig1_nguv_01_small, fig2_nguv_01_small, fig3d_nguv_17to24]
+  text: >
+    Visual verification of pages/page-003.png through page-005.png reveals four minor figure
+    labeling and plotting anomalies relevant to downstream digitization: (1) Fig. 2b x-axis
+    prints "7-11" instead of "7-12" used everywhere else in text and Figs. 1-2; (2) Fig. 3c
+    x-axis prints "alpha-Actin+fascin" for "alpha-Actinin+fascin", and Fig. 3d x-axis prints
+    "16-24" while its caption prints "17-24 um"; (3) Fig. 1 caption states "Error bars in (d)
+    indicate standard error of the mean", whereas Fig. 1c (not 1d) displays error bars, and
+    neither Fig. 1d nor Fig. 2e draws error bars; (4) in Fig. 1d (>16 um, 0.3) and Fig. 2e
+    (12-16 and >16 um, 0.1 and 0.3), individual Ring/Network replicate diamonds lie above 100%
+    (up to ~115-118%) because they are plotted offset atop the mean Network bar height rather
+    than each replicate's own Network value.
+  citation:
+    page: 3
+    printed_page: "3"
+    quote: "Error bars in (d) indicate standard error of the mean"
+    where: "Figs. 1d, 2b, 2e, 3c, 3d (pp. 3-5)"
+
+- id: q_lp_intercept_abs_misprint
+  kind: possible_error
+  about: [persistence_length_intercept_amplitude, lp_max_abs_ln_C0]
+  text: >
+    Methods ("Calculation of persistence length", p. 8) writes "The absolute value of the
+    intercept, Ln(|C_0|) for selected bundles was found to be around zero with a maximum of
+    0.03". Because the intercept of ln(<C(s)>) = ln(C_0) - s/L_p' is ln(C_0), its absolute
+    value is |ln(C_0)| rather than ln(|C_0|) (which is negative whenever 0 < C_0 < 1). This
+    misplaced absolute-value notation occurs immediately after the <Ln(C(s))> vs Ln(<C(s)>)
+    misprint in the same paragraph.
+  citation:
+    page: 8
+    printed_page: "8"
+    quote: "absolute value of the intercept, Ln(|C0|) for selected bundles was found"
+    where: "Methods, Calculation of persistence length"
+
+- id: q_supp_fig8_caption_and_label_inconsistencies
+  kind: possible_error
+  about: [exp_alpha_actinin_conc_high, exp_fascin_conc_high]
+  text: >
+    Three minor figure/caption inconsistencies occur in the Supplemental Information: (1)
+    Supplementary Fig. 8a (p. 23, SI-12) caption describes "3D reconstructed confocal
+    fluorescence images" and prints "α-actinin, 1.5 μM (top), Fascin, 1.5 μM. Actin, 5 μM",
+    whereas the top-row fluorescence micrographs are stamped "2D" (only the skeletonized panel
+    and bottom row are "3D"), "(bottom)" is omitted for α-actinin despite the shared left
+    margin label "α-actinin/actin: 0.3, fascin/actin: 0.3" spanning both rows, and main text
+    p. 5 cites Supplementary Fig. 8a, c as showing "peripheral actin bundles" while the caption
+    describes the bottom row as an "actin ring"; (2) Supplementary Fig. 4b (p. 18, SI-7) refers
+    to "Higher α-actinin concentration (right)", though the low and high schematics are stacked
+    vertically; and (3) Supplementary Fig. 5a (p. 19, SI-8) has a truncated caption fragment
+    "Actin, Scale bars, 10 μm." omitting the actin molar concentration.
+  citation:
+    page: 23
+    printed_page: "SI-12"
+    quote: "Representative 3D reconstructed confocal fluorescence images of α-actinin, actin, merged"
+    where: "Supplementary Fig. 8a (p. 23), Supp. Fig. 4b (p. 18), Supp. Fig. 5a (p. 19)"
+
+- id: q_audit_reading_standin_models
+  kind: reading
+  about:
+    - binder_cumulant_eq5_2d_grid
+    - binder_cumulant_sum_2d_grid
+    - cmp_eq5_2d_grid_vs_fig4h_range
+    - cmp_sum_variant_2d_grid_vs_fig4h_range
+    - afines_initial_filament_confinement
+  text: >
+    Independent audit reading disagreements with first-reader modeling choices (kept intact per
+    audit rules): (1) binder_cumulant_eq5_2d_grid (and its variant binder_cumulant_sum_2d_grid)
+    substitutes a reader-chosen truncated radial Gaussian PDF (pdf_gaussian_sigma_added) for the
+    unrunnable AFINES simulation output, yet is not marked reconstructed and its comparisons
+    against Fig. 4h are tagged purpose: reproduction; furthermore, binder_cumulant_eq5_2d_grid
+    averages s^2 and s^4 over all 400 bins of the bounding square [-r_c, r_c]^2 including the
+    ~86 zero-valued corner bins outside r <= r_c (shifting U_4 from -3.16 over the disk to
+    -4.31 over the square, though the Cauchy-Schwarz bound U_4 <= 2/3 < 0.97 holds
+    unconditionally on any domain and is already proven without a stand-in by
+    cmp_eq5_binder_uniform_supremum_vs_fig4h); and (2) afines_initial_filament_confinement
+    hardcodes the printed bend half-range pi/4 (p. 9) inside model.py rather than declaring it
+    as an input port using the unused initial_bend_half_range quantity in quantities.yaml.
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "where s is an order parameter. In our case, s is the value at one point"
+    where: "Methods, Simulation methods and analysis (Eq. 5 & initial condition)"
+
+- id: q_digitize_fig4e_errorbars_resolve_welch
+  kind: possible_error
+  about:
+    - fig4e_lp_no_fascin_fig
+    - fig4e_lp_plus_fascin_fig
+    - supp_fig9c_bundle_lp_fig
+    - cmp_fig4e_p_0110_vs_1110_plotted_sems
+    - cmp_fig4e_p_1110_vs_1310_plotted_sems
+    - cmp_fig4e_p_0310_vs_1310_plotted_sems
+    - cmp_supp_fig9c_bar1_vs_lp_1_3_10
+  text: >
+    Calibrated 1200-dpi digitization of Fig. 4e (fig4e_lp_no_fascin, fig4e_lp_plus_fascin) and
+    Supplementary Fig. 9c (supp_fig9c_bundle_lp) resolves q_welch_pvalues_fig4e and exposes an
+    error-bar discrepancy between Fig. 4e, its caption, and Supp. Fig. 9c: (1) All five Fig. 4e
+    bar heights match the caption means within 0.04-0.30 um (33.60, 39.40, 54.36, 78.01, 99.74 um
+    vs caption 33.3, 39.3, 54.2, 77.8, 99.7 um), but the plotted symmetric T-capped error bars on
+    three of the four bracketed conditions are strictly narrower than the caption +/- values:
+    [0:1:10] plots +/-7.72 um vs caption +/-10 um (-23%); [0:3:10] plots +/-8.69 um vs +/-9 um;
+    [1:1:10] plots +/-10.38 um vs +/-11.4 um (-9%); [1:2:10] plots +/-19.07 um vs +/-19 um; and
+    [1:3:10] plots +/-14.00 um vs +/-15 um (-7%). (2) Feeding the digitized Fig. 4e plotted SEMs
+    into two-sided Welch's t-test (cmp_fig4e_p_*_plotted_sems) reproduces ALL THREE printed
+    p-values to ~0.00005: [0:1:10] vs [1:1:10] gives p = 0.11625 vs printed 0.1162 (caption SEMs
+    gave 0.1770); [1:1:10] vs [1:3:10] gives p = 0.01258 vs printed 0.0125 (caption SEMs gave
+    0.0203); and [0:3:10] vs [1:3:10] gives p = 0.00076 vs printed 0.0008 (caption SEMs gave
+    0.00140). Thus the printed Fig. 4e p-values were computed from the same dataset plotted in
+    Fig. 4e, whereas the caption +/- numbers are wider. (3) In Supplementary Fig. 9c Bar 1, which
+    replots the identical [1:3:10] condition (fascin/actin = 0.1, alpha-actinin/actin = 0.3,
+    n = 26), the digitized bar is 99.58 +/- 15.09 um—matching the caption's +/-15 um rather than
+    Fig. 4e Bar 5's plotted +/-14.00 um.
+  citation:
+    page: 7
+    printed_page: "7"
+    quote: "33.3 ± 10 μm [0:1:10], 39.3 ± 9 μm [0:3:10]"
+    where: "Fig. 4e (pp. 6-7) & Supplementary Fig. 9c (p. 25)"
+
+- id: q_digitize_fig1f_fig2f_onesided_sd_vs_sem
+  kind: possible_error
+  about:
+    - fig1f_periph_aster_pct_0p1_fig
+    - fig1f_periph_aster_pct_0p2_fig
+    - fig1f_periph_aster_pct_0p3_fig
+    - fig2f_aster_pct_0p1_fig
+    - fig2f_aster_pct_0p2_fig
+    - fig2f_aster_pct_0p3_fig
+  text: >
+    Both Fig. 1f (p. 3) and Fig. 2f (p. 4) state in their captions "Error bars indicate standard
+    error of the mean; n = 3 experiments", yet neither panel plots two-sided T-capped +/-SEM bars
+    like Figs. 1c and 2d. Instead, Figs. 1f and 2f draw one-sided uncapped upward vertical stems
+    extending from the bar top all the way to the highest of the 3 replicate diamonds (~mean + 1 SD):
+    for example, in Fig. 1f (>16 um, alpha-actinin/actin = 0.3), the 3 diamonds lie at ~41.9%,
+    64.6%, and 88.4% (mean 65.0%, sample SD 23.2%, SEM = SD/sqrt(3) = 13.4%, so mean + SEM = 78.4%
+    and mean + SD = 88.2%), and the plotted upward stem terminates at 88.3% right at the top diamond
+    with no cap at 78.4%. The same ~mean + 1 SD / max-replicate whisker length occurs across all
+    visible stems in Fig. 1f (e.g., 0.1 >16 um: 53.3% up to 67.1% vs mean+SEM 59.9%; 0.3 7-16 um:
+    17.3% up to 35.6%) and Fig. 2f (e.g., 0.1 >16 um: 65.8% up to 78.8%; 0.3 >16 um: 61.3% up to
+    77.1%).
+  citation:
+    page: 3
+    printed_page: "3"
+    quote: "Error bars indicate standard error of the mean; n = 3 experiments"
+    where: "Fig. 1f (p. 3) & Fig. 2f (p. 4)"
+
+- id: q_digitize_fig4h_trajectories_vs_eq5
+  kind: possible_error
+  about:
+    - fig4h_single_alpha_actinin_fig
+    - fig4h_single_fascin_fig
+    - fig4h_combined_alpha_actinin_fig
+    - fig4h_combined_fascin_fig
+    - cmp_fig4h_single_alpha_vs_eq5_bound
+    - cmp_fig4h_single_fascin_vs_eq5_bound
+    - cmp_fig4h_combined_alpha_vs_eq5_bound
+    - cmp_fig4h_combined_fascin_vs_eq5_bound
+  text: >
+    Calibrated 1200-dpi digitization of all four Fig. 4h trajectories (40 time-series points with
+    symmetric SD error bars across 10 evenly spaced time stations t = 3.5-94.4 s) provides exact
+    numerical curves confirming q_binder_cumulant_eq5_vs_fig4h_and_prose at every point: in
+    Single component, alpha-actinin rises from 0.9802 +/- 0.0039 at t = 3.5 s to a plateau of
+    0.9945-0.9952 over t = 23.7-94.4 s while fascin stays flat at 0.9950-0.9961; in Combined,
+    alpha-actinin rises from 0.9770 +/- 0.0059 at t = 3.6 s to 0.9852-0.9885 (+/-0.001-0.003)
+    while fascin remains at 0.9947-0.9961. All 40/40 digitized points exceed printed Eq. 5's
+    unconditional Cauchy-Schwarz ceiling U_4 <= 2/3 = 0.6667 by +0.310 to +0.329, while sitting
+    directly inside the 20x20 unnormalized-sum variant range [0.9867, 0.9987].
+  citation:
+    page: 7
+    printed_page: "7"
+    quote: "h Binder cumulant as a function of time for each cross-linker"
+    where: "Fig. 4h (pp. 6-7) & Eq. 5 (p. 9)"
+
+- id: q_digitize_fig1b_fig2b_pooled_vs_mean
+  kind: unexplained_difference
+  about:
+    - fig1b_ring_prob_fig
+    - fig1c_ring_pct_0p1_fig
+    - fig1c_ring_pct_0p2_fig
+    - fig1c_ring_pct_0p3_fig
+    - fig2b_ring_prob_fig
+    - fig2d_ring_pct_0p1_fig
+    - fig2d_ring_pct_0p2_fig
+    - fig2d_ring_pct_0p3_fig
+    - cmp_fig1b_ring_vs_nguv_weighted_fig1c
+    - cmp_fig2b_ring_vs_nguv_weighted_fig2d
+  text: >
+    Digitizing Figs. 1b-d and 2b, d-e confirms that Ring% + (Network + Ring/Network)% = 100%
+    across all 18 (panel, ratio, size) bins (98.7%-101.5%; all 9 Fig. 1c+1d bins within 0.8% of
+    100%, cmp_fig1cd_partition_* and cmp_fig2de_partition_*), but exposes systematic gaps between
+    the cumulative probability bars (Figs. 1b and 2b) and NGUVs-weighted averages of the three
+    concentration bars (Figs. 1c and 2d): (1) In Fig. 2b (12-16 um), cumulative P(Ring) = 0.120
+    falls strictly below EVERY individual ratio mean in Fig. 2d (0.131 at 0.1, 0.198 at 0.2,
+    0.203 at 0.3; NGUVs-weighted average 0.172, unweighted average 0.178); (2) In Fig. 1b
+    (>16 um), cumulative P(Ring) = 0.108 is more than 2.5x the NGUVs-weighted Fig. 1c average
+    (0.039) and exceeds the unweighted average (0.079), while cumulative P(Network) = 0.410 is
+    well below the NGUVs-weighted Fig. 1d average (0.506). Because Figs. 1c-d / 2d-e plot
+    unweighted means of 3 experiments while Figs. 1b / 2b pool GUVs cumulatively, unequal
+    per-experiment GUV sample sizes (Simpson-type weighting) or unstated differences in how
+    replicates were pooled across Figs. 1b vs 1c-d and 2b vs 2d-e are implied (connecting to
+    q_fig1g_vs_fig1f_aster_count_paradox).
+  citation:
+    page: 3
+    printed_page: "3"
+    quote: "Cumulative probability (for all three α-actinin concentrations) of ring and"
+    where: "Figs. 1b-d (p. 3) & Figs. 2b, d-e (p. 4)"
+
+- id: q_source_data_audit_resolutions_and_errors
+  kind: possible_error
+  about:
+    - welch_two_sample_t_test
+    - fig4e_lp_no_fascin_fig
+    - fig4e_lp_plus_fascin_fig
+    - supp_fig9c_bundle_lp_fig
+    - fig4e_p_0110_vs_1110
+    - fig4e_p_1110_vs_1310
+    - fig4e_p_0310_vs_1310
+    - fig2b_ring_prob_fig
+    - fig1_nguv_01_small
+    - fig1f_nguv_01_7to16
+    - fig1g_periph_aster_count_02
+    - fig3c_nguv_alpha_only
+    - fig3c_nguv_alpha_fascin
+    - fig3d_nguv_17to24
+    - lp_selected_bundle_length_range
+    - bashirzadeh2021_source_data/fig4e_persistence_length_reader
+    - bashirzadeh2021_source_data/fig4e_ttest_audit_reader
+    - bashirzadeh2021_source_data/figs1_2_pvalues_audit_reader
+    - bashirzadeh2021_source_data/fig1_fig2_guv_morphology_reader
+    - bashirzadeh2021_source_data/fig3_cluster_localization_reader
+  text: >
+    Cross-referencing bashirzadeh2021 against its public Figshare Source Data deposit
+    (bashirzadeh2021_source_data, DOI 10.6084/m9.figshare.16337442.v1) resolves five open
+    paper-only mysteries while exposing pervasive spreadsheet and reporting errors:
+    (1) Fig. 4e & Supp. Fig. 9c SEM/Welch resolution (resolves q_welch_pvalues_fig4e &
+    q_digitize_fig4e_errorbars_resolve_welch): Fig. 4e's digitized plotted SEMs (7.72, 8.69,
+    10.38, 19.07, 14.00 um) match Sheet5's true SEMs SD/sqrt(N) (7.683, 8.688, 10.420, 19.054,
+    13.970 um) to <=0.04 um, whereas the caption +/- values (+/-10, +/-11.4, +/-15 um) and
+    Supp. Fig. 9c Bar 1 (+/-15.09 um) came from three buggy Excel row-32 formulas:
+    A32 = A33/SQRT(13) = 9.995 (N=22), K32 = K33/SQRT(15) = 11.414 (true N=18, not caption 17),
+    and X32 = STDEV(X2:X25)/SQRT(24) = 15.026 (omitting X26:X27, N=26). Supp. Fig. 9c [3:3:10]
+    has N=15 (95.62 +/- 21.86 um in Sheet5 vs digitized 97.66 +/- 21.79 um), not caption 16.
+    Excel ToolPak Welch t-tests on raw Sheet5 reproduce P_PL to 15 digits: 0.116226 (df=33 ->
+    0.1162), 0.012547 (df=42 -> 0.0125), and 0.00086695 (df=38 -> truncated to 0.0008, flagged
+    not reproduced in cited.yaml).
+    (2) Duplicate bundles and length-window violations in Sheet5: [1:3:10] contains 4 full
+    reverse-order duplicate (L_p, L) rows plus 1 duplicate value (21 unique of 26; dedup
+    103.99 +/- 15.87 um), and [1:1:10] contains 1 duplicate row (17 unique of 18; dedup
+    55.61 +/- 10.96 um; deduplicated Welch p = 0.1305, 0.0171, 0.00135). Furthermore, 25/73
+    bundles with recorded lengths (34.2%; 20 with L < 8 um down to 4.43 um and 5 with L > 20 um
+    up to 52.74 um) violate Methods p. 8's stated "8 < L < 20 um" selection criterion.
+    (3) Complete Fig. 1 <-> Fig. 2 p-value swap: Figs_1_and_2_Pvalues.xlsx (Sheets 3-20) proves
+    that ALL 9 p-values printed on Fig. 1 (1c, 1d, 1f) came from Fig. 2's alpha-actinin+fascin
+    data (Sheets 3-11), and ALL 9 p-values printed on Fig. 2 (2d, 2e, 2f) came from Fig. 1's
+    alpha-actinin-only data (Sheets 12-20), plus a 10x typo (Sheet12 0.006397 printed as 0.0006
+    on Fig. 2d) and 5 four-decimal truncations.
+    (4) Fig. 2b 0.120 bug & Fig. 1-2 NGUVs paradox resolved (resolves q_digitize_fig1b_fig2b_pooled_vs_mean,
+    q_fig1f_sample_count_mismatch, q_fig1g_vs_fig1f_aster_count_paradox): In Source_data.xlsx
+    Sheet3, cell A6 omits J11, lowering Fig. 2b medium Ring probability from true 23/149 = 0.1544
+    (T2) to 17/143 = 0.1189 (A9, matching digitized 0.1197). Fig. 1c/d and 2d/e NGUVs brackets
+    are per-replicate total GUV counts across all diameters (plus unused extra blocks 67 and 188
+    in Fig. 1), NOT diameter-bin counts; Fig. 1f mis-summed 389+42=431 as 429; Fig. 1g at 0.2
+    uses denominator 12 (5/12, 7/12), not caption 14; and Sheet2/Sheet3 add a spurious +1
+    denominator in Q43/O44.
+    (5) Fig. 3c caption errors & missing simulation data: Sheet4 proves Fig. 3c swaps 87 and 80
+    (true: 80 NoFascin>16um, 87=61+26 fascin>16um) and misprints >20 um when Sheet4 analyzes >16 um.
+    Finally, ZERO AFINES simulation outputs (Fig. 4g PDFs, Fig. 4h Binder cumulant U_4, Supp. Fig. 11)
+    or Cytosim data exist anywhere in the Figshare archive.
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "The experimental datasets obtained during this study are available in the"
+    where: "Data availability (p. 9) & Figs. 1-4e, Supp. Fig. 9c"
+
+- id: q_code_audit_bugs_hidden_params_and_missing_scripts
+  kind: possible_error
+  about:
+    - afines_crosslinker_sorting_2d
+    - afines_initial_filament_confinement
+    - afines_crosslinker_potential_eq2
+    - cytosim_crosslinker_sorting
+    - binder_cumulant_eq5
+    - sim_init_displacement_sd
+    - sim_confinement_radius
+    - sim_beads_per_polymer
+    - sim_crosslinker_density
+    - bashirzadeh2021_code/init_condition_script_adapter
+    - bashirzadeh2021_code/cpp_init_sampling_bias_analytical
+    - bashirzadeh2021_code/cpp_kmc_metropolis_occlusion
+    - bashirzadeh2021_code/afines_config_derived_quantities
+  text: >
+    Cross-referencing bashirzadeh2021 against its released AFINES repository
+    (bashirzadeh2021_code, dinner-group/AFINES@sorting_guv commit a34e602) resolves the omitted
+    parameters of q_afines_not_runnable and the crosslinker count ambiguity of
+    q_crosslinker_init_box_and_histogram_domain (N = round(5 * pi * 15^2) = 3,534 per species),
+    while exposing severe initial-condition bugs, undisclosed non-default overrides, and missing
+    analysis/Cytosim code:
+    (1) Shared-arm & bend-angle bug: Instead of independent filaments with half-arm offsets in
+    [-pi/4, +pi/4] (mean pi/8 = 0.393 rad, 0% > pi/4; Methods p. 9),
+    aster_initial_condition_grid_conda_freeze.py:98-117 draws ang1 and ang2 independently from
+    Uniform(0, 2*pi) (yielding bends uniform in [0, pi], mean pi/2 = 1.571 rad, 4x larger, 75% >
+    pi/4, up to 84 k_B T per hinge) and alternates resampling ang2 (even ii) and ang1 (odd ii),
+    forcing 100% (49/49) of consecutive initial filaments to share an identical arm orientation.
+    (2) Uniform(-3, 3) vs Gaussian translation: Lines 111-112 sample xkick, ykick from
+    random.uniform(-3, 3) (actual SD = 3/sqrt(3) = 1.732 um, 3x smaller variance) rather than
+    the stated Gaussian(0, 3 um), cutting initial beads outside r_c = 15 um from ~18.5% to ~15.4%.
+    (3) Non-uniform crosslinker disk sampling: Lines 155-196 draw x ~ U(-r_c, r_c) and
+    y | x ~ U(-sqrt(r_c^2 - x^2), sqrt(r_c^2 - x^2)) (only pi/12 = 26.2% fall in the stated
+    r_c x r_c box), producing PDF p(x,y) = 1/(4*r_c*sqrt(r_c^2 - x^2)) that depletes center
+    density by -21.5% (3.93 vs 5 um^-2), enriches lateral caps |x| > 12 um by +94% (~9.7 um^-2),
+    and introduces 3:2 spatial anisotropy (<x^2>/<y^2> = 1.50).
+    (4) Undisclosed non-default overrides contradicting Methods p. 9 ("Default values^42 were used
+    for all parameters not listed"): steric occlusion --occ 0.15 um (C++ default 0),
+    viscosity = 0.01 mg/(um*s) = 0.01 Pa*s (10x C++ default 0.001),
+    link_stretching_stiffness = 10 pN/um (10x C++ default 1), a_m_bend = p_m_bend = 0 (C++
+    default 0.04; silently allowing same-filament crosslinker binding on different springs in
+    src/motor.cpp:696-700), kexv = 0 (default 1.0), temperature = 0.004 pN*um (~290 K, giving
+    L_p = 17.0 um), actin_length = 0.5 um, and capture cutoffs 0.063 um. Moreover, standalone
+    sorting_kinetics.cfg differs from the paper on four core parameters (r_c = 12 vs 15 um,
+    nmonomer = 27 vs 35, densities = 1 vs 5 um^-2), restored only via CLI flags; Eq. 2's
+    explicit U_xl^bind potential is absent from C++ (affinity enters strictly kinetically);
+    and the generator omits fasc_conc = 0 (cannot produce alpha-actinin-only runs unmodified).
+    (5) Missing analysis & Cytosim code: Neither Fig. 4g 2D PDF scripts, Fig. 4h Binder cumulant
+    U_4 (Eq. 5) code, nor Supplementary Fig. 12 Cytosim files exist anywhere in the repository,
+    leaving q_binder_cumulant_eq5_vs_fig4h_and_prose and q_cytosim_unstated permanently
+    unresolvable from public artifacts.
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "of AFINES, including the new features described here, as well as the full configuration"
+    where: "Methods, Simulation methods and analysis & Code availability (p. 9)"
+
+- id: q_cross_paper_citations_and_model_audit
+  kind: unexplained_difference
+  about:
+    - fascin_bundle_spacing_exp
+    - crosslinker_size_ratio_exp_printed
+    - sim_alpha_kon_koff_ratio_printed
+    - filament_persistence_length_from_modulus
+    - afines_crosslinker_sorting_2d
+    - cytosim_crosslinker_sorting
+    - supp_fig7d_bundle_width_bulk_fig
+    - winkelman2016/d_interfil_fascin_EM
+    - haviv2008/size_distribution_eq1
+    - graham2024/actin_persistence_length_from_rigidity
+  text: >
+    Cross-record audit of bashirzadeh2021 across its 11 paper/code partners (winkelman2016,
+    freedman2019, freedman2019_code, claessens2008, gov2008, haviv2008, liu2008, pelletier2003,
+    graham2023, graham2024, chandrasekaran2024) identifies three citation/characterization
+    discrepancies and documents why 0 cross-record validations apply in validations.yaml:
+    (1) winkelman2016 (ref-9): (a) bashirzadeh2021 p. 2 cites ref-8,9 for "tight parallel actin
+    bundles with about 6-nm spacing", whereas Winkelman et al. report ~8 nm interfilament spacing
+    by EM and prior literature (d_interfil_fascin_EM, d_interfil_fascin_lit), ~5 nm mean TIRFM
+    spacing (one Fig. 4B example = 6 nm), and ~5-6 nm for fascin's molecular diameter;
+    (b) p. 9's "~6" size ratio and p. 7's "ratio k_on/k_off for fascin was 40 while that for
+    alpha-actinin was 4^9" are not values printed by Winkelman et al. (who actually measured
+    nearly equal bundling K_D = 272 vs 290 nM and nearly equal k_off ~ 0.20 vs 0.22-0.25 s^-1,
+    tau ~ 5 s; 4 = 0.2/0.05 is Bashirzadeh et al.'s tuned AFINES kinetic ratio).
+    (2) haviv2008 (ref-40): p. 3 writes "while the distribution of bundle widths with molar ratio
+    of fascin is expected to be exponential^40". Haviv et al. (2008) Eq. 1 instead gives a peaked
+    filament-number distribution P(N_b) = R_n exp(2*(k_on/D)*sqrt(N_b) - (k_off/D)*N_b), whose
+    large-bundle tail is exponential in filament number N_b ~ D_b^2 (i.e., Gaussian exp(-c D_b^2)
+    in bundle width D_b), not exponential in bundle width vs fascin ratio.
+    (3) graham2024 false-positive citation pairing: graham2024 cites Wubshet, Bashirzadeh & Liu
+    (MBoC 32, 1634-1640, 2021; ref-12 and duplicate ref-44), not Bashirzadeh et al. (Commun. Biol.
+    4, 1136, 2021).
+    (4) Zero cross-record validations (validations.yaml = []): bashirzadeh2021's full many-body
+    AFINES and Cytosim models are runnable: false; its runnable role: model equations compute
+    AFINES pair/confinement potentials, t=0 confinement statistics, the Binder cumulant 2/3 bound,
+    3D tangent-vector correlation <C(s)>, and single-filament WLC L_p = kappa_b / k_B T. Across all
+    13 partners (275 total origin: measured datums), no partner reports bare single-filament L_p
+    paired with an independently measured kappa_b, raw <C(s)> vs s curves, or any other observable
+    predicted by bashirzadeh2021's runnable models.
+  citation:
+    page: 3
+    printed_page: "3"
+    quote: "distribution of bundle widths with molar ratio of fascin is"
+    where: "Results (pp. 2-3, 7) & Methods (p. 9)"
+
+
+

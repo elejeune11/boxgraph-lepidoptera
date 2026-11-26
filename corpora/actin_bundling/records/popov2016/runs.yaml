@@ -1,0 +1,758 @@
+# ---------------------------------------------------------------------------
+# 1. S2 Text Section A: Kuramoto length & inter-compartment diffusion rates
+# ---------------------------------------------------------------------------
+- id: run_tau_fastest_s2eq2
+  model: fastest_reaction_timescale_s2eq2
+  inputs:
+    k_poly_plus: k_actin_poly_plus
+    A: actin_conc_small
+  outputs:
+    tau: tau_fastest_computed
+
+- id: run_kuramoto_from_printed_tau
+  model: kuramoto_length_s2eq1
+  inputs:
+    D: D_actin
+    tau: tau_fastest_reaction_printed
+  outputs:
+    l_k: kuramoto_from_printed_tau
+
+- id: run_kuramoto_from_computed_tau
+  model: kuramoto_length_s2eq1
+  inputs:
+    D: D_actin
+    tau: tau_fastest_computed
+  outputs:
+    l_k: kuramoto_from_computed_tau
+
+- id: run_k_diff_actin
+  model: compartment_diffusion_rate_s2a
+  inputs:
+    D: D_actin
+    l_comp: compartment_length_s2
+  outputs:
+    k_diff: k_diff_actin_computed
+
+- id: run_D_alpha_reduced
+  model: reduced_diffusion_constant_s2a
+  inputs:
+    D_actin: D_actin
+    factor: alpha_diff_reduction_factor
+  outputs:
+    D_species: D_alpha_computed
+
+- id: run_k_diff_alpha
+  model: compartment_diffusion_rate_s2a
+  inputs:
+    D: D_alpha_computed
+    l_comp: compartment_length_s2
+  outputs:
+    k_diff: k_diff_alpha_computed
+
+- id: run_D_nmiia_reduced
+  model: reduced_diffusion_constant_s2a
+  inputs:
+    D_actin: D_actin
+    factor: nmiia_diff_reduction_factor
+  outputs:
+    D_species: D_nmiia_computed
+
+- id: run_k_diff_nmiia
+  model: compartment_diffusion_rate_s2a
+  inputs:
+    D: D_nmiia_computed
+    l_comp: compartment_length_s2
+  outputs:
+    k_diff: k_diff_nmiia_computed
+
+# ---------------------------------------------------------------------------
+# 2. Table 2A: Compartment bimolecular rates & NMIIA head unbinding rate
+# ---------------------------------------------------------------------------
+- id: run_k_actin_poly_plus_sim
+  model: compartment_bimolecular_rate_table2a
+  inputs:
+    k_macro: k_actin_poly_plus
+    l_comp: l_comp_table2d
+  outputs:
+    k_sim: k_actin_poly_plus_sim_computed
+
+- id: run_k_actin_poly_minus_sim
+  model: compartment_bimolecular_rate_table2a
+  inputs:
+    k_macro: k_actin_poly_minus
+    l_comp: l_comp_table2d
+  outputs:
+    k_sim: k_actin_poly_minus_sim_computed
+
+- id: run_k_alpha_bind_sim
+  model: compartment_bimolecular_rate_table2a
+  inputs:
+    k_macro: k_alpha_bind
+    l_comp: l_comp_table2d
+  outputs:
+    k_sim: k_alpha_bind_sim_computed
+
+- id: run_k_nmiia_unbind_0
+  model: nmiia_head_unbinding_from_duty_ratio
+  inputs:
+    k_bind: k_nmiia_bind
+    rho: nmiia_duty_ratio
+  outputs:
+    k_unbind_0: k_nmiia_unbind_0_computed
+
+# ---------------------------------------------------------------------------
+# 3. Table 2B & Table 2C: Bending energy, stall force, Brownian ratchet force
+# ---------------------------------------------------------------------------
+- id: run_eps_actin_bend_small
+  model: actin_cylinder_bending_energy_table2b
+  inputs:
+    l_p: actin_persistence_length_added
+    k_B_T: k_B_T
+    l_cyl: l_cyl_small
+  outputs:
+    eps_bend: eps_actin_bend_small_computed
+
+- id: run_eps_actin_bend_large
+  model: actin_cylinder_bending_energy_table2b
+  inputs:
+    l_p: actin_persistence_length_added
+    k_B_T: k_B_T
+    l_cyl: l_cyl_large
+  outputs:
+    eps_bend: eps_actin_bend_large_computed
+
+- id: run_mt_to_actin_bend_ratio
+  model: mt_to_actin_bending_energy_ratio
+  inputs:
+    l_p_MT: mt_persistence_length
+    l_mon_MT: mt_monomer_length
+    l_p_actin: actin_persistence_length_added
+    l_mon_actin: actin_monomer_length
+  outputs:
+    ratio_same_monomers: mt_to_actin_ratio_same_mon_computed
+    ratio_same_length: mt_to_actin_ratio_same_len_computed
+
+- id: run_F_nmiia_stall
+  model: nmiia_head_stall_force_table2c
+  inputs:
+    K_head: K_nmiia_stretching
+    d_step: nmiia_head_step_size
+  outputs:
+    F_stall: F_nmiia_stall_computed
+
+- id: run_F_actin_poly
+  model: actin_char_poly_force_brownian_ratchet
+  inputs:
+    k_B_T: k_B_T
+    l_mon: actin_monomer_length
+  outputs:
+    F_actin_poly: F_actin_poly_computed
+
+- id: run_nmiia_minifil_stiffness
+  model: nmiia_minifilament_stiffness
+  inputs:
+    N_total: nmiia_heads_eval_added
+    K_head: K_nmiia_stretching
+  outputs:
+    K_minifil: K_nmiia_minifil_20_computed
+
+# ---------------------------------------------------------------------------
+# 4. S3 Text Section A: NMIIA mechanochemical model (unloaded & stall load)
+# ---------------------------------------------------------------------------
+- id: run_nmiia_binding_rate
+  model: nmiia_binding_rate_s3eq1
+  inputs:
+    alpha: nmiia_alpha
+    k_bind: k_nmiia_bind
+    N_total: nmiia_heads_eval_added
+  outputs:
+    k_fil_bind: k_fil_bind_20_computed
+
+- id: run_nmiia_unloaded_walking
+  model: nmiia_unloaded_walking_rate_s3eq5
+  inputs:
+    N_total: nmiia_heads_eval_added
+    rho: nmiia_duty_ratio
+    k_bind: k_nmiia_bind
+    d_step: nmiia_head_step_size
+    l_site: actin_binding_site_spacing
+  outputs:
+    k_ens_walk_0: k_ens_walk_0_computed
+    v_walk_0: v_walk_0_computed
+    k_walk_cyl_0: k_walk_cyl_0_computed
+
+- id: run_nmiia_bound_heads_unloaded
+  model: nmiia_bound_heads_s3eq3
+  inputs:
+    rho: nmiia_duty_ratio
+    N_total: nmiia_heads_eval_added
+    gamma: nmiia_gamma
+    F_ext: zero_external_force_added
+  outputs:
+    N_bound: N_bound_unloaded_computed
+
+- id: run_nmiia_unbinding_unloaded
+  model: nmiia_unbinding_and_attachment_time_s3eq2
+  inputs:
+    beta: nmiia_beta
+    k_unbind_0: k_nmiia_unbind_0
+    N_bound: N_bound_unloaded_computed
+    F_ext: zero_external_force_added
+    F_unbind: F_nmiia_unbind
+  outputs:
+    k_fil_unbind: k_fil_unbind_unloaded_computed
+    tau_att: tau_att_unloaded_computed
+
+# Stall load as literally printed: F_ext = rho * K_head * d_step (= 1.5 pN)
+- id: run_nmiia_stall_load_printed
+  model: nmiia_stall_load_printed_s3a
+  inputs:
+    rho: nmiia_duty_ratio
+    K_head: K_nmiia_stretching
+    d_step: nmiia_head_step_size
+  outputs:
+    F_ext: F_stall_load_printed_computed
+
+- id: run_nmiia_bound_heads_stall_printed
+  model: nmiia_bound_heads_s3eq3
+  inputs:
+    rho: nmiia_duty_ratio
+    N_total: nmiia_heads_eval_added
+    gamma: nmiia_gamma
+    F_ext: F_stall_load_printed_computed
+  outputs:
+    N_bound: N_bound_stall_printed_computed
+
+- id: run_nmiia_unbinding_stall_printed
+  model: nmiia_unbinding_and_attachment_time_s3eq2
+  inputs:
+    beta: nmiia_beta
+    k_unbind_0: k_nmiia_unbind_0
+    N_bound: N_bound_stall_printed_computed
+    F_ext: F_stall_load_printed_computed
+    F_unbind: F_nmiia_unbind
+  outputs:
+    k_fil_unbind: k_fil_unbind_stall_printed_computed
+    tau_att: tau_att_stall_printed_computed
+
+- id: run_nmiia_walking_stall_printed
+  model: nmiia_loaded_walking_rate_s3eq4
+  inputs:
+    k_ens_walk_0: k_ens_walk_0_computed
+    F_stall: F_nmiia_stall
+    F_ext: F_stall_load_printed_computed
+    N_total: nmiia_heads_eval_added
+    zeta: nmiia_zeta
+    d_step: nmiia_head_step_size
+  outputs:
+    k_ens_walk: k_ens_walk_stall_printed_computed
+    v_walk: v_walk_stall_printed_computed
+
+# Variant stall load with mini-filament stiffness N_total * K_head (= 30 pN at N_total=20)
+- id: run_nmiia_stall_load_variant
+  model: nmiia_stall_load_minifil_variant
+  inputs:
+    rho: nmiia_duty_ratio
+    N_total: nmiia_heads_eval_added
+    K_head: K_nmiia_stretching
+    d_step: nmiia_head_step_size
+  outputs:
+    F_ext: F_stall_load_variant_computed
+
+- id: run_nmiia_bound_heads_stall_variant
+  model: nmiia_bound_heads_s3eq3
+  inputs:
+    rho: nmiia_duty_ratio
+    N_total: nmiia_heads_eval_added
+    gamma: nmiia_gamma
+    F_ext: F_stall_load_variant_computed
+  outputs:
+    N_bound: N_bound_stall_variant_computed
+
+- id: run_nmiia_unbinding_stall_variant
+  model: nmiia_unbinding_and_attachment_time_s3eq2
+  inputs:
+    beta: nmiia_beta
+    k_unbind_0: k_nmiia_unbind_0
+    N_bound: N_bound_stall_variant_computed
+    F_ext: F_stall_load_variant_computed
+    F_unbind: F_nmiia_unbind
+  outputs:
+    k_fil_unbind: k_fil_unbind_stall_variant_computed
+    tau_att: tau_att_stall_variant_computed
+
+- id: run_nmiia_walking_stall_variant
+  model: nmiia_loaded_walking_rate_s3eq4
+  inputs:
+    k_ens_walk_0: k_ens_walk_0_computed
+    F_stall: F_nmiia_stall
+    F_ext: F_stall_load_variant_computed
+    N_total: nmiia_heads_eval_added
+    zeta: nmiia_zeta
+    d_step: nmiia_head_step_size
+  outputs:
+    k_ens_walk: k_ens_walk_stall_variant_computed
+    v_walk: v_walk_stall_variant_computed
+
+# ---------------------------------------------------------------------------
+# 5. S2 Text Section C: Mini-filament copy counts & walking events/minimization
+# ---------------------------------------------------------------------------
+- id: run_nmiia_minifil_count_min
+  model: nmiia_minifilament_count_from_ratio
+  inputs:
+    R_ma: rm_a_min_small
+    A_tot: actin_conc_small
+    V: box_volume_small
+    N_mol: myosin_molecules_per_minifil_added
+  outputs:
+    N_minifil: nmiia_minifil_count_min_computed
+
+- id: run_nmiia_minifil_count_max
+  model: nmiia_minifilament_count_from_ratio
+  inputs:
+    R_ma: rm_a_max_small
+    A_tot: actin_conc_small
+    V: box_volume_small
+    N_mol: myosin_molecules_per_minifil_added
+  outputs:
+    N_minifil: nmiia_minifil_count_max_computed
+
+- id: run_walking_events_min
+  model: walking_events_per_minimization_s2c
+  inputs:
+    N_minifil: nmiia_minifil_count_min
+    k_walk_cyl: k_walk_cyl_0_computed
+    t_min: t_minimization
+  outputs:
+    N_walk: walking_events_min_computed
+
+- id: run_walking_events_max
+  model: walking_events_per_minimization_s2c
+  inputs:
+    N_minifil: nmiia_minifil_count_max
+    k_walk_cyl: k_walk_cyl_0_computed
+    t_min: t_minimization
+  outputs:
+    N_walk: walking_events_max_computed
+
+# ---------------------------------------------------------------------------
+# 6. S4 Text Eq. 1 & Main Text pp. 17, 22, 24, 25: [A_c], turnover, lengths, R_g
+# ---------------------------------------------------------------------------
+- id: run_actin_critical_conc
+  model: actin_critical_concentration_s4eq1
+  inputs:
+    k_depoly_plus: k_actin_depoly_plus
+    k_depoly_minus: k_actin_depoly_minus
+    k_poly_plus: k_actin_poly_plus
+    k_poly_minus: k_actin_poly_minus
+  outputs:
+    A_c: actin_crit_conc_computed
+
+- id: run_turnover_chi_low_analytical
+  model: actin_treadmilling_turnover_rate
+  inputs:
+    chi: chi_low
+    k_poly_plus: k_actin_poly_plus
+    k_depoly_plus: k_actin_depoly_plus
+    A_c: actin_crit_conc_computed
+  outputs:
+    J_tm: turnover_chi_low_analytical_computed
+
+- id: run_turnover_chi_base_analytical
+  model: actin_treadmilling_turnover_rate
+  inputs:
+    chi: chi_baseline
+    k_poly_plus: k_actin_poly_plus
+    k_depoly_plus: k_actin_depoly_plus
+    A_c: actin_crit_conc_computed
+  outputs:
+    J_tm: turnover_chi_base_analytical_computed
+
+- id: run_turnover_chi_high_analytical
+  model: actin_treadmilling_turnover_rate
+  inputs:
+    chi: chi_high
+    k_poly_plus: k_actin_poly_plus
+    k_depoly_plus: k_actin_depoly_plus
+    A_c: actin_crit_conc_computed
+  outputs:
+    J_tm: turnover_chi_high_analytical_computed
+
+- id: run_turnover_chi_low_minus_ss
+  model: actin_minus_end_turnover_rate
+  inputs:
+    chi: chi_low
+    k_depoly_minus: k_actin_depoly_minus
+    k_poly_minus: k_actin_poly_minus
+    A_ss: actin_conc_ss_s2
+  outputs:
+    J_minus: turnover_chi_low_minus_ss_computed
+
+- id: run_turnover_chi_base_minus_ss
+  model: actin_minus_end_turnover_rate
+  inputs:
+    chi: chi_baseline
+    k_depoly_minus: k_actin_depoly_minus
+    k_poly_minus: k_actin_poly_minus
+    A_ss: actin_conc_ss_s2
+  outputs:
+    J_minus: turnover_chi_base_minus_ss_computed
+
+- id: run_turnover_chi_high_minus_ss
+  model: actin_minus_end_turnover_rate
+  inputs:
+    chi: chi_high
+    k_depoly_minus: k_actin_depoly_minus
+    k_poly_minus: k_actin_poly_minus
+    A_ss: actin_conc_ss_s2
+  outputs:
+    J_minus: turnover_chi_high_minus_ss_computed
+
+- id: run_mean_length_small_mass_balance
+  model: mean_filament_length_mass_balance
+  inputs:
+    A_tot: actin_conc_small
+    A_ss: actin_conc_ss_s2
+    V: box_volume_small
+    N_fil: filament_count_small
+    l_mon: actin_monomer_length
+  outputs:
+    L_mean: mean_length_small_mass_balance_computed
+
+- id: run_mean_length_large_mass_balance
+  model: mean_filament_length_mass_balance
+  inputs:
+    A_tot: actin_conc_large
+    A_ss: actin_conc_ss_s2
+    V: box_volume_large
+    N_fil: filament_count_large
+    l_mon: actin_monomer_length
+  outputs:
+    L_mean: mean_length_large_mass_balance_computed
+
+- id: run_rg_bounds_small_cube
+  model: rg_cubic_domain_bounds_eq13
+  inputs:
+    L: box_length_small
+  outputs:
+    Rg_uniform: rg_uniform_1um_computed
+    Rg_max: rg_max_1um_computed
+
+- id: run_rg_bounds_large_cube
+  model: rg_cubic_domain_bounds_eq13
+  inputs:
+    L: box_length_large
+  outputs:
+    Rg_uniform: rg_uniform_3um_computed
+    Rg_max: rg_max_3um_computed
+
+- id: run_actin_aspect_ratio
+  model: actin_aspect_ratio_p8
+  inputs:
+    l_p: actin_persistence_length_added
+    sigma_0: actin_diameter
+  outputs:
+    aspect_ratio: actin_aspect_ratio_computed
+
+# ---------------------------------------------------------------------------
+# 7. Representative probe evaluations of mechanical & rate-law equations
+# ---------------------------------------------------------------------------
+- id: run_probe_eq1_bending
+  model: filament_bending_energy_eq1
+  inputs:
+    eps_bend: eps_actin_bend_small
+    theta: probe_bend_angle_added
+  outputs:
+    U_bend: probe_U_bend_computed
+
+- id: run_probe_eq2_stretching
+  model: filament_stretching_energy_eq2
+  inputs:
+    K_str: K_actin_str
+    l: probe_cyl_length_stretched_added
+    l_0: l_cyl_small
+  outputs:
+    U_str: probe_U_str_computed
+
+- id: run_probe_eq4_excluded_vol
+  model: cylinder_excluded_volume_eq4
+  inputs:
+    K_vol: K_actin_vol_dim_corrected_added
+    l_0: l_cyl_small
+    d: probe_cyl_separation_added
+  outputs:
+    U_vol: probe_U_vol_computed
+
+- id: run_probe_eq6_branch_str
+  model: branch_stretching_energy_eq6
+  inputs:
+    K_branch_str: probe_branch_K_str_added
+    d_ij: probe_branch_d_added
+    d_0: probe_branch_d0_added
+  outputs:
+    U_branch_str: probe_U_branch_str_computed
+
+- id: run_probe_eq7_branch_ang
+  model: branch_angular_energy_eq7
+  inputs:
+    eps_branch_ang: probe_branch_eps_ang_added
+    theta: probe_branch_angle_added
+    theta_0: arp23_branch_angle
+  outputs:
+    U_branch_ang: probe_U_branch_ang_computed
+
+- id: run_probe_eq8_branch_dihed
+  model: branch_dihedral_energy_eq8
+  inputs:
+    eps_branch_dihed: probe_branch_eps_dihed_added
+    phi: probe_branch_phi_added
+    phi_0: probe_branch_phi0_added
+  outputs:
+    U_branch_dihed: probe_U_branch_dihed_computed
+
+- id: run_probe_eq9_alpha_actinin_str
+  model: motor_crosslinker_stretching_energy_eq9
+  inputs:
+    K_motor: K_alpha_stretching
+    l_m: probe_alpha_stretched_len_added
+    l_0m: alpha_actinin_binding_range
+  outputs:
+    U_motor: probe_U_alpha_str_computed
+
+- id: run_probe_eq11_boundary
+  model: boundary_repulsion_energy_eq11
+  inputs:
+    eps_boundary: eps_boundary
+    d_i: probe_boundary_dist_added
+    lambda_boundary: lambda_boundary
+  outputs:
+    U_boundary: probe_U_boundary_computed
+
+- id: run_probe_s3eq6_alpha_slip
+  model: alpha_actinin_slip_bond_s3eq6
+  inputs:
+    k_unbind_0: k_alpha_unbind_0
+    F_ext: probe_pulling_force_added
+    F_unbind: F_alpha_unbind
+  outputs:
+    k_unbind: probe_k_alpha_unbind_loaded_computed
+
+- id: run_probe_s3eq7_brownian_ratchet
+  model: actin_brownian_ratchet_s3eq7
+  inputs:
+    k_poly_0: probe_k_poly_0_unimol_added
+    F_ext: probe_pulling_force_added
+    F_actin_poly: F_actin_poly
+  outputs:
+    k_poly: probe_k_actin_poly_loaded_computed
+
+- id: run_probe_eq15_msd_scaling
+  model: anomalous_diffusion_msd_eq15
+  inputs:
+    t: probe_msd_time_added
+    nu: probe_msd_nu_added
+  outputs:
+    msd: probe_msd_scaling_computed
+
+- id: run_probe_s4eq2_disp_error
+  model: filament_displacement_error_s4eq2
+  inputs:
+    x_bs: probe_x_bs_added
+    x_cg: probe_x_cg_added
+    L: s4_benchmark_filament_length
+  outputs:
+    e_d: probe_e_d_computed
+
+# ---------------------------------------------------------------------------
+# 8. Digitized figure model checks & cross-figure consistency runs
+# ---------------------------------------------------------------------------
+- id: run_fig6_bound_rma0p005
+  model: rg_cubic_bound_sweep_eq13
+  inputs:
+    L: box_length_small
+  sweep:
+    R_alpha_a: fig6_rg_rma0p005_fig
+  outputs:
+    Rg_max: fig6_rg_max_1um_rma0p005_computed
+    Rg_uniform: fig6_rg_unif_1um_rma0p005_computed
+
+- id: run_fig6_bound_rma0p01
+  model: rg_cubic_bound_sweep_eq13
+  inputs:
+    L: box_length_small
+  sweep:
+    R_alpha_a: fig6_rg_rma0p01_fig
+  outputs:
+    Rg_max: fig6_rg_max_1um_rma0p01_computed
+    Rg_uniform: fig6_rg_unif_1um_rma0p01_computed
+
+- id: run_fig6_bound_rma0p02
+  model: rg_cubic_bound_sweep_eq13
+  inputs:
+    L: box_length_small
+  sweep:
+    R_alpha_a: fig6_rg_rma0p02_fig
+  outputs:
+    Rg_max: fig6_rg_max_1um_rma0p02_computed
+    Rg_uniform: fig6_rg_unif_1um_rma0p02_computed
+
+- id: run_fig6_from_fig8_unif_1um
+  model: rg_from_initial_and_fig8_ratios
+  inputs:
+    Rg_i: rg_uniform_1um_computed
+    c_0p01: fig8_rg_ratio_ra0p01_fig
+    c_0p02: fig8_rg_ratio_ra0p02_fig
+    c_0p05: fig8_rg_ratio_ra0p05_fig
+    c_0p1: fig8_rg_ratio_ra0p1_fig
+    c_0p2: fig8_rg_ratio_ra0p2_fig
+    c_0p5: fig8_rg_ratio_ra0p5_fig
+  outputs:
+    Rg_final: fig6_from_fig8_unif_1um_computed
+
+- id: run_fig6_from_fig8_unif_3um
+  model: rg_from_initial_and_fig8_ratios
+  inputs:
+    Rg_i: rg_uniform_3um_computed
+    c_0p01: fig8_rg_ratio_ra0p01_fig
+    c_0p02: fig8_rg_ratio_ra0p02_fig
+    c_0p05: fig8_rg_ratio_ra0p05_fig
+    c_0p1: fig8_rg_ratio_ra0p1_fig
+    c_0p2: fig8_rg_ratio_ra0p2_fig
+    c_0p5: fig8_rg_ratio_ra0p5_fig
+  outputs:
+    Rg_final: fig6_from_fig8_unif_3um_computed
+
+- id: run_fig12a_loglog_nu_fit
+  model: msd_loglog_fit_eq15
+  inputs:
+    msd_0p125: fig12a_msd_chi0p125_fig
+    msd_0p25: fig12a_msd_chi0p25_fig
+    msd_0p5: fig12a_msd_chi0p5_fig
+    msd_1: fig12a_msd_chi1_fig
+    msd_2: fig12a_msd_chi2_fig
+    msd_4: fig12a_msd_chi4_fig
+    msd_8: fig12a_msd_chi8_fig
+    t_cut: msd_fit_cutoff_time
+  outputs:
+    nu_vs_chi: fig12a_nu_fitted_computed
+
+- id: run_extract_nu_chi0p125
+  model: extract_nu_at_chi
+  inputs: {nu_curve: fig12b_nu_vs_chi_fig, chi: chi_low}
+  outputs: {nu: nu_fig12b_chi0p125}
+
+- id: run_extract_nu_chi0p25
+  model: extract_nu_at_chi
+  inputs: {nu_curve: fig12b_nu_vs_chi_fig, chi: chi_0p25}
+  outputs: {nu: nu_fig12b_chi0p25}
+
+- id: run_extract_nu_chi0p5
+  model: extract_nu_at_chi
+  inputs: {nu_curve: fig12b_nu_vs_chi_fig, chi: chi_0p5}
+  outputs: {nu: nu_fig12b_chi0p5}
+
+- id: run_extract_nu_chi1
+  model: extract_nu_at_chi
+  inputs: {nu_curve: fig12b_nu_vs_chi_fig, chi: chi_baseline}
+  outputs: {nu: nu_fig12b_chi1}
+
+- id: run_extract_nu_chi2
+  model: extract_nu_at_chi
+  inputs: {nu_curve: fig12b_nu_vs_chi_fig, chi: chi_2}
+  outputs: {nu: nu_fig12b_chi2}
+
+- id: run_extract_nu_chi4
+  model: extract_nu_at_chi
+  inputs: {nu_curve: fig12b_nu_vs_chi_fig, chi: chi_4}
+  outputs: {nu: nu_fig12b_chi4}
+
+- id: run_extract_nu_chi8
+  model: extract_nu_at_chi
+  inputs: {nu_curve: fig12b_nu_vs_chi_fig, chi: chi_high}
+  outputs: {nu: nu_fig12b_chi8}
+
+- id: run_eq15_msd_chi0p125
+  model: anomalous_diffusion_msd_eq15
+  inputs: {nu: nu_fig12b_chi0p125}
+  sweep: {t: fig12a_msd_chi0p125_fig}
+  outputs: {msd: eq15_msd_chi0p125_computed}
+
+- id: run_eq15_msd_chi0p25
+  model: anomalous_diffusion_msd_eq15
+  inputs: {nu: nu_fig12b_chi0p25}
+  sweep: {t: fig12a_msd_chi0p25_fig}
+  outputs: {msd: eq15_msd_chi0p25_computed}
+
+- id: run_eq15_msd_chi0p5
+  model: anomalous_diffusion_msd_eq15
+  inputs: {nu: nu_fig12b_chi0p5}
+  sweep: {t: fig12a_msd_chi0p5_fig}
+  outputs: {msd: eq15_msd_chi0p5_computed}
+
+- id: run_eq15_msd_chi1
+  model: anomalous_diffusion_msd_eq15
+  inputs: {nu: nu_fig12b_chi1}
+  sweep: {t: fig12a_msd_chi1_fig}
+  outputs: {msd: eq15_msd_chi1_computed}
+
+- id: run_eq15_msd_chi2
+  model: anomalous_diffusion_msd_eq15
+  inputs: {nu: nu_fig12b_chi2}
+  sweep: {t: fig12a_msd_chi2_fig}
+  outputs: {msd: eq15_msd_chi2_computed}
+
+- id: run_eq15_msd_chi4
+  model: anomalous_diffusion_msd_eq15
+  inputs: {nu: nu_fig12b_chi4}
+  sweep: {t: fig12a_msd_chi4_fig}
+  outputs: {msd: eq15_msd_chi4_computed}
+
+- id: run_eq15_msd_chi8
+  model: anomalous_diffusion_msd_eq15
+  inputs: {nu: nu_fig12b_chi8}
+  sweep: {t: fig12a_msd_chi8_fig}
+  outputs: {msd: eq15_msd_chi8_computed}
+
+- id: run_s4fig1_nrm_final
+  model: curve_terminal_value_length
+  inputs: {length_curve: s4fig1_length_nrm_fig}
+  outputs: {L_final: s4fig1_nrm_final_length}
+
+- id: run_s4fig1_gillespie_final
+  model: curve_terminal_value_length
+  inputs: {length_curve: s4fig1_length_gillespie_fig}
+  outputs: {L_final: s4fig1_gillespie_final_length}
+
+- id: run_s4fig2_nrm_final
+  model: curve_terminal_value_conc
+  inputs: {conc_curve: s4fig2_conc_nrm_fig}
+  outputs: {A_final: s4fig2_nrm_final_conc}
+
+- id: run_s4fig2_gillespie_final
+  model: curve_terminal_value_conc
+  inputs: {conc_curve: s4fig2_conc_gillespie_fig}
+  outputs: {A_final: s4fig2_gillespie_final_conc}
+
+- id: run_s4fig3_speedup
+  model: algorithm_speedup_from_s4fig3
+  inputs:
+    t_gillespie: s4fig3_time_gillespie_fig
+    t_nrm: s4fig3_time_nrm_fig
+  outputs:
+    speedup_t10: s4fig3_speedup_t10_computed
+    speedup_max: s4fig3_speedup_max_computed
+
+- id: run_s4fig4_peak_actin_5pN
+  model: peak_displacement_error_s4fig4
+  inputs: {err_curve: s4fig4_err_actin_5pN_fig}
+  outputs: {max_e_d: s4fig4_peak_actin_5pN_computed}
+
+- id: run_s4fig4_peak_actin_1pN
+  model: peak_displacement_error_s4fig4
+  inputs: {err_curve: s4fig4_err_actin_1pN_fig}
+  outputs: {max_e_d: s4fig4_peak_actin_1pN_computed}
+
+- id: run_s4fig4_peak_mt_1pN
+  model: peak_displacement_error_s4fig4
+  inputs: {err_curve: s4fig4_err_mt_1pN_fig}
+  outputs: {max_e_d: s4fig4_peak_mt_1pN_computed}

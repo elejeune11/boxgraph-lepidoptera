@@ -1,0 +1,437 @@
+# Model runs for bashirzadeh2021
+
+# ---------------------------------------------------------------------------
+# Crosslinker kinetics, geometry, and experimental molar ratios
+# ---------------------------------------------------------------------------
+- id: run_fascin_affinity_ratio
+  model: crosslinker_affinity_ratio
+  inputs: {k_on: sim_fascin_kon, k_off: sim_fascin_koff}
+  outputs: {K_ratio: sim_fascin_kon_koff_computed}
+
+- id: run_alpha_affinity_ratio
+  model: crosslinker_affinity_ratio
+  inputs: {k_on: sim_alpha_kon, k_off: sim_alpha_koff}
+  outputs: {K_ratio: sim_alpha_kon_koff_computed}
+
+- id: run_crosslinker_size_ratio_exp
+  model: crosslinker_size_ratio
+  inputs: {l_alpha: alpha_actinin_dimer_length_exp, l_fascin: fascin_bundle_spacing_exp}
+  outputs: {size_ratio: crosslinker_size_ratio_exp_computed}
+
+- id: run_crosslinker_size_ratio_sim
+  model: crosslinker_size_ratio
+  inputs: {l_alpha: sim_alpha_rest_length, l_fascin: sim_fascin_rest_length}
+  outputs: {size_ratio: crosslinker_size_ratio_sim_computed}
+
+- id: run_alpha_molar_ratios_sweep
+  model: crosslinker_molar_ratio
+  inputs: {C_actin: exp_actin_conc}
+  sweep: {C_xl: exp_alpha_actinin_molar_ratios_table}
+  outputs: {r_xl: alpha_molar_ratios_computed}
+
+- id: run_fascin_molar_ratios_sweep
+  model: crosslinker_molar_ratio
+  inputs: {C_actin: exp_actin_conc}
+  sweep: {C_xl: exp_fascin_molar_ratios_table}
+  outputs: {r_xl: fascin_molar_ratios_computed}
+
+# ---------------------------------------------------------------------------
+# cDICE rotation speed unit conversion check (Methods, p. 8)
+# ---------------------------------------------------------------------------
+- id: run_cdice_rotation_hz
+  model: rotational_frequency_from_rpm
+  inputs: {omega_rpm: cdice_rotation_rpm}
+  outputs: {f_rot: cdice_rotation_hz_computed}
+
+# ---------------------------------------------------------------------------
+# GUV sample count bin-summation checks (Figs. 1-3)
+# ---------------------------------------------------------------------------
+- id: run_fig1f_sum_01
+  model: sample_size_sum
+  inputs: {N_a: fig1_nguv_01_small, N_b: fig1_nguv_01_medium}
+  outputs: {N_total: fig1f_nguv_01_computed}
+
+- id: run_fig1f_sum_02
+  model: sample_size_sum
+  inputs: {N_a: fig1_nguv_02_small, N_b: fig1_nguv_02_medium}
+  outputs: {N_total: fig1f_nguv_02_computed}
+
+- id: run_fig1f_sum_03
+  model: sample_size_sum
+  inputs: {N_a: fig1_nguv_03_small, N_b: fig1_nguv_03_medium}
+  outputs: {N_total: fig1f_nguv_03_computed}
+
+- id: run_fig2f_sum_01
+  model: sample_size_sum
+  inputs: {N_a: fig2_nguv_01_small, N_b: fig2_nguv_01_medium}
+  outputs: {N_total: fig2f_nguv_01_computed}
+
+- id: run_fig2f_sum_02
+  model: sample_size_sum
+  inputs: {N_a: fig2_nguv_02_small, N_b: fig2_nguv_02_medium}
+  outputs: {N_total: fig2f_nguv_02_computed}
+
+- id: run_fig2f_sum_03
+  model: sample_size_sum
+  inputs: {N_a: fig2_nguv_03_small, N_b: fig2_nguv_03_medium}
+  outputs: {N_total: fig2f_nguv_03_computed}
+
+- id: run_fig3c_sum
+  model: sample_size_sum
+  inputs: {N_a: fig3c_nguv_alpha_only, N_b: fig3c_nguv_alpha_fascin}
+  outputs: {N_total: fig3c_nguv_total_computed}
+
+- id: run_fig3d_sum
+  model: sample_size_sum
+  inputs: {N_a: fig3d_nguv_17to24, N_b: fig3d_nguv_gt24}
+  outputs: {N_total: fig3d_nguv_total_computed}
+
+# ---------------------------------------------------------------------------
+# Welch two-sample unequal-variance t-tests on Fig. 4e persistence lengths
+# ---------------------------------------------------------------------------
+- id: run_welch_0110_vs_1110
+  model: welch_two_sample_t_test
+  inputs:
+    mean1: Lp_0_1_10
+    sem1: Lp_sem_0_1_10
+    n1: nbundles_0_1_10
+    mean2: Lp_1_1_10
+    sem2: Lp_sem_1_1_10
+    n2: nbundles_1_1_10
+  outputs: {p_value: welch_p_0110_vs_1110_computed}
+
+- id: run_welch_1110_vs_1310
+  model: welch_two_sample_t_test
+  inputs:
+    mean1: Lp_1_1_10
+    sem1: Lp_sem_1_1_10
+    n1: nbundles_1_1_10
+    mean2: Lp_1_3_10
+    sem2: Lp_sem_1_3_10
+    n2: nbundles_1_3_10
+  outputs: {p_value: welch_p_1110_vs_1310_computed}
+
+- id: run_welch_0310_vs_1310
+  model: welch_two_sample_t_test
+  inputs:
+    mean1: Lp_0_3_10
+    sem1: Lp_sem_0_3_10
+    n1: nbundles_0_3_10
+    mean2: Lp_1_3_10
+    sem2: Lp_sem_1_3_10
+    n2: nbundles_1_3_10
+  outputs: {p_value: welch_p_0310_vs_1310_computed}
+
+# ---------------------------------------------------------------------------
+# Orientational correlation and persistence length checks (Methods, p. 8)
+# ---------------------------------------------------------------------------
+- id: run_lp_intercept_bounds
+  model: persistence_length_intercept_amplitude
+  inputs: {abs_ln_C0: lp_max_abs_ln_C0}
+  outputs:
+    C_0_upper: C0_upper_from_max_intercept
+    C_0_lower: C0_lower_from_max_intercept
+
+- id: run_orientational_corr_1_3_10
+  model: orientational_correlation_3d
+  inputs: {C_0: lp_assumed_C0, s: probe_arc_length_added, L_p_eff: Lp_1_3_10}
+  outputs: {C_s: C_s_1_3_10_at_10um}
+
+- id: run_orientational_corr_unit_1_3_10
+  model: orientational_correlation_unit_intercept
+  inputs: {s: probe_arc_length_added, L_p_eff: Lp_1_3_10}
+  outputs: {C_s: C_s_unit_1_3_10_at_10um}
+
+# ---------------------------------------------------------------------------
+# AFINES potential energy, polymer mechanics, and simulation geometry (Eqs. 1-4, Supp. Tables 2-3)
+# ---------------------------------------------------------------------------
+- id: run_eq3_confinement_probe
+  model: afines_confinement_potential_eq3
+  inputs: {k_c: sim_confinement_stiffness, r: probe_r_outside_added, r_c: sim_confinement_radius}
+  outputs: {U_confine: U_confine_probe_16um}
+
+- id: run_eq4_align_fascin_antiparallel
+  model: afines_alignment_potential_eq4
+  inputs: {k_xl_align: sim_fascin_k_align, theta: probe_theta_antiparallel_added}
+  outputs: {U_xl_align: U_align_fascin_antiparallel}
+
+- id: run_eq4_align_alpha_antiparallel
+  model: afines_alignment_potential_eq4
+  inputs: {k_xl_align: sim_alpha_k_align, theta: probe_theta_antiparallel_added}
+  outputs: {U_xl_align: U_align_alpha_antiparallel}
+
+- id: run_xl_stretch_fascin_probe
+  model: crosslinker_harmonic_stretch_potential
+  inputs: {kappa: sim_fascin_stiffness, d: probe_xl_distance_added, l: sim_fascin_rest_length}
+  outputs: {U_xl_stretch: U_stretch_fascin_probe}
+
+- id: run_eq1_filament_potential_probe
+  model: afines_filament_potential_eq1
+  inputs:
+    U_f_stretch: probe_zero_energy_added
+    U_f_bend: probe_zero_energy_added
+    U_f_confine: U_confine_probe_16um
+  outputs: {U_f: U_f_probe_total}
+
+- id: run_eq2_crosslinker_potential_probe
+  model: afines_crosslinker_potential_eq2
+  inputs:
+    U_xl_stretch: U_stretch_fascin_probe
+    U_xl_bind: probe_zero_energy_added
+    U_xl_confine: U_confine_probe_16um
+    U_xl_align: U_align_fascin_antiparallel
+  outputs: {U_xl: U_xl_probe_total}
+
+- id: run_filament_contour_length
+  model: filament_contour_length
+  inputs: {N_beads: sim_beads_per_polymer, l_link: sim_link_length}
+  outputs: {L_f: sim_filament_contour_length_computed}
+
+- id: run_single_filament_lp
+  model: filament_persistence_length_from_modulus
+  inputs: {kappa_b: sim_polymer_bending_modulus, kBT: kBT_room_temp_added}
+  outputs: {L_p: sim_single_filament_lp_computed}
+
+- id: run_sim_step_count
+  model: simulation_step_count
+  inputs: {t_end: sim_end_time, dt: sim_time_step}
+  outputs: {N_steps: sim_total_steps_computed}
+
+- id: run_vesicle_xl_count
+  model: vesicle_crosslinker_count
+  inputs: {rho_xl: sim_crosslinker_density, r_c: sim_confinement_radius}
+  outputs: {N_xl: sim_vesicle_xl_count_computed}
+
+- id: run_initial_filament_confinement
+  model: afines_initial_filament_confinement
+  inputs:
+    N_beads: sim_beads_per_polymer
+    l_link: sim_link_length
+    sigma_disp: sim_init_displacement_sd
+    r_c: sim_confinement_radius
+    k_c: sim_confinement_stiffness
+  settings: {n_samples: 500, seed: 42}
+  replicates: 5
+  outputs:
+    frac_outside: sim_init_frac_beads_outside
+    mean_U_confine: sim_init_mean_U_confine
+
+# ---------------------------------------------------------------------------
+# 2D histogram PDF normalization and Eq. 5 Binder cumulant checks (p. 7, p. 9, Fig. 4g-h)
+# ---------------------------------------------------------------------------
+- id: run_hist_pdf_uniform_disk
+  model: histogram_pdf_normalization
+  inputs:
+    n_bin: hist_uniform_bin_count_added
+    N_total: hist_uniform_total_count_added
+    L_domain: hist_domain_width_added
+    N_bins: sim_hist_bins_per_axis
+  outputs: {pdf_val: hist_uniform_disk_pdf_computed}
+
+- id: run_eq5_binder_gaussian
+  model: binder_cumulant_eq5
+  inputs: {m2: gaussian_m2_added, m4: gaussian_m4_added}
+  outputs: {U_4: U4_eq5_gaussian_computed}
+
+- id: run_eq5_binder_uniform_supremum
+  model: binder_cumulant_eq5
+  inputs: {m2: gaussian_m2_added, m4: uniform_m4_added}
+  outputs: {U_4: U4_eq5_uniform_bound_computed}
+
+- id: run_eq5_binder_2d_grid_printed
+  model: binder_cumulant_eq5_2d_grid
+  inputs: {r_c: sim_confinement_radius, sigma: pdf_gaussian_sigma_added}
+  settings: {n_bins: 20}
+  outputs:
+    U_4: U4_eq5_2d_grid_computed
+    peak_pdf: peak_pdf_2d_grid_computed
+
+- id: run_sum_binder_2d_grid_variant
+  model: binder_cumulant_sum_2d_grid
+  inputs: {r_c: sim_confinement_radius, sigma: pdf_gaussian_sigma_added}
+  settings: {n_bins: 20}
+  outputs:
+    U_4: U4_sum_2d_grid_computed
+    peak_pdf: peak_pdf_sum_variant_computed
+
+# ---------------------------------------------------------------------------
+# Digitized Fig. 4h Binder cumulant trajectories vs printed Eq. 5 Cauchy-Schwarz bound (40 points)
+# ---------------------------------------------------------------------------
+- id: run_eq5_bound_fig4h_single_alpha
+  model: binder_cumulant_eq5_bound_vs_time
+  inputs: {}
+  sweep: {t: fig4h_single_alpha_actinin_fig}
+  outputs: {U_4: U4_eq5_bound_fig4h_single_alpha_computed}
+
+- id: run_eq5_bound_fig4h_single_fascin
+  model: binder_cumulant_eq5_bound_vs_time
+  inputs: {}
+  sweep: {t: fig4h_single_fascin_fig}
+  outputs: {U_4: U4_eq5_bound_fig4h_single_fascin_computed}
+
+- id: run_eq5_bound_fig4h_combined_alpha
+  model: binder_cumulant_eq5_bound_vs_time
+  inputs: {}
+  sweep: {t: fig4h_combined_alpha_actinin_fig}
+  outputs: {U_4: U4_eq5_bound_fig4h_combined_alpha_computed}
+
+- id: run_eq5_bound_fig4h_combined_fascin
+  model: binder_cumulant_eq5_bound_vs_time
+  inputs: {}
+  sweep: {t: fig4h_combined_fascin_fig}
+  outputs: {U_4: U4_eq5_bound_fig4h_combined_fascin_computed}
+
+# ---------------------------------------------------------------------------
+# Digitized Fig. 4e & Supp. Fig. 9c bar heights vs printed caption means
+# ---------------------------------------------------------------------------
+- id: run_extract_fig4e_lp_0_1_10
+  model: extract_lp_at_alpha_ratio
+  inputs: {lp_curve: fig4e_lp_no_fascin_fig}
+  settings: {target_ratio: 0.1}
+  outputs: {L_p: fig4e_lp_0_1_10_extracted}
+
+- id: run_extract_fig4e_lp_0_3_10
+  model: extract_lp_at_alpha_ratio
+  inputs: {lp_curve: fig4e_lp_no_fascin_fig}
+  settings: {target_ratio: 0.3}
+  outputs: {L_p: fig4e_lp_0_3_10_extracted}
+
+- id: run_extract_fig4e_lp_1_1_10
+  model: extract_lp_at_alpha_ratio
+  inputs: {lp_curve: fig4e_lp_plus_fascin_fig}
+  settings: {target_ratio: 0.1}
+  outputs: {L_p: fig4e_lp_1_1_10_extracted}
+
+- id: run_extract_fig4e_lp_1_2_10
+  model: extract_lp_at_alpha_ratio
+  inputs: {lp_curve: fig4e_lp_plus_fascin_fig}
+  settings: {target_ratio: 0.2}
+  outputs: {L_p: fig4e_lp_1_2_10_extracted}
+
+- id: run_extract_fig4e_lp_1_3_10
+  model: extract_lp_at_alpha_ratio
+  inputs: {lp_curve: fig4e_lp_plus_fascin_fig}
+  settings: {target_ratio: 0.3}
+  outputs: {L_p: fig4e_lp_1_3_10_extracted}
+
+- id: run_extract_supp_fig9c_lp_0p1
+  model: extract_lp_at_fascin_ratio
+  inputs: {lp_curve: supp_fig9c_bundle_lp_fig}
+  settings: {target_ratio: 0.1}
+  outputs: {L_p: supp_fig9c_lp_0p1_extracted}
+
+# ---------------------------------------------------------------------------
+# Welch two-sample t-tests on Fig. 4e using digitized plotted SEMs (resolving q_welch_pvalues_fig4e)
+# ---------------------------------------------------------------------------
+- id: run_welch_0110_vs_1110_fig4e_sems
+  model: welch_two_sample_t_test
+  inputs:
+    mean1: Lp_0_1_10
+    sem1: fig4e_plotted_sem_0_1_10_added
+    n1: nbundles_0_1_10
+    mean2: Lp_1_1_10
+    sem2: fig4e_plotted_sem_1_1_10_added
+    n2: nbundles_1_1_10
+  outputs: {p_value: welch_p_0110_vs_1110_plotted_sems}
+
+- id: run_welch_1110_vs_1310_fig4e_sems
+  model: welch_two_sample_t_test
+  inputs:
+    mean1: Lp_1_1_10
+    sem1: fig4e_plotted_sem_1_1_10_added
+    n1: nbundles_1_1_10
+    mean2: Lp_1_3_10
+    sem2: fig4e_plotted_sem_1_3_10_added
+    n2: nbundles_1_3_10
+  outputs: {p_value: welch_p_1110_vs_1310_plotted_sems}
+
+- id: run_welch_0310_vs_1310_fig4e_sems
+  model: welch_two_sample_t_test
+  inputs:
+    mean1: Lp_0_3_10
+    sem1: fig4e_plotted_sem_0_3_10_added
+    n1: nbundles_0_3_10
+    mean2: Lp_1_3_10
+    sem2: fig4e_plotted_sem_1_3_10_added
+    n2: nbundles_1_3_10
+  outputs: {p_value: welch_p_0310_vs_1310_plotted_sems}
+
+# ---------------------------------------------------------------------------
+# Architecture probability-partition conservation: 100% - Ring% vs (Network + Ring/Network)%
+# ---------------------------------------------------------------------------
+- id: run_fig1c_complement_0p1
+  model: architecture_complement_percent
+  inputs: {ring_curve: fig1c_ring_pct_0p1_fig}
+  outputs: {non_ring_curve: fig1c_non_ring_pct_0p1_computed}
+
+- id: run_fig1c_complement_0p2
+  model: architecture_complement_percent
+  inputs: {ring_curve: fig1c_ring_pct_0p2_fig}
+  outputs: {non_ring_curve: fig1c_non_ring_pct_0p2_computed}
+
+- id: run_fig1c_complement_0p3
+  model: architecture_complement_percent
+  inputs: {ring_curve: fig1c_ring_pct_0p3_fig}
+  outputs: {non_ring_curve: fig1c_non_ring_pct_0p3_computed}
+
+- id: run_fig2d_complement_0p1
+  model: architecture_complement_percent
+  inputs: {ring_curve: fig2d_ring_pct_0p1_fig}
+  outputs: {non_ring_curve: fig2d_non_ring_pct_0p1_computed}
+
+- id: run_fig2d_complement_0p2
+  model: architecture_complement_percent
+  inputs: {ring_curve: fig2d_ring_pct_0p2_fig}
+  outputs: {non_ring_curve: fig2d_non_ring_pct_0p2_computed}
+
+- id: run_fig2d_complement_0p3
+  model: architecture_complement_percent
+  inputs: {ring_curve: fig2d_ring_pct_0p3_fig}
+  outputs: {non_ring_curve: fig2d_non_ring_pct_0p3_computed}
+
+# ---------------------------------------------------------------------------
+# NGUVs-weighted ring probability (Figs. 1c & 2d) vs cumulative bars (Figs. 1b & 2b)
+# ---------------------------------------------------------------------------
+- id: run_fig1c_nguv_weighted_ring
+  model: nguv_weighted_ring_probability
+  inputs:
+    ring_01: fig1c_ring_pct_0p1_fig
+    ring_02: fig1c_ring_pct_0p2_fig
+    ring_03: fig1c_ring_pct_0p3_fig
+    N01_1: fig1_nguv_01_small
+    N01_2: fig1_nguv_01_medium
+    N01_3: fig1_nguv_01_large
+    N02_1: fig1_nguv_02_small
+    N02_2: fig1_nguv_02_medium
+    N02_3: fig1_nguv_02_large
+    N03_1: fig1_nguv_03_small
+    N03_2: fig1_nguv_03_medium
+    N03_3: fig1_nguv_03_large
+  outputs: {pooled_ring_prob: fig1c_nguv_weighted_ring_prob_computed}
+
+- id: run_fig2d_nguv_weighted_ring
+  model: nguv_weighted_ring_probability
+  inputs:
+    ring_01: fig2d_ring_pct_0p1_fig
+    ring_02: fig2d_ring_pct_0p2_fig
+    ring_03: fig2d_ring_pct_0p3_fig
+    N01_1: fig2_nguv_01_small
+    N01_2: fig2_nguv_01_medium
+    N01_3: fig2_nguv_01_large
+    N02_1: fig2_nguv_02_small
+    N02_2: fig2_nguv_02_medium
+    N02_3: fig2_nguv_02_large
+    N03_1: fig2_nguv_03_small
+    N03_2: fig2_nguv_03_medium
+    N03_3: fig2_nguv_03_large
+  outputs: {pooled_ring_prob: fig2d_nguv_weighted_ring_prob_computed}
+
+# ---------------------------------------------------------------------------
+# Supp. Fig. 7d bulk vs encapsulated central aster bundle width at fascin/actin = 0.1
+# ---------------------------------------------------------------------------
+- id: run_supp_fig7d_bulk_width_0p1
+  model: extract_bundle_width_at_fascin_ratio
+  inputs: {width_curve: supp_fig7d_bundle_width_bulk_fig}
+  settings: {target_ratio: 0.1}
+  outputs: {matched_width: supp_fig7d_bulk_width_0p1_extracted}
+

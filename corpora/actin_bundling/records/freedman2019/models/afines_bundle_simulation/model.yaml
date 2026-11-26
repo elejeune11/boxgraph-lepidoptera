@@ -1,0 +1,53 @@
+id: afines_bundle_simulation
+name: 2D agent-based AFINES two-filament bundling simulation (SI Section A & Table S1)
+role: model
+stated:
+  page: 8
+  printed_page: "SI-2"
+  quote: "In AFINES, actin filaments and passive crosslinkers are modeled as coarse-grained entities"
+  where: SI Section A, Eqs. 1-6 & Table S1
+equation: "r(t+dt) = r(t) + F(r(t)) mu dt + sqrt(k_B T mu dt / 2)(W(t+dt) + W(t)) coupled with MC cross-linker binding/unbinding and Markovian barbed-end growth"
+inputs:
+  N_f: {quantity: filament_count, unit: dimensionless}
+  L_0: {quantity: filament_length, unit: um}
+  l_a: {quantity: filament_link_length, unit: um}
+  k_a: {quantity: stretching_stiffness, unit: pN/um}
+  kappa_B: {quantity: bending_modulus, unit: pN*um^2}
+  l_short: {quantity: crosslinker_length, unit: um}
+  l_long: {quantity: crosslinker_length, unit: um}
+  k_xl: {quantity: stretching_stiffness, unit: pN/um}
+  kappa_short_B: {quantity: crosslinker_bending_stiffness, unit: pN*um}
+  rho_long: {quantity: areal_density, unit: 1/um^2}
+  k_on_1: {quantity: head_binding_rate, unit: 1/s}
+  k_off_1: {quantity: head_binding_rate, unit: 1/s}
+  T: {quantity: temperature, unit: K}
+  nu: {quantity: dynamic_viscosity, unit: Pa*s}
+outputs:
+  domain_length: {quantity: domain_length, unit: um}
+settings:
+  dt: 0.00002
+  t_F: 2000
+  n_seeds: 40
+  seed: 0
+built_from:
+  - filament_potential_si_eq1
+  - filament_growth_rate_si_eq2
+  - excluded_volume_si_eq3_printed
+  - crosslinker_potential_si_eq4
+  - force_lever_rule_si_eq5
+  - crosslinker_bending_calibration_si
+  - stokes_mobility_si_eq6
+  - brownian_step_si_eq6
+described_from: ref-23
+runnable: false
+not_runnable_reason: >
+  Full 2D coarse-grained molecular dynamics + Monte Carlo simulation of growing actin filaments
+  and diffusing cross-linkers requires 10^8 Brownian dynamics steps per seed across 40 seeds in
+  the C++ AFINES codebase (cataloged separately in freedman2019_code), and the paper omits several
+  required implementation parameters: bead and cross-linker hydrodynamic radii R in Stokes mobility
+  SI Eq. (6), MC head capture radius and spatial grid lookup rule using g = 2.5 um^-1, propagation
+  of cross-linker angular bending torques from U_xl^bend onto filament beads, whether U_xl^bind
+  enters Delta U in MC acceptance probabilities, the empirical kappa_long^B/kappa_short^B rule on
+  the undefined interval (200, 300) nm (including l_long = 227 nm), and the dimensional correction
+  of k_exv (printed as pN*um^2 instead of energy units pN*um in SI Eq. 3 & Table S1).
+stochastic: true

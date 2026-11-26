@@ -1,0 +1,43 @@
+id: full_3d_network_bundling_sim
+name: full 3D dynamic cross-linked semiflexible actin bundling simulation (FixedDynamicLinkNetwork.py)
+role: model
+software: true
+runnable: false
+not_runnable_reason: "Requires compiling C++ pybind11 extensions (FiberCollectionC, EndedCrossLinkers, CrossLinkForceEvaluator, DomainC, RPYKernelEvaluator) against FINUFFT, OpenMP, Intel MKL/LAPACK, and optionally CUDA/UAMMD PSE for nonlocal hydrodynamics; full F=200 bundling runs over 10-20 s at dt=1e-4 s (1e5-2e5 GMRES/SBT steps x 5 trials x parameter sweeps) require multi-hour HPC/GPU compute; furthermore commit 38c2fc8 omits all maxian2022 figure-reproduction scripts and input decks (shipped SemiflexBundleInputFile.txt configures a later cortical-flow/motor study with Motors=True, FluctuatingFibs=True, Ldx=5, rl=0.012)."
+stated:
+  file: Python/Examples/FixedDynamicLinkNetwork.py
+  lines: "199-201"
+  quote: "maxX, ItsNeed[iT], _ = TIntegrator.updateAllFibers(iT,dt,stopcount,Dom,outfile=LocsFileName,write=wr,\\"
+  where: "Python/Examples/FixedDynamicLinkNetwork.py:1-220 coupling TemporalIntegrator.py, fiberCollection.py, DoubleEndedCrossLinkedNetwork.py, and C++ modules"
+equation: "Coupled 3D inextensible Euler-Bernoulli slender-body dynamics with local/nonlocal hydrodynamics, rigid-rod Brownian splitting, 4-reaction Gillespie cross-linker SSA, and exponential filament turnover"
+inputs:
+  F: {quantity: fiber_count, unit: dimensionless}
+  N: {quantity: chebyshev_points, unit: dimensionless}
+  L: {quantity: fiber_length, unit: um}
+  Ld: {quantity: domain_extent, unit: um}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  eps: {quantity: fiber_aspect_ratio, unit: dimensionless}
+  lp: {quantity: persistence_length, unit: um}
+  kbT: {quantity: thermal_energy, unit: pN*um}
+  dt: {quantity: time_step, unit: s}
+  Networkdt: {quantity: time_step, unit: s}
+  N_u: {quantity: binding_site_count, unit: dimensionless}
+  K_c: {quantity: cl_spring_stiffness, unit: pN/um}
+  ell: {quantity: cl_rest_length, unit: um}
+  k_on: {quantity: cl_first_end_binding_rate, unit: 1/(um*s)}
+  k_on_s: {quantity: cl_second_end_binding_rate, unit: 1/(um*s)}
+  k_off: {quantity: cl_unbinding_rate, unit: 1/s}
+  k_off_s: {quantity: cl_unbinding_rate, unit: 1/s}
+  c_w: {quantity: binding_site_width, unit: um}
+  d_bund: {quantity: bundle_link_separation, unit: um}
+  tau_f: {quantity: turnover_time, unit: s}
+outputs:
+  link_density: {quantity: link_density_per_fiber, unit: dimensionless}
+  bundle_count: {quantity: bundle_count, unit: dimensionless}
+  orientation_param: {quantity: orientation_parameter, unit: dimensionless}
+settings:
+  n_trials: 5
+  rpy_quad: true
+  smooth_force: false
+  seed: 1
+stochastic: true

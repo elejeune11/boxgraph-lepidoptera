@@ -1,0 +1,79 @@
+- id: kT_zero_nonbrownian
+  quantity: thermal_energy
+  unit: pN*um
+  printed: "0"
+  basis: "DoubleEndedCrossLinkedNetwork.__init__ (line 39) defaults kT = 0 to represent non-Brownian simulations (omitting the Arrhenius factor in EndedCrossLinkers.cpp:525)."
+  alternatives: ["4 x 10^-3", "4.1 x 10^-3"]
+  stands_for: "kT argument in non-Brownian DoubleEndedCrossLinkedNetwork instantiation"
+
+- id: r_sep_inside_cutoff
+  quantity: cl_stretch_length
+  unit: um
+  printed: "0.07"
+  basis: "Diagnostic pair separation r = ell + 1*delta_ell = 0.05 + 0.02 = 0.07 um (1 thermal standard deviation inside Brownian capture window [0.01, 0.09] um) to verify EndedCrossLinkers.cpp detailed-balance SSA against Eq. 20."
+  alternatives: ["0.05", "0.08"]
+  stands_for: "probe site-pair distance r in EndedCrossLinkers.cpp::BindingRate"
+
+- id: r_sep_outside_cutoff
+  quantity: cl_stretch_length
+  unit: um
+  printed: "0.095"
+  basis: "Diagnostic pair separation r = 0.095 um just outside Brownian capture cutoff ell + 2*delta_ell = 0.090 um to quantify the 2-sigma binding-window truncation of detailed balance."
+  alternatives: ["0.091", "0.10"]
+  stands_for: "probe site-pair distance r outside CLBounds in DoubleEndedCrossLinkedNetwork.py:110"
+
+- id: expected_sreg_min_unreg
+  quantity: regularized_arclength
+  unit: um
+  printed: "0.0000"
+  basis: "Expected minimum value of self._sRegularized = self._sX[0] = 0.0000 um on Chebyshev kind-2 grid [0, L] when RPYOversample = True bypasses SBT endpoint regularization (as documented on FibCollocationDiscretization.py:146-147)."
+  alternatives: ["0.05"]
+  stands_for: "intended min(self._sRegularized) when RPYOversample=True"
+
+- id: expected_parallel_order_param
+  quantity: orientation_parameter
+  unit: dimensionless
+  printed: "1"
+  basis: "Exact upper bound of maxian2022 Eq. 21 (p. 5) for a bundle of parallel straight filaments."
+  alternatives: ["0.333333"]
+  stands_for: "maximum eigenvalue of Q for perfectly aligned parallel bundle"
+
+- id: expected_isotropic_order_param
+  quantity: orientation_parameter
+  unit: dimensionless
+  printed: "0.333333"
+  basis: "Exact lower bound 1/3 of maxian2022 Eq. 21 (p. 5) for three mutually orthogonal straight filaments."
+  alternatives: ["1"]
+  stands_for: "maximum eigenvalue of Q for isotropic 3-filament triad"
+
+- id: zero_tolerance_target
+  quantity: relative_error
+  unit: dimensionless
+  printed: "0.0"
+  basis: "Zero relative deviation target (0.0 +- 0.05, i.e., 5% Monte Carlo window) between SSA-sampled equilibrium double-link occupancy and exact truncated-Poisson Gibbs-Boltzmann detailed balance."
+  alternatives: ["0.02"]
+  stands_for: "exact detailed-balance agreement target"
+
+- id: unit_step_factor_target
+  quantity: time_step_ratio
+  unit: dimensionless
+  printed: "1"
+  basis: "maxian2022 p. 5 states CL attachments are updated every fiber time step dt (dtFactor = 1), contrasted with FixedDynamicLinkNetwork.py:161 + SemiflexBundleInputFile.txt:16 (NetworkStepEvery = int(0.01 / 1e-4) = 100)."
+  alternatives: ["100"]
+  stands_for: "dtFactor = 1 (per-step CL update stated in maxian2022 p. 5)"
+
+- id: expected_max_per_site_2
+  quantity: max_links_per_site
+  unit: dimensionless
+  printed: "2"
+  basis: "ceil(Delta s_u / c_w) = ceil(25.64 nm / 20 nm) = 2 bound ends per binding site (maxian2022 p. 4, DoubleEndedCrossLinkedNetwork.py:119)."
+  alternatives: ["1", "3"]
+  stands_for: "ceil(Delta s_u / c_w) steric site capacity"
+
+- id: expected_bundle_at_boundary
+  quantity: bundle_count
+  unit: dimensionless
+  printed: "1"
+  basis: "maxian2022 Sec. 2.5 (p. 5) defines two filaments as bundled when linked by two cross-linkers separated by 'at least L/4' (>= d_bund), whereas CrossLinkedNetwork.py:382-383 tests strict '>'."
+  alternatives: ["0"]
+  stands_for: "bundle count for a 2-filament pair linked at exact separation d_bund = L/4"

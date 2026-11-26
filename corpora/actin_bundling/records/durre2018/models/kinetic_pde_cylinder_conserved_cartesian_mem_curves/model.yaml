@@ -1,0 +1,69 @@
+id: kinetic_pde_cylinder_conserved_cartesian_mem_curves
+name: infinite-pool cylinder kinetic PDEs with mass-conserving BCs and 1D Cartesian membrane diffusion returning full time-series curves
+role: model
+variant_of: kinetic_pde_cylinder_eq6_16_curves
+built_from: [kinetic_pde_cylinder_conserved_cartesian_mem, kinetic_pde_cylinder_eq6_16_curves]
+corrections:
+  - equation: "Eq. 14"
+    change: "Add reverse dissociation term +k_2*V* to the G-actin membrane flux boundary condition"
+    evidence: "Required by actin mass conservation from Eq. (3) and Eqs. (6)-(7)."
+  - equation: "Eq. 15"
+    change: "Add reverse dissociation term +k_4*A* to the Arp2/3 membrane flux boundary condition"
+    evidence: "Required by Arp2/3 mass conservation from Eq. (3) and Eqs. (7)-(8)."
+  - equation: "Eqs. 6-9"
+    change: "Replace axisymmetric 2D membrane Laplacian (1/r) d_r(r d_r u) with 1D Cartesian d^2 u / dr^2 on the membrane boundary while keeping 3D axisymmetric diffusion in the bulk cylinder"
+    evidence: "Matches COMSOL Multiphysics 5.3 Coefficient Form Boundary PDE default when the cylindrical metric factor r is omitted on a 2D axisymmetric boundary line; reduces RMSE against digitized Fig. 5c-e by ~2x relative to the axisymmetric membrane variant."
+stated:
+  page: 23
+  printed_page: "SI 12"
+  quote: "Membrane bound 2d species:"
+  where: "Eqs. 6-16 (Supplementary Note 2, cylinder geometry SI p. 11; Fig. 5c-e, Supp Fig. 11)"
+equation: "1D Cartesian membrane PDEs (d_rr u) coupled to 3D axisymmetric cylinder bulk with mass-conserving flux BCs (+k_2*V*, +k_4*A*), outputting full time-course curves at r = 0"
+inputs:
+  G_0: {quantity: actin_concentration, unit: uM}
+  Arp_0: {quantity: arp_concentration, unit: uM}
+  CP_0: {quantity: cp_concentration, unit: nM}
+  V_0: {quantity: vca_surface_density, unit: 1/um^2}
+  B_0_norm: {quantity: barbed_end_density, unit: 1/um^2}
+  sigma: {quantity: seed_width, unit: nm}
+  r_cyl: {quantity: cylinder_radius, unit: um}
+  h_cyl: {quantity: cylinder_height, unit: um}
+  k_on: {quantity: elongation_on_rate, unit: uM^-1*s^-1}
+  k_off: {quantity: elongation_off_rate, unit: 1/s}
+  k_1: {quantity: vca_actin_on_rate, unit: uM^-1*s^-1}
+  k_2: {quantity: vca_actin_off_rate, unit: 1/s}
+  k_3: {quantity: arp_activation_on_rate, unit: uM^-1*s^-1}
+  k_3_reduction: {quantity: rate_scaling_factor, unit: dimensionless}
+  k_4: {quantity: arp_activation_off_rate, unit: 1/s}
+  k_Cap: {quantity: cp_binding_rate, unit: uM^-1*s^-1}
+  k_Arp: {quantity: branching_rate_constant, unit: um^2/s}
+  k_re: {quantity: vca_recovery_rate, unit: 1/s}
+  k_Deg: {quantity: barbed_end_degradation_rate, unit: 1/s}
+  D_G: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_Arp: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_CP: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_V: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_Vstar: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_A: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_B: {quantity: network_spreading_diffusivity, unit: um^2/s}
+outputs:
+  B_curve: {quantity: barbed_end_density, unit: 1/um^2, curve: {quantity: time, unit: s}}
+  A_star_curve: {quantity: activated_arp_density, unit: 1/um^2, curve: {quantity: time, unit: s}}
+  A_star_ss_curve: {quantity: activated_arp_density, unit: 1/um^2, curve: {quantity: time, unit: s}}
+  branching_rate_curve: {quantity: branching_rate, unit: 1/(um^2*s), curve: {quantity: time, unit: s}}
+  capping_rate_curve: {quantity: capping_rate, unit: 1/(um^2*s), curve: {quantity: time, unit: s}}
+  B_100_curve: {quantity: barbed_end_density, unit: 1/um^2, curve: {quantity: time, unit: s}}
+settings:
+  mesh_n: 24
+  r_stretch: 5.5
+  z_stretch: 2.5
+  t_end: 100.0
+  rtol: 1.0e-5
+  atol: 1.0e-7
+  t_B: [5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 18.0, 20.0, 25.0, 30.0, 35.0, 40.0]
+  t_A: [4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0]
+  t_A_ss: [20.0, 30.0, 40.0]
+  t_br: [4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0]
+  t_cap: [7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 14.0, 16.0, 20.0, 30.0, 35.0]
+  t_s11: [6.0, 8.0, 10.0, 11.0, 12.0, 13.0, 14.0, 16.0, 20.0, 25.0, 30.0, 35.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0]
+stochastic: false

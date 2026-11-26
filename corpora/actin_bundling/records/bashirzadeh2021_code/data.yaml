@@ -1,0 +1,909 @@
+# =============================================================================
+# 1. Parameters in crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+# =============================================================================
+- id: cfg_xrange
+  quantity: simulation_box_length
+  unit: um
+  origin: reported
+  printed: "100"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "1"
+    quote: "xrange=100"
+  from_source: bashirzadeh2021
+  from_datum: sim_box_x_range
+  note: "Matches Supplementary Table 3 X range = 100 um."
+
+- id: cfg_yrange
+  quantity: simulation_box_length
+  unit: um
+  origin: reported
+  printed: "100"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "2"
+    quote: "yrange=100"
+  from_source: bashirzadeh2021
+  from_datum: sim_box_y_range
+  note: "Matches Supplementary Table 3 Y range = 100 um."
+
+- id: cfg_grid_factor
+  quantity: grid_factor
+  unit: 1/um
+  origin: reported
+  printed: "2.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "3"
+    quote: "grid_factor=2.5"
+  note: "Hidden choice not stated in paper; overrides C++ default grid_factor = 2 (prog/network.cpp:93), producing 250 x 250 neighbor quadrants of width 0.4 um."
+
+- id: cfg_actin_length
+  quantity: bead_radius
+  unit: um
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "5"
+    quote: "actin_length=0.5"
+  note: "Hidden parameter not stated in paper; used as filament bead hydrodynamic radius rad in src/bead.cpp:20-22 (also hardcoded as 0.5 in aster_initial_condition_grid_conda_freeze.py:135)."
+
+- id: cfg_link_length
+  quantity: filament_link_length
+  unit: um
+  origin: reported
+  printed: "1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "6"
+    quote: "link_length=1"
+  from_source: bashirzadeh2021
+  from_datum: sim_link_length
+  note: "Matches Supplementary Table 3 link length = 1 um."
+
+- id: cfg_polymer_bending_modulus
+  quantity: polymer_bending_modulus
+  unit: pN*um^2
+  origin: reported
+  printed: "0.068"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "7"
+    quote: "polymer_bending_modulus=0.068"
+  from_source: bashirzadeh2021
+  from_datum: sim_polymer_bending_modulus
+  note: "Matches Supplementary Table 3 polymer bending modulus = 0.068 pN*um^2."
+
+- id: cfg_link_stretching_stiffness
+  quantity: link_stretching_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "10"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "8"
+    quote: "link_stretching_stiffness=10"
+  note: "Hidden parameter omitted from paper ('Default values were used for all parameters not listed'), yet overrides C++ default link_stretching_stiffness = 1 pN/um (prog/network.cpp:133) by 10x."
+
+- id: cfg_npolymer
+  quantity: polymer_count
+  unit: dimensionless
+  origin: reported
+  printed: "50"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "9"
+    quote: "npolymer=50"
+  from_source: bashirzadeh2021
+  from_datum: sim_num_polymers
+  note: "Matches Supplementary Table 3 number of polymers = 50."
+
+- id: cfg_nmonomer
+  quantity: beads_per_polymer
+  unit: dimensionless
+  origin: reported
+  printed: "27"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "10"
+    quote: "nmonomer=27"
+  from_source: bashirzadeh2021
+  from_datum: sim_beads_per_polymer
+  note: "Mismatch in standalone sorting_kinetics.cfg (27 beads = 26 um vs paper's 35 beads = 34 um); restored to 35 via CLI --nmonomer 35 in aster_initial_condition_grid_conda_freeze.py:49,255."
+
+- id: cfg_a_motor_stiffness
+  quantity: crosslinker_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "12"
+    quote: "a_motor_stiffness=1"
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_stiffness
+  note: "Fascin is represented by the AFINES a_motor species (with a_motor_v = 0); stiffness matches Supplementary Table 2 (1 pN/um)."
+
+- id: cfg_a_motor_length
+  quantity: crosslinker_length
+  unit: um
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "13"
+    quote: "a_motor_length=0.1"
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_rest_length
+  note: "Matches Supplementary Table 2 fascin resting length = 0.1 um."
+
+- id: cfg_a_m_stall
+  quantity: motor_stall_force
+  unit: pN
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "14"
+    quote: "a_m_stall=0.5"
+  note: "Hidden active-motor stall force parameter; inactive because a_motor_v = 0 (src/motor.cpp:496)."
+
+- id: cfg_a_m_kon
+  quantity: crosslinker_on_rate
+  unit: 1/s
+  origin: reported
+  printed: "20"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "16"
+    quote: "a_m_kon=20"
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_kon
+  note: "Matches Supplementary Table 2 fascin on-rate = 20 s^-1 (scaled as 20/scl for scl in 1..4 by CLI script)."
+
+- id: cfg_a_m_koff
+  quantity: crosslinker_off_rate
+  unit: 1/s
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "17"
+    quote: "a_m_koff=0.5"
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_koff
+  note: "Matches Supplementary Table 2 fascin off-rate = 0.5 s^-1 (scaled as 0.5/scl for scl in 1..4 by CLI script)."
+
+- id: cfg_a_m_kend
+  quantity: crosslinker_off_rate
+  unit: 1/s
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "18"
+    quote: "a_m_kend=0.5"
+  note: "Barbed-end detachment rate for fascin; equals a_m_koff at scl=1, but is NOT overridden by aster_initial_condition_grid_conda_freeze.py:247-248 when scl > 1."
+
+- id: cfg_a_motor_density
+  quantity: crosslinker_areal_density
+  unit: 1/um^2
+  origin: reported
+  printed: "1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "19"
+    quote: "a_motor_density=1"
+  from_source: bashirzadeh2021
+  from_datum: sim_crosslinker_density
+  note: "Mismatch in standalone sorting_kinetics.cfg (1 um^-2 vs paper's 5 um^-2); overridden to 5 via CLI --a_motor_density 5 and --a_motor_in in aster_initial_condition_grid_conda_freeze.py:41,249."
+
+- id: cfg_a_motor_v
+  quantity: motor_velocity
+  unit: um/s
+  origin: reported
+  printed: "0"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "20"
+    quote: "a_motor_v=0"
+  note: "Overrides C++ default a_motor_v = 1 um/s (prog/network.cpp:200) so active-motor species models passive fascin crosslinkers."
+
+- id: cfg_a_m_align
+  quantity: alignment_mode
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "21"
+    quote: "a_m_align=1"
+  note: "Selects parallel-only alignment mode par_flag = 1 (prog/network.cpp:531, src/motor.cpp:408-410), implementing Eq. 4 U_xl^align = kalign * (1 - cos(theta))."
+
+- id: cfg_a_m_kalign
+  quantity: alignment_penalty
+  unit: pN*um
+  origin: reported
+  printed: "0.333"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "22"
+    quote: "a_m_kalign=0.333"
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_k_align
+  note: "Matches Supplementary Table 2 (0.333 pN*um; Methods p. 9 prints exact fraction 1/3 pN*um)."
+
+- id: cfg_a_m_bend
+  quantity: crosslinker_bending_modulus
+  unit: pN
+  origin: reported
+  printed: "0"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "23"
+    quote: "a_m_bend=0"
+  note: "Hidden override disabling AFINES default motor-filament angular bending stiffness a_m_bend = 0.04 pN (prog/network.cpp:194); also causes motor::allowed_bind() (src/motor.cpp:698-699) to allow both heads to bind different springs on the same filament."
+
+- id: cfg_p_motor_density
+  quantity: crosslinker_areal_density
+  unit: 1/um^2
+  origin: reported
+  printed: "1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "25"
+    quote: "p_motor_density=1"
+  from_source: bashirzadeh2021
+  from_datum: sim_crosslinker_density
+  note: "Mismatch in standalone sorting_kinetics.cfg (1 um^-2 vs paper's 5 um^-2); overridden via CLI --p_motor_density {0,5,10,15} and --p_motor_in in aster_initial_condition_grid_conda_freeze.py:29,250."
+
+- id: cfg_p_motor_stiffness
+  quantity: crosslinker_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "26"
+    quote: "p_motor_stiffness=0.1"
+  from_source: bashirzadeh2021
+  from_datum: sim_alpha_stiffness
+  note: "Matches Supplementary Table 2 alpha-actinin stiffness = 0.1 pN/um."
+
+- id: cfg_p_motor_length
+  quantity: crosslinker_length
+  unit: um
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "27"
+    quote: "p_motor_length=0.5"
+  from_source: bashirzadeh2021
+  from_datum: sim_alpha_rest_length
+  note: "Matches Supplementary Table 2 alpha-actinin resting length = 0.5 um."
+
+- id: cfg_p_m_kon
+  quantity: crosslinker_on_rate
+  unit: 1/s
+  origin: reported
+  printed: "0.2"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "28"
+    quote: "p_m_kon=0.2"
+  from_source: bashirzadeh2021
+  from_datum: sim_alpha_kon
+  note: "Matches Supplementary Table 2 alpha-actinin on-rate = 0.2 s^-1."
+
+- id: cfg_p_m_koff
+  quantity: crosslinker_off_rate
+  unit: 1/s
+  origin: reported
+  printed: "0.05"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "29"
+    quote: "p_m_koff=0.05"
+  from_source: bashirzadeh2021
+  from_datum: sim_alpha_koff
+  note: "Matches Supplementary Table 2 alpha-actinin off-rate = 0.05 s^-1."
+
+- id: cfg_p_m_kend
+  quantity: crosslinker_off_rate
+  unit: 1/s
+  origin: reported
+  printed: "0.05"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "30"
+    quote: "p_m_kend=0.05"
+  note: "Barbed-end detachment rate for alpha-actinin; matches p_m_koff."
+
+- id: cfg_p_m_align
+  quantity: alignment_mode
+  unit: dimensionless
+  origin: reported
+  printed: "0"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "31"
+    quote: "p_m_align=0"
+  note: "Inactive because p_m_kalign = 0 (prog/network.cpp:549)."
+
+- id: cfg_p_m_kalign
+  quantity: alignment_penalty
+  unit: pN*um
+  origin: reported
+  printed: "0"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "32"
+    quote: "p_m_kalign=0"
+  from_source: bashirzadeh2021
+  from_datum: sim_alpha_k_align
+  note: "Matches Supplementary Table 2 alpha-actinin alignment penalty = 0 pN*um."
+
+- id: cfg_p_m_bend
+  quantity: crosslinker_bending_modulus
+  unit: pN
+  origin: reported
+  printed: "0"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "33"
+    quote: "p_m_bend=0"
+  note: "Hidden override disabling AFINES default passive-crosslinker angular bending stiffness p_m_bend = 0.04 pN (prog/network.cpp:257)."
+
+- id: cfg_dt
+  quantity: time_step
+  unit: s
+  origin: reported
+  printed: "2 x 10^-5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "35"
+    quote: "dt=2e-5"
+  from_source: bashirzadeh2021
+  from_datum: sim_time_step
+  note: "Matches Supplementary Table 3 time step = 2e-5 s."
+
+- id: cfg_tfinal
+  quantity: simulation_time
+  unit: s
+  origin: reported
+  printed: "100"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "36"
+    quote: "tfinal=100"
+  from_source: bashirzadeh2021
+  from_datum: sim_end_time
+  note: "Matches Supplementary Table 3 end time = 100 s."
+
+- id: cfg_nframes
+  quantity: frame_count
+  unit: dimensionless
+  origin: reported
+  printed: "50"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "37"
+    quote: "nframes=50"
+  note: "Hidden output cadence not stated in paper; overrides C++ default 1000 (prog/network.cpp:76), writing frames every 2 s."
+
+- id: cfg_viscosity
+  quantity: dynamic_viscosity
+  unit: mg/(um*s)
+  origin: reported
+  printed: "0.01"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "38"
+    quote: "viscosity=0.01"
+  note: "Hidden parameter omitted from paper ('Default values were used for all parameters not listed'), yet overrides C++ default water viscosity 0.001 mg/(um*s) (prog/network.cpp:79) by 10x (= 0.01 Pa*s = 10 cP)."
+
+- id: cfg_circle_radius
+  quantity: confinement_radius
+  unit: um
+  origin: reported
+  printed: "12"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "46"
+    quote: "circle_radius=12"
+  from_source: bashirzadeh2021
+  from_datum: sim_confinement_radius
+  note: "Mismatch in standalone sorting_kinetics.cfg (12 um vs paper's 15 um); overridden to 15 via CLI --circle_radius 15 in aster_initial_condition_grid_conda_freeze.py:40,258."
+
+- id: cfg_circle_spring_constant
+  quantity: confinement_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "20"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "47"
+    quote: "circle_spring_constant=20"
+  from_source: bashirzadeh2021
+  from_datum: sim_confinement_stiffness
+  note: "Matches Supplementary Table 3 k_c = 20 pN/um."
+
+- id: cfg_temperature
+  quantity: thermal_energy
+  unit: pN*um
+  origin: reported
+  printed: "0.004"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "49"
+    quote: "temperature=0.004"
+  note: "Hidden thermal energy k_B T = 0.004 pN*um (4.0 pN*nm, ~290 K), matching C++ default (prog/network.cpp:80) and yielding exact single-filament persistence length L_p = 0.068 / 0.004 = 17.0 um."
+
+- id: cfg_kexv
+  quantity: excluded_volume_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "0"
+  citation:
+    file: crosslinker_sorting_in_GUVs/sorting_kinetics.cfg
+    lines: "52"
+    quote: "kexv=0"
+  note: "Explicitly disables AFINES default filament excluded volume kexv = 1.0 pN/um (prog/network.cpp:137), matching Methods p. 9."
+
+# =============================================================================
+# 2. Parameters in crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+# =============================================================================
+- id: py_circle_radius
+  quantity: confinement_radius
+  unit: um
+  origin: reported
+  printed: "15"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "40"
+    quote: "circle_radius = 15"
+  from_source: bashirzadeh2021
+  from_datum: sim_confinement_radius
+  note: "Overrides sorting_kinetics.cfg circle_radius=12 via CLI --circle_radius 15 (line 258); matches Supplementary Table 3."
+
+- id: py_fasc_conc
+  quantity: crosslinker_areal_density
+  unit: 1/um^2
+  origin: reported
+  printed: "5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "41"
+    quote: "fasc_conc = 5"
+  from_source: bashirzadeh2021
+  from_datum: sim_crosslinker_density
+  note: "Overrides sorting_kinetics.cfg a_motor_density=1 via CLI --a_motor_density 5 (line 249); matches Methods p. 9 (5 um^-2)."
+
+- id: py_alpha_conc_baseline
+  quantity: crosslinker_areal_density
+  unit: 1/um^2
+  origin: reported
+  printed: "5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "29"
+    quote: "for alpha_conc in range(0,16,5):"
+  from_source: bashirzadeh2021
+  from_datum: sim_crosslinker_density
+  note: "Baseline alpha-actinin density (hh=2) in the range(0,16,5) = {0, 5, 10, 15} um^-2 sweep; overrides sorting_kinetics.cfg p_motor_density=1 via CLI (line 250)."
+
+- id: py_r_rand
+  quantity: displacement_half_range
+  unit: um
+  origin: reported
+  printed: "3"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "47"
+    quote: "r_rand = 3"
+  note: "Half-width of uniform filament center translation random.uniform(-r_rand, r_rand) on lines 111-112 (std dev = 3/sqrt(3) = 1.732 um), contradicting Methods p. 9's claim of a Gaussian with sigma = 3 um."
+
+- id: py_link_len
+  quantity: filament_link_length
+  unit: um
+  origin: reported
+  printed: "1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "48"
+    quote: "link_len = 1"
+  from_source: bashirzadeh2021
+  from_datum: sim_link_length
+
+- id: py_nbeads
+  quantity: beads_per_polymer
+  unit: dimensionless
+  origin: reported
+  printed: "35"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "49"
+    quote: "nbeads = 35"
+  from_source: bashirzadeh2021
+  from_datum: sim_beads_per_polymer
+  note: "Overrides sorting_kinetics.cfg nmonomer=27 via CLI --nmonomer 35 (line 255); matches Supplementary Table 3."
+
+- id: py_fascin_len
+  quantity: crosslinker_length
+  unit: um
+  origin: reported
+  printed: "0.1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "50"
+    quote: "fascin_len = 0.1"
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_rest_length
+
+- id: py_alpha_len
+  quantity: crosslinker_length
+  unit: um
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "51"
+    quote: "alpha_len = 0.5"
+  from_source: bashirzadeh2021
+  from_datum: sim_alpha_rest_length
+
+- id: py_nrep
+  quantity: replicate_count
+  unit: dimensionless
+  origin: reported
+  printed: "5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "52"
+    quote: "nrep = 5"
+  from_source: bashirzadeh2021
+  from_datum: sim_replicates
+  note: "Matches Fig. 4g-h five independent simulations."
+
+- id: py_fil_dens
+  quantity: filament_areal_density
+  unit: 1/um^2
+  origin: reported
+  printed: "0.071"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "54"
+    quote: "fil_dens = 0.071"
+  note: "Hidden filament areal density overwriting nfil=50 on line 55 as int(np.round(area*fil_dens)) = int(round(706.858 * 0.071)) = 50."
+
+- id: py_occc
+  quantity: steric_occlusion_distance
+  unit: um
+  origin: reported
+  printed: "0.15"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "65"
+    quote: "occc = 0.15"
+  note: "Settles unprinted o_c parameter named in bashirzadeh2021 Methods p. 9 (passed via --occ 0.15 on line 259, overriding C++ default occ = 0 in prog/network.cpp:147)."
+
+- id: py_offf_base
+  quantity: crosslinker_off_rate
+  unit: 1/s
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "68"
+    quote: "offf = 0.5/scl"
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_koff
+  note: "Numerator of fascin off-rate sweep offf = 0.5/scl for scl in {1, 2, 3, 4}; equals 0.5 s^-1 at baseline scl = 1."
+
+- id: py_onnn_base
+  quantity: crosslinker_on_rate
+  unit: 1/s
+  origin: reported
+  printed: "20"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "69"
+    quote: "onnn = 20/scl"
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_kon
+  note: "Numerator of fascin on-rate sweep onnn = 20/scl for scl in {1, 2, 3, 4}; equals 20 s^-1 at baseline scl = 1."
+
+- id: py_scl_baseline
+  quantity: kinetics_scale_factor
+  unit: dimensionless
+  origin: reported
+  printed: "1"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "27"
+    quote: "for scl in range(1,5,1):"
+  note: "Baseline kinetics divisor scl = 1 in range(1, 5, 1) = {1, 2, 3, 4}."
+
+- id: py_bead_radius_hardcoded
+  quantity: bead_radius
+  unit: um
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "135"
+    quote: "line = '%s\\t' %x +  '%s\\t' %y + '0.5\\t' + '%s\\n' %idd"
+  note: "Hardcoded actin bead radius 0.5 um written to column 3 of every generated actin_*.txt input file."
+
+- id: py_dead_p_m_stf
+  quantity: crosslinker_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "0.5"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "56"
+    quote: "p_m_stf = 0.5"
+  note: "Dead variable in Python script (CLI flag --p_motor_stiffness on line 251 is commented out, so sorting_kinetics.cfg's 0.1 pN/um remains active)."
+
+- id: py_dead_a_m_bend
+  quantity: crosslinker_bending_modulus
+  unit: pN
+  origin: reported
+  printed: "0.06"
+  citation:
+    file: crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py
+    lines: "64"
+    quote: "a_m_bend = 0.06"
+  note: "Dead variable in Python script (CLI flag --a_m_bend on line 254 is commented out, so sorting_kinetics.cfg's 0 remains active)."
+
+# =============================================================================
+# 3. C++ AFINES built-in defaults and constants (prog/network.cpp, include/globals.h)
+# =============================================================================
+- id: cpp_default_nframes
+  quantity: frame_count
+  unit: dimensionless
+  origin: reported
+  printed: "1000"
+  citation:
+    file: prog/network.cpp
+    lines: "76"
+    quote: 'default_value(1000)'
+  note: "AFINES C++ default nframes = 1000 (overridden to 50 by sorting_kinetics.cfg:37)."
+
+- id: cpp_default_viscosity
+  quantity: dynamic_viscosity
+  unit: mg/(um*s)
+  origin: reported
+  printed: "0.001"
+  citation:
+    file: prog/network.cpp
+    lines: "79"
+    quote: 'default_value(0.001)'
+  note: "AFINES C++ default dynamic viscosity = 0.001 mg/(um*s) (water at 20 C); overridden 10x higher to 0.01 in sorting_kinetics.cfg:38."
+
+- id: cpp_default_temperature
+  quantity: thermal_energy
+  unit: pN*um
+  origin: reported
+  printed: "0.004"
+  citation:
+    file: prog/network.cpp
+    lines: "80"
+    quote: 'default_value(0.004)'
+  note: "AFINES C++ default thermal energy k_B T = 0.004 pN*um."
+
+- id: cpp_default_grid_factor
+  quantity: grid_factor
+  unit: 1/um
+  origin: reported
+  printed: "2"
+  citation:
+    file: prog/network.cpp
+    lines: "93"
+    quote: 'default_value(2)'
+  note: "AFINES C++ default grid_factor = 2 (overridden to 2.5 in sorting_kinetics.cfg:3; docstring says 'per um^2' whereas line 460 computes round(grid_factor*xrange), unit 1/um)."
+
+- id: cpp_default_link_stretching_stiffness
+  quantity: link_stretching_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "1"
+  citation:
+    file: prog/network.cpp
+    lines: "133"
+    quote: 'default_value(1)'
+  note: "AFINES C++ default filament stretching stiffness = 1 pN/um; overridden 10x stiffer to 10 pN/um in sorting_kinetics.cfg:8."
+
+- id: cpp_default_rmax
+  quantity: excluded_volume_cutoff
+  unit: um
+  origin: reported
+  printed: "0.25"
+  citation:
+    file: prog/network.cpp
+    lines: "136"
+    quote: 'default_value(0.25)'
+  note: "AFINES C++ default filament excluded-volume cutoff rmax = 0.25 um (inactive since kexv = 0)."
+
+- id: cpp_default_kexv
+  quantity: excluded_volume_stiffness
+  unit: pN/um
+  origin: reported
+  printed: "1.0"
+  citation:
+    file: prog/network.cpp
+    lines: "137"
+    quote: 'default_value(1.0)'
+  note: "AFINES C++ default filament excluded volume kexv = 1.0 pN/um (disabled by sorting_kinetics.cfg:52 kexv=0)."
+
+- id: cpp_default_occ
+  quantity: steric_occlusion_distance
+  unit: um
+  origin: reported
+  printed: "0"
+  citation:
+    file: prog/network.cpp
+    lines: "147"
+    quote: 'default_value(0)'
+  note: "AFINES C++ default steric occlusion occ = 0 (disabled); overridden to 0.15 um by CLI --occ 0.15."
+
+- id: cpp_default_a_m_cut
+  quantity: binding_cutoff_distance
+  unit: um
+  origin: reported
+  printed: "0.063"
+  citation:
+    file: prog/network.cpp
+    lines: "187"
+    quote: 'default_value(0.063)'
+  note: "Hidden active binding capture cutoff for fascin (a_m_cut = 0.063 um), omitted from paper, sorting_kinetics.cfg, and CLI script."
+
+- id: cpp_default_a_m_bend
+  quantity: crosslinker_bending_modulus
+  unit: pN
+  origin: reported
+  printed: "0.04"
+  citation:
+    file: prog/network.cpp
+    lines: "194"
+    quote: 'default_value(0.04)'
+  note: "AFINES C++ default motor-filament bending parameter = 0.04 pN (disabled by sorting_kinetics.cfg:23 a_m_bend=0)."
+
+- id: cpp_default_p_m_cut
+  quantity: binding_cutoff_distance
+  unit: um
+  origin: reported
+  printed: "0.063"
+  citation:
+    file: prog/network.cpp
+    lines: "250"
+    quote: 'default_value(0.063)'
+  note: "Hidden active binding capture cutoff for alpha-actinin (p_m_cut = 0.063 um), omitted from paper, sorting_kinetics.cfg, and CLI script."
+
+- id: cpp_default_p_m_bend
+  quantity: crosslinker_bending_modulus
+  unit: pN
+  origin: reported
+  printed: "0.04"
+  citation:
+    file: prog/network.cpp
+    lines: "257"
+    quote: 'default_value(0.04)'
+  note: "AFINES C++ default crosslinker-filament bending parameter = 0.04 pN (disabled by sorting_kinetics.cfg:33 p_m_bend=0)."
+
+- id: cpp_max_small_angle
+  quantity: small_angle_clamp
+  unit: dimensionless
+  origin: reported
+  printed: "0.001"
+  citation:
+    file: include/globals.h
+    lines: "61"
+    quote: "const double maxSmallAngle = 0.001;"
+  note: "Lower clamp on sin(theta) in bend_harmonic() (src/potentials.cpp:103)."
+
+# =============================================================================
+# 4. Target values copied from bashirzadeh2021 for reproduction checks
+# =============================================================================
+- id: paper_fascin_kon_koff_ratio
+  quantity: crosslinker_affinity_ratio
+  unit: dimensionless
+  origin: derived
+  printed: "40"
+  citation:
+    none: "Copied from bashirzadeh2021/sim_fascin_kon_koff_ratio_printed (Results p. 7) to check code fascin k_on / k_off."
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_kon_koff_ratio_printed
+
+- id: paper_alpha_kon_koff_ratio
+  quantity: crosslinker_affinity_ratio
+  unit: dimensionless
+  origin: derived
+  printed: "4"
+  citation:
+    none: "Copied from bashirzadeh2021/sim_alpha_kon_koff_ratio_printed (Results p. 7) to check code alpha-actinin k_on / k_off."
+  from_source: bashirzadeh2021
+  from_datum: sim_alpha_kon_koff_ratio_printed
+
+- id: paper_num_polymers
+  quantity: polymer_count
+  unit: dimensionless
+  origin: reported
+  printed: "50"
+  citation:
+    none: "Copied from bashirzadeh2021/sim_num_polymers (Supplementary Table 3) to check Python script nfil = int(round(pi * r^2 * fil_dens)) and generated actin_*.txt files."
+  from_source: bashirzadeh2021
+  from_datum: sim_num_polymers
+
+- id: paper_beads_per_polymer
+  quantity: beads_per_polymer
+  unit: dimensionless
+  origin: reported
+  printed: "35"
+  citation:
+    none: "Copied from bashirzadeh2021/sim_beads_per_polymer (Supplementary Table 3) to check parsed actin_*.txt output from live script adapter."
+  from_source: bashirzadeh2021
+  from_datum: sim_beads_per_polymer
+
+- id: paper_replicates
+  quantity: replicate_count
+  unit: dimensionless
+  origin: reported
+  printed: "5"
+  citation:
+    none: "Copied from bashirzadeh2021/sim_replicates (Fig. 4g-h caption p. 7) to check live script replicate file generation."
+  from_source: bashirzadeh2021
+  from_datum: sim_replicates
+
+- id: paper_fascin_rest_length
+  quantity: crosslinker_length
+  unit: um
+  origin: reported
+  printed: "0.1"
+  citation:
+    none: "Copied from bashirzadeh2021/sim_fascin_rest_length (Supplementary Table 2) to check parsed fascin_*.txt spring length via python/output.py."
+  from_source: bashirzadeh2021
+  from_datum: sim_fascin_rest_length
+
+- id: paper_alpha_rest_length
+  quantity: crosslinker_length
+  unit: um
+  origin: reported
+  printed: "0.5"
+  citation:
+    none: "Copied from bashirzadeh2021/sim_alpha_rest_length (Supplementary Table 2) to check parsed alpha_*.txt spring length via python/output.py."
+  from_source: bashirzadeh2021
+  from_datum: sim_alpha_rest_length
+
+- id: paper_crosslinker_density
+  quantity: crosslinker_areal_density
+  unit: 1/um^2
+  origin: reported
+  printed: "5"
+  citation:
+    none: "Copied from bashirzadeh2021/sim_crosslinker_density (Methods p. 9) to compare against global vesicle density and local center/edge densities generated by aster_initial_condition_grid_conda_freeze.py."
+  from_source: bashirzadeh2021
+  from_datum: sim_crosslinker_density
+
+- id: paper_init_displacement_sd
+  quantity: displacement_stddev
+  unit: um
+  origin: reported
+  printed: "3"
+  citation:
+    none: "Copied from bashirzadeh2021/sim_init_displacement_sd (Methods p. 9: 'Gaussian distribution centered at zero with a standard deviation of 3 um') to compare against actual filament center std dev generated by aster_initial_condition_grid_conda_freeze.py."
+  from_source: bashirzadeh2021
+  from_datum: sim_init_displacement_sd
+
+- id: paper_crosslinker_size_ratio
+  quantity: crosslinker_size_ratio
+  unit: dimensionless
+  origin: derived
+  printed: "~6"
+  citation:
+    none: "Copied from bashirzadeh2021/crosslinker_size_ratio_exp_printed (Methods p. 9: 'almost a factor of six smaller') for approximation check against code rest-length ratio 0.5/0.1 = 5.0."
+  from_source: bashirzadeh2021
+  from_datum: crosslinker_size_ratio_exp_printed

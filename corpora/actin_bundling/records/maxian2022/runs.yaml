@@ -1,0 +1,530 @@
+# =============================================================================
+# Table 1 basic parameter consistency runs
+# =============================================================================
+- id: run_kbt_25C
+  model: thermal_energy_kbt
+  inputs: {T: temperature_25C}
+  outputs: {kBT: kbt_25C_computed}
+
+- id: run_lp_actin_table1_kbt
+  model: persistence_length_actin
+  inputs: {kappa: bending_stiffness_actin, kBT: thermal_energy_kBT_table1}
+  outputs: {l_p: lp_actin_table1_pred}
+
+- id: run_lp_actin_exact_kbt
+  model: persistence_length_actin
+  inputs: {kappa: bending_stiffness_actin, kBT: kbt_25C_computed}
+  outputs: {l_p: lp_actin_exact_kbt_pred}
+
+- id: run_viscosity_ratio_water
+  model: cytoplasm_viscosity_ratio
+  inputs: {mu: cytoplasm_viscosity_mu, mu_water: mu_water_added}
+  outputs: {ratio: viscosity_ratio_computed}
+
+- id: run_aspect_ratio_L1
+  model: fiber_aspect_ratio
+  inputs: {a: fiber_radius_a, L: fiber_length_L_1}
+  outputs: {epsilon: eps_L1_computed}
+
+- id: run_aspect_ratio_L05
+  model: fiber_aspect_ratio
+  inputs: {a: fiber_radius_a, L: fiber_length_L_05}
+  outputs: {epsilon: eps_L05_computed}
+
+# =============================================================================
+# Cross-linker mechanics, detailed balance, and maximum links per fiber
+# =============================================================================
+- id: run_cl_fluctuation_eq7
+  model: cl_spring_fluctuation_eq7
+  inputs: {kBT: thermal_energy_kBT_table1, Kc: cl_spring_stiffness_Kc}
+  outputs: {delta_ell: delta_ell_eq7_pred}
+
+- id: run_cl_cutoff_brownian
+  model: cl_binding_cutoff_brownian
+  inputs: {kBT: thermal_energy_kBT_table1, Kc: cl_spring_stiffness_Kc}
+  outputs: {delta_ell_B: delta_ell_brownian_pred}
+
+- id: run_detailed_balance_eq20_rest
+  model: detailed_balance_binding_rate_eq20
+  inputs:
+    kons0: cl_second_end_kons
+    koffs0: cl_koffs
+    Kc: cl_spring_stiffness_Kc
+    ell: cl_rest_length_ell
+    ell_k: x_test_rest_added
+    kBT: thermal_energy_kBT_table1
+  outputs:
+    kons: kons_eq20_rest_pred
+    rate_ratio: rate_ratio_eq20_rest_pred
+
+- id: run_max_links_p7_printed
+  model: max_links_per_fiber_p7
+  inputs: {dsu: binding_site_spacing_dsu, cw: cl_site_width_cw, L: fiber_length_L_1}
+  outputs: {n_max: max_links_p7_pred}
+
+- id: run_max_links_exact_sites_variant
+  model: max_links_per_fiber_exact_sites
+  inputs: {dsu: binding_site_spacing_dsu, cw: cl_site_width_cw, L: fiber_length_L_1}
+  outputs: {n_max: max_links_exact_sites_pred}
+
+# =============================================================================
+# Initial mesh size across all 6 simulated (F, L_d, L) systems & G-actin conc
+# =============================================================================
+- id: run_mesh_F200_Ld2_L1
+  model: initial_mesh_size
+  inputs: {Ld: Ld_2, F: F_200, L: fiber_length_L_1}
+  outputs: {ell_m: ell_m_F200_pred}
+
+- id: run_mesh_F675_Ld3_L1
+  model: initial_mesh_size
+  inputs: {Ld: Ld_3, F: F_675, L: fiber_length_L_1}
+  outputs: {ell_m: ell_m_F675_pred}
+
+- id: run_mesh_F1600_Ld4_L1
+  model: initial_mesh_size
+  inputs: {Ld: Ld_4, F: F_1600, L: fiber_length_L_1}
+  outputs: {ell_m: ell_m_F1600_pred}
+
+- id: run_mesh_F400_Ld4_L1
+  model: initial_mesh_size
+  inputs: {Ld: Ld_4, F: F_400_lm04, L: fiber_length_L_1}
+  outputs: {ell_m: ell_m_F400_lm04_pred}
+
+- id: run_mesh_F338_Ld6_L1
+  model: initial_mesh_size
+  inputs: {Ld: Ld_6, F: F_338_lm08, L: fiber_length_L_1}
+  outputs: {ell_m: ell_m_F338_lm08_pred}
+
+- id: run_mesh_F400_Ld2_L05
+  model: initial_mesh_size
+  inputs: {Ld: Ld_2, F: F_400_L05, L: fiber_length_L_05}
+  outputs: {ell_m: ell_m_F400_L05_pred}
+
+- id: run_g_actin_conc_lm02
+  model: g_actin_concentration_from_mesh
+  inputs: {ell_m: ell_m_02_printed, rho_G: rho_g_actin_added}
+  outputs: {c_G: g_actin_conc_lm02_pred}
+
+# =============================================================================
+# Slender-body mobility (Table S1) & translational diffusion (Eq. 22, tau_m)
+# =============================================================================
+- id: run_sbt_table_s1_sweep
+  model: sbt_rigid_mobility_reconstructed
+  inputs: {delta_rel: endpoint_reg_delta_rel}
+  sweep: {epsilon: table_s1_alpha}
+  settings: {N: 16}
+  outputs:
+    alpha: sbt_alpha_curve
+    beta: sbt_beta_curve
+    gamma: sbt_gamma_curve
+
+- id: run_sbt_eps0004_single
+  model: sbt_rigid_mobility_reconstructed
+  inputs: {epsilon: fiber_aspect_ratio_0004_printed, delta_rel: endpoint_reg_delta_rel}
+  settings: {N: 16}
+  outputs:
+    alpha: sbt_alpha_eps0004
+    beta: sbt_beta_eps0004
+    gamma: sbt_gamma_eps0004
+
+- id: run_mobility_trace_eps0004
+  model: rigid_mobility_trace_eq12
+  inputs: {alpha: alpha_eps0004, beta: beta_eps0004}
+  outputs:
+    c_tr: c_tr_eps0004_pred
+    anisotropy_ratio: anisotropy_eps0004_pred
+
+- id: run_Dt_L1_from_tableS1
+  model: translational_diffusion_eq22
+  inputs:
+    kBT: thermal_energy_kBT_table1
+    mu: cytoplasm_viscosity_mu
+    L: fiber_length_L_1
+    alpha: alpha_eps0004
+    beta: beta_eps0004
+  outputs:
+    D_t: Dt_L1_pred
+    six_D_t: six_Dt_L1_pred
+
+- id: run_Dt_L1_from_eq22_coeff
+  model: translational_diffusion_eq22_printed_coeff
+  inputs:
+    kBT: thermal_energy_kBT_table1
+    mu: cytoplasm_viscosity_mu
+    L: fiber_length_L_1
+    c_tr: c_tr_eq22_printed
+  outputs:
+    D_t: Dt_L1_eq22_coeff_pred
+    six_D_t: six_Dt_L1_eq22_coeff_pred
+
+- id: run_Dt_L05_from_tableS1
+  model: translational_diffusion_eq22
+  inputs:
+    kBT: thermal_energy_kBT_table1
+    mu: cytoplasm_viscosity_mu
+    L: fiber_length_L_05
+    alpha: alpha_eps0008
+    beta: beta_eps0008
+  outputs:
+    D_t: Dt_L05_pred
+    six_D_t: six_Dt_L05_pred
+
+- id: run_tau_m_L1_full
+  model: mesh_diffusion_time
+  inputs: {ell_m: ell_m_02_printed, six_D_t: six_Dt_L1_pred}
+  outputs: {tau_m: tau_m_L1_full_pred}
+
+- id: run_tau_m_L1_rounded_p9
+  model: mesh_diffusion_time
+  inputs: {ell_m: ell_m_02_printed, six_D_t: six_Dt_rounded_p9}
+  outputs: {tau_m: tau_m_L1_rounded_pred}
+
+- id: run_tau_m_L05_full
+  model: mesh_diffusion_time
+  inputs: {ell_m: ell_m_02_printed, six_D_t: six_Dt_L05_pred}
+  outputs: {tau_m: tau_m_L05_full_pred}
+
+- id: run_tau_m_length_ratio
+  model: mesh_diffusion_time_ratio
+  inputs: {tau_m_long: tau_m_L1_full_pred, tau_m_short: tau_m_L05_full_pred}
+  outputs: {ratio: tau_m_length_ratio_pred}
+
+# =============================================================================
+# Bundling phenomenological fits (Figs. 2, 3, S5), speedup ratios & scaling laws
+# =============================================================================
+- id: run_single_exp_nb_at_16s
+  model: percent_in_bundles_single_exp
+  inputs: {t: t_16s_printed, tau1: fit_single_exp_tau1}
+  outputs:
+    percent: pct_in_bundles_16s_nb_pred
+    t_50: t50_nb_fit_pred
+
+- id: run_double_exp_b_at_4s
+  model: percent_in_bundles_double_exp
+  inputs:
+    t: t_4s_printed
+    w1: fit_double_exp_w1
+    tau1: fit_double_exp_tau1
+    tau2: fit_double_exp_tau2
+  outputs:
+    percent: pct_in_bundles_4s_b_pred
+    t_50: t50_b_fit_pred
+    t_80: t80_b_fit_pred
+
+- id: run_bundle_decay_fig3_nb
+  model: bundle_density_exp_decay
+  inputs: {t: fit_fig3_t0_nb, A: fit_fig3_A, t0: fit_fig3_t0_nb, tau_dec: fit_fig3_tau_dec_nb}
+  outputs: {rho_B: rho_B_fig3_nb_pred}
+
+- id: run_bundle_decay_fig3_b
+  model: bundle_density_exp_decay
+  inputs: {t: fit_fig3_t0_b, A: fit_fig3_A, t0: fit_fig3_t0_b, tau_dec: fit_fig3_tau_dec_b}
+  outputs: {rho_B: rho_B_fig3_b_pred}
+
+- id: run_bundle_decay_figS5_nb_printed
+  model: bundle_density_exp_decay_figS5_printed
+  inputs: {t: fit_figS5_t0_nb, A: fit_figS5_A, t0: fit_figS5_t0_nb, tau_dec: fit_figS5_tau_dec_nb}
+  outputs: {rho_B: rho_B_figS5_nb_printed_pred}
+
+- id: run_bundle_decay_figS5_b_printed
+  model: bundle_density_exp_decay_figS5_printed
+  inputs: {t: fit_figS5_t0_b, A: fit_figS5_A, t0: fit_figS5_t0_b, tau_dec: fit_figS5_tau_dec_b}
+  outputs: {rho_B: rho_B_figS5_b_printed_pred}
+
+- id: run_bundle_decay_figS5_nb_corrected
+  model: bundle_density_exp_decay_figS5_corrected
+  inputs: {t: fit_figS5_t0_nb, A: fit_figS5_A, t0: fit_figS5_t0_nb, tau_dec: fit_figS5_tau_dec_nb}
+  outputs: {rho_B: rho_B_figS5_nb_corrected_pred}
+
+- id: run_bundle_decay_figS5_b_corrected
+  model: bundle_density_exp_decay_figS5_corrected
+  inputs: {t: fit_figS5_t0_b, A: fit_figS5_A, t0: fit_figS5_t0_b, tau_dec: fit_figS5_tau_dec_b}
+  outputs: {rho_B: rho_B_figS5_b_corrected_pred}
+
+- id: run_speedup_t50
+  model: half_bundling_time_ratio
+  inputs: {t50_nb: t50_nb_printed, t50_b: t50_b_exact_for_ratio}
+  outputs: {ratio: speedup_t50_computed}
+
+- id: run_speedup_tau_c_FB2
+  model: bundling_time_ratio
+  inputs: {tau_c_nb: tau_c_nb_FB2_exact, tau_c_b: tau_c_b_FB2_exact}
+  outputs: {ratio: speedup_tau_c_FB2_computed}
+
+- id: run_speedup_coalescence_FB2
+  model: coalescence_decay_ratio
+  inputs: {tau_dec_nb: fit_fig3_tau_dec_nb, tau_dec_b: fit_fig3_tau_dec_b}
+  outputs: {ratio: speedup_coalescence_FB2_computed}
+
+- id: run_speedup_peak_FB5
+  model: peak_time_ratio_figS5
+  inputs: {t0_nb: fit_figS5_t0_nb, t0_b: fit_figS5_t0_b}
+  outputs: {ratio: speedup_peak_FB5_computed}
+
+- id: run_speedup_coalescence_FB5
+  model: coalescence_decay_ratio
+  inputs: {tau_dec_nb: fit_figS5_tau_dec_nb, tau_dec_b: fit_figS5_tau_dec_b}
+  outputs: {ratio: speedup_coalescence_FB5_computed}
+
+- id: run_scaling_small_kon_lm2
+  model: diffusion_limited_bundling_scaling
+  inputs: {}
+  sweep: {ell_m: tau_c_small_kon_vs_lm}
+  outputs: {tau_c: tau_c_small_kon_lm2_pred}
+
+- id: run_scaling_length_linear
+  model: linear_length_bundling_scaling
+  inputs: {}
+  sweep: {L: tau_c_vs_length_b}
+  outputs: {tau_c: tau_c_length_linear_pred}
+
+# =============================================================================
+# Supporting Material Section C: Eq. S13, local-drag stability, 2-fiber BD
+# =============================================================================
+- id: run_eqS13_gibbs_boltzmann
+  model: gibbs_boltzmann_spring_pdf_eqS13
+  inputs:
+    x: x_test_rest_added
+    Kc: cl_spring_stiffness_Kc
+    ell: cl_rest_length_ell
+    kBT: thermal_energy_kBT_table1
+  outputs:
+    pdf: eqS13_pdf_at_rest
+    x_mode: eqS13_x_mode
+    mean_x: eqS13_mean_x
+    std_x: eqS13_std_x
+
+- id: run_local_drag_stability_sm_c
+  model: two_fiber_local_drag_stability
+  inputs:
+    epsilon: fiber_aspect_ratio_0004_printed
+    delta_rel: endpoint_reg_delta_rel
+    Kc: cl_spring_stiffness_Kc
+    mu: cytoplasm_viscosity_mu
+    L: fiber_length_L_1
+  settings: {N: 50}
+  outputs:
+    alpha: loc_alpha_sm_c
+    beta: loc_beta_sm_c
+    gamma: loc_gamma_sm_c
+    dt_max: dt_max_sm_c_pred
+
+- id: run_two_fiber_bd_small_dt
+  model: two_fiber_brownian_strang_sim
+  inputs:
+    alpha: loc_alpha_sm_c
+    beta: loc_beta_sm_c
+    gamma: loc_gamma_sm_c
+    Kc: cl_spring_stiffness_Kc
+    ell: cl_rest_length_ell
+    mu: cytoplasm_viscosity_mu
+    L: fiber_length_L_1
+    kBT: thermal_energy_kBT_table1
+  settings: {dt: 0.0005, t_max: 100.0, burn_t: 1.0, seed: 0}
+  replicates: 5
+  outputs:
+    mean_x: bd_small_dt_mean_x
+    std_x: bd_small_dt_std_x
+
+- id: run_two_fiber_bd_large_dt
+  model: two_fiber_brownian_strang_sim
+  inputs:
+    alpha: loc_alpha_sm_c
+    beta: loc_beta_sm_c
+    gamma: loc_gamma_sm_c
+    Kc: cl_spring_stiffness_Kc
+    ell: cl_rest_length_ell
+    mu: cytoplasm_viscosity_mu
+    L: fiber_length_L_1
+    kBT: thermal_energy_kBT_table1
+  settings: {dt: 0.0025, t_max: 100.0, burn_t: 1.0, seed: 0}
+  replicates: 5
+  outputs:
+    mean_x: bd_large_dt_mean_x
+    std_x: bd_large_dt_std_x
+
+# =============================================================================
+# Audit additions: uncompared printed ratios, relative rates & stability fractions
+# =============================================================================
+- id: run_fb5_peak_shift_nb
+  model: fb5_to_fb2_peak_ratio
+  inputs: {t0_fb5: fit_figS5_t0_nb, tau_c_fb2: tau_c_nb_FB2_exact}
+  outputs: {ratio: fb5_peak_shift_nb_computed}
+
+- id: run_fb5_peak_shift_b
+  model: fb5_to_fb2_peak_ratio
+  inputs: {t0_fb5: fit_figS5_t0_b, tau_c_fb2: tau_c_b_FB2_exact}
+  outputs: {ratio: fb5_peak_shift_b_computed}
+
+- id: run_speedup_t80_length
+  model: eighty_percent_bundling_time_ratio
+  inputs: {t80_long: t80_b_L1_printed, t80_short: t80_b_L05_printed}
+  outputs: {ratio: speedup_t80_length_computed}
+
+- id: run_kon_rel_low
+  model: relative_binding_rate
+  inputs: {kon: cl_first_end_kon_low, kon0: cl_first_end_kon_base}
+  outputs: {kon_rel: kon_rel_low_computed}
+
+- id: run_kon_rel_high
+  model: relative_binding_rate
+  inputs: {kon: cl_first_end_kon_high, kon0: cl_first_end_kon_base}
+  outputs: {kon_rel: kon_rel_high_computed}
+
+- id: run_fiber_density_ratio_length
+  model: fiber_number_density_ratio
+  inputs: {F_short: F_400_L05, Ld_short: Ld_2, F_long: F_675, Ld_long: Ld_3}
+  outputs:
+    rho_short: rho_fibers_L05_computed
+    rho_long: rho_fibers_L1_computed
+    ratio: fiber_density_ratio_length_computed
+
+- id: run_dt_fraction_small_printed
+  model: time_step_stability_fraction
+  inputs: {dt: dt_small_sm_c, dt_max: dt_max_sm_c_printed}
+  outputs: {frac_pct: dt_fraction_small_printed_computed}
+
+- id: run_dt_fraction_large_printed
+  model: time_step_stability_fraction
+  inputs: {dt: dt_large_sm_c, dt_max: dt_max_sm_c_printed}
+  outputs: {frac_pct: dt_fraction_large_printed_computed}
+
+- id: run_dt_fraction_small_reconstructed
+  model: time_step_stability_fraction
+  inputs: {dt: dt_small_sm_c, dt_max: dt_max_sm_c_pred}
+  outputs: {frac_pct: dt_fraction_small_reconstructed_computed}
+
+- id: run_dt_fraction_large_reconstructed
+  model: time_step_stability_fraction
+  inputs: {dt: dt_large_sm_c, dt_max: dt_max_sm_c_pred}
+  outputs: {frac_pct: dt_fraction_large_reconstructed_computed}
+
+
+# =============================================================================
+# Digitized figure curve sweeps (Figs. 2, 3, 4, 6b, S1, S2, S5)
+# =============================================================================
+- id: run_eqS13_figS1_left_curve
+  model: gibbs_boltzmann_spring_pdf_eqS13
+  inputs: {Kc: cl_spring_stiffness_Kc, ell: cl_rest_length_ell, kBT: thermal_energy_kBT_table1}
+  sweep: {x: data_figS1_left_eqS13}
+  outputs: {pdf: eqS13_figS1_left_curve_pred}
+
+- id: run_eqS13_figS1_right_curve
+  model: gibbs_boltzmann_spring_pdf_eqS13
+  inputs: {Kc: cl_spring_stiffness_Kc, ell: cl_rest_length_ell, kBT: thermal_energy_kBT_table1}
+  sweep: {x: data_figS1_right_eqS13}
+  outputs: {pdf: eqS13_figS1_right_curve_pred}
+
+- id: run_eqS13_figS1_left_hist
+  model: gibbs_boltzmann_spring_pdf_eqS13
+  inputs: {Kc: cl_spring_stiffness_Kc, ell: cl_rest_length_ell, kBT: thermal_energy_kBT_table1}
+  sweep: {x: data_figS1_left_hist}
+  outputs: {pdf: eqS13_figS1_left_hist_pred}
+
+- id: run_eqS13_figS1_right_hist
+  model: gibbs_boltzmann_spring_pdf_eqS13
+  inputs: {Kc: cl_spring_stiffness_Kc, ell: cl_rest_length_ell, kBT: thermal_energy_kBT_table1}
+  sweep: {x: data_figS1_right_hist}
+  outputs: {pdf: eqS13_figS1_right_hist_pred}
+
+- id: run_figS5_fit_nb_printed_sweep
+  model: bundle_density_exp_decay_figS5_printed
+  inputs: {A: fit_figS5_A, t0: fit_figS5_t0_nb, tau_dec: fit_figS5_tau_dec_nb}
+  sweep: {t: data_figS5_fit_nb}
+  outputs: {rho_B: figS5_fit_nb_printed_curve}
+
+- id: run_figS5_fit_nb_corrected_sweep
+  model: bundle_density_exp_decay_figS5_corrected
+  inputs: {A: fit_figS5_A, t0: fit_figS5_t0_nb, tau_dec: fit_figS5_tau_dec_nb}
+  sweep: {t: data_figS5_fit_nb}
+  outputs: {rho_B: figS5_fit_nb_corrected_curve}
+
+- id: run_figS5_fit_b_printed_sweep
+  model: bundle_density_exp_decay_figS5_printed
+  inputs: {A: fit_figS5_A, t0: fit_figS5_t0_b, tau_dec: fit_figS5_tau_dec_b}
+  sweep: {t: data_figS5_fit_b}
+  outputs: {rho_B: figS5_fit_b_printed_curve}
+
+- id: run_figS5_fit_b_corrected_sweep
+  model: bundle_density_exp_decay_figS5_corrected
+  inputs: {A: fit_figS5_A, t0: fit_figS5_t0_b, tau_dec: fit_figS5_tau_dec_b}
+  sweep: {t: data_figS5_fit_b}
+  outputs: {rho_B: figS5_fit_b_corrected_curve}
+
+- id: run_fig3_bd_fit_nb_sweep
+  model: bundle_density_exp_decay
+  inputs: {A: fit_fig3_A, t0: fit_fig3_t0_nb, tau_dec: fit_fig3_tau_dec_nb}
+  sweep: {t: data_fig3_bd_fit_nb}
+  outputs: {rho_B: fig3_bd_fit_nb_curve}
+
+- id: run_fig3_bd_fit_b_sweep
+  model: bundle_density_exp_decay
+  inputs: {A: fit_fig3_A, t0: fit_fig3_t0_b, tau_dec: fit_fig3_tau_dec_b}
+  sweep: {t: data_fig3_bd_fit_b}
+  outputs: {rho_B: fig3_bd_fit_b_curve}
+
+- id: run_fig2_pct_fit_sweep
+  model: percent_in_bundles_single_exp
+  inputs: {tau1: fit_single_exp_tau1}
+  sweep: {t: data_fig2_pct_fit}
+  outputs: {percent: fig2_pct_fit_curve}
+
+- id: run_fig2_pct_rigid_sweep
+  model: percent_in_bundles_single_exp
+  inputs: {tau1: fit_single_exp_tau1}
+  sweep: {t: data_fig2_pct_rigid}
+  outputs: {percent: fig2_pct_rigid_curve}
+
+- id: run_fig3_pct_fit_nb_sweep
+  model: percent_in_bundles_single_exp
+  inputs: {tau1: fit_single_exp_tau1}
+  sweep: {t: data_fig3_pct_fit_nb}
+  outputs: {percent: fig3_pct_fit_nb_curve}
+
+- id: run_fig3_pct_nb_sweep
+  model: percent_in_bundles_single_exp
+  inputs: {tau1: fit_single_exp_tau1}
+  sweep: {t: data_fig3_pct_nb}
+  outputs: {percent: fig3_pct_nb_curve}
+
+- id: run_fig3_pct_inset_nb_sweep
+  model: percent_in_bundles_single_exp
+  inputs: {tau1: fit_single_exp_tau1}
+  sweep: {t: data_fig3_pct_inset_nb}
+  outputs: {percent: fig3_pct_inset_nb_curve}
+
+- id: run_fig3_pct_fit_b_sweep
+  model: percent_in_bundles_double_exp
+  inputs: {w1: fit_double_exp_w1, tau1: fit_double_exp_tau1, tau2: fit_double_exp_tau2}
+  sweep: {t: data_fig3_pct_fit_b}
+  outputs: {percent: fig3_pct_fit_b_curve}
+
+- id: run_fig3_pct_b_sweep
+  model: percent_in_bundles_double_exp
+  inputs: {w1: fit_double_exp_w1, tau1: fit_double_exp_tau1, tau2: fit_double_exp_tau2}
+  sweep: {t: data_fig3_pct_b}
+  outputs: {percent: fig3_pct_b_curve}
+
+- id: run_fig3_pct_inset_b_sweep
+  model: percent_in_bundles_double_exp
+  inputs: {w1: fit_double_exp_w1, tau1: fit_double_exp_tau1, tau2: fit_double_exp_tau2}
+  sweep: {t: data_fig3_pct_inset_b}
+  outputs: {percent: fig3_pct_inset_b_curve}
+
+- id: run_fig6b_pct_L1_sweep
+  model: percent_in_bundles_double_exp
+  inputs: {w1: fit_double_exp_w1, tau1: fit_double_exp_tau1, tau2: fit_double_exp_tau2}
+  sweep: {t: data_fig6b_pct_L1}
+  outputs: {percent: fig6b_pct_L1_curve}
+
+- id: run_figS2_pct_Ld4_sweep
+  model: percent_in_bundles_single_exp
+  inputs: {tau1: fit_single_exp_tau1}
+  sweep: {t: data_figS2_pct_Ld4}
+  outputs: {percent: figS2_pct_Ld4_curve}
+
+- id: run_fig4_tauc_kon025_lm2_sweep
+  model: diffusion_limited_bundling_scaling
+  inputs: {}
+  sweep: {ell_m: data_fig4_tauc_kon025_vs_lm}
+  outputs: {tau_c: fig4_tauc_kon025_lm2_pred}

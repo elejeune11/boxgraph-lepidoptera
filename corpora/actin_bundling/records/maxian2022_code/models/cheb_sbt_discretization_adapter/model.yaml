@@ -1,0 +1,29 @@
+id: cheb_sbt_discretization_adapter
+name: live ChebyshevDiscretization SBT/RPY setup audit (FibCollocationDiscretization.py)
+role: model
+software: true
+stated:
+  file: Python/FibCollocationDiscretization.py
+  lines: "138-176"
+  quote: "def initLocalcvals(self,delta=0.1):"
+  where: "Python/FibCollocationDiscretization.py::ChebyshevDiscretization (lines 10, 48-176, 254-293, 358-418)"
+equation: "a_RPY = (e^(3/2)/4)*eps*L; s_bar(s;delta) = w(s)*s + (1 - w(s)^2)*delta*L/2 for delta < 0.5 else L/2; ds = L/(N_u - 1); EigValThres = 0.001 (0 for RPYDirectQuad/RPYOversample)"
+inputs:
+  L: {quantity: fiber_length, unit: um}
+  eps: {quantity: fiber_aspect_ratio, unit: dimensionless}
+  Eb: {quantity: bending_stiffness, unit: pN*um^2}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  N: {quantity: chebyshev_points, unit: dimensionless}
+  delta: {quantity: relative_regularization_length, unit: dimensionless}
+  N_u: {quantity: binding_site_count, unit: dimensionless}
+outputs:
+  a_rpy: {quantity: fiber_radius, unit: nm}
+  s_reg_min: {quantity: regularized_arclength, unit: um}
+  eig_val_thres: {quantity: eigenvalue_threshold, unit: um/(pN*s)}
+  binding_site_spacing: {quantity: binding_site_spacing, unit: um}
+settings:
+  rpy_special_quad: false
+  rpy_direct_quad: false
+  rpy_oversample: false
+  n_upsample: 64
+stochastic: false

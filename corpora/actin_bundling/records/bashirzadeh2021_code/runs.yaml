@@ -1,0 +1,391 @@
+# Model runs for bashirzadeh2021_code
+
+# ---------------------------------------------------------------------------
+# 1. Live Python software adapter (unmodified aster_initial_condition_grid_conda_freeze.py + python/output.py)
+# ---------------------------------------------------------------------------
+- id: run_live_init_combined_hh2
+  model: init_condition_script_adapter
+  inputs:
+    target_hh: probe_hh_combined
+    r_c: py_circle_radius
+    k_c: cfg_circle_spring_constant
+  settings:
+    seed: 42
+    n_seeds: 1
+  replicates: 5
+  outputs:
+    n_filaments: live_hh2_n_filaments
+    n_beads_per_fil: live_hh2_n_beads
+    n_replicates: live_hh2_n_replicates
+    n_fascin: live_hh2_n_fascin
+    n_alpha: live_hh2_n_alpha
+    mean_fascin_len: live_hh2_mean_fascin_len
+    mean_alpha_len: live_hh2_mean_alpha_len
+    actin_center_std_x: live_hh2_center_std_x
+    actin_mean_hinge_angle: live_hh2_mean_hinge_angle
+    actin_frac_bend_gt_pi4: live_hh2_frac_bend_gt_pi4
+    actin_frac_shared_arm: live_hh2_frac_shared_arm
+    actin_frac_beads_outside: live_hh2_frac_beads_outside
+    actin_mean_U_confine: live_hh2_mean_U_confine
+    fascin_global_density: live_hh2_global_density
+    fascin_center_density: live_hh2_center_density
+    fascin_edge_density: live_hh2_edge_density
+    fascin_ex2: live_hh2_ex2
+    fascin_ey2: live_hh2_ey2
+    fascin_anisotropy_x2_y2: live_hh2_anisotropy
+    fascin_frac_in_rc_box: live_hh2_frac_in_rc_box
+    cli_fascin_kon_koff_ratio: live_hh2_cli_ratio
+  note: "Executes unmodified crosslinker_sorting_in_GUVs/aster_initial_condition_grid_conda_freeze.py through condition hh=2 (scl=1, scale=0, alpha_conc=5, fasc_conc=5) and parses generated actin/fascin/alpha files with unmodified python/output.py across 5 independent RNG seeds."
+
+- id: run_live_init_fascin_only_hh1
+  model: init_condition_script_adapter
+  inputs:
+    target_hh: probe_hh_fascin_only
+    r_c: py_circle_radius
+    k_c: cfg_circle_spring_constant
+  settings:
+    seed: 100
+    n_seeds: 1
+  outputs:
+    n_filaments: live_hh1_n_filaments
+    n_fascin: live_hh1_n_fascin
+    n_alpha: live_hh1_n_alpha
+  note: "Verifies condition hh=1 (alpha_conc=0, fascin-only) generates empty alpha_1.txt (0 alpha-actinin) and 3534 fascin crosslinkers."
+
+# ---------------------------------------------------------------------------
+# 2. Config and script derived quantities (CLI baseline, standalone .cfg, scl=4 sweep)
+# ---------------------------------------------------------------------------
+- id: run_config_derived_cli_baseline
+  model: afines_config_derived_quantities
+  inputs:
+    xrange: cfg_xrange
+    grid_factor: cfg_grid_factor
+    r_c: py_circle_radius
+    fil_dens: py_fil_dens
+    n_beads: py_nbeads
+    l_link: cfg_link_length
+    r_bead: cfg_actin_length
+    kappa_b: cfg_polymer_bending_modulus
+    temperature: cfg_temperature
+    viscosity: cfg_viscosity
+    dt: cfg_dt
+    tfinal: cfg_tfinal
+    nframes: cfg_nframes
+    rho_fascin: py_fasc_conc
+    rho_alpha: py_alpha_conc_baseline
+    l_fascin: cfg_a_motor_length
+    l_alpha: cfg_p_motor_length
+    kon_fascin: py_onnn_base
+    koff_fascin: py_offf_base
+    scl: py_scl_baseline
+    kon_alpha: cfg_p_m_kon
+    koff_alpha: cfg_p_m_koff
+  outputs:
+    n_fil_from_dens: cli_n_fil_from_dens
+    n_fascin: cli_n_fascin
+    n_alpha: cli_n_alpha
+    L_contour: cli_L_contour
+    k_b_link: cli_k_b_link
+    L_p_code: cli_L_p_code
+    n_steps: cli_n_steps
+    n_bw_print: cli_n_bw_print
+    dt_frame: cli_dt_frame
+    xgrid: cli_xgrid
+    K_fascin: cli_K_fascin
+    K_alpha: cli_K_alpha
+    size_ratio: cli_size_ratio
+    dF_bind_fascin: cli_dF_bind_fascin
+    dF_bind_alpha: cli_dF_bind_alpha
+    gamma_bead: cli_gamma_bead
+    D_bead: cli_D_bead
+    gamma_fascin: cli_gamma_fascin
+    D_fascin: cli_D_fascin
+    gamma_alpha: cli_gamma_alpha
+    D_alpha: cli_D_alpha
+    bd_prefactor_bead: cli_bd_prefactor_bead
+    bd_prefactor_fascin: cli_bd_prefactor_fascin
+    bd_prefactor_alpha: cli_bd_prefactor_alpha
+  note: "Effective combined baseline parameters (sorting_kinetics.cfg overridden by CLI flags in aster_initial_condition_grid_conda_freeze.py for hh=2, scl=1)."
+
+- id: run_config_derived_cfg_standalone
+  model: afines_config_derived_quantities
+  inputs:
+    xrange: cfg_xrange
+    grid_factor: cfg_grid_factor
+    r_c: cfg_circle_radius
+    fil_dens: py_fil_dens
+    n_beads: cfg_nmonomer
+    l_link: cfg_link_length
+    r_bead: cfg_actin_length
+    kappa_b: cfg_polymer_bending_modulus
+    temperature: cfg_temperature
+    viscosity: cfg_viscosity
+    dt: cfg_dt
+    tfinal: cfg_tfinal
+    nframes: cfg_nframes
+    rho_fascin: cfg_a_motor_density
+    rho_alpha: cfg_p_motor_density
+    l_fascin: cfg_a_motor_length
+    l_alpha: cfg_p_motor_length
+    kon_fascin: cfg_a_m_kon
+    koff_fascin: cfg_a_m_koff
+    scl: py_scl_baseline
+    kon_alpha: cfg_p_m_kon
+    koff_alpha: cfg_p_m_koff
+  outputs:
+    n_fil_from_dens: cfg_only_n_fil_from_dens
+    n_fascin: cfg_only_n_fascin
+    L_contour: cfg_only_L_contour
+  note: "Evaluates standalone sorting_kinetics.cfg without CLI overrides (circle_radius=12, nmonomer=27, density=1), giving 26 um filaments and only 452 crosslinkers per species."
+
+- id: run_config_derived_scl4
+  model: afines_config_derived_quantities
+  inputs:
+    xrange: cfg_xrange
+    grid_factor: cfg_grid_factor
+    r_c: py_circle_radius
+    fil_dens: py_fil_dens
+    n_beads: py_nbeads
+    l_link: cfg_link_length
+    r_bead: cfg_actin_length
+    kappa_b: cfg_polymer_bending_modulus
+    temperature: cfg_temperature
+    viscosity: cfg_viscosity
+    dt: cfg_dt
+    tfinal: cfg_tfinal
+    nframes: cfg_nframes
+    rho_fascin: py_fasc_conc
+    rho_alpha: py_alpha_conc_baseline
+    l_fascin: cfg_a_motor_length
+    l_alpha: cfg_p_motor_length
+    kon_fascin: py_onnn_base
+    koff_fascin: py_offf_base
+    scl: probe_scl_slow
+    kon_alpha: cfg_p_m_kon
+    koff_alpha: cfg_p_m_koff
+  outputs:
+    K_fascin: scl4_K_fascin
+  note: "Verifies fascin affinity ratio K = (20/scl)/(0.5/scl) = 40 is preserved at scl=4."
+
+# ---------------------------------------------------------------------------
+# 3. C++ physics kernel ports: confinement, alignment, filament potentials, KMC + occlusion
+# ---------------------------------------------------------------------------
+- id: run_cpp_ext_circle_outside
+  model: cpp_ext_circle_confinement
+  inputs:
+    k_c: cfg_circle_spring_constant
+    r: probe_r_outside
+    r_c: py_circle_radius
+  outputs:
+    U_confine: ext_circle_U_16um
+    F_rad: ext_circle_F_16um
+
+- id: run_cpp_ext_circle_inside
+  model: cpp_ext_circle_confinement
+  inputs:
+    k_c: cfg_circle_spring_constant
+    r: probe_r_inside
+    r_c: py_circle_radius
+  outputs:
+    U_confine: ext_circle_U_10um
+    F_rad: ext_circle_F_10um
+
+- id: run_cpp_align_fascin_antiparallel
+  model: cpp_motor_alignment_potential
+  inputs:
+    kalign: cfg_a_m_kalign
+    par_flag: cfg_a_m_align
+    theta: probe_theta_antiparallel
+    temperature: cfg_temperature
+  outputs:
+    U_align: align_fascin_U_pi
+    tau_align: align_fascin_tau_pi
+    p_metro_align: align_fascin_pmetro_pi
+
+- id: run_cpp_align_fascin_pi4
+  model: cpp_motor_alignment_potential
+  inputs:
+    kalign: cfg_a_m_kalign
+    par_flag: cfg_a_m_align
+    theta: probe_theta_pi4
+    temperature: cfg_temperature
+  outputs:
+    U_align: align_fascin_U_pi4
+    tau_align: align_fascin_tau_pi4
+    p_metro_align: align_fascin_pmetro_pi4
+
+- id: run_cpp_align_alpha_antiparallel
+  model: cpp_motor_alignment_potential
+  inputs:
+    kalign: cfg_p_m_kalign
+    par_flag: cfg_p_m_align
+    theta: probe_theta_antiparallel
+    temperature: cfg_temperature
+  outputs:
+    U_align: align_alpha_U_pi
+    p_metro_align: align_alpha_pmetro_pi
+
+- id: run_cpp_filament_potentials_cfg
+  model: cpp_filament_potentials
+  inputs:
+    k_s: cfg_link_stretching_stiffness
+    l_0: cfg_link_length
+    l_cur: probe_link_stretched
+    kappa_b: cfg_polymer_bending_modulus
+    theta: probe_theta_hinge_code
+    max_small_angle: cpp_max_small_angle
+  outputs:
+    U_stretch: fil_cfg_U_stretch
+    F_stretch: fil_cfg_F_stretch
+    k_b: fil_cfg_k_b
+    U_bend: fil_cfg_U_bend_pi2
+    tau_bend: fil_cfg_tau_bend_pi2
+
+- id: run_cpp_filament_potentials_default
+  model: cpp_filament_potentials
+  inputs:
+    k_s: cpp_default_link_stretching_stiffness
+    l_0: cfg_link_length
+    l_cur: probe_link_stretched
+    kappa_b: cfg_polymer_bending_modulus
+    theta: probe_theta_hinge_code
+    max_small_angle: cpp_max_small_angle
+  outputs:
+    U_stretch: fil_def_U_stretch
+    F_stretch: fil_def_F_stretch
+
+- id: run_cpp_kmc_fascin_allowed
+  model: cpp_kmc_metropolis_occlusion
+  inputs:
+    k_on: cfg_a_m_kon
+    k_off: cfg_a_m_koff
+    dt: cfg_dt
+    temperature: cfg_temperature
+    mk: cfg_a_motor_stiffness
+    mld: cfg_a_motor_length
+    len_old: probe_xl_len_old
+    len_new: probe_xl_len_new
+    kalign: cfg_a_m_kalign
+    par_flag: cfg_a_m_align
+    theta: probe_theta_parallel
+    kb_motor: cfg_a_m_bend
+    same_filament: probe_flag_false
+    same_spring: probe_flag_false
+    occ: py_occc
+    nearest_head_dist: probe_occ_clear_dist
+  outputs:
+    dE_attach: kmc_fascin_dE_allowed
+    p_metro_attach: kmc_fascin_pmetro_allowed
+    allowed_by_topology: kmc_fascin_topo_allowed
+    allowed_by_occ: kmc_fascin_occ_allowed
+    p_attach_step: kmc_fascin_patt_allowed
+    p_detach_step: kmc_fascin_pdet_allowed
+    K_effective: kmc_fascin_Keff_allowed
+
+- id: run_cpp_kmc_fascin_occluded
+  model: cpp_kmc_metropolis_occlusion
+  inputs:
+    k_on: cfg_a_m_kon
+    k_off: cfg_a_m_koff
+    dt: cfg_dt
+    temperature: cfg_temperature
+    mk: cfg_a_motor_stiffness
+    mld: cfg_a_motor_length
+    len_old: probe_xl_len_old
+    len_new: probe_xl_len_new
+    kalign: cfg_a_m_kalign
+    par_flag: cfg_a_m_align
+    theta: probe_theta_parallel
+    kb_motor: cfg_a_m_bend
+    same_filament: probe_flag_false
+    same_spring: probe_flag_false
+    occ: py_occc
+    nearest_head_dist: probe_occ_blocked_dist
+  outputs:
+    allowed_by_occ: kmc_fascin_occ_blocked
+    p_attach_step: kmc_fascin_patt_blocked
+
+- id: run_cpp_kmc_same_filament_kb0
+  model: cpp_kmc_metropolis_occlusion
+  inputs:
+    k_on: cfg_a_m_kon
+    k_off: cfg_a_m_koff
+    dt: cfg_dt
+    temperature: cfg_temperature
+    mk: cfg_a_motor_stiffness
+    mld: cfg_a_motor_length
+    len_old: probe_xl_len_old
+    len_new: probe_xl_len_new
+    kalign: cfg_a_m_kalign
+    par_flag: cfg_a_m_align
+    theta: probe_theta_parallel
+    kb_motor: cfg_a_m_bend
+    same_filament: probe_flag_true
+    same_spring: probe_flag_false
+    occ: py_occc
+    nearest_head_dist: probe_occ_clear_dist
+  outputs:
+    allowed_by_topology: kmc_same_fil_allowed_kb0
+    p_attach_step: kmc_same_fil_patt_kb0
+  note: "Tests src/motor.cpp:696-700 allowed_bind() with a_m_bend = 0: confirms both heads CAN bind to different springs of the SAME filament (allowed_by_topology = 1)."
+
+# ---------------------------------------------------------------------------
+# 4. Stochastic C++ Leimkuhler-Matthews Langevin integrator verification
+# ---------------------------------------------------------------------------
+- id: run_cpp_langevin_fascin
+  model: cpp_leimkuhler_langevin_diffusion
+  inputs:
+    viscosity: cfg_viscosity
+    r_hydro: cfg_a_motor_length
+    temperature: cfg_temperature
+    k_trap: cfg_circle_spring_constant
+    dt: cfg_dt
+  settings:
+    n_steps: 2000
+    n_particles: 2000
+    seed: 42
+  replicates: 5
+  outputs:
+    D_theory: langevin_fascin_D_theory
+    D_sim: langevin_fascin_D_sim
+    var_x_boltzmann: langevin_fascin_var_boltz
+    var_x_sim: langevin_fascin_var_sim
+  note: "Verifies exact Einstein diffusion and harmonic Boltzmann variance for unbound fascin heads (mld = 0.1 um, vis = 0.01) under AFINES Leimkuhler-Matthews dynamics."
+
+- id: run_cpp_langevin_alpha
+  model: cpp_leimkuhler_langevin_diffusion
+  inputs:
+    viscosity: cfg_viscosity
+    r_hydro: cfg_p_motor_length
+    temperature: cfg_temperature
+    k_trap: cfg_circle_spring_constant
+    dt: cfg_dt
+  settings:
+    n_steps: 2000
+    n_particles: 2000
+    seed: 77
+  replicates: 5
+  outputs:
+    D_theory: langevin_alpha_D_theory
+    D_sim: langevin_alpha_D_sim
+    var_x_boltzmann: langevin_alpha_var_boltz
+    var_x_sim: langevin_alpha_var_sim
+  note: "Verifies exact Einstein diffusion (5x slower than fascin) and harmonic Boltzmann variance for unbound alpha-actinin heads (mld = 0.5 um, vis = 0.01)."
+
+# ---------------------------------------------------------------------------
+# 5. Exact analytical initial-condition sampling bias derivation
+# ---------------------------------------------------------------------------
+- id: run_analytical_init_sampling_bias
+  model: cpp_init_sampling_bias_analytical
+  inputs:
+    r_rand: py_r_rand
+    r_c: py_circle_radius
+    rho_xl: py_fasc_conc
+  outputs:
+    center_std_code: ana_center_std_code
+    ex2_code: ana_ex2_code
+    ey2_code: ana_ey2_code
+    ex2_uniform_disk: ana_ex2_uniform_disk
+    anisotropy_code: ana_anisotropy_code
+    density_at_origin_code: ana_density_origin_code
+    frac_in_rc_box_code: ana_frac_rc_box_code

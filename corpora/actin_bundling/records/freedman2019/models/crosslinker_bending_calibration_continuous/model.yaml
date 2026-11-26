@@ -1,0 +1,23 @@
+id: crosslinker_bending_calibration_continuous
+name: AFINES empirical long-to-short bending stiffness ratio (continuous ramp variant)
+role: model
+stated:
+  page: 9
+  printed_page: "SI-3"
+  quote: "empirically, we suppressed this bias by setting"
+  where: SI Section A & Fig. S2
+equation: "kappa_long^B / kappa_short^B = min(4, 22 * (l_long / l_short) - 21) for l_long >= l_short"
+inputs:
+  l_long: {quantity: crosslinker_length, unit: nm}
+  l_short: {quantity: crosslinker_length, unit: nm}
+  kappa_short_B: {quantity: crosslinker_bending_stiffness, unit: pN*um}
+outputs:
+  stiffness_ratio: {quantity: bending_stiffness_ratio, unit: dimensionless}
+  kappa_long_B: {quantity: crosslinker_bending_stiffness, unit: pN*um}
+settings: {}
+stochastic: false
+variant_of: crosslinker_bending_calibration_si
+corrections:
+  - equation: "SI Section A (p. 9, SI-3)"
+    change: "Apply the linear ramp 22*(l_long/l_short) - 21 over l_long in [200, 227.27] nm and cap continuously at 4 above 227.27 nm (covering the undefined (200, 300) nm interval)."
+    evidence: "Table S1 specifies l_short = 200 nm and l_long in [200, 1200] nm, and Figs. 2C, 5B, S2, and Movie S2 use l_long = 227 nm; the printed conditions l_long <= 200 nm and l_long >= 300 nm leave (200, 300) nm undefined, whereas 22*(l_long/200) - 21 equals 1 at 200 nm and reaches 4 at l_long = 227.27 nm (3.97 at 227 nm)."

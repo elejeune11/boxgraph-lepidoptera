@@ -1,0 +1,22 @@
+id: excluded_volume_si_eq3_energy_units
+name: AFINES excluded volume potential in dimensionally consistent energy units (SI Eq. 3 corrected)
+role: model
+stated:
+  page: 8
+  printed_page: "SI-2"
+  quote: "restricted from overlapping via a soft (Hookean) excluded volume interaction"
+  where: SI Eq. 3
+equation: "U_ij = k_exv * (1 - |r_ij| / r_max)^2 for |r_ij| < r_max, 0 for |r_ij| >= r_max (with k_exv in energy units pN*um)"
+inputs:
+  k_exv: {quantity: excluded_volume_energy_scale, unit: pN*um}
+  r_ij: {quantity: interaction_distance, unit: um}
+  r_max: {quantity: interaction_distance, unit: um}
+outputs:
+  U_ij: {quantity: mechanical_energy, unit: pN*um}
+settings: {}
+stochastic: false
+variant_of: excluded_volume_si_eq3_printed
+corrections:
+  - equation: "SI Eq. 3 & Table S1"
+    change: "Use scalar norm |r_ij| instead of vector r_ij inside (1 - |r_ij|/r_max)^2, assign k_exv energy units (pN*um) instead of pN*um^2, and include |r_ij| = r_max in the zero branch."
+    evidence: "SI Eq. 3 defines potential energy U_ij (dimension [energy]) as k_exv times the dimensionless square (1 - |r_ij|/r_max)^2, so k_exv in Table S1 and Fig. 2D caption (pN*um^2) has dimension [energy]*[length] and cannot yield an energy."

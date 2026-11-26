@@ -1,0 +1,720 @@
+- id: run_kd_afines_single
+  model: dissociation_constant_kd
+  inputs:
+    k_off: test_kd_koff_added
+    k_on: test_kd_kon_added
+  settings: {}
+  outputs:
+    K_d: kd_afines_single_pred
+
+- id: run_switching_ref16
+  model: switching_rate_1d_model
+  inputs:
+    mu_on_same: kmc_bundling_rate_mu_on
+    epsilon_kBT: barrier_height_ref16
+  settings: {}
+  outputs:
+    mu_on_diff: mu_on_diff_ref16_pred
+    switching_ratio: switching_ratio_ref16_pred
+    fold_reduction: switching_fold_reduction_ref16_pred
+
+- id: run_eps_from_figs3a_ratio
+  model: effective_barrier_from_ratio
+  inputs:
+    switching_ratio: figs3a_switching_ratio
+  settings: {}
+  outputs:
+    epsilon_predicted: eps_from_figs3a_ratio_pred
+
+- id: run_delta_l_physiological
+  model: crosslinker_length_difference
+  inputs:
+    l_long: alpha_actinin_size_nm
+    l_short: fascin_size_nm
+  settings: {}
+  outputs:
+    delta_l_xl: delta_l_xl_physiological_pred
+
+- id: run_delta_l_afines
+  model: crosslinker_length_difference
+  inputs:
+    l_long: afines_l_long_default
+    l_short: afines_l_short
+  settings: {}
+  outputs:
+    delta_l_xl: delta_l_xl_afines_pred
+
+- id: run_bend_angle_20sites
+  model: bending_angle_domain_switch
+  inputs:
+    delta_l_xl: delta_l_xl_physiological
+    l_g: equal_binding_distance_um
+  settings: {}
+  outputs:
+    theta: bend_angle_20sites_pred
+
+- id: run_gap_energy_20sites
+  model: gap_bending_energy_eq1
+  inputs:
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    l_g: equal_binding_distance_um
+    T: afines_temperature
+  settings: {}
+  outputs:
+    U_kBT: gap_energy_20sites_kBT_pred
+    U: gap_energy_20sites_pNum_pred
+
+- id: run_site_prob_20_sites
+  model: site_binding_probability_fig3b
+  inputs:
+    n_g: equal_binding_sites_count
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+  settings: {}
+  outputs:
+    l_g: gap_length_20sites_pred
+    U_kBT: gap_u_20sites_pred
+    P_diff: site_prob_20sites_pred
+
+- id: run_lattice_site_count
+  model: lattice_site_count
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+  settings: {}
+  outputs:
+    N: lattice_sites_N_pred
+
+- id: run_chem_pot_occupancy_minus2
+  model: chemical_potential_from_occupancy
+  inputs:
+    N: lattice_sites_N
+    mu_kBT: chemical_potential_used
+  settings: {}
+  outputs:
+    N_b: single_species_occ_minus2_pred
+    mu_kBT_inv: chem_pot_inv_minus2_pred
+
+- id: run_chem_pot_occupancy_minus1p5
+  model: chemical_potential_from_occupancy
+  inputs:
+    N: lattice_sites_N
+    mu_kBT: chemical_potential_single_species_est
+  settings: {}
+  outputs:
+    N_b: single_species_occ_minus1p5_pred
+    mu_kBT_inv: chem_pot_inv_minus1p5_pred
+
+- id: run_eq_lattice_energy_fig2b
+  model: equilibrium_lattice_energy_eq2
+  inputs:
+    N_S: test_n_short_single_added
+    N_L: test_n_long_single_added
+    mu_S_kBT: chemical_potential_used
+    mu_L_kBT: chemical_potential_used
+    n_g: test_gap_fig2b_initial_added
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: afines_delta_l_default
+  settings: {}
+  outputs:
+    U_lat_kBT: eq_lattice_energy_fig2b_pred
+
+- id: run_eq_lattice_baseline
+  model: equilibrium_lattice_mc_eq2
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: afines_delta_l_default
+    mu_S_kBT: chemical_potential_used
+    mu_L_kBT: chemical_potential_used
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  settings:
+    n_sweeps: 200
+    n_sims: 30
+    seed: 0
+  replicates: 3
+  outputs:
+    domain_length: eq_lattice_dom_baseline_pred
+    domain_length_short: eq_lattice_dom_short_baseline_pred
+    domain_length_long: eq_lattice_dom_long_baseline_pred
+  note: >
+    Baseline Fig. 2C-D equilibrium 1D lattice point (Delta l_xl = 100 nm, L_p = 17 um, mu = -2 k_B T).
+    The paper does not state the Metropolis sweep count; n_sweeps = 200 is chosen as baseline and refined
+    up to 800 sweeps (factors 1, 2, 4) across n_sims = 30 independent chains x 3 replicates.
+
+- id: run_kmc_rate_ratio_figs3a
+  model: kmc_rate_ratio_figs3c
+  inputs:
+    mu_grow: kmc_growth_rate_ref16
+    l_b: binding_site_spacing_lb
+    mu_on: kmc_bundling_rate_mu_on
+  settings: {}
+  outputs:
+    rate_ratio: kmc_rate_ratio_figs3a_pred
+
+- id: run_kmc_figs3a
+  model: kmc_growing_bundle_fig3
+  inputs:
+    mu_grow: kmc_growth_rate_ref16
+    mu_on_A: kmc_bundling_rate_mu_on
+    mu_on_B: kmc_bundling_rate_mu_on
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  settings:
+    n_sims: 1000
+    seed: 0
+  replicates: 5
+  outputs:
+    switching_ratio: kmc_figs3a_switching_ratio_pred
+    epsilon_predicted: kmc_figs3a_epsilon_pred
+    domain_length_A: kmc_figs3a_dom_A_pred
+    domain_length_B: kmc_figs3a_dom_B_pred
+  note: >
+    Uses the paper's Fig. 3C sample count (n_sims = 1000) at Fig. S3A parameters
+    (mu_grow = 40 nm/s, mu_on = 0.2/site/s, L_p = 17 um, Delta l_xl = 27 nm, L_0 = 15 um, l_b = 37 nm).
+
+- id: run_lp_min_afines
+  model: persistence_length_from_kappa_b
+  inputs:
+    kappa_B: afines_kappa_b_min
+    T: afines_temperature
+  settings: {}
+  outputs:
+    L_p: lp_min_afines_pred
+
+- id: run_lp_max_afines
+  model: persistence_length_from_kappa_b
+  inputs:
+    kappa_B: afines_kappa_b_max
+    T: afines_temperature
+  settings: {}
+  outputs:
+    L_p: lp_max_afines_pred
+
+- id: run_filament_potential_sample
+  model: filament_potential_si_eq1
+  inputs:
+    k_a: afines_ka
+    r: test_link_length_stretched_added
+    l_a: afines_link_length_la
+    kappa_B: afines_kappa_b_min
+    theta: test_bend_angle_added
+  settings: {}
+  outputs:
+    U_stretch: fil_u_stretch_sample_pred
+    U_bend: fil_u_bend_sample_pred
+    U_f: fil_u_total_sample_pred
+
+- id: run_afines_growth_min
+  model: filament_growth_rate_si_eq2
+  inputs:
+    k_g: afines_kg
+    delta_l_a: afines_lg_min_table_s1
+    dt: afines_dt
+  settings: {}
+  outputs:
+    k_grow: afines_growth_rate_min_pred
+    P_step: afines_growth_pstep_min_pred
+
+- id: run_afines_growth_max
+  model: filament_growth_rate_si_eq2
+  inputs:
+    k_g: afines_kg
+    delta_l_a: afines_lg_max_table_s1
+    dt: afines_dt
+  settings: {}
+  outputs:
+    k_grow: afines_growth_rate_max_pred
+    P_step: afines_growth_pstep_max_pred
+
+- id: run_exv_printed_sample
+  model: excluded_volume_si_eq3_printed
+  inputs:
+    k_exv: afines_kexv_printed
+    r_ij: test_sep_exv_added
+    r_max: afines_rmax
+  settings: {}
+  outputs:
+    U_ij: exv_printed_sample_pred
+
+- id: run_exv_corrected_sample
+  model: excluded_volume_si_eq3_energy_units
+  inputs:
+    k_exv: kexv_energy_scale_added
+    r_ij: test_sep_exv_added
+    r_max: afines_rmax
+  settings: {}
+  outputs:
+    U_ij: exv_corrected_sample_pred
+
+- id: run_xl_potential_short_base
+  model: crosslinker_potential_si_eq4
+  inputs:
+    k_xl: afines_k_short
+    r: test_xl_length_added
+    l_xl: afines_l_short
+    kappa_xl_B: afines_kappa_b_short
+    alpha_L: test_xl_angle_added
+    alpha_R: test_xl_angle_added
+    I_L: indicator_bound_added
+    I_R: indicator_bound_added
+    k_on_1: afines_k_on_1_short
+    k_off_1: afines_k_off_1_short_base
+    k_on_2: afines_k_on_2_short
+    k_off_2: afines_k_off_2_short
+    T: afines_temperature
+  settings: {}
+  outputs:
+    U_stretch: xl_u_stretch_base_pred
+    U_bend: xl_u_bend_base_pred
+    U_bind: xl_u_bind_base_pred
+    U_xl: xl_u_total_base_pred
+
+- id: run_xl_potential_short_4x_off1
+  model: crosslinker_potential_si_eq4
+  inputs:
+    k_xl: afines_k_short
+    r: test_xl_length_added
+    l_xl: afines_l_short
+    kappa_xl_B: afines_kappa_b_short
+    alpha_L: test_xl_angle_added
+    alpha_R: test_xl_angle_added
+    I_L: indicator_bound_added
+    I_R: indicator_bound_added
+    k_on_1: afines_k_on_1_short
+    k_off_1: afines_k_off_1_short_4x
+    k_on_2: afines_k_on_2_short
+    k_off_2: afines_k_off_2_short
+    T: afines_temperature
+  settings: {}
+  outputs:
+    U_stretch: xl_u_stretch_4x_pred
+    U_bend: xl_u_bend_4x_pred
+    U_bind: xl_u_bind_4x_pred
+    U_xl: xl_u_total_4x_pred
+
+- id: run_lever_rule_sample
+  model: force_lever_rule_si_eq5
+  inputs:
+    F_xl: test_tensile_force_added
+    d_next: test_head_offset_added
+    l_link: afines_link_length_la
+  settings: {}
+  outputs:
+    F_i: lever_f_i_sample_pred
+    F_i_plus_1: lever_f_next_sample_pred
+
+- id: run_bending_calib_300nm_printed
+  model: crosslinker_bending_calibration_si
+  inputs:
+    l_long: afines_l_long_default
+    l_short: afines_l_short
+    kappa_short_B: afines_kappa_b_short
+  settings: {}
+  outputs:
+    stiffness_ratio: bending_ratio_300nm_printed_pred
+    kappa_long_B: kappa_long_300nm_printed_pred
+
+- id: run_bending_calib_227nm_continuous
+  model: crosslinker_bending_calibration_continuous
+  inputs:
+    l_long: afines_l_long_phys_diff
+    l_short: afines_l_short
+    kappa_short_B: afines_kappa_b_short
+  settings: {}
+  outputs:
+    stiffness_ratio: bending_ratio_227nm_cont_pred
+    kappa_long_B: kappa_long_227nm_cont_pred
+
+- id: run_bending_calib_300nm_continuous
+  model: crosslinker_bending_calibration_continuous
+  inputs:
+    l_long: afines_l_long_default
+    l_short: afines_l_short
+    kappa_short_B: afines_kappa_b_short
+  settings: {}
+  outputs:
+    stiffness_ratio: bending_ratio_300nm_cont_pred
+    kappa_long_B: kappa_long_300nm_cont_pred
+
+- id: run_stokes_mobility
+  model: stokes_mobility_si_eq6
+  inputs:
+    R: bead_hydrodynamic_radius_added
+    nu: afines_viscosity
+    T: afines_temperature
+  settings: {}
+  outputs:
+    mu: stokes_mobility_pred
+    D: stokes_einstein_D_pred
+
+- id: run_brownian_eq6
+  model: brownian_step_si_eq6
+  inputs:
+    F: zero_force_added
+    mu: stokes_mobility_pred
+    T: afines_temperature
+    t_total: brownian_test_time_added
+  settings:
+    dt: 0.00002
+    n_traj: 2000
+    seed: 0
+  replicates: 5
+  outputs:
+    D_eff: brownian_D_eff_pred
+
+- id: run_off1_ratio_2
+  model: single_filament_unbinding_ratio
+  inputs:
+    k_off_1_short: afines_k_off_1_short_2x
+    k_off_1_long: afines_k_off_1_long
+  settings: {}
+  outputs:
+    off1_ratio: off1_ratio_2_pred
+
+- id: run_off1_ratio_4
+  model: single_filament_unbinding_ratio
+  inputs:
+    k_off_1_short: afines_k_off_1_short_4x
+    k_off_1_long: afines_k_off_1_long
+  settings: {}
+  outputs:
+    off1_ratio: off1_ratio_4_pred
+
+- id: run_afines_init_length_growing
+  model: afines_filament_contour_length
+  inputs:
+    N_links: afines_nl0_growing
+    l_a: afines_link_length_la
+  settings: {}
+  outputs:
+    L: afines_init_length_growing_pred
+
+- id: run_afines_max_length
+  model: afines_filament_contour_length
+  inputs:
+    N_links: afines_nmax
+    l_a: afines_link_length_la
+  settings: {}
+  outputs:
+    L: afines_max_length_pred
+
+- id: run_delta_l_afines_227
+  model: crosslinker_length_difference
+  inputs:
+    l_long: afines_l_long_phys_diff
+    l_short: afines_l_short
+  settings: {}
+  outputs:
+    delta_l_xl: delta_l_xl_afines_227_pred
+
+# ==========================================================================
+# Figure-sweep runs (Main Figs. 2C-D, 3B, 3C, 5B and SI Fig. S3C)
+# ==========================================================================
+
+- id: run_fig3b_switching_prob_sweep
+  model: site_binding_probability_fig3b
+  inputs:
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+  sweep:
+    n_g: fig3b_switching_prob_datum
+  settings: {}
+  outputs:
+    P_diff: fig3b_switching_prob_pred
+  note: >
+    Deterministic sweep of Eq. (1) conditional switching probability over n_g = 1..20 sites
+    at the paper's stated parameters (l_b = 37 nm, L_p = 17 um, Delta l_xl = 27 nm).
+
+- id: run_eq_lattice_fig2c_sweep
+  model: equilibrium_lattice_mc_eq2
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    mu_S_kBT: chemical_potential_used
+    mu_L_kBT: chemical_potential_used
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    delta_l_xl: fig2c_lattice_datum
+  settings:
+    n_sweeps: 200
+    n_sims: 15
+    seed: 0
+  replicates: 3
+  outputs:
+    domain_length: fig2c_lattice_pred
+  note: >
+    Sweeps 1D equilibrium lattice Metropolis MC across all 7 Fig. 2C Delta l_xl values
+    (0, 27, 50, 100, 300, 500, 1000 nm) at L_p = 17 um, mu_S = mu_L = -2 k_B T
+    (n_sweeps = 200 baseline matching ref_eq_lattice_sweeps; 15 chains x 3 replicates = 45 chains/point).
+
+- id: run_eq_lattice_fig2d_sweep
+  model: equilibrium_lattice_mc_eq2
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    delta_l_xl: afines_delta_l_default
+    mu_S_kBT: chemical_potential_used
+    mu_L_kBT: chemical_potential_used
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    L_p: fig2d_lattice_datum
+  settings:
+    n_sweeps: 200
+    n_sims: 15
+    seed: 0
+  replicates: 3
+  outputs:
+    domain_length: fig2d_lattice_pred
+  note: >
+    Sweeps 1D equilibrium lattice Metropolis MC across all 7 Fig. 2D persistence lengths
+    (2.5, 7.5, 12.5, 17, 25, 75, 125 um) at Delta l_xl = 100 nm, mu_S = mu_L = -2 k_B T
+    (n_sweeps = 200 baseline; 15 chains x 3 replicates = 45 chains/point).
+
+- id: run_kmc_fig3c_left_sweep
+  model: kmc_growing_bundle_conc_ratio
+  inputs:
+    mu_grow: kmc_growth_rate_ref16
+    mu_on_B: kmc_bundling_rate_mu_on
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    conc_ratio: fig3c_left_kmc_fascin_datum
+  settings:
+    n_sims: 1000
+    seed: 0
+  replicates: 3
+  outputs:
+    domain_length_A: fig3c_left_kmc_fascin_pred
+    domain_length_B: fig3c_left_kmc_alpha_actinin_pred
+  note: >
+    Sweeps growing-bundle KMC over Fig. 3C Left concentration ratios [0.3, 0.5, 1, 1.5, 2]
+    at stated parameters (mu_grow = 40 nm/s, mu_on^alpha-actinin = 0.2/site/s, l_b = 37 nm, Delta l_xl = 27 nm).
+
+- id: run_kmc_fig3c_left_expt_sweep
+  model: kmc_growing_bundle_conc_ratio
+  inputs:
+    mu_grow: kmc_growth_rate_ref16
+    mu_on_B: kmc_bundling_rate_mu_on
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    conc_ratio: fig3c_left_expt_fascin_datum
+  settings:
+    n_sims: 1000
+    seed: 0
+  replicates: 3
+  outputs:
+    domain_length_A: fig3c_left_expt_fascin_pred
+  note: >
+    Evaluates growing-bundle KMC fascin domain length at the 8 digitized Ref. 16 experimental
+    concentration ratios from Fig. 3C Left for direct model validation.
+
+- id: run_kmc_fig5b_expt_sweep
+  model: kmc_growing_bundle_conc_ratio
+  inputs:
+    mu_grow: kmc_growth_rate_ref16
+    mu_on_B: kmc_bundling_rate_mu_on
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    conc_ratio: fig5b_expt_fascin_datum
+  settings:
+    n_sims: 1000
+    seed: 0
+  replicates: 3
+  outputs:
+    domain_length_A: fig5b_expt_fascin_pred
+  note: >
+    Evaluates growing-bundle KMC fascin domain length at all 10 digitized Ref. 16 experimental
+    concentration ratios resolved on Fig. 5B's log10 axis.
+
+- id: run_kmc_fig3c_right_sweep
+  model: kmc_growing_bundle_fig3
+  inputs:
+    mu_on_A: kmc_bundling_rate_mu_on
+    mu_on_B: kmc_bundling_rate_mu_on
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    mu_grow: fig3c_right_kmc_alpha_actinin_datum
+  settings:
+    n_sims: 1000
+    seed: 0
+  replicates: 3
+  outputs:
+    domain_length_A: fig3c_right_kmc_fascin_pred
+    domain_length_B: fig3c_right_kmc_alpha_actinin_pred
+  note: >
+    Sweeps growing-bundle KMC over Fig. 3C Right polymerization rates [20, 50, 100] nm/s
+    at equal bundling rates mu_on = 0.2/site/s.
+
+- id: run_kmc_figs3c_100nms_sweep
+  model: kmc_growing_bundle_rate_ratio
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    rate_ratio: figS3c_100nms_datum
+  settings:
+    n_sims: 400
+    seed: 0
+  replicates: 3
+  outputs:
+    epsilon_predicted: figs3c_100nms_eps_pred
+  note: >
+    Sweeps growing-bundle KMC effective switching barrier over the 6 unoccluded growth-to-bundling
+    rate ratios of the mu_grow = 100 nm/s series in Fig. S3C.
+
+- id: run_kmc_figs3c_50nms_sweep
+  model: kmc_growing_bundle_rate_ratio
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    rate_ratio: figS3c_50nms_datum
+  settings:
+    n_sims: 400
+    seed: 0
+  replicates: 3
+  outputs:
+    epsilon_predicted: figs3c_50nms_eps_pred
+  note: >
+    Sweeps growing-bundle KMC effective switching barrier over the 3 digitized mu_grow = 50 nm/s points in Fig. S3C.
+
+- id: run_kmc_figs3c_40nms_sweep
+  model: kmc_growing_bundle_rate_ratio
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    rate_ratio: figS3c_40nms_datum
+  settings:
+    n_sims: 400
+    seed: 0
+  replicates: 3
+  outputs:
+    epsilon_predicted: figs3c_40nms_eps_pred
+  note: >
+    Sweeps growing-bundle KMC effective switching barrier over the 4 digitized mu_grow = 40 nm/s points in Fig. S3C.
+
+- id: run_kmc_figs3c_30nms_sweep
+  model: kmc_growing_bundle_rate_ratio
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    rate_ratio: figS3c_30nms_datum
+  settings:
+    n_sims: 400
+    seed: 0
+  replicates: 3
+  outputs:
+    epsilon_predicted: figs3c_30nms_eps_pred
+  note: >
+    Sweeps growing-bundle KMC effective switching barrier over the 6 digitized mu_grow = 30 nm/s points in Fig. S3C.
+
+- id: run_kmc_figs3c_20nms_sweep
+  model: kmc_growing_bundle_rate_ratio
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    rate_ratio: figS3c_20nms_datum
+  settings:
+    n_sims: 400
+    seed: 0
+  replicates: 3
+  outputs:
+    epsilon_predicted: figs3c_20nms_eps_pred
+  note: >
+    Sweeps growing-bundle KMC effective switching barrier over the 2 digitized mu_grow = 20 nm/s points in Fig. S3C.
+
+- id: run_kmc_figs3c_10nms_sweep
+  model: kmc_growing_bundle_rate_ratio
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    rate_ratio: figS3c_10nms_datum
+  settings:
+    n_sims: 400
+    seed: 0
+  replicates: 3
+  outputs:
+    epsilon_predicted: figs3c_10nms_eps_pred
+  note: >
+    Sweeps growing-bundle KMC effective switching barrier at the 1 digitized mu_grow = 10 nm/s point in Fig. S3C.
+
+- id: run_kmc_figs3c_5nms_sweep
+  model: kmc_growing_bundle_rate_ratio
+  inputs:
+    L_0: filament_length_L0
+    l_b: binding_site_spacing_lb
+    L_p: actin_persistence_length
+    delta_l_xl: delta_l_xl_physiological
+    n_d: domain_min_crosslinkers_nd
+    l_d: domain_max_gap_ld
+  sweep:
+    rate_ratio: figS3c_5nms_datum
+  settings:
+    n_sims: 400
+    seed: 0
+  replicates: 3
+  outputs:
+    epsilon_predicted: figs3c_5nms_eps_pred
+  note: >
+    Sweeps growing-bundle KMC effective switching barrier over the 2 digitized mu_grow = 5 nm/s points in Fig. S3C.

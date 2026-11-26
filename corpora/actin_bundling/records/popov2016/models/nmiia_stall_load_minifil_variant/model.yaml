@@ -1,0 +1,21 @@
+id: nmiia_stall_load_minifil_variant
+name: NMIIA stall-condition external force using mini-filament stiffness N_total * K_head (variant of S3 Text p. 46)
+role: model
+variant_of: nmiia_stall_load_printed_s3a
+corrections:
+  - equation: "S3 Text Section A stall-load formula (p. 46)"
+    change: "Replace single-head K_NMIIA,stretching with mini-filament stretching constant N_total * K_NMIIA,stretching, giving F_ext = rho * N_total * K_NMIIA,stretching * d_step."
+    evidence: "Table 2B footnote e (p. 60) explicitly states K_NMIIA,stretching = 2.5 pN/nm 'will be multiplied by the number of heads in the NMIIA ensemble to obtain a mini-filament stretching constant'; without N_total, F_ext = 1.5 pN is 10x smaller than even a single head's stall force F_stall = 15 pN (Table 2C)."
+stated:
+  page: 46
+  printed_page: "S3-3"
+  quote: "Under stall conditions (i.e. Fext = ρKNMIIA,stretching dstep ), the model gives a loaded attachment time"
+  where: "S3 Text Section A (variant with Table 2B footnote e)"
+equation: "F_ext = rho * N_total * K_NMIIA,stretching * d_step"
+inputs:
+  rho: {quantity: motor_duty_ratio, unit: dimensionless}
+  N_total: {quantity: motor_total_head_count, unit: dimensionless}
+  K_head: {quantity: stretching_stiffness, unit: pN/nm}
+  d_step: {quantity: motor_head_step_size, unit: nm}
+outputs:
+  F_ext: {quantity: external_force, unit: pN}

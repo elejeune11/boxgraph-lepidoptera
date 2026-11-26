@@ -1,0 +1,29 @@
+id: afines_filament_mechanics_cpp
+name: AFINES C++ filament Hookean stretching, LAMMPS harmonic bending, and Leimkuhler-Matthews BD step (src/spring.cpp, src/filament.cpp)
+role: model
+stated:
+  file: src/filament.cpp
+  lines: "518-575"
+  quote: "a   = -kb * theta / s; //Note, in this implementation, Lp = kb/kT"
+  where: "src/spring.cpp:77-81,376-378; src/filament.cpp:206-242,518-575"
+equation: "U_stretch = 0.5*kl*(llen - l0)^2; U_bend = 0.5*(kappa_B/l0)*(acos(c) - pi)^2; F_bend = -grad U_bend with sin clamped at maxSmallAngle; x(t+dt) = x(t) + (F/damp)*dt + sqrt(kT*dt/(2*damp))*(W_n + W_{n-1})"
+inputs:
+  kl: {quantity: stretching_stiffness, unit: pN/um}
+  l0: {quantity: filament_link_length, unit: um}
+  llen: {quantity: spatial_coordinate, unit: um}
+  polymer_bending_modulus: {quantity: bending_modulus, unit: pN*um^2}
+  bend_angle: {quantity: filament_bend_angle, unit: dimensionless}
+  max_small_angle: {quantity: filament_bend_angle, unit: dimensionless}
+  temperature: {quantity: thermal_energy, unit: pN*um}
+  viscosity: {quantity: dynamic_viscosity, unit: Pa*s}
+  actin_length: {quantity: particle_radius, unit: um}
+  dt: {quantity: observation_time, unit: s}
+outputs:
+  U_stretch: {quantity: mechanical_energy, unit: pN*um}
+  F_stretch: {quantity: mechanical_force, unit: pN}
+  U_bend: {quantity: mechanical_energy, unit: pN*um}
+  F_bend_end_bead: {quantity: mechanical_force, unit: pN}
+  F_bend_net_residual: {quantity: mechanical_force, unit: pN}
+  D_bead_lm: {quantity: diffusion_coefficient, unit: um^2/s}
+settings: {}
+stochastic: false

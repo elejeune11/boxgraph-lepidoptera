@@ -1,0 +1,270 @@
+- id: q_kmc_35_37_transposition_explains_figs3a
+  kind: possible_error
+  about:
+    - kmc_site_width
+    - kmc_alpha_actinin_len
+    - kmc_dxl_code
+    - kmc_max_n_sites_printed
+    - kmc_notebook_bending_and_switching
+    - kmc_notebook_growing_bundle
+    - cmp_kmc_figs3a_ratio_code
+    - cmp_kmc_figs3a_eps_code
+    - cmp_kmc_figs3a_ratio_paper_params
+    - cmp_kmc_figs3a_eps_paper_params
+    - cmp_kmc_dxl_code_vs_paper
+    - cmp_kmc_nsites_code_vs_paper
+  text: >
+    In xlink_sorting_paper/kmc.ipynb Cell 2 (lines 98-100), the notebook transposes the 35 nm
+    alpha-actinin size and the 37 nm F-actin helical half-pitch: it sets site_width = 35. (instead
+    of l_b = 37 nm, giving 428 sites instead of 405 for a 15 um bundle) and dxl = 37.-8. = 29 nm
+    (instead of Delta l_xl = 35 - 8 = 27 nm). Because U(x) scales as L_p * dxl^2 / site_width^3,
+    this swap inflates the bending barrier by ~36% at every site. Running the released kmc.ipynb
+    function with its own (35 nm, 29 nm) and seed=1 reproduces Fig. S3A's printed inset values to
+    the exact digit (N_diff/N_same = 0.01647 -> 0.016, epsilon = 4.106 -> 4.1), whereas running
+    the exact same code with the paper's stated (37 nm, 27 nm) gives 0.0226 and 3.79 (+41% higher),
+    completely resolving freedman2019's Fig. S3A KMC discrepancy. Three additional notebook defects
+    were found: (1) Cells 9-12 (lines 797, 869, 910, 942, 950) pass std_domain_lengths[0] /
+    std_domain_lengths_mu[0] (fascin error bars) for BOTH fascin and alpha-actinin errorbar calls;
+    (2) Cell 5 measures domain lengths from instantaneous filament tip length (filament_length) at
+    swap times rather than bound cross-linker site position (current_site * site_width); (3) Cell 10
+    line 876 packages Cell 9's avg_domain_lengths instead of avg_domain_lengths_mu.
+  citation:
+    file: xlink_sorting_paper/kmc.ipynb
+    lines: "98-100"
+    quote: "site_width = 35."
+
+- id: q_kexv_units_and_crossing_bugs
+  kind: possible_error
+  about:
+    - plots_kexv_fig2d
+    - cfg_kexv_zero
+    - afines_excluded_volume_cpp
+    - run_exv_fig2d
+    - cmp_exv_force_exact_grad
+  text: >
+    src/filament_ensemble.cpp:571-715 resolves the dimensional error in freedman2019 SI Eq. (3) and
+    Table S1 (which print k_exv = 0.08 pN*um^2): line 673 evaluates pe_exv += kexv * (1 - r/rmax)^2
+    and lines 668-671 evaluate Fx1 = 2*kexv*dist[0]*(1/rmax)*(1/r - 1/rmax) (exact -grad U), proving
+    kexv in C++ has energy units pN*um (0.08 pN*um = 20 k_B T at temperature = 0.004 pN*um). Three
+    further discrepancies/bugs exist in the excluded-volume implementation and configs: (1) both
+    grow.cfg:37 and nogrow.cfg:37 set kexv=0 and xlink_sorting_paper/README.md omits --kexv 0.08 in
+    its Fig. 2D commands, even though plots.nb:8457,8460 proves Fig. 2D ran with kexv=0.08; (2) the
+    outer guard `if (r < rmax)` (line 618) checks only the minimum endpoint-to-segment distance r_c,
+    so two 1-um links crossing near their midpoints (r = 0.5 um > rmax = 0.05 um) skip the entire
+    block and experience ZERO excluded-volume force; (3) when crossing links satisfy r < rmax, lines
+    700-713 apply a hardcoded +45-degree force Fx1 = Fy1 = 2*kexv/(rmax*sqrt(2)) to BOTH endpoints
+    of link 1 and (-Fx1, -Fy1) to BOTH endpoints of link 2, ignoring segment orientation and doubling
+    the total force magnitude to 4*kexv/rmax (6.4 pN at kexv=0.08, rmax=0.05).
+  citation:
+    file: src/filament_ensemble.cpp
+    lines: "668-714"
+    quote: "pe_exv += kexv*pow((1-r*b),2);"
+
+- id: q_spacer_bending_division_and_calibration_mismatch
+  kind: possible_error
+  about:
+    - cfg_s1_bend
+    - cfg_s2_bend
+    - readme_kb0
+    - plots_s2kb_fig5
+    - afines_parameter_mapping
+    - cmp_kb_short_eff_vs_table_s1
+    - cmp_kb_ratio_grow_cfg_eff_vs_si
+    - cmp_sbend_ratio_grow_cfg_raw_vs_si
+  text: >
+    src/motor_ensemble.cpp:313-317 (spacer_ensemble::set_bending) divides the input parameter by the
+    spacer rest length: `double kb = modulus/mld;`. Consequently, grow.cfg/nogrow.cfg's s1_bend = 0.005
+    (with spacer1_length = 0.2 um) produces an actual angular stiffness kb_short = 0.025 pN*um in
+    U_xl^bend = 0.5*kb*(alpha - pi/2)^2 — 5x larger than freedman2019 Table S1's printed 0.005 pN*um.
+    Furthermore, four mutually inconsistent long cross-linker bending prescriptions appear across the
+    paper and released files, leaving freedman2019 SI Section A's undefined (200, 300) nm gap (including
+    227 nm) unresolved: (1) SI Section A prints kappa_long^B/kappa_short^B = 22*l_long/l_short - 21 for
+    l_long <= 200 nm and 4 for l_long >= 300 nm; (2) grow.cfg/nogrow.cfg set s2_bend = 0.06 at l_long =
+    0.3 um, giving raw s2_bend/s1_bend = 12 (matching 22*(300/200) - 21 = 12!) and effective kb_long /
+    kb_short = (0.06/0.3)/(0.005/0.2) = 8; (3) xlink_sorting_paper/README.md:40,102 (Fig. 2C) sets
+    kb2 = 0.04 * l2 (yielding constant effective kb_long = 0.04 pN*um, ratio 1.6, via invalid flag
+    --s2bend); (4) plots.nb:14229 (Fig. 5C, 5E, S5, Movies S6-S7) loads job directories labeled
+    _s2kb0.0675_ (0.0675/0.3 = 0.225 pN*um, effective ratio 9.0, raw ratio 13.5).
+  citation:
+    file: src/motor_ensemble.cpp
+    lines: "313-317"
+    quote: "double kb  = modulus/mld;"
+
+- id: q_barbed_end_split_condition_and_overshoot
+  kind: reading
+  about:
+    - afines_barbed_end_growth_cpp
+    - cfg_l0max
+    - readme_lgrow_min
+    - readme_lgrow_003
+    - readme_lgrow_007
+    - cmp_growth_nondivisor_007_realized_vs_nominal
+  text: >
+    src/filament.cpp:676 implements `if ( lb + dL < l0_max )` (splitting at >= 2*l_a rather than the
+    strict > 2*l_a printed in freedman2019 SI Section A below Eq. 2), resetting both split links to
+    spring_l0 = 1.0 um. For exact divisors lgrow in {0.01, 0.02, 0.04, 0.05, 0.10} um, zero overshoot
+    is discarded and realized contour velocity equals kgrow * lgrow exactly. However, for non-divisors
+    lgrow = 0.03 and 0.07 um in the Fig. 5C-E sweep, filament::grow() still discards 0.02 and 0.05 um
+    per split (34 steps -> 29.41 nm/s, -2.0%; 15 steps -> 66.67 nm/s, -4.8%), and binary IEEE-754 double
+    accumulation causes 1.0 + 400*0.0025 = 1.9999999999999998 < 2.0 to take 401 steps at 0.0025 um
+    (2.4938 nm/s) and 201 steps at 0.005 um (4.9751 nm/s). Separately, commit 0c6c349 ("updated default
+    l0max") updated prog/network.cpp:189 to default_value(2) but left prog/bundles.cpp:178 at
+    default_value(0) (harmless when using grow.cfg/nogrow.cfg, which set l0max=2 explicitly).
+  citation:
+    file: src/filament.cpp
+    lines: "673-707"
+    quote: "if ( lb + dL < l0_max ){"
+
+- id: q_growth_sweep_bounds_init_length_and_tfinal
+  kind: possible_error
+  about:
+    - cfg_nmonomer_grow
+    - cfg_nmonomer_nogrow
+    - readme_lgrow_min
+    - plots_dt_fig5b_s2len03
+    - plots_tfinal_slow_growth
+    - cmp_grow_nlinks_vs_table_s1
+    - cmp_grow_init_len_vs_fig5b
+    - cmp_growth_rate_min_nominal
+  text: >
+    The released configs, README, and plots.nb resolve three contradictions in freedman2019 Table S1:
+    (1) xlink_sorting_paper/README.md:256 and plots.nb:14195 begin the Fig. 5C growth sweep at
+    lgrow = 0.0025 um (2.5 nm/s, matching Movie S6), proving Table S1's lower bound lg = 0.008 um
+    (8 nm/s) is a misprint; (2) grow.cfg:7 sets nmonomer = 2 (2 beads = 1 initial link = 1 um initial
+    length, matching Fig. 5B caption and plots.nb:14255's tDoneGrowing = Ceiling[14/lgrow]), proving
+    Table S1's "N_{l,0} = 2, 15" confused bead count (2) with link count (15 from nogrow.cfg's
+    nmonomer=16); (3) plots.nb reveals two unstated simulation protocol overrides relative to Table S1:
+    slow growth runs (lgrow = 0.0025, 0.005) ran to tfinal = 6000 s (plots.nb:14217, 3x Table S1's
+    2000 s), and Fig. 5B s2len=0.3 runs used dt = 0.00001 s (plots.nb:11266,11270, half of Table S1's
+    0.00002 s).
+  citation:
+    file: xlink_sorting_paper/config/grow.cfg
+    lines: "7"
+    quote: "nmonomer=2"
+
+- id: q_temperature_kbt_0004_explains_movies3_lp
+  kind: unexplained_difference
+  about:
+    - cfg_temperature_kBT
+    - afines_lp_min_code
+    - afines_lp_max_code
+    - cmp_lp_min_code_vs_movies3
+    - cmp_lp_max_code_vs_movies3
+  text: >
+    grow.cfg:46, nogrow.cfg:46, prog/bundles.cpp:98, README.md:201, and plots.nb:8466 all hardcode
+    thermal energy temperature = 0.004 pN*um rather than exact k_B * (300 K) = 0.0041419 pN*um
+    (Table S1 prints T = 300 K). Using 0.004 pN*um gives L_p = 0.01/0.004 = 2.5 um, 0.068/0.004 =
+    17.0 um, and 0.5/0.004 = 125.0 um identically, completely resolving freedman2019/q_lp_kbt_rounding_movies3.
+  citation:
+    file: xlink_sorting_paper/config/grow.cfg
+    lines: "46"
+    quote: "temperature=0.004"
+
+- id: q_spacer_metropolis_and_s2koff_bugs
+  kind: possible_error
+  about:
+    - cfg_s2_koff
+    - afines_spacer_mechanics_and_mc_cpp
+    - run_spacer_mc_short_bug
+    - cmp_spacer_delE_bug_vs_true
+  text: >
+    Four C++ implementation bugs affect cross-linker kinetics in prog/bundles.cpp and src/spacer.cpp:
+    (1) prog/bundles.cpp:372,376 passes `s2_kend, s2_kend` instead of `s2_koff, s2_kend` to the long
+    cross-linker spacer_ensemble constructor, silently ignoring s2_koff whenever s2_koff != s2_kend
+    (benign only in grow.cfg/nogrow.cfg because both equal 0.05/s); (2) when attaching the second head,
+    spacer::metropolis_prob() (src/spacer.cpp:355-374) evaluates delr1 and delr2 using pre-attachment
+    (hx[hd], hy[hd]), old disp, and stale pos_a_end[hd]=0 rather than candidate position newpos;
+    (3) metropolis_prob() adds bend_eng for only ONE head upon entering state (1,1), ignoring the new
+    bending energy simultaneously activated at the partner head pr(hd) in spacer::update_force():216-219;
+    (4) spacer::update_force() lines 220-224 reset b_force to zero when not doubly bound but NEVER
+    reset b_eng to zero, so stale b_eng[hd] from a prior doubly-bound state is subtracted from delE on
+    line 377 (breaking detailed balance).
+  citation:
+    file: src/spacer.cpp
+    lines: "355-378"
+    quote: "double delE = 0.5*mk*stretch*stretch + bend_eng - this->get_stretching_energy() - b_eng[hd];"
+
+- id: q_hidden_afines_parameters_and_grid_mismatch
+  kind: unstated_input
+  about:
+    - cfg_actin_length_radius
+    - cfg_grid_factor
+    - cfg_quad_update_period
+    - cpp_s1_cut_default
+    - cpp_s2_cut_default
+    - cpp_max_small_angle
+    - kmc_seed
+    - kmc_max_extensions
+  text: >
+    Several active numerical and physical parameters in the released code are omitted from or disagree
+    with freedman2019: (1) Stokes radius R in mu = 1/(6*pi*R*nu) (omitted in Table S1) is actin_length
+    = 0.5 um for filament beads (src/bead.cpp:23-25) and mld (0.2 um short vs 0.3 um long, giving
+    1.5x faster short cross-linker diffusion!) for spacer heads (src/spacer.cpp:55,151); (2) cross-linker
+    binding capture cutoff is hardcoded as s1_cut = s2_cut = 0.063 um (prog/bundles.cpp:120,133);
+    (3) grow.cfg:3 and nogrow.cfg:3 set grid_factor = 3 um^-1 whereas Table S1 prints g = 2.5 um^-1;
+    (4) quad_update_period = 10 timesteps (grow.cfg:4); (5) maxSmallAngle = 0.001 rad sine clamp
+    (include/globals.h:58); (6) kmc.ipynb sets np.random.seed(1) and max_extensions = 200; (7) plots.nb
+    reveals equilibrium lattice MC sampled t = 9000..10000 (lines 4716-4729), plotted Delta l_xl = 0
+    at x = 10 nm on the Fig. 2C log axis (lines 4324, 4700), and omitted Delta l_xl = 0.3 um from the
+    lattice sweep ("forgot to do 0.3 for lattice -- FIX", lines 4688-4690).
+  citation:
+    file: prog/bundles.cpp
+    lines: "120-133"
+    quote: "(\"s1_cut\", po::value<double>(&s1_cut)->default_value(0.063),\"cutoff distance for binding (um)\")"
+
+- id: q_readme_broken_cli_and_missing_files
+  kind: possible_error
+  about:
+    - afines_bundles_cpp_driver
+    - readme_kb0
+  text: >
+    xlink_sorting_paper/README.md and plots.nb contain multiple reproducibility errors preventing
+    out-of-the-box execution: (1) lattice.py (invoked at README.md:155,214 for Fig. 2C-D equilibrium
+    lattice curves) is completely missing from the repository; (2) README.md:31 references
+    config/no_grow.cfg whereas the actual file is config/nogrow.cfg; (3) README.md passes invalid CLI
+    options --s2bend (lines 118, 135; prog/bundles.cpp:135 expects --s2_bend) and --s1_koff1 (line 278;
+    prog/bundles.cpp:112 expects --s1_koff); (4) Fig. 5A-B command (lines 246-247) omits --spacer2_length
+    ${s2len} and leaves ${lgrow} undefined, Fig. 5C-E (line 278) leaves ${s1dens} undefined, and Fig. 2D
+    omits --kexv 0.08; (5) README.md:45 sets y0 = 0.375 for row_of_spacers.py (placing seed spacers
+    outside the filaments at y = ±0.125); (6) plots.nb:366 and afines2lattice.m:7 depend on hardcoded
+    cluster paths (~/Code/cytomod/...) and an unreleased crashed_list.txt file.
+  citation:
+    file: xlink_sorting_paper/README.md
+    lines: "155"
+    quote: "python lattice.py ${dir} --dL ${lendiff} --seed ${seed} --muA ${mu} --muB ${mu}"
+
+- id: q_afines_full_cpp_driver_not_runnable
+  kind: unstated_model
+  about:
+    - afines_bundles_cpp_driver
+  text: >
+    The full Boost C++ AFINES executable bin/bun (prog/bundles.cpp) is marked runnable: false because
+    reproducing the published 2000 s (and 6000 s for slow growth) trajectories across 40 seeds
+    (10^8-3x10^8 steps per trajectory) requires compiling C++ with Boost and hundreds of CPU-hours,
+    the post-processing pipeline requires MathematicaScript and an unreleased crashed_list.txt file,
+    and lattice.py is absent. All C++ mechanical/kinetic equations, Mathematica post-processing rules,
+    and a short-horizon integrated 2-filament trajectory are faithfully ported and verified in Python.
+  citation:
+    file: prog/bundles.cpp
+    lines: "24-25"
+    quote: "int main(int argc, char* argv[]){"
+
+- id: q_short_horizon_and_reduced_trials_choices
+  kind: choice
+  about:
+    - run_kmc_cell9_kratio_sweep
+    - run_bundle_port_short_relax
+    - ref_kmc_trials
+    - ref_bundle_dt
+  text: >
+    To keep full BoxGraph validation fast (under ~2 minutes), two reduced-budget choices were made:
+    (1) run_kmc_cell9_kratio_sweep executes live kmc.ipynb with num_trials = 150 x 3 replicates
+    (vs 1000 trials in Cell 9) and ref_kmc_trials refines 100 -> 200 -> 400 trials; (2) the integrated
+    C++ port run_bundle_port_short_relax simulates a 3-link 2-filament bundle with static seed spacers
+    for t_sim_s = 0.01 s (500 steps at dt = 2e-5 s) rather than 2000 s (10^8 steps). Exact 1000-trial
+    reproduction IS run at full budget for Fig. S3A (run_kmc_figs3a_code_exact and
+    run_kmc_figs3a_paper_params).
+  citation:
+    file: xlink_sorting_paper/kmc.ipynb
+    lines: "762"
+    quote: "my_num_trials=1000"

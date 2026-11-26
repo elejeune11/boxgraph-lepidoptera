@@ -1,0 +1,37 @@
+id: cl_network_params_adapter
+name: live DoubleEndedCrossLinkedNetwork parameter & rate initialization audit
+role: model
+software: true
+stated:
+  file: Python/DoubleEndedCrossLinkedNetwork.py
+  lines: "94-121"
+  quote: "self._kon = kon*self._ds;"
+  where: "Python/DoubleEndedCrossLinkedNetwork.py::__init__ (lines 94-121) and Python/CrossLinkedNetwork.py::__init__, sigmaFromNL (lines 9, 64-134)"
+equation: "ds = L/(N_u-1); kon_site = kon*ds; konSecond_site = konSecond*ds; maxPerSite = ceil(ds/c_w); max_links_per_fiber = maxPerSite*N_u; deltaL = 2*sqrt(kT/K_c) if kT>0 else min(sqrt(4.1e-3/K_c), 0.5*rl); sigma/L from sigmaFromNL(N_x, L)"
+inputs:
+  L: {quantity: fiber_length, unit: um}
+  N: {quantity: chebyshev_points, unit: dimensionless}
+  N_u: {quantity: binding_site_count, unit: dimensionless}
+  K_c: {quantity: cl_spring_stiffness, unit: pN/um}
+  ell: {quantity: cl_rest_length, unit: um}
+  k_on: {quantity: cl_first_end_binding_rate, unit: 1/(um*s)}
+  k_off: {quantity: cl_unbinding_rate, unit: 1/s}
+  k_on_s: {quantity: cl_second_end_binding_rate, unit: 1/(um*s)}
+  k_off_s: {quantity: cl_unbinding_rate, unit: 1/s}
+  c_w: {quantity: binding_site_width, unit: um}
+  kT: {quantity: thermal_energy, unit: pN*um}
+outputs:
+  ds: {quantity: binding_site_spacing, unit: um}
+  max_per_site: {quantity: max_links_per_site, unit: dimensionless}
+  max_links_per_fiber: {quantity: max_links_per_fiber, unit: dimensionless}
+  delta_ell: {quantity: cl_length_fluctuation, unit: nm}
+  cl_bound_lo: {quantity: cl_stretch_length, unit: nm}
+  cl_bound_hi: {quantity: cl_stretch_length, unit: nm}
+  site_kon: {quantity: cl_site_binding_rate, unit: 1/s}
+  site_kons: {quantity: cl_site_binding_rate, unit: 1/s}
+  sigma_rel: {quantity: relative_gaussian_width, unit: dimensionless}
+settings:
+  n_fib: 2
+  Ld: 2.0
+  seed: 1
+stochastic: false

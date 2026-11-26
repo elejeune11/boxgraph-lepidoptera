@@ -1,0 +1,34 @@
+id: two_fiber_brownian_strang_sim
+name: two-fiber rigid Brownian dynamics with Strang splitting and endpoint spring (SM Sec. C, Fig. S1)
+role: model
+built_from: [two_fiber_local_drag_stability]
+reconstructed: >
+  Implements the Strang-splitting Brownian dynamics integrator (Eqs. 12, 15, S12; Temporal
+  Integration p. 5; SM Sec. C p. 20-21) for two rigid fibers linked by a permanent spring at
+  s = L, using point-force coupling (as sigma/L = 0.005 approximates a point spring) and
+  reconstructed local-drag rigid mobility coefficients. Spring extension is sampled at the
+  midpoint of each time step (after Step 1), matching Fig. S1 caption.
+stated:
+  page: 20
+  printed_page: "SI-3"
+  quote: "We place two parallel fibers a distance 0.05 apart"
+  where: "Sec. C; Fig. S1; Eq. 15; Eq. S12"
+equation: "Strang step: B(dt/2) -> measure x = ||e_1 - e_2|| -> explicit deterministic spring step D(dt) -> B(dt/2), using N_tt^(1/2) and N_rr^(1/2) from Eq. S12"
+inputs:
+  alpha: {quantity: mobility_alpha, unit: dimensionless}
+  beta: {quantity: mobility_beta, unit: dimensionless}
+  gamma: {quantity: mobility_gamma, unit: dimensionless}
+  Kc: {quantity: cl_spring_stiffness, unit: pN/um}
+  ell: {quantity: cl_rest_length, unit: um}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  L: {quantity: fiber_length, unit: um}
+  kBT: {quantity: thermal_energy, unit: pN*um}
+outputs:
+  mean_x: {quantity: mean_spring_extension, unit: um}
+  std_x: {quantity: std_spring_extension, unit: um}
+settings:
+  dt: 0.0025
+  t_max: 100.0
+  burn_t: 1.0
+  seed: 0
+stochastic: true

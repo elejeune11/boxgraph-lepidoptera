@@ -1,0 +1,182 @@
+# ==============================================================================
+# 1. kmc.ipynb reproductions & paper-vs-code audits
+# ==============================================================================
+- id: cmp_kmc_dxl_code_self
+  purpose: reproduction
+  computed: kmc_code_dxl_out
+  printed: kmc_dxl_code
+  note: "Verifies kmc.ipynb Cell 2 dxl = 37 - 8 = 29 nm."
+
+- id: cmp_kmc_dxl_code_vs_paper
+  purpose: consistency
+  computed: kmc_code_dxl_out
+  printed: paper_delta_l_xl_physiological
+  note: "Exposes Cell 2 transposition: kmc.ipynb uses dxl = 29 nm (37 - 8) instead of freedman2019's printed 27 nm (35 - 8)."
+
+- id: cmp_kmc_nsites_code_self
+  purpose: reproduction
+  computed: kmc_code_max_n_sites_out
+  printed: kmc_max_n_sites_printed
+  note: "Reproduces kmc.ipynb stdout '15.000000 microns / 428 sites' (int(15000 / 35))."
+
+- id: cmp_kmc_nsites_code_vs_paper
+  purpose: consistency
+  computed: kmc_code_max_n_sites_out
+  printed: paper_lattice_sites_N
+  note: "Exposes Cell 2 site_width=35 nm bug: kmc.ipynb runs on 428 sites rather than freedman2019's printed N = 15 um / 37 nm = 405 sites."
+
+- id: cmp_kmc_gap20_vs_paper
+  purpose: reproduction
+  computed: kmc_code_gap20_out
+  printed: paper_equal_binding_distance_um
+  note: "20 sites * 35 nm = 0.700 um vs paper's '~0.7 um' (20 * 37 nm = 0.740 um)."
+
+- id: cmp_kmc_figs3a_ratio_code
+  purpose: reproduction
+  computed: kmc_figs3a_code_ratio
+  printed: paper_figs3a_switching_ratio
+  note: "Live kmc.ipynb Cell 5+6 at code's actual (site_width=35 nm, dxl=29 nm, seed=1) reproduces Fig. S3A's printed 0.016 (0.016472 -> %.3f = 0.016)."
+
+- id: cmp_kmc_figs3a_eps_code
+  purpose: reproduction
+  computed: kmc_figs3a_code_eps
+  printed: paper_figs3a_effective_barrier
+  note: "Live kmc.ipynb Cell 5+6 at code's actual (site_width=35 nm, dxl=29 nm, seed=1) reproduces Fig. S3A's printed 4.1 (4.1061 -> %.1f = 4.1)."
+
+- id: cmp_kmc_figs3a_ratio_paper_params
+  purpose: reproduction
+  computed: kmc_figs3a_paper_ratio
+  printed: paper_figs3a_switching_ratio
+  note: "Live kmc.ipynb run at the paper's stated (l_b=37 nm, Delta l_xl=27 nm) gives 0.0226 (+41% above 0.016), proving the 35/37 transposition explains the Fig. S3A discrepancy."
+
+- id: cmp_kmc_figs3a_eps_paper_params
+  purpose: reproduction
+  computed: kmc_figs3a_paper_eps
+  printed: paper_figs3a_effective_barrier
+  note: "Live kmc.ipynb run at the paper's stated (37 nm, 27 nm) gives epsilon = 3.79 vs printed 4.1."
+
+- id: cmp_kmc_nsites_paper_params
+  purpose: consistency
+  computed: kmc_figs3a_paper_nsites
+  printed: paper_lattice_sites_N
+  note: "At paper's stated l_b = 37 nm, int(15000 / 37) = 405 matches freedman2019."
+
+- id: cmp_kmc_cell9_eps_curve
+  purpose: reproduction
+  computed: kmc_cell9_eps_pred
+  printed: kmc_cell9_eps_table
+  note: "Checks live kmc.ipynb Cell 9 kratio sweep (150 trials x 3 replicates) against the 6 competition-parameter values printed in Cell 9 stdout."
+
+# ==============================================================================
+# 2. AFINES C++ parameter & growth audits against freedman2019
+# ==============================================================================
+- id: cmp_grow_nlinks_vs_table_s1
+  purpose: consistency
+  computed: afines_grow_nlinks_init
+  printed: paper_afines_nl0_growing
+  note: "grow.cfg sets nmonomer=2 (= 1 initial link), exposing Table S1's typo N_{l,0} = 2 links (confusing bead count with link count)."
+
+- id: cmp_grow_init_len_vs_fig5b
+  purpose: reproduction
+  computed: afines_grow_init_len
+  printed: paper_afines_init_length_fig5b
+  note: "grow.cfg nmonomer=2 with link_length=1.0 um yields exact 1.0 um initial filament length, matching Fig. 5B caption."
+
+- id: cmp_lp_default_code
+  purpose: reproduction
+  computed: afines_grow_Lp_default
+  printed: paper_actin_persistence_length
+  note: "0.068 pN*um^2 / 0.004 pN*um = 17.0 um exactly."
+
+- id: cmp_lp_min_code_vs_movies3
+  purpose: reproduction
+  computed: afines_lp_min_code
+  printed: paper_afines_lp_min_movies3
+  note: "0.01 pN*um^2 / 0.004 pN*um = 2.5 um exactly, resolving freedman2019's Movie S3 k_B T = 0.004 vs k_B*(300 K) discrepancy."
+
+- id: cmp_lp_max_code_vs_movies3
+  purpose: reproduction
+  computed: afines_lp_max_code
+  printed: paper_afines_lp_max_movies3
+  note: "0.5 pN*um^2 / 0.004 pN*um = 125.0 um exactly."
+
+- id: cmp_kb_short_eff_vs_table_s1
+  purpose: consistency
+  computed: afines_grow_kb_short_eff
+  printed: paper_afines_kappa_b_short
+  note: "src/motor_ensemble.cpp:314 divides s1_bend=0.005 by mld=0.2 um -> effective kb_short = 0.025 pN*um (5x larger than Table S1's 0.005 pN*um)."
+
+- id: cmp_kb_ratio_grow_cfg_eff_vs_si
+  purpose: consistency
+  computed: afines_grow_kb_ratio_eff
+  printed: paper_afines_bending_ratio_long_ge300
+  note: "grow.cfg/nogrow.cfg yield effective kb_long/kb_short = (0.06/0.3)/(0.005/0.2) = 8.0 vs SI Section A's printed ratio 4 for l_long >= 300 nm."
+
+- id: cmp_sbend_ratio_grow_cfg_raw_vs_si
+  purpose: consistency
+  computed: afines_grow_sbend_ratio_raw
+  printed: paper_afines_bending_ratio_long_ge300
+  note: "grow.cfg/nogrow.cfg raw parameter ratio s2_bend/s1_bend = 0.06/0.005 = 12 (matching 22*(300/200)-21 = 12, contradicting SI Section A's 4)."
+
+- id: cmp_nrand_readme
+  purpose: reproduction
+  computed: afines_grow_nrand
+  printed: readme_nrand
+  note: "Verifies ceil(0.25 * 35 * 20) - 9 = 166 random bulk cross-linkers in xlink_sorting_paper/README.md:37."
+
+- id: cmp_lattice_mu_kBT
+  purpose: reproduction
+  computed: afines_grow_mu_kBT
+  printed: paper_chemical_potential_used
+  note: "Verifies README.md mu = -0.008 pN*um / 0.004 pN*um = -2 k_B T."
+
+- id: cmp_growth_rate_min_nominal
+  purpose: reproduction
+  computed: growth_min_nominal
+  printed: paper_afines_growth_rate_min_movies6
+  note: "README.md & plots.nb lgrow=0.0025 um with kgrow=1/s reproduces Movie S6's 2.5 nm/s (contradicting Table S1's 0.008 um lower bound)."
+
+- id: cmp_growth_rate_min_realized
+  purpose: reproduction
+  computed: growth_min_realized
+  printed: paper_afines_growth_rate_min_movies6
+  note: "Exact IEEE-754 filament::grow() takes 401 steps per split -> 2.4938 nm/s, reproducing 2.5 nm/s within printed precision."
+
+- id: cmp_growth_rate_max_realized
+  purpose: reproduction
+  computed: growth_max_realized
+  printed: paper_afines_growth_rate_max_movies6
+  note: "Exact IEEE-754 filament::grow() at lgrow=0.1 um takes 10 steps per split with zero overshoot -> 100.0 nm/s."
+
+- id: cmp_growth_nondivisor_007_realized_vs_nominal
+  purpose: approximation
+  computed: growth_007_realized
+  printed: growth_007_nominal
+  note: "Non-divisor lgrow=0.07 um discards 0.05 um overshoot per split in src/filament.cpp:676-706 (realized 66.67 nm/s vs nominal 70 nm/s, -4.8%)."
+
+# ==============================================================================
+# 3. C++ force/energy self-consistency, spacer MC bug, & Mathematica binning checks
+# ==============================================================================
+- id: cmp_exv_force_exact_grad
+  purpose: consistency
+  computed: exv_F_par_code
+  printed: exv_F_par_analytic
+  note: "Confirms src/filament_ensemble.cpp:668-673 force equals exact -dU/dr when kexv has energy units pN*um (resolving Table S1's pN*um^2 dimensional error)."
+
+- id: cmp_D_bead_lm_vs_stokes
+  purpose: consistency
+  computed: fil_D_bead_lm
+  printed: afines_grow_D_bead
+  note: "Confirms Leimkuhler-Matthews bd_prefactor in src/filament.cpp:83,222 reproduces exact Stokes-Einstein diffusivity k_B T / (6*pi*vis*0.5)."
+
+- id: cmp_spacer_delE_bug_vs_true
+  purpose: consistency
+  computed: spacer_short_delE_buggy
+  printed: spacer_short_delE_true
+  note: "Quantifies the energy-difference bug in src/spacer.cpp:220-224,355-378 (stale pre-binding geometry, single-head bending, and unreset b_eng)."
+
+- id: cmp_proc_nbins_vs_paper
+  purpose: reproduction
+  computed: proc_n_bins
+  printed: paper_lattice_sites_N
+  note: "Confirms Mathematica afines2lattice.m uses l0=0.037 um -> 405 bins (matching freedman2019, unlike kmc.ipynb's 35 nm -> 428 sites)."

@@ -1,0 +1,47 @@
+id: kinetic_ss_infinite_pool_conserved
+name: infinite-pool 1D steady state with mass-conserving membrane flux BCs
+role: model
+variant_of: kinetic_ss_infinite_pool_eq6_16
+corrections:
+  - equation: "Eq. 14"
+    change: "Add reverse VCA-actin dissociation release term +k_2*V* to the G-actin membrane flux boundary condition: -D_G d_z G|_{z=0} = -k_1 G|_0 V + k_2 V* - k_on G|_0 B + k_off B"
+    evidence: "Reaction Eq. (3) (SI p. 10) and surface PDEs Eqs. (6)-(7) (SI p. 12) include reversible VCA + G <-> VCAG dissociation at rate k_2*V*. Omitting +k_2*V* in Eq. (14) violates actin mass conservation and creates an unphysical one-way sink even at B = 0, collapsing G|_0 from 3 to 0.15 uM and suppressing steady-state B_ss to 64.5, 12.6, 0 /um^2 vs Fig. 5c / Supp Fig. 11 (~470, ~175, ~98 /um^2). Restoring +k_2*V* yields B_ss = 475.3, 176.8, 98.7 /um^2."
+  - equation: "Eq. 15"
+    change: "Add reverse Arp*-VCAG dissociation release term +k_4*A* to the Arp2/3 membrane flux boundary condition: -D_Arp d_z Arp|_{z=0} = -k_3_eff Arp|_0 V* + k_4 A*"
+    evidence: "Reaction Eq. (3) (SI p. 10) and surface PDEs Eqs. (7)-(8) (SI p. 12) include reversible VCAG + Arp2/3 <-> Arp* dissociation at rate k_4*A*. Restoring +k_4*A* enforces Arp2/3 conservation across the membrane boundary."
+stated:
+  page: 23
+  printed_page: "SI 12"
+  quote: "Because all reactions happen at the membrane, they lead to fluxes in the cytosol"
+  where: "Eqs. 6-16 (Supplementary Note 2)"
+equation: "Steady state of Eqs. (6)-(16) in 1D vertical column of height h with mass-conserving BCs -D_G d_z G|_0 = -k_1 G|_0 V + k_2 V* - k_on G|_0 B + k_off B and -D_Arp d_z Arp|_0 = -k_3_eff Arp|_0 V* + k_4 A*"
+inputs:
+  G_0: {quantity: actin_concentration, unit: uM}
+  Arp_0: {quantity: arp_concentration, unit: uM}
+  CP_0: {quantity: cp_concentration, unit: nM}
+  V_0: {quantity: vca_surface_density, unit: 1/um^2}
+  h: {quantity: cylinder_height, unit: um}
+  k_on: {quantity: elongation_on_rate, unit: uM^-1*s^-1}
+  k_off: {quantity: elongation_off_rate, unit: 1/s}
+  k_1: {quantity: vca_actin_on_rate, unit: uM^-1*s^-1}
+  k_2: {quantity: vca_actin_off_rate, unit: 1/s}
+  k_3: {quantity: arp_activation_on_rate, unit: uM^-1*s^-1}
+  k_3_reduction: {quantity: rate_scaling_factor, unit: dimensionless}
+  k_4: {quantity: arp_activation_off_rate, unit: 1/s}
+  k_Cap: {quantity: cp_binding_rate, unit: uM^-1*s^-1}
+  k_Arp: {quantity: branching_rate_constant, unit: um^2/s}
+  k_re: {quantity: vca_recovery_rate, unit: 1/s}
+  k_Deg: {quantity: barbed_end_degradation_rate, unit: 1/s}
+  D_G: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_Arp: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_CP: {quantity: diffusion_coefficient, unit: um^2/s}
+outputs:
+  B_ss: {quantity: barbed_end_density, unit: 1/um^2}
+  A_star_ss: {quantity: activated_arp_density, unit: 1/um^2}
+  branching_rate_ss: {quantity: branching_rate, unit: 1/(um^2*s)}
+  G_mem_ss: {quantity: actin_concentration, unit: uM}
+  Arp_mem_ss: {quantity: arp_concentration, unit: uM}
+  CP_mem_ss: {quantity: cp_concentration, unit: nM}
+settings:
+  xtol: 1.0e-12
+stochastic: false

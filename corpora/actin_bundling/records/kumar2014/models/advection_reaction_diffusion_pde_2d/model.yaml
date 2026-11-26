@@ -1,0 +1,71 @@
+id: advection_reaction_diffusion_pde_2d
+name: 2D active stress-advection-reaction-diffusion PDE solver (Eqs. 12-13, 3-5, 11; Fig. 3)
+role: model
+stated:
+  page: 3
+  printed_page: "208101-3"
+  quote: "(13), together with Eqs. (3)–(5) specify our active stress-"
+  where: "Eqs. 12-13, 3-5, 11 / Fig. 3"
+equation: "d_t A = -div(v A) + lap A - kappa*tau*(A - 1); d_t I = -div(v I) + lap I - rho*kappa*tau*(I - 1); (1 - nu*lap) v = P * grad f_scaled(A, I) on periodic [0, L/ell]^2"
+built_from:
+  - active_stress_regulation_eq11_scaled
+  - viscous_coefficient_2d
+inputs:
+  P:
+    quantity: peclet_number
+    unit: dimensionless
+  beta:
+    quantity: stress_asymmetry_parameter
+    unit: dimensionless
+  kappa_tau:
+    quantity: dimensionless_turnover_rate
+    unit: dimensionless
+  rho:
+    quantity: turnover_rate_ratio
+    unit: dimensionless
+  nu:
+    quantity: viscous_screening_coefficient
+    unit: dimensionless
+  xi:
+    quantity: saturation_ratio
+    unit: dimensionless
+  f_0:
+    quantity: base_active_stress
+    unit: dimensionless
+  L_over_l:
+    quantity: dimensionless_domain_length
+    unit: dimensionless
+  t_max:
+    quantity: dimensionless_time
+    unit: dimensionless
+  eps_init:
+    quantity: initial_perturbation_amplitude
+    unit: dimensionless
+outputs:
+  state_code:
+    quantity: pattern_state_code
+    unit: dimensionless
+    description: "0 = homogeneous, 1 = stationary pattern, 2 = oscillating or drifting pattern."
+  A_max:
+    quantity: normalized_activator_concentration
+    unit: dimensionless
+  I_max:
+    quantity: normalized_inhibitor_concentration
+    unit: dimensionless
+  osc_amp:
+    quantity: oscillation_amplitude
+    unit: dimensionless
+  n_peaks:
+    quantity: peak_count
+    unit: dimensionless
+  A_mean_final:
+    quantity: normalized_activator_concentration
+    unit: dimensionless
+  I_mean_final:
+    quantity: normalized_inhibitor_concentration
+    unit: dimensionless
+settings:
+  n_grid: 64
+  dt: 0.04
+  seed: 42
+stochastic: false

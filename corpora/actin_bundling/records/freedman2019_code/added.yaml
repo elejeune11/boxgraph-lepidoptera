@@ -1,0 +1,71 @@
+- id: probe_exv_sep_half_rmax
+  quantity: spatial_coordinate
+  unit: um
+  printed: "0.025"
+  basis: "Mid-range probe separation r = rmax/2 = 0.025 um for verifying exact -grad U_exv consistency and energy units (pN*um) in src/filament_ensemble.cpp:668-673."
+  alternatives: ["0.01", "0.04"]
+  stands_for: "r = |r_ij| in filament_ensemble::update_force_between_filaments"
+
+- id: probe_filament_bend_angle
+  quantity: filament_bend_angle
+  unit: dimensionless
+  printed: "0.2"
+  basis: "Moderate deflection angle theta = 0.2 rad (11.5 deg) between two consecutive 1 um filament links to probe src/filament.cpp:518-575 LAMMPS harmonic bending forces and total-force conservation."
+  alternatives: ["0.05", "0.5"]
+  stands_for: "theta = acos(c) - pi in filament::lammps_bending_update"
+
+- id: probe_filament_stretch_len
+  quantity: spatial_coordinate
+  unit: um
+  printed: "1.05"
+  basis: "5% stretched actin link length (1.05 um vs rest length 1.0 um) to probe src/spring.cpp:77-81, 376-378 Hookean force and energy."
+  alternatives: ["0.95", "1.10"]
+  stands_for: "llen in spring::update_force"
+
+- id: probe_spacer_head_sep_y
+  quantity: spatial_coordinate
+  unit: um
+  printed: "0.25"
+  basis: "Default initial inter-filament y separation 0.25 um = 0.5*(l_short + l_long) from grow.cfg:12 (-0.125 to +0.125) to probe spacer bending, stretching, and Metropolis acceptance."
+  alternatives: ["0.20", "0.30"]
+  stands_for: "Inter-filament separation in grow.cfg actin_pos_str"
+
+- id: probe_spacer_tilt_dx
+  quantity: spatial_coordinate
+  unit: um
+  printed: "0.05"
+  basis: "Lateral offset dx = 0.05 um of head 1 relative to head 0 (~11 deg tilt off pi/2) to exercise nonzero spacer bending energy and expose the stale-geometry / single-head bugs in src/spacer.cpp:355-378."
+  alternatives: ["0.0", "0.10"]
+  stands_for: "Head-to-head lateral displacement hx[1] - hx[0] in spacer::update_bending and metropolis_prob"
+
+- id: probe_spacer_pre_bind_dy
+  quantity: spatial_coordinate
+  unit: um
+  printed: "0.04"
+  basis: "Unbound head 1 distance 0.04 um (< s1_cut = 0.063 um) from filament 1 prior to second-head attachment in spacer::metropolis_prob() (src/spacer.cpp:355-378)."
+  alternatives: ["0.01", "0.06"]
+  stands_for: "Pre-attachment offset |newpos - h_old| within capture radius s1_cut"
+
+- id: probe_spacer_pos_a_end
+  quantity: spatial_coordinate
+  unit: um
+  printed: "0.3"
+  basis: "Attachment position pos_a_end = 0.3 um from the pointed end of a 1.0 um link to probe the lever rule (src/motor.cpp:486-491) and further-end bead selection (src/spacer.cpp:234-237)."
+  alternatives: ["0.5", "0.7"]
+  stands_for: "pos_a_end[hd] in motor::filament_update_hd and spacer::get_further_end"
+
+- id: probe_spacer_stale_b_eng
+  quantity: mechanical_energy
+  unit: pN*um
+  printed: "0.002"
+  basis: "Nonzero residual bending energy b_eng[hd] = 0.002 pN*um (= 0.5 k_B T) left over from a prior doubly-bound state because src/spacer.cpp:220-224 never zeroes b_eng upon unbinding."
+  alternatives: ["0.0", "0.004"]
+  stands_for: "Unreset b_eng[hd] carried into spacer::metropolis_prob line 377"
+
+- id: probe_kratio_one
+  quantity: concentration_ratio
+  unit: dimensionless
+  printed: "1.0"
+  basis: "Equal short/long cross-linker concentration ratio kratio = kon1/kon2 = 1.0 used in kmc.ipynb Cell 4, Cell 6 (Fig. S3A), and Cell 10 (Fig. 3C Right)."
+  alternatives: ["0.5", "2.0"]
+  stands_for: "kratio = kon1 / kon2 in kmc.ipynb"

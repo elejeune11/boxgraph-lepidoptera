@@ -1,0 +1,184 @@
+# Comparisons of code execution and C++ port outputs against bashirzadeh2021 targets and exact theory
+
+# =============================================================================
+# 1. Paper quantities REPRODUCED by the released code (CLI-overridden baseline)
+# =============================================================================
+- id: cmp_fascin_kon_koff_ratio_cfg
+  purpose: reproduction
+  computed: cli_K_fascin
+  printed: paper_fascin_kon_koff_ratio
+  note: "Confirms code fascin k_on / k_off = 20 / 0.5 = 40 matches paper Results p. 7 (also preserved at scl=4)."
+
+- id: cmp_fascin_kon_koff_ratio_live_cli
+  purpose: reproduction
+  computed: live_hh2_cli_ratio
+  printed: paper_fascin_kon_koff_ratio
+  note: "Confirms generated SLURM command --a_m_kon 20.0 --a_m_koff 0.5 in 0202_fasc_kinetics_2.csh gives ratio 40."
+
+- id: cmp_alpha_kon_koff_ratio_cfg
+  purpose: reproduction
+  computed: cli_K_alpha
+  printed: paper_alpha_kon_koff_ratio
+  note: "Confirms sorting_kinetics.cfg alpha-actinin k_on / k_off = 0.2 / 0.05 = 4 matches paper Results p. 7."
+
+- id: cmp_n_filaments_from_dens
+  purpose: reproduction
+  computed: cli_n_fil_from_dens
+  printed: paper_num_polymers
+  note: "Confirms aster_initial_condition_grid_conda_freeze.py:54-55 int(round(pi * 15^2 * 0.071)) = 50 reproduces Supplementary Table 3."
+
+- id: cmp_live_n_filaments
+  purpose: reproduction
+  computed: live_hh2_n_filaments
+  printed: paper_num_polymers
+  note: "Live execution of aster_initial_condition_grid_conda_freeze.py + python/output.py reproduces 50 filaments in actin_2_*.txt."
+
+- id: cmp_live_n_beads
+  purpose: reproduction
+  computed: live_hh2_n_beads
+  printed: paper_beads_per_polymer
+  note: "Live execution reproduces 35 beads per filament (overriding sorting_kinetics.cfg's nmonomer=27)."
+
+- id: cmp_live_n_replicates
+  purpose: reproduction
+  computed: live_hh2_n_replicates
+  printed: paper_replicates
+  note: "Live execution reproduces 5 actin initial-condition replicate files matching Fig. 4g-h's five independent simulations."
+
+- id: cmp_live_fascin_len
+  purpose: reproduction
+  computed: live_hh2_mean_fascin_len
+  printed: paper_fascin_rest_length
+  note: "Live execution + python/output.py motors2coords reproduces fascin initial spring length 0.1 um."
+
+- id: cmp_live_alpha_len
+  purpose: reproduction
+  computed: live_hh2_mean_alpha_len
+  printed: paper_alpha_rest_length
+  note: "Live execution + python/output.py motors2coords reproduces alpha-actinin initial spring length 0.5 um."
+
+- id: cmp_live_fascin_global_density
+  purpose: reproduction
+  computed: live_hh2_global_density
+  printed: paper_crosslinker_density
+  note: "Live execution generates 3534 fascin molecules inside pi*15^2 = 706.86 um^2 -> global vesicle density 4.9996 um^-2, reproducing Methods p. 9's 5 um^-2 within the vesicle."
+
+- id: cmp_size_ratio_approx
+  purpose: approximation
+  computed: cli_size_ratio
+  printed: paper_crosslinker_size_ratio
+  note: "Simulated rest-length ratio 0.5 / 0.1 = 5.0 approximates the experimental '~6' ratio stated in Methods p. 9."
+
+# =============================================================================
+# 2. Paper claims NOT REPRODUCED by the released code (verified code-vs-paper discrepancies)
+# =============================================================================
+- id: cmp_live_actin_center_std_vs_paper
+  purpose: reproduction
+  computed: live_hh2_center_std_x
+  printed: paper_init_displacement_sd
+  note: "Live aster_initial_condition_grid_conda_freeze.py:47,111-112 uses random.uniform(-3, 3), yielding empirical filament center std dev ~1.73 um rather than Methods p. 9's stated Gaussian std dev of 3 um (1.73x smaller)."
+
+- id: cmp_analytical_actin_center_std_vs_paper
+  purpose: reproduction
+  computed: ana_center_std_code
+  printed: paper_init_displacement_sd
+  note: "Exact std dev of Uniform(-3, 3) is 3/sqrt(3) = 1.7321 um, failing to reproduce Methods p. 9's stated 3 um Gaussian standard deviation."
+
+- id: cmp_live_mean_hinge_angle_vs_paper
+  purpose: reproduction
+  computed: live_hh2_mean_hinge_angle
+  printed: paper_mean_hinge_angle_benchmark
+  note: "Live script uses bent=True (lines 24, 98-117) drawing independent U[0, 2*pi] arm angles, giving mean midpoint bend angle ~pi/2 = 1.571 rad (4x larger than Methods p. 9's U[-pi/4, pi/4] mean pi/8 = 0.3927 rad)."
+
+- id: cmp_live_frac_bend_gt_pi4_vs_paper
+  purpose: reproduction
+  computed: live_hh2_frac_bend_gt_pi4
+  printed: paper_bend_gt_pi4_benchmark
+  note: "Live script places ~75% of initial filaments at midpoint bend angles exceeding pi/4 (up to pi), contradicting Methods p. 9's stated [-pi/4, +pi/4] bound (0%)."
+
+- id: cmp_live_shared_arm_vs_paper
+  purpose: reproduction
+  computed: live_hh2_frac_shared_arm
+  printed: paper_shared_arm_benchmark
+  note: "Because lines 102-105 update only ang2 on even ii and only ang1 on odd ii, 100% (49/49) of consecutive initial filament pairs share an identical half-filament orientation rather than being independent (0%)."
+
+- id: cmp_live_fascin_center_density_vs_paper
+  purpose: reproduction
+  computed: live_hh2_center_density
+  printed: paper_crosslinker_density
+  note: "Lines 156-158 sample x ~ U[-r, r] and y|x ~ U[-sqrt(r^2-x^2), sqrt(r^2-x^2)], depleting central [-3,3]^2 density to ~3.93 um^-2 (-21.5% below uniform 5 um^-2)."
+
+- id: cmp_live_fascin_edge_density_vs_paper
+  purpose: reproduction
+  computed: live_hh2_edge_density
+  printed: paper_crosslinker_density
+  note: "Same non-uniform disk-sampling bug concentrates crosslinkers in lateral caps |x| > 12 um to ~9.7 um^-2 (+94% above uniform 5 um^-2, ~2.5x denser than the center)."
+
+- id: cmp_analytical_origin_density_vs_paper
+  purpose: reproduction
+  computed: ana_density_origin_code
+  printed: paper_crosslinker_density
+  note: "Exact origin density of the code's crosslinker sampler is (pi/4) * 5 = 3.927 um^-2, failing to reproduce uniform density 5 um^-2."
+
+- id: cmp_live_fascin_anisotropy_vs_isotropic
+  purpose: reproduction
+  computed: live_hh2_anisotropy
+  printed: paper_isotropic_anisotropy_benchmark
+  note: "Live crosslinker coordinates exhibit <x^2>/<y^2> ~ 1.50 (exact theory 3/2) instead of isotropic 1.0."
+
+- id: cmp_live_fascin_rc_box_vs_paper
+  purpose: reproduction
+  computed: live_hh2_frac_in_rc_box
+  printed: paper_rc_box_containment_benchmark
+  note: "Live crosslinkers are placed across the circle r <= 15 um so only ~26.2% (exact pi/12) fall inside Methods p. 9's stated r_c x r_c box [-7.5, 7.5]^2 (100%)."
+
+- id: cmp_cfg_standalone_nfil_vs_paper
+  purpose: reproduction
+  computed: cfg_only_n_fil_from_dens
+  printed: paper_num_polymers
+  note: "Without CLI overrides, sorting_kinetics.cfg sets circle_radius = 12 um (vs 15 um), which at fil_dens = 0.071 gives 32 filaments instead of 50 (and nmonomer = 27 vs 35, density = 1 vs 5)."
+
+# =============================================================================
+# 3. Internal consistency: live script vs exact analytical theory, and Langevin vs Einstein/Boltzmann
+# =============================================================================
+- id: cmp_live_vs_analytical_center_std
+  purpose: consistency
+  computed: live_hh2_center_std_x
+  printed: ana_center_std_code
+  note: "Checks live script filament center std dev across 5 seeds against exact Uniform(-3,3) theory 3/sqrt(3) = 1.7321 um."
+
+- id: cmp_live_vs_analytical_anisotropy
+  purpose: consistency
+  computed: live_hh2_anisotropy
+  printed: ana_anisotropy_code
+  note: "Checks live script crosslinker <x^2>/<y^2> across 5 seeds against exact analytical ratio 3/2 = 1.500."
+
+- id: cmp_live_vs_analytical_rc_box
+  purpose: consistency
+  computed: live_hh2_frac_in_rc_box
+  printed: ana_frac_rc_box_code
+  note: "Checks live script fraction inside [-7.5, 7.5]^2 across 5 seeds against exact analytical pi/12 = 0.26180."
+
+- id: cmp_langevin_fascin_D_vs_einstein
+  purpose: consistency
+  computed: langevin_fascin_D_sim
+  printed: langevin_fascin_D_theory
+  note: "Verifies C++ AFINES Leimkuhler-Matthews integrator (src/motor.cpp:35-36,485-491) recovers exact Einstein diffusivity D = kT/(6*pi*eta*l_fascin) = 0.2122 um^2/s."
+
+- id: cmp_langevin_fascin_var_vs_boltzmann
+  purpose: consistency
+  computed: langevin_fascin_var_sim
+  printed: langevin_fascin_var_boltz
+  note: "Verifies C++ AFINES Leimkuhler-Matthews integrator in a k = 20 pN/um harmonic potential recovers exact Boltzmann variance kT/k = 2.00e-4 um^2 without semi-implicit damping."
+
+- id: cmp_langevin_alpha_D_vs_einstein
+  purpose: consistency
+  computed: langevin_alpha_D_sim
+  printed: langevin_alpha_D_theory
+  note: "Verifies C++ AFINES Leimkuhler-Matthews integrator recovers exact Einstein diffusivity D = kT/(6*pi*eta*l_alpha) = 0.04244 um^2/s (5x slower than fascin)."
+
+- id: cmp_langevin_alpha_var_vs_boltzmann
+  purpose: consistency
+  computed: langevin_alpha_var_sim
+  printed: langevin_alpha_var_boltz
+  note: "Verifies C++ AFINES Leimkuhler-Matthews integrator recovers exact Boltzmann variance kT/k = 2.00e-4 um^2 for alpha-actinin."

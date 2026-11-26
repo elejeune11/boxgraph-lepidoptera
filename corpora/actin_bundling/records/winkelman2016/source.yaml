@@ -1,0 +1,187 @@
+id: winkelman2016
+kind: article
+title: "Fascin- and α-Actinin-Bundled Networks Contain Intrinsic Structural Features that Drive Protein Sorting"
+authors:
+  - Jonathan D. Winkelman
+  - Cristian Suarez
+  - Glen M. Hocky
+  - Alyssa J. Harker
+  - Alisha N. Morganthaler
+  - Jenna R. Christensen
+  - Gregory A. Voth
+  - James R. Bartles
+  - David R. Kovar
+year: 2016
+venue: "Current Biology 26, 2697-2706"
+doi: "10.1016/j.cub.2016.07.080"
+file: corpus/actin_bundling/2016_Winkelman.pdf
+page_range: [1, 29]
+pages:
+  1: "cover"
+  2: "2697"
+  3: "2698"
+  4: "2699"
+  5: "2700"
+  6: "2701"
+  7: "2702"
+  8: "2703"
+  9: "2704"
+  10: "2705"
+  11: "2706"
+  12: "SI-cover"
+  13: "SI-1"
+  14: "SI-2"
+  15: "SI-3"
+  16: "SI-4"
+  17: "SI-5"
+  18: "SI-6"
+  19: "SI-7"
+  20: "SI-8"
+  21: "SI-9"
+  22: "SI-10"
+  23: "SI-11"
+  24: "SI-12"
+  25: "SI-13"
+  26: "SI-14"
+  27: "SI-15"
+  28: "SI-16"
+  29: "SI-17"
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1"
+  date: "2026-11-26"
+notes: >
+  Full quantitative reading of Winkelman et al. (2016), Current Biology 26, 2697-2706
+  (PDF pages 1-11: Graphical Abstract/Highlights cover + journal pp. 2697-2706) together
+  with its merged Supplemental Information (PDF pages 12-29: SI cover, Figures S1-S6 with
+  captions, Supplemental Experimental Procedures, and Supplemental References S1-S8).
+
+  In scope (models, inputs, derived/predicted results, key measurements, and comparisons):
+  - Cooperative kinetic lattice model of fascin / alpha-actinin segregation on two-filament
+    bundles (Main Text p. 10 / 2705, Fig. 3H p. 5, Fig. S3 pp. 17-18, SI pp. 27-28):
+    1. Virtual bundle length L = N * a = 400 * 37 nm = 14.8 um vs printed ~15 um (pp. 10, 27).
+    2. On-rate ratio r = k_on^Fascin / k_on^alpha-Actinin evaluated for the three Fig. S3B
+       parameter pairs (0.75/1.5 = 0.5, 1.5/1.5 = 1.0, 1.5/0.75 = 2.0) vs Fig. S3C legend.
+    3. Finite-lattice kinetic Monte Carlo (KMC) model on N = 400 sites (a = 37 nm, n_sims =
+       5000, first two sites initialized identically with probability r/(r+1) for fascin and
+       1/(r+1) for alpha-actinin, heterologous switching rates slowed by exp(-epsilon / k_B T)
+       with epsilon = 4.8 k_B T). Because the paper states two distinct domain-length readouts—
+       an exponential decay fit to P(l) in Fig. S3C caption (p. 18) and the arithmetic mean
+       repeat length on SI p. 28—both readouts are implemented as separate models
+       (`kmc_domain_length_exp_fit` and `kmc_domain_length_mean`) and compared against all six
+       Fig. S3C printed domain lengths (r = 0.5: l_F = 2.1, l_alpha = 8.2 um; r = 1.0: l_F =
+       3.6, l_alpha = 3.7 um; r = 2.0: l_F = 7.8, l_alpha = 2.1 um). The exponential-fit readout
+       reproduces or comes close to all six values (and matches the 0.4 um stochastic asymmetry
+       between symmetric pairs 8.2 vs 7.8 um), whereas the direct arithmetic mean on N = 400
+       sites severely underpredicts the minority-switch cases (5.57 um vs 8.2 and 7.8 um).
+    4. Finite-size convergence (`refinements.yaml` over n_sites = 400, 800, 1600, 3200) and a
+       reconstructed infinite-lattice Markov-chain limit (`kmc_infinite_lattice_limit`:
+       l_F = a*(1 + r*exp(eps/k_B T)), yielding 2.285, 4.533, 9.029 um) show that N = 400 sites
+       exhibits 18-38% finite-size truncation bias, directly refuting SI p. 27's claim that
+       400 sites was "long enough to remove edge effects".
+    5. Cooperative-to-simple mass-action domain-length enhancement ratio (`cooperativity_length_ratio`,
+       eps = 4.8 vs eps = 0) compared against the main-text claim "~50x longer" (p. 7 / 2702).
+  - Single-molecule residence time vs off-rate consistency (`residence_time_from_koff`, tau =
+    1 / k_off, Fig. S5D-E pp. 21-22): reproduces Fascin Control (0.203 s^-1 -> 4.93 vs 4.9 s),
+    Fascin domains (0.198 s^-1 -> 5.05 vs 5.1 s), and alpha-Actinin Control (0.217 s^-1 -> 4.61
+    vs 4.6 s), but exposes an internal inconsistency for alpha-Actinin domains (k_off = 0.251
+    s^-1 gives 3.98 s, NOT the printed tau = 4.9 sec; 23% / 0.92 s error).
+  - Illustrative filament growth speed (`filament_growth_speed`, Fig. S3B caption p. 18):
+    20 subunits/sec * d_sub vs printed ~53 nm/sec (with added canonical actin axial rise
+    2.7 nm -> 54 nm/s, and alternatives 2.643 nm = 37/14 nm -> 52.9 nm/s, 2.65 nm -> 53.0 nm/s,
+    2.75 nm -> 55.0 nm/s).
+  - Trailing barbed-end elongation reduction (`trailing_barbed_end_relative_rate`, Main Text
+    p. 4 and Fig. S1 pp. 13-14): 9 sub/s vs 10 sub/s reproduces printed 90% and ~10% reduction.
+  - Core measured, fitted, and literature-reported biophysical values recorded in `data.yaml`:
+    low-speed sedimentation Hill fits (fascin K_D = 272 nM, n_H = 2.3; alpha-actinin K_D = 290
+    nM, n_H = 2.5, Fig. 1B-C), TIRFM critical bundling threshold (~25-50 nM, p. 3), TIRFM
+    subdiffraction interfilament spacing (~5 nm fascin, ~25 nm alpha-actinin; example Gaussian
+    fits 6 nm and 37 nm, Fig. 4B/D/E), negative-stain EM interfilament spacing (~8 nm fascin,
+    ~32 nm alpha-actinin, Fig. 4H), EM transverse repeat (~35 nm, Fig. 4G), EM transition zone
+    length (L = 142 +/- 52 nm, Fig. 4F), fimbrin enrichment on fascin vs alpha-actinin bundles
+    (6-fold, p. 7), fimbrin-fascin competition IC50 = 47.4 nM (Fig. S6B), structural dimensions
+    (fascin 5-6 nm, alpha-actinin dimer 35 nm / spectrin rod ~25 nm, fimbrin core 6-8 nm), and
+    cited multi-filament bundle values (~20-30 filaments hexagonal fascin bundles [ref-32],
+    30 nm square-lattice alpha-actinin bundles [ref-33 / pelletier2003]).
+
+  Left out of data.yaml and models/ (experimental protocol details, protein expression/purification
+  buffers, centrifugation/labeling/optics parameters, residue boundaries, and qualitative numbers
+  feeding no model):
+  - Protein domain residue ranges in Fig. 1A (fascin 1-138, 259, 383, 493; alpha-actinin 1, 250,
+    285, 406, 518, 632, 767), PDB IDs (3P53, 1SJJ), cloning restriction sites/vectors (pET21a,
+    ProEX HTA), IPTG induction (0.5 mM, 16 h at 16 degC), lysate spins (30,000g, 50,000g),
+    column elution gradients (300-700 mM NaCl), dye DMF stocks (10 mM TMR, 1 mM Cy5, 3-5x molar
+    excess, 4 degC overnight, 3x 500 mL dialysis), buffer recipes (10 mM imidazole pH 7.0, 50 mM
+    KCl, 1 mM MgCl2, 1 mM EGTA, 0.5 mM DTT, 0.2 mM ATP, 50/90 uM CaCl2, 15 mM glucose, 20 ug/mL
+    catalase, 100 ug/mL glucose oxidase, 0.5% 400 cP methylcellulose at 25 degC; see question on
+    SI p. 26 Bead motility buffer unit misprints), glass passivation (acetone 30 min, 95% ethanol
+    10 min, 2% Hellmanex III 2 h, piranha 1-2 h, 1 mg/mL 5000 MW mPEG-Silane 18 h), SDS-PAGE
+    (12.5%, 20 min stain, 16 h destain), TIRFM/confocal/EM optics (488/491/561/638/642 nm lasers,
+    50 ms exposure, 10 frames/s, <100 nm pixel, 100 nm TetraSpeck beads ~20/field, 100x oil
+    objective, 1 um z-step, 2 um carboxylate microspheres 2.6% solids, 120 kV TEM, 400 mesh
+    grids, 1% uranyl acetate), and individual fit R^2 / R thresholds (Fig. S2F R > 0.97; Fig.
+    S5D-E R^2 = 0.997-0.998; noted in data.yaml notes).
+
+  Figures catalog (left for the independent downstream digitize stage; no figures.yaml or
+  figures.md created here):
+  - Fig. 1 (p. 3 / 2698): (A) Structural fold and domain schematics (qualitative). (B) Quantitative
+    plot + gel: Bound Fascin/F-actin (0-0.18) vs [Free Fascin] (0-1.2 uM) with SEM error bars
+    (n = 2) and Hill fit curve (K_D = 272 nM, Hill = 2.3). (C) Quantitative plot + gel: Bound
+    alpha-Actinin/F-actin (0-0.08) vs [Free alpha-Actinin dimers] (0-1.2 uM) with SEM error bars
+    (n = 2) and Hill fit curve (K_D = 290 nM, Hill = 2.5). (D) Time-lapse TIRFM micrographs
+    (qualitative). (E) Quantitative plot: Fascin Fluor. Int. (a.u., 0-1) vs Time (0-100 s) with
+    sigmoidal fit curve.
+  - Fig. 2 (p. 4 / 2699): (A) Quantitative plot + gel: Protein in pellet, normalized (0-1) vs
+    [alpha-Actinin dimers] (0-1.1 uM) for alpha-actinin (blue) and fascin (red), SEM (n >= 2).
+    (B) Bead cartoon (qualitative). (C-D) Confocal micrographs (qualitative). (E-G) Quantitative
+    bar charts with SE error bars (n = 2, >20 beads each): (E) Fascin in comet tail (a.u., 0-3)
+    -/+ alpha-actinin; (F) Fascin in protrusions (a.u., 0-1) -/+ alpha-actinin; (G) Fascin/
+    alpha-Actinin fluorescence ratio (0-1) in Comet Tail vs Protrusions.
+  - Fig. 3 (p. 5 / 2700): (A, D, G, J) TIRFM micrographs and (B, E, K) kymographs (qualitative).
+    (C, F, L) Representative single-bundle fluorescence line scans vs Length (um). (H) Quantitative
+    plot: Fascin domain Length (0-8 um) vs [Fascin]/[alpha-Actinin] (0-1.6) with red data points
+    (SEM, n = 2 experiments, >10 domains each), Simple model (dashed blue), and Coop. model
+    (solid blue, eps = 4.8 k_B T) — key target for digitizing and validating the KMC model!
+    (I) Quantitative plot: Fascin Fluor./um (a.u.; y-axis ticks misprinted 0, 4, 8, 1.2 for 12)
+    vs [TMR-Fascin] (0-160 nM) for pure fascin, fascin domains + alpha-actinin, and actinin domains.
+  - Fig. 4 (p. 6 / 2701): (A, C) Schematics + TIRFM micrographs (qualitative). (B, D) Quantitative
+    normal intensity line scans (0-22 x 10^2) vs Distance (0-1000 nm) with Gaussian fits showing
+    6 nm (fascin) and 37 nm (alpha-actinin) centroid separation. (E) Quantitative bar chart:
+    Interfilament distance (0-30 nm) by TIRFM for alpha-Actinin vs Fascin (SEM, n >= 6).
+    (F) Negative-stain EM micrographs with printed transition length L = 142 +/- 52 nm.
+    (G) Quantitative bar chart: Transverse repeat (0-35 nm) for alpha-Actinin vs Fascin (SEM,
+    n >= 10). (H) Quantitative bar chart: EM Distance between filaments (0-35 nm) for alpha-Actinin
+    only/mixed and Fascin only/mixed (SEM, n >= 8).
+  - Fig. 5 (p. 8 / 2703): (A) Bundle schematics; (B, D, G) TIRFM micrographs and kymographs
+    (qualitative). (C, E, H) Quantitative bar charts (SEM) on Single filaments, Parallel
+    alpha-Actinin, and Parallel Fascin: (C) Fimbrin molecules/um F-actin (0-4; n = 6, 23, 16);
+    (E) Espin molecules/um F-actin (0-6; n = 15, 15, 17); (H) Tropomyosin fluorescence (a.u.,
+    0-1). (F) Quantitative plot: Fascin domain length / total bundle length (0-1) vs
+    [Snap-647-Espin] (0-2.5 uM, SEM, n = 2 movies). (I) Quantitative plot + gels: Fraction of
+    bundler bound (0-1) vs [Tropomyosin] (0-12 uM) for alpha-Actinin (blue) and Fascin (red)
+    with single exponential decay fits.
+  - Fig. 6 (p. 9 / 2704): Conceptual model schematic (qualitative).
+  - Fig. S1 (pp. 13-14): (A) Quantitative bar chart: Elongation rate (0-10 sub/s, SEM, n > 8) for
+    Leading barbed end and 4 Trailing barbed end conditions (Fascin alone, alpha-Actinin alone,
+    Fascin domains, alpha-Actinin domains) with p-value brackets. (B) Schematic summarizing 10
+    vs 9 sub/s.
+  - Fig. S2 (pp. 15-16): (A-D) TIRFM micrographs and kymographs (qualitative). (E) Quantitative
+    histogram: Count (0-15) vs TMR-Fascin domain size (0-16 um) at 125 nM fascin + 400 nM
+    alpha-actinin. (F) Quantitative plot: 1-Cumulative Frequency (0-1) vs TMR-Fascin domain size
+    (0-10 um) single-exponential decay fit curves for 50, 125, 500 nM fascin (R > 0.97).
+  - Fig. S3 (pp. 17-18): (A) Model lattice schematic; (B) 3 illustrative simulation kymographs
+    (r = 0.5, 1.0, 2.0). (C) Quantitative semi-log plot: P(l) (10^-5 to 10^-1) vs l (0-16 um,
+    bottom; misscaled 0-400 lattice sites, top) for Fascin (cyan) and alpha-Actinin (red) at
+    r = 0.5, 1.0, 2.0, with printed inset l_F and l_alpha values already recorded in data.yaml.
+  - Fig. S4 (pp. 19-20): (A-B) Kymographs (qualitative). (C-D) Quantitative bar charts (SEM,
+    n > 5): Cy5 alpha-Actinin Fluor. Intensity (0-7 x 10^4) and TMR-Fascin Fluor. Intensity
+    (0-3.0 x 10^4) for Background, Single Filament, and "Parallel Bundle" (axis/caption mismatch
+    with caption "anti-parallel bundled filaments").
+  - Fig. S5 (pp. 21-22): (A-B) Single-molecule TIRFM micrographs and kymograph (qualitative).
+    (C) Quantitative bar chart: Events/min/um F-actin (0-5, SEM, n > 7) on alpha-Actinin vs
+    Fascin domains. (D-E) Quantitative plots: Fraction bound (0-1) vs Time (0-50 s) with single
+    exponential fits for (D) Fascin (Control vs Fascin domains) and (E) alpha-Actinin (Control
+    vs alpha-Actinin domains); fitted k_off and tau insets recorded in data.yaml.
+  - Fig. S6 (pp. 23-24): (A) TIRFM micrographs (qualitative). (B) Quantitative plot: Fascin
+    Intensity (0-1.0) vs [TMR-Fimbrin] (0-1.3 uM) with fit curve and printed IC50 = 47.4 nM.

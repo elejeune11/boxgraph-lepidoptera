@@ -1,0 +1,989 @@
+# Dimensional scaling definitions (p. 2, p. 4, Ref. [29])
+- id: run_hydrodynamic_length
+  model: hydrodynamic_length
+  inputs:
+    eta: eta_added
+    gamma: gamma_added
+  outputs:
+    ell: ell_ref
+
+- id: run_hydrodynamic_length_1d_footnote29
+  model: hydrodynamic_length
+  inputs:
+    eta: eta_1d_footnote29
+    gamma: gamma_added
+  outputs:
+    ell: ell_1d_literal_zero
+  note: "Evaluating printed ell = sqrt(eta/gamma) with footnote [29]'s printed eta = 0 in d = 1 yields ell = 0."
+
+- id: run_characteristic_velocity
+  model: characteristic_velocity
+  inputs:
+    zdm0: zdm0_added
+    eta: eta_added
+    gamma: gamma_added
+  outputs:
+    U: U_ref
+
+- id: run_diffusive_timescale
+  model: diffusive_timescale
+  inputs:
+    ell: ell_ref
+    D: D_added
+  outputs:
+    tau: tau_ref
+
+- id: run_advective_timescale
+  model: advective_timescale
+  inputs:
+    ell: ell_ref
+    U: U_ref
+  outputs:
+    tau_a: tau_a_ref
+
+- id: run_peclet_physical
+  model: peclet_number_physical
+  inputs:
+    zdm0: zdm0_added
+    gamma: gamma_added
+    D: D_added
+  outputs:
+    P: P_phys_ref
+
+- id: run_peclet_timescale
+  model: peclet_number_timescale
+  inputs:
+    tau: tau_ref
+    tau_a: tau_a_ref
+  outputs:
+    P: P_timescale_ref
+
+- id: run_viscous_scales_1d_printed
+  model: viscous_hydrodynamic_scales_printed
+  inputs:
+    eta: eta_1d_footnote29
+    eta_v: eta_v_added
+    gamma: gamma_added
+    d: d_1d
+  outputs:
+    ell: ell_1d_printed_pred
+    nu: nu_1d_printed_pred
+  note: "Verbatim p. 2 definitions with footnote [29] eta = 0 in d = 1: yields nu = 1 but collapses ell = 0."
+
+- id: run_viscous_scales_1d_consistent
+  model: viscous_hydrodynamic_scales_eq4_consistent
+  inputs:
+    eta: eta_1d_footnote29
+    eta_v: eta_v_added
+    gamma: gamma_added
+    d: d_1d
+  outputs:
+    ell: ell_1d_consistent_pred
+    nu: nu_1d_consistent_pred
+  note: "Eq. (4)-consistent variant in d = 1: yields nu = 1 and finite ell = sqrt(eta_v / gamma) > 0."
+
+- id: run_viscous_scales_2d_printed
+  model: viscous_hydrodynamic_scales_printed
+  inputs:
+    eta: eta_added
+    eta_v: eta_v_added
+    gamma: gamma_added
+    d: d_2d
+  outputs:
+    ell: ell_2d_printed_pred
+    nu: nu_2d_scales_pred
+
+- id: run_viscous_coeff_2d
+  model: viscous_coefficient_2d
+  inputs:
+    eta_v_over_eta: eta_v_over_eta_2d
+  outputs:
+    nu: nu_2d_pred
+  note: "Computes nu = 1 + eta_v / eta = 4 in d = 2 from footnote [29]'s thin-film relation eta_v = 3 eta."
+
+- id: run_k1_periodic_2pi
+  model: discrete_wavenumber
+  inputs:
+    omega: omega_periodic
+    n: n_mode_1
+    L_over_l: L_over_l_periodic_sim
+  outputs:
+    k_l: k1_l_periodic_2pi
+  note: "Fundamental mode k_1 * ell = 1 for periodic domain L / ell = 2*pi (Figs. 1d, 1e, 2)."
+
+- id: run_k1_noflux_2pi
+  model: discrete_wavenumber
+  inputs:
+    omega: omega_noflux
+    n: n_mode_1
+    L_over_l: L_over_l_periodic_sim
+  outputs:
+    k_l: k1_l_noflux_2pi
+
+- id: run_v_homog
+  model: fourier_velocity_eq6
+  inputs:
+    k: k_sample_added
+    zdm0: zdm0_added
+    df_hat: df_hat_homog
+    gamma: gamma_added
+    nu: nu_1d_printed
+    ell: ell_ref
+  outputs:
+    v_hat_amp: v_homog_pred
+  note: "Eq. (6) at zero perturbation (homogeneous state c = c0) reproduces v = 0."
+
+- id: run_turnover_length
+  model: turnover_length_scale
+  inputs:
+    D: D_added
+    kappa: kappa_added
+    ell: ell_ref
+  outputs:
+    ell_kappa: ell_kappa_ref
+    ell_kappa_over_ell: ell_kappa_over_ell_ref
+
+# Active stress regulation function Eq. (11) and p. 3 scaling
+- id: run_eq11_homog_fig2
+  model: active_stress_regulation_eq11
+  inputs:
+    f_0: f0_sim
+    beta: beta_fig2_added
+    A_norm: A_norm_homog
+    I_norm: I_norm_homog
+    xi: xi_sim
+  outputs:
+    f: f_eq11_homog_fig2
+    A0_fA: A0_fA_eq11_homog_fig2
+    I0_fI: I0_fI_eq11_homog_fig2
+    sum_sens: sum_sens_eq11_homog_fig2
+  note: "Unscaled Eq. (11) at homogeneous state gives f = 0.50 matching the baseline of Fig. 2(b,d,f)."
+
+- id: run_eq11_scaled_homog_beta3
+  model: active_stress_regulation_eq11_scaled
+  inputs:
+    f_0: f0_sim
+    beta: beta_fig1abc
+    A_norm: A_norm_homog
+    I_norm: I_norm_homog
+    xi: xi_sim
+  outputs:
+    f: f_scaled_homog_beta3
+    A0_fA: A0_fA_beta3
+    I0_fI: I0_fI_beta3
+    sum_sens: sum_sens_beta3
+  note: "Rescaled Eq. (11) (p. 3) at homogeneous state gives A_0*f_A = 4, I_0*f_I = -2, sum = 2, and f = 8/3."
+
+- id: run_eq11_scaled_homog_beta_neg1
+  model: active_stress_regulation_eq11_scaled
+  inputs:
+    f_0: f0_sim
+    beta: beta_regime_neg1
+    A_norm: A_norm_homog
+    I_norm: I_norm_homog
+    xi: xi_sim
+  outputs:
+    f: f_scaled_homog_neg1
+    A0_fA: A0_fA_neg1
+    I0_fI: I0_fI_neg1
+    sum_sens: sum_sens_neg1
+
+- id: run_eq11_scaled_homog_beta_pos1
+  model: active_stress_regulation_eq11_scaled
+  inputs:
+    f_0: f0_sim
+    beta: beta_regime_pos1
+    A_norm: A_norm_homog
+    I_norm: I_norm_homog
+    xi: xi_sim
+  outputs:
+    f: f_scaled_homog_pos1
+    A0_fA: A0_fA_pos1
+    I0_fI: I0_fI_pos1
+    sum_sens: sum_sens_pos1
+
+# Linear stability of 1D active stress-advection-diffusion model (Eqs. 7-10, Fig. 1)
+- id: run_eq7_fig1e_beta3
+  model: linear_stability_ad_eq7
+  inputs:
+    k_l: k1_l_periodic_2pi
+    alpha: alpha_fig1
+    P: P_fig1e
+    nu: nu_1d_printed
+    A0_fA: A0_fA_beta3
+    I0_fI: I0_fI_beta3
+  outputs:
+    tr_tau_L: tr_eq7_fig1e_beta3
+    det_tau_L: det_eq7_fig1e_beta3
+    disc_tau_L: disc_eq7_fig1e_beta3
+    re_lam_plus: re_eq7_fig1e_beta3
+    im_lam_plus: im_eq7_fig1e_beta3
+
+- id: run_eq7_equal_diff_beta3
+  model: linear_stability_ad_eq7
+  inputs:
+    k_l: k1_l_periodic_2pi
+    alpha: alpha_equal_diff
+    P: P_fig1e
+    nu: nu_1d_printed
+    A0_fA: A0_fA_beta3
+    I0_fI: I0_fI_beta3
+  outputs:
+    tr_tau_L: tr_eq7_eqdiff
+    det_tau_L: det_eq7_eqdiff
+    disc_tau_L: disc_eq7_eqdiff
+    re_lam_plus: re_eq7_eqdiff
+    im_lam_plus: im_eq7_eqdiff
+  note: "Equal diffusivities (alpha = 1) yield purely real eigenvalues (im_lam_plus = 0), confirming p. 3 claim."
+
+- id: run_eq8_9_fig1e_beta3
+  model: trace_discriminant_eq8_9
+  inputs:
+    D: D_added
+    k: k_sample_added
+    ell: ell_ref
+    alpha: alpha_fig1
+    P: P_fig1e
+    nu: nu_1d_printed
+    A0_fA: A0_fA_beta3
+    I0_fI: I0_fI_beta3
+  outputs:
+    tr_L: tr_L_eq8_fig1e_beta3
+    disc_L: disc_L_eq9_fig1e_beta3
+    tr_tau_L: tr_tau_eq8_fig1e_beta3
+    disc_tau_L: disc_tau_eq9_fig1e_beta3
+
+- id: run_eq10_fig1d_periodic
+  model: oscillatory_threshold_eq10
+  inputs:
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+    A0_fA: A0_fA_beta3
+    I0_fI: I0_fI_beta3
+  outputs:
+    P_c: P_c_fig1d_osc
+  note: "Finite-domain Eq. (10) critical Peclet number P_c = 1.1 for Fig. 1(d) (alpha = 0.1, L/ell = 2*pi, periodic)."
+
+- id: run_eq10_noflux
+  model: oscillatory_threshold_eq10
+  inputs:
+    alpha: alpha_fig1
+    omega: omega_noflux
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+    A0_fA: A0_fA_beta3
+    I0_fI: I0_fI_beta3
+  outputs:
+    P_c: P_c_noflux_osc
+
+- id: run_eq10_inf_fig1b
+  model: oscillatory_threshold_infinite
+  inputs:
+    alpha: alpha_fig1
+    A0_fA: A0_fA_beta3
+    I0_fI: I0_fI_beta3
+  outputs:
+    P_c: P_c_inf_fig1b
+  note: "Infinite-domain limit P_c^(inf) = 0.55 used in Fig. 1(b)."
+
+- id: run_fig1a_k1
+  model: linear_stability_ad_fig1
+  inputs:
+    k_l: k1_l_periodic_2pi
+    alpha: alpha_fig1
+    P: P_fig1a_added
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  outputs:
+    tr_tau_L: tr_fig1a_k1
+    det_tau_L: det_fig1a_k1
+    disc_tau_L: disc_fig1a_k1
+    re_lam_plus: re_fig1a_k1
+    im_lam_plus: im_fig1a_k1
+
+- id: run_fig1b_k1
+  model: linear_stability_ad_fig1
+  inputs:
+    k_l: k1_l_periodic_2pi
+    alpha: alpha_fig1
+    P: P_c_inf_fig1b
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  outputs:
+    tr_tau_L: tr_fig1b_k1
+    det_tau_L: det_fig1b_k1
+    disc_tau_L: disc_fig1b_k1
+    re_lam_plus: re_fig1b_k1
+    im_lam_plus: im_fig1b_k1
+
+- id: run_fig1c_k1
+  model: linear_stability_ad_fig1
+  inputs:
+    k_l: k1_l_periodic_2pi
+    alpha: alpha_fig1
+    P: P_fig1c_added
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  outputs:
+    tr_tau_L: tr_fig1c_k1
+    det_tau_L: det_fig1c_k1
+    disc_tau_L: disc_fig1c_k1
+    re_lam_plus: re_fig1c_k1
+    im_lam_plus: im_fig1c_k1
+
+- id: run_boundary_fig1d_beta_neg1
+  model: linear_stability_boundary_ad_fig1d
+  inputs:
+    beta: beta_regime_neg1
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  outputs:
+    P_c: P_c_fig1d_beta_neg1
+    P_c_osc: P_c_osc_fig1d_beta_neg1
+    is_oscillatory: is_osc_fig1d_beta_neg1
+    beta_codim2: beta_codim2_fig1d
+
+- id: run_boundary_fig1d_beta0
+  model: linear_stability_boundary_ad_fig1d
+  inputs:
+    beta: beta_both_up_added
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  outputs:
+    P_c: P_c_fig1d_beta0
+    P_c_osc: P_c_osc_fig1d_beta0
+    is_oscillatory: is_osc_fig1d_beta0
+    beta_codim2: beta_codim2_fig1d_beta0
+
+- id: run_boundary_fig1d_beta_pos1
+  model: linear_stability_boundary_ad_fig1d
+  inputs:
+    beta: beta_regime_pos1
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  outputs:
+    P_c: P_c_fig1d_beta_pos1
+    P_c_osc: P_c_osc_fig1d_beta_pos1
+    is_oscillatory: is_osc_fig1d_beta_pos1
+    beta_codim2: beta_codim2_fig1d_pos1
+
+- id: run_boundary_fig1d_codim2_gap
+  model: linear_stability_boundary_ad_fig1d
+  inputs:
+    beta: beta_codim2_gap_added
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  outputs:
+    P_c: P_c_fig1d_gap
+    P_c_osc: P_c_osc_fig1d_gap
+    is_oscillatory: is_osc_fig1d_gap
+    beta_codim2: beta_codim2_fig1d_gap
+  note: "At beta = 1.01 (f_A > 0, f_I < 0, alpha = 0.1 < 1), P_c_stat = 1.047 < P_c_osc = 1.1 (is_oscillatory = 0), demonstrating that the sign criterion below Eq. (10) is necessary but not sufficient."
+
+- id: run_boundary_fig1d_beta3
+  model: linear_stability_boundary_ad_fig1d
+  inputs:
+    beta: beta_fig1abc
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  outputs:
+    P_c: P_c_fig1d_beta3
+    P_c_osc: P_c_osc_fig1d_beta3
+    is_oscillatory: is_osc_fig1d_beta3
+    beta_codim2: beta_codim2_fig1d_beta3
+
+- id: run_period_lin_fig1e_beta3
+  model: oscillation_period_linear_fig1e
+  inputs:
+    beta: beta_fig1abc
+    P: P_fig1e
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  outputs:
+    T_over_tau: T_lin_fig1e_beta3
+    im_lam_k1: im_lin_fig1e_beta3
+    re_lam_k1: re_lin_fig1e_beta3
+
+- id: run_period_lin_fig1e_beta2
+  model: oscillation_period_linear_fig1e
+  inputs:
+    beta: beta_fig1e_mid_added
+    P: P_fig1e
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  outputs:
+    T_over_tau: T_lin_fig1e_beta2
+    im_lam_k1: im_lin_fig1e_beta2
+    re_lam_k1: re_lin_fig1e_beta2
+
+# Linear stability of 2D active stress-advection-reaction-diffusion model (Eqs. 12-13, Fig. 3a)
+- id: run_ard_boundary_fig3_beta1p3
+  model: ard_stability_boundary_2d
+  inputs:
+    beta: beta_fig3b_added
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+  outputs:
+    P_c: P_c_fig3_beta1p3
+    P_c_osc: P_c_osc_fig3_beta1p3
+    P_c_stat: P_c_stat_fig3_beta1p3
+    k_c_osc_l: k_c_osc_fig3_beta1p3
+    is_oscillatory: is_osc_fig3_beta1p3
+  note: "Continuous-k 2D ARD threshold at beta = 1.3: stationary instability at P_c = 5.547 precedes Hopf at 6.1665, matching Fig. 3(a)."
+
+- id: run_ard_boundary_fig3_beta1p5
+  model: ard_stability_boundary_2d
+  inputs:
+    beta: beta_fig3c_added
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+  outputs:
+    P_c: P_c_fig3_beta1p5
+    P_c_osc: P_c_osc_fig3_beta1p5
+    P_c_stat: P_c_stat_fig3_beta1p5
+    k_c_osc_l: k_c_osc_fig3_beta1p5
+    is_oscillatory: is_osc_fig3_beta1p5
+  note: "Continuous-k 2D ARD threshold at beta = 1.5: oscillatory instability at P_c = 6.1665 precedes stationary at 6.265, matching Fig. 3(a)."
+
+- id: run_ard_boundary_fig3_beta1p9
+  model: ard_stability_boundary_2d
+  inputs:
+    beta: beta_fig3g_added
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+  outputs:
+    P_c: P_c_fig3_beta1p9
+    P_c_osc: P_c_osc_fig3_beta1p9
+    P_c_stat: P_c_stat_fig3_beta1p9
+    k_c_osc_l: k_c_osc_fig3_beta1p9
+    is_oscillatory: is_osc_fig3_beta1p9
+
+- id: run_ard_stab_fig3_hopf
+  model: ard_linear_stability_eq12_13
+  inputs:
+    k_l: k_c_osc_fig3_beta1p9
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    P: P_c_osc_fig3_beta1p9
+    nu: nu_2d_pred
+    A0_fA: A0_fA_beta3
+    I0_fI: I0_fI_beta3
+  outputs:
+    tr_tau_L: tr_ard_hopf
+    det_tau_L: det_ard_hopf
+    disc_tau_L: disc_ard_hopf
+    re_lam_plus: re_ard_hopf
+    im_lam_plus: im_ard_hopf
+  note: "Direct evaluation of tau*L_ARD at the Hopf onset (k_c_osc*ell = 0.6089, P_c_osc = 6.1665) verifies tr = 0, det > 0."
+
+- id: run_ard_boundary_finite_2pi
+  model: ard_stability_boundary_finite_2d
+  inputs:
+    beta: beta_fig3g_added
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+    L_over_l: L_over_l_periodic_sim
+  outputs:
+    P_c: P_c_fig3_L2pi
+    P_c_osc: P_c_osc_fig3_L2pi
+    P_c_stat: P_c_stat_fig3_L2pi
+    is_oscillatory: is_osc_fig3_L2pi
+  note: "Shows that the paper's only printed domain size L/ell = 2*pi gives P_c_osc = 7.75 in 2D with nu = 4, outside Fig. 3(a)'s range P in [5.2, 7.0]."
+
+- id: run_ard_boundary_finite_10pi
+  model: ard_stability_boundary_finite_2d
+  inputs:
+    beta: beta_fig3g_added
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+    L_over_l: L_over_l_fig3_2d_added
+  outputs:
+    P_c: P_c_fig3_L10pi
+    P_c_osc: P_c_osc_fig3_L10pi
+    P_c_stat: P_c_stat_fig3_L10pi
+    is_oscillatory: is_osc_fig3_L10pi
+  note: "With L/ell = 10*pi, discrete modes recover P_c_osc = 6.167 matching Fig. 3(a)'s onset between P = 6.1 and P = 6.2."
+
+# Nonlinear 1D PDE simulations (Eqs. 1-5, 11; Figs. 1d, 1e, 2)
+- id: run_pde_1d_fig2
+  model: advection_diffusion_pde_1d
+  inputs:
+    P: P_fig2_added
+    beta: beta_fig2_added
+    alpha: alpha_fig1
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_periodic_sim
+    t_max: t_max_1d_added
+    eps_init: eps_init_added
+  outputs:
+    state_code: state_pde_1d_fig2
+    T_over_tau: T_pde_1d_fig2
+    A_max: A_max_pde_1d_fig2
+    I_max: I_max_pde_1d_fig2
+    v_max: v_max_pde_1d_fig2
+    f_max: f_max_pde_1d_fig2
+    f_min: f_min_pde_1d_fig2
+    A_mean_final: A_mean_pde_1d_fig2
+    I_mean_final: I_mean_pde_1d_fig2
+  note: "1D PDE at Fig. 2 crossed point (beta = 1.4, P = 1.3): reproduces oscillating state, A_max ~= 2.03, I_max ~= 5.59, v_max ~= 1.12; literal f_scaled lies in [1.09, 4.30]."
+
+- id: run_pde_1d_fig2_unscaled
+  model: advection_diffusion_pde_1d_unscaled_stress
+  inputs:
+    P: P_fig2_added
+    beta: beta_fig2_added
+    alpha: alpha_fig1
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_periodic_sim
+    t_max: t_max_1d_added
+    eps_init: eps_init_added
+  outputs:
+    state_code: state_pde_1d_fig2_unsc
+    T_over_tau: T_pde_1d_fig2_unsc
+    A_max: A_max_pde_1d_fig2_unsc
+    I_max: I_max_pde_1d_fig2_unsc
+    v_max: v_max_pde_1d_fig2_unsc
+    f_max: f_max_pde_1d_fig2_unsc
+    f_min: f_min_pde_1d_fig2_unsc
+    A_mean_final: A_mean_pde_1d_fig2_unsc
+    I_mean_final: I_mean_pde_1d_fig2_unsc
+  note: "Variant reporting unscaled Eq. (11) active stress f in [0.205, 0.806] matching Fig. 2(b,d,f)."
+
+- id: run_pde_1d_fig1e_beta3
+  model: advection_diffusion_pde_1d
+  inputs:
+    P: P_fig1e
+    beta: beta_fig1abc
+    alpha: alpha_fig1
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_periodic_sim
+    t_max: t_max_1d_added
+    eps_init: eps_init_added
+  outputs:
+    state_code: state_pde_1d_fig1e_b3
+    T_over_tau: T_pde_1d_fig1e_b3
+    A_max: A_max_pde_1d_fig1e_b3
+    I_max: I_max_pde_1d_fig1e_b3
+    v_max: v_max_pde_1d_fig1e_b3
+    f_max: f_max_pde_1d_fig1e_b3
+    f_min: f_min_pde_1d_fig1e_b3
+    A_mean_final: A_mean_pde_1d_fig1e_b3
+    I_mean_final: I_mean_pde_1d_fig1e_b3
+  note: "1D PDE at Fig. 1(e) rightmost point (P = 1.2, beta = 3): gives T/tau ~= 6.39 vs linear stability 6.11."
+
+- id: run_pde_1d_highP_stat
+  model: advection_diffusion_pde_1d
+  inputs:
+    P: P_high_stat_1d_added
+    beta: beta_fig2_added
+    alpha: alpha_fig1
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_periodic_sim
+    t_max: t_max_1d_added
+    eps_init: eps_init_added
+  outputs:
+    state_code: state_pde_1d_highP
+    T_over_tau: T_pde_1d_highP
+    A_max: A_max_pde_1d_highP
+    I_max: I_max_pde_1d_highP
+    v_max: v_max_pde_1d_highP
+    f_max: f_max_pde_1d_highP
+    f_min: f_min_pde_1d_highP
+    A_mean_final: A_mean_pde_1d_highP
+    I_mean_final: I_mean_pde_1d_highP
+  note: "Verifies p. 3 claim that at large enough P (P = 1.6, beta = 1.4 > 1), oscillatory patterns transition to stationary patterns (state_code = 1)."
+
+- id: run_pde_1d_equal_diff
+  model: advection_diffusion_pde_1d
+  inputs:
+    P: P_fig2_added
+    beta: beta_fig2_added
+    alpha: alpha_equal_diff
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_periodic_sim
+    t_max: t_max_1d_added
+    eps_init: eps_init_added
+  outputs:
+    state_code: state_pde_1d_eqdiff
+    T_over_tau: T_pde_1d_eqdiff
+    A_max: A_max_pde_1d_eqdiff
+    I_max: I_max_pde_1d_eqdiff
+    v_max: v_max_pde_1d_eqdiff
+    f_max: f_max_pde_1d_eqdiff
+    f_min: f_min_pde_1d_eqdiff
+    A_mean_final: A_mean_pde_1d_eqdiff
+    I_mean_final: I_mean_pde_1d_eqdiff
+  note: "Verifies p. 3 claim that equal diffusivities (alpha = 1) yield stable steady-state patterns (state_code = 1)."
+
+# Nonlinear 2D ARD PDE simulations (Eqs. 12-13, 3-5, 11; Fig. 3)
+- id: run_pde_2d_fig3b
+  model: advection_reaction_diffusion_pde_2d
+  inputs:
+    P: P_fig3b_added
+    beta: beta_fig3b_added
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_fig3_2d_added
+    t_max: t_max_2d_added
+    eps_init: eps_init_added
+  outputs:
+    state_code: state_pde_2d_fig3b
+    A_max: A_max_pde_2d_fig3b
+    I_max: I_max_pde_2d_fig3b
+    osc_amp: osc_amp_pde_2d_fig3b
+    n_peaks: n_peaks_pde_2d_fig3b
+    A_mean_final: A_mean_pde_2d_fig3b
+    I_mean_final: I_mean_pde_2d_fig3b
+  note: "2D ARD PDE at Fig. 3(b) stationary-hexagon crossed point (beta = 1.3, P = 6.2) with nu = 4 and L/ell = 10*pi."
+
+- id: run_pde_2d_fig3f
+  model: advection_reaction_diffusion_pde_2d
+  inputs:
+    P: P_fig3g_added
+    beta: beta_fig3c_added
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_fig3_2d_added
+    t_max: t_max_2d_added
+    eps_init: eps_init_added
+  outputs:
+    state_code: state_pde_2d_fig3f
+    A_max: A_max_pde_2d_fig3f
+    I_max: I_max_pde_2d_fig3f
+    osc_amp: osc_amp_pde_2d_fig3f
+    n_peaks: n_peaks_pde_2d_fig3f
+    A_mean_final: A_mean_pde_2d_fig3f
+    I_mean_final: I_mean_pde_2d_fig3f
+  note: "2D ARD PDE at Fig. 3(f) dynamic crossed point (beta = 1.5, P = 6.3) with nu = 4 and L/ell = 10*pi."
+
+# Calibrated figure-digitization sweeps and profile evaluations (Figs. 1, 2, 3)
+- id: run_sweep_fig1a_re
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_fig1a_added
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: re_lam_fig1a
+  outputs:
+    re_lam_plus: re_lam_fig1a_pred
+
+- id: run_sweep_fig1a_im
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_fig1a_added
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: im_lam_fig1a
+  outputs:
+    im_lam_plus: im_lam_fig1a_pred
+
+- id: run_sweep_fig1b_re_pc_eq10
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_c_fig1d_osc
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: re_lam_fig1b
+  outputs:
+    re_lam_plus: re_lam_fig1b_pc_eq10_pred
+  note: "Evaluates Eq. (7) at Eq. (10)'s finite-domain threshold P_c = 1.1 across Fig. 1(b) k*ell points."
+
+- id: run_sweep_fig1b_im_pc_eq10
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_c_fig1d_osc
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: im_lam_fig1b
+  outputs:
+    im_lam_plus: im_lam_fig1b_pc_eq10_pred
+
+- id: run_sweep_fig1b_re_pc_inf
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_c_inf_fig1b
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: re_lam_fig1b
+  outputs:
+    re_lam_plus: re_lam_fig1b_pc_inf_pred
+  note: "Evaluates Eq. (7) at the infinite-domain threshold P_c^(inf) = 0.55 across Fig. 1(b) k*ell points."
+
+- id: run_sweep_fig1b_im_pc_inf
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_c_inf_fig1b
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: im_lam_fig1b
+  outputs:
+    im_lam_plus: im_lam_fig1b_pc_inf_pred
+
+- id: run_sweep_fig1b_re_p050
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_fig1b_fit_added
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: re_lam_fig1b
+  outputs:
+    re_lam_plus: re_lam_fig1b_p050_pred
+  note: "Diagnostic sweep at P = 0.50 (identified by 2400-dpi digitization of Fig. 1b)."
+
+- id: run_sweep_fig1b_im_p050
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_fig1b_fit_added
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: im_lam_fig1b
+  outputs:
+    im_lam_plus: im_lam_fig1b_p050_pred
+
+- id: run_sweep_fig1c_re
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_fig1c_added
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: re_lam_fig1c
+  outputs:
+    re_lam_plus: re_lam_fig1c_pred
+
+- id: run_sweep_fig1c_im
+  model: linear_stability_ad_fig1
+  inputs:
+    alpha: alpha_fig1
+    P: P_fig1c_added
+    nu: nu_1d_printed
+    beta: beta_fig1abc
+  sweep:
+    k_l: im_lam_fig1c
+  outputs:
+    im_lam_plus: im_lam_fig1c_pred
+
+- id: run_sweep_fig1d_linear
+  model: linear_stability_boundary_ad_fig1d
+  inputs:
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  sweep:
+    beta: Pc_linear_fig1d
+  outputs:
+    P_c: Pc_linear_fig1d_pred
+
+- id: run_sweep_fig1d_osc_to_stat
+  model: advection_diffusion_pde_1d_osc_boundary
+  inputs:
+    alpha: alpha_fig1
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_periodic_sim
+    t_max: t_max_1d_added
+    eps_init: eps_init_added
+    bnd_ref: P_osc_to_stat_fig1d
+  outputs:
+    P_osc_to_stat: P_osc_to_stat_fig1d_pred
+  note: "Vectorized 1D PDE bisection of the upper oscillatory-to-stationary phase boundary across all 19 beta values in Fig. 1(d)."
+
+- id: run_sweep_fig1e_linear
+  model: oscillation_period_linear_fig1e
+  inputs:
+    P: P_fig1e
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  sweep:
+    beta: T_linear_fig1e
+  outputs:
+    T_over_tau: T_linear_fig1e_pred
+
+- id: run_sweep_fig1e_pde
+  model: advection_diffusion_pde_1d_period_curve
+  inputs:
+    P: P_fig1e
+    alpha: alpha_fig1
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_periodic_sim
+    t_max: t_max_1d_added
+    eps_init: eps_init_added
+    T_ref: T_pde_fig1e
+  outputs:
+    T_over_tau: T_pde_fig1e_pred
+  note: "Vectorized 1D PDE oscillation periods across all 19 beta values of Fig. 1(e) at P = 1.2."
+
+- id: run_sweep_fig1e_lin_at_pde
+  model: oscillation_period_linear_fig1e
+  inputs:
+    P: P_fig1e
+    alpha: alpha_fig1
+    omega: omega_periodic
+    L_over_l: L_over_l_periodic_sim
+    nu: nu_1d_printed
+  sweep:
+    beta: T_pde_fig1e
+  outputs:
+    T_over_tau: T_lin_at_pde_fig1e_pred
+  note: "Evaluates the linear-stability period 2*pi/Im[tau*lambda_+(k_1)] at the 19 numerical symbol positions of Fig. 1(e)."
+
+- id: run_fig2_profiles_scaled
+  model: advection_diffusion_pde_1d_profiles
+  inputs:
+    P: P_fig2_added
+    beta: beta_fig2_added
+    alpha: alpha_fig1
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_periodic_sim
+    t_max: t_max_1d_profiles_added
+    eps_init: eps_init_added
+    phi_0: phi0_fig2_added
+    A_a_ref: A_profile_fig2a
+    I_a_ref: I_profile_fig2a
+    v_b_ref: v_profile_fig2b
+    f_b_ref: f_profile_fig2b
+    A_c_ref: A_profile_fig2c
+    I_c_ref: I_profile_fig2c
+    v_d_ref: v_profile_fig2d
+    f_d_ref: f_profile_fig2d
+    A_e_ref: A_profile_fig2e
+    I_e_ref: I_profile_fig2e
+    v_f_ref: v_profile_fig2f
+    f_f_ref: f_profile_fig2f
+  outputs:
+    A_a: A_fig2a_pred
+    I_a: I_fig2a_pred
+    v_b: v_fig2b_pred
+    f_b: f_fig2b_scaled_pred
+    A_c: A_fig2c_pred
+    I_c: I_fig2c_pred
+    v_d: v_fig2d_pred
+    f_d: f_fig2d_scaled_pred
+    A_e: A_fig2e_pred
+    I_e: I_fig2e_pred
+    v_f: v_fig2f_pred
+    f_f: f_fig2f_scaled_pred
+  note: "1D PDE spatial snapshots at literal (t, t + T/4, t + T/2) reporting verbatim p. 3 rescaled active stress f_scaled."
+
+- id: run_fig2_profiles_unscaled
+  model: advection_diffusion_pde_1d_profiles_unscaled_stress
+  inputs:
+    P: P_fig2_added
+    beta: beta_fig2_added
+    alpha: alpha_fig1
+    xi: xi_sim
+    f_0: f0_sim
+    L_over_l: L_over_l_periodic_sim
+    t_max: t_max_1d_profiles_added
+    eps_init: eps_init_added
+    phi_0: phi0_fig2_added
+    A_a_ref: A_profile_fig2a
+    I_a_ref: I_profile_fig2a
+    v_b_ref: v_profile_fig2b
+    f_b_ref: f_profile_fig2b
+    A_c_ref: A_profile_fig2c
+    I_c_ref: I_profile_fig2c
+    v_d_ref: v_profile_fig2d
+    f_d_ref: f_profile_fig2d
+    A_e_ref: A_profile_fig2e
+    I_e_ref: I_profile_fig2e
+    v_f_ref: v_profile_fig2f
+    f_f_ref: f_profile_fig2f
+  outputs:
+    f_b: f_fig2b_unsc_pred
+    f_d: f_fig2d_unsc_pred
+    f_f: f_fig2f_unsc_pred
+  note: "Variant reporting unscaled Eq. (11) active stress f_Eq11 = f_scaled / (16/3) at literal (t, t + T/4, t + T/2)."
+
+- id: run_sweep_fig3a_cont
+  model: ard_stability_boundary_2d
+  inputs:
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+  sweep:
+    beta: Pc_sim_fig3a
+  outputs:
+    P_c: Pc_fig3a_cont_pred
+  note: "Continuous-wavenumber (large-box) 2D ARD linear stability boundary across Fig. 3(a) beta in [1.2, 2.5]."
+
+- id: run_sweep_fig3a_L2pi
+  model: ard_stability_boundary_finite_2d
+  inputs:
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+    L_over_l: L_over_l_periodic_sim
+  sweep:
+    beta: Pc_sim_fig3a
+  outputs:
+    P_c: Pc_fig3a_L2pi_pred
+  note: "Finite-domain 2D ARD stability boundary using the paper's only printed box size L/ell = 2*pi across Fig. 3(a)."
+
+- id: run_sweep_fig3a_L10pi
+  model: ard_stability_boundary_finite_2d
+  inputs:
+    kappa_tau: kappa_tau_fig3
+    rho: rho_fig3
+    nu: nu_2d_pred
+    L_over_l: L_over_l_fig3_2d_added
+  sweep:
+    beta: Pc_sim_fig3a
+  outputs:
+    P_c: Pc_fig3a_L10pi_pred
+  note: "Finite-domain 2D ARD stability boundary using inferred large-box size L/ell = 10*pi across Fig. 3(a)."
+

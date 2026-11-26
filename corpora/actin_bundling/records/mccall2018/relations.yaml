@@ -1,0 +1,320 @@
+- id: rel_mesh_overlap_same_as_mesh
+  kind: same_as
+  a: mccall2018/coacervate_mesh_size_overlap
+  b: mccall2018/coacervate_mesh_size
+  mapping:
+    a: "a"
+    Phi_pp: "Phi_pp"
+  regime:
+    a: [0.5, 2.0]
+    N: [50.0, 200.0]
+    Phi_pp: [0.05, 0.5]
+  provenance: stated
+  citation: {page: 20, printed_page: "SI-9", quote: "Combining these expressions gives (16)   a pp", where: "SI I.h.4"}
+  assumptions:
+    - "Self-avoiding flexible chains in good solvent with Flory exponent nu = 3/5 and overlap volume fraction Phi_pp* = N^(-4/5)"
+
+- id: rel_eq9_reduces_to_eq10
+  kind: reduces_to
+  a: mccall2018/electrostatic_persistence_length_eq9
+  b: mccall2018/electrostatic_persistence_length_eq10
+  output_map:
+    l_E: l_E
+  mapping:
+    c_m: "c_c"
+    b: "b"
+  limit:
+    f: "1"
+    Z_c: "1"
+    S_salt: "0"
+  regime:
+    f: [0.5, 1.0]
+    Z_c: [1.0, 2.0]
+    c_c: [0.5, 4.0]
+    S_salt: [0.01, 1.0]
+    b: [2.5, 5.0]
+  provenance: stated
+  citation: {page: 21, printed_page: "SI-10", quote: "maximum persistence length for a fully charged polypeptide chain (f = 1)", where: "SI I.h.5 / Eqs. (9)-(10)"}
+  assumptions:
+    - "Fully charged polypeptide chains (f = 1) with monovalent counterions (Z_c = 1) in the salt-free limit (sum_gamma Z_gamma^2 c_gamma -> 0)"
+
+# ==========================================================================
+# Cross-record ModelAtlas relations (audit across 5 paired actin_bundling records)
+#
+# - feigeles2025 + mccall2018: 0 direct scalar-model relations.
+#   Feigeles et al. (2025, p. 6, ref-36) cite McCall et al. (2018) qualitatively
+#   for actin in polyelectrolyte coacervates. Both papers apply the same
+#   viscocapillary coalescence scaling eta/gamma = tau/ell, but solve it for
+#   algebraically inverse outputs (mccall2018/viscosity_from_capillary_velocity
+#   solves eta = v_inv * gamma and inverse_capillary_velocity solves v_inv = tau/d,
+#   whereas feigeles2025/coalescence_surface_tension_figS6C solves gamma = eta*slope,
+#   coalescence_capillary_velocity_figS6C computes gamma/eta and eta/gamma from
+#   (eta, gamma), and coalescence_deltaL_linear_scaling solves Delta_L = (gamma/eta)*tau);
+#   mccall2018/coalescence_aspect_ratio_fit uses curve ports and is outside
+#   scalar ModelAtlas testing.
+# - graham2023 + mccall2018: 3 proposed verified relations (2 reduces_to, 1 scales_as).
+# - mccall2018 + scheff2020: 3 proposed verified relations (1 same_as, 1 scales_as, 1 reduces_to).
+# - mccall2018 + tang1996:   2 proposed verified relations (2 same_as).
+# - mccall2018 + weirich2017: 2 proposed verified relations (1 reduces_to, 1 same_as).
+# ==========================================================================
+
+# --- graham2023 + mccall2018 ----------------------------------------------
+
+- id: rel_graham2023_buckling_length_reduces_eff_diam
+  kind: reduces_to
+  a: mccall2018/filament_buckling_length_eq1
+  b: graham2023/effective_spherical_diameter
+  mapping:
+    a: "2 * R"
+    b: "2 * R"
+  output_map:
+    D: L_star
+  limit:
+    gamma: "oo"
+  regime:
+    R: [0.5, 4.0]
+    l_p: [8.0, 20.0]
+    d: [6.0, 10.0]
+    gamma: [0.5, 10.0]
+    T: [290.0, 310.0]
+  provenance: proposed
+  reason: >
+    Bridges McCall et al.'s (2018, Main Text Eq. 1, p. 7) droplet-confined filament buckling
+    threshold L* = 2*R / (1 - k_B*T*l_p / (2*pi*d*gamma*R^2)) to Graham et al.'s (2023,
+    Methods p. 15) effective spherical droplet diameter D = (a*b^2)^(1/3). In the rigid
+    high-interfacial-tension limit (gamma -> oo, where the bending-to-capillary parameter
+    alpha = k_B*T*l_p / (2*pi*d*gamma*R^2) -> 0, approached to 0.37% in McCall's pLK/pRE
+    coacervates at gamma = 1 mN/m), L* reduces identically to the undeformed spherical droplet
+    diameter D = 2*R (a = b = 2*R). Conversely, at Graham 2023's much softer VASP condensate
+    tensions (~1-15 pN line tension, ~1-15 uN/m), alpha reaches O(1) and filaments deform the
+    droplet rather than buckling strictly inside a rigid sphere.
+  assumptions:
+    - "Spherical droplet geometry (a = b = 2*R in graham2023/effective_spherical_diameter) in the infinite-surface-tension limit gamma -> oo."
+
+- id: rel_graham2023_buckling_length_scales_ring_circumference
+  kind: scales_as
+  a: mccall2018/filament_buckling_length_eq1
+  b: graham2023/circular_ring_contour_length
+  mapping:
+    R: "R"
+  output_map:
+    L: L_star
+  regime:
+    R: [0.6, 4.0]
+    l_p: [8.0, 12.0]
+    d: [6.0, 10.0]
+    gamma: [1.0, 10.0]
+    T: [290.0, 310.0]
+  provenance: proposed
+  reason: >
+    Connects McCall et al.'s (2018, Eq. 1, p. 7) critical contour length for surface-tension-driven
+    peripheral filament buckling L* = 2*R / (1 - k_B*T*l_p / (2*pi*d*gamma*R^2)) to Graham et al.'s
+    (2023, SI Eq. S23-S25) peripheral closed-ring contour length L = 2*pi*R inside a spherical
+    droplet of radius R. Throughout McCall 2018's high-tension coacervate regime (gamma >= 1 mN/m,
+    R >= 0.6 um, where alpha < 0.004), both characteristic confinement contour lengths (buckling
+    onset ~2*R vs full peripheral ring closure 2*pi*R) scale linearly with droplet radius R
+    (differing by the diameter-to-circumference factor pi).
+  assumptions:
+    - "High-surface-tension confinement regime (gamma in [1, 10] mN/m, R in [0.6, 4.0] um) where the bending correction alpha = k_B*T*l_p / (2*pi*d*gamma*R^2) <= 0.0038 << 1."
+
+- id: rel_graham2023_ellipse_axes_reduces_droplet_radius
+  kind: reduces_to
+  a: graham2023/ellipse_axes_constant_area
+  b: mccall2018/droplet_radius_from_diameter
+  mapping:
+    D: "D_droplet"
+  output_map:
+    R: a
+  limit:
+    AR: "1"
+  regime:
+    D_droplet: [0.8, 8.0]
+    AR: [1.01, 10.0]
+  provenance: proposed
+  reason: >
+    Connects Graham et al.'s (2023, SI Eq. S10-S12) area-conserving elliptical droplet semi-major
+    axis a = (D_droplet/2)*sqrt(AR) for actin-deformed VASP condensates to McCall et al.'s (2018,
+    p. 7) spherical coacervate droplet radius R = D/2. In the undeformed spherical droplet limit
+    AR -> 1 (observed across McCall 2018's high-tension pLK/pRE coacervates and Graham 2023's
+    low-actin / thin-ring VASP droplets), the semi-major (and semi-minor) axis reduces identically
+    to R = D/2.
+  assumptions:
+    - "Spherical undeformed limit AR -> 1 across the shared micron-scale droplet diameter range D in [0.8, 8.0] um."
+
+# --- mccall2018 + scheff2020 ----------------------------------------------
+
+- id: rel_scheff2020_partition_ratio_same_as_filament_boundary
+  kind: same_as
+  a: mccall2018/filament_boundary_ram
+  b: scheff2020/partition_intensity_ratio
+  mapping:
+    I_inside: "c_star"
+    I_outside: "c_global"
+  output_map:
+    P_I: RAM_crit
+  regime:
+    c_star: [0.05, 1.0]
+    c_global: [0.01, 2.0]
+  provenance: proposed
+  reason: >
+    Scheff et al. (2020, p. 4, ref-37) explicitly cite McCall et al. (2018) when defining the
+    actin droplet partitioning ratio P_I = I_inside / I_outside as an estimate of the inside-to-outside
+    actin concentration ratio under linear fluorescence proportionality (I proportional to c).
+    Evaluated along McCall 2018's Fig. 4F filament-assembly threshold boundary (c_inside = c*,
+    c_outside = c_global), both models express the identical dimensionless enrichment ratio
+    (provenance set to proposed in mccall2018 because the citation appears in the later paper
+    scheff2020).
+  assumptions:
+    - "Linear proportionality between background-subtracted actin fluorescence intensity and actin concentration inside and outside droplets (I_inside/I_outside = c_inside/c_outside), evaluated at the polymerization boundary c_inside = c*."
+
+- id: rel_scheff2020_buckling_length_scales_sphere_radius
+  kind: scales_as
+  a: mccall2018/filament_buckling_length_eq1
+  b: scheff2020/tactoid_semimajor_from_volume
+  mapping:
+    V: "(4 / 3) * pi * R**3"
+    x: "1.0"
+  output_map:
+    R: L_star
+  regime:
+    R: [0.6, 4.0]
+    l_p: [8.0, 12.0]
+    d: [6.0, 10.0]
+    gamma: [1.0, 10.0]
+    T: [290.0, 310.0]
+  provenance: proposed
+  reason: >
+    Connects McCall et al.'s (2018, Eq. 1, p. 7) filament buckling threshold length
+    L* = 2*R / (1 - k_B*T*l_p / (2*pi*d*gamma*R^2)) to Scheff et al.'s (2020, p. 3) volume-to-
+    semi-major-axis relation R = (V / v(x))^(1/3) evaluated in the spherical low-actin droplet
+    limit (x = 1, v(1) = 4*pi/3) at equal spherical volume V = (4/3)*pi*R^3. In McCall's
+    high-surface-tension confinement regime (gamma >= 1 mN/m, R >= 0.6 um, alpha < 0.004),
+    L* ~ 2*R shares exact linear R^(+1) scaling with Scheff's spherical droplet radius R.
+  assumptions:
+    - "Spherical droplet reference (x = 1, V = (4/3)*pi*R^3) in McCall's high-tension confinement regime (gamma in [1, 10] mN/m, R in [0.6, 4.0] um)."
+
+- id: rel_scheff2020_tactoid_semiminor_reduces_droplet_radius
+  kind: reduces_to
+  a: scheff2020/tactoid_geometry_from_semimajor
+  b: mccall2018/droplet_radius_from_diameter
+  mapping:
+    D: "2 * R"
+  output_map:
+    R: r
+  limit:
+    x: "1"
+  regime:
+    R: [0.5, 5.0]
+    x: [1.05, 3.5]
+  provenance: proposed
+  reason: >
+    Connects Scheff et al.'s (2020, p. 3) spindle-tactoid semi-minor radius r = R / x for
+    actin-doped FUS droplets to McCall et al.'s (2018, p. 7) spherical coacervate droplet radius
+    R = D / 2. In the isotropic spherical droplet limit x -> 1 (observed in Scheff 2020 below
+    0.1 uM actin and throughout McCall 2018's spherical pLK/pRE coacervates), r reduces
+    identically to the spherical droplet radius D / 2 with D = 2*R.
+  assumptions:
+    - "Isotropic spherical limit x -> 1 equating spindle semi-major axis R to sphere radius D / 2."
+
+# --- mccall2018 + tang1996 ------------------------------------------------
+
+- id: rel_tang1996_molar_conc_same_as_methylcellulose
+  kind: same_as
+  a: mccall2018/methylcellulose_molar_concentration
+  b: tang1996/actin_molar_from_mass
+  mapping:
+    c_mass: "10 * c_wv"
+    M_actin: "1000 * M_W"
+  output_map:
+    c_molar: c
+  regime:
+    c_wv: [0.05, 2.0]
+    M_W: [10.0, 100.0]
+  provenance: proposed
+  reason: >
+    Both models convert dilute macromolecular mass-per-volume concentration to molarity via
+    c = c_mass / M_W: McCall et al. (2018, SI I.h.1, p. 19) convert 0.25% (w/v) (= 0.25 g/dL)
+    14-kDa methylcellulose to ~180 uM, while Tang & Janmey (1996, p. 8557) convert F-actin
+    mass concentration (mg/mL) with M_actin = 42,000 g/mol to uM. Symbolically identical after
+    exact unit conversions (1 g/dL = 10 mg/mL; 1 kDa = 1000 g/mol).
+  assumptions:
+    - "Unit conversion 1 g/dL (% w/v) = 10 mg/mL and 1 kDa = 1000 g/mol."
+
+- id: rel_tang1996_molar_conc_same_as_coacervate_conc
+  kind: same_as
+  a: mccall2018/coacervate_polypeptide_conc_printed
+  b: tang1996/actin_molar_from_mass
+  mapping:
+    c_mass: "rho_pp * f_pp"
+    M_actin: "1000 * M_W"
+  output_map:
+    c_molar: c
+  regime:
+    rho_pp: [1000.0, 1600.0]
+    f_pp: [0.05, 0.4]
+    M_W: [5.0, 50.0]
+  provenance: proposed
+  reason: >
+    McCall et al.'s (2018, SI I.h.3, p. 19) printed coacervate polypeptide chain concentration
+    formula c = rho_pp * f_pp / M_W [mM] uses the exact same mass-concentration-over-molar-mass
+    relation as Tang & Janmey's (1996) actin_molar_from_mass (c_molar = 1e6 * c_mass / M_actin [uM])
+    with c_mass = rho_pp * f_pp [mg/mL] and M_actin = 1000 * M_W [g/mol] (Pint converts uM <-> mM).
+  assumptions:
+    - "Identifies mass concentration c_mass = rho_pp * f_pp [mg/mL] (ignoring the 33% solid-vs-mixture density approximation noted in q_coacervate_chain_conc_10x_error) and converts 1 kDa = 1000 g/mol."
+
+# --- mccall2018 + weirich2017 ---------------------------------------------
+
+- id: rel_weirich2017_buckling_length_reduces_tactoid_sphere_diameter
+  kind: reduces_to
+  a: mccall2018/filament_buckling_length_eq1
+  b: weirich2017/tactoid_geometry_circular_arc
+  mapping:
+    R: "R"
+    alpha: "pi / 2"
+  output_map:
+    L: L_star
+  limit:
+    gamma: "oo"
+  regime:
+    R: [0.5, 4.0]
+    l_p: [8.0, 20.0]
+    d: [6.0, 10.0]
+    gamma: [0.5, 10.0]
+    T: [290.0, 310.0]
+  provenance: proposed
+  reason: >
+    Bridges McCall et al.'s (2018, Eq. 1, p. 7) droplet-confined filament buckling threshold
+    L* = 2*R / (1 - k_B*T*l_p / (2*pi*d*gamma*R^2)) to Weirich et al.'s (2017, SI p. 7)
+    circular-arc tactoid major axis L = 2*R*sin(alpha). In the infinite-surface-tension rigid-
+    confinement limit (gamma -> oo), L* reduces identically to the spherical droplet diameter
+    2*R, matching Weirich's tactoid major axis evaluated in the zero-anchoring isotropic sphere
+    limit (alpha = pi/2, L = 2*R*sin(pi/2) = 2*R). Conversely, at Weirich 2017's ultra-low
+    filamin-actin tactoid tension (gamma_I ~ 300 nN/m, 3333x below McCall's 1 mN/m), Eq. (1)'s
+    critical buckling radius rises to R_crit = 1.75 um, explaining why tactoid surface tension
+    cannot buckle filaments into peripheral rings.
+  assumptions:
+    - "Maps spherical droplet radius R identically and evaluates weirich2017/tactoid_geometry_circular_arc in the zero-anchoring spherical limit alpha = pi/2 as gamma -> oo."
+
+- id: rel_weirich2017_enrichment_ratio_same_as_filament_boundary
+  kind: same_as
+  a: mccall2018/filament_boundary_ram
+  b: weirich2017/concentration_enrichment_ratio
+  mapping:
+    c_dense: "c_star"
+    c_dilute: "c_global"
+  output_map:
+    ratio: RAM_crit
+  regime:
+    c_star: [0.05, 5.0]
+    c_global: [0.01, 2.0]
+  provenance: proposed
+  reason: >
+    Both models compute the dimensionless dense-to-dilute actin concentration enrichment factor
+    c_dense / c_dilute in identical uM units: Weirich et al. (2017, p. 2) quantify ~100-fold
+    actin enrichment in filamin-crosslinked tactoids (~250 uM vs 2.6 uM bulk), while McCall et al.
+    (2018, Fig. 4F, p. 5) compute the critical enrichment threshold RAM_crit = c* / c_global
+    needed for local actin inside pLK/pRE coacervates to reach the 0.1 uM polymerization threshold.
+    Symbolically identical under identity concentration mapping.
+  assumptions:
+    - "Evaluates dense-phase concentration at McCall's Mg-ATP-actin critical concentration c_dense = c* and dilute-phase concentration at global actin concentration c_dilute = c_global."
+

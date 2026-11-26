@@ -1,0 +1,74 @@
+id: advection_diffusion_pde_1d_unscaled_stress
+name: 1D advection-diffusion PDE solver reporting unscaled Eq. (11) active stress matching Fig. 2(b,d,f)
+role: model
+variant_of: advection_diffusion_pde_1d
+corrections:
+  - equation: "p. 3 rescaling of Eq. (11) by (1 + xi)^2 / xi vs Fig. 2(b,d,f) y-axis zeta*Delta_mu / (zeta*Delta_mu)_0"
+    change: "Keep the rescaled f_scaled = ((1+xi)^2/xi) * f_Eq11 inside the PDE dynamics (matching P_c = 1.1, Fig. 1d-e, and Fig. 2's A/A_0, I/I_0, and v*tau/ell), but divide the reported dimensionless active stress by (1+xi)^2/xi = 16/3 so f_report = f_Eq11."
+    evidence: "At the Fig. 2 crossed point (beta = 1.4, P = 1.3, xi = 3, f_0 = 0), the literal rescaled active stress f_scaled spans [1.09, 4.30] (homogeneous baseline 8/3 ~= 2.67), whereas the thin black curve labeled zeta*Delta_mu / zeta*Delta_mu_0 in Fig. 2(b,d,f) spans [0.20, 0.81] (homogeneous baseline 0.50), which equals f_scaled / (16/3) = f_Eq11 while A/A_0 (peak ~2.0), I/I_0 (peak ~5.6), and v*tau/ell (peak ~1.1) match the scaled-f PDE."
+stated:
+  page: 3
+  printed_page: "208101-3"
+  quote: "the Eqs. (1)–(5) in a periodic domain of size L ¼ 2π"
+  where: "Eqs. 1-5, 11 / Fig. 2(b,d,f)"
+equation: "Same 1D PDE as advection_diffusion_pde_1d, with reported active stress f_report = f_scaled * xi / (1 + xi)^2 = f_Eq11"
+built_from:
+  - advection_diffusion_pde_1d
+inputs:
+  P:
+    quantity: peclet_number
+    unit: dimensionless
+  beta:
+    quantity: stress_asymmetry_parameter
+    unit: dimensionless
+  alpha:
+    quantity: diffusivity_ratio
+    unit: dimensionless
+  xi:
+    quantity: saturation_ratio
+    unit: dimensionless
+  f_0:
+    quantity: base_active_stress
+    unit: dimensionless
+  L_over_l:
+    quantity: dimensionless_domain_length
+    unit: dimensionless
+  t_max:
+    quantity: dimensionless_time
+    unit: dimensionless
+  eps_init:
+    quantity: initial_perturbation_amplitude
+    unit: dimensionless
+outputs:
+  state_code:
+    quantity: pattern_state_code
+    unit: dimensionless
+  T_over_tau:
+    quantity: dimensionless_oscillation_period
+    unit: dimensionless
+  A_max:
+    quantity: normalized_activator_concentration
+    unit: dimensionless
+  I_max:
+    quantity: normalized_inhibitor_concentration
+    unit: dimensionless
+  v_max:
+    quantity: dimensionless_velocity
+    unit: dimensionless
+  f_max:
+    quantity: dimensionless_active_stress
+    unit: dimensionless
+  f_min:
+    quantity: dimensionless_active_stress
+    unit: dimensionless
+  A_mean_final:
+    quantity: normalized_activator_concentration
+    unit: dimensionless
+  I_mean_final:
+    quantity: normalized_inhibitor_concentration
+    unit: dimensionless
+settings:
+  n_grid: 64
+  dt: 0.01
+  seed: 42
+stochastic: false

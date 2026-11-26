@@ -1,0 +1,415 @@
+# ---------------------------------------------------------------------------
+# 1. Study design, grid sizes, morphology fractions, rescue folds, box geometry
+# ---------------------------------------------------------------------------
+- id: run_grid_nontread
+  model: parameter_grid_2d_count
+  inputs:
+    N_alpha: n_alpha_nontread
+    N_myosin: n_myosin_nontread
+  outputs:
+    N_pairs: n_pairs_nontread_computed
+
+- id: run_grid_tread
+  model: parameter_grid_3d_count
+  inputs:
+    N_alpha: n_alpha_tread
+    N_myosin: n_myosin_tread
+    N_chi: n_chi_tread
+  outputs:
+    N_triads: n_triads_tread_computed
+
+- id: run_pct_unipolar_nontread_bl
+  model: morphology_percentage
+  inputs:
+    n_class: n_unipolar_nontread_bl
+    N_total: n_pairs_nontread_printed
+  outputs:
+    pct: pct_unipolar_nontread_bl_computed
+
+- id: run_pct_apolar_nontread_bl
+  model: morphology_percentage
+  inputs:
+    n_class: n_apolar_nontread_bl
+    N_total: n_pairs_nontread_printed
+  outputs:
+    pct: pct_apolar_nontread_bl_computed
+
+- id: run_pct_unipolar_tread_bl_abi
+  model: morphology_percentage
+  inputs:
+    n_class: n_unipolar_tread_bl_abi
+    N_total: n_triads_tread_printed
+  outputs:
+    pct: pct_unipolar_tread_bl_abi_computed
+
+- id: run_pct_apolar_tread_bl_abi
+  model: morphology_percentage
+  inputs:
+    n_class: n_apolar_tread_bl_abi
+    N_total: n_triads_tread_printed
+  outputs:
+    pct: pct_apolar_tread_bl_abi_computed
+
+- id: run_pct_apolar_tread_al
+  model: morphology_percentage
+  inputs:
+    n_class: n_apolar_tread_al
+    N_total: n_triads_tread_printed
+  outputs:
+    pct: pct_apolar_tread_al_computed
+
+- id: run_pct_unipolar_tread_al
+  model: morphology_percentage
+  inputs:
+    n_class: n_unipolar_tread_al
+    N_total: n_triads_tread_printed
+  outputs:
+    pct: pct_unipolar_tread_al_computed
+
+- id: run_rescue_fold_low
+  model: crosslinker_rescue_fold_change
+  inputs:
+    alpha_high: alpha_mid_tread
+    alpha_low: alpha_low_rescue
+  outputs:
+    fold: rescue_fold_low_computed
+
+- id: run_rescue_fold_high
+  model: crosslinker_rescue_fold_change
+  inputs:
+    alpha_high: alpha_high_tread
+    alpha_low: alpha_low_rescue
+  outputs:
+    fold: rescue_fold_high_computed
+
+- id: run_reaction_volume_geometry
+  model: reaction_volume_geometry
+  inputs:
+    L_bundle: initial_bundle_length
+    d_skin: flexible_vol_skin_distance
+    L_y: treadmilling_box_ly
+    L_z: treadmilling_box_lz
+    l_vox: compartment_size_medyan
+  outputs:
+    L_x: box_lx_computed
+    N_x: box_nx_computed
+    V_r: box_vr_computed
+
+- id: run_sim_duration_minutes
+  model: simulation_duration_unit_check
+  inputs:
+    t_sec: sim_duration
+  outputs:
+    t_min: sim_duration_min_computed
+
+# ---------------------------------------------------------------------------
+# 2. Order parameters and trajectory analysis (Eqs. S16-S19)
+# ---------------------------------------------------------------------------
+- id: run_nematic_aligned_printed_N1
+  model: nematic_order_parameter_eqS18
+  inputs:
+    N: n_single_filament_test
+    theta: theta_aligned_exact
+  outputs:
+    S: S_aligned_printed_N1
+
+- id: run_nematic_aligned_printed_N30
+  model: nematic_order_parameter_eqS18
+  inputs:
+    N: initial_filament_count
+    theta: theta_aligned_exact
+  outputs:
+    S: S_aligned_printed_N30
+
+- id: run_nematic_random_printed_N1
+  model: nematic_order_parameter_eqS18
+  inputs:
+    N: n_single_filament_test
+    theta: theta_isotropic_3d
+  outputs:
+    S: S_random_printed_N1
+
+- id: run_nematic_random_printed_N30
+  model: nematic_order_parameter_eqS18
+  inputs:
+    N: initial_filament_count
+    theta: theta_isotropic_3d
+  outputs:
+    S: S_random_printed_N30
+
+- id: run_nematic_aligned_corrected_N1
+  model: nematic_order_parameter_eqS18_sum1toN
+  inputs:
+    N: n_single_filament_test
+    theta: theta_aligned_exact
+  outputs:
+    S: S_aligned_corrected_N1
+
+- id: run_nematic_aligned_corrected_N30
+  model: nematic_order_parameter_eqS18_sum1toN
+  inputs:
+    N: initial_filament_count
+    theta: theta_aligned_exact
+  outputs:
+    S: S_aligned_corrected_N30
+
+- id: run_nematic_random_corrected_N1
+  model: nematic_order_parameter_eqS18_sum1toN
+  inputs:
+    N: n_single_filament_test
+    theta: theta_isotropic_3d
+  outputs:
+    S: S_random_corrected_N1
+
+- id: run_nematic_random_corrected_N30
+  model: nematic_order_parameter_eqS18_sum1toN
+  inputs:
+    N: initial_filament_count
+    theta: theta_isotropic_3d
+  outputs:
+    S: S_random_corrected_N30
+
+- id: run_shape_parameter_bundle
+  model: shape_parameter_eqS19
+  inputs:
+    lambda_1: lambda1_bundle_test
+    lambda_2: lambda2_bundle_test
+    lambda_3: lambda3_bundle_test
+  outputs:
+    Sh: Sh_bundle_test
+
+- id: run_kl_divergence_test
+  model: kl_divergence_gaussian_eqS17
+  inputs:
+    mu_1: dist_mu1_test
+    sigma_1: dist_sigma1_test
+    mu_2: dist_mu2_test
+    sigma_2: dist_sigma2_test
+  outputs:
+    D_KL: d_kl_test
+
+- id: run_jsd_divergence_test
+  model: jensen_shannon_divergence_eqS16
+  inputs:
+    mu_1: dist_mu1_test
+    sigma_1: dist_sigma1_test
+    mu_2: dist_mu2_test
+    sigma_2: dist_sigma2_test
+  settings:
+    n_grid: 1000
+    n_sigma: 10.0
+  outputs:
+    JSD: jsd_test
+
+# ---------------------------------------------------------------------------
+# 3. Chemical, transport, mechanical, and mechanochemical submodels (Eqs. S1-S15)
+# ---------------------------------------------------------------------------
+- id: run_diffusion_coefficients
+  model: diffusion_coefficients_s211
+  inputs:
+    D_actin: d_actin_added
+    r_alpha: diffusion_ratio_alpha_to_actin
+    r_myosin: diffusion_ratio_myosin_to_actin
+  outputs:
+    D_alpha: d_alpha_test
+    D_myosin: d_myosin_test
+
+- id: run_homodimer_degeneracy
+  model: homodimer_degeneracy_s22
+  inputs:
+    X_A: species_copy_number_test
+  outputs:
+    gamma: gamma_homodimer_test
+
+- id: run_mesoscopic_rate_printed
+  model: mesoscopic_rate_eqS2
+  inputs:
+    k_mu: k_mu_bimolecular_added
+    V_r: compartment_volume_added
+    N_A: avogadro_constant_added
+  settings:
+    n: 2
+  outputs:
+    c_mu_printed: c_mu_printed_test
+
+- id: run_mesoscopic_rate_corrected
+  model: mesoscopic_rate_eqS2_corrected
+  inputs:
+    k_mu: k_mu_bimolecular_added
+    V_r: compartment_volume_added
+    N_A: avogadro_constant_added
+  settings:
+    n: 2
+  outputs:
+    c_mu: c_mu_corrected_test
+
+- id: run_propensity
+  model: propensity_eqS1
+  inputs:
+    gamma_mu: gamma_homodimer_test
+    c_mu: c_mu_corrected_test
+  outputs:
+    a_mu: a_mu_test
+
+- id: run_nrm_reaction_time
+  model: nrm_reaction_time_s222
+  inputs:
+    a_mu: a_mu_test
+    r_mu: random_draw_r_mu_test
+  outputs:
+    tau_mu: tau_mu_test
+
+- id: run_actin_stretching
+  model: actin_stretching_eqS3
+  inputs:
+    K_str: k_str_actin_added
+    l_i: l_cyl_stretched_test
+    l_0: l0_cylinder
+  outputs:
+    U_str: u_str_test
+
+- id: run_actin_bending
+  model: actin_bending_eqS4
+  inputs:
+    eps_bend: eps_bend_actin_added
+    theta: theta_hinge_test
+  outputs:
+    U_bend: u_bend_test
+
+- id: run_excluded_volume_s5
+  model: excluded_volume_eqS5
+  inputs:
+    K_vol: k_vol_s5_added
+    L: l0_cylinder
+    d: d_cylinder_sep_test
+  outputs:
+    U_vol: u_vol_s5_test
+
+- id: run_excluded_volume_s6
+  model: excluded_volume_eqS6
+  inputs:
+    K_vol: k_vol_s6_added
+    L: l0_cylinder
+    d: d_cylinder_sep_test
+  outputs:
+    U_vol: u_vol_s6_test
+
+- id: run_excluded_volume_s6_jacobian
+  model: excluded_volume_eqS6_with_jacobian
+  inputs:
+    K_vol: k_vol_s5_added
+    L: l0_cylinder
+    d: d_cylinder_sep_test
+  outputs:
+    U_vol: u_vol_s6_jac_test
+
+- id: run_minifilament_stretching
+  model: minifilament_stretching_eqS7
+  inputs:
+    K_str_MF: k_str_mf_added
+    l_ij: l_mf_stretched_test
+    l_0: l0_mf_added
+  outputs:
+    U_MF: u_mf_test
+
+- id: run_crosslinker_stretching
+  model: crosslinker_stretching_eqS8
+  inputs:
+    K_str_linker: k_str_linker_added
+    l_ij: l_linker_stretched_test
+    l_0: l0_linker_added
+  outputs:
+    U_linker: u_linker_test
+
+- id: run_boundary_repulsion
+  model: boundary_repulsion_eqS9
+  inputs:
+    eps_boundary: eps_boundary_added
+    d: d_cylinder_sep_test
+    lam: lambda_boundary_added
+  outputs:
+    U_boundary: u_boundary_test
+
+- id: run_mf_binding_rate
+  model: minifilament_binding_rate_eqS10
+  inputs:
+    k_NMIIA_bind: k_nmiia_bind_added
+    N_total: n_total_heads_test
+  outputs:
+    k_fil_bind: k_fil_bind_test
+
+- id: run_myosin_n0
+  model: myosin_zero_load_bound_heads
+  inputs:
+    rho: myosin_duty_ratio
+    N_total: n_total_heads_test
+  outputs:
+    N_0: n0_bound_heads_test
+
+- id: run_myosin_bound_heads_printed
+  model: myosin_bound_heads_eqS11
+  inputs:
+    N_0: n0_bound_heads_test
+    gamma: gamma_myosin_bound_heads_printed
+    F_ext: f_ext_motor_test
+  outputs:
+    N_bound: n_bound_printed_test
+
+- id: run_myosin_bound_heads_corrected
+  model: myosin_bound_heads_eqS11_inverse_force
+  inputs:
+    N_0: n0_bound_heads_test
+    gamma: gamma_myosin_bound_heads_corrected
+    F_ext: f_ext_motor_test
+  outputs:
+    N_bound: n_bound_corrected_test
+
+- id: run_myosin_unbind_printed
+  model: myosin_unbinding_catch_bond_eqS12
+  inputs:
+    epsilon: epsilon_myosin_unbind_printed
+    k0_NMIIA_unbind: k0_nmiia_unbind_added
+    N_bound: n_bound_corrected_test
+    F_ext: f_ext_motor_test
+    F_NMIIA_unbind: f_nmiia_unbind_added
+  outputs:
+    k_fil_unbind_printed: k_fil_unbind_printed_test
+
+- id: run_myosin_unbind_corrected
+  model: myosin_unbinding_catch_bond_eqS12_dimensionless_eps
+  inputs:
+    epsilon: epsilon_myosin_unbind_corrected
+    k0_NMIIA_unbind: k0_nmiia_unbind_added
+    N_bound: n_bound_corrected_test
+    F_ext: f_ext_motor_test
+    F_NMIIA_unbind: f_nmiia_unbind_added
+  outputs:
+    k_fil_unbind: k_fil_unbind_corrected_test
+
+- id: run_myosin_k_walk_0
+  model: myosin_zero_load_walking_rate_eqS13
+  inputs:
+    k_NMII_bind: k_nmiia_bind_added
+    N_total: n_total_heads_test
+    N_bound_0: n0_bound_heads_test
+  outputs:
+    k_walk_0: k_walk_0_test
+
+- id: run_myosin_hill_walking
+  model: myosin_hill_walking_rate_eqS14
+  inputs:
+    k_walk_0: k_walk_0_test
+    F_stall: myosin_stall_force
+    F_ext: f_ext_motor_test
+    zeta: myosin_hill_zeta
+  outputs:
+    k_walk: k_walk_test
+
+- id: run_crosslinker_slip_bond
+  model: crosslinker_slip_bond_unbinding_eqS15
+  inputs:
+    k0_alpha_unbind: k0_alpha_unbind_added
+    F_ext: f_ext_motor_test
+    F_alpha_unbind: f_alpha_unbind_added
+  outputs:
+    k_alpha_unbind: k_alpha_unbind_test

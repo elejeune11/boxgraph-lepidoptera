@@ -1,0 +1,62 @@
+id: kinetic_pde_cone_conserved_cartesian_mem_curves
+name: finite-pool cone kinetic PDEs with mass-conserving BCs and 1D Cartesian membrane diffusion returning Fig. 5f and Supp Fig. 14 curves
+role: model
+variant_of: kinetic_pde_cone_eq6_16_curves
+built_from: [kinetic_pde_cone_conserved_cartesian_mem, kinetic_pde_cone_eq6_16_curves]
+corrections:
+  - equation: "Eq. 14"
+    change: "Add reverse dissociation term +k_2*V* to the G-actin membrane flux boundary condition"
+    evidence: "Required by actin mass conservation from Eq. (3) and Eqs. (6)-(7)."
+  - equation: "Eq. 15"
+    change: "Add reverse dissociation term +k_4*A* to the Arp2/3 membrane flux boundary condition"
+    evidence: "Required by Arp2/3 mass conservation from Eq. (3) and Eqs. (7)-(8)."
+  - equation: "Eqs. 6-9"
+    change: "Replace axisymmetric 2D membrane Laplacian (1/r) d_r(r d_r u) with 1D Cartesian d^2 u / dr^2 on the membrane boundary while keeping 3D axisymmetric diffusion in the bulk cone"
+    evidence: "Matches COMSOL Multiphysics 5.3 Coefficient Form Boundary PDE default when the cylindrical metric factor r is omitted on a 2D axisymmetric boundary line; closely tracks digitized Fig. 5f peak heights and Supp Fig. 14 VCA extrema."
+stated:
+  page: 22
+  printed_page: "SI 11"
+  quote: "The simulated geometry is a cone shape that represents the volume element of the vesicle assigned to a single domain"
+  where: "Eqs. 6-16 (Supplementary Note 2, cone geometry SI p. 11; Fig. 5f, Supp Fig. 14)"
+equation: "1D Cartesian membrane PDEs (d_rr u) coupled to 3D axisymmetric cone bulk with mass-conserving flux BCs (+k_2*V*, +k_4*A*), outputting Fig. 5f and Supp Fig. 14 curves"
+inputs:
+  G_0: {quantity: actin_concentration, unit: uM}
+  Arp_0: {quantity: arp_concentration, unit: uM}
+  r_cone_by_cp: {quantity: cone_disk_radius, unit: um, curve: {quantity: cp_concentration, unit: nM}}
+  V_0: {quantity: vca_surface_density, unit: 1/um^2}
+  B_0_norm: {quantity: barbed_end_density, unit: 1/um^2}
+  sigma: {quantity: seed_width, unit: nm}
+  h_cone: {quantity: ves_radius, unit: um}
+  k_on: {quantity: elongation_on_rate, unit: uM^-1*s^-1}
+  k_off: {quantity: elongation_off_rate, unit: 1/s}
+  k_1: {quantity: vca_actin_on_rate, unit: uM^-1*s^-1}
+  k_2: {quantity: vca_actin_off_rate, unit: 1/s}
+  k_3: {quantity: arp_activation_on_rate, unit: uM^-1*s^-1}
+  k_3_reduction: {quantity: rate_scaling_factor, unit: dimensionless}
+  k_4: {quantity: arp_activation_off_rate, unit: 1/s}
+  k_Cap: {quantity: cp_binding_rate, unit: uM^-1*s^-1}
+  k_Arp: {quantity: branching_rate_constant, unit: um^2/s}
+  k_re: {quantity: vca_recovery_rate, unit: 1/s}
+  k_Deg: {quantity: barbed_end_degradation_rate, unit: 1/s}
+  D_G: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_Arp: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_CP: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_V: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_Vstar: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_A: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_B: {quantity: network_spreading_diffusivity, unit: um^2/s}
+outputs:
+  B_peak_vs_CP: {quantity: barbed_end_density, unit: 1/um^2, curve: {quantity: cp_concentration, unit: nM}}
+  V_tot_max_vs_CP: {quantity: vca_surface_density, unit: 1/um^2, curve: {quantity: cp_concentration, unit: nM}}
+  V_tot_min_vs_CP: {quantity: vca_surface_density, unit: 1/um^2, curve: {quantity: cp_concentration, unit: nM}}
+  B_80nM_t40_profile: {quantity: barbed_end_density, unit: 1/um^2, curve: {quantity: radial_position, unit: um}}
+settings:
+  mesh_n: 72
+  r_stretch: 3.0
+  z_stretch: 2.0
+  t_end: 40.0
+  rtol: 1.0e-5
+  atol: 1.0e-7
+  profile_cp_nM: 80.0
+  r_eval: [-3.0, -2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5]
+stochastic: false

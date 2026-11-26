@@ -1,0 +1,37 @@
+id: afines_bundles_cpp_driver
+name: Full Boost C++ AFINES 2-filament bundle executable (prog/bundles.cpp -> bin/bun) and unreleased lattice.py
+role: model
+runnable: false
+not_runnable_reason: >
+  Reproducing the full 2000 s (and 6000 s for lgrow=0.0025, 0.005) AFINES trajectories across 40 seeds
+  (10^8 to 3x10^8 timesteps per trajectory at dt=2e-5 s, or 2x10^8 steps at dt=1e-5 s for Fig. 5B s2len=0.3)
+  requires compiling and running the native C++ Boost binary bin/bun (prog/bundles.cpp) across hundreds of
+  CPU-hours, and the Mathematica post-processing pipeline relies on proprietary MathematicaScript plus an
+  unreleased crashed_list.txt file; in addition, lattice.py referenced by xlink_sorting_paper/README.md for
+  Fig. 2C-D equilibrium lattice curves is missing from the repository. All component physics kernels and a
+  short-horizon integrated bundle trajectory are faithfully ported and verified in sibling Python models.
+stated:
+  file: prog/bundles.cpp
+  lines: "24-514"
+  quote: "int main(int argc, char* argv[]){"
+  where: "prog/bundles.cpp (make bundles -> bin/bun)"
+inputs:
+  dt: {quantity: observation_time, unit: s}
+  tfinal: {quantity: observation_time, unit: s}
+  npolymer: {quantity: filament_count, unit: dimensionless}
+outputs:
+  mean_domain_length: {quantity: domain_length, unit: um}
+settings:
+  seed: 150000000
+  dt: 0.00002
+  tfinal: 2000
+  grid_factor: 3
+  quad_update_period: 10
+built_from:
+  - afines_parameter_mapping
+  - afines_barbed_end_growth_cpp
+  - afines_excluded_volume_cpp
+  - afines_filament_mechanics_cpp
+  - afines_spacer_mechanics_and_mc_cpp
+  - afines_lattice_and_domain_processing
+stochastic: true

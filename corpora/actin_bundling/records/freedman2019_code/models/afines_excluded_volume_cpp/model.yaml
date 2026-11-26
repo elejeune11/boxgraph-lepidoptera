@@ -1,0 +1,22 @@
+id: afines_excluded_volume_cpp
+name: AFINES C++ segment-segment excluded volume force and potential (src/filament_ensemble.cpp:571-715)
+role: model
+stated:
+  file: src/filament_ensemble.cpp
+  lines: "571-715"
+  quote: "pe_exv += kexv*pow((1-r*b),2);"
+  where: "filament_ensemble::update_force_between_filaments() and spring::get_r_c/get_line_intersect"
+equation: "Non-intersecting (r < rmax): U = kexv*(1 - r/rmax)^2, F = 2*kexv*(dist/rmax)*(1/r - 1/rmax) (exact -grad U, requiring kexv in pN*um); intersecting (r < rmax): fixed 45-deg force Fx1=Fy1=2*kexv/(rmax*sqrt(2)) on both endpoints of link 1; crossing with r >= rmax: F = 0"
+inputs:
+  kexv: {quantity: excluded_volume_energy_scale, unit: pN*um}
+  rmax: {quantity: capture_radius, unit: um}
+  sep_parallel: {quantity: spatial_coordinate, unit: um}
+  link_length: {quantity: filament_link_length, unit: um}
+outputs:
+  U_parallel: {quantity: mechanical_energy, unit: pN*um}
+  F_parallel_code: {quantity: mechanical_force, unit: pN}
+  F_parallel_analytic_neg_grad: {quantity: mechanical_force, unit: pN}
+  F_crossing_midpoint_code: {quantity: mechanical_force, unit: pN}
+  F_crossing_near_end_total_code: {quantity: mechanical_force, unit: pN}
+settings: {}
+stochastic: false

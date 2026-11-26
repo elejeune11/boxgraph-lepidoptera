@@ -1,0 +1,29 @@
+id: sm_c_local_drag_stability_port
+name: SM Sec. C local-drag + CrossLinkForceEvaluator stability limit port
+role: model
+stated:
+  file: Python/cppmodules/CrossLinkForceEvaluator.cpp
+  lines: "65-148"
+  quote: "double factor = (1.0-_restlen/nds)*deltah1[iPt-_chebStart[iFib]]*deltah2[jPt-_chebStart[jFib]]*rnorm;"
+  where: "Port of AsymptoticLocalMobility.m:51 + RegularizeS.m:9-19 local-drag mobility with CrossLinkForceEvaluator.cpp:65-148, 273-280 Gaussian force density (and calcCLForcesEnergy point spring)"
+equation: "N_perp = 1 / int (8*pi*mu)/(c(s_bar)+1) ds; N_rot = 1 / int (8*pi*mu)*(s-L/2)^2/(c(s_bar)+1) ds; dt_max = 2 / lambda_max(J_2fib)"
+inputs:
+  L: {quantity: fiber_length, unit: um}
+  eps: {quantity: fiber_aspect_ratio, unit: dimensionless}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  K_c: {quantity: cl_spring_stiffness, unit: pN/um}
+  delta: {quantity: relative_regularization_length, unit: dimensionless}
+  sigma_rel: {quantity: relative_gaussian_width, unit: dimensionless}
+  dt_small: {quantity: time_step, unit: s}
+  dt_large: {quantity: time_step, unit: s}
+outputs:
+  alpha_ld: {quantity: mobility_alpha, unit: dimensionless}
+  gamma_ld: {quantity: mobility_gamma, unit: dimensionless}
+  effective_arm: {quantity: torque_arm_length, unit: um}
+  dt_max: {quantity: time_step, unit: s}
+  dt_small_pct: {quantity: time_step_stability_fraction, unit: percent}
+  dt_large_pct: {quantity: time_step_stability_fraction, unit: percent}
+settings:
+  N: 50
+  smooth_force: true
+stochastic: false

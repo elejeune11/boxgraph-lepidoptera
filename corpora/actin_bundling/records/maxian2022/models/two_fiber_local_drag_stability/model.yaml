@@ -1,0 +1,30 @@
+id: two_fiber_local_drag_stability
+name: local-drag rigid mobility and explicit-spring stability limit for two endpoint-linked fibers (SM Sec. C)
+role: model
+reconstructed: >
+  Supporting Material Sec. C (p. 20) states that the two-fiber test uses local drag mobility
+  (Eq. 4 without the integral term) and reports a maximum stable time step Delta t = 0.005 s
+  without printing the stability formula or the endpoint regularization function from ref. 21.
+  We compute the local-drag Schur-complement mobility (alpha_loc, beta_loc, gamma_loc) with
+  C^1 ellipsoidal-cap endpoint regularization over delta = 0.1 L and evaluate the explicit Euler
+  stability limit Delta t_max = 2 / lambda_perp = mu * L / (K_c * (alpha_loc + gamma_loc / 4)).
+stated:
+  page: 20
+  printed_page: "SI-3"
+  quote: "use the local drag mobility, which is Eq. (4) without the integral term. The maximum stable time step is"
+  where: "Sec. C"
+equation: "N_loc = (K_r^* M_loc^-1 K_r)^dagger; Delta t_max = 2 / [2 (K_c / (mu L)) (alpha_loc + gamma_loc / 4)]"
+inputs:
+  epsilon: {quantity: fiber_aspect_ratio, unit: dimensionless}
+  delta_rel: {quantity: relative_regularization_length, unit: dimensionless}
+  Kc: {quantity: cl_spring_stiffness, unit: pN/um}
+  mu: {quantity: dynamic_viscosity, unit: Pa*s}
+  L: {quantity: fiber_length, unit: um}
+outputs:
+  alpha: {quantity: mobility_alpha, unit: dimensionless}
+  beta: {quantity: mobility_beta, unit: dimensionless}
+  gamma: {quantity: mobility_gamma, unit: dimensionless}
+  dt_max: {quantity: time_step, unit: s}
+settings:
+  N: 50
+stochastic: false

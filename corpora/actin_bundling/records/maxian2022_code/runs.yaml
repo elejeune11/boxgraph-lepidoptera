@@ -1,0 +1,580 @@
+# ==============================================================================
+# 1. Live software adapters (software: true) executing unmodified Python modules
+# ==============================================================================
+
+- id: run_cheb_sbt_delta01
+  model: cheb_sbt_discretization_adapter
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    Eb: paper_Eb_actin
+    mu: strain_mu
+    N: code_N_cheb_default
+    delta: code_delta_local_init_default
+    N_u: strain_Nuniformsites
+  settings: {rpy_special_quad: false, rpy_direct_quad: false, rpy_oversample: false, n_upsample: 64}
+  outputs:
+    a_rpy: cheb_a_rpy_01
+    s_reg_min: cheb_s_reg_min_01
+    eig_val_thres: cheb_eig_thres_01
+    binding_site_spacing: cheb_ds_01
+  note: "Live ChebyshevDiscretization in SBT mode with initLocalcvals default delta = 0.1 and N_u = 40."
+
+- id: run_cheb_sbt_ctor_delta1
+  model: cheb_sbt_discretization_adapter
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    Eb: paper_Eb_actin
+    mu: strain_mu
+    N: code_N_cheb_default
+    delta: code_delta_local_ctor_default
+    N_u: strain_Nuniformsites
+  settings: {rpy_special_quad: false, rpy_direct_quad: false, rpy_oversample: false, n_upsample: 64}
+  outputs:
+    a_rpy: cheb_a_rpy_d1
+    s_reg_min: cheb_s_reg_min_d1
+    eig_val_thres: cheb_eig_thres_d1
+    binding_site_spacing: cheb_ds_d1
+  note: "Live ChebyshevDiscretization with constructor default deltaLocal = 1 (sets s_bar = L/2 = 0.5 um everywhere)."
+
+- id: run_cheb_rpy_oversample_bug
+  model: cheb_sbt_discretization_adapter
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    Eb: paper_Eb_actin
+    mu: strain_mu
+    N: code_N_cheb_default
+    delta: code_delta_local_init_default
+    N_u: strain_Nuniformsites
+  settings: {rpy_special_quad: false, rpy_direct_quad: false, rpy_oversample: true, n_upsample: 64}
+  outputs:
+    a_rpy: cheb_a_rpy_ov
+    s_reg_min: cheb_s_reg_min_ov
+    eig_val_thres: cheb_eig_thres_ov
+    binding_site_spacing: cheb_ds_ov
+  note: "Exposes FibCollocationDiscretization.py:164 duplicate _RPYDirectQuad bug: RPYOversample=True still regularizes _sRegularized (min = 0.05 um instead of 0) while zeroing _EigValThres."
+
+- id: run_clnet_nonbrownian
+  model: cl_network_params_adapter
+  inputs:
+    L: strain_Lf
+    N: code_N_cheb_default
+    N_u: strain_Nuniformsites
+    K_c: strain_Kspring
+    ell: strain_rl
+    k_on: strain_konCL
+    k_off: strain_koffCL
+    k_on_s: strain_konSecond
+    k_off_s: strain_koffSecond
+    c_w: strain_bindingSiteWidth
+    kT: kT_zero_nonbrownian
+  settings: {n_fib: 2, Ld: 2.0, seed: 1}
+  outputs:
+    ds: clnet_nb_ds
+    max_per_site: clnet_nb_max_per_site
+    max_links_per_fiber: clnet_nb_max_links
+    delta_ell: clnet_nb_delta_ell
+    cl_bound_lo: clnet_nb_lo
+    cl_bound_hi: clnet_nb_hi
+    site_kon: clnet_nb_site_kon
+    site_kons: clnet_nb_site_kons
+    sigma_rel: clnet_nb_sigma_rel
+  note: "Live DoubleEndedCrossLinkedNetwork with kT = 0 (non-Brownian): audits ds = 1/39, maxPerSite = 2, 80 max links/fiber, deltaL = sqrt(4.1e-3/10) = 20.25 nm, and kon*ds, konSecond*ds unit scaling."
+
+- id: run_clnet_brownian_4e3
+  model: cl_network_params_adapter
+  inputs:
+    L: strain_Lf
+    N: code_N_cheb_default
+    N_u: strain_Nuniformsites
+    K_c: strain_Kspring
+    ell: strain_rl
+    k_on: strain_konCL
+    k_off: strain_koffCL
+    k_on_s: strain_konSecond
+    k_off_s: strain_koffSecond
+    c_w: strain_bindingSiteWidth
+    kT: paper_kBT_table1
+  settings: {n_fib: 2, Ld: 2.0, seed: 1}
+  outputs:
+    ds: clnet_b4_ds
+    max_per_site: clnet_b4_max_per_site
+    max_links_per_fiber: clnet_b4_max_links
+    delta_ell: clnet_b4_delta_ell
+    cl_bound_lo: clnet_b4_lo
+    cl_bound_hi: clnet_b4_hi
+    site_kon: clnet_b4_site_kon
+    site_kons: clnet_b4_site_kons
+    sigma_rel: clnet_b4_sigma_rel
+  note: "Live DoubleEndedCrossLinkedNetwork with paper Table 1 kT = 4e-3 pN*um: Brownian capture window [10, 90] nm (deltaL = 40 nm)."
+
+- id: run_clnet_brownian_41e3
+  model: cl_network_params_adapter
+  inputs:
+    L: strain_Lf
+    N: code_N_cheb_default
+    N_u: strain_Nuniformsites
+    K_c: strain_Kspring
+    ell: strain_rl
+    k_on: strain_konCL
+    k_off: strain_koffCL
+    k_on_s: strain_konSecond
+    k_off_s: strain_koffSecond
+    c_w: strain_bindingSiteWidth
+    kT: strain_kbT
+  settings: {n_fib: 2, Ld: 2.0, seed: 1}
+  outputs:
+    ds: clnet_b41_ds
+    max_per_site: clnet_b41_max_per_site
+    max_links_per_fiber: clnet_b41_max_links
+    delta_ell: clnet_b41_delta_ell
+    cl_bound_lo: clnet_b41_lo
+    cl_bound_hi: clnet_b41_hi
+    site_kon: clnet_b41_site_kon
+    site_kons: clnet_b41_site_kons
+    sigma_rel: clnet_b41_sigma_rel
+  note: "Live DoubleEndedCrossLinkedNetwork with StrainInputFile/SemiflexBundleInputFile kT = 4.1e-3 pN*um: capture window [9.50, 90.50] nm."
+
+- id: run_clnet_sm_c_N50
+  model: cl_network_params_adapter
+  inputs:
+    L: strain_Lf
+    N: paper_chebyshev_N_sm_c
+    N_u: strain_Nuniformsites
+    K_c: strain_Kspring
+    ell: strain_rl
+    k_on: strain_konCL
+    k_off: strain_koffCL
+    k_on_s: strain_konSecond
+    k_off_s: strain_koffSecond
+    c_w: strain_bindingSiteWidth
+    kT: paper_kBT_table1
+  settings: {n_fib: 2, Ld: 2.0, seed: 1}
+  outputs:
+    ds: clnet_smc_ds
+    max_per_site: clnet_smc_max_per_site
+    max_links_per_fiber: clnet_smc_max_links
+    delta_ell: clnet_smc_delta_ell
+    cl_bound_lo: clnet_smc_lo
+    cl_bound_hi: clnet_smc_hi
+    site_kon: clnet_smc_site_kon
+    site_kons: clnet_smc_site_kons
+    sigma_rel: clnet_smc_sigma_rel
+  note: "Live sigmaFromNL(N_x = 51, L = 1) audit confirming sigma/L = 0.005 for SM Sec. C (N >= 50 branch)."
+
+- id: run_bundle_detect
+  model: bundle_detection_adapter
+  inputs:
+    L: strain_Lf
+    N: code_N_cheb_default
+    N_u: strain_Nuniformsites
+    d_bund: strain_bunddist
+    min_per_bundle: code_min_per_bundle_default
+  settings: {}
+  outputs:
+    n_bundles_parallel: bund_n_par
+    order_param_parallel: bund_q_par
+    order_param_isotropic: bund_q_iso
+    n_bundles_boundary_eq: bund_n_eq
+    mean_links_per_fiber: bund_links_per_fib
+  note: "Live CrossLinkedNetwork FindBundles + BundleOrderParameters audit verifying Eq. 21 bounds [1/3, 1] and strict '>' boundary behavior at exact separation d_bund = L/4."
+
+# ==============================================================================
+# 2. MATLAB StraightMobility.m and C++ SingleFiberMobilityEvaluator SBT ports
+# ==============================================================================
+
+- id: run_matlab_table_s1
+  model: straight_mobility_sbt_matlab_port
+  inputs:
+    delta: matlab_straight_delta
+  sweep:
+    eps: paper_table_s1_alpha
+  settings: {N: 32, kind: 1, include_fp: true}
+  outputs:
+    alpha: mat_ts1_alpha
+    beta: mat_ts1_beta
+    gamma: mat_ts1_gamma
+    c_tr: mat_ts1_c_tr
+    anisotropy_ratio: mat_ts1_aniso
+  note: "Full 7-point Table S1 sweep (epsilon = 0.01..0.001) using RegularizeS (delta = 0.1) + AsymptoticLocalMobility + StokesletFinitePartMatrix (N = 32, kind 1)."
+
+- id: run_matlab_eps0004
+  model: straight_mobility_sbt_matlab_port
+  inputs:
+    eps: strain_eps
+    delta: matlab_straight_delta
+  settings: {N: 32, kind: 1, include_fp: true}
+  outputs:
+    alpha: mat_0004_alpha
+    beta: mat_0004_beta
+    gamma: mat_0004_gamma
+    c_tr: mat_0004_c_tr
+    anisotropy_ratio: mat_0004_aniso
+  note: "Scalar actin L = 1 um (eps = 0.004) SBT rigid mobility run for Eq. 22 c_tr, anisotropy ratio, and N-refinement."
+
+- id: run_matlab_eps0008
+  model: straight_mobility_sbt_matlab_port
+  inputs:
+    eps: paper_fiber_aspect_ratio_0008
+    delta: matlab_straight_delta
+  settings: {N: 32, kind: 1, include_fp: true}
+  outputs:
+    alpha: mat_0008_alpha
+    beta: mat_0008_beta
+    gamma: mat_0008_gamma
+    c_tr: mat_0008_c_tr
+    anisotropy_ratio: mat_0008_aniso
+  note: "Scalar short actin L = 0.5 um (eps = 0.008) SBT rigid mobility run feeding tau_m(L=0.5)."
+
+- id: run_matlab_eps0004_delta1
+  model: straight_mobility_sbt_matlab_port
+  inputs:
+    eps: strain_eps
+    delta: code_delta_local_ctor_default
+  settings: {N: 32, kind: 1, include_fp: true}
+  outputs:
+    alpha: mat_d1_alpha
+    beta: mat_d1_beta
+    gamma: mat_d1_gamma
+    c_tr: mat_d1_c_tr
+    anisotropy_ratio: mat_d1_aniso
+  note: "Quantifies rigid mobility shift under FibCollocationDiscretization constructor default deltaLocal = 1 (ellipsoidal constant s_bar = L/2)."
+
+- id: run_cpp_table_s1
+  model: cpp_sbt_mobility_port
+  inputs:
+    L: strain_Lf
+    mu: strain_mu
+    delta: code_delta_local_init_default
+    eig_val_thres: code_eig_val_thres
+  sweep:
+    eps: paper_table_s1_alpha
+  settings: {N_tau: 16}
+  outputs:
+    alpha: cpp_ts1_alpha
+    beta: cpp_ts1_beta
+    gamma: cpp_ts1_gamma
+    min_raw_eig: cpp_ts1_min_eig
+  note: "Full 7-point Table S1 sweep of C++ SingleFiberMobilityEvaluator in SBT mode (N_tau = 16, kind-2, W_tilde^-1, EigValThres = 0.001, mu = 0.1 Pa*s)."
+
+- id: run_cpp_eps0004
+  model: cpp_sbt_mobility_port
+  inputs:
+    eps: strain_eps
+    L: strain_Lf
+    mu: strain_mu
+    delta: code_delta_local_init_default
+    eig_val_thres: code_eig_val_thres
+  settings: {N_tau: 16}
+  outputs:
+    alpha: cpp_0004_alpha
+    beta: cpp_0004_beta
+    gamma: cpp_0004_gamma
+    min_raw_eig: cpp_0004_min_eig
+  note: "Scalar actin eps = 0.004 check of C++ SBT mobility (all raw eigenvalues > 23.6 >> 0.001, no clamping triggered)."
+
+- id: run_cpp_eps0010
+  model: cpp_sbt_mobility_port
+  inputs:
+    eps: paper_eps_0010
+    L: strain_Lf
+    mu: strain_mu
+    delta: code_delta_local_init_default
+    eig_val_thres: code_eig_val_thres
+  settings: {N_tau: 16}
+  outputs:
+    alpha: cpp_0010_alpha
+    beta: cpp_0010_beta
+    gamma: cpp_0010_gamma
+    min_raw_eig: cpp_0010_min_eig
+  note: "Scalar eps = 0.010 check exposing C++ SBT negative-eigenvalue clamping collapse (min_raw_eig = -4.776 clamped to 0.001 -> beta = 0.00197 vs Table S1 0.2230, -99.1%)."
+
+# ==============================================================================
+# 3. C++ EndedCrossLinkers.cpp 4-reaction Gillespie SSA detailed-balance checks
+# ==============================================================================
+
+- id: run_cl_ssa_inside
+  model: cpp_cl_kinetics_ssa_port
+  inputs:
+    k_on: strain_konCL
+    k_off: strain_koffCL
+    k_on_s: strain_konSecond
+    k_off_s: strain_koffSecond
+    ds: clnet_nb_ds
+    c_w: strain_bindingSiteWidth
+    K_c: strain_Kspring
+    ell: strain_rl
+    kBT: paper_kBT_table1
+    r_sep: r_sep_inside_cutoff
+  settings: {t_sim: 10000.0, burn_t: 50.0}
+  replicates: 5
+  outputs:
+    site_binding_rate_at_r: ssa_in_rate
+    mean_free_ends: ssa_in_free
+    mean_double_links: ssa_in_dbl
+    exact_gibbs_double_links: ssa_in_gibbs
+    db_rel_error: ssa_in_err
+  note: "5-replicate SSA inside Brownian capture window (r = 0.07 um <= 0.09 um, t_sim = 10000 s), verifying exact truncated-Poisson Gibbs-Boltzmann detailed balance."
+
+- id: run_cl_ssa_outside
+  model: cpp_cl_kinetics_ssa_port
+  inputs:
+    k_on: strain_konCL
+    k_off: strain_koffCL
+    k_on_s: strain_konSecond
+    k_off_s: strain_koffSecond
+    ds: clnet_nb_ds
+    c_w: strain_bindingSiteWidth
+    K_c: strain_Kspring
+    ell: strain_rl
+    kBT: paper_kBT_table1
+    r_sep: r_sep_outside_cutoff
+  settings: {t_sim: 10000.0, burn_t: 50.0}
+  replicates: 5
+  outputs:
+    site_binding_rate_at_r: ssa_out_rate
+    mean_free_ends: ssa_out_free
+    mean_double_links: ssa_out_dbl
+    exact_gibbs_double_links: ssa_out_gibbs
+    db_rel_error: ssa_out_err
+  note: "5-replicate SSA outside Brownian capture cutoff (r = 0.095 um > 0.090 um, t_sim = 10000 s): binding is zeroed while unbinding stays active, truncating Gibbs-Boltzmann equilibrium to 0."
+
+# ==============================================================================
+# 4. SM Sec. C stability limit, Lie-Trotter vs Strang splitting, and Eq. S13
+# ==============================================================================
+
+- id: run_smc_stab_smooth
+  model: sm_c_local_drag_stability_port
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    mu: strain_mu
+    K_c: strain_Kspring
+    delta: code_delta_local_init_default
+    sigma_rel: code_sigma_rel_N50
+    dt_small: paper_dt_small_sm_c
+    dt_large: paper_dt_large_sm_c
+  settings: {N: 50, smooth_force: true}
+  outputs:
+    alpha_ld: smc_stab_alpha
+    gamma_ld: smc_stab_gamma
+    effective_arm: smc_stab_arm
+    dt_max: smc_stab_dtmax
+    dt_small_pct: smc_stab_small_pct
+    dt_large_pct: smc_stab_large_pct
+  note: "SM Sec. C explicit-Euler stability limit with code local-drag mobility (delta = 0.1) and CrossLinkForceEvaluator::calcCLForces Gaussian lever arm (sigma/L = 0.005, N = 50)."
+
+- id: run_smc_stab_point
+  model: sm_c_local_drag_stability_port
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    mu: strain_mu
+    K_c: strain_Kspring
+    delta: code_delta_local_init_default
+    sigma_rel: code_sigma_rel_N50
+    dt_small: paper_dt_small_sm_c
+    dt_large: paper_dt_large_sm_c
+  settings: {N: 50, smooth_force: false}
+  outputs:
+    alpha_ld: smc_pt_alpha
+    gamma_ld: smc_pt_gamma
+    effective_arm: smc_pt_arm
+    dt_max: smc_pt_dtmax
+    dt_small_pct: smc_pt_small_pct
+    dt_large_pct: smc_pt_large_pct
+  note: "SM Sec. C stability limit with point force (calcCLForcesEnergy, arm = 0.5 L) and delta = 0.1."
+
+- id: run_smc_stab_delta1
+  model: sm_c_local_drag_stability_port
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    mu: strain_mu
+    K_c: strain_Kspring
+    delta: code_delta_local_ctor_default
+    sigma_rel: code_sigma_rel_N50
+    dt_small: paper_dt_small_sm_c
+    dt_large: paper_dt_large_sm_c
+  settings: {N: 50, smooth_force: false}
+  outputs:
+    alpha_ld: smc_d1_alpha
+    gamma_ld: smc_d1_gamma
+    effective_arm: smc_d1_arm
+    dt_max: smc_d1_dtmax
+    dt_small_pct: smc_d1_small_pct
+    dt_large_pct: smc_d1_large_pct
+  note: "SM Sec. C stability limit with constructor default deltaLocal = 1 (point force): dt_max = 0.00522 s (closest to printed 0.005 s)."
+
+- id: run_gibbs_4e3
+  model: gibbs_boltzmann_spring_pdf_ref
+  inputs:
+    K_c: strain_Kspring
+    ell: strain_rl
+    kBT: paper_kBT_table1
+  settings: {n_quad: 20001}
+  outputs:
+    mean_x: gibbs_4e3_mean
+    std_x: gibbs_4e3_std
+  note: "Exact Eq. S13 equilibrium moments at paper k_B T = 4e-3 pN*um: <x> = 0.06381 um, std_x = 0.01786 um."
+
+- id: run_gibbs_41e3
+  model: gibbs_boltzmann_spring_pdf_ref
+  inputs:
+    K_c: strain_Kspring
+    ell: strain_rl
+    kBT: strain_kbT
+  settings: {n_quad: 20001}
+  outputs:
+    mean_x: gibbs_41e3_mean
+    std_x: gibbs_41e3_std
+  note: "Exact Eq. S13 equilibrium moments at code input k_B T = 4.1e-3 pN*um: <x> = 0.06410 um, std_x = 0.01805 um."
+
+- id: run_smc_lt_small
+  model: sm_c_two_fiber_lie_trotter_port
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    mu: strain_mu
+    K_c: strain_Kspring
+    ell: strain_rl
+    kBT: paper_kBT_table1
+    delta: code_delta_local_init_default
+    sigma_rel: code_sigma_rel_N50
+  settings: {dt: 0.0005, N: 50, smooth_force: true, t_sim: 40.0, burn_t: 1.0}
+  replicates: 5
+  outputs:
+    mean_x_end: lt_small_mean_end
+    std_x_end: lt_small_std_end
+    mean_x_after_bd: lt_small_mean_bd
+    std_x_after_bd: lt_small_std_bd
+  note: "Released code 1st-order Lie-Trotter port at SM Sec. C small step dt = 0.0005 s (5 replicates, t_sim = 40 s)."
+
+- id: run_smc_lt_large
+  model: sm_c_two_fiber_lie_trotter_port
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    mu: strain_mu
+    K_c: strain_Kspring
+    ell: strain_rl
+    kBT: paper_kBT_table1
+    delta: code_delta_local_init_default
+    sigma_rel: code_sigma_rel_N50
+  settings: {dt: 0.0025, N: 50, smooth_force: true, t_sim: 40.0, burn_t: 1.0}
+  replicates: 5
+  outputs:
+    mean_x_end: lt_large_mean_end
+    std_x_end: lt_large_std_end
+    mean_x_after_bd: lt_large_mean_bd
+    std_x_after_bd: lt_large_std_bd
+  note: "Released code 1st-order Lie-Trotter port at SM Sec. C large step dt = 0.0025 s: end-of-step std_x collapses by -61% while after-BD std_x inflates by +23%."
+
+- id: run_smc_strang_small
+  model: sm_c_two_fiber_strang_variant
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    mu: strain_mu
+    K_c: strain_Kspring
+    ell: strain_rl
+    kBT: paper_kBT_table1
+    delta: code_delta_local_init_default
+    sigma_rel: code_sigma_rel_N50
+  settings: {dt: 0.0005, N: 50, smooth_force: true, t_sim: 40.0, burn_t: 1.0}
+  replicates: 5
+  outputs:
+    mean_x_end: st_small_mean_end
+    std_x_end: st_small_std_end
+    mean_x_after_bd: st_small_mean_bd
+    std_x_after_bd: st_small_std_bd
+  note: "Paper Sec. 2.4 2nd-order Strang-splitting variant at dt = 0.0005 s (5 replicates, t_sim = 40 s)."
+
+- id: run_smc_strang_large
+  model: sm_c_two_fiber_strang_variant
+  inputs:
+    L: strain_Lf
+    eps: strain_eps
+    mu: strain_mu
+    K_c: strain_Kspring
+    ell: strain_rl
+    kBT: paper_kBT_table1
+    delta: code_delta_local_init_default
+    sigma_rel: code_sigma_rel_N50
+  settings: {dt: 0.0025, N: 50, smooth_force: true, t_sim: 40.0, burn_t: 1.0}
+  replicates: 5
+  outputs:
+    mean_x_end: st_large_mean_end
+    std_x_end: st_large_std_end
+    mean_x_after_bd: st_large_mean_bd
+    std_x_after_bd: st_large_std_bd
+  note: "Paper Sec. 2.4 2nd-order Strang-splitting variant at dt = 0.0025 s: midpoint (Fig. S1 caption) inflates std_x by +24%, whereas true full-step endpoint stays within -4.5% of Eq. S13."
+
+# ==============================================================================
+# 5. Derived code-input algebraic checks (Eb, ell_m, 6*D_t, tau_m, subcycling)
+# ==============================================================================
+
+- id: run_derived_code_L1
+  model: code_input_derived_checks
+  inputs:
+    kbT: bundle_kbT
+    lp: bundle_lp
+    Ldx: strain_Ld
+    Ld: strain_Ld
+    F: strain_nFib
+    L: strain_Lf
+    mu: strain_mu
+    c_tr: mat_0004_c_tr
+    Networkdt: bundle_Networkdt
+    dt: strain_dt
+  outputs:
+    Eb: code_L1_Eb
+    ell_m: code_L1_ell_m
+    six_Dt: code_L1_six_Dt
+    tau_m: code_L1_tau_m
+    network_step_every: code_L1_net_step_every
+  note: "Derived quantities using code input kbT = 4.1e-3 pN*um, lp = 17 um, Networkdt = 0.01 s, dt = 1e-4 s."
+
+- id: run_derived_paper_L1
+  model: code_input_derived_checks
+  inputs:
+    kbT: paper_kBT_table1
+    lp: bundle_lp
+    Ldx: strain_Ld
+    Ld: strain_Ld
+    F: strain_nFib
+    L: strain_Lf
+    mu: strain_mu
+    c_tr: mat_0004_c_tr
+    Networkdt: bundle_Networkdt
+    dt: strain_dt
+  outputs:
+    Eb: paper_L1_Eb
+    ell_m: paper_L1_ell_m
+    six_Dt: paper_L1_six_Dt
+    tau_m: paper_L1_tau_m
+    network_step_every: paper_L1_net_step_every
+  note: "Derived quantities for L = 1 um using paper Table 1 kbT = 4e-3 pN*um and StraightMobility c_tr = 1.6698."
+
+- id: run_derived_paper_L05
+  model: code_input_derived_checks
+  inputs:
+    kbT: paper_kBT_table1
+    lp: bundle_lp
+    Ldx: strain_Ld
+    Ld: strain_Ld
+    F: paper_F_400_L05
+    L: paper_fiber_length_L_05
+    mu: strain_mu
+    c_tr: mat_0008_c_tr
+    Networkdt: bundle_Networkdt
+    dt: strain_dt
+  outputs:
+    Eb: paper_L05_Eb
+    ell_m: paper_L05_ell_m
+    six_Dt: paper_L05_six_Dt
+    tau_m: paper_L05_tau_m
+    network_step_every: paper_L05_net_step_every
+  note: "Derived diffusion timescale tau_m = 0.1727 s for short fibers L = 0.5 um (F = 400, Ld = 2 um -> ell_m = 0.2 um) using StraightMobility c_tr(0.008) = 1.4473."

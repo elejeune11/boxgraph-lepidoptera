@@ -1,0 +1,46 @@
+id: afines_crosslinker_sorting_2d
+name: 2D AFINES coarse-grained Langevin and kinetic Monte Carlo simulation of actin, fascin, and alpha-actinin in circular confinement
+role: model
+stated:
+  page: 9
+  printed_page: "9"
+  quote: "AFINES simulation package, which is described in detail elsewhere14,42,43"
+  where: "Methods, Simulation methods and analysis (Eqs. 1-4, Supp. Tables 2-3)"
+equation: "Overdamped 2D Langevin dynamics with U_f = U_f^stretch + U_f^bend + U_f^confine (Eq. 1), U_xl = U_xl^stretch + U_xl^bind + U_xl^confine + U_xl^align (Eq. 2), and detailed-balance KMC crosslinker binding/unbinding"
+inputs:
+  N_polymers: {quantity: polymer_count, unit: dimensionless}
+  N_beads: {quantity: beads_per_polymer, unit: dimensionless}
+  l_link: {quantity: filament_link_length, unit: um}
+  kappa_b: {quantity: polymer_bending_modulus, unit: pN*um^2}
+  r_c: {quantity: confinement_radius, unit: um}
+  k_c: {quantity: confinement_stiffness, unit: pN/um}
+  rho_xl: {quantity: crosslinker_areal_density, unit: 1/um^2}
+  l_fascin: {quantity: crosslinker_length, unit: um}
+  l_alpha: {quantity: crosslinker_length, unit: um}
+  kappa_fascin: {quantity: crosslinker_stiffness, unit: pN/um}
+  kappa_alpha: {quantity: crosslinker_stiffness, unit: pN/um}
+  kon_fascin: {quantity: crosslinker_on_rate, unit: 1/s}
+  koff_fascin: {quantity: crosslinker_off_rate, unit: 1/s}
+  kon_alpha: {quantity: crosslinker_on_rate, unit: 1/s}
+  koff_alpha: {quantity: crosslinker_off_rate, unit: 1/s}
+  k_align_fascin: {quantity: alignment_penalty, unit: pN*um}
+  t_end: {quantity: simulation_time, unit: s}
+outputs:
+  U_4: {quantity: binder_cumulant, unit: dimensionless}
+  pdf_peak: {quantity: spatial_pdf_value, unit: 1/um^2}
+settings:
+  dt: 2.0e-5
+  n_replicates: 5
+  n_bins: 20
+  seed: 0
+described_from: ref-42
+runnable: false
+not_runnable_reason: >
+  Multiple required AFINES Hamiltonian and kinetic parameters are omitted from the article and
+  SI ("Default values^42 were used for all parameters not listed"): filament stretching spring
+  stiffness, crosslinker occupancy exclusion distance o_c (named on p. 9 without a numeric
+  value), binding capture radius and energy U_xl^bind, thermal energy k_B T, bead drag
+  coefficient/viscosity, and KMC step interval. Executing 5 trajectories of 50 35-bead
+  filaments plus ~7000 crosslinkers for 5 x 10^6 steps (t_end = 100 s, dt = 2 x 10^-5 s)
+  requires the compiled C++ AFINES package (separate record bashirzadeh2021_code).
+stochastic: true

@@ -1,0 +1,124 @@
+id: maxian2022_code
+kind: software
+title: "SPHARCLE (SlenderBody): Python/C++/Fortran/MATLAB nonlocal slender-body theory and dynamically cross-linked actin network simulation platform (Maxian et al., 2022)"
+authors:
+  - Ondrej Maxian
+  - Raul P. Pelaez
+  - Alex Mogilner
+  - Aleksandar Donev
+year: 2022
+url: "https://github.com/stochasticHydroTools/SlenderBody"
+file: corpus/actin_bundling/code/maxian2022_code
+version: "sha256:839edc8277bbfe91afa903fb207b8c67f599f0aca0899134a74f3920304b313e"
+licence: none stated
+language: "Python, C++, Fortran, MATLAB"
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "reader-1"
+  date: "2026-11-26"
+notes: >
+  Full source audit, live Python adapter verification, and faithful MATLAB/C++ port evaluation of
+  `corpus/actin_bundling/code/maxian2022_code` (`stochasticHydroTools/SlenderBody`, commit `38c2fc8`,
+  no top-level LICENSE file, no precompiled binaries), the released multi-language slender-body
+  hydrodynamics and cross-linked actin network codebase accompanying Maxian, Donev & Mogilner,
+  Biophysical Journal 121, 1230-1245 (2022) (`maxian2022`). Core entry points audited include
+  `Python/FibCollocationDiscretization.py`, `Python/CrossLinkedNetwork.py`,
+  `Python/DoubleEndedCrossLinkedNetwork.py`, `Python/TemporalIntegrator.py`,
+  `Python/fiberCollection.py`, `Python/Examples/FixedDynamicLinkNetwork.py`,
+  `Python/Examples/StrainInputFile.txt`, `Python/Examples/SemiflexBundleInputFile.txt`,
+  `Python/cppmodules/{SingleFiberMobilityEvaluator,SingleFiberSaddlePointSolver,FiberCollectionC,
+  VectorMethods,EndedCrossLinkers,CrossLinkForceEvaluator}.cpp`, `Matlab/MainPrograms/StraightMobility.m`,
+  `Matlab/functions-solvers/{RegularizeS,AsymptoticLocalMobility,StokesletFinitePartMatrix,
+  precomputeStokesletInts}.m`, and `Matlab/AnalyzePython/ProcessPythonNetwork.m`.
+
+  Record inventory and build verdicts: 57 quantities, 70 data entries (45 cited directly from source
+  files + 25 copied target/parameter values from `maxian2022`; 50 linked via `from_source: maxian2022`),
+  10 added diagnostic targets/probes, 6 references (`ref-maxian2022` -> `maxian2022`), 12 models
+  (3 live `software: true` adapters importing unmodified repo modules from `BOXGRAPH_SOURCE`:
+  `cheb_sbt_discretization_adapter`, `cl_network_params_adapter`, `bundle_detection_adapter`;
+  5 faithful MATLAB/C++/Python ports: `straight_mobility_sbt_matlab_port`, `cpp_sbt_mobility_port`,
+  `cpp_cl_kinetics_ssa_port`, `sm_c_local_drag_stability_port`, `sm_c_two_fiber_lie_trotter_port`;
+  1 corrected variant: `sm_c_two_fiber_strang_variant`; 2 processing models:
+  `gibbs_boltzmann_spring_pdf_ref`, `code_input_derived_checks`; and 1 non-runnable HPC simulation
+  `full_3d_network_bundling_sim`), 29 runs, 42 comparisons (22 reproduced, 2 close, 6 not reproduced,
+  12 no verdict), 7 refinements (4 settled with `belongs_to = model`; 3 with `belongs_to = numerics`,
+  including `ref_smc_lt_dt_end` not settled), and 14 open questions in `questions.yaml`.
+
+  What the code settles from `maxian2022`:
+  (1) EXACT Table S1 SBT endpoint regularization (`q_matlab_table_s1_exact_and_broken_call`, resolves
+  `maxian2022/q_sbt_endpoint_regularization_unstated`): `RegularizeS.m:9-19` (=
+  `FibCollocationDiscretization.py:168-176`) defines `s_bar(s) = w(s)*s + (1 - w(s)^2)*delta*L/2` with
+  `w(s) = tanh((eta+1)/delta) - tanh((eta-1)/delta) - 1`, `eta = 2s/L - 1`, `delta = 0.1`. Coupled with
+  `AsymptoticLocalMobility.m:51` and `StokesletFinitePartMatrix.m` (`N = 32`, kind 1),
+  `straight_mobility_sbt_matlab_port` reproduces ALL 21 Table S1 entries (`alpha`, `beta`, `gamma` across
+  `eps = 0.01..0.001`) to all 4 printed decimals (max error <= 5e-5), yields `3*alpha + beta = 1.6698`
+  (Eq. 22 `1.67`, REPRODUCED), confirms `tau_m(L=0.5) = 0.1727 s` (`0.17 s`, REPRODUCED), and confirms
+  exact mobility anisotropy `(alpha + beta)/alpha = 1.650` (17.5% below p. 9's slender-asymptotic `2`).
+  (2) EXACT `80` max links/fiber (`q_max_links_80_resolved`, resolves `maxian2022/q_max_links_per_fiber_discrepancy`):
+  `Nuniformsites = 40` (`StrainInputFile.txt:29`, `SemiflexBundleInputFile.txt:34`,
+  `ProcessPythonNetwork.m:18`) yields `ds = 1/39 = 0.025641 um` (Table 1 `0.026 um`, REPRODUCED),
+  `maxPerSite = ceil(ds/0.020) = 2`, and `2 * 40 = 80` exactly (REPRODUCED).
+  (3) Cross-linker Eq. 17 rate units (`q_cl_detailed_balance_units_docstring_cutoff`, resolves
+  `maxian2022/q_eq17_detailed_balance_unit_mismatch`): `DoubleEndedCrossLinkedNetwork.py:96-99` scales
+  BOTH `kon` and `konSecond` by `ds`, converting both to 1/s in `EndedCrossLinkers.cpp`; inside the
+  Brownian capture window (`r = 0.07 um`), 5-replicate 4-reaction Gillespie SSA agrees with exact
+  truncated-Poisson Gibbs-Boltzmann occupancy (`db_rel_error = 1.59%`, REPRODUCED; `ref_cl_ssa_tsim`
+  settled, `belongs_to = model`).
+  (4) Bending stiffness rounding (`q_kbt_41e3_vs_4e3_mismatch`): `SemiflexBundleInputFile.txt:11-12`
+  uses `kbT = 4.1e-3 pN*um` and `lp = 17 um`, giving `Eb = 0.0697 pN*um^2` (rounds to Table 1's `0.07`,
+  vs `0.068` from Table 1's rounded `4e-3 pN*um`).
+
+  Major bugs, failed reproductions, and every difference between code and `maxian2022`:
+  (1) CRITICAL INTEGRATOR DIVERGENCE — 1st-order Lie-Trotter vs paper's 2nd-order Strang splitting
+  (`q_lie_trotter_vs_strang_splitting`): `TemporalIntegrator.py:441-445` comments `# Brownian update
+  (always first order)` and executes ONE full-step `BrownianUpdate(dt)` before deterministic
+  `updateAllFibers(dt)` (NO second `dt/2` Brownian step). On the SM Sec. C two-fiber benchmark
+  (`dt = 0.0025 s`, exact Eq. S13 `mean = 0.06381 um`, `std = 0.01786 um`): end-of-step measurement
+  (where `FixedDynamicLinkNetwork.py:208` logs `LinkStrains`) collapses `std_x` to `0.00684 um`
+  (`-61.7%`; `ref_smc_lt_dt_end` NOT SETTLED, shift `59.0%`, `belongs_to = numerics`) and `mean_x` to
+  `0.05421 um` (`-15.0%`); even at `dt = 0.0005 s`, end-of-step `std_x = 0.01600 um` (`-10.4%`).
+  Sampled right after `BrownianUpdate(dt)` (or at Strang midpoint after step 1, per Fig. S1 caption),
+  `std_x = 0.02216-0.02219 um` (`+24.2%`, reproducing Fig. S1 right's lowered peak; `ref_smc_lt_dt_bd`
+  and `ref_smc_strang_dt_mid` `belongs_to = numerics`, shift `21%`). Implementing paper Sec. 2.4's
+  3-step Strang splitting (`sm_c_two_fiber_strang_variant`) sampled at the true full-step endpoint
+  restores `std_x = 0.01710 um` (`-4.3%`) at `dt = 0.0025 s` and `0.01734 um` (`-2.9%`) at `dt = 0.0005 s`
+  (`ref_smc_strang_dt_end` SETTLED, shift `2.5%`, `belongs_to = model`).
+  (2) RIGID BROWNIAN DEFECTS (`q_rigid_body_displacements_untested_dead_code`):
+  `SingleFiberSaddlePointSolver.cpp:148` prints `"Rigid fiber displacements not really tested -- check"`
+  every step, discards the `SymmetrizeAndDecomposePositive` output on line 157 (dead code), and
+  `FixedDynamicLinkNetwork.py:73` omits `dt` from `fiberCollection(...)`, causing hidden
+  `svdRigidTol = kbT*dt/0.25^2` to use default `dt = 1e-3 s` instead of simulation `dt = 1e-4 s`.
+  (3) C++ SBT NEGATIVE-EIGENVALUE CLAMPING COLLAPSE (`q_cpp_sbt_eigval_clamping_bug`):
+  `FibCollocationDiscretization.py:370` hardcodes dimensional `_EigValThres = 0.001` (not scaled by
+  `1/(mu*L)`). At `eps = 0.010, N_tau = 16, delta = 0.1, mu = 0.1 Pa*s`, symmetrized `M_par W_tilde^-1`
+  has negative eigenvalue `-4.776` clamped to `+0.001`, collapsing `beta(0.010)` from `0.2230` to `0.00197`
+  (`-99.1%`, `cmp_cpp_eps0010_beta`: NOT REPRODUCED). For `eps <= 0.008`, all eigenvalues remain `>= 8.89`
+  and C++ SBT matches Table S1 within `2.5e-3`.
+  (4) BROKEN MATLAB CALL (`q_matlab_table_s1_exact_and_broken_call`): `StraightMobility.m:21` (and
+  `TemporalIntegrator.m:97,106`, `KirchoffFiberRectangularKeav_Twist.m:48`) calls nonexistent
+  `getGrandMloc(...)` (renamed to `AsymptoticLocalMobility.m`).
+  (5) DUPLICATE CONDITION BUG (`q_fibdisc_duplicate_condition_bug`): `FibCollocationDiscretization.py:164`
+  tests `self._RPYDirectQuad` twice and omits `self._RPYOversample`, so `RPYOversample=True` still
+  regularizes `_sRegularized` (`min = 0.05 um` vs `0.0000 um`, `cmp_cheb_rpy_oversample_sreg_bug`: NOT REPRODUCED).
+  (6) `deltaLocal = 1` DEFAULT & UNREACHABLE SBT (`q_delta_local_default_and_sbt_unreachable`):
+  constructors and input decks default `deltaLocal = 1` (constant `s_bar = 0.5 um`; lowers SM Sec. C
+  `dt_max` from `0.00570 s` to `0.00522 s`, vs `0.005 s`, making `cmp_smc_large_pct_vs_paper` `43.85%`
+  vs `50%` NOT REPRODUCED at `delta = 0.1`), and `FixedDynamicLinkNetwork.py:56-57` makes SBT mode
+  unreachable via inputs.
+  (7) CROSS-LINKER DOCSTRING & 2-SIGMA TRUNCATION (`q_cl_detailed_balance_units_docstring_cutoff`):
+  `DoubleEndedCrossLinkedNetwork.py:165` docstring omits `1/2` (C++ line 528 is correct), and lines
+  109-112 zero binding outside `rl +- 2*sqrt(kT/Kc)` (`[10, 90] nm`), driving equilibrium occupancy to 0
+  at `r = 0.095 um` (`cmp_ssa_outside_rel_err`: `1.0` vs `0.0`, NOT REPRODUCED).
+  (8) THERMAL ENERGY `4.1e-3` vs `4e-3`, UNDISCLOSED `t=0` PRE-EQUILIBRATION & 100x SUBCYCLING
+  (`q_kbt_41e3_vs_4e3_mismatch`, `q_undisclosed_preequilibration_and_subcycling`): `Networkdt = 0.01 s`
+  subcycles CL/turnover every `100` steps (`cmp_network_step_every_vs_paper`: `100` vs `1`, NOT REPRODUCED);
+  line 111 pre-equilibrates CLs before `t = 0`.
+  (9) BUNDLE STRICT `>` & HARDCODED `1/4`, `ProcessPythonNetwork.m` 2x SEM ERROR BARS, & MISSING SCRIPTS
+  (`q_bundle_criterion_strict_gt_and_hardcoded_quarter`, `q_process_matlab_2sem_and_link_density_units`,
+  `q_missing_paper_scripts_and_readme_drift`): `CrossLinkedNetwork.py:382` uses strict `>` (`0` vs `1`
+  bundles at exact `d_bund = L/4`, `cmp_bundle_strict_inequality`: NOT REPRODUCED); `bunddist = 1/4`
+  is hardcoded rather than `Lf/4`; `ProcessPythonNetwork.m:226` plots `2*std/sqrt(nTri)` (2x SEM) while
+  captions state "error in the mean"; line 168/230 computes `2C/(FL)` but labels it `(per fiber)`;
+  all `maxian2022` figure/sweep scripts are absent from commit `38c2fc8`; and `README.md:35` has stale
+  citation numbering contradicting `Python/Examples/README.md:30-35`.

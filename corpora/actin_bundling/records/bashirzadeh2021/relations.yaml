@@ -1,0 +1,746 @@
+# Within-paper ModelAtlas relations explicitly stated in bashirzadeh2021
+
+- id: rel_orientational_correlation_unit_intercept
+  kind: reduces_to
+  a: bashirzadeh2021/orientational_correlation_3d
+  b: bashirzadeh2021/orientational_correlation_unit_intercept
+  mapping:
+    s: "s"
+    L_p_eff: "L_p_eff"
+  output_map:
+    C_s: C_s
+  limit:
+    C_0: "1"
+  regime:
+    C_0: [0.95, 1.05]
+    s: [0.5, 20.0]
+    L_p_eff: [10.0, 150.0]
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "8"
+    quote: "C0 = 1 for persistence-length measurement of actin bundles with length <20 μm69"
+    where: "Methods, Calculation of persistence length"
+
+# =============================================================================
+# Cross-record ModelAtlas relations for bashirzadeh2021 (13 ready pairs audited)
+#
+# Pairwise audit summary:
+# 1. bashirzadeh2021_code (dinner-group/AFINES@sorting_guv, 2021): 12 verified
+#    relations below linking Eqs. 3-4, crosslinker/filament Hookean stretching,
+#    Metropolis KMC detailed-balance affinity limit, contour length, WLC L_p,
+#    step count, affinity ratio, size ratio, and vesicle crosslinker count.
+#    (Initial filament confinement afines_initial_filament_confinement is NOT
+#    same_as init_condition_script_adapter due to Uniform(-3,3) vs Gaussian,
+#    [0,pi] bend, and shared-arm bugs in the released script.)
+# 2. bashirzadeh2021_source_data (Figshare Source Data, 2021): 0 relations
+#    (all 7 partner models are software: true discrete-index .xlsx/.mat readers).
+# 3. winkelman2016 (Curr. Biol. 2016, ref-9): 0 relations (disjoint 1D lattice
+#    domain-length / elongation models vs 2D AFINES confinement/sorting models).
+# 4. freedman2019 (PNAS 2019, ref-14): 3 verified relations below (AFINES
+#    crosslinker stretch potential SI Eq. 4, filament contour length, WLC L_p).
+# 5. freedman2019_code (Simfreed/AFINES@growing_spacer_exv, 2019): 3 verified
+#    relations below (contour length, WLC L_p, zero-bending spacer stretch MC).
+# 6. claessens2008 (PNAS 2008, ref-39): 1 verified relation below (crosslinker-
+#    to-actin molar ratio).
+# 7. gov2008 (Phys. Rev. E 2008): 0 relations (disjoint bundle defect-energy
+#    and Fokker-Planck radius distribution models).
+# 8. haviv2008 (Eur. Biophys. J. 2008, ref-40): 0 relations (disjoint peaked
+#    bundle filament-count distribution models).
+# 9. liu2008 (Nat. Phys. 2008, ref-20): 0 relations (disjoint membrane-tube
+#    Euler buckling and filopodium growth models).
+# 10. pelletier2003 (PRL 2003, ref-54): 0 relations (disjoint SAXS Bragg/peak
+#     width models).
+# 11. graham2023 (Nat. Phys. 2023): 0 relations (filament_flexural_rigidity is
+#     the algebraic inverse k_b = L_p*kBT outputting rigidity rather than L_p;
+#     droplet ring-rod mechanics are disjoint).
+# 12. graham2024 (PNAS 2024): 2 verified relations below (single-filament WLC
+#     persistence length L_p = kappa / kBT; crosslinker/VASP-to-actin ratio).
+# 13. chandrasekaran2024 (Nat. Commun. 2024): 2 verified relations below
+#     (single-filament WLC L_p = kappa / kBT; harmonic crosslinker stretch
+#     scales_as LAMMPS dimensionless harmonic bond potential).
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Companion AFINES C++ codebase: bashirzadeh2021 <-> bashirzadeh2021_code
+# -----------------------------------------------------------------------------
+- id: rel_code_confinement_potential_eq3
+  kind: same_as
+  a: bashirzadeh2021/afines_confinement_potential_eq3
+  b: bashirzadeh2021_code/cpp_ext_circle_confinement
+  mapping:
+    k_c: "k_c"
+    r: "r"
+    r_c: "r_c"
+  output_map:
+    U_confine: U_confine
+  regime:
+    k_c: [1.0, 50.0]
+    r: [0.5, 25.0]
+    r_c: [10.0, 20.0]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "of AFINES, including the new features described here, as well as the full configuration"
+    where: "Methods, Simulation methods and analysis (Eq. 3 & Code availability)"
+
+- id: rel_code_alignment_potential_eq4
+  kind: same_as
+  a: bashirzadeh2021/afines_alignment_potential_eq4
+  b: bashirzadeh2021_code/cpp_motor_alignment_potential
+  mapping:
+    kalign: "k_xl_align"
+    par_flag: "1"
+    theta: "theta"
+    temperature: "0.004"
+  output_map:
+    U_align: U_xl_align
+  regime:
+    k_xl_align: [0.05, 1.0]
+    theta: [0.05, 3.1]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "This term penalizes binding to filaments that are not parallel."
+    where: "Methods, Simulation methods and analysis (Eq. 4 -> src/motor.cpp par_flag=1)"
+
+- id: rel_code_kmc_alignment_eq4
+  kind: same_as
+  a: bashirzadeh2021/afines_alignment_potential_eq4
+  b: bashirzadeh2021_code/cpp_kmc_metropolis_occlusion
+  mapping:
+    k_on: "20"
+    k_off: "0.5"
+    dt: "0.00002"
+    temperature: "0.004"
+    mk: "1.0"
+    mld: "0.1"
+    len_old: "0.1"
+    len_new: "0.1"
+    kalign: "k_xl_align"
+    par_flag: "1"
+    theta: "theta"
+    kb_motor: "0"
+    same_filament: "0"
+    same_spring: "0"
+    occ: "0"
+    nearest_head_dist: "1.0"
+  output_map:
+    dE_attach: U_xl_align
+  regime:
+    k_xl_align: [0.05, 1.0]
+    theta: [0.05, 3.1]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "and unbind from filaments via a kinetic Monte Carlo scheme that preserves"
+    where: "Methods, Simulation methods and analysis (Eq. 4 in motor::metropolis_prob)"
+
+- id: rel_code_crosslinker_stretch_kmc
+  kind: same_as
+  a: bashirzadeh2021/crosslinker_harmonic_stretch_potential
+  b: bashirzadeh2021_code/cpp_kmc_metropolis_occlusion
+  mapping:
+    k_on: "20"
+    k_off: "0.5"
+    dt: "0.00002"
+    temperature: "0.004"
+    mk: "kappa"
+    mld: "l"
+    len_old: "l"
+    len_new: "d"
+    kalign: "0"
+    par_flag: "1"
+    theta: "0"
+    kb_motor: "0"
+    same_filament: "0"
+    same_spring: "0"
+    occ: "0"
+    nearest_head_dist: "1.0"
+  output_map:
+    dE_attach: U_xl_stretch
+  regime:
+    kappa: [0.05, 5.0]
+    d: [0.05, 0.8]
+    l: [0.05, 0.6]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "cross-linkers are modeled as linear springs with sites (beads) on each end"
+    where: "Methods, Simulation methods and analysis (src/motor.cpp:537-539)"
+
+- id: rel_code_filament_stretch_harmonic_same
+  kind: same_as
+  a: bashirzadeh2021/crosslinker_harmonic_stretch_potential
+  b: bashirzadeh2021_code/cpp_filament_potentials
+  mapping:
+    k_s: "kappa"
+    l_0: "l"
+    l_cur: "d"
+    kappa_b: "0.068"
+    theta: "0.1"
+    max_small_angle: "0.001"
+  output_map:
+    U_stretch: U_xl_stretch
+  regime:
+    kappa: [0.1, 20.0]
+    d: [0.05, 1.5]
+    l: [0.05, 1.2]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "Similarly, cross-linkers are modeled as linear springs with sites (beads) on each end"
+    where: "Methods, Simulation methods and analysis (shared Hookean spring potential U = 0.5*k*(l-l0)^2 in src/spring.cpp:187 and src/motor.cpp:537-539)"
+
+- id: rel_code_kmc_detailed_balance_reduces_to_affinity
+  kind: reduces_to
+  a: bashirzadeh2021_code/cpp_kmc_metropolis_occlusion
+  b: bashirzadeh2021/crosslinker_affinity_ratio
+  mapping:
+    k_on: "k_on"
+    k_off: "k_off"
+  output_map:
+    K_ratio: K_effective
+  limit:
+    kalign: "0"
+    mk: "0"
+  regime:
+    k_on: [0.1, 30.0]
+    k_off: [0.02, 2.0]
+    dt: [0.00001, 0.00005]
+    temperature: [0.003, 0.005]
+    mk: [0.1, 5.0]
+    mld: [0.1, 0.5]
+    len_old: [0.1, 0.5]
+    len_new: [0.1, 0.6]
+    kalign: [0.05, 0.5]
+    par_flag: [1.0, 1.0]
+    theta: [0.1, 3.0]
+    kb_motor: [0.0, 0.0]
+    same_filament: [0.0, 0.0]
+    same_spring: [0.0, 0.0]
+    occ: [0.0, 0.0]
+    nearest_head_dist: [0.5, 1.0]
+  tolerance: 0.0001
+  provenance: stated
+  citation:
+    page: 7
+    printed_page: "7"
+    quote: "similar numbers of bound cross-linkers, the ratio kon =koff for fascin"
+    where: "Results (p. 7) & Methods (p. 9): detailed-balance KMC K_eff -> k_on/k_off as mechanical penalties vanish"
+  assumptions:
+    - "Inter-filament binding (same_filament = 0) with steric occlusion disabled (occ = 0)."
+    - "Tolerance 1e-4 accounts for 1/kT = 250 amplification of the 1e-8 numeric limit perturbation in exp(-dE/kT)."
+
+- id: rel_code_filament_contour_length
+  kind: same_as
+  a: bashirzadeh2021/filament_contour_length
+  b: bashirzadeh2021_code/afines_config_derived_quantities
+  mapping:
+    xrange: "100"
+    grid_factor: "2.5"
+    r_c: "15"
+    fil_dens: "0.071"
+    n_beads: "N_beads"
+    l_link: "l_link"
+    r_bead: "0.5"
+    kappa_b: "0.068"
+    temperature: "0.004"
+    viscosity: "0.01"
+    dt: "0.00002"
+    tfinal: "100"
+    nframes: "50"
+    rho_fascin: "5"
+    rho_alpha: "5"
+    l_fascin: "0.1"
+    l_alpha: "0.5"
+    kon_fascin: "20"
+    koff_fascin: "0.5"
+    scl: "1"
+    kon_alpha: "0.2"
+    koff_alpha: "0.05"
+  output_map:
+    L_contour: L_f
+  regime:
+    N_beads: [5.0, 50.0]
+    l_link: [0.5, 2.0]
+  provenance: stated
+  citation:
+    page: 30
+    printed_page: "SI-19"
+    quote: "beads per polymer 35"
+    where: "Supplementary Table 3 (L_f = (N_beads - 1) * l_link)"
+
+- id: rel_code_persistence_length_from_modulus
+  kind: same_as
+  a: bashirzadeh2021/filament_persistence_length_from_modulus
+  b: bashirzadeh2021_code/afines_config_derived_quantities
+  mapping:
+    xrange: "100"
+    grid_factor: "2.5"
+    r_c: "15"
+    fil_dens: "0.071"
+    n_beads: "35"
+    l_link: "1"
+    r_bead: "0.5"
+    kappa_b: "kappa_b"
+    temperature: "kBT"
+    viscosity: "0.01"
+    dt: "0.00002"
+    tfinal: "100"
+    nframes: "50"
+    rho_fascin: "5"
+    rho_alpha: "5"
+    l_fascin: "0.1"
+    l_alpha: "0.5"
+    kon_fascin: "20"
+    koff_fascin: "0.5"
+    scl: "1"
+    kon_alpha: "0.2"
+    koff_alpha: "0.05"
+  output_map:
+    L_p_code: L_p
+  regime:
+    kappa_b: [0.01, 0.5]
+    kBT: [0.003, 0.005]
+  provenance: proposed
+  reason: >
+    Both bashirzadeh2021/filament_persistence_length_from_modulus and
+    bashirzadeh2021_code/afines_config_derived_quantities compute single-filament
+    WLC persistence length L_p = kappa_b / k_B T directly in pN*um thermal units
+    (yielding L_p = 0.068 / 0.004 = 17.0 um in AFINES).
+
+- id: rel_code_simulation_step_count
+  kind: same_as
+  a: bashirzadeh2021/simulation_step_count
+  b: bashirzadeh2021_code/afines_config_derived_quantities
+  mapping:
+    xrange: "100"
+    grid_factor: "2.5"
+    r_c: "15"
+    fil_dens: "0.071"
+    n_beads: "35"
+    l_link: "1"
+    r_bead: "0.5"
+    kappa_b: "0.068"
+    temperature: "0.004"
+    viscosity: "0.01"
+    dt: "dt"
+    tfinal: "t_end"
+    nframes: "50"
+    rho_fascin: "5"
+    rho_alpha: "5"
+    l_fascin: "0.1"
+    l_alpha: "0.5"
+    kon_fascin: "20"
+    koff_fascin: "0.5"
+    scl: "1"
+    kon_alpha: "0.2"
+    koff_alpha: "0.05"
+  output_map:
+    n_steps: N_steps
+  regime:
+    t_end: [10.0, 500.0]
+    dt: [0.00001, 0.0001]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "Each simulation ran for 100 s with a time step of 2"
+    where: "Methods, Simulation methods and analysis (n_steps = tfinal / dt)"
+
+- id: rel_code_affinity_ratio_alpha
+  kind: same_as
+  a: bashirzadeh2021/crosslinker_affinity_ratio
+  b: bashirzadeh2021_code/afines_config_derived_quantities
+  mapping:
+    xrange: "100"
+    grid_factor: "2.5"
+    r_c: "15"
+    fil_dens: "0.071"
+    n_beads: "35"
+    l_link: "1"
+    r_bead: "0.5"
+    kappa_b: "0.068"
+    temperature: "0.004"
+    viscosity: "0.01"
+    dt: "0.00002"
+    tfinal: "100"
+    nframes: "50"
+    rho_fascin: "5"
+    rho_alpha: "5"
+    l_fascin: "0.1"
+    l_alpha: "0.5"
+    kon_fascin: "20"
+    koff_fascin: "0.5"
+    scl: "1"
+    kon_alpha: "k_on"
+    koff_alpha: "k_off"
+  output_map:
+    K_alpha: K_ratio
+  regime:
+    k_on: [0.1, 30.0]
+    k_off: [0.02, 2.0]
+  provenance: stated
+  citation:
+    page: 7
+    printed_page: "7"
+    quote: "similar numbers of bound cross-linkers, the ratio kon =koff for fascin"
+    where: "Results (p. 7) & Supplementary Table 2 (p. 29)"
+
+- id: rel_code_crosslinker_size_ratio
+  kind: same_as
+  a: bashirzadeh2021/crosslinker_size_ratio
+  b: bashirzadeh2021_code/afines_config_derived_quantities
+  mapping:
+    xrange: "100"
+    grid_factor: "2.5"
+    r_c: "15"
+    fil_dens: "0.071"
+    n_beads: "35"
+    l_link: "1"
+    r_bead: "0.5"
+    kappa_b: "0.068"
+    temperature: "0.004"
+    viscosity: "0.01"
+    dt: "0.00002"
+    tfinal: "100"
+    nframes: "50"
+    rho_fascin: "5"
+    rho_alpha: "5"
+    l_fascin: "l_fascin / 1000"
+    l_alpha: "l_alpha / 1000"
+    kon_fascin: "20"
+    koff_fascin: "0.5"
+    scl: "1"
+    kon_alpha: "0.2"
+    koff_alpha: "0.05"
+  output_map:
+    size_ratio: size_ratio
+  regime:
+    l_alpha: [100.0, 1000.0]
+    l_fascin: [50.0, 300.0]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "linkers is their respective lengths, with fascin being almost a factor of six smaller9."
+    where: "Methods, Simulation methods and analysis (nm-to-um conversion l_alpha/l_fascin)"
+
+- id: rel_code_vesicle_crosslinker_count_approx
+  kind: approximated_by
+  a: bashirzadeh2021/vesicle_crosslinker_count
+  b: bashirzadeh2021_code/afines_config_derived_quantities
+  mapping:
+    xrange: "100"
+    grid_factor: "2.5"
+    r_c: "r_c"
+    fil_dens: "0.071"
+    n_beads: "35"
+    l_link: "1"
+    r_bead: "0.5"
+    kappa_b: "0.068"
+    temperature: "0.004"
+    viscosity: "0.01"
+    dt: "0.00002"
+    tfinal: "100"
+    nframes: "50"
+    rho_fascin: "rho_xl"
+    rho_alpha: "rho_xl"
+    l_fascin: "0.1"
+    l_alpha: "0.5"
+    kon_fascin: "20"
+    koff_fascin: "0.5"
+    scl: "1"
+    kon_alpha: "0.2"
+    koff_alpha: "0.05"
+  output_map:
+    n_fascin: N_xl
+  regime:
+    rho_xl: [1.0, 15.0]
+    r_c: [10.0, 20.0]
+  tolerance: 0.002
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "Both cross-linkers are simulated at a density of 5 μm−2 within the vesicle."
+    where: "Methods, Simulation methods and analysis (aster_initial_condition_grid_conda_freeze.py:43-45 rounds rho*pi*r_c^2 to an integer)"
+
+# -----------------------------------------------------------------------------
+# 2. Upstream AFINES paper & code: bashirzadeh2021 <-> freedman2019 & freedman2019_code
+# -----------------------------------------------------------------------------
+- id: rel_freedman2019_crosslinker_stretch_same
+  kind: same_as
+  a: bashirzadeh2021/crosslinker_harmonic_stretch_potential
+  b: freedman2019/crosslinker_potential_si_eq4
+  mapping:
+    k_xl: "kappa"
+    r: "d"
+    l_xl: "l"
+    kappa_xl_B: "0"
+    alpha_L: "1.5707963267948966"
+    alpha_R: "1.5707963267948966"
+    I_L: "1"
+    I_R: "1"
+    k_on_1: "20"
+    k_off_1: "0.5"
+    k_on_2: "20"
+    k_off_2: "0.5"
+    T: "300"
+  output_map:
+    U_stretch: U_xl_stretch
+  regime:
+    kappa: [0.05, 10.0]
+    d: [0.05, 0.8]
+    l: [0.05, 0.6]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "AFINES simulation package, which is described in detail elsewhere14,42,43 and is"
+    where: "Methods, Simulation methods and analysis (shared AFINES Hookean crosslinker stretching potential SI Eq. 4)"
+
+- id: rel_freedman2019_filament_contour_length_same
+  kind: same_as
+  a: bashirzadeh2021/filament_contour_length
+  b: freedman2019/afines_filament_contour_length
+  mapping:
+    N_links: "N_beads - 1"
+    l_a: "l_link"
+  output_map:
+    L: L_f
+  regime:
+    N_beads: [3.0, 50.0]
+    l_link: [0.5, 2.0]
+  provenance: stated
+  citation:
+    page: 9
+    printed_page: "9"
+    quote: "filaments are modeled as worm-like chains that are represented by beads connected by springs"
+    where: "Methods, Simulation methods and analysis (AFINES bead-spring contour length L = (N_beads - 1) * l_a)"
+
+- id: rel_freedman2019_persistence_length_same
+  kind: same_as
+  a: bashirzadeh2021/filament_persistence_length_from_modulus
+  b: freedman2019/persistence_length_from_kappa_b
+  mapping:
+    kappa_B: "kappa_b"
+    T: "kBT / 1.380649e-5"
+  output_map:
+    L_p: L_p
+  regime:
+    kappa_b: [0.01, 0.5]
+    kBT: [0.003, 0.005]
+  provenance: proposed
+  reason: >
+    Both AFINES studies define single F-actin persistence length via L_p = kappa_B / (k_B T)
+    (with k_B = 1.380649e-5 pN*um/K; at AFINES's hardcoded k_B T = 0.004 pN*um and
+    kappa_b = 0.068 pN*um^2 this yields L_p = 17.0 um, corresponding to T = 289.72 K vs
+    freedman2019 Table S1's printed 300 K).
+
+- id: rel_freedman2019_code_contour_length_same
+  kind: same_as
+  a: bashirzadeh2021/filament_contour_length
+  b: freedman2019_code/afines_parameter_mapping
+  mapping:
+    nmonomer: "N_beads"
+    link_length: "l_link"
+    nlink_max: "34"
+    polymer_bending_modulus: "0.068"
+    temperature: "0.004"
+    viscosity: "0.001"
+    actin_length: "0.5"
+    spacer1_length: "0.2"
+    spacer2_length: "0.3"
+    s1_bend: "0.005"
+    s2_bend: "0.06"
+    xrange: "35"
+    yrange: "20"
+    grid_factor: "2.5"
+    spacer2_density: "0.25"
+    nfixed: "9"
+    lattice_mu: "-0.008"
+  output_map:
+    init_filament_length: L_f
+  regime:
+    N_beads: [3.0, 50.0]
+    l_link: [0.5, 2.0]
+  provenance: proposed
+  reason: >
+    bashirzadeh2021's bead-spring filament contour length L_f = (N_beads - 1) * l_link
+    matches the upstream AFINES C++ initialization formula in freedman2019_code
+    (prog/bundles.cpp:224).
+
+- id: rel_freedman2019_code_persistence_length_same
+  kind: same_as
+  a: bashirzadeh2021/filament_persistence_length_from_modulus
+  b: freedman2019_code/afines_parameter_mapping
+  mapping:
+    nmonomer: "35"
+    link_length: "1.0"
+    nlink_max: "34"
+    polymer_bending_modulus: "kappa_b"
+    temperature: "kBT"
+    viscosity: "0.001"
+    actin_length: "0.5"
+    spacer1_length: "0.2"
+    spacer2_length: "0.3"
+    s1_bend: "0.005"
+    s2_bend: "0.06"
+    xrange: "35"
+    yrange: "20"
+    grid_factor: "2.5"
+    spacer2_density: "0.25"
+    nfixed: "9"
+    lattice_mu: "-0.008"
+  output_map:
+    persistence_length: L_p
+  regime:
+    kappa_b: [0.01, 0.5]
+    kBT: [0.003, 0.005]
+  provenance: proposed
+  reason: >
+    Both bashirzadeh2021 and the upstream AFINES branch freedman2019_code compute
+    single-filament persistence length as kappa_b / temperature in pN*um thermal energy units.
+
+- id: rel_freedman2019_code_spacer_stretch_nobend_same
+  kind: same_as
+  a: bashirzadeh2021/crosslinker_harmonic_stretch_potential
+  b: freedman2019_code/afines_spacer_mechanics_and_mc_cpp
+  mapping:
+    mld: "l"
+    mk: "kappa"
+    s_bend: "0"
+    th0: "1.5707963267948966"
+    link_length: "1.0"
+    head_sep_y: "d"
+    tilt_dx: "0"
+    pre_bind_dy: "d - l"
+    pos_a_end: "0.4"
+    stale_b_eng: "0"
+    kon: "20"
+    dt: "0.00002"
+    temperature: "0.004"
+  output_map:
+    delE_true_physical: U_xl_stretch
+  regime:
+    kappa: [0.05, 10.0]
+    d: [0.05, 0.8]
+    l: [0.05, 0.6]
+  provenance: proposed
+  reason: >
+    When upstream AFINES's perpendicular crosslinker-filament bending (s_bend = 0) and stale
+    bending energy (stale_b_eng = 0) are disabled — the exact limit adopted in bashirzadeh2021's
+    AFINES fork — an initially unstretched crosslinker (len_old = l) attaching at separation d
+    incurs stretching energy change delE = 0.5 * kappa * (d - l)^2 identical to
+    bashirzadeh2021/crosslinker_harmonic_stretch_potential.
+
+# -----------------------------------------------------------------------------
+# 3. Other corpus papers: claessens2008, graham2024, chandrasekaran2024
+# -----------------------------------------------------------------------------
+- id: rel_claessens2008_molar_ratio_same
+  kind: same_as
+  a: bashirzadeh2021/crosslinker_molar_ratio
+  b: claessens2008/molar_ratio_fascin_actin
+  mapping:
+    c_f: "C_xl"
+    c_a: "C_actin"
+  output_map:
+    R: r_xl
+  regime:
+    C_xl: [0.05, 5.0]
+    C_actin: [0.5, 20.0]
+  provenance: proposed
+  reason: >
+    Both bashirzadeh2021 (Figs. 1-4, Supp. Fig. 9; citing Claessens et al. 2008 as ref-39) and
+    claessens2008 parameterize fascin-actin stoichiometry by the identical molar concentration
+    ratio R = [crosslinker] / [actin] (M/M).
+
+- id: rel_graham2024_persistence_length_same
+  kind: same_as
+  a: bashirzadeh2021/filament_persistence_length_from_modulus
+  b: graham2024/actin_persistence_length_from_rigidity
+  mapping:
+    K_bend: "kappa_b"
+    T: "kBT / 1.380649e-5"
+  output_map:
+    L_p: L_p
+  regime:
+    kappa_b: [0.01, 0.5]
+    kBT: [0.003, 0.005]
+  provenance: proposed
+  reason: >
+    Both coarse-grained actin confinement studies (AFINES in bashirzadeh2021, CytoSim in
+    graham2024) relate single F-actin flexural rigidity to persistence length via the WLC
+    identity L_p = kappa / (k_B T) (k_B = 1.380649e-5 pN*um/K; 0.068/0.004 = 17.0 um vs
+    0.075/0.004142 = 18.11 um at 300 K / 17.86 um at CytoSim's k_B T = 0.0042 pN*um).
+
+- id: rel_graham2024_molar_ratio_same
+  kind: same_as
+  a: bashirzadeh2021/crosslinker_molar_ratio
+  b: graham2024/vasp_to_actin_molar_ratio
+  mapping:
+    C_vasp: "C_xl"
+    C_actin: "C_actin"
+  output_map:
+    vasp_to_actin: r_xl
+  regime:
+    C_xl: [0.1, 15.0]
+    C_actin: [0.5, 10.0]
+  provenance: proposed
+  reason: >
+    Both confined actin-bundling studies define actin-binding-protein stoichiometry via the
+    identical molar ratio [crosslinker or VASP] / [actin].
+
+- id: rel_chandrasekaran2024_persistence_length_same
+  kind: same_as
+  a: bashirzadeh2021/filament_persistence_length_from_modulus
+  b: chandrasekaran2024/persistence_length_from_rigidity
+  mapping:
+    kappa: "kappa_b"
+    kBT: "1000 * kBT"
+  output_map:
+    l_p: L_p
+  regime:
+    kappa_b: [0.01, 0.5]
+    kBT: [0.003, 0.005]
+  provenance: proposed
+  reason: >
+    Both AFINES (bashirzadeh2021) and CytoSim (chandrasekaran2024) compute single-filament
+    WLC persistence length via L_p = kappa / (k_B T), differing only in thermal-energy port
+    units (pN*um in bashirzadeh2021 vs pN*nm in chandrasekaran2024: kBT_pN_nm = 1000 * kBT_pN_um).
+
+- id: rel_chandrasekaran2024_harmonic_stretch_scales_lammps_bond
+  kind: scales_as
+  a: bashirzadeh2021/crosslinker_harmonic_stretch_potential
+  b: chandrasekaran2024/lammps_harmonic_bond_potential
+  mapping:
+    K_bond: "(kappa / 2) * (0.03**2 / 0.00411)"
+    r: "d / 0.03"
+    r0: "l / 0.03"
+  output_map:
+    U_bond: U_xl_stretch
+  regime:
+    kappa: [0.1, 5.0]
+    l: [0.05, 0.25]
+    d: [0.30, 0.70]
+  provenance: proposed
+  reason: >
+    Both coarse-grained actin simulation frameworks model elastic springs via a quadratic
+    harmonic potential: AFINES crosslinkers use U_xl^stretch = (1/2) * kappa * (d - l)^2 in
+    physical units [pN*um], whereas Chandrasekaran et al. Supplementary Table 1 use LAMMPS
+    bond_style harmonic U_bond = K_bond * (r - r0)^2 in dimensionless LJ k_B T units (absorbing
+    1/2 into K_bond). Because U_bond is dimensionless while U_xl_stretch carries energy units,
+    scales_as verifies exact agreement of the constant log-slope +1 in kappa and the nontrivial
+    position-dependent log-slopes 2*d/(d - l) in d and -2*l/(d - l) in l across the strictly
+    stretched regime d > l (anchored at Chandrasekaran's sigma = 0.03 um and k_B T = 0.00411 pN*um).
+  assumptions:
+    - "Strictly stretched regime d > l (l in [0.05, 0.25] um, d in [0.30, 0.70] um) so U > 0 everywhere."
+    - "Fixed LJ reference scales sigma = 0.03 um and k_B T = 0.00411 pN*um (constant scale factors leave all log-slopes invariant)."
+

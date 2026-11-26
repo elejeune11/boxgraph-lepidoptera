@@ -1,0 +1,65 @@
+# Cross-Record Audit Notes — `bashirzadeh2021`
+
+Complete `relate` and `validate` audit of `bashirzadeh2021` (Bashirzadeh et al., *Communications Biology* **4**, 1136, 2021; DOI `10.1038/s42003-021-02653-6`) across all **13 ready pairs** in the `actin_bundling` corpus:
+
+| # | Partner Record | Year / Kind | Relations (`relations.yaml`) | Cited Links (`cited.yaml`) | Validations (`validations.yaml`) | Key Finding |
+|---|---|---|---|---|---|---|
+| 1 | `bashirzadeh2021_code` | 2021 / software | **12** (`10 same_as`, `1 reduces_to`, `1 approximated_by`) | `0` (42 inline in partner) | `0` (`0` measured) | Verifies Eqs. 3–4, KMC stretch/alignment/detailed-balance, contour/`L_p`/step/ratio/count formulas; exposes shared-arm & `[0,π]` bend bugs, `Uniform(-3,3)` vs Gaussian, non-uniform disk sampling, hidden `occ=0.15`/`viscosity=0.01`/`k_s=10`/`bend=0`, and absent `U_4`/Cytosim code |
+| 2 | `bashirzadeh2021_source_data` | 2021 / software | `0` (7 discrete-index readers) | **1** (`not reproduced`) | `0` (44 paper-copy/array-len measured) | Resolves Fig. 4e SEMs (buggy row-32 `SQRT(13/15/24)` formulas), Fig. 2b `0.120` (`A6` omitting `J11`), `NGUVs` brackets; exposes ALL 18 swapped Fig. 1 ↔ Fig. 2 p-values, duplicate bundles, 34.2% length-window violations, Fig. 3c `87`/`80` swap & `>16` vs `>20 μm`, and `0.00086695 → 0.0008` truncation |
+| 3 | `winkelman2016` (`ref-9`) | 2016 / article | `0` | **1** (`no verdict`) | `0` | `fascin_bundle_spacing_exp` ("about 6 nm") vs `d_interfil_fascin_EM` (`~8 nm` EM / `~5 nm` TIRFM / `~5–6 nm` molecular size); `~6` ratio & `k_on/k_off = 4` not printed by Winkelman (who measured nearly equal `K_D = 272 vs 290 nM` and `k_off ≈ 0.20 vs 0.22–0.25 s⁻¹`) |
+| 4 | `freedman2019` (`ref-14`) | 2019 / article | **3** (`3 same_as`) | **3** (`3 reproduced`) | `0` | Shared AFINES crosslinker stretch potential (SI Eq. 4), bead-spring contour length, WLC `L_p = κ_B/(k_B T)`, and inherited `l_a = 1 μm`, `dt = 2×10⁻⁵ s`, `k_off = 0.05 s⁻¹` |
+| 5 | `freedman2019_code` | 2019 / software | **3** (`3 same_as`) | **1** (`reproduced`) | `0` | Shared AFINES C++ contour length, WLC `L_p`, zero-bending spacer stretch MC energy, and inherited `κ_b = 0.068 pN·μm²` |
+| 6 | `claessens2008` (`ref-39`) | 2008 / article | **1** (`same_as`) | `0` | `0` | Shared crosslinker/actin molar ratio `R = [crosslinker]/[actin]`; cited qualitatively on p. 2 for fascin bundle rings/protrusions |
+| 7 | `gov2008` | 2008 / article | `0` | `0` | `0` | Uncited; disjoint bundle defect-energy and Fokker–Planck radius distribution models (`0` measured datums) |
+| 8 | `haviv2008` (`ref-40`) | 2008 / article | `0` | `0` | `0` | Cited on p. 3 claiming bundle width distribution vs fascin ratio is "exponential"; Haviv Eq. 1 is a peaked distribution with exponential tail in `N_b ~ D_b²` (Gaussian in width `D_b`) |
+| 9 | `liu2008` (`ref-20`) | 2008 / article | `0` | `0` | `0` | Cited qualitatively on p. 2 (`19–21`, GUV surfaces); disjoint membrane-tube Euler buckling and filopodium growth models |
+| 10 | `pelletier2003` (`ref-54`) | 2003 / article | `0` | `0` | `0` | Cited qualitatively on p. 7 (non-parallel α-actinin crosslinks); disjoint SAXS Bragg/Scherrer models |
+| 11 | `graham2023` | 2023 / article | `0` | `0` | `0` | Later paper (neither cites the other); `filament_flexural_rigidity` (`k_b = L_p k_B T`) is the algebraic inverse of `filament_persistence_length_from_modulus` (`L_p = κ_b / k_B T`) |
+| 12 | `graham2024` | 2024 / article | **2** (`2 same_as`) | `0` | `0` | False-positive regex pairing (`graham2024` ref-12/44 cites Wubshet, Bashirzadeh & Liu *MBoC* 2021); shares WLC `L_p = κ/(k_B T)` and `[protein]/[actin]` molar ratio |
+| 13 | `chandrasekaran2024` | 2024 / article | **2** (`1 same_as`, `1 scales_as`) | `0` | `0` | Later paper; shares WLC `L_p = κ/(k_B T)` (pN·μm vs pN·nm) and harmonic stretching scaling with LAMMPS `bond_style harmonic` |
+| **Total** | **13 pairs** | | **23** cross-record (+1 within-paper = **24**) | **6** | **0** | All 24 relations verified; record SOUND (`0` errors) |
+
+---
+
+## 1. Companion Pair 1: `bashirzadeh2021` ↔ `bashirzadeh2021_code` (`dinner-group/AFINES@sorting_guv`)
+
+- **Verified ModelAtlas relations (`12`)**:
+  - `rel_code_confinement_potential_eq3` (`same_as`, stated): Eq. 3 `afines_confinement_potential_eq3::U_confine` ↔ `cpp_ext_circle_confinement::U_confine` (`src/ext.cpp:11–22`).
+  - `rel_code_alignment_potential_eq4` (`same_as`, stated): Eq. 4 `afines_alignment_potential_eq4::U_xl_align` ↔ `cpp_motor_alignment_potential::U_align` (`src/motor.cpp:392–435,621–639`, `par_flag = 1`).
+  - `rel_code_kmc_alignment_eq4` (`same_as`, stated): Eq. 4 `U_xl_align` ↔ `cpp_kmc_metropolis_occlusion::dE_attach` (unstretched parallel attachment, `src/motor.cpp:580–608`).
+  - `rel_code_crosslinker_stretch_kmc` (`same_as`, stated): `crosslinker_harmonic_stretch_potential::U_xl_stretch` ↔ `cpp_kmc_metropolis_occlusion::dE_attach` (`kalign = 0`, `src/motor.cpp:537–539`).
+  - `rel_code_filament_stretch_harmonic_same` (`same_as`, stated): `crosslinker_harmonic_stretch_potential::U_xl_stretch` ↔ `cpp_filament_potentials::U_stretch` (shared Hookean spring potential `0.5·k·(l−l₀)²` in `src/spring.cpp:187`).
+  - `rel_code_kmc_detailed_balance_reduces_to_affinity` (`reduces_to`, stated): `cpp_kmc_metropolis_occlusion::K_effective` → `crosslinker_affinity_ratio::K_ratio = k_on/k_off` as `(kalign, mk) → (0, 0)` (inter-filament, `occ = 0`).
+  - `rel_code_filament_contour_length`, `rel_code_persistence_length_from_modulus`, `rel_code_simulation_step_count`, `rel_code_affinity_ratio_alpha`, `rel_code_crosslinker_size_ratio` (`5 same_as`), and `rel_code_vesicle_crosslinker_count_approx` (`approximated_by`, `tol = 0.002` due to integer `round(ρπr_c²)`): all link directly to `afines_config_derived_quantities`.
+- **Forensic code-vs-paper discrepancies (logged in `q_code_audit_bugs_hidden_params_and_missing_scripts`)**:
+  1. **Shared-arm & bend-angle bug**: `aster_initial_condition_grid_conda_freeze.py:98–117` draws `ang1, ang2 ~ U(0, 2π)` (bends uniform in `[0, π]`, mean `π/2 = 1.571 rad` = **4×** paper's `π/8`, `75% > π/4`, up to `84 k_B T`/hinge) and alternates updating `ang2` / `ang1`, forcing **49/49 (100%)** consecutive initial filaments to share an identical arm angle.
+  2. **`Uniform(-3, 3)` vs Gaussian**: `xkick, ykick = random.uniform(-3, 3)` (`SD = 1.732 μm`, 3× smaller variance than stated Gaussian `σ = 3 μm`), dropping initial beads outside `r_c = 15 μm` from `~18.5%` (`afines_initial_filament_confinement`) to `~15.4%`.
+  3. **Non-uniform disk crosslinker sampling**: `x ~ U(-r_c, r_c), y|x ~ U(-√(r_c²−x²), √(r_c²−x²))` places `N = 3,534` crosslinkers per species in the disk (only `π/12 = 26.2%` in the stated `r_c × r_c` box), depleting origin density by **`-21.5%`** (`3.93 μm⁻²`), enriching lateral caps `|x| > 12 μm` by **`+94%`** (`~9.7 μm⁻²`), and introducing `3:2` x/y variance anisotropy.
+  4. **Hidden non-default overrides**: `--occ 0.15 μm` (default `0`), `viscosity = 0.01 Pa·s` (10× default `0.001`), `link_stretching_stiffness = 10 pN/μm` (10× default `1`), `a_m_bend = p_m_bend = 0` (default `0.04`, silently enabling same-filament crosslinker binding on distinct springs in `src/motor.cpp:696–700`), `kexv = 0`, `temperature = 0.004 pN·μm`, `actin_length = 0.5 μm`, capture cutoffs `0.063 μm`; standalone `sorting_kinetics.cfg` disagrees on `r_c = 12`, `nmonomer = 27`, `density = 1`; explicit `U_xl^bind` (Eq. 2) does not exist in C++.
+  5. **Missing Binder cumulant `U_4` & Cytosim code**: Zero post-processing scripts for Fig. 4g PDFs, Fig. 4h `U_4` (Eq. 5), or Supp. Fig. 12 Cytosim exist in the repository (`q_binder_cumulant_eq5_vs_fig4h_and_prose` and `q_cytosim_unstated` remain unresolvable from public files).
+
+---
+
+## 2. Companion Pair 2: `bashirzadeh2021` ↔ `bashirzadeh2021_source_data` (Figshare `10.6084/m9.figshare.16337442.v1`)
+
+- **ModelAtlas relations**: `0` (all 7 models in `bashirzadeh2021_source_data` are `software: true` discrete-index `.xlsx`/`.mat` readers).
+- **Cited links (`1`)**: `fig4e_p_0310_vs_1310` (`"0.0008"`) → `bashirzadeh2021_source_data/ppl_p_0310_vs_1310_stored` (`0.00086695`, **`not reproduced`**, exposing truncation instead of rounding to `0.0009`). All 45 `paper_*` datums in `bashirzadeh2021_source_data` already point inline to `bashirzadeh2021`.
+- **Exact quantitative reconciliation of `bashirzadeh2021` digitized readings vs Figshare workbooks (logged in `q_source_data_audit_resolutions_and_errors`)**:
+  - **Fig. 4e & Supp. Fig. 9c**: Digitized Fig. 4e plotted SEMs (`7.72, 8.69, 10.38, 19.07, 14.00 μm`) match `Sheet5` true SEMs (`7.683, 8.688, 10.420, 19.054, 13.970 μm`) to `≤ 0.04 μm`, whereas the caption `±` values (`±10, ±11.4, ±15 μm`) and Supp. Fig. 9c Bar 1 (`±15.09 μm`) reflect buggy row-32 formulas `A32 = A33/SQRT(13) = 9.995`, `K32 = K33/SQRT(15) = 11.414` (`N = 18`, not `17`), and `X32 = STDEV(X2:X25)/SQRT(24) = 15.026` (omitting `X26:X27`). Raw `Sheet5` reproduces `P_PL` to 15 digits (`0.116226`, `0.012547`, `0.00086695`), while exposing **duplicate bundles** (`[1:3:10]` 5 dupes, `[1:1:10]` 1 dupe; deduplicated p = `0.1305, 0.0171, 0.00135`) and **25/73 (34.2%)** bundles violating Methods p. 8's `"8 < L < 20 μm"` window (`4.43–52.74 μm`). Supp. Fig. 9c `[3:3:10]` has `N = 15` (`95.62 ± 21.86 μm` vs digitized `97.66 ± 21.79 μm`), not caption `16`.
+  - **ALL 18 Fig. 1 ↔ Fig. 2 p-values swapped**: `Figs_1_and_2_Pvalues.xlsx` (`Sheet3`–`Sheet20`) proves all 9 Fig. 1 p-values came from Fig. 2 data and all 9 Fig. 2 p-values came from Fig. 1 data, plus a 10× misprint (`Sheet12 = 0.006397` printed as `0.0006` on Fig. 2d) and 5 truncations.
+  - **Fig. 2b `0.120` & `NGUVs` brackets resolved**: `Sheet3` cell `A6` omits `J11`, shifting medium Ring probability from `23/149 = 0.1544` (`T2`) to `17/143 = 0.1189` (`A9`, matching digitized `0.1197`). Fig. 1c/d and 2d/e `NGUVs` brackets are per-replicate totals across all diameters (plus unused blocks `67` and `188` in Fig. 1), Fig. 1f mis-summed `389+42=431` as `429`, and Fig. 1g at `0.2` uses denominator `12` (not `14`).
+  - **Fig. 3c & 3d**: Digitized Fig. 3c (`3.67%/62.43%` NoFascin; `29.81%/47.06%` +fascin) and Fig. 3d (`18.05%`, `57.69%`) match `Sheet4` (`3.75%/62.50%`, `29.89%/47.13%`, `18.03%`, `57.69%`) to `< 0.1%`, proving the caption swapped `87` and `80` (`80` NoFascin, `87 = 61+26` +fascin) and misprinted `>20 μm` instead of `>16 μm`.
+  - **Zero simulation data**: No Fig. 4g PDFs, Fig. 4h Binder cumulants, Supp. Fig. 11, or Cytosim data exist in Figshare.
+
+---
+
+## 3. Summary of the 11 Paper & Code Partners
+
+- **`winkelman2016` (`ref-9`)**: 0 relations; 1 cited link (`fascin_bundle_spacing_exp` `"about 6 nm"` → `d_interfil_fascin_EM` `"~8 nm"`, documenting conflation with fascin's `~5–6 nm` molecular diameter or single Fig. 4B `6 nm` TIRFM example); 2 `from_source: ref-9` datums intentionally unlinked (`~6` size ratio and `k_on/k_off = 4` are not printed by Winkelman et al., who measured nearly equal `K_D = 272 vs 290 nM` and `k_off ≈ 0.20 vs 0.22–0.25 s⁻¹`).
+- **`freedman2019` (`ref-14`) & `freedman2019_code`**: 6 verified `same_as` relations (AFINES crosslinker stretching SI Eq. 4, zero-bending spacer stretch MC, contour length, WLC `L_p` in both paper and code) + 4 cited links (`sim_link_length = 1 μm`, `sim_time_step = 2×10⁻⁵ s`, `sim_alpha_koff = 0.05 s⁻¹` → `freedman2019`; `sim_polymer_bending_modulus = 0.068 pN·μm²` → `freedman2019_code`). Note `K_ratio = k_on/k_off` is the reciprocal of `freedman2019/dissociation_constant_kd` (`k_off/k_on`).
+- **`claessens2008` (`ref-39`)**: 1 verified `same_as` relation (`crosslinker_molar_ratio` ↔ `molar_ratio_fascin_actin`); 0 cited links.
+- **`haviv2008` (`ref-40`)**: 0 relations, 0 cited links; exposes p. 3's mischaracterization of Haviv Eq. 1 ("exponential" width distribution vs peaked `P(N_b)` with exponential tail in `N_b ~ D_b²`, i.e., Gaussian in width `D_b`).
+- **`gov2008`, `liu2008` (`ref-20`), `pelletier2003` (`ref-54`), `graham2023`**: 0 relations, 0 cited links (all disjoint models; `graham2023/filament_flexural_rigidity` is the algebraic inverse `k_b = L_p k_B T`).
+- **`graham2024`**: 2 verified `same_as` relations (WLC `L_p = κ/(k_B T)` and `[protein]/[actin]` molar ratio); 0 cited links; false-positive citation pairing via Wubshet, Bashirzadeh & Liu (*MBoC* 2021). Note `welch_two_sample_t_test` (unequal-variance SEM) is intentionally not equated to `graham2024`'s pooled equal-variance Student t-tests (SD).
+- **`chandrasekaran2024`**: 2 verified relations (`filament_persistence_length_from_modulus` `same_as` `persistence_length_from_rigidity`, and `crosslinker_harmonic_stretch_potential` `scales_as` `lammps_harmonic_bond_potential` in the strictly stretched regime `d > l`); 0 cited links.
+- **Validations (`validations.yaml = []`)**: 0 genuine cross-record validations across all 13 pairs (275 partner `origin: measured` datums audited; full AFINES/Cytosim models are `runnable: false`, and none of `bashirzadeh2021`'s runnable equations predict partner measurements under their measured conditions).

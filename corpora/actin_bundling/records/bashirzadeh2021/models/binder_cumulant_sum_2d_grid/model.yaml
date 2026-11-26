@@ -1,0 +1,23 @@
+id: binder_cumulant_sum_2d_grid
+name: sum-based Binder cumulant variant (unnormalized spatial sum instead of spatial average in Eq. 5)
+role: processing
+stated:
+  page: 9
+  printed_page: "9"
+  quote: "where s is an order parameter. In our case, s is the value at one point"
+  where: "Eq. 5 (variant matching Fig. 4h range [0.97, 1])"
+equation: "U_4 = 1 - sum(s^4) / (3 * (sum(s^2))^2) on N_bins x N_bins grid over [-r_c, r_c]^2"
+inputs:
+  r_c: {quantity: confinement_radius, unit: um}
+  sigma: {quantity: displacement_stddev, unit: um}
+outputs:
+  U_4: {quantity: binder_cumulant, unit: dimensionless}
+  peak_pdf: {quantity: spatial_pdf_value, unit: 1/um^2}
+settings:
+  n_bins: 20
+variant_of: binder_cumulant_eq5_2d_grid
+corrections:
+  - equation: "Eq. 5"
+    change: "Replace spatial averages <s^4> and <s^2> with spatial sums sum(s^4) and sum(s^2) over the N_bins x N_bins histogram grid (equivalently dividing <s^4>/(3<s^2>^2) by N = N_bins^2 = 400)"
+    evidence: "By Cauchy-Schwarz (<s^4> >= <s^2>^2), printed Eq. 5 with spatial averages satisfies U_4 <= 2/3 ~ 0.667 for every non-zero PDF, contradicting Fig. 4h (p. 6) which plots Binder cumulant trajectories in [0.97, 1.0]. Replacing spatial mean with spatial sum over the 20x20 grid places realistic aster PDFs (sigma = 3-12 um) directly in [0.986, 0.999], matching Fig. 4h, while revealing O(1/N_bins^2) grid-discretization drift toward 1."
+stochastic: false

@@ -1,0 +1,37 @@
+id: cpp_kmc_metropolis_occlusion
+name: Line-by-line Python port of C++ KMC Metropolis binding/unbinding, allowed_bind, and steric occlusion (src/motor.cpp, src/filament.cpp)
+role: model
+stated:
+  file: src/motor.cpp
+  lines: "534-742"
+  quote: "if (occ != 0.0 && f->closest_attached_distance(fl[1], intpoint) < occ) {"
+  where: "src/motor.cpp:534-616 (metropolis_prob), 646-700 (try_attach, allowed_bind), 726-742 (try_detach); src/filament.cpp:590-614 (closest_attached_distance)"
+equation: "dE = 0.5*mk*((len_new-mld)^2 - (len_old-mld)^2) + kalign*(1 - cos(theta)); p_metro_att = min(1, exp(-dE/kT)); p_metro_det = min(1, exp(+dE/kT)); p_att = (k_on*dt)*p_metro_att*I_allowed*I_occ; p_det = (k_off*dt)*p_metro_det; K_eff = p_att / p_det"
+inputs:
+  k_on: {quantity: crosslinker_on_rate, unit: 1/s}
+  k_off: {quantity: crosslinker_off_rate, unit: 1/s}
+  dt: {quantity: time_step, unit: s}
+  temperature: {quantity: thermal_energy, unit: pN*um}
+  mk: {quantity: crosslinker_stiffness, unit: pN/um}
+  mld: {quantity: crosslinker_length, unit: um}
+  len_old: {quantity: crosslinker_end_to_end_distance, unit: um}
+  len_new: {quantity: crosslinker_end_to_end_distance, unit: um}
+  kalign: {quantity: alignment_penalty, unit: pN*um}
+  par_flag: {quantity: alignment_mode, unit: dimensionless}
+  theta: {quantity: filament_pair_angle, unit: rad}
+  kb_motor: {quantity: crosslinker_bending_modulus, unit: pN}
+  same_filament: {quantity: boolean_flag, unit: dimensionless}
+  same_spring: {quantity: boolean_flag, unit: dimensionless}
+  occ: {quantity: steric_occlusion_distance, unit: um}
+  nearest_head_dist: {quantity: contour_separation, unit: um}
+outputs:
+  dE_attach: {quantity: potential_energy, unit: pN*um}
+  p_metro_attach: {quantity: probability, unit: dimensionless}
+  p_metro_detach: {quantity: probability, unit: dimensionless}
+  allowed_by_topology: {quantity: boolean_flag, unit: dimensionless}
+  allowed_by_occ: {quantity: boolean_flag, unit: dimensionless}
+  p_attach_step: {quantity: probability, unit: dimensionless}
+  p_detach_step: {quantity: probability, unit: dimensionless}
+  K_effective: {quantity: crosslinker_affinity_ratio, unit: dimensionless}
+settings: {}
+stochastic: false

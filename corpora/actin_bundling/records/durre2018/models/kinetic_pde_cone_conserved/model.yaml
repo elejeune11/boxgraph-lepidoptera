@@ -1,0 +1,62 @@
+id: kinetic_pde_cone_conserved
+name: time-dependent finite-pool cone kinetic PDEs with mass-conserving BCs (axisymmetric)
+role: model
+variant_of: kinetic_pde_cone_eq6_16
+built_from: [kinetic_pde_cone_eq6_16]
+corrections:
+  - equation: "Eq. 14"
+    change: "Add reverse dissociation term +k_2*V* to the G-actin membrane flux boundary condition: -D_G d_z G|_{z=0} = -k_1 G|_0 V + k_2 V* - k_on G|_0 B + k_off B"
+    evidence: "Reaction Eq. (3) and Eqs. (6)-(7) include reversible V + G <-> V* dissociation at rate k_2*V*. In the closed finite-pool cone, omitting +k_2*V* drains the entire G-actin monomer pool to 0 within milliseconds and extinguishes network growth at all CP concentrations (B_40 = 0), whereas restoring it reproduces flat (40, 120 nM) vs double-peaked ring (80 nM) barbed-end profiles (Fig. 5f) and ~4-fold VCA enrichment at t = 100-200 s (SI p. 13, Supp Fig. 14)."
+  - equation: "Eq. 15"
+    change: "Add reverse dissociation term +k_4*A* to the Arp2/3 membrane flux boundary condition: -D_Arp d_z Arp|_{z=0} = -k_3_eff Arp|_0 V* + k_4 A*"
+    evidence: "Reaction Eq. (3) and Eqs. (7)-(8) include reversible V* + Arp2/3 <-> A* dissociation at rate k_4*A*; restoring +k_4*A* enforces Arp2/3 conservation in the closed cone."
+stated:
+  page: 22
+  printed_page: "SI 11"
+  quote: "The simulated geometry is a cone shape that represents the volume element of the vesicle assigned to a single domain"
+  where: "Eqs. 6-16 (Supplementary Note 2, cone geometry SI p. 11)"
+equation: "Axisymmetric cone PDEs Eqs. (6)-(13), zero-flux Neumann BCs, and mass-conserving membrane flux BCs Eqs. (14)-(16) (+k_2*V*, +k_4*A*)"
+inputs:
+  G_0: {quantity: actin_concentration, unit: uM}
+  Arp_0: {quantity: arp_concentration, unit: uM}
+  CP_0: {quantity: cp_concentration, unit: nM}
+  V_0: {quantity: vca_surface_density, unit: 1/um^2}
+  B_0_norm: {quantity: barbed_end_density, unit: 1/um^2}
+  sigma: {quantity: seed_width, unit: nm}
+  r_cone: {quantity: cone_disk_radius, unit: um}
+  h_cone: {quantity: ves_radius, unit: um}
+  k_on: {quantity: elongation_on_rate, unit: uM^-1*s^-1}
+  k_off: {quantity: elongation_off_rate, unit: 1/s}
+  k_1: {quantity: vca_actin_on_rate, unit: uM^-1*s^-1}
+  k_2: {quantity: vca_actin_off_rate, unit: 1/s}
+  k_3: {quantity: arp_activation_on_rate, unit: uM^-1*s^-1}
+  k_3_reduction: {quantity: rate_scaling_factor, unit: dimensionless}
+  k_4: {quantity: arp_activation_off_rate, unit: 1/s}
+  k_Cap: {quantity: cp_binding_rate, unit: uM^-1*s^-1}
+  k_Arp: {quantity: branching_rate_constant, unit: um^2/s}
+  k_re: {quantity: vca_recovery_rate, unit: 1/s}
+  k_Deg: {quantity: barbed_end_degradation_rate, unit: 1/s}
+  D_G: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_Arp: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_CP: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_V: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_Vstar: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_A: {quantity: diffusion_coefficient, unit: um^2/s}
+  D_B: {quantity: network_spreading_diffusivity, unit: um^2/s}
+outputs:
+  B_peak: {quantity: barbed_end_density, unit: 1/um^2}
+  B_final_center: {quantity: barbed_end_density, unit: 1/um^2}
+  B_final_max: {quantity: barbed_end_density, unit: 1/um^2}
+  r_peak_final: {quantity: radial_position, unit: um}
+  rim_to_center_ratio: {quantity: density_ratio, unit: dimensionless}
+  V_tot_final_center: {quantity: vca_surface_density, unit: 1/um^2}
+  V_tot_final_edge: {quantity: vca_surface_density, unit: 1/um^2}
+  vca_fold_enrichment: {quantity: density_ratio, unit: dimensionless}
+settings:
+  mesh_n: 72
+  r_stretch: 3.0
+  z_stretch: 2.0
+  t_end: 40.0
+  rtol: 1.0e-5
+  atol: 1.0e-7
+stochastic: false

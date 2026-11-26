@@ -1,0 +1,132 @@
+id: freedman2019_code
+kind: software
+title: "AFINES (growing_spacer_exv) & xlink_sorting_paper: C++ Brownian-dynamics engine, Python 1D KMC notebook, and Mathematica analysis scripts (Freedman et al., 2019)"
+authors:
+  - Simon L. Freedman
+  - Cristian Suarez
+  - Jonathan D. Winkelman
+  - David R. Kovar
+  - Gregory A. Voth
+  - Shiladitya Banerjee
+  - Aaron R. Dinner
+  - Glen M. Hocky
+year: 2019
+file: corpus/actin_bundling/code/freedman2019_code
+url: https://github.com/Simfreed/AFINES/tree/growing_spacer_exv
+version: "sha256:bd1357a511addd53b246a09d02a430cc047cafac865b035fb53b276c5455b03b"
+licence: GPL-3.0-or-later
+language: "C++, Python, Mathematica"
+reader:
+  kind: agent
+  name: boxgraph-reader
+  prompt_version: "read_code-1"
+  date: "2026-11-26"
+notes: >
+  Full source-code, configuration, notebook, and analysis-pipeline audit of
+  `corpus/actin_bundling/code/freedman2019_code` (GitHub
+  https://github.com/Simfreed/AFINES/tree/growing_spacer_exv, commit `0c6c349`, tree digest
+  `sha256:bd1357a511addd53b246a09d02a430cc047cafac865b035fb53b276c5455b03b`, GPL-3.0-or-later),
+  the released simulation and analysis repository accompanying Freedman et al., PNAS 116(33),
+  16192-16197 (2019) (`freedman2019`).
+
+  Repository contents and entry points:
+  (1) AFINES C++ Brownian-dynamics engine (`prog/bundles.cpp`, `src/filament.cpp`,
+  `src/filament_ensemble.cpp`, `src/spring.cpp`, `src/bead.cpp`, `src/spacer.cpp`,
+  `src/motor.cpp`, `src/motor_ensemble.cpp`, `include/globals.h`), implementing growing
+  2-filament F-actin bundles, Leimkuhler-Matthews overdamped integration, LAMMPS harmonic
+  bending, link-segment excluded volume, and Metropolis cross-linker attachment/detachment.
+  (2) `xlink_sorting_paper/`: `kmc.ipynb` (13 cells implementing the 1D continuous-time
+  Gillespie/KMC growing-bundle model and Figs. 3B, 3D, 3E, 5C, S3A, S3B, S3C), `config/grow.cfg`
+  and `config/nogrow.cfg`, `README.md` (run instructions for Figs. 2, 5, S4, S5),
+  `config/row_of_spacers.py`, and `process/` (`afines2lattice.m`, `domain_length.m`,
+  `cytomod_functions.m`, `plots.nb`). Note that `lattice.py` (invoked by `README.md` for
+  equilibrium lattice MC curves in Figs. 2C-D) and `crashed_list.txt` (loaded by `plots.nb`)
+  are absent from the repository.
+
+  Record inventory: 59 quantities, 98 data (82 parameters, defaults, and embedded outputs cited
+  directly from C++, `.cfg`, `kmc.ipynb`, `README.md`, `.m`, and `plots.nb` + 16 paper targets
+  copied from `freedman2019`; 61 total cross-linked to `freedman2019` via `from_source` /
+  `from_datum`), 9 added probe inputs, 10 models (2 live `software: true` adapters executing
+  unmodified `xlink_sorting_paper/kmc.ipynb` via `$BOXGRAPH_SOURCE`, 7 Python ports of AFINES
+  C++ mechanics/kinetics/growth/excluded-volume/parameter-mapping/integrated 2-filament BD and
+  Mathematica post-processing, 1 `runnable: false` full Boost C++ `bin/bun` driver), 17 runs,
+  29 comparisons (15 reproduced, 2 close, 7 not reproduced, 5 no verdict), 2 settled refinements
+  (`ref_kmc_trials` and `ref_bundle_dt`, both `belongs_to: model`), 11 open questions, and
+  8 references (linking corpus records `freedman2019` and `winkelman2016`).
+
+  What the code reproduces from `freedman2019` (15/29 comparisons reproduced):
+  - Live `kmc.ipynb` Cells 5-6 (`kmc_notebook_growing_bundle`, Poisson/Gillespie growth) run at
+    the notebook's actual Cell 2 parameters (`site_width = 35 nm`, `dxl = 37 - 8 = 29 nm`,
+    `seed = 1`, 1 warmup trial + `num_trials = 1000`) reproduces Fig. S3A's printed inset to the
+    exact digit: `N_diff/N_same = 0.016472` (`%.3f` -> `0.016`, `cmp_kmc_figs3a_ratio_code`) and
+    `epsilon = 4.1061` (`%.1f` -> `4.1`, `cmp_kmc_figs3a_eps_code`).
+  - Live `kmc.ipynb` Cells 2-4 reproduce its own `dxl = 29 nm`, `max_n_sites = 428`, and
+    `20 * 35 nm = 0.700 um` (`~0.7 um` equal-binding distance in Fig. 3B, `U = 0.0417 k_B T`,
+    `p_switch = 0.4896`).
+  - With hardcoded `temperature = 0.004 pN*um` (`grow.cfg:46`, `nogrow.cfg:46`, `plots.nb:8466`),
+    AFINES reproduces exact persistence lengths `L_p = 17.0 um` (default, `0.068/0.004`),
+    `2.5 um` (`0.01/0.004`, Movie S3 min), and `125.0 um` (`0.5/0.004`, Movie S3 max), resolving
+    `freedman2019`'s `k_B * 300 K` discrepancy.
+  - `grow.cfg:7` (`nmonomer = 2` -> `1` initial link = `1.0 um`), `README.md:256` & `plots.nb:14195`
+    (`lgrow = 0.0025..0.10 um` -> `2.5..100 nm/s`), `nrand = 166`, `mu = -0.008/0.004 = -2 k_B T`,
+    and Mathematica `afines2lattice.m` (`l0 = 0.037 um` -> `405` lattice bins, ties -> `0`)
+    all reproduce their corresponding paper/code targets.
+
+  Major code-vs-paper discrepancies, bugs, and hidden defaults (7 not reproduced, 2 close,
+  5 internal consistency/approximation comparisons, 11 questions):
+  (1) Fig. S3A KMC 39% discrepancy 100% solved (`q_kmc_35_37_transposition_explains_figs3a`):
+    `kmc.ipynb` Cell 2 (lines 98-100) transposes `35 nm` (alpha-actinin size) and `37 nm` (F-actin
+    helical half-pitch), setting `site_width = 35.` (`428` sites vs paper's `405`,
+    `cmp_kmc_nsites_code_vs_paper` not reproduced) and `dxl = 37 - 8 = 29 nm` (vs paper's `27 nm`,
+    `cmp_kmc_dxl_code_vs_paper` close), inflating `U(x) ~ dxl^2 / site_width^3` by 36%. Running
+    the exact same live notebook at the paper's printed `(37 nm, 27 nm)` yields `0.022624` and
+    `3.7887` (+41% above `0.016`; `cmp_kmc_figs3a_ratio_paper_params` and
+    `cmp_kmc_figs3a_eps_paper_params` not reproduced). Additional `kmc.ipynb` bugs: Cells 9-12
+    plot fascin error bars (`std_domain_lengths[0]` / `std_domain_lengths_mu[0]`) for both species;
+    Cell 5 measures domain lengths from tip `filament_length` instead of `current_site * site_width`;
+    Cell 10 line 876 packages Cell 9's `avg_domain_lengths`. In `cmp_kmc_cell9_eps_curve`, 4/6
+    `kratio` points reproduce Cell 9's 1000-trial stdout within 2 SE while `kratio = 0.3`
+    (`4.426` vs `4.417`, +0.2%) and `0.5` (`4.010` vs `4.082`, -1.8%) fall outside the small
+    3-replicate SE against raw unannotated 15-digit MC floats.
+  (2) SI Eq. 3 excluded-volume units & crossing bugs (`q_kexv_units_and_crossing_bugs`):
+    `src/filament_ensemble.cpp:668-673` evaluates `pe_exv += kexv*(1 - r/rmax)^2` and exact
+    `-grad U` (`1.6 pN` at `r = 0.025 um`), proving `kexv` has energy units `pN*um` (`0.08 pN*um =
+    20 k_B T`), NOT `pN*um^2` as misprinted in Table S1 & Fig. 2D. Yet `grow.cfg:37`/`nogrow.cfg:37`
+    set `kexv = 0` and `README.md` omits `--kexv 0.08` (while `plots.nb:8457,8460` proves Fig. 2D
+    used `0.08`). Worse, `if (r < rmax)` (line 618) checks only endpoint-to-segment distances so
+    orthogonal midpoint crossings feel `0.0 pN`, while near-end crossings (lines 700-713) apply a
+    hardcoded +45-deg force to BOTH endpoints of each link (doubling force to `4*kexv/rmax = 6.4 pN`).
+  (3) SI Section A bending-energy calibration & 5x division (`q_spacer_bending_division_and_calibration_mismatch`):
+    `src/motor_ensemble.cpp:314` computes `kb = modulus/mld`, making `s1_bend = 0.005` (`mld = 0.2`)
+    give effective `kb_short = 0.025 pN*um` (5x Table S1's `0.005`, `cmp_kb_short_eff_vs_table_s1`
+    not reproduced). Four mutually inconsistent long-cross-linker prescriptions exist (`SI Sec A`:
+    `22*l_long/l_short - 21` for `<= 200 nm` & `4` for `>= 300 nm`, leaving `(200, 300) nm` and
+    `227 nm` undefined; `grow.cfg`: `s2_bend = 0.06` -> raw ratio `12`, effective ratio `8.0`, both
+    not reproduced vs `4`; `README.md:40,102`: `kb2 = 0.04*l2` -> constant `kb_long = 0.04`, ratio
+    `1.6`, via invalid flag `--s2bend`; `plots.nb:14229` Fig. 5C/5E: `s2kb = 0.0675` -> effective
+    `0.225 pN*um`, effective ratio `9.0`, raw `13.5`).
+  (4) SI Eq. 2 barbed-end split remainder (`q_barbed_end_split_condition_and_overshoot`):
+    `src/filament.cpp:676` tests `lb + dL < l0_max` (splitting at `>= 2*l_a`, not strict `> 2*l_a`).
+    Exact divisors `{0.01, 0.02, 0.04, 0.05, 0.10} um` lose zero remainder, but non-divisors
+    `0.03` and `0.07 um` discard `0.02` and `0.05 um`/split (`29.41 nm/s`, -2.0%; `66.67 nm/s`,
+    -4.8%), and IEEE-754 accumulation adds 1 extra step at `0.0025 um` (401 steps -> `2.4938 nm/s`)
+    and `0.005 um` (201 steps -> `4.9751 nm/s`). Commit `0c6c349` updated `prog/network.cpp:189`
+    to `default_value(2)` for `l0max` while leaving `prog/bundles.cpp:178` at `default_value(0)`.
+  (5) Table S1 protocol mismatches (`q_growth_sweep_bounds_init_length_and_tfinal`):
+    `grow.cfg` has `nmonomer = 2` (= 1 link = `1 um`, exposing Table S1's `N_{l,0} = 2` bead-vs-link
+    typo, `cmp_grow_nlinks_vs_table_s1` close); `README.md`/`plots.nb` start at `lgrow = 0.0025 um`
+    (`2.5 nm/s`, exposing Table S1's `0.008 um` misprint); `plots.nb` ran slow growth to
+    `tfinal = 6000 s` (3x Table S1's `2000 s`) and Fig. 5B `s2len = 0.3` at `dt = 1e-5 s` (half of
+    Table S1's `2e-5 s`).
+  (6) Additional C++ bugs & hidden parameters (`q_spacer_metropolis_and_s2koff_bugs`,
+    `q_hidden_afines_parameters_and_grid_mismatch`, `q_readme_broken_cli_and_missing_files`):
+    `prog/bundles.cpp:372,376` passes `s2_kend, s2_kend` instead of `s2_koff, s2_kend`;
+    `src/spacer.cpp:220-224,355-378` evaluates `metropolis_prob` using pre-attachment coordinates,
+    only one head's bending energy, and unreset stale `b_eng` (`delE = 0.01225` vs true `0.01481
+    pN*um`, attachment probability `1.87e-6` vs `9.86e-7`); unstated Stokes radii `R = 0.5 um`
+    (actin beads, `D = 0.4244 um^2/s`) and `R = mld` (`0.2/0.3 um` for short/long spacers ->
+    species-dependent `D = 1.061` vs `0.707 um^2/s`); hidden `s1_cut = s2_cut = 0.063 um`,
+    `grid_factor = 3` (vs Table S1 `2.5`), `quad_update_period = 10`, `maxSmallAngle = 0.001`;
+    broken `README.md` commands (`no_grow.cfg`, `--s2bend`, `--s1_koff1`, unset shell vars,
+    `y0 = 0.375`, missing `lattice.py`); and `plots.nb` lattice MC details (`t = 9000..10000`,
+    `Delta l_xl = 0` plotted at `10 nm`, omitted `0.3 um`).

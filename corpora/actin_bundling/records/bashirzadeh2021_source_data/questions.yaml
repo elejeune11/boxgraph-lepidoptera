@@ -1,0 +1,358 @@
+# Open questions documenting every newly discovered discrepancy, formula bug,
+# duplicate data row, label swap, truncation, and missing panel in bashirzadeh2021_source_data.
+
+- id: q_fig4e_sem_formulas_and_count_errors
+  kind: possible_error
+  about:
+    - fig4e_persistence_length_reader
+    - fig4e_ttest_audit_reader
+    - paper_Lp_sem_0_1_10
+    - paper_Lp_sem_1_1_10
+    - paper_Lp_sem_1_3_10
+    - paper_nbundles_1_1_10
+    - paper_nbundles_3_3_10
+    - cmp_lp_0110_sem_true
+    - cmp_lp_1110_sem_true
+    - cmp_lp_1310_sem_true
+    - cmp_nbundles_1110_raw
+    - cmp_nbundles_s9c_3310
+  text: >
+    Resolves `bashirzadeh2021/q_welch_pvalues_fig4e` completely: the three printed Fig. 4e Welch
+    p-values (0.1162, 0.0125, 0.0008) failed to reproduce from the caption summary values because
+    THREE of the five caption SEM values come from buggy Excel formulas in `Sheet5` row 32 (both in
+    `Fig4e_persistence_length_data.xlsx` and identical `Source_data.xlsx`): (1) `[0:1:10]` (`A2:A23`,
+    N=22, SD=36.0375) computes `A32 = A33/SQRT(13) = 9.9950` (printed `+/- 10`) instead of true
+    `SD/sqrt(22) = 7.6832` (+30.1% inflated); (2) `[1:1:10]` (`K2:K19`, N=18, SD=44.2067) computes
+    `K32 = K33/SQRT(15) = 11.4141` (printed `+/- 11.4`) instead of true `SD/sqrt(18) = 10.4196`
+    (+9.5% inflated), AND the caption misprints `N = 17` instead of `18` (while `P_PL` uses `18`);
+    (3) `[1:3:10]` (`X2:X27`, N=26, full SD=71.2350) computes `X33 = STDEV(X2:X25) = 73.6105`
+    (omitting `X26` and `X27`) and `X32 = X33/SQRT(24) = 15.0257` (printed `+/- 15`) instead of
+    true `SD/sqrt(26) = 13.9703` (+7.6% inflated). Visual measurement of Fig. 4e confirms that
+    the plotted bar error bars actually show the TRUE SEMs (`+/-7.68`, `+/-10.42`, `+/-13.97 um`),
+    contradicting the caption's text. Using the raw columns directly, Excel Analysis ToolPak's
+    integer-rounded-df Welch t-test reproduces `P_PL` to 15 digits: `0.116226` (df=33, printed
+    `0.1162`), `0.012547` (df=42, printed `0.0125`), and `0.00086695` (df=38, truncated rather than
+    rounded to `0.0008`; means in the caption are likewise truncated: `33.366->33.3`, `39.376->39.3`,
+    `54.251->54.2`). Additionally, Supp. Fig. 9c (`Sheet5` col `AG`, `AG3:AG17`) contains `N = 15`
+    bundles (`95.62 +/- 21.86 um`, `AG39 = AG38/SQRT(15)`), NOT `N = 16` as printed in the
+    Supplementary Fig. 9c caption.
+  citation:
+    none: "binary xlsx spreadsheet in Figshare Source Data archive"
+    where: "Fig4e_persistence_length_data.xlsx ('Sheet5' A31:AG39 & 'P_PL' A1:U30)"
+    quote: "A32=A33/SQRT(13), K32=K33/SQRT(15), X33=STDEV(X2:X25), X32=X33/SQRT(24), AG39=AG38/SQRT(15)"
+
+- id: q_fig4e_duplicate_bundles_length_violations_and_skewness
+  kind: possible_error
+  about:
+    - fig4e_persistence_length_reader
+    - fig4e_ttest_audit_reader
+    - paper_nbundles_1_3_10
+    - cmp_nbundles_1310_unique
+    - cmp_fig4e_p_0110_vs_1110_mw
+    - cmp_fig4e_p_1110_vs_1310_dedup
+    - cmp_fig4e_p_0310_vs_1310_dedup
+  text: >
+    Three data-integrity and distributional issues affect `Sheet5` (`Fig4e_persistence_length_data.xlsx`):
+    (1) **Exact 15-digit duplicate bundle rows**: `[1:3:10]` (`X2:Y27`, N=26) contains 5 exact
+    floating-point duplicate `L_p` entries — four full `(L_p, L)` pairs appear verbatim in reverse
+    order (`R4=R22`: `197.279758769351, 9.34340465240673`; `R5=R21`: `53.6680569614863, 11.9739782216399`;
+    `R6=R19`: `13.137221669911, 15.0323865912941`; `R7=R18`: `70.3044287054511, 10.2190919988279`)
+    plus `X15=X16` (`74.1635462702595`), leaving only 21 unique bundles (`mean = 103.99 +/- 15.87 um`);
+    `[1:1:10]` (`K2:L19`, N=18) also duplicates `(K3,L3) == (K10,L10)` (`31.0787494721203, 17.2547743730733`),
+    leaving 17 unique bundles (`mean = 55.61 +/- 10.96 um`). Deduplication shifts the three Welch
+    p-values from `(0.1162, 0.0125, 0.00087)` to `(0.1305, 0.0171, 0.00135)` (same qualitative
+    significance at alpha = 0.05). (2) **Violation of stated `8 < L < 20 um` selection criterion**:
+    across the 73 Fig. 4e bundles with recorded contour lengths (cols `B, H, L, R, Y`), 25/73
+    (34.2% — 20 bundles with `L < 8 um` down to `4.43 um`, and 5 bundles in `[0:1:10]` with
+    `L > 20 um` up to `52.74 um`) fall outside Methods p. 8's `"8 < L < 20 um"` window. Also rows
+    37–41 contain undocumented excluded outliers (`2.62–7.58 um` and `296–5225 um`). (3) **Strong
+    right-skewness**: because `SD > mean` in `[0:1:10]` and `L_p` spans 8–236 um, two-sided
+    Mann-Whitney U (`p = 0.01496`) and log-transformed Welch t-test (`p = 0.01619`) find a
+    statistically significant stiffness increase from `[0:1:10]` to `[1:1:10]`, whereas the
+    paper's untransformed Welch t-test (`p = 0.1162`) reports it as non-significant.
+  citation:
+    none: "binary xlsx spreadsheet in Figshare Source Data archive"
+    where: "Fig4e_persistence_length_data.xlsx ('Sheet5', A2:Y27 & A37:AB41)"
+    quote: "X4=X22=197.279758769351, X5=X21=53.6680569614863, X6=X19=13.137221669911, X7=X18=70.3044287054511, K3=K10=31.0787494721203"
+
+- id: q_figs_1_and_2_all_18_pvalues_swapped_and_10x_typo
+  kind: possible_error
+  about:
+    - figs1_2_pvalues_audit_reader
+    - printed_fig1c_p_01
+    - printed_fig1c_p_02
+    - printed_fig1c_p_03
+    - printed_fig1d_p_01
+    - printed_fig1d_p_02
+    - printed_fig1d_p_03
+    - printed_fig1f_p_01
+    - printed_fig1f_p_02
+    - printed_fig1f_p_03
+    - printed_fig2d_p_01
+    - printed_fig2d_p_02
+    - printed_fig2d_p_03
+    - printed_fig2e_p_01
+    - printed_fig2e_p_02
+    - printed_fig2e_p_03
+    - printed_fig2f_p_01
+    - printed_fig2f_p_02
+    - printed_fig2f_p_03
+    - cmp_fig1c_01_own_data_vs_printed
+    - cmp_fig2d_01_own_data_vs_printed
+    - cmp_swap_f1c01_vs_printed_f2d01_10x_typo
+  text: >
+    **ALL 18 p-values printed on Figs. 1c, 1d, 1f (p. 3) and Figs. 2d, 2e, 2f (p. 4) of
+    `bashirzadeh2021` are completely swapped between Fig. 1 and Fig. 2.** In `Figs_1_and_2_Pvalues.xlsx`,
+    `Sheet1` rows 1–18 hold Fig. 2 (α-actinin+fascin, matching `Source_data.xlsx` `Sheet3` to `< 5e-6`)
+    and feed Excel ToolPak Welch t-tests `Sheet3`–`Sheet11`, whereas `Sheet1` rows 23–40 hold Fig. 1
+    (α-actinin-only, matching `Source_data.xlsx` `Sheet2` to `< 5e-6`) and feed `Sheet12`–`Sheet20`.
+    Yet the published paper placed `Sheet3`–`Sheet11` (Fig. 2 results) onto **Fig. 1** (`1c`:
+    `0.0185, 0.0009, 0.0018`; `1d`: `0.0382, 0.0150, 0.0266`; `1f`: `0.0392, 0.0004, 0.0364`) and
+    placed `Sheet12`–`Sheet20` (Fig. 1 results) onto **Fig. 2** (`2d`: `0.0006, 0.0034, 0.0079`;
+    `2e`: `0.0338, 0.0261, 0.0217`; `2f`: `0.0241, 0.0168, 0.0435`). Furthermore, `Sheet12`
+    (`0.006397`, true Fig. 1c `0.1`) suffered an additional 10x decimal-place transcription error
+    when printed as `p = 0.0006` on Fig. 2d, and multiple values were truncated rather than rounded
+    to 4 decimal places (`0.000472 -> 0.0004`, `0.015065 -> 0.0150`, `0.026163 -> 0.0261`,
+    `0.021749 -> 0.0217`, `0.024161 -> 0.0241`). Also note Excel's integer rounding of Welch-Satterthwaite
+    `df` at `n = 3` per group shifts several p-values materially relative to exact continuous-df Welch
+    t-tests (e.g., `Sheet18` Fig. 1f `0.1`: `df = 2.403 -> 2` gives `0.0242` vs exact `0.0151`;
+    `Sheet13` Fig. 1c `0.2`: `df = 2.59 -> 3` gives `0.00343` vs exact `0.00585`; `Sheet20` Fig. 1f
+    `0.3`: `df = 3.57 -> 4` gives `0.0435` vs exact `0.04995`).
+  citation:
+    none: "binary xlsx spreadsheet in Figshare Source Data archive"
+    where: "Figs_1_and_2_Pvalues.xlsx ('Sheet1' & 'Sheet3'-'Sheet20')"
+    quote: "Sheet3=0.018545 (Fig2d 0.1) printed on Fig1c; Sheet12=0.006397 (Fig1c 0.1) printed as 0.0006 on Fig2d"
+
+- id: q_figs_1_and_2_caption_nguv_counts_are_replicates_not_diameters
+  kind: possible_error
+  about:
+    - fig1_fig2_guv_morphology_reader
+    - paper_fig1_nguv_01_small
+    - paper_fig1_nguv_01_large
+    - paper_fig1f_nguv_01_7to16
+    - paper_fig1g_aster_count_02
+    - paper_fig2_nguv_01_small
+    - paper_fig2f_nguv_01_7to16
+    - cmp_f1_01_small_true_vs_caption
+    - cmp_f1_01_large_true_vs_caption
+    - cmp_f1g_02_denom
+    - cmp_f2_01_small_true_vs_caption
+  text: >
+    Resolves both `bashirzadeh2021/q_fig1f_sample_count_mismatch` and
+    `bashirzadeh2021/q_fig1g_vs_fig1f_aster_count_paradox`: the captions of Fig. 1c, d
+    (`[389 42 23], [67 45 38], [188 145 128]`) and Fig. 2d, e (`[101 98 29], [147 58 71],
+    [137 82 24]`) state "(numbers in brackets are arranged in order of ascending GUV diameter)",
+    which is false. Direct summation of `Source_data.xlsx` `Sheet2` and `Sheet3` proves that all
+    these brackets are **total GUV counts per replicate experiment across ALL diameters** — and in
+    Fig. 1 `0.2` and `0.3`, the first entries (`67` and `188`) even come from unused extra blocks
+    (`J1:L3` and `F1:H3`) rather than analyzed Replicate 3 (`25` and `91`)! True pooled totals by
+    diameter `[7-12, 12-16, >16 um]` across the 3 replicates are `[314, 70, 70]`, `[48, 35, 25]`,
+    `[155, 121, 88]` for Fig. 1 and `[127, 57, 44]`, `[176, 59, 41]`, `[182, 33, 28]` for Fig. 2.
+    For Figs. 1f and 2f, the authors summed the first two replicate totals (`389+42=431` mis-added
+    as `429`, `67+45=112`, `188+145=333`; `101+98=199`, `147+58=205`, `137+82=219`), falsely
+    labeling them as `[7-16 um, >16 um]`. Because there are actually `70`, `25`, and `88` large
+    (>16 um) GUVs in Fig. 1 (not `23, 38, 128`), Fig. 1g's peripheral aster counts are no longer
+    impossible; however, Fig. 1g's caption prints `[35, 14, 53]` whereas `Sheet2` M48:N50 actually
+    computes `20/35` & `15/35` (vs `21/35` & `14/35` in `H43:I43`/`G47:H47`), `5/12` & `7/12`
+    (`N = 12`, NOT `14`!), and `17/53` & `36/53` (and Fig. 1f large-aster numerators in `P43:R45`
+    sum to `36, 13, 56` rather than `35, 12, 53`).
+  citation:
+    none: "binary xlsx spreadsheet in Figshare Source Data archive"
+    where: "Source_data.xlsx ('Sheet2' F1:S15, M43:N50 & 'Sheet3' F4:S13)"
+    quote: "Sheet2: N1:P3=42, N5:P7=23, Q11:S13=389; M49=5/12*100; Sheet3: N1:P3=101, N5:P7=98, Q11:S13=29"
+
+- id: q_source_data_formula_bugs_j11_and_plus1
+  kind: possible_error
+  about:
+    - fig1_fig2_guv_morphology_reader
+    - figs1_2_pvalues_audit_reader
+    - sheet2_fig1b_med_ring_a9_stored
+    - sheet3_fig2b_med_ring_a9_stored
+    - cmp_f2b_med_ring_correct_vs_a9
+  text: >
+    Four spreadsheet formula bugs reside inside `Source_data.xlsx` (`Sheet2` and `Sheet3`):
+    (1) **Omitted cell `J11` in `A6`** (`=F5+F8+F11+J5+J8+N2+N6+...`): drops `J11 = 2` rings in
+    `Sheet2` (shifting Fig. 1b medium Ring probability from `115/226 = 0.5088` in `T2` to
+    `113/224 = 0.5045` in `A9`) and drops `J11 = 6` rings in `Sheet3` (shifting Fig. 2b medium
+    Ring probability from `23/149 = 0.1544` in `T2` down to `17/143 = 0.1189` in `A9`, and visual
+    inspection of Fig. 2b confirms the buggy `0.119` value was plotted!).
+    (2) **Spurious `+1` in peripheral aster denominators**: both `Sheet2` and `Sheet3` compute
+    `Q43 = num/(SUM(N3:P3)+1)` (`8/12` instead of `8/11` in Fig. 1f; `13/19` instead of `13/18` in
+    Fig. 2f) and `O44 = num/(SUM(J10:L11)+1)` (`4/15` instead of `4/14` in Fig. 1f; `12/60` instead
+    of `12/59` in Fig. 2f). Removing the spurious `+1` shifts Fig. 1f `0.1` >16 um mean from `53.35%`
+    to `55.37%` and its Excel Welch p-value from `0.02416` to `0.03534` (and Fig. 1f `0.2` from
+    `0.01681` to `0.02080`).
+    (3) **`Sheet2` `V43:V45` / `X43:X45`** compute `STDEV(...)` (SD) rather than `STDEV(...)/SQRT(3)`
+    (SEM), whereas Fig. 1f plots SEM; and **`Sheet3` `Q48`** stores `'=7/13'` as a literal text string,
+    causing `AVERAGE(P48:R48)` to ignore it.
+    (4) `Sheet1` and `Sheet1 (2)` are superseded 2-bin draft sheets, and `Sheet2` rows 42–89 /
+    `Sheet3` rows 52–72 / `Sheet4` rows 14–15 (`0min` vs `60min`, `Myosin`, `filopodia`, `shape
+    changes`) contain unrelated scratch/auxiliary analyses not appearing in `bashirzadeh2021`.
+  citation:
+    none: "binary xlsx spreadsheet in Figshare Source Data archive"
+    where: "Source_data.xlsx ('Sheet2' A6, Q43, O44 & 'Sheet3' A6, Q43, O44, Q48)"
+    quote: "A6=F5+F8+F11+J5+J8+N2+N6+Q12; Q43=8/(SUM(N3:P3)+1); O44=4/(SUM(J10:L11)+1); Q48='=7/13'"
+
+- id: q_fig3c_caption_count_swap_and_diameter_threshold_error
+  kind: possible_error
+  about:
+    - fig3_cluster_localization_reader
+    - paper_fig3c_nguv_alpha_only
+    - paper_fig3c_nguv_alpha_fascin
+    - cmp_f3c_n_alpha_only_vs_caption
+    - cmp_f3c_n_alpha_fascin_vs_caption
+    - cmp_f3_raw_16_25_vs_61
+    - cmp_f3_raw_gt25_vs_26
+  text: >
+    `Source_data.xlsx` `Sheet4` reveals THREE discrepancies in Fig. 3c & 3d (p. 5):
+    (1) **Swapped sample counts in Fig. 3c caption**: the caption prints
+    `N_GUVs>20 um = 167 [87 (α-actinin), 80 (α-actinin+fascin)]`, whereas `Sheet4` proves `80` is
+    `NoFascin>16um` (`N5:P5 = 3, 50, 27` -> `3.75%` center, `62.50%` pole) and `87` is `fascin`
+    (`J4:L4 + J6:L6 = 61 + 26 = 87` -> `29.89%` center, `47.13%` pole — the exact same 87 GUVs
+    plotted in Fig. 3d!).
+    (2) **Misstated diameter threshold in Fig. 3c**: the caption and text claim Fig. 3c analyzes
+    GUVs with diameter `>20 um`, whereas `Sheet4` explicitly titles the table `A1 = 'cluster location,
+    >16 um GUVs'`, labels `M10 = 'NoFascin>16um'`, and computes the α-actinin+fascin bar directly
+    from `16–24 um` (`J4:L4`, n=61) + `>24 um` (`J6:L6`, n=26).
+    (3) **Hardcoded summary vs stale raw breakdown**: in `Sheet4`, cells `K4=34`, `L4=16` (n=61)
+    and `J6:L6=(15, 7, 4)` (n=26) are hardcoded numbers that disagree with the raw per-concentration
+    table `B4:G6` (`16_25`: `11 center, 42 pole, 9 noCluster`, n=62; `>25`: `6, 3, 2`, n=11),
+    indicating the diameter cut was shifted from `25 um` to `24 um` manually without updating `B4:G6`.
+  citation:
+    none: "binary xlsx spreadsheet in Figshare Source Data archive"
+    where: "Source_data.xlsx ('Sheet4', A1:P12)"
+    quote: "A1='cluster location, >16 um GUVs'; J10='fascin' (n=87); M10='NoFascin>16um' (n=80)"
+
+- id: q_fig4cd_mat_unplotted_actin_and_undocumented_supp_fig8e
+  kind: reading
+  about:
+    - fig4c_line_profile_reader
+    - fig4d_angular_profile_reader
+    - mat_fig4c_alpha_peak_norm
+    - mat_fig4d_npoints
+    - mat_s8e_ring_npoints
+  text: >
+    Inspection of `Fig4c-d.mat` (15 MATLAB v5 double arrays) clarifies three undocumented details
+    of Figs. 4c, 4d, and Supplementary Fig. 8e: (1) Despite its filename `Fig4c-d.mat`, the file
+    also stores the 18-point (`0–3.953 um`) cross-section profiles `ValuesActinRing`,
+    `ValuesAlphaRing`, and `ValuesFascinRing` plotted in **Supplementary Fig. 8e** (mean-normalized
+    peaks `1.525, 1.253, 1.088` at `x = 2.33–2.56 um`, strong colocalization `r = 0.791–0.921`).
+    (2) In Fig. 4c (`ValuesAlpha`, `ValuesFascin`, n=213, `0–49.30 um`), both crosslinkers peak at
+    the central cluster (`r = +0.897`), with α-actinin enriched more sharply (`1.911x` mean vs
+    fascin `1.469x`); `ValuesActin` has only `209` points (`0–48.37 um`), matching a second scan
+    set (`*2`, n=209). (3) In Fig. 4d (`ValuesAlphaoval`, `ValuesFascinoval`, n=360, `0–359 deg`),
+    the paper omits the accompanying `ValuesActinoval` array (`CV = 15.9%`) and plots raw intensities
+    on equal-span 500-a.u. axes (`1400–1900` vs `500–1000`), where both crosslinkers exhibit nearly
+    identical weak relative modulation (`CV = 3.17%` α-actinin vs `2.55%` fascin). The quantitative
+    signature of sorting outside the cluster only appears by correlating against the unplotted actin
+    channel (`r(actin, fascin) = +0.421` vs `r(actin, α-actinin) = +0.170`; secondary circle
+    `Values*2oval`: `+0.430` vs `+0.078`).
+  citation:
+    none: "binary MATLAB v5 .mat file in Figshare Source Data archive"
+    where: "Fig4c-d.mat (all 15 arrays)"
+    quote: "ValuesAlpha/ValuesFascin (213x2), Values*oval (360x2), Values*Ring (18x2)"
+
+- id: q_missing_panels_and_unreleased_binder_data
+  kind: unstated_input
+  about:
+    - fig4c_line_profile_reader
+    - fig4e_persistence_length_reader
+  text: >
+    Multiple quantitative figure panels in `bashirzadeh2021` are completely absent from the Figshare
+    Source Data deposit (`10.6084/m9.figshare.16337442.v1`): **Fig. 3b** (actin intensity profiles),
+    **Fig. 4g** (20x20 AFINES crosslinker 2D PDFs), **Fig. 4h** (AFINES Binder cumulant trajectories
+    and SD error bars), **Supp. Fig. 3c** (ring radial deviation), **Supp. Fig. 7b & 7d** (bulk vs
+    aster arm bundle widths), **Supp. Fig. 8b & 8c** (circular and ring line intensity profiles),
+    **Supp. Fig. 9b** (high-fascin actin line intensity), and **Supp. Fig. 11** (AFINES count heatmaps).
+    Because Fig. 4g and Fig. 4h data and post-processing scripts are absent from BOTH `bashirzadeh2021_code`
+    and `bashirzadeh2021_source_data`, `bashirzadeh2021/q_binder_cumulant_eq5_vs_fig4h_and_prose`
+    cannot be settled from the released archives.
+  citation:
+    none: "complete file inventory of Figshare archive 10.6084/m9.figshare.16337442.v1"
+    where: "corpus/actin_bundling/code/bashirzadeh2021_source_data"
+    quote: "Source_data.xlsx, Figs_1_and_2_Pvalues.xlsx, Fig4e_persistence_length_data.xlsx, Fig4c-d.mat"
+
+- id: q_graham2024_pair_audit_and_quantitative_comparison
+  kind: unstated_model
+  about:
+    - fig4e_persistence_length_reader
+    - fig1_fig2_guv_morphology_reader
+    - fig3_cluster_localization_reader
+    - fig4c_line_profile_reader
+    - fig4d_angular_profile_reader
+    - paper_Lp_0_1_10
+    - paper_Lp_1_3_10
+    - graham2024/actin_persistence_length_from_rigidity
+    - graham2024/max_filament_length_circumference
+    - graham2024/cytosim_actin_vasp_arp23_vca
+    - graham2024/aster_spoke_enrichment
+    - graham2024/fig4f_0nM_fig
+    - graham2024/fig6c_asters_fig
+    - graham2024/fig6f_spoke_enrichment_fig
+  text: >
+    Cross-record relate/validate audit of `bashirzadeh2021_source_data` + `graham2024` (Graham et al.,
+    PNAS 121(3), e2309152121, 2024): **0 ModelAtlas relations** (273 model pairs audited), **0 cited
+    links**, and **0 valid CrossValidation entries** in either direction.
+    (1) **False-positive pairing cause**: `pipeline/pairs.py` paired these records solely via
+    `graham2024 cites Bashirzadeh 2021 (ref-12)` (`\bBashirzadeh\b.*\b2021\b`), which matched Yashar
+    Bashirzadeh as second author of **Wubshet, Bashirzadeh & Liu (MBoC 32, 1634-1640, 2021)** — cited
+    twice in `graham2024` as `ref-12` (pp. 2, 10, 11) and duplicate `ref-44` (pp. 7, 12) for Arp2/3
+    suppression of fascin bundles in GUVs — NOT Bashirzadeh et al. (*Commun. Biol.* 4, 1136, 2021) or
+    its Figshare Source Data (`10.6084/m9.figshare.16337442.v1`).
+    (2) **Why no relations, cited links, or validations apply**: all 7 `bashirzadeh2021_source_data`
+    models are `role: processing`, `software: true` Excel/MATLAB readers taking discrete integer
+    selectors over fixed Figshare files (not continuous physical equations or predictive models of
+    `graham2024`'s VASP-Arp2/3-VCA droplets); conversely, `graham2024`'s 3D CytoSim model is
+    `runnable: false` and lacks α-actinin and fascin (*"Importantly, our system lacks fascin"*, p. 8),
+    its `actin_persistence_length_from_rigidity` models single bare F-actin filaments (absent from
+    `Sheet5`), and its other 37 runnable models predict VASP-Arp2/3-VCA setup/ODE/radial-density/FRAP
+    quantities disjoint from `bashirzadeh2021_source_data`'s 44 `origin: measured` datums (crosslinked
+    bundle `L_p`, SEMs, GUV/bundle sample counts, and `.mat` array lengths).
+    (3) **Quantitative comparison A — Bundle `L_p` (`Sheet5`) vs single-filament `L_p` (`graham2024`)**:
+    `graham2024/actin_persistence_length_from_rigidity` maps Table S1 `K_bend = 0.075 pN*um^2` (Gittes
+    et al. 1993) to `L_p = 18.11 um` at `300 K` (`18.22 um` at `298.15 K`, `17.86 um` at CytoSim
+    `k_B T = 0.0042 pN*um`; printed `~17 um` on p. 7). Across `Sheet5`'s 6 crosslinked-bundle
+    conditions (`N = 109` rows, `102` unique), mean `L_p` spans `1.84x-5.51x` above `18.11 um`
+    (`K_eff(300 K) = 0.138-0.413 pN*um^2`): `[0:1:10]` `33.37 +/- 7.68 um` (`1.84x`), `[0:3:10]`
+    `39.38 +/- 9.13 um` (`2.17x`), `[1:1:10]` `54.25 +/- 10.42 um` (`3.00x`), `[1:2:10]`
+    `77.83 +/- 19.05 um` (`4.30x`), `[1:3:10]` `99.71 +/- 13.97 um` (`5.51x`; deduplicated `103.99 um`),
+    and Supp. Fig. 9c `[3:3:10]` `95.62 +/- 21.86 um` (`5.28x`), implying modest effective bundle sizes
+    (`N_eff = 1.8-5.5` under uncoupled linear scaling or `1.4-2.4` under shear-coupled quadratic
+    scaling). Critically, because raw `Sheet5` distributions are strongly right-skewed, **50.0%
+    (11/22)** of `[0:1:10]` bundles (median `18.02 um`, min `8.10 um`), **42.9% (6/14)** of `[0:3:10]`
+    bundles (min `9.48 um`), and **21.1% (23/109)** of all measured bundles (`20/109 = 18.3% < 17 um`)
+    fall *below* `graham2024`'s single-filament `18.11 um`; adding fascin collapses this `< 18.11 um`
+    tail to `5.6%-14.3%` (`0%` at `[3:3:10]`).
+    (4) **Quantitative comparison B — Confinement diameter, `L_p/D`, `L_max = 2*pi*R_drop`, and ring/aster
+    control**: `graham2024` confines actin in small VASP droplets (`R_drop = 1 um`, `D = 2 um`,
+    `L_max = 2*pi*R_drop = 6.283 um`, single-filament `L_p/D = 8.5-9.1`; Fig. 1C experimental average
+    `D ~ 3 um`, histogram weighted mean `2.50 um` VASP-only and `4.12 um` VASP+Arp2/3+VCA, `99%+ < 7.4 um`),
+    where single filaments bend into peripheral rings (`34.2%` Ring + `53.6%` Disc at `0 nM` Arp2/3,
+    Fig. 4F) until Arp2/3 shortens median `L_fil` below `D = 2 um` (`~5.6 um` -> `~0.75 um` at `150 nM`,
+    Fig. 5E; `76.1%` Shells) or generates asters at high actin:VASP (`4:1 uM`: `0%` -> `76.7%` at
+    `500 nM` Arp2/3, Fig. 6C). By contrast, `bashirzadeh2021_source_data` GUV bins (`7-12`, `12-16`,
+    `>16 um`; Fig. 3d split `24 um`; Fig. 4c span `49.30 um`; circumferences `pi*D = 22.0-75.4 um`)
+    are `3.5x-25x` wider: at `D = 16-24 um`, single-filament `L_p/D = 0.71-1.06`, whereas crosslinked
+    bundles restore `L_p/D = 1.39-6.23`, and `67/73` (**91.8%**) of `Sheet5` bundle contour lengths
+    (`4.43-52.74 um`, median `10.28 um`) exceed `graham2024`'s `L_max = 6.283 um` while staying below
+    large-GUV circumferences. Stiffening bundles with fascin shifts medium GUVs away from rings (`50.9%`
+    in `Sheet2` [115/226] -> `15.4%` true / `11.9%` buggy `A9` in `Sheet3` [23/149]) and shifts >16 um
+    asters from periphery (`3.75%` central, `62.50%` pole in `Sheet4` `NoFascin>16um`, `n=80`) to
+    center (`29.89%` central overall, `57.69%` at `>24 um`, `n=87`).
+    (5) **Quantitative comparison C — Spatial sorting in asters (`Fig4c-d.mat` vs `graham2024` Fig. 6F)**:
+    Both papers measure core-vs-spoke sorting with radial/circular confocal profiles (`graham2024`
+    Methods p. 11 circular scan `1 um` outside the core; `Fig4c-d.mat` `49.30 um` line + `360 deg`
+    circle). `graham2024` finds sharp **`7.6x-10x`** VASP-vs-Arp2/3 spoke enrichment (Fig. 6F digitized
+    `0.563 +/- 0.175` vs `0.074 +/- 0.070`; text `6.8 +/- 2.3%` vs `0.69 +/- 0.52%`), whereas
+    `Fig4c-d.mat` shows only a **`1.30x`** central α-actinin/fascin peak-normalized ratio (`1.911` vs
+    `1.469`; secondary scan `1.909` vs `1.414`, `1.35x`), weak angular modulation (`CV = 3.17%`
+    α-actinin vs `2.55%` fascin vs `15.88%` unplotted actin), and an exploratory Graham-style
+    actin-normalized spoke/core ratio (Fig. 4d top-10% actin angles vs Fig. 4c cluster peak) of
+    `E_fascin = 1.19` vs `E_alpha = 0.86` (**`1.38x`**; `[23, 27.5] um` core window: `0.92` vs `0.72`,
+    **`1.28x`**) — `~6x` smaller in fold amplitude, so sorting in `Fig4c-d.mat` appears mainly in
+    angular phase correlation with actin (`r = +0.421` fascin vs `+0.170` α-actinin).
+  citation:
+    none: "cross-record audit of Figshare Source Data vs graham2024 (PNAS 121, e2309152121, 2024)"
+    where: "Fig4e_persistence_length_data.xlsx ('Sheet5'), Source_data.xlsx ('Sheet2'-'Sheet4'), Fig4c-d.mat vs graham2024 pp. 2, 6-11, Table S1"
+    quote: "Sheet5 N=109 bundles (L_p=33.37-99.71 um, L=4.43-52.74 um), Sheet2-4 GUV bins (7-12, 12-16, >16, >24 um), Fig4c-d.mat (ValuesAlpha/Fascin/Actin & *oval)"
+

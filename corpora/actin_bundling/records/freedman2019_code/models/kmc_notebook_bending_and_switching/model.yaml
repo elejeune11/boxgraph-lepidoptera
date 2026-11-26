@@ -1,0 +1,25 @@
+id: kmc_notebook_bending_and_switching
+name: live kmc.ipynb adapter for gap bending energy f(x, Lp), Fig. 3B switching probability, and lattice site count
+role: model
+software: true
+stated:
+  file: xlink_sorting_paper/kmc.ipynb
+  lines: "98-143"
+  quote: "def f(x,Lp):"
+  where: "Cells 2-4 (site_width, dxl, f, ratio_at_dist, p_switch)"
+equation: "dxl = l_long - l_short; max_n_sites = int(L_0 / site_width); f(x, Lp) = (Lp*1e3/site_width)/x * arcsin((dxl/site_width)/x)^2; p_switch = exp(-f) / (1 + exp(-f))"
+inputs:
+  site_width: {quantity: binding_site_spacing, unit: nm}
+  l_long: {quantity: crosslinker_length, unit: nm}
+  l_short: {quantity: crosslinker_length, unit: nm}
+  Lp: {quantity: filament_persistence_length, unit: um}
+  x_sites: {quantity: gap_length_sites, unit: dimensionless}
+  max_filament_length: {quantity: filament_length, unit: nm}
+outputs:
+  dxl: {quantity: crosslinker_length_difference, unit: nm}
+  max_n_sites: {quantity: lattice_site_count, unit: dimensionless}
+  gap_distance: {quantity: gap_length, unit: um}
+  U_kBT: {quantity: gap_bending_energy_thermal, unit: dimensionless}
+  p_switch: {quantity: site_switching_probability, unit: dimensionless}
+settings: {}
+stochastic: false

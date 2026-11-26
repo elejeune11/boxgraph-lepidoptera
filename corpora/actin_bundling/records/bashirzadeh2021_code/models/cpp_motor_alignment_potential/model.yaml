@@ -1,0 +1,20 @@
+id: cpp_motor_alignment_potential
+name: Line-by-line Python port of C++ motor::update_alignment() and motor::alignment_penalty() (src/motor.cpp:392-435,621-639)
+role: model
+stated:
+  file: src/motor.cpp
+  lines: "406-422"
+  quote: "align_eng = kalign * (1.0 - c);"
+  where: "src/motor.cpp:392-435, 621-639; src/potentials.cpp:38-89; prog/network.cpp:530-534, 549-553"
+equation: "c = cos(theta); for par_flag=1: U_align = kalign*(1 - c), tau_align = kalign*sin(theta); for par_flag=-1: U_align = kalign*(1 + c); for par_flag=0: U_align = kalign*(1 - |c|); p_metro = exp(-U_align / kT)"
+inputs:
+  kalign: {quantity: alignment_penalty, unit: pN*um}
+  par_flag: {quantity: alignment_mode, unit: dimensionless}
+  theta: {quantity: filament_pair_angle, unit: rad}
+  temperature: {quantity: thermal_energy, unit: pN*um}
+outputs:
+  U_align: {quantity: potential_energy, unit: pN*um}
+  tau_align: {quantity: torque, unit: pN*um}
+  p_metro_align: {quantity: probability, unit: dimensionless}
+settings: {}
+stochastic: false

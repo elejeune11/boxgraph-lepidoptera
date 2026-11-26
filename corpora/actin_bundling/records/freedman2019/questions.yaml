@@ -1,0 +1,702 @@
+- id: q_kmc_figs3a_switching_discrepancy
+  kind: unexplained_difference
+  about:
+    - kmc_growing_bundle_fig3
+    - run_kmc_figs3a
+    - cmp_kmc_switching_ratio_figs3a
+    - cmp_kmc_epsilon_figs3a
+    - figs3a_switching_ratio
+    - figs3a_effective_barrier
+  text: >
+    Running the stated growing-bundle 1D KMC model (Fig. 3A, p. 16194-16195: Poisson addition of
+    empty sites at rate mu_grow / l_b = (40 nm/s)/(37 nm) = 1.081 sites/s, same-type binding at
+    mu_on = 0.2/site/s, and dissimilar binding at mu_on * exp(-U(d * l_b)/(k_B T)) with Eq. 1 for
+    L_p = 17 um, Delta l_xl = 27 nm, L_0 = 15 um) gives N_diff / N_same ~= 0.0225 and
+    epsilon_predicted ~= 3.79 (confirmed by exact stationary Markov-chain solution pi*Q = 0 giving
+    0.02251 and 3.794), whereas Fig. S3A right inset prints N_diff / N_same = 0.016 and epsilon = 4.1.
+    Unstated algorithmic choices in the KMC (such as whether empty sites left behind the barbed-end
+    cross-linker also fill with subsequent bindings, deterministic vs. Poisson growth steps, or how
+    binding-site index offsets enter U(l_g)) could shift N_diff / N_same; the printed text does not
+    specify these details.
+  citation:
+    page: 12
+    printed_page: "SI-6"
+    quote: "The inset shows the switching ratio for these data"
+    where: Fig. S3A
+
+- id: q_afines_not_runnable
+  kind: unstated_model
+  about:
+    - afines_bundle_simulation
+  text: >
+    The full 2D agent-based AFINES simulation (SI Section A, Eqs. 1-6, Table S1) is marked
+    runnable: false because reproducing its 2000 s trajectories at dt = 2e-5 s (10^8 steps per
+    seed x 40 seeds) requires the C++ AFINES implementation (separately tracked in freedman2019_code),
+    and the paper omits essential implementation parameters: hydrodynamic radius R in Stokes mobility
+    SI Eq. (6), MC head capture radius and spatial grid lookup rule (g = 2.5 um^-1), angular bending
+    torque lever-rule propagation from U_xl^bend onto filament beads, whether U_xl^bind is excluded
+    from Delta U in MC acceptance probabilities to avoid double-counting k_on/k_off, and the
+    bending-stiffness ratio on the undefined (200, 300) nm interval.
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "In AFINES, actin filaments and passive crosslinkers are modeled as coarse-grained entities"
+    where: SI Section A
+
+- id: q_kappa_long_domain_gap
+  kind: possible_error
+  about:
+    - crosslinker_bending_calibration_si
+    - crosslinker_bending_calibration_continuous
+    - afines_l_long_phys_diff
+  text: >
+    SI Section A (p. 9 / SI-3) states kappa_long^B / kappa_short^B = 22 * l_long / l_short - 21
+    for l_long <= 200 nm and 4 for l_long >= 300 nm. Because l_short = 200 nm and l_long spans
+    [200, 1200] nm (Table S1), the condition l_long <= 200 nm covers only the single point
+    l_long = 200 nm (ratio = 1) and leaves the entire interval (200, 300) nm — including
+    l_long = 227 nm used in Fig. 2C, Fig. 5B, Fig. S2, and Movie S2 — undefined. Moreover, at
+    l_long = 300 nm the linear expression equals 12 rather than 4, whereas it reaches 4 at
+    l_long = 227.27 nm (3.97 at l_long = 227 nm). A continuous capped-ramp variant
+    (crosslinker_bending_calibration_continuous) is added beside the verbatim model.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "empirically, we suppressed this bias by setting"
+    where: SI Section A
+
+- id: q_kexv_units_and_vector_eq3
+  kind: possible_error
+  about:
+    - excluded_volume_si_eq3_printed
+    - excluded_volume_si_eq3_energy_units
+    - afines_kexv_printed
+    - kexv_energy_scale_added
+  text: >
+    SI Eq. (3) writes the excluded volume potential energy as U_ij = k_exv (1 - r_ij / r_max)^2
+    for |r_ij| < r_max (0 for |r_ij| > r_max), placing the vector r_ij inside a scalar difference
+    and omitting |r_ij| = r_max. More importantly, because (1 - |r_ij|/r_max)^2 is dimensionless,
+    U_ij has energy dimension [energy] only if k_exv has units of energy (pN*um), whereas both
+    Table S1 (p. 10) and Fig. 2D caption (p. 3) print k_exv = 0.08 pN*um^2 ([energy]*[length]).
+    A dimensionally consistent variant (excluded_volume_si_eq3_energy_units) is included alongside
+    the verbatim model.
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "restricted from overlapping via a soft (Hookean) excluded volume interaction"
+    where: SI Eq. 3 & Table S1
+
+- id: q_lp_kbt_rounding_movies3
+  kind: unexplained_difference
+  about:
+    - persistence_length_from_kappa_b
+    - cmp_lp_min_movie_s3
+    - cmp_lp_max_movie_s3
+    - afines_kappa_b_min
+    - afines_kappa_b_max
+    - afines_lp_min_movies3
+    - afines_lp_max_movies3
+  text: >
+    Evaluating L_p = kappa_B / (k_B T) at Table S1 temperature T = 300 K (k_B T = 0.0041419 pN*um)
+    gives nominal values L_p = 2.414 um for kappa_B = 0.01 pN*um^2 and L_p = 120.72 um for
+    kappa_B = 0.5 pN*um^2, ~3.4% below Movie S3's printed endpoints L_p = 2.5 um and L_p = 125 um
+    (both comparisons reproduce under BoxGraph printed-input rounding because 0.01 and 0.5 are printed
+    to 1 significant digit). Both printed endpoints equal kappa_B / 0.004 exactly (0.01/0.004 = 2.5
+    and 0.5/0.004 = 125), indicating the Movie S3 labels were computed using the rounded thermal
+    energy k_B T = 0.004 pN*um rather than exact k_B * (300 K).
+  citation:
+    page: 15
+    printed_page: "SI-9"
+    quote: "Lp = {2.5, 17, 125} µm corresponding to Fig. 2D"
+    where: Movie S3 caption
+
+- id: q_table_s1_growth_length_lower_bound
+  kind: possible_error
+  about:
+    - filament_growth_rate_si_eq2
+    - cmp_afines_growth_rate_min
+    - afines_lg_min_table_s1
+    - afines_growth_rate_min_movies6
+    - afines_crossover_growth_rate
+  text: >
+    Table S1 lists k_g = 1 s^-1 and growth length l_g in [0.008, 0.1] um, which by SI Eq. (2)
+    (k_grow = k_g * Delta l_a) spans growth rates [8, 100] nm/s. This contradicts Movie S6
+    (mu_grow = {2.5, 10, 40, 100} nm/s) and Fig. 5C (which plots growth rates down to ~2.5-3 nm/s
+    and reports a cross-over at ~3 nm/s). In addition, Table S1 reuses the symbol l_g for barbed-end
+    growth length (called Delta l_a in SI Eq. 2), colliding with Main Text Eq. (1) where l_g denotes
+    gap length between dissimilar cross-linkers.
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "lg growth length (µm) [0.008, 0.1]"
+    where: Table S1
+
+- id: q_table_s1_nf_units_and_nl0_mismatch
+  kind: possible_error
+  about:
+    - afines_nf_printed
+    - afines_nl0_growing
+    - afines_init_length_fig5b
+    - afines_link_length_la
+  text: >
+    Table S1 (p. 10) contains two parameter-table inconsistencies: (1) N_f is listed as
+    "number of filaments (um^-2) | 2", attaching areal-density units um^-2 to a dimensionless
+    filament count (2 filaments in a 35 x 20 um^2 box); (2) N_{l,0} ("intial number of links per
+    filament") is listed as "2, 15" with link rest length l_a = 1 um, implying an initial growing
+    filament length of 2 um, whereas Fig. 5B caption (p. 5) states filaments are initially 1 um long.
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "Nf number of filaments (µm−2 ) 2"
+    where: Table S1
+
+- id: q_unstated_stokes_radius
+  kind: unstated_input
+  about:
+    - stokes_mobility_si_eq6
+    - brownian_step_si_eq6
+    - bead_hydrodynamic_radius_added
+  text: >
+    SI Eq. (6) (p. 9) specifies Stokes mobility mu = 1 / (6 pi R nu) with dynamic viscosity
+    nu = 0.001 Pa*s in Table S1, but the particle radius R for actin beads and cross-linker heads
+    is not stated anywhere in the main text, SI text, or Table S1. Additionally, SI text describes
+    F(r(t)) as "the gradient of the potential" (missing the negative sign of force -grad U).
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "use the Stokes relation µ = 1/(6πRν) in the damping term"
+    where: SI Section A
+
+- id: q_eq1_eq2_short_gap_cutoff_and_mc_settings
+  kind: choice
+  about:
+    - gap_bending_energy_eq1
+    - equilibrium_lattice_mc_eq2
+    - run_eq_lattice_baseline
+    - ref_eq_lattice_sweeps
+  text: >
+    Main Text Eq. (1) U(l_g) = (k_B T L_p / l_g) arcsin^2(Delta l_xl / l_g) is undefined in the
+    reals whenever l_g < Delta l_xl (which occurs in Eq. 2 and Fig. 2C-D for all lattice gaps
+    with d * l_b < Delta l_xl, e.g. d <= 2 for Delta l_xl = 100 nm and d <= 27 for Delta l_xl = 1000 nm).
+    The paper does not explicitly state the handling of l_g <= Delta l_xl (treated as infinite
+    energy / geometrically forbidden in equilibrium_lattice_mc_eq2), nor does it state the
+    Metropolis sweep count, burn-in, initial state, or boundary conditions (open vs. periodic) used
+    to generate the lattice-model curves in Fig. 2C-D.
+  citation:
+    page: 3
+    printed_page: "16194"
+    quote: "state of the lattice using the Metropolis algorithm: iteratively, we"
+    where: Eq. 2 & text
+
+- id: q_fig5e_off1_changes_equilibrium_bundling_energy
+  kind: reading
+  about:
+    - crosslinker_potential_si_eq4
+    - run_xl_potential_short_base
+    - run_xl_potential_short_4x_off1
+    - afines_k_off_1_short_2x
+    - afines_k_off_1_short_4x
+  text: >
+    In Fig. 5E (p. 5) and Table S1 (p. 10), single-filament affinity is lowered by increasing
+    k_short^{off,1} from 0.05 to 0.1 and 0.2 s^-1 while holding k_short^{on,1} = k_short^{on,2} = 2 s^-1
+    and k_short^{off,2} = 0.05 s^-1 fixed. By SI Eq. (4), the doubly-bound binding energy is
+    U_xl^bind = -k_B T [ln(k^{on,1}/k^{off,1}) + ln(k^{on,2}/k^{off,2})], so increasing
+    k_short^{off,1} by 2x or 4x without adjusting k^{on,2}/k^{off,2} also weakens the equilibrium
+    doubly-bound bundling free energy of short cross-linkers by +k_B T ln(2) or +k_B T ln(4),
+    rather than isolating purely single-filament residence kinetics at constant equilibrium bundle
+    affinity.
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "Thus, the potential energy of a crosslinker is"
+    where: SI Eq. 4 & Fig. 5E
+
+- id: q_caption_crossref_typos
+  kind: possible_error
+  about:
+    - figs3a_switching_ratio
+    - fig5e_off1_ratio_2
+  text: >
+    Three minor figure cross-reference typos appear in the SI captions: (1) Fig. S3A caption (p. 12)
+    refers to "the same simulations as Fig. 3B" (Fig. 3B is an analytical curve; the simulations are
+    in Fig. 3C) and writes k_on instead of mu_on; (2) Movie S5 caption (p. 15) refers to
+    "Fig. S4(B,left) with a zoom showing Fig. 4(B,left)" instead of Fig. S4(A,right) and Fig. 4(A,right);
+    (3) Movie S7 caption (p. 15) refers to "Fig. 5E (left)" instead of Fig. 5E (top), as the two panels
+    in Fig. 5E are stacked vertically.
+  citation:
+    page: 12
+    printed_page: "SI-6"
+    quote: "Data from the same simulations as Fig. 3B at equal concentrations"
+    where: Fig. S3A, Movie S5, Movie S7 captions
+
+- id: q_fig2b_omits_initial_gap_energy
+  kind: possible_error
+  about:
+    - equilibrium_lattice_energy_eq2
+    - equilibrium_lattice_mc_eq2
+    - run_eq_lattice_energy_fig2b
+  text: >
+    Fig. 2B (p. 3 / 16194) depicts an empty lattice site inside an initial gap of length 6 l_b
+    switching to a short cross-linker (new gap 2 l_b) or long cross-linker (new gap 4 l_b), and
+    prints the Boltzmann weights exp((mu_S - U(2 l_b))/k_B T) and exp((mu_L - U(4 l_b))/k_B T).
+    By Eq. (2), the actual energy change is Delta U_lat = -mu_S + U(2 l_b) - U(6 l_b) (or
+    -mu_L + U(4 l_b) - U(6 l_b)), so exp(-Delta U_lat / k_B T) omits the initial gap energy
+    +U(6 l_b)/k_B T (which equals ~16.72 k_B T at Delta l_xl = 100 nm, L_p = 17 um, l_b = 37 nm,
+    and ~1.14 k_B T at Delta l_xl = 27 nm). equilibrium_lattice_mc_eq2 uses the full Eq. (2)
+    difference Delta U_lat rather than the Fig. 2B schematic label.
+  citation:
+    page: 3
+    printed_page: "16194"
+    quote: "Lattice model example, in which there is initially a gap of length 6lb"
+    where: Fig. 2B
+
+- id: q_dissociation_constant_units_and_terminology
+  kind: reading
+  about:
+    - dissociation_constant_kd
+    - run_kd_afines_single
+    - fig5e_off1_ratio_2
+    - fig5e_off1_ratio_4
+  text: >
+    Audit reading disagreement: dissociation_constant_kd declares binding_rate_solution (k_on) in
+    1/s and K_d = k_off / k_on as dimensionless (matching AFINES first-order MC attachment/detachment
+    rates in Table S1), whereas p. 1 (16192) introduces K_d = k_off / k_on in the context of solution
+    biochemistry for alpha-actinin (Ref. 8), where second-order k_on has units M^-1 s^-1 and K_d has
+    molar concentration units (M). Separately, the paper's Fig. 5E caption (p. 5 / 16196) loosely
+    refers to the first-order unbinding rate constant k_short^{off,1} (units s^-1 in Table S1) as
+    "the dissociation constant of the short cross-linker from single filaments".
+  citation:
+    page: 1
+    printed_page: "16192"
+    quote: "an optimal binding affinity (Kd = koff /kon ) for the"
+    where: text & Fig. 5E caption
+
+- id: q_si_minor_typos_and_terminology
+  kind: possible_error
+  about:
+    - filament_potential_si_eq1
+    - crosslinker_potential_si_eq4
+    - afines_bundle_simulation
+    - afines_avg_window
+  text: >
+    Additional minor inconsistencies/typos noted during independent audit of the SI Appendix:
+    (1) SI Section A (p. 8 / SI-2, above SI Eq. 1) states internal forces on an actin filament are
+    obtained from "the gradient of the potential energy U_f(t)" (missing the negative sign -grad U_f,
+    paralleling the same sign omission below SI Eq. 6);
+    (2) SI Section A (p. 8 / SI-2, below SI Eq. 4) writes that k_xl^{on,j} (k_xl^{off,j}) is the rate
+    constant for binding (unbinding) "if j - 1 heads (j in {1, 2}) are already bound", which for
+    unbinding at j = 1 literally reads "0 heads are already bound" instead of "j - 1 other heads are
+    bound" (clarified by Table S1 and Fig. 5D);
+    (3) SI Section B (p. 9 / SI-3) cites "(Fig. 1C and Fig. S1)" for extracted domains, whereas
+    extracted domains are shown in Fig. 1D (Fig. 1C shows continuous AFINES bundles);
+    (4) Fig. S5 caption (p. 14 / SI-8) drops the unit "s" in "a consistent 100 time window of
+    1500 - 1600 s";
+    (5) Movie S1 caption (p. 15 / SI-9) states "rho_short/rho_long = {0.5, 1, 2}, corresponding to
+    the images in Fig. 1C-D", whereas Fig. 1C actually plots rho_short/rho_long = {0.67, 1, 2}
+    (0.50 appears only in Fig. 1D).
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "internal forces on an actin filament can be obtained from the gradient"
+    where: SI Section A, Section B, Fig. S5, Movie S1
+
+- id: q_si_eq2_barbed_end_split_remainder
+  kind: reading
+  about:
+    - filament_growth_rate_si_eq2
+    - afines_bundle_simulation
+  text: >
+    SI Section A below Eq. (2) (p. 8 / SI-2) states that starting from l_{a,1}(0) = l_a, each growth
+    event increments l_{a,1} by Delta l_a and "If l_{a,1}(t) + Delta l_a > 2 l_a, the barbed end link
+    is split into two links, such that each has rest length l_a". Resetting both split links to l_a
+    strictly when l_{a,1} + Delta l_a > 2 l_a discards the overshoot above 2 l_a (for l_a = 1 um and
+    Delta l_a = 0.1 um, 11 increments adding 1.1 um yield 1.0 um of permanent contour length, giving
+    realized growth rate (10/11) * k_g * Delta l_a rather than exact k_g * Delta l_a unless the code
+    splits at >= 2 l_a or preserves the remainder).
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "the barbed end link is split into two links, such that each has rest length"
+    where: SI Section A below Eq. 2
+
+- id: q_kmc_growth_protocol_and_cutoff_reading
+  kind: reading
+  about:
+    - kmc_growing_bundle_fig3
+    - run_kmc_figs3a
+    - cmp_kmc_switching_ratio_figs3a
+  text: >
+    Audit check on kmc_growing_bundle_fig3 algorithmic choices: (1) allowing empty sites left behind
+    the leading barbed-end cross-linker to fill later (per the text's "binding of either cross-linker
+    to empty sites" on p. 3) still yields barbed-end switching ratio N_diff/N_same ~= 0.023
+    (epsilon ~= 3.76) under Poisson growth; (2) replacing Poisson site addition with deterministic
+    periodic addition every l_b / mu_grow = 0.925 s yields N_diff/N_same ~= 0.0142 (epsilon ~= 4.26),
+    bracketing Fig. S3A's printed 0.016 and 4.1; (3) kmc_growing_bundle_fig3 exits immediately when
+    cur_len == N_max, leaving the final ~2-3 barbed-end sites unbound (<1% effect at N_max = 405).
+  citation:
+    page: 3
+    printed_page: "16194"
+    quote: "To perform KMC, the rates of all possible events"
+    where: text & Fig. 3A / Fig. S3A
+
+- id: q_quantity_typing_reading
+  kind: reading
+  about:
+    - afines_seed_crosslinkers_count
+    - force_lever_rule_si_eq5
+  text: >
+    Audit reading notes on two quantity-typing choices preserved from the first reading:
+    (1) afines_seed_crosslinkers_count ("9 crosslinkers evenly spaced on the first filament link",
+    p. 9 / SI-3) is typed as occupied_site_count, whose description refers to discrete 1D lattice
+    sites rather than continuous AFINES cross-linker counts;
+    (2) force_lever_rule_si_eq5 (SI Eq. 5, p. 8 / SI-2) types denominator l_link = |r_{i+1} - r_i| as
+    filament_link_length (rest length l_a), whereas SI Eq. (5) divides by the instantaneous distance
+    between beads i and i+1 (which differs from l_a when a filament spring is stretched or compressed).
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "small bundle of crosslinkers (9 crosslinkers evenly spaced"
+    where: SI Section A & SI Eq. 5
+
+- id: q_kmc_35nm_37nm_parameter_swap
+  kind: possible_error
+  about:
+    - site_binding_probability_fig3b
+    - kmc_growing_bundle_fig3
+    - kmc_growing_bundle_conc_ratio
+    - kmc_growing_bundle_rate_ratio
+    - cmp_fig3b_switching_prob
+    - cmp_fig3c_left_kmc_fascin
+    - cmp_fig3c_left_kmc_alpha_actinin
+    - cmp_fig3c_right_kmc_alpha_actinin
+    - cmp_fig3c_right_kmc_fascin
+    - cmp_figs3c_100nms
+    - cmp_kmc_switching_ratio_figs3a
+    - fig3b_switching_prob_datum
+    - figS3c_100nms_datum
+  text: >
+    High-DPI digitization of Fig. 3B, Fig. 3C, and Fig. S3C reveals strong 4-digit quantitative
+    evidence that the code generating Fig. 3B-C and Fig. S3A-C swapped the F-actin binding-site
+    spacing (printed l_b = 37 nm) and the alpha-actinin length (printed ~35 nm), using l_b = 35 nm
+    and Delta l_xl = 37 - 8 = 29 nm instead of the stated (l_b = 37 nm, Delta l_xl = 27 nm):
+    (1) In Fig. S3C, the 6 unoccluded mu_grow = 100 nm/s markers sit at x = 2.858, 5.712, 14.284,
+    28.562, 57.116, 142.768, which equals (100/35)/mu_on for mu_on in {1.0, 0.5, 0.2, 0.1, 0.05, 0.02} s^-1
+    (2.857, 5.714, 14.286, 28.571, 57.143, 142.857) to < 0.06%, rather than (100/37)/mu_on
+    (2.703..135.135, 5.7% lower); the same mu_grow/35 spacing holds for 30, 50, and 20 nm/s.
+    (2) In Fig. 3B, Eq. (1) evaluated at stated (l_b = 37 nm, Delta l_xl = 27 nm) systematically
+    overpredicts the digitized curve across n_g = 4..14 (e.g., at n_g = 6: 0.2426 vs digitized
+    0.1746; verdict: not reproduced). Across n_g = 5..16, the implied bending-energy ratio
+    U_plot / U(37, 27) is constant at 1.363, equal to (37/35)^3 * (29/27)^2 = 1.3629; evaluating
+    Eq. (1) with (l_b = 35 nm, Delta l_xl = 29 nm) matches every unclipped Fig. 3B point (n_g = 5..16)
+    to <= 0.0001 (e.g., n=5: 0.0633 vs 0.0633; n=6: 0.1746 vs 0.1746; n=7: 0.2735 vs 0.2735).
+    (3) Running kmc_growing_bundle_fig3 with stated (37 nm, 27 nm) produces N_diff/N_same = 0.0225
+    (eps = 3.79), underpredicts Fig. 3C Left & Right domain lengths by 15-22%, and underpredicts
+    Fig. S3C barriers by 0.1-0.6 k_B T (all comparisons not reproduced); substituting (l_b = 35 nm,
+    Delta l_xl = 29 nm) simultaneously reproduces Fig. S3A (N_diff/N_same = 0.0159 vs printed 0.016,
+    eps = 4.14 vs printed 4.1, resolving q_kmc_figs3a_switching_discrepancy) as well as Fig. 3C
+    Left/Right and Fig. S3C.
+  citation:
+    page: 4
+    printed_page: "16195"
+    quote: "∆lxl = 27 nm (corresponding to the difference in length"
+    where: Fig. 3B, Fig. 3C & Fig. S3C
+
+- id: q_fig2c_fig2d_lattice_discrepancy
+  kind: unexplained_difference
+  about:
+    - equilibrium_lattice_mc_eq2
+    - run_eq_lattice_fig2c_sweep
+    - run_eq_lattice_fig2d_sweep
+    - cmp_fig2c_lattice_repro
+    - cmp_fig2d_lattice_repro
+    - fig2c_lattice_datum
+    - fig2d_lattice_datum
+  text: >
+    Sweeping equilibrium_lattice_mc_eq2 (Eq. 2 with L_0 = 15 um, l_b = 37 nm, mu_S = mu_L = -2 k_B T,
+    n_d = 4, l_d = 1 um) against the digitized Fig. 2C and Fig. 2D black circles gives not reproduced
+    on both curves: (1) Across Fig. 2C (Delta l_xl = 0, 27, 50, 100, 300, 500, 1000 nm), the model
+    increases monotonically (0.69, 1.43, 1.61, 2.39, 4.30, 5.18, 6.19 um; reaching 6.64 um at 400 sweeps),
+    whereas digitized Fig. 2C peaks at 500 nm (3.43 ± 0.65 um) and drops non-monotonically to
+    2.82 ± 0.85 um at 1000 nm (119% below the model); (2) Across all 7 Fig. 2D persistence lengths
+    (L_p = 2.5..125 um at Delta l_xl = 100 nm), the model systematically exceeds the digitized
+    lattice circles by ~20-32% (1.55..4.50 um vs 1.27..3.69 um). Likely contributors are unstated
+    Metropolis protocol details (sweep count, initialization, or slow coarsening when 27 sites are
+    geometrically forbidden at Delta l_xl = 1000 nm) or differences in lattice domain-length
+    calculation / gap-energy handling.
+  citation:
+    page: 3
+    printed_page: "16194"
+    quote: "from AFINES and lattice model as a function of cross-linker length"
+    where: Fig. 2C & Fig. 2D
+
+- id: q_fig2c_figs2_log_axis_zero_offset
+  kind: possible_error
+  about:
+    - fig2c_lattice_datum
+    - fig2c_afines_datum
+    - figS2_afines_short_datum
+    - figS2_afines_long_datum
+  text: >
+    Digitization reveals two unstated x-axis zero-handling conventions on the logarithmic Delta l_xl
+    plots in Fig. 2C and Fig. S2 for the same 7 simulated length differences {0, 27, 50, 100, 300,
+    500, 1000} nm: (1) In Fig. 2C, Delta l_xl = 0 nm is plotted at the log10(10 nm) tick with that
+    tick custom-labeled "0", while the remaining 6 nonzero points sit at their true log10 positions;
+    (2) In Fig. S2, every point is plotted at Delta l_xl + 0.01 um ({0.01, 0.037, 0.06, 0.11, 0.31,
+    0.51, 1.01} um) on a standard log10 axis without relabeling the ticks (0.01, 0.05, 0.10, 0.50, 1),
+    visibly displacing every nonzero point rightward of its nominal value (e.g., 0.10 um plotted at
+    0.11 um and 1.0 um plotted at 1.01 um).
+  citation:
+    page: 11
+    printed_page: "SI-5"
+    quote: "Fig. S2. Simulation calibration."
+    where: Fig. S2 & Fig. 2C
+
+- id: q_fig5c_crossover_rate_5nms_vs_3nms
+  kind: reading
+  about:
+    - afines_crossover_growth_rate
+    - fig5c_afines_short_datum
+    - fig5c_afines_long_datum
+  text: >
+    Main text (p. 5 / 16196) states that the AFINES short/long domain-length crossover in Fig. 5C
+    "occurs at a much lower growth rate (~3 nm/s)", whereas digitizing Fig. 5C shows the plotted
+    curves crossing right at the k_grow = 5 nm/s data point (short = 2.83 ± 0.85 um, long = 2.84 ±
+    0.58 um; at the leftmost point k_grow = 2.5 nm/s, long = 3.88 ± 1.09 um already substantially
+    exceeds short = 2.38 ± 0.84 um). Both 2.5 nm/s and 5 nm/s also lie below Table S1's printed
+    l_g >= 0.008 um (8 nm/s) lower bound (reinforcing q_table_s1_growth_length_lower_bound).
+  citation:
+    page: 5
+    printed_page: "16196"
+    quote: "seen experimentally, although it occurs at a much lower growth"
+    where: text & Fig. 5C
+
+- id: q_code_kmc_swap_and_notebook_equivalence
+  kind: possible_error
+  about:
+    - site_binding_probability_fig3b
+    - gap_bending_energy_eq1
+    - kmc_growing_bundle_fig3
+    - kmc_growing_bundle_conc_ratio
+    - binding_site_spacing_lb
+    - delta_l_xl_physiological
+    - figs3a_switching_ratio
+    - figs3a_effective_barrier
+    - freedman2019_code/kmc_notebook_bending_and_switching
+    - freedman2019_code/kmc_notebook_growing_bundle
+    - freedman2019_code/kmc_site_width
+    - freedman2019_code/kmc_dxl_code
+  text: >
+    Cross-record audit with `freedman2019_code` (`xlink_sorting_paper/kmc.ipynb`) definitively
+    confirms the `(l_b = 35 nm, Delta l_xl = 29 nm)` parameter swap independently deduced from
+    `freedman2019` Fig. 3B and Fig. S3C pixels (`q_kmc_35nm_37nm_parameter_swap`) and resolves
+    `q_kmc_figs3a_switching_discrepancy` and `q_kmc_growth_protocol_and_cutoff_reading`:
+    (1) Live `software: true` adapter `freedman2019_code/kmc_notebook_bending_and_switching`
+    (`kmc.ipynb` Cell 3) verifies `same_as` (`<= 1.02e-15`) with both `gap_bending_energy_eq1`
+    and `site_binding_probability_fig3b` (`rel_code_kmc_nb_bending_same_as_eq1`,
+    `rel_code_kmc_nb_pswitch_same_as_fig3b`), proving the bending formula is identical and the
+    +36.2% barrier inflation (`(37/35)^3 * (29/27)^2 = 1.3629`) comes solely from Cell 2 lines
+    98-100 setting `site_width = 35.` (`max_n_sites = 428`) and `dxl = 37. - 8. = 29.` nm
+    instead of the paper's `l_b = 37 nm` (`N = 405`) and `Delta l_xl = 35 - 8 = 27 nm`.
+    (2) Cell 5 (`extension_population_ratio`) confirms continuous-time Gillespie (Poisson)
+    barbed-end growth. Direct 15-um cross-checks of `freedman2019_code/kmc_notebook_growing_bundle`
+    vs `freedman2019/kmc_growing_bundle_conc_ratio` (`n_d = 4, l_d = 1 um`, `r = 1.0`,
+    `mu_grow = 40 nm/s`, `mu_on = 0.2/s`) agree within ~1-3% at both `(35, 29)` (`eps = 4.107`
+    vs `4.145`, `dl_A = 3.93` vs `3.98 um`, reproducing Fig. S3A's `0.016` / `4.1`) and
+    `(37, 27)` (`eps = 3.789` vs `3.811`, `dl_A = 3.28` vs `3.30 um`); `kmc_notebook_growing_bundle`
+    is omitted from automated 40-sample `relations.yaml` sweeps only because its fixed
+    `num_trials = 1000` takes ~8-9 s per sample (~6 min cold).
+    (3) Cross-validating `kmc_growing_bundle_conc_ratio` against the exact 9-point unshifted
+    Winkelman source table (`freedman2019_code/kmc_winkelman_expt_table`) gives `close` (0/9
+    not reproduced) for both parameter sets, with the paper's intended `(37, 27)` actually
+    achieving tighter 1-SE agreement (7/9 within 1 SE, `val_kmc_printed_vs_winkelman_expt_table`)
+    than the notebook's accidentally swapped `(35, 29)` (5/9 within 1 SE,
+    `val_kmc_code_swap_vs_winkelman_expt_table`). Additional notebook bugs in `kmc.ipynb` include
+    reusing Type-A `std_domain_lengths[0]` error bars for alpha-actinin in Cells 9-12, measuring
+    domain lengths from filament tip position at swaps rather than bound cross-linker site, and
+    copying Cell 9's `avg_domain_lengths` into Cell 10's `competition_prediction_data`.
+  citation:
+    page: 4
+    printed_page: "16195"
+    quote: "∆lxl = 27 nm (corresponding to the difference in length"
+    where: Fig. 3B-C, Fig. S3A-C vs `freedman2019_code` `kmc.ipynb`
+
+- id: q_code_afines_units_bending_table_s1_and_spacer_bugs
+  kind: possible_error
+  about:
+    - excluded_volume_si_eq3_energy_units
+    - crosslinker_potential_si_eq4
+    - crosslinker_bending_calibration_si
+    - filament_growth_rate_si_eq2
+    - afines_filament_contour_length
+    - stokes_mobility_si_eq6
+    - persistence_length_from_kappa_b
+    - afines_kexv_printed
+    - afines_nl0_growing
+    - afines_lg_min_table_s1
+    - afines_kappa_b_short
+    - freedman2019_code/afines_excluded_volume_cpp
+    - freedman2019_code/afines_spacer_mechanics_and_mc_cpp
+    - freedman2019_code/afines_barbed_end_growth_cpp
+    - freedman2019_code/afines_parameter_mapping
+  text: >
+    Cross-record audit against the released AFINES C++ codebase, configs, and Mathematica scripts
+    (`freedman2019_code`, commit `0c6c349`) resolves five paper-vs-code discrepancies and reveals
+    several severe C++ implementation bugs:
+    (1) Excluded-volume units (`rel_code_afines_exv_same_as_si_eq3_energy`, resolving
+    `q_kexv_units_and_vector_eq3`): `src/filament_ensemble.cpp:668-673` computes
+    `pe_exv = kexv*(1 - r/rmax)^2` and exact `-grad U`, proving `kexv` has energy units `pN*um`
+    (`0.08 pN*um = 20 k_B T`), NOT `pN*um^2` as misprinted in Table S1 & Fig. 2D; meanwhile
+    `grow.cfg`/`nogrow.cfg`/`README.md` omit `kexv = 0.08`, and C++ has two crossing bugs
+    (zero force for midpoint-crossing links with endpoint distance `r >= rmax`, and a hardcoded
+    +45-deg doubled force `4*kexv/rmax` for near-end intersections).
+    (2) 5x `set_bending` rescaling, SI Eq. (4) missing `1/2`, and 4 conflicting `kappa_long^B`
+    prescriptions (`rel_code_spacer_bend_rescaled_same_as_si_eq4`, compounding
+    `q_kappa_long_domain_gap`): `spacer_ensemble::set_bending()` (`src/motor_ensemble.cpp:314`)
+    divides `s_bend` by rest length `mld` (`s1_bend = 0.005` -> `kb_short = 0.025 pN*um`, 5x
+    Table S1), while `src/spacer.cpp:277` includes a `0.5` factor omitted in SI Eq. (4), so
+    `U_bend` matches only under `kappa_xl^B = 0.5 * s_bend / mld` (net 2.5x stiffer for short
+    cross-linkers). Moreover, SI Section A (`ratio = 4` for `l_long >= 300 nm`), `grow.cfg`/
+    `nogrow.cfg` (`s2_bend = 0.06` -> raw 12x, effective 8x), `README.md` (`kb0 = 0.04` ->
+    effective 1.6x via invalid flag `--s2bend`), and `plots.nb:14229` (`s2kb = 0.0675` ->
+    effective 9x in Fig. 5C/5E/S5) all contradict one another.
+    (3) `grow.cfg:7` `nmonomer = 2` vs Table S1 `N_{l,0} = 2` (resolving
+    `q_table_s1_nf_units_and_nl0_mismatch`): `nmonomer = 2` beads = 1 initial link = `1.0 um`
+    (confirmed by `plots.nb:14255` `Ceiling[14/lgrow]`), matching Fig. 5B caption (`1 um`) and
+    proving Table S1 confused bead count (`2`) with link count (`15` from `nogrow.cfg`'s
+    `nmonomer = 16`).
+    (4) `lgrow = 0.0025 um` & barbed-end split remainder (`rel_code_barbed_growth_approx_si_eq2`,
+    resolving `q_table_s1_growth_length_lower_bound` and `q_si_eq2_barbed_end_split_remainder`):
+    `README.md:256` and `plots.nb:14195` confirm Fig. 5C ran down to `lgrow = 0.0025 um`
+    (`2.5 nm/s`, proving Table S1's `0.008 um` is a misprint, with slow runs extended to
+    `tfinal = 6000 s` in `plots.nb:14217` and Fig. 5B `s2len = 0.3` run at `dt = 1e-5 s` in
+    `plots.nb:11266`); `src/filament.cpp:673-736` splits at `>= 2*l_a` (not `> 2*l_a`),
+    discarding overshoot only on non-divisors (`0.03` [-2.0%], `0.07` [-4.8%]) and IEEE-754
+    rounding at `0.0025`/`0.005` um.
+    (5) `src/spacer.cpp` detailed-balance bugs, `s2_koff` bug, hidden Stokes radii &
+    `temperature = 0.004`: `spacer::metropolis_prob()` (`src/spacer.cpp:220-224,355-378`) uses
+    pre-attachment `(hx, hy)`, old `disp`, and stale `pos_a_end = 0`, omits head-0 bending
+    activation on `(1,0)->(1,1)`, and subtracts unreset stale `b_eng` (inflating attachment
+    probability 1.90x at the probe configuration); `prog/bundles.cpp:372,376` passes `s2_kend`
+    twice instead of `s2_koff, s2_kend`; `src/bead.cpp:25` and `src/spacer.cpp:55` reveal
+    unstated Stokes radii `R_bead = actin_length = 0.5 um` and `R_spacer = mld` (making short
+    cross-linkers diffuse 1.5x-6x faster than long ones, `rel_code_param_map_*_same_as_si_eq6`);
+    and hardcoded `temperature = 0.004 pN*um` resolves `q_lp_kbt_rounding_movies3`
+    (`rel_code_param_map_lp_approx_kbt300`, 3.43% offset vs `k_B * 300 K`).
+  citation:
+    page: 10
+    printed_page: "SI-4"
+    quote: "Table S1. AFINES Parameter Values"
+    where: SI Section A & Table S1 vs `freedman2019_code`
+
+- id: q_winkelman2016_growth_rate_40nms_not_printed
+  kind: possible_error
+  about:
+    - kmc_growth_rate_ref16
+    - tirf_poly_rate_high_actin
+    - gap_bending_energy_eq1
+    - winkelman2016/v_elong_leading_S1B
+    - winkelman2016/v_elong_S3B_illustrative
+    - winkelman2016/L_transition_zone_EM
+  text: >
+    Freedman et al. (2019, p. 3 / 16194) set the growing-bundle KMC polymerization speed to
+    `mu_grow = 40 nm/s (corresponding to the approximate growth rate in ref. 16)`, and Fig. 3C
+    caption (p. 4 / 16195) repeats `mu_grow = 40 nm/s as in those experiments`, citing
+    `winkelman2016` (`ref-16`). However, `winkelman2016` never prints `40 nm/s` anywhere:
+    Winkelman Fig. S1A-B measures `10 sub/s` (~27 nm/s at 2.7 nm/subunit) for leading and
+    alpha-actinin trailing barbed ends and `9 sub/s` (~24.3 nm/s) for fascin trailing barbed ends
+    at 1.5 uM actin, while Fig. S3B caption prints an illustrative `20 sub/s (~53 nm/s)` ("not
+    part of the model"). Notably, `40 nm/s` is closer to Freedman's own new Fig. 4 TIRF
+    measurement at 1.5 uM actin (`46.99 +- 3.62 nm/s`, `tirf_poly_rate_high_actin`). Accordingly,
+    `kmc_growth_rate_ref16` is left unlinked in `freedman2019/cited.yaml`. Separately, for
+    cross-validation completeness, `winkelman2016/L_transition_zone_EM` (`142 +- 52 nm`, Fig. 4F)
+    cannot be directly validated because no `freedman2019` model outputs transition-zone length,
+    though evaluating Eq. (1) at `l_g = 142 nm` (`L_p = 17 um`, `Delta l_xl = 27 nm`) gives
+    `U(142 nm) ~= 4.33 k_B T`, remarkably close to the empirical barriers `4.1-4.8 k_B T`.
+  citation:
+    page: 3
+    printed_page: "16194"
+    quote: "at a growth rate of µgrow = 40 nm/s"
+    where: text p. 3 & Fig. 3C caption vs `winkelman2016`
+
+- id: q_kierfeld2005_2d_vs_3d_persistence_length_and_no_validation
+  kind: reading
+  about:
+    - persistence_length_from_kappa_b
+    - chemical_potential_from_occupancy
+    - filament_potential_si_eq1
+    - gap_bending_energy_eq1
+    - kierfeld2005/persistence_length_def
+    - kierfeld2005/linker_site_occupancy
+    - kierfeld2005/pair_unbinding_threshold_eq5
+  text: >
+    Cross-record analysis of `freedman2019 + kierfeld2005` (PRL 95, 038102, 2005; not cited by
+    `freedman2019`) identifies two verified mathematical relations and zero citations/validations
+    (`kierfeld2005` is a pure theory/MC paper with no `origin: measured` datums):
+    (1) Exact grand-canonical Langmuir identity (`rel_kierfeld2005_langmuir_same_as_chem_pot`):
+    Freedman SI Section C's single-species occupancy `N_b = N / (1 + exp(-mu/(k_B T)))` is
+    symbolically identical to Kierfeld's `X_1 = K*c_x / (1 + K*c_x)` at `N = 1` with
+    `mu/(k_B T) = ln(K*c_x)` (placing Freedman's calibrated `mu = -1.5..-2 k_B T` at fractional
+    occupancy `X_1 = 0.182..0.119`).
+    (2) Dimensional 2D-vs-3D persistence-length discrepancy (`rel_kierfeld2005_lp_2d_scales_as_3d`):
+    Kierfeld et al. (p. 2 col. 1) model planar (1+1D / 2D) semiflexible filaments and correctly
+    define `L_p^(2D) = 2 * kappa / T`, whereas AFINES (`freedman2019` SI Section A pp. 8-9)
+    simulates filaments in 2D with a single scalar bending angle `theta_i` per hinge
+    (`U_bend = (kappa_B / (2*l_a)) * sum theta_i^2`) yet parameterizes `kappa_B = L_p * k_B T`
+    using the 3D formula (`L_p^(3D) = kappa_B / (k_B T)`). Because a 2D chain has only one
+    transverse thermal bending mode per hinge (`<theta_i^2> = l_a k_B T / kappa_B`), AFINES
+    filaments parameterized at `kappa_B = 0.068 pN*um^2` and `k_B T = 0.004 pN*um` actually have
+    a 2D thermal tangent-correlation persistence length of `2 * kappa_B / (k_B T) = 34 um`
+    (twice the intended `17 um`), even though their deterministic mechanical bending energy
+    `U_bend` matches 3D F-actin.
+    (3) Shared Odijk deflection-length scaling: Freedman Eq. (1) reaches `U(l_g*) = k_B T` at
+    `l_g* = (L_p * Delta l_xl^2)^(1/3) ~= 231 nm` (for `L_p = 17 um`, `Delta l_xl = 27 nm`),
+    sharing the same Odijk deflection-length scaling `(L_p * l_a^2)^(1/3)` that governs
+    Kierfeld Eq. (5)'s critical unbinding threshold `|W_bar_c| ~ k_B T / (L_p * l_a^2)^(1/3)`,
+    though the two models output different physical quantities (gap energy `[energy]` vs critical
+    attraction per length `[force]`).
+  citation:
+    page: 8
+    printed_page: "SI-2"
+    quote: "The persistence length of the filament is then Lp"
+    where: SI Section A & Section C vs `kierfeld2005`
+
+- id: q_bathe2008_no_direct_relation_and_physics_contrast
+  kind: reading
+  about:
+    - chemical_potential_from_occupancy
+    - filament_potential_si_eq1
+    - gap_bending_energy_eq1
+    - afines_ka
+    - binding_site_spacing_lb
+    - bathe2008/langmuir_crosslink_spacing
+    - bathe2008/fiber_stretching_stiffness_def
+    - bathe2008/peristaltic_wavelength
+    - bathe2008/wlb_bending_stiffness_eq2
+  text: >
+    Cross-record audit of `bathe2008 + freedman2019` (Biophys. J. 94, 2955-2964, 2008; not cited
+    by `freedman2019`) yields honest 0 direct ModelAtlas relations, 0 cited links, and 0
+    cross-validations: Bathe et al. model macroscopic bending stiffness `kappa_B(N, alpha)` and
+    peristaltic elasticity of homogeneous multi-filament (`N = 4..400`) bundles (validating
+    against Claessens et al. 2006's 21-33-filament fascin bundle stiffness measurements in Fig. 4),
+    whereas Freedman et al. model competitive sorting of two length-mismatched cross-linkers on
+    2-filament bundles. Three quantitative cross-framework contrasts link their physical regimes:
+    (1) Reciprocal Langmuir isotherm duality: `bathe2008/langmuir_crosslink_spacing`
+    (`delta = delta_min * (K_d + c_fascin) / c_fascin` with `delta_min = 37.5 nm`) and
+    `freedman2019/chemical_potential_from_occupancy` (`N_b = N / (1 + exp(-mu/(k_B T)))` with
+    `l_b = 37 nm`) express reciprocal observables (`delta = delta_min / X` vs `N_b = N * X`) of
+    the same non-depleted 2-state Langmuir isotherm `X = 1 / (1 + K_d/c) = 1 / (1 + exp(-mu/k_B T))`.
+    (2) 8,800x filament extensional-rigidity coarse-graining gap: Bathe uses physical F-actin
+    extensional rigidity `E_f A_f = 4.4e-8 N = 44,000 pN` (`k_f = E_f A_f / l_a = 44,000 pN/um`
+    for a 1-um link), whereas AFINES uses `k_a = 5 pN/um` (`k_a * l_a = 5 pN`, 8,800x softer) for
+    explicit-timestep numerical stability at `dt = 2e-5 s`.
+    (3) Peristaltic elastic vs rigid-mismatch thermal bending length scales: Bathe's peristaltic
+    healing length `lambda_max = (kappa_f * delta / k_perp)^(1/4)` balances filament bending
+    against finite cross-linker stretching stiffness (~40 nm at physiological `k_perp ~ 1e-3 N/m`,
+    ~294 nm at AFINES `k_xl = 10 pN/um = 1e-5 N/m`, scaling as `kappa_f^(1/4)`), whereas
+    Freedman's Eq. (1) rigid-mismatch thermal bending crossover `l_g* = (L_p * Delta l_xl^2)^(1/3)`
+    (~231 nm for fascin/alpha-actinin) scales as `kappa_f^(1/3)`.
+  citation:
+    page: 9
+    printed_page: "SI-3"
+    quote: "evaluate the partition function to determine the average lattice occupancy number"
+    where: SI Section A & Section C vs `bathe2008`
+

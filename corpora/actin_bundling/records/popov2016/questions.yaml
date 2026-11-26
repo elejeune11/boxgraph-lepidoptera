@@ -1,0 +1,764 @@
+- id: q_medyan_3d_not_runnable
+  kind: unstated_model
+  about: [medyan_3d_actomyosin_simulator]
+  text: >
+    The full 3D MEDYAN simulator couples spatially resolved Next Reaction Method RDME chemistry with
+    conjugate-gradient mechanical equilibration of coarse-grained cylindrical polymer networks
+    (implemented in external C++ software at www.medyan.org; 12 h to 6 days serial runtime per
+    trajectory per S4 Text Section C, p. 53). Random number seeds, initial nucleated filament
+    positions/orientations, exact CG line-search tolerances, and the external C++ engine are not
+    contained in the paper, so the full 3D simulator is recorded as runnable: false.
+  citation:
+    page: 14
+    printed_page: "14"
+    quote: "The MEDYAN model has been implemented in a C++ software package"
+    where: "Publicly available software package"
+
+- id: q_s4_cg_benchmark_not_runnable
+  kind: unstated_input
+  about: [single_filament_cg_benchmark]
+  text: >
+    S4 Text Section B (pp. 51-53) benchmarks single-filament equilibration (L = 1 um, 50 pN central
+    point force, fixed endpoints) across coarse-graining levels and gradient tolerances (1 pN, 5 pN)
+    in S4 Figs. 4-5, but does not state whether g_tol measures L2 or L-infinity gradient norm,
+    whether fixed endpoints are pinned or clamped, what initial filament deflection initializes CG,
+    or whether K_actin,str = 100 pN/nm is held fixed or scaled inversely with segment length l_cyl.
+  citation:
+    page: 51
+    printed_page: "S4-3"
+    quote: "equilibrated a single filament with length L = 1 µm with fixed endpoints"
+    where: "S4 Text Section B"
+
+- id: q_nematic_order_not_runnable
+  kind: unstated_input
+  about: [nematic_order_parameter_eq14]
+  text: >
+    Eq. 14 defines the nematic ordering tensor Q and largest eigenvalue S from the 3D end-to-end
+    unit direction vectors u_i of all N actin filaments; these 3D trajectory coordinates are stored
+    externally (DRUM doi:10.13016/M2W16B) and are not printed in the paper. In addition, printed
+    Eq. 14 sums from i = 0 to N (N + 1 terms) while dividing by N, an apparent off-by-one typo.
+  citation:
+    page: 21
+    printed_page: "21"
+    quote: "largest eigenvalue of the ordering tensor Q [114] which is constructed from"
+    where: "Eq. 14"
+
+- id: q_s2_kuramoto_tau_and_lk_mismatch
+  kind: possible_error
+  about:
+    - fastest_reaction_timescale_s2eq2
+    - kuramoto_length_s2eq1
+    - tau_fastest_reaction_printed
+    - kuramoto_length_printed
+    - cmp_tau_fastest_s2eq2
+    - cmp_kuramoto_from_printed_tau
+    - cmp_kuramoto_from_computed_tau
+  text: >
+    S2 Text Eq. 2 (p. 42) states tau = 1 / (k_actin,poly,+ * [A]) = 0.003 s at [A] = 20 uM and gives
+    Kuramoto length l_k = sqrt(6 D tau) = 0.64 um for D = 20 um^2/s. With Table 2A's printed
+    k_actin,poly,+ = 11.6 uM^-1 s^-1 and [A] = 20 uM, Eq. 2 yields tau = 1 / 232 = 0.00431 s
+    (+43.7% above printed 0.003 s), and Eq. 1 yields l_k = 0.719 um (+12.4% above 0.64 um). Even
+    plugging the printed tau = 0.003 s into Eq. 1 yields l_k = sqrt(0.36) = 0.600 um, not 0.64 um.
+    Notably, [A] = 25 uM would yield tau = 0.00345 s (rounding to 0.003 s) and l_k = 0.643 um
+    (rounding to 0.64 um), suggesting tau and l_k may have been evaluated before changing [A] to 20 uM.
+  citation:
+    page: 42
+    printed_page: "S2-1"
+    quote: "giving a Kuramoto length of 0.64 µm"
+    where: "S2 Text Section A, Eqs. 1-2"
+
+- id: q_s3_nmiia_stall_load_and_loaded_predictions
+  kind: possible_error
+  about:
+    - nmiia_stall_load_printed_s3a
+    - nmiia_stall_load_minifil_variant
+    - nmiia_unbinding_and_attachment_time_s3eq2
+    - nmiia_loaded_walking_rate_s3eq4
+    - nmiia_loaded_att_time
+    - nmiia_loaded_walk_vel
+    - cmp_nmiia_loaded_att_time_printed
+    - cmp_nmiia_loaded_walk_vel_printed
+    - cmp_nmiia_loaded_att_time_variant
+    - cmp_nmiia_loaded_walk_vel_variant
+  text: >
+    S3 Text Section A (p. 46) states that under "stall conditions (i.e. F_ext = rho K_NMIIA,stretching d_step)",
+    Eqs. 2-5 with alpha=1.0, beta=0.2, gamma=0.05/pN, zeta=0.1 give a loaded attachment time of 50 s
+    and a loaded walking velocity of 3 nm/s. Literally evaluating F_ext = 0.1 * 2.5 * 6 = 1.5 pN yields
+    tau_att = 6.46 s and v_walk = 10.23 nm/s (at N_total = 20), disagreeing strongly with 50 s and 3 nm/s.
+    Restoring the mini-filament head count N_total per Table 2B footnote e (variant F_ext = rho * N_total
+    * K_head * d_step = 30 pN at N_total = 20) still gives tau_att = 20.32 s (10.2-30.5 s across
+    N_total = 10-30) and v_walk = 4.86 nm/s (independent of N_total), failing to reproduce both 50 s and
+    3 nm/s. Achieving v_walk = 3.0 nm/s in Eq. 4 requires F_ext / N_total = 2.87 pN (nearly 2x rho*F_stall),
+    which at N_total = 27-30 simultaneously yields tau_att = 49-55 s.
+  citation:
+    page: 46
+    printed_page: "S3-3"
+    quote: "gives a loaded attachment time of 50 s and a loaded walking velocity of 3 nm/s"
+    where: "S3 Text Section A"
+
+- id: q_s3_nmiia_unloaded_att_time_Ntotal
+  kind: unstated_input
+  about:
+    - nmiia_heads_eval_added
+    - nmiia_unloaded_att_time
+    - cmp_nmiia_unloaded_att_time
+  text: >
+    S3 Text Section A (p. 44) states that NMIIA mini-filaments contain N_total = 10-30 implicit subunits
+    (heads per side) randomly selected at binding, but p. 46 does not state which N_total value yields
+    the printed unloaded attachment time of 5 s. From Eqs. 2-3 at F_ext = 0, tau_att(0) = rho * N_total /
+    (beta * k_NMIIA,unbind^0) = 0.2941 * N_total s (2.94 s at N_total=10, 5.00 s at N_total=17, 5.88 s at
+    midpoint N_total=20, 8.82 s at N_total=30; reciprocal of uniform-average rate across 10-30 is 5.35 s).
+  citation:
+    page: 46
+    printed_page: "S3-3"
+    quote: "gives an unloaded attachment time of 5 s"
+    where: "S3 Text Section A"
+
+- id: q_rg_impossible_bound_1um_cube
+  kind: possible_error
+  about:
+    - rg_cubic_domain_bounds_eq13
+    - s1fig_rg_a
+    - s1fig_rg_b
+    - s1fig_rg_c
+    - cmp_s1fig_rg_a_vs_1um_bound
+  text: >
+    For any point set confined within a 1 x 1 x 1 um^3 cubic hard-wall boundary (L = 1 um), Eq. 13
+    (R_g = sqrt((1/n) sum |r_i - r_GC|^2)) satisfies R_g = L/2 = 0.500 um for a uniform spatial
+    distribution and the strict Popoviciu upper bound R_g <= sqrt(3)*L/2 = 0.866 um for any
+    configuration inside the cube. Yet Fig. 6 (p. 19, for the 1 x 1 x 1 um^3 system) shows a colorbar
+    spanning R_g = 1.0 to 1.8 um, and S1 Fig caption (p. 29) prints R_g = 1.77, 1.51, and 1.22 um
+    (1.77 um exceeds even the entire 1 um cube diagonal sqrt(3) = 1.732 um). This indicates an
+    apparent scaling/unit discrepancy in the reported R_g values or confusion with the 3 x 3 x 3 um^3
+    box (where R_g,uniform = 1.50 um). In addition, Eq. 13 prints an off-by-one sum i = 0 to n (n + 1
+    terms) with prefactor 1/n.
+  citation:
+    page: 17
+    printed_page: "17"
+    quote: "define an actomyosin network radius of gyration using all coarse-grained actin filament"
+    where: "Eq. 13, Fig. 6 (p. 19), S1 Fig caption (p. 29)"
+
+- id: q_table2b_Kvol_dimensional_mismatch
+  kind: possible_error
+  about:
+    - K_actin_vol_printed
+    - K_actin_vol_dim_corrected_added
+    - cylinder_excluded_volume_eq4
+  text: >
+    Table 2B (p. 60) prints K_actin,vol = 10^5 pN/nm^4, which is dimensionally inconsistent with Main
+    Text Eq. 4 (p. 10): because s and t are dimensionless parameters in [0, 1] and |r_i - r_j|^4 has
+    dimension nm^4, K_vol must have units pN*nm^5 (energy * length^4) for U_ij^vol to have dimensions
+    of energy (pN*nm). In addition, passing from Eq. 3 (integrating over dl_i dl_j) to Eq. 4
+    (integrating over ds dt) omits the Jacobian factor |l_i| |l_j|, which is non-constant for growing
+    or shrinking end cylinders.
+  citation:
+    page: 60
+    printed_page: "S2Tab-2"
+    quote: "Actin filament excluded volume repulsion constant"
+    where: "Table 2B and Main Text Eq. 4 (p. 10)"
+
+- id: q_table2a_bimolecular_sim_rate_rounding
+  kind: unexplained_difference
+  about:
+    - compartment_bimolecular_rate_table2a
+    - k_actin_poly_plus_sim
+    - cmp_k_actin_poly_plus_sim
+  text: >
+    Converting macroscopic bimolecular rates to compartment rates in V_comp = (500 nm)^3 = 1.25e-16 L
+    via k_sim = k_macro / (N_A * V_comp) divides by 75.2768 uM^-1 (factor 0.013284 uM/molecule),
+    yielding 0.1541 s^-1 for k_actin,poly,+ = 11.6 uM^-1 s^-1 vs Table 2A's bracketed 0.151 s^-1
+    (+2.05% discrepancy), while reproducing 0.017 s^-1 and 0.009 s^-1. Truncating 1/(N_A V_comp) to
+    0.013 uM/molecule before multiplying reproduces all three bracketed Table 2A values exactly
+    (0.1508 -> 0.151, 0.0169 -> 0.017, 0.0091 -> 0.009).
+  citation:
+    page: 59
+    printed_page: "S2Tab-1"
+    quote: "The value in brackets is the constant used in simulation, calculated based on a compartment"
+    where: "Table 2A footnote *"
+
+- id: q_table2a_nmiia_unbind_duty_ratio
+  kind: unexplained_difference
+  about:
+    - nmiia_head_unbinding_from_duty_ratio
+    - k_nmiia_unbind_0
+    - cmp_k_nmiia_unbind_0
+  text: >
+    Table 2A footnote c (p. 59) states that k_NMIIA,unbind^0 = 1.7 s^-1 was calculated from
+    k_NMIIA,bind = 0.2 s^-1 and the known duty ratio of NMIIA from Kovacs et al. (2003). Using the
+    printed duty ratio rho = 0.1 (Table 2C) in a two-state cycle gives k_unbind^0 = k_bind*(1-rho)/rho
+    = 1.8 s^-1 (+5.9%); an unrounded duty ratio rho ~ 0.105 from Kovacs et al. yields 1.70 s^-1.
+  citation:
+    page: 59
+    printed_page: "S2Tab-1"
+    quote: "This rate was calculated based on kNMIIA,bind , determined by Kovacs et al."
+    where: "Table 2A footnote c"
+
+- id: q_table2a_diffusion_unit_typo
+  kind: possible_error
+  about:
+    - k_diff_alpha_sim
+    - k_diff_nmiia_sim
+  text: >
+    Table 2A (p. 59) writes k_alpha,diff = k_actin,diff / 10 s^-1 and k_NMIIA,diff = k_actin,diff /
+    100 s^-1, placing an extraneous s^-1 unit next to the dimensionless divisors 10 and 100. S2 Text
+    Section A (p. 42) confirms the intended compartment jump rates are 8 s^-1 and 0.8 s^-1.
+  citation:
+    page: 59
+    printed_page: "S2Tab-1"
+    quote: "α-actinin diffusion"
+    where: "Table 2A"
+
+- id: q_table2b_eps_bend_sigfigs_and_lp
+  kind: unstated_input
+  about:
+    - actin_persistence_length_added
+    - eps_actin_bend_small
+    - eps_actin_bend_large
+    - cmp_eps_actin_bend_small
+    - cmp_eps_actin_bend_large
+  text: >
+    Table 2B footnote b (p. 60) states eps_actin,bending = l_p * k_B T / l_cyl citing Ott et al. (1993)
+    without printing the numerical value of l_p. Using Ott et al.'s l_p = 17.7 um and k_B T = 4.1 pN*nm
+    gives 2687.8 pN*nm (for l_cyl = 27 nm) and 671.94 pN*nm (for l_cyl = 108 nm), which match the
+    printed 2690 and 672 pN*nm to 3 significant figures (2687.8 falls 2.2 pN*nm outside the strict
+    integer half-unit interval [2689.5, 2690.5] of printed "2690").
+  citation:
+    page: 60
+    printed_page: "S2Tab-2"
+    quote: "Calculated based on the persistence length of actin filaments, which was determined by Ott"
+    where: "Table 2B footnote b"
+
+- id: q_s4_mt_bending_ratio_overstated
+  kind: overstated_claim
+  about:
+    - mt_to_actin_bending_energy_ratio
+    - mt_to_actin_bend_ratio_claimed
+    - cmp_mt_to_actin_bend_ratio_same_mon
+    - cmp_mt_to_actin_bend_ratio_same_len
+  text: >
+    S4 Text Section B (p. 52) states that for a microtubule with l_p = 5 mm and monomer size 2 nm, the
+    bending energy used in the harmonic bending potential "is increased in comparison to the bending
+    energy of an actin filament cylindrical segment by a factor of over 1000." Using eps_bend = l_p *
+    k_B T / l_cyl with actin l_p = 17.7 um and l_mon = 2.7 nm, the ratio is (5000/2)/(17.7/2.7) = 381.4
+    at equal monomers per cylindrical segment, or 5000/17.7 = 282.5 at equal physical segment length—
+    both roughly 3x smaller than 1000.
+  citation:
+    page: 52
+    printed_page: "S4-4"
+    quote: "filament cylindrical segment by a factor of over 1000"
+    where: "S4 Text Section B"
+
+- id: q_s4_fig4_displacement_error_overstated
+  kind: overstated_claim
+  about:
+    - s4_max_displacement_error_claimed
+    - single_filament_cg_benchmark
+  text: >
+    S4 Text Fig. 4 caption (p. 53) claims "Displacement errors stay under 5% of the total polymer length
+    for all levels of coarse-graining used." However, the plotted red curve ("Actin filament, 5pN
+    tolerance") in S4 Fig. 4 visibly exceeds 0.06 (>6%) at both 20 monomers and 40 monomers; only the
+    two 1 pN tolerance curves remain below 5%.
+  citation:
+    page: 53
+    printed_page: "S4-5"
+    quote: "Displacement errors stay under 5% of the total polymer length for all levels"
+    where: "S4 Text Fig. 4 caption"
+
+- id: q_mean_filament_length_mass_balance_gap
+  kind: unexplained_difference
+  about:
+    - mean_filament_length_mass_balance
+    - mean_filament_length_small
+    - mean_filament_length_large
+    - cmp_mean_length_small_mass_balance
+    - cmp_mean_length_large_mass_balance
+  text: >
+    Strict actin monomer conservation L_mean = (([A]_tot - [A]_ss) * N_A * V / N_fil) * l_mon with
+    l_mon = 2.7 nm predicts 0.644 um for the 1 um^3, 20 uM, 50-filament system (vs printed 0.8 um on
+    p. 17, -19.5%; S4 Fig. 1 also approaches ~0.79 um at t = 10 s while [G] drops from ~19.4 to ~0.5 uM
+    in S4 Fig. 2) and 1.295 um for the 27 um^3, 12 uM, 400-filament system (vs printed 1.4 um on p. 25,
+    -7.5%). The reason both simulated mean lengths exceed exact monomer mass balance for constant N_fil
+    is not explained in the text (e.g., filament disappearance or initial seed monomers excluded from [A]_tot).
+  citation:
+    page: 17
+    printed_page: "17"
+    quote: "average actin filament length in these simulations is 0.8 μm"
+    where: "Results (p. 17 and p. 25)"
+
+- id: q_turnover_rate_boundary_slowdown
+  kind: unexplained_difference
+  about:
+    - actin_treadmilling_turnover_rate
+    - actin_minus_end_turnover_rate
+    - turnover_rate_chi_low
+    - turnover_rate_chi_baseline
+    - turnover_rate_chi_high
+    - cmp_turnover_chi_high_analytical
+    - cmp_turnover_chi_base_analytical
+  text: >
+    At analytical critical concentration [A_c] = 0.1705 uM (S4 Text Eq. 1), steady-state treadmilling
+    flux is 0.578 * chi monomers/s (0.0723, 0.578, and 4.626 monomers/s for chi = 0.125, 1, and 8),
+    slightly higher than printed 0.07, 0.5, and 4.4 monomers/s (pp. 22, 24). Evaluating minus-end
+    shrinkage at simulated steady-state [G] ~ 0.2 uM (S2 Text p. 42, reflecting boundary Brownian-ratchet
+    slowdown at barbed ends) yields 0.54 * chi (0.0675, 0.54, 4.32 monomers/s), closely tracking the
+    printed turnover rates.
+  citation:
+    page: 22
+    printed_page: "22"
+    quote: "actin filament turnover rates of 0.07 to 4.4 monomers per s"
+    where: "Results (p. 22 and p. 24)"
+
+- id: q_chain_rule_and_dihedral_normal_typos
+  kind: possible_error
+  about:
+    - branch_dihedral_energy_eq8
+    - branch_stretching_energy_eq6
+    - boundary_repulsion_energy_eq11
+  text: >
+    Several mathematical/notational typos appear in the printed mechanical equations: (1) p. 13 prints
+    the unnumbered chain rule inverted as dU^i/dx_i^m = (1 - alpha) dU^i/dx_i^1 + alpha dU^i/dx_i^2,
+    whereas x_i^m = (1 - alpha) x_i^1 + alpha x_i^2 gives dU^i/dx_i^1 = (1 - alpha) dU^i/dx_i^m and
+    dU^i/dx_i^2 = alpha dU^i/dx_i^m (whose sum equals dU^i/dx_i^m, while the printed RHS equals
+    ((1 - alpha)^2 + alpha^2) dU^i/dx_i^m); (2) beneath Eq. 8 (p. 11), the plane normals n_i and n_j
+    normalize a x b by |a||b| instead of |a x b|, so |n_i| != 1 whenever the vectors are non-orthogonal;
+    (3) Eq. 6 (p. 10) omits the 1/2 prefactor used in harmonic Eqs. 2 and 9, and Eq. 11 (p. 12) writes
+    vector d_i inside the scalar exponential exp(-d_i / lambda).
+  citation:
+    page: 13
+    printed_page: "13"
+    quote: "Mathematically speaking, this is equivalent to a simple chain rule"
+    where: "Models / Mechanical model (pp. 10-13)"
+
+- id: q_si_table_crossref_error
+  kind: possible_error
+  about:
+    - k_actin_poly_plus
+    - nmiia_alpha
+  text: >
+    S2 Text Section A (p. 42, "see Table 1A in S1 Table") and S3 Text introduction (p. 44, "can be found
+    in S1 Table") both mis-cite S1 Table (the qualitative agent-based model comparison, pp. 56-58)
+    instead of S2 Table (Tables 2A-2D, pp. 59-61) where all simulation parameters are actually tabulated.
+  citation:
+    page: 42
+    printed_page: "S2-1"
+    quote: "see Table 1A in S1 Table for reaction rates used in the"
+    where: "S2 Text Section A (p. 42) and S3 Text (p. 44)"
+
+- id: q_audit_s2fig_exclusivity_contradiction
+  kind: possible_error
+  about:
+    - medyan_3d_actomyosin_simulator
+    - rg_cubic_domain_bounds_eq13
+  text: >
+    Direct contradiction between Main Text p. 25 and S2 Fig caption p. 29 regarding the effect of
+    enforcing binding-site exclusivity between alpha-actinin and NMIIA: Main Text p. 25 states that
+    disallowing dual occupancy "resulted in an overall decrease in contraction for each concentration
+    configuration" (which means larger R_g, since smaller R_g signifies greater contraction per p. 17
+    and S1 Fig caption p. 29), whereas S2 Fig caption p. 29 states "in changing this modeling
+    assumption, overall Rg is reduced and its dependence on R_alpha:a is altered."
+  citation:
+    page: 29
+    printed_page: "29"
+    quote: "overall Rg is reduced and its dependence on Rα:a is altered"
+    where: "S2 Fig caption (p. 29) vs Main Text (p. 25)"
+
+- id: q_audit_nmiia_heads_total_vs_perside
+  kind: possible_error
+  about:
+    - nmiia_heads_range
+    - nmiia_heads_eval_added
+    - nmiia_minifilament_count_from_ratio
+    - myosin_molecules_per_minifil_added
+  text: >
+    Main Text pp. 12 and 16 state that NMIIA mini-filaments contain "10-30 individual myosin heads"
+    total, citing Verkhovsky & Borisy (1993) [Ref 78], whereas S3 Text Section A (p. 44) states they
+    comprise "10-30 implicit subunits [6]" (Thoresen et al., 2013) and defines N_total as "the number
+    of head groups (or heads) on each side of the bipolar filament" (implying 20-60 heads total).
+    Furthermore, S2 Text Section C (p. 43) maps R_m:a = 0.005-0.02 at 20 uM actin in 1 um^3 to
+    "2-8 NMIIA mini-filaments" without stating the stoichiometry; matching 2.01-8.03 mini-filaments
+    requires ~30 myosin II molecules per mini-filament (= 60 heads = 30 per side), sitting at the top
+    of the S3 per-side range rather than the 10-30 midpoint.
+  citation:
+    page: 44
+    printed_page: "S3-1"
+    quote: "represents the number of head groups (or heads) on each side"
+    where: "S3 Text Section A (p. 44) vs Main Text (pp. 12, 16) and S2 Text (p. 43)"
+
+- id: q_audit_k_alpha_citation_mismatch
+  kind: possible_error
+  about:
+    - K_alpha_stretching
+    - F_alpha_unbind
+  text: >
+    Conflicting attribution for the alpha-actinin stretching constant K_alpha,stretching = 8 pN/nm:
+    Main Text p. 17 states it was "found in single molecule pulling experiments [106]" and Table 2B
+    (p. 60) cites S2Tab Ref [6], both of which are Didonna & Levine (2007), a theoretical/computational
+    study of unfolding cross-linkers rather than a single-molecule experiment. By contrast, S3 Text
+    Section B (p. 46) states "The stiffness of alpha-actinin has been experimentally determined by
+    Ferrer et al. [12]" (2008), which is the optical-trap pulling study cited only in Table 2C (p. 61)
+    for F_alpha,unbind = 17.2 pN.
+  citation:
+    page: 46
+    printed_page: "S3-3"
+    quote: "The stiffness of α-actinin has been experimentally determined by Ferrer et al."
+    where: "S3 Text Section B (p. 46) vs Main Text (p. 17) and Table 2B (p. 60)"
+
+- id: q_audit_ss_actin_conc_s2_vs_s4
+  kind: unexplained_difference
+  about:
+    - actin_conc_ss_s2
+    - actin_crit_conc_sim
+    - actin_crit_conc_analytical
+    - cmp_actin_crit_conc_sim
+    - cmp_actin_conc_ss_s2
+  text: >
+    S2 Text Section A (p. 42) states that in the 1 um^3, 20 uM system, diffusing actin concentration
+    "stabilizes around 0.2 uM", whereas S4 Text Section A (p. 50) reports a "critical concentration
+    reached in both algorithms of about 0.4 uM" for the same 1 um^3, 20 uM, 50-filament actin system
+    (without alpha-actinin or NMIIA) run for 10 s. In S4 Fig. 2 (p. 51), diffusing [G-actin] is still
+    monotonically decaying near ~0.5 uM at t = 10 s and has not finished equilibrating; moreover, a
+    true steady-state [G] = 0.4 uM would reduce unhindered minus-end turnover to 0.8 - 1.3*0.4 =
+    0.28 monomers/s, well below the 0.5 monomers/s reported on p. 24.
+  citation:
+    page: 50
+    printed_page: "S4-2"
+    quote: "critical concentration reached in both algorithms of about 0.4 µM"
+    where: "S4 Text Section A (p. 50) vs S2 Text Section A (p. 42)"
+
+- id: q_audit_crossref_and_omissions
+  kind: possible_error
+  about:
+    - kuramoto_length_s2eq1
+    - N_compartments_per_axis
+    - medyan_3d_actomyosin_simulator
+  text: >
+    Three additional minor cross-reference and reporting omissions in the paper: (1) Main Text p. 5
+    directs readers to "Section B of S2 Text for an example determination of a Kuramoto length",
+    whereas the Kuramoto length calculation is in Section A of S2 Text (p. 42; Section B covers
+    g_tolerance); (2) Table 2D (p. 61) prints only N = 2 compartments per dimension (for the 1 um^3
+    box with l_comp = 500 nm) and omits the large-box count (N = 6 for 3 um^3), unlike Table 2B which
+    lists both small and large system values; (3) Main Fig. 10A (p. 23) omits the baseline chi = 1
+    curve from both plot and legend (showing only chi = 0.125, 0.25, 0.5, 2, 4, 8), even though
+    chi = 1 is plotted in Fig. 10B and Fig. 12A-B.
+  citation:
+    page: 5
+    printed_page: "5"
+    quote: "see Section B of S2 Text for an example determination of a Kuramoto length"
+    where: "Main Text (p. 5), Table 2D (p. 61), and Fig. 10A (p. 23)"
+
+- id: q_audit_zero_load_condition_propagation
+  kind: reading
+  about:
+    - k_nmiia_unbind_0
+    - k_alpha_unbind_0
+    - cmp_nmiia_loaded_att_time_printed
+    - cmp_nmiia_loaded_att_time_variant
+  text: >
+    Audit reading note on condition metadata: the first reader attached conditions: {external_force:
+    "0 pN"} to the zero-load kinetic parameters k_nmiia_unbind_0 and k_alpha_unbind_0 in data.yaml.
+    Because BoxGraph propagates input datum conditions onto run outputs, loaded evaluations of S3 Text
+    Eqs. 2 and 6 (run_nmiia_unbinding_stall_printed at 1.5 pN, run_nmiia_unbinding_stall_variant at
+    30 pN, and run_probe_s3eq6_alpha_slip at 10 pN) inherit external_force: 0 pN on their outputs,
+    causing spurious one-sided condition notes in cmp_nmiia_loaded_att_time_printed and
+    cmp_nmiia_loaded_att_time_variant. Treating k_unbind^0 as a zero-load model parameter without a
+    propagating run condition would avoid this artifact; left unchanged here as a first-reader choice.
+  citation:
+    page: 59
+    printed_page: "S2Tab-1"
+    quote: "NMIIA head unbinding under no external load"
+    where: "Table 2A (p. 59) and S3 Text Eqs. 2, 6 (pp. 45-46)"
+
+- id: q_digitize_fig6_fig8_rg_3x_scaling
+  kind: possible_error
+  about:
+    - fig6_rg_rma0p005_fig
+    - fig6_rg_rma0p01_fig
+    - fig6_rg_rma0p02_fig
+    - fig8_rg_ratio_ra0p01_fig
+    - fig8_rg_ratio_ra0p02_fig
+    - fig8_rg_ratio_ra0p05_fig
+    - fig8_rg_ratio_ra0p1_fig
+    - fig8_rg_ratio_ra0p2_fig
+    - fig8_rg_ratio_ra0p5_fig
+    - cmp_fig6_rma0p005_vs_1um_bound
+    - cmp_fig6_rma0p01_vs_1um_bound
+    - cmp_fig6_rma0p02_vs_1um_bound
+    - cmp_fig6_vs_fig8_unif_1um
+    - cmp_fig6_vs_fig8_unif_3um
+  text: >
+    Calibrated digitization of all 18 cells of Main Fig. 6 (p. 19) confirms that every single cell
+    (spanning 1.004 to 1.797 um) violates the strict Popoviciu upper bound R_g <= sqrt(3)/2 = 0.866 um
+    for a 1 x 1 x 1 um^3 cubic domain (all 18/18 points not reproduced). Furthermore, dividing each
+    cell of Fig. 6's middle row (R_m:a = 0.01) by the corresponding t = 2000 s normalized ratio
+    R_g,f/R_g,i digitized from Fig. 8 (p. 21) yields implied initial radii of gyration R_g,i = 1.654,
+    1.504, 1.528, 1.539, 1.521, and 1.445 um (mean 1.532 +- 0.063 um), which is 3.06x the uniform
+    1 um^3 cube value (0.500 um) and closely matches the uniform 3 um^3 cube value (1.500 um),
+    pointing to a systematic ~3x length/box scaling factor in the reported absolute R_g values of
+    Fig. 6 and S1 Fig.
+  citation:
+    page: 19
+    printed_page: "19"
+    quote: "A heat map of actomyosin network Rg as a function of Rm:a"
+    where: "Fig. 6 (p. 19) and Fig. 8 (p. 21)"
+
+- id: q_digitize_s4fig3_speedup_overstated
+  kind: overstated_claim
+  about:
+    - s4_nrm_speedup_claimed
+    - s4fig3_time_nrm_fig
+    - s4fig3_time_gillespie_fig
+    - cmp_s4fig3_speedup_t10_vs_claim
+    - cmp_s4fig3_speedup_max_vs_claim
+  text: >
+    S4 Text Section A (p. 50) and the S4 Text Fig. 3 caption (p. 52) both claim that the NRM
+    algorithm outperforms the Gillespie DM "by over 100-fold" for the 10 s actin reaction-diffusion
+    benchmark. Calibrated 900-dpi digitization of S4 Fig. 3 shows Gillespie DM reaches 6000.7 +- 218 s
+    at t = 10 s while NRM visibly sits above zero at 100.3 +- 15 s (rising monotonically from 29.0 s
+    at t = 1 s to 100.3 s at t = 8-10 s), yielding a speedup ratio of 59.8-fold at t = 10 s (and a
+    maximum of 62.9-fold at t = 4 s: 4377.5 / 69.6 s). Even at the optimistic 95% bound (6213 / 85 =
+    73-fold), the plotted speedup remains well below 100-fold.
+  citation:
+    page: 50
+    printed_page: "S4-2"
+    quote: "the NRM algorithm outperforms the Gillespie DM by over 100-fold"
+    where: "S4 Text Section A (p. 50) and S4 Fig. 3 (p. 52)"
+
+- id: q_digitize_s4fig4_error_exceeds_5pct
+  kind: overstated_claim
+  about:
+    - s4_max_displacement_error_claimed
+    - s4fig4_err_actin_5pN_fig
+    - s4fig4_err_actin_1pN_fig
+    - s4fig4_err_mt_1pN_fig
+    - cmp_s4fig4_peak_actin_5pN_vs_claim
+  text: >
+    Calibrated digitization of S4 Text Fig. 4 (p. 53) quantitatively settles q_s4_fig4_displacement_error_overstated:
+    the red "Actin filament, 5pN tolerance" series reads e_d = 0.0000 (bead-spring), 0.0487 (4.87% at
+    10 monomers), 0.0608 (6.08% at 20 monomers), and 0.0664 (6.64% at 40 monomers), exceeding the
+    caption's "< 5%" claim at both 20 monomers (+1.08%) and 40 monomers (+1.64%). Only the 1 pN
+    tolerance curves remain under 5% across all coarse-graining levels (Actin 1 pN max 4.32%;
+    Microtubule 1 pN max 3.95%).
+  citation:
+    page: 53
+    printed_page: "S4-5"
+    quote: "Displacement errors stay under 5% of the total polymer length for all levels"
+    where: "S4 Text Fig. 4 (p. 53)"
+
+- id: q_digitize_fig12_peak_and_powerlaw_fit
+  kind: unexplained_difference
+  about:
+    - fig12b_nu_vs_chi_fig
+    - fig12a_msd_chi0p125_fig
+    - fig12a_msd_chi0p25_fig
+    - fig12a_msd_chi0p5_fig
+    - fig12a_msd_chi1_fig
+    - fig12a_msd_chi2_fig
+    - fig12a_msd_chi4_fig
+    - fig12a_msd_chi8_fig
+    - cmp_fig12b_nu_vs_fig12a_fit
+    - cmp_eq15_msd_chi1
+    - cmp_eq15_msd_chi4
+    - cmp_eq15_msd_chi8
+  text: >
+    Calibrated digitization of Main Fig. 12A-B (p. 24) reveals two quantitative discrepancies with
+    the text: (1) Main Text p. 24 describes a maximum exponent nu "centered around chi = 1", whereas
+    digitized Fig. 12B peaks at chi = 0.5 (nu = 1.411 +- 0.020 SE) above chi = 1 (1.381 +- 0.027 SE);
+    (2) log-log linear regression of digitized Fig. 12A over t <= 1000 s reproduces Fig. 12B closely
+    at chi = 0.5 (1.364 vs 1.411) and chi = 0.125 (1.084 vs 1.124) but yields systematically lower
+    exponents at chi = 2, 4, 8 (1.236, 1.059, 0.887 vs 1.337, 1.169, 1.050), and Eq. 15 shape fits
+    depart from a single power law over 100-1000 s (especially at chi = 8, which peaks near 900 s
+    and declines before the stated 1000 s cutoff). The earliest time point t_min included in the
+    paper's log-log regression is unstated and strongly influences the fitted slope when curves bend.
+  citation:
+    page: 24
+    printed_page: "24"
+    quote: "with a maximum ν value centered around χ = 1"
+    where: "Main Text (pp. 23-24) and Fig. 12A-B"
+
+- id: q_digitize_s4fig1_s4fig2_equilibration_and_mass_balance
+  kind: unexplained_difference
+  about:
+    - s4fig1_length_nrm_fig
+    - s4fig1_length_gillespie_fig
+    - s4fig2_conc_nrm_fig
+    - s4fig2_conc_gillespie_fig
+    - cmp_s4fig1_nrm_final_vs_printed
+    - cmp_s4fig2_nrm_final_vs_analytical_Ac
+    - cmp_s4fig2_nrm_final_vs_sim_claim
+  text: >
+    Calibrated digitization of S4 Text Figs. 1-2 (pp. 50-51) quantitatively settles
+    q_audit_ss_actin_conc_s2_vs_s4 and sharpens q_mean_filament_length_mass_balance_gap: at t = 10 s,
+    both NRM and Gillespie DM give diffusing G-actin [G] = 0.492 uM (still decreasing from 0.693 uM
+    at 8 s and 0.559 uM at 9 s, well above both the text's "about 0.4 uM" and analytical [A_c] =
+    0.1705 uM), while starting from [G](0) = 19.32 uM and L(0) = 0.0275 um (consistent with 50 short
+    10-monomer seed filaments consuming ~0.83 uM). Yet by t = 10 s, mean filament length already
+    reaches 0.790 um (matching p. 17's 0.8 um), whereas conserving 20 - 0.492 = 19.51 uM of F-actin
+    across 50 filaments in 1 um^3 at 2.7 nm/monomer yields only 0.634 um (leaving a ~20% mass-balance
+    surplus even in the 10 s pure-actin benchmark without motors or cross-linkers).
+  citation:
+    page: 50
+    printed_page: "S4-2"
+    quote: "critical concentration reached in both algorithms of about 0.4 µM"
+    where: "S4 Text Figs. 1-2 (pp. 50-51)"
+
+- id: q_cross_framework_stretching_and_wlb_coupling
+  kind: unexplained_difference
+  about:
+    - K_actin_str
+    - K_alpha_stretching
+    - l_cyl_large
+    - l_cyl_small
+    - filament_stretching_energy_eq2
+    - motor_crosslinker_stretching_energy_eq9
+    - actin_cylinder_bending_energy_table2b
+    - bathe2008/EfAf_actin
+    - bathe2008/coupling_parameter_ea
+    - freedman2019/filament_potential_si_eq1
+    - freedman2019/crosslinker_potential_si_eq4
+    - graham2023/single_filament_k_stretch
+    - graham2023/discrete_bending_constant
+  text: >
+    Cross-framework mechanical stiffness and provenance audit across MEDYAN (popov2016), WLB
+    (bathe2008), AFINES (freedman2019), Graham discrete-ring (graham2023), and CytoSim/LAMMPS
+    (chandrasekaran2024): (1) Filament extensional rigidity E_f*A_f = K_str*l_seg spans nearly
+    four orders of magnitude despite shared single-filament persistence length l_p = 17-18.3 um.
+    Physical actin measured by Kojima et al. (1994, cited in both bathe2008 as EfAf_actin = 44 nN
+    and popov2016 Table 2B footnote c as ref-98) gives k_f = 407 pN/nm for l_cyl = 108 nm and
+    1630 pN/nm for l_cyl = 27 nm. MEDYAN softens K_actin,str to 100 pN/nm (effective E_f*A_f =
+    10.8 nN at 108 nm and 2.7 nN at 27 nm, 4.1x-16.3x softer than physical actin); inside Bathe
+    et al.'s WLB coupling parameter alpha = k_x * L^2 / (E_f * A_f * delta), this softening
+    artificially shifts alpha upward by 4.1x-16.3x toward the fully-coupled bundle regime.
+    AFINES (freedman2019 Table S1) softens filament springs far further to k_a = 5 pN/um at
+    l_a = 1 um (E_f*A_f = 5 pN: 2,160x softer than MEDYAN at 108 nm and 8,800x softer than
+    Kojima 1994) and crosslinkers to k_xl = 10 pN/um (800x softer than MEDYAN's K_alpha =
+    8 pN/nm = 8000 pN/um) because AFINES integrates explicit Brownian dynamics at dt = 20 us,
+    whereas MEDYAN decouples chemistry from quasi-static conjugate-gradient minimization
+    (g_tol = 1 pN every t_min = 0.05 s) and CytoSim enforces inextensible filament constraints.
+    (2) Unlinked partner citation & factor-of-2 stiffness drift in graham2023: Graham et al.
+    (2023) SI Table 1 (p. 39) cites Popov et al. (2016) [SI ref 10, graham2023/ref-si-10,
+    which currently lacks `source: popov2016` and a `cited.yaml` link from
+    `graham2023/single_filament_k_stretch` to `popov2016/K_actin_str`] directly for
+    k_stretch = N_fil * 100 pN/nm at L_cyl = 100 nm, adopting MEDYAN's exact cylinder bending
+    discretization k_bend = N_fil * L_p * k_B T / L_cyl and cosine hinge potential
+    k_bend*(1 - u_i . u_{i+1}) in SI Eq. (S2). However, Graham Eq. (S2) omits the 1/2
+    prefactor on stretching (sum k_stretch*(||r_i - r_{i+1}|| - L_cyl)^2 vs MEDYAN Eq. 2's
+    (1/2)*K_str*(l - l_0)^2), effectively doubling per-filament stretching stiffness to
+    200 pN/nm (E_f*A_f = 20 nN, 2x stiffer than MEDYAN's actual spring constant). (3) Crosslinker
+    mechanics diverge qualitatively: WLB assumes permanent linear-shear crosslinkers
+    (k_perp ~ 1000 pN/nm, k_x ~ 10^-5 to 10^-6 N/m for fascin); MEDYAN models alpha-actinin
+    as central-force Hookean springs (8 pN/nm, zero angular bending stiffness) with
+    non-equilibrium Bell slip-bond unbinding; AFINES adds perpendicular crosslinker bending
+    kappa_xl^B (0.005-0.02 pN*um) and equilibrium detailed-balance chemical binding energy.
+  citation:
+    page: 60
+    printed_page: "S2Tab-2"
+    quote: "This value was chosen to be smaller than the known stretching rigidity of actin filaments"
+    where: "Table 2B (p. 60, footnotes b-c)"
+
+- id: q_cross_framework_brownian_ratchet_and_slip_bond
+  kind: unexplained_difference
+  about:
+    - actin_brownian_ratchet_s3eq7
+    - actin_char_poly_force_brownian_ratchet
+    - alpha_actinin_slip_bond_s3eq6
+    - nmiia_unbinding_and_attachment_time_s3eq2
+    - mean_filament_length_mass_balance
+    - F_actin_poly
+    - F_alpha_unbind
+    - chandrasekaran2024/brownian_ratchet_growth_rate
+    - chandrasekaran2024/bell_slip_bond_unbinding
+    - chandrasekaran2024/final_actin_concentration
+  text: >
+    Cross-framework mechanochemical kinetics comparison between MEDYAN (popov2016) and CytoSim
+    (chandrasekaran2024): (1) Brownian ratchet stall force discrepancy: both frameworks use the
+    exact same exponential load-dependent barbed-end polymerization law (verified via
+    rel_chandrasekaran2024_brownian_ratchet_scales up to monomer increment l_mon = 2.7 nm),
+    yet popov2016 derives F_actin,poly = k_B T / l_mon = 4.1 / 2.7 = 1.5 pN (citing Peskin
+    et al. 1993 and Footer et al. 2007), whereas chandrasekaran2024 prescribes f_grow = 10 pN
+    (6.67x larger). Under a 5 pN compressive load (typical of droplet-rim confinement or
+    bundle buckling), MEDYAN suppresses elongation to exp(-5/1.5) = 3.6% of the unloaded rate,
+    whereas CytoSim retains exp(-5/10) = 60.7% — a 17x kinetic divergence from the same formula.
+    (2) Crosslinker force-response: MEDYAN alpha-actinin (S3 Eq. 6, F_unbind = 17.2 pN,
+    k_0 = 0.3 s^-1) and CytoSim VASP (bell_slip_bond_unbinding, f_u = 10 pN, k_0 = 0.1-1.75 s^-1)
+    implement the identical Bell slip bond (rel_chandrasekaran2024_bell_slip_bond), directly
+    opposite in force sign to MEDYAN's NMIIA catch bond (S3 Eq. 2, exp(-F_ext / (N_bound * F_unbind)))
+    and distinct from AFINES's detailed-balance Metropolis crosslinker dynamics (freedman2019 SI
+    Eq. 4). (3) Inverse-variable mass conservation: popov2016/mean_filament_length_mass_balance
+    solves F-actin conservation for L_mean = ((A_tot - A_ss) * N_A * V / N_fil) * l_mon,
+    which is the exact algebraic inverse (for A_ss = 0 and V = (4/3)*pi*R_drop^3) of
+    chandrasekaran2024/final_actin_concentration solving for C_actin.
+  citation:
+    page: 47
+    printed_page: "S3-4"
+    quote: "The polymerization rate of a filament tip under external load can be modeled by the Brownian"
+    where: "S3 Text Eqs. 6-7 (pp. 46-47) and Table 2C (p. 61)"
+
+- id: q_cross_framework_validations_audit
+  kind: choice
+  about:
+    - medyan_3d_actomyosin_simulator
+    - actin_treadmilling_turnover_rate
+    - actin_brownian_ratchet_s3eq7
+    - k_actin_poly_plus
+    - k_actin_depoly_plus
+    - actin_monomer_length
+    - bathe2008/fig4_exp_points_datum
+    - chandrasekaran2024/exp_wt_disk_pct_1_7p5
+    - freedman2019/tirf_poly_rate_high_actin
+    - freedman2019/tirf_poly_rate_low_actin
+    - graham2023/elongation_rate_mean_text
+  text: >
+    Cross-record validation audit for popov2016 across bathe2008, chandrasekaran2024,
+    freedman2019, and graham2023 (0 entries added to popov2016/validations.yaml): popov2016
+    itself contains 0 `origin: measured` empirical datums (purely computational MEDYAN paper),
+    so no partner model can validate against popov2016 measurements. Conversely, checking all
+    62 `origin: measured` datums in the four partners against popov2016's 49 models yields zero
+    compatible runnable predictions: (1) bathe2008 (6 measured datums): all 6 are Claessens
+    2006 / Fig. 4 bundle bending stiffnesses kappa_B [N*m^2]; popov2016 has no model outputting
+    bundle flexural rigidity [energy*length]. (2) chandrasekaran2024 (10 measured datums): all
+    10 are VASP-droplet disk/ring/shell morphology percentages; popov2016 models 3D actomyosin
+    networks in cubic boxes with no droplet morphology predictor. (3) freedman2019 (8 measured
+    datums): 6 are TIRF fascin/alpha-actinin domain lengths [um] (no MEDYAN domain-length model),
+    and 2 are TIRF single-filament polymerization speeds (22.15 +- 3.78 nm/s at 0.75 uM actin;
+    46.99 +- 3.62 nm/s at 1.5 uM actin). Although popov2016 has no standalone model outputting
+    actin elongation velocity [nm/s] (actin_treadmilling_turnover_rate outputs monomer flux
+    J_tm [1/s] and actin_brownian_ratchet_s3eq7 outputs rate k_poly [1/s]), multiplying popov2016
+    Table 2A's Fujiwara 2007 net barbed-end rate (11.6*[A] - 1.4 s^-1) by l_mon = 2.7 nm yields
+    19.71 nm/s at 0.75 uM (0.65 SD below Freedman's 22.15 +- 3.78 nm/s) and 43.20 nm/s at 1.5 uM
+    (1.05 SD below Freedman's 46.99 +- 3.62 nm/s), demonstrating close kinetic consistency without
+    forcing a dimensional mismatch into validations.yaml. (4) graham2023 (38 measured datums):
+    droplet FRAP, fusion time, sizes, aspect ratios, partition coefficients, morphology counts,
+    and VASP-droplet bundle elongation rate (23 +- 3 nm/s at 2 uM actin — 2.56x slower than
+    popov2016's bare barbed-end speed 58.9 nm/s at 2 uM due to monomer depletion/confinement,
+    with no matching runnable [length/time] polymerization model in popov2016).
+  citation:
+    page: 59
+    printed_page: "S2Tab-1"
+    quote: "Actin polymerization at plus end"
+    where: "Table 2A (p. 59) and S4 Text Eq. 1 (p. 49)"
+
+- id: q_filament_bending_float64_cancellation_note
+  kind: numerics
+  about:
+    - filament_bending_energy_eq1
+    - rel_freedman2019_filament_bending_derived_small_angle
+    - rel_freedman2019_gap_bending_approx_two_medyan_hinges
+    - rel_graham2023_ring_confinement_derived_medyan_bend
+    - rel_graham2023_ring_confinement_approx_medyan_bend
+  text: >
+    ModelAtlas numerical precision note: popov2016/filament_bending_energy_eq1 implements
+    Eq. 1 verbatim as `eps_bend * (1.0 - math.cos(theta))` in IEEE-754 float64 (rather than the
+    numerically stable half-angle identity `2 * eps_bend * math.sin(theta / 2)**2`). For very
+    small angles theta <= 1e-7 rad, `1.0 - math.cos(theta)` suffers catastrophic cancellation
+    and underflows identically to 0.0 around theta ~ 1e-9 rad. Consequently, ModelAtlas numeric
+    `reduces_to` tests (which probe down to ~10^-8 of the regime upper bound) spuriously report
+    relative error 1.0 at k = 8 despite exact mathematical convergence. The small-angle
+    equivalences between popov2016/filament_bending_energy_eq1, freedman2019/filament_potential_si_eq1,
+    freedman2019/gap_bending_energy_eq1, and graham2023/ring_confinement_bending_energy are
+    therefore verified symbolically via `derived_from` (`series: theta -> 0, 3`) and
+    quantitatively over physiological angles via `approximated_by`.
+  citation:
+    page: 8
+    printed_page: "8"
+    quote: "we use an angular potential between consecutive cylinders in the polymer chain"
+    where: "Main Text Eq. 1 (p. 8)"
