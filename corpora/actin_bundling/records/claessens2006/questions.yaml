@@ -1,0 +1,442 @@
+- id: q_unstated_actin_concentration
+  kind: unstated_input
+  about: [c_a_added, abp_chemical_equilibrium, abp_concentration_from_ratio, droplet_filament_count, bundle_3d_bending]
+  text: >
+    The paper never states the actin monomer concentration c_a inside the emulsion droplets
+    anywhere in the main text, Methods, figure captions, or Supplementary Information, reporting
+    only the ABP-to-actin molar ratios r_ABP:a (1:2, 1:10/0.2, 1:20, 1:50). Yet c_ABP = r_ABP:a * c_a
+    is required to evaluate theta = c_ABP / (K_d + c_ABP) and delta = 33 nm / theta (p. 12), and
+    c_a is required to compute filament count n from droplet volume (p. 16). Two independent
+    internal constraints both point to c_a ~ 0.4-0.6 uM: (1) combining droplet mass conservation
+    with the SI linear relations L_B(n) = 2*pi*R_r gives c_a ~ 0.35-0.45 uM; (2) p. 7 states
+    delta = 10^-7 m as the typical axial spacing at high ABP concentration (r = 0.5), which yields
+    c_a = 0.49 uM for K_d = 0.5 uM and 0.69 uM for K_d = 0.7 uM.
+  citation: {page: 12, printed_page: "12", quote: "and c ABP is the droplet ABP concentration, which is confirmed", where: Methods}
+
+- id: q_K_factor_vs_fig3_curves
+  kind: possible_error
+  about: [bundle_2d_bending, bundle_3d_bending, bundle_3d_bending_K_no_divN, cmp_fig3d_peg4_n36_printed, cmp_fig3d_peg4_n36_KnoN]
+  text: >
+    Page 12 prints K = (1/N) * sum_{k=1}^N sum_{i=k}^N i = S_2 / N = n_2D*(n_2D + 1)/12.
+    Although K = S_2/N is variationally exact for the linear-strain ansatz u_i = i*u_1 and yields
+    the paper's stated crossover scaling alpha ~ n_3D, plugging the SI empirical bundle lengths
+    L_B(n) = L_0 + s*n (p. 20) into printed K = S_2/N makes L_B^2/n increase at large n and
+    drives kappa_B upward super-quadratically, overshooting the plotted curves in Fig. 3A-D.
+    Crucially, in Fig. 3D (PEG 4%, where t = 0, k_par/delta = 10^3 N/m^2, and L_B = 21.2 + 1.3*n um
+    with no unstated c_a), printed K = S_2/N gives kappa_B(36) = 70.45 pN*um^2 and ratio
+    kappa_B(36)/kappa_B(10) = 13.21 (> 3.6^2 = 12.96), whereas the red model curve in Fig. 3D
+    gives ~5.1 at n = 10 and ~51 pN*um^2 at n = 36 (ratio ~10.0). Omitting 1/N (variant
+    bundle_3d_bending_K_no_divN, K = S_2) gives 5.23 and 51.18 pN*um^2 (ratio 9.80) for PEG 4%
+    and produces the concave-down crossover curves seen in Fig. 3A-C. Calibrated digitization of
+    Fig. 3A-D in digitize:claessens2006 is needed to test both forms definitively.
+  citation: {page: 12, printed_page: "12", quote: "where n is the total (odd) number of filaments in 2D and", where: Methods}
+
+- id: q_spacing_factor_d_d_plus_t
+  kind: choice
+  about: [bundle_2d_bending, bundle_3d_bending]
+  text: >
+    The printed three-point-bending equations on p. 12 use the geometric factor d*(d + t) in both
+    w_B,max and beta^2, which yields a fully coupled limit kappa_B(2D) -> n*kappa_a + 2*k_a*d*(d+t)*S_2
+    rather than the parallel-axis Euler-Bernoulli limit n*kappa_a + 2*k_a*(d+t)^2*S_2 (differing
+    by (d+t)/d = 3.22 for fascin/plastin and 8.78 for alpha-actinin). This reflects the Tolomeo &
+    Holley (1997, ref-25) surface-slip approximation (surface slip d*w' times moment arm d+t,
+    neglecting rotation of the crosslink of length t). Preliminary inspection of Fig. 3B and 3C
+    at n = 9 (N = 1, where K = 1 unconditionally) matches d*(d+t) rather than (d+t)^2, confirming
+    that d*(d+t) is a deliberate modeling approximation rather than a typographical error.
+  citation: {page: 12, printed_page: "12", quote: "calculated analytically using an analogous version of Eq. 11 of ref. 25", where: Methods}
+
+- id: q_fig3b_caption_square_symbols_swapped
+  kind: possible_error
+  about: [r_abp_1_20, r_abp_1_50]
+  text: >
+    The Fig. 3b caption (p. 16) lists fascin concentration ratios as '● 1:2, ○ 1:10, ■ 1:20, □ 1:50'
+    (red filled circle, blue open circle, orange filled square, green open square). However, in
+    Fig. 3B (p. 19) the green open squares (□) and green model curve lie strictly above the orange
+    filled squares (■) and orange model curve, indicating higher stiffness and therefore higher
+    fascin concentration for □ than ■. Thus the symbols ■ (1:20) and □ (1:50) appear swapped in
+    the Fig. 3b caption relative to the plot.
+  citation: {page: 16, printed_page: "16", quote: "rABP:a ● 1:2, ○ 1:10, ■ 1:20, □ 1:50", where: "Fig. 3b caption"}
+
+- id: q_caption_vs_si_concentration_ratios
+  kind: possible_error
+  about: [r_abp_1_10, r_abp_0_2_si, r_abp_1_50, L0_fascin_02, L0_aact_005]
+  text: >
+    Two concentration ratios in the SI bundle-length table (p. 20) conflict with the Fig. 3
+    caption (p. 16): (1) for fascin, Fig. 3b caption lists 1:10 (0.1) as the second ratio,
+    whereas the SI table lists r_ABP:a = 0.2 (1:5); (2) for alpha-actinin, Fig. 3c caption lists
+    1:50 (0.02) as the lower ratio, whereas the SI table lists r_ABP:a = 0.05 (1:20).
+  citation: {page: 20, printed_page: "SI 1", quote: "rABP:a=0.2 16.9+1.2n 0.95", where: "SI Table"}
+
+- id: q_fig2b_typo_for_fig3b
+  kind: possible_error
+  about: [k_par_fascin]
+  text: >
+    Page 6 prints 'using k_|| = 1.5 x 10^-5 N/m (Fig. 2b).' This is a figure cross-reference
+    misprint for Fig. 3b (Fig. 2b is the emulsion-droplet fluorescence micrograph; Fig. 3b shows
+    the fascin bundle bending stiffness data and model fits).
+  citation: {page: 6, printed_page: "6", quote: "using k = 1.5 × 10−5 N/m (Fig. 2b).", where: text}
+
+- id: q_fig1_caption_kappa_B_typo
+  kind: possible_error
+  about: [kappa_a_ref35]
+  text: >
+    The Fig. 1 caption (p. 16) prints 'and bending stiffness, kappa_B = EI = 7.3 x 10^-26 Nm^2'
+    for a single F-actin filament, misprinting the bundle bending stiffness symbol kappa_B instead
+    of the single-filament symbol kappa_a (correctly written as kappa_a = EI = 7.3 x 10^-26 Nm^2
+    on p. 12).
+  citation: {page: 16, printed_page: "16", quote: "and bending stiffness, κ B = EI = 7.3 × 10−26 Nm 2", where: "Fig. 1 caption"}
+
+- id: q_delta_max_subscript_inversion
+  kind: possible_error
+  about: [delta_max_hex, abp_chemical_equilibrium]
+  text: >
+    Page 12 states 'The minimum mean axial spacing between crosslinks, delta_max = 33 nm' for
+    hexagonally packed F-actin bundles with fully saturated binding sites. Since delta = 33 nm / theta
+    and theta <= 1, 33 nm is the minimum (not maximum) axial spacing delta_min (corresponding to
+    maximum crosslink density).
+  citation: {page: 12, printed_page: "12", quote: "The minimum mean axial spacing between crosslinks, δ max = 33 nm", where: Methods}
+
+- id: q_actin_cross_section_square_vs_circular
+  kind: choice
+  about: [filament_geometry_square, filament_geometry_circular, d_actin_p12, E_actin_p12, cmp_d_actin_circular, cmp_d_actin_square]
+  text: >
+    Page 12 states that F-actin has k_a = EA = 4.4 x 10^-8 N and kappa_a = EI = 7.3 x 10^-26 N*m^2
+    'with diameter d = 4.5 nm corresponding to an effective Young's modulus of 2 GPa', without
+    specifying the beam cross-section shape. For a circular cylinder (A = pi*d^2/4, I = pi*d^4/64),
+    inverting (k_a, kappa_a) yields d = 5.15 nm (not reproducing 4.5 nm) and E = 2.11 GPa. For a
+    square cross-section (A = d^2, I = d^4/12), inverting (k_a, kappa_a) yields d = 4.46 nm and
+    E = 2.21 GPa, reproducing both printed values and ensuring that the t = 0 rigid-bundle limit
+    satisfies k_a*d^2/(12*kappa_a) = 1.017 ~ 1 (so kappa_B(3D) ~ n^2*kappa_a).
+  citation: {page: 12, printed_page: "12", quote: "with diameter d = 4.5 nm corresponding to an effective", where: Methods}
+
+- id: q_fuzzy_diameter_linear_vs_quadrature
+  kind: possible_error
+  about: [fuzzy_diameter_gaussian_processing]
+  text: >
+    Page 11 extracts the bundle fuzzy diameter via linear subtraction D_B = sigma_avg - sigma_int
+    of Gaussian standard deviations of the time-averaged and instantaneous intensity profiles,
+    rather than quadrature subtraction sqrt(sigma_avg^2 - sigma_int^2) expected when convolving an
+    intrinsic Gaussian profile width with independent Gaussian transverse thermal fluctuations.
+    Moreover, no raw sigma_avg or sigma_int values are reported, making the image-processing step
+    non-runnable.
+  citation: {page: 11, printed_page: "11", quote: "The fuzzy diameter of the bundle is, DB = σ avg − σ int", where: Methods}
+
+- id: q_wlc_ring_mc_unstated
+  kind: unstated_model
+  about: [wlc_ring_mc_prefactor, prefactor_wlc_ring]
+  text: >
+    Page 11 states that Metropolis Monte Carlo simulations were used to determine the numerical
+    prefactor 0.16 in kappa_B = 0.16 * R_c^3 * k_B * T / D_B^2 and confirm equal in-plane and
+    out-of-plane transverse fluctuations, but provides no simulation specification (segment/bead
+    count, bending Hamiltonian discretization, ring closure constraint, trial moves, step count,
+    or L_B / l_p range), making the simulation non-runnable.
+  citation: {page: 11, printed_page: "11", quote: "Metropolis Monte Carlo simulations were used to determine the prefactor (0.16)", where: Methods}
+
+- id: q_langmuir_depletion_neglected
+  kind: choice
+  about: [abp_chemical_equilibrium, c_a_added]
+  text: >
+    The chemical equilibrium expression theta = c_ABP / (K_d + c_ABP) on p. 12 uses the droplet
+    ABP concentration c_ABP without subtracting bound ABP (free-ligand depletion). For c_a ~ 0.5 uM
+    and saturated hexagonal binding (~1 crosslink site per 12 actin monomers, ~0.04 uM sites),
+    bound ABP can be comparable to total c_ABP at low ratios r_ABP:a = 0.02-0.05 (c_ABP ~ 0.01-0.025 uM).
+  citation: {page: 12, printed_page: "12", quote: "equilibrium using, δ = 33 × 10 −9 /θ m , where, θ = c ABP /( K d + c ABP )", where: Methods}
+
+- id: q_si_table_missing_units_and_affine_scaling
+  kind: reading
+  about: [bundle_length_linear_fit, L0_fascin_05, r2_plastin_002, droplet_filament_count]
+  text: >
+    The SI bundle-length table (p. 20) omits units in the header 'Bundle length L_B(n)' (inferred
+    to be micrometers from SI Fig. 1a-b ring radii 8.0 and 5.2 um), and p. 11 describes L_B as
+    'directly proportional to n' even though all 10 empirical fits are affine with large positive
+    intercepts (13.8 to 24.0 um). Geometrically, spherical droplet mass conservation at fixed c_a
+    predicts n proportional to R_d^2 proportional to L_B^2, i.e., L_B proportional to n^(1/2),
+    whose tangent over n ~ 2-30 naturally produces an affine fit with a large positive intercept.
+    Also note the low goodness of fit R^2 = 0.37 for plastin r_ABP:a = 0.02.
+  citation: {page: 11, printed_page: "11", quote: "Bundle length LB was directly proportional to n and the", where: Methods}
+
+- id: q_si_relaxation_mu_unstated
+  kind: unstated_input
+  about: [wlc_relaxation_time_scaling, mu_water_added, cmp_tau_si1a_vs_eq, cmp_tau_si1b_vs_eq]
+  text: >
+    SI p. 20 states the WLC equilibration scaling tau ~ (mu / kappa) * L^4 without defining the
+    symbol mu, stating its numerical value, or giving the ring-mode numerical prefactor. By
+    dimensional analysis [mu] = Pa*s (solvent viscosity / transverse hydrodynamic drag per unit
+    length ~ 10^-3 Pa*s), and comparing unit-prefactor (mu/kappa)*L^4 against the observed
+    equilibration times (~3-5 s) implies a mode prefactor of order ~10^-2 to 10^-4 depending on
+    whether L is full circumference 2*pi*R or ring radius R.
+  citation: {page: 20, printed_page: "SI 1", quote: "where τ depends on the length L and bending rigidity κ of the chain.", where: "SI Bundle Equilibration"}
+
+- id: q_ring_radius_symbols_and_odd_n2d_continuation
+  kind: reading
+  about: [wlc_ring_bending_stiffness, bundle_2d_bending, bundle_3d_bending]
+  text: >
+    Two minor notation/formulation details remain implicit: (1) ring radius is denoted R_r (pp. 4, 16),
+    R_c (p. 11), and R_ring (p. 20), and fuzzy diameter is denoted D (pp. 16, 20) and D_B (pp. 11, 20);
+    (2) p. 12 defines the 2D model for odd integer n_2D = 2*N + 1 (mapping to n_3D = 1, 9, 25, 49)
+    without stating how continuous or intermediate n values in Fig. 3A-D are evaluated (here
+    bundle_3d_bending uses the exact polynomial continuation S_2 = n_2D*(n_2D^2 - 1)/24 and
+    K = n_2D*(n_2D + 1)/12, which agrees exactly at all odd integers n_2D >= 3).
+  citation: {page: 12, printed_page: "12", quote: "where n is the total (odd) number of filaments in 2D and", where: Methods}
+
+- id: q_fig3a_caption_symbol_colors_swapped
+  kind: possible_error
+  about: [r_abp_1_2, r_abp_1_50]
+  text: >
+    In the Fig. 3a caption (p. 16), the open circle symbol for low plastin ratio (1:50) is printed
+    in red and the filled circle symbol for high plastin ratio (1:2) is printed in blue. In the
+    actual Fig. 3A plot (p. 19), the open circles are blue and the filled circles are red, matching
+    the convention in Fig. 3B-D (red filled = high concentration, blue open = lower concentration).
+  citation: {page: 16, printed_page: "16", quote: "both low (○ 1:50) and high (● 1:2) crosslinker:actin concentration ratios", where: "Fig. 3a caption"}
+
+- id: q_unstated_measurement_temperature
+  kind: unstated_input
+  about: [wlc_ring_bending_stiffness, T_room_p5, run_ring_stiffness_si1a, run_ring_stiffness_si1b]
+  text: >
+    Nowhere in Methods (pp. 10-13) or SI (p. 20) does the paper state the fluid-chamber temperature T
+    during the emulsion-droplet ring microscopy measurements, even though kappa_B = 0.16 * R_c^3 * k_B * T / D_B^2
+    (p. 11) depends linearly on T. The only printed T = 298 K (p. 5) is cited from ref-23 (Le Goff et al.)
+    for single-filament persistence length l_p = 17 um. Runs run_ring_stiffness_si1a and
+    run_ring_stiffness_si1b reuse T_room_p5 (from_source: ref-23) rather than an added ambient
+    temperature (e.g., 293-298 K, ~1.7% range).
+  citation: {page: 11, printed_page: "11", quote: "k B is the Boltzmann constant, and T is absolute temperature.", where: Methods}
+
+- id: q_sampling_window_vs_relaxation_time
+  kind: reading
+  about: [t_sampling_window, relaxation_time, wlc_relaxation_time_scaling]
+  text: >
+    Datum t_sampling_window (5-12 s, p. 11) is the experimental fluorescence observation and profile
+    summing duration chosen long enough to ensure equilibration, not the WLC bundle equilibration
+    relaxation time tau ~ (mu/kappa)*L^4 (SI p. 20). Assigning t_sampling_window to quantity
+    relaxation_time conflates two physically distinct quantities of dimension [time]; downstream
+    cross-record analyses should treat it as an observation window rather than a relaxation time.
+  citation: {page: 11, printed_page: "11", quote: "Fluctuations are followed for 5–12 seconds and the intensity profiles are summed", where: Methods}
+
+- id: q_unstated_kd_and_delta_max_sources
+  kind: unstated_input
+  about: [K_d_aact_plastin, K_d_fascin, delta_max_hex, abp_chemical_equilibrium]
+  text: >
+    Page 12 states equilibrium dissociation constants K_d = 0.5 uM (alpha-actinin and plastin) and
+    K_d = 0.7 uM (fascin), the saturated hexagonal axial spacing delta_max = 33 nm, and that droplet
+    c_ABP is "confirmed to be independent of finite-size effects", without citing any literature
+    source or describing a binding assay or finite-size calculation (unlike k_a, kappa_a, and t on
+    the same page, which carry explicit citations).
+  citation: {page: 12, printed_page: "12", quote: "actin bundles (α–actinin and plastin Kd = 0.5 µM, fascin Kd = 0.7 µM)", where: Methods}
+
+- id: q_si_fig1a_stiffness_vs_fig3b
+  kind: unexplained_difference
+  about: [wlc_ring_bending_stiffness, run_ring_stiffness_si1a, run_relaxation_si1a, run_relaxation_si1b, D_sat_si1a_eye, R_ring_si1a]
+  text: >
+    Evaluating kappa_B = 0.16 * R_c^3 * k_B * T / D_B^2 (p. 11) on the SI Fig. 1a ring
+    (fascin:actin 1:2, R_ring = 8.0 um, plateau D ~ 0.08 um, p. 20) gives kappa_B ~ 52.7 pN*um^2
+    (kappa_B_ring_si1a), roughly 2-2.5x higher than the fascin 1:2 measurements plotted in Fig. 3B
+    (p. 19, where all red filled circles lie <= ~25 pN*um^2 and the SI table fit L_B = 16.2 + 1.4*n
+    at L_B = 2*pi*8.0 = 50.3 um implies n ~ 24.3). Correspondingly, the unit-prefactor relaxation
+    time (mu/kappa)*L^4 differs by 6.9x between SI Fig. 1b and 1a (832 s vs 121 s), whereas the
+    apparent saturation times differ by less than 2x (~5 s vs ~3 s). Calibrated digitization of
+    SI Fig. 1a-b and Fig. 3B in digitize:claessens2006 should test this discrepancy.
+  citation: {page: 20, printed_page: "SI 1", quote: "a. Ratio of fascin:actin 1:2 R ring =8.0 µm", where: "SI Fig. 1a"}
+
+- id: q_digitized_fig3_K_and_small_n_continuation
+  kind: unexplained_difference
+  about: [fig3d_peg_curve, fig3a_plastin_05_curve, fig3b_fascin_05_curve, fig3c_aact_01_curve, bundle_3d_bending_linear_L, bundle_3d_bending_linear_L_K_no_divN, cmp_fig3d_peg_curve_printed, cmp_fig3d_peg_curve_KnoN]
+  text: >
+    Calibrated digitization of Fig. 3D (parameter-free PEG 4% curve, t = 0, k_par/delta = 10^3 N/m^2,
+    L_B = 21.2 + 1.3*n um) decisively separates the printed K = S_2/N formula from the variant K = S_2
+    for n >= 10: printed K = S_2/N overshoots every point (48.1 vs 35.9 pN*um^2 at n = 30, +34.1%;
+    78.9 vs 54.6 pN*um^2 at n = 38, +44.5%; verdict not reproduced), whereas variant K = S_2 falls
+    inside the 95% reading interval of all 7 digitized points across n = 10..38 (+1.4% to +3.8%;
+    overall verdict close). Across Fig. 3A-C at n >= 9 (c_a = 0.5 uM), printed K = S_2/N overshoots by
+    +64% to +221% at n = 38, whereas K = S_2 reproduces fig3a_plastin_002_curve and comes close on
+    fig3b_fascin_002_curve (within 5.8% for n >= 9) and fig3b_fascin_02_curve (within 11.4% for n >= 9).
+    However, for n < 9 (where N = (sqrt(n) - 1)/2 < 1), continuous polynomial continuation of K = S_2
+    overshoots all plotted curves (+13% to +14% on PEG, +60% on fascin 0.5, +71% on alpha-actinin 0.1
+    at n = 2-3), while printed K = S_2/N stays close at n = 2-3. This indicates the plotted curves did
+    not use the naive continuous polynomial K = S_2 below n = 9 (e.g., interpolating from the discrete
+    odd-n_2D points n = 1, 9, 25, 49, or using a modified small-n expression), and even for n >= 9
+    residual +19% to +35% overshoots remain on Fig. 3A red, 3B red, and 3C red/blue at c_a = 0.5 uM.
+  citation: {page: 12, printed_page: "12", quote: "where n is the total (odd) number of filaments in 2D and", where: Methods}
+
+- id: q_digitized_ratio_discrepancies_settled
+  kind: possible_error
+  about: [fig3b_fascin_02_curve, fig3b_fascin_005_curve, fig3b_fascin_002_curve, fig3c_aact_002_curve, cmp_fig3b_fascin_02_curve_KnoN, cmp_fig3b_fascin_01_curve_KnoN, cmp_fig3c_aact_002_curve_KnoN, cmp_fig3c_aact_005_curve_KnoN]
+  text: >
+    Calibrated digitization of Fig. 3B and Fig. 3C settles the caption-vs-SI ratio conflicts noted in
+    q_caption_vs_si_concentration_ratios and q_fig3b_caption_square_symbols_swapped: (1) For the Fig. 3B
+    blue curve (fascin, second from top), variant K = S_2 at c_a = 0.5 uM matches SI ratio r = 0.2
+    within -11.4% to +2.3% across n = 9..34 (e.g., 15.59 vs 15.24 pN*um^2 at n = 34), whereas Fig. 3b
+    caption ratio 1:10 (0.1) underpredicts every point by -36% to -41% (9.74 vs 15.24 at n = 34),
+    confirming the SI table ratio r = 0.2 (1:5) is the one plotted; (2) for the Fig. 3C blue curve
+    (alpha-actinin, lower curve), caption ratio 1:50 (0.02) lies much closer to the plotted curve
+    (10.91 vs 7.16 pN*um^2 at n = 38 under K = S_2 at c_a = 0.5 uM, and 8.56 at c_a = 0.35 uM),
+    whereas SI table ratio r = 0.05 overshoots by +81% to +205% under K = S_2 (+120% to +586% under
+    printed K = S_2/N), confirming the Fig. 3c caption ratio 1:50 (0.02) is the one plotted; (3) in
+    Fig. 3B, digitized green open squares (0.86-7.27 pN*um^2) and green curve (8.51 pN*um^2 at n = 38)
+    lie strictly above orange filled squares (0.14-3.11 pN*um^2) and orange curve (4.48 pN*um^2 at
+    n = 38), confirming green = 0.05 (1:20) and orange = 0.02 (1:50) with symbols swapped in caption.
+  citation: {page: 16, printed_page: "16", quote: "rABP:a ● 1:2, ○ 1:10, ■ 1:20, □ 1:50", where: "Fig. 3b caption"}
+
+- id: q_digitized_dashed_asymptotes_kappa_a
+  kind: reading
+  about: [fig3a_coupled_asymptote_curve, fig3d_decoupled_asymptote_curve, kappa_a_single_p5, kappa_a_ref35, cmp_fig3a_coupled_asymptote_p5, cmp_fig3a_coupled_asymptote_ref35, cmp_fig3d_decoupled_asymptote_p5, cmp_fig3d_decoupled_asymptote_ref35]
+  text: >
+    Calibrated readings of the Fig. 3A upper dashed line (kappa_B = n^2 * kappa_a, 9 points, median
+    kappa_B/n^2 = 0.0697 pN*um^2) and Fig. 3D lower dashed line (kappa_B = n * kappa_a, 10 points,
+    median kappa_B/n = 0.0703 pN*um^2) both reproduce kappa_a = 7 x 10^-26 N*m^2 (printed on p. 5,
+    ref-23) cleanly (verdict reproduced), whereas kappa_a = 7.3 x 10^-26 N*m^2 (printed in Methods
+    p. 12 and Fig. 1 caption p. 16, ref-35) lies ~4% above both dashed lines (verdict close). This
+    indicates the Fig. 3 asymptotic reference lines were drawn with 7.0 x 10^-26 N*m^2 rather than
+    7.3 x 10^-26 N*m^2.
+  citation: {page: 16, printed_page: "16", quote: "Dashed lines indicate decoupled", where: "Fig. 3 caption"}
+
+- id: q_digitized_si_fig1a_confirms_stiffness_discrepancy
+  kind: unexplained_difference
+  about: [si_fig1a_D_vs_t_meas, si_fig1b_D_vs_t_meas, fig3b_fascin_05_meas, fig3b_fascin_002_meas]
+  text: >
+    Calibrated digitization of SI Fig. 1a (10 points at exact multiples 1, 3, 5, 10, 15, 20, 30, 40,
+    50, 60 of the 117 ms frame interval) yields a flat saturation plateau D = 0.0814 +/- 0.0003 um
+    for t >= 3.53 s. Combined with R_ring = 8.0 um at T = 298 K via kappa_B = 0.16*R_c^3*k_B*T/D_B^2,
+    this gives kappa_B = 50.9 pN*um^2, nearly twice the stiffest digitized fascin 1:2 bundle in Fig. 3B
+    (fig3b_fascin_05_meas: 15 points spanning n = 1.99-30.51 and kappa_B = 0.148-27.32 pN*um^2),
+    confirming the discrepancy flagged in q_si_fig1a_stiffness_vs_fig3b. By contrast, SI Fig. 1b
+    (8 points at 1, 5, 10, 20, 30, 40, 50, 60 frames) plateaus at D = 0.2571 +/- 0.0008 um for
+    t >= 4.68 s, implying kappa_B = 1.40 pN*um^2 at R_ring = 5.2 um, consistent with the digitized
+    fascin 1:50 points in Fig. 3B (fig3b_fascin_002_meas: 0.142-3.11 pN*um^2).
+  citation: {page: 20, printed_page: "SI 1", quote: "a. Ratio of fascin:actin 1:2 R ring =8.0 µm", where: "SI Fig. 1a"}
+
+- id: q_claessens2008_fascin_parameters_and_nmax_tension
+  kind: unexplained_difference
+  about:
+    - K_d_fascin
+    - t_fascin_plastin
+    - abp_chemical_equilibrium
+    - droplet_filament_count
+    - fig3b_fascin_05_meas
+    - fig3b_fascin_02_meas
+    - fig3b_fascin_005_meas
+    - fig3b_fascin_002_meas
+    - claessens2008/Kd_fascin
+    - claessens2008/effective_bound_ratio
+    - claessens2008/nf_max_confinement
+    - claessens2008/aH_hex_saxs
+    - claessens2008/ca_fig2e_single_ring_max
+  text: >
+    Comparing claessens2006 (Nature Materials 2006) with the same laboratory's follow-up claessens2008
+    (PNAS 2008, which cites claessens2006 as ref-2 on pp. 1, 2, 4 for single-ring fascin bundles in
+    emulsion droplets) reveals four concrete quantitative tensions: (1) Maximum single-ring fascin
+    bundle size: claessens2008 (pp. 1-3, Fig. 2E) reports that single confined F-actin/fascin rings
+    cannot exceed n_f ~= 20 filaments (two hexagonal shells = 19) due to helical overtwist frustration
+    and split into two bundles above n_f = 20, yet claessens2006 Fig. 3B reports single fascin rings
+    reaching n = 30.5-36.1 filaments across all four fascin:actin ratios (18 of 52 digitized points
+    have n > 20: max 30.51 at 1:2, 36.13 at 0.2, 32.76 at 1:20, 32.15 at 1:50). Moreover, evaluating
+    droplet_filament_count (exact same_as claessens2008/droplet_ring_filament_number) on claessens2008
+    Fig. 2E's own measured rightmost single-ring droplets (ca_fig2e_single_ring_max, R_r = R_d = D_d/2,
+    M_actin = 42 kDa) yields n = 30.5-66.1 (a_mon = 2.7 nm) or 32.8-71.0 (2.9 nm), consistent with
+    claessens2008's 2.22x Fig. 2E boundary discrepancy (claessens2008/q_fig2e_quantified_factor_2p22).
+    (2) Fascin dissociation constant K_d: claessens2006 (p. 12, uncited) uses K_d = 0.7 uM, whereas
+    claessens2008 (p. 4, citing Ono et al. 1997 ref-36) uses K_d = 0.3 uM (a 2.33x difference).
+    (3) Inter-filament spacing for fascin: claessens2006 (p. 12) sets surface spacing t = 10 nm with
+    d = 4.5 nm (center-to-center d + t = 14.5 nm), whereas claessens2008 states a surface separation
+    of ~5 nm (p. 1) and measures a SAXS hexagonal center-to-center lattice constant a_H = 12.4 nm (p. 2).
+    (4) Ligand depletion: claessens2006 (p. 12) uses the non-depleted Langmuir isotherm theta = c_ABP / (K_d + c_ABP),
+    whereas claessens2008 (p. 4) switches to the exact 1:1 quadratic depletion equation R* (which
+    reduces to theta only as c_a -> 0; at c_a = 0.5 uM, K_d = 0.7 uM, r = 0.5, theta = 0.263 exceeds
+    R* = 0.184 by 43%).
+  citation: {page: 12, printed_page: "12", quote: "actin bundles (α–actinin and plastin Kd = 0.5 µM, fascin Kd = 0.7 µM)", where: Methods}
+
+- id: q_claessens2008_no_cross_validation
+  kind: unstated_model
+  about:
+    - droplet_filament_count
+    - abp_chemical_equilibrium
+    - bundle_3d_bending
+    - claessens2008/nf_max_confinement
+    - claessens2008/ca_fig2e_single_ring_max
+    - claessens2008/Rstar_plateau
+    - claessens2008/D_fig1c_measured
+  text: >
+    No cited.yaml links and no cross-record validations.yaml entries are entered for claessens2006 +
+    claessens2008: (1) Citation direction: claessens2006 predates claessens2008 (claessens2006/ref-bathe-inprep
+    is Bathe et al. 2008, not claessens2008); claessens2008 cites claessens2006 as ref-2 qualitatively
+    and methodologically (pp. 1, 2, 4) with 0 numerical values taken from claessens2006. (2) Exhaustive
+    dimensional and physical audit of claessens2006's 21 runnable models against claessens2008's 26
+    origin: measured datums yields 0 valid cross-record validations: claessens2006 has no model for
+    TEM bundle diameter (D_fig1c_measured, D_fil_fig2d_*), SAXS wavevectors/intensities (q10_saxs,
+    I_saxs_*), or helical overtwist (Delta_theta_fig3d_*); abp_chemical_equilibrium.theta (normalized
+    crosslink site occupancy in [0, 1]) is physically distinct from claessens2008's stoichiometric
+    bound fascin-to-actin molar ratio R* (Rstar_plateau ~= 0.25 ~= 1/4.5, Rstar_figS1_experiment);
+    and droplet_filament_count.n cannot be run against claessens2008/nf_max_confinement (~= 20)
+    because claessens2008 prints no scalar (c_a [uM], R_d, R_r) pair for that threshold, while
+    ca_fig2e_single_ring_max and ca_fig2e_two_bundle_min are curves of mass concentration [mg/ml]
+    versus droplet diameter D_d [um] (wrong output variable and mass-vs-molar dimension without
+    M_actin). (3) In the reverse direction (outside claessens2006), claessens2008 has no bending-stiffness
+    or ring-fluctuation model, and claessens2006 leaves droplet actin concentration c_a unstated.
+
+- id: q_graham2023_citation_bathe_K_and_no_cross_validation
+  kind: unstated_model
+  about:
+    - bundle_3d_bending
+    - bundle_3d_bending_K_no_divN
+    - wlc_ring_bending_stiffness
+    - ref-21
+    - ref-bathe-inprep
+    - graham2023/bundle_bending_rigidity_bathe_eqS1
+    - graham2023/bundle_bending_rigidity_linear
+    - graham2023/ring_thickness_scaling_eqS25
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for claessens2006 + graham2023 yields
+    0 cited.yaml links, 6 proposed relations in claessens2006/relations.yaml, and 0 cross-record
+    validations: (1) Citation disambiguation: graham2023/ref-31 (p. 6, 11) is Claessens, Tharmann,
+    Kroy & Bausch (2006) Nature Physics 2:186-189 (claessens2006/ref-21), not claessens2006 (Nature
+    Materials 5:748-753). Graham et al. instead cite Bathe, Heussinger, Claessens, Bausch & Frey
+    (2008) Biophys. J. 94:2955-2964 (graham2023/ref-si-11 = claessens2006/ref-bathe-inprep) for SI
+    Eq. (S1). (2) Structural link to q_K_factor_vs_fig3_curves: graham2023/bundle_bending_rigidity_bathe_eqS1
+    approximates claessens2006/bundle_3d_bending (with printed K = S_2/N = (n + sqrt(n))/12) to within
+    9.4% across n in [2, 40], t in [0, 35 nm] at c_qj = 5/6 (exact small-beta*L_B three-point bending
+    asymptote, within 1.3% of Bathe's fundamental mode pi^2/12), because 12*K = N + sqrt(N) reproduces
+    Eq. S1's (N + sqrt(N))/alpha denominator directly, whereas variant bundle_3d_bending_K_no_divN
+    (K = S_2) deviates by up to 49%. Note also that claessens2006 uses the Tolomeo-Holley geometric
+    factor d*(d+t) in chi^2 = k_a*d*(d+t)/(12*kappa_a), whereas Bathe et al. 2008 use parallel-axis
+    (d+t)^2. (3) Algebraic-inverse ring-fluctuation scaling: inverting claessens2006/wlc_ring_bending_stiffness
+    (kappa_B = 0.16*R_c^3*k_B*T/D_B^2) yields D_B = 0.40*R_c^1.5/sqrt(l_p,B), matching the exact
+    R^1.5*L_p^(-1/2) exponents of graham2023/ring_thickness_scaling_eqS25 (u_m ~ R^1.5/sqrt(L_p)),
+    though claessens2006 measures dynamic thermal fluctuation width D_B whereas graham2023 applies
+    u_m to static confocal ring thickness T_ring. (4) No cross-record validations: none of claessens2006's
+    21 runnable models predicts any of graham2023's 38 origin: measured datums (FRAP, droplet fusion,
+    droplet diameters, morphology fractions, droplet aspect ratios, bundle elongation rate, partitioning,
+    or normalized fluorescence); conversely, graham2023 never parameterizes (alpha, chi, c_qj) for
+    fascin, plastin, alpha-actinin, or PEG, treating VASP rings strictly in the decoupled linear limit.
+
+- id: q_walker2025_citation_and_no_cross_validation
+  kind: unstated_model
+  about:
+    - droplet_volume_sphere
+    - droplet_filament_count
+    - bending_stiffness_persistence
+    - abp_chemical_equilibrium
+    - ref-21
+    - walker2025/concentration_from_copy_number
+    - walker2025/droplet_circumference
+    - walker2025/persistence_length_from_rigidity
+    - walker2025/well_mixed_dynamic_dimerization_ode
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for claessens2006 + walker2025 yields
+    0 cited.yaml links, 2 proposed relations in claessens2006/relations.yaml, and 0 cross-record
+    validations: (1) Citation disambiguation: walker2025/ref-68 (p. 15, 18) is Claessens, Tharmann,
+    Kroy & Bausch (2006) Nature Physics 2:186-189 (claessens2006/ref-21), not claessens2006 (Nature
+    Materials 5:748-753); walker2025 does not cite claessens2006 or bathe2008. (2) Model overlaps:
+    spherical droplet volume (droplet_volume_sphere <-> concentration_from_copy_number.V_drop) and
+    equatorial ring circumference (droplet_filament_count.L_B <-> droplet_circumference.L_max) are
+    exact geometric identities. Single-filament WLC rigidity (bending_stiffness_persistence: kappa_a = l_p*k_B*T)
+    and walker2025/persistence_length_from_rigidity (L_p = k_bend/k_B*T) are exact algebraic inverses
+    (walker2025 uses k_bend = 0.075 pN*um^2, k_B*T = 4.2 pN*nm vs claessens2006 0.073/0.070 pN*um^2).
+    In the monomer-only limit (k_dimer_form -> 0), walker2025/well_mixed_dynamic_dimerization_ode
+    gives an excess-actin Langmuir bound-crosslinker fraction C_actin/(K_d + C_actin), symmetric to
+    but physically distinct from claessens2006's excess-ABP actin-site occupancy c_ABP/(K_d + c_ABP),
+    so the two are deliberately not conflated in relations.yaml. (3) No cross-record validations:
+    none of claessens2006's 21 runnable models predicts any of walker2025's 55 origin: measured datums
+    (condensate fusion times, GUV LLPS concentration, FRAP curves, partition coefficients, droplet
+    diameter histograms, aspect ratios, or omitted tail fractions), and walker2025 contains no
+    bundle bending-stiffness model predicting claessens2006's kappa_B(n) or D_B measurements.
+
+

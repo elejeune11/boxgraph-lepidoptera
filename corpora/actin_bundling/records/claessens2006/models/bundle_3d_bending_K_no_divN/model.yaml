@@ -1,0 +1,33 @@
+id: bundle_3d_bending_K_no_divN
+name: 3D F-actin bundle bending stiffness variant omitting 1/N in K
+role: model
+stated: {page: 12, printed_page: "12", quote: "equivalent displacement of a homogeneous Euler–Bernoulli beam, κ B = L3B / 48wB ,max", where: Methods}
+variant_of: bundle_3d_bending
+corrections:
+  - equation: "K definition (Methods, p. 12)"
+    change: "Use K = sum_{k=1}^N sum_{i=k}^N i = N*(N+1)*(2*N+1)/6 instead of printed K = (1/N) * sum_{k=1}^N sum_{i=k}^N i"
+    evidence: >
+      In Fig. 3D (PEG 4% w/w, where t = 0, k_par/delta = 10^3 N/m^2, and L_B(n) = 21.2 + 1.3*n um
+      with no unstated c_a), the printed K = S_2/N predicts kappa_B(10) = 5.33 and kappa_B(36) =
+      70.45 pN*um^2 (super-quadratic ratio 13.21 > (36/10)^2 = 12.96), whereas the plotted red
+      model curve in Fig. 3D has kappa_B(10) ~ 5.1 and kappa_B(36) ~ 51.3 pN*um^2 (ratio ~ 10.0),
+      which K = S_2 reproduces closely (5.23 and 51.18 pN*um^2, ratio 9.80). Likewise in Fig. 3A-C,
+      printed K = S_2/N combined with the SI L_B(n) curves bends upward super-quadratically at large n
+      (overshooting Fig. 3A-C by >2x at n = 36), while K = S_2 produces the concave-down crossover
+      slopes shown in Fig. 3A-C. Note that K = S_2/N is variationally exact for the linear-strain
+      ansatz and gives the text's crossover alpha ~ n, so digitize:claessens2006 should test both
+      against calibrated curve readings.
+equation: "n_2D = sqrt(n), kappa_B(3D) = n_2D * kappa_B(2D) with K = sum_{k=1}^N sum_{i=k}^N i = n_2D*(n_2D^2 - 1)/24"
+inputs:
+  n: {quantity: filament_number, unit: dimensionless}
+  L_B: {quantity: bundle_length, unit: m}
+  k_par: {quantity: crosslink_shear_stiffness, unit: N/m}
+  delta: {quantity: crosslink_spacing_axial, unit: m}
+  k_a: {quantity: stretching_stiffness_filament, unit: N}
+  kappa_a: {quantity: bending_stiffness_filament, unit: N*m^2}
+  d: {quantity: filament_diameter, unit: m}
+  t: {quantity: crosslink_spacing_interfilament, unit: m}
+outputs:
+  kappa_B: {quantity: bending_stiffness_bundle, unit: N*m^2}
+settings: {}
+stochastic: false

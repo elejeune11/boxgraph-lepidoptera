@@ -1,0 +1,1032 @@
+- id: rel_alpha_ea_same_as_eq1
+  kind: same_as
+  a: bathe2008/coupling_parameter_ea
+  b: bathe2008/coupling_parameter_eq1
+  mapping:
+    k_x: "k_x"
+    L: "L"
+    k_f: "E_f_A_f / delta"
+    delta: "delta"
+  output_map:
+    alpha: alpha
+  regime:
+    k_x: [1.0e-6, 1.0e-4]
+    E_f_A_f: [1.0e-8, 5.0e-7]
+    L: [1.0e-6, 1.0e-4]
+    delta: [2.0e-8, 5.0e-7]
+  provenance: stated
+  citation:
+    page: 2
+    printed_page: "2956"
+    quote: "Euler-Bernoulli beams (or extensible wormlike polymers) with stretching"
+    where: text p. 2 col 1, Eq. 1 p. 3, Appendix p. 8
+  assumptions:
+    - "Discrete fiber stretching stiffness definition k_f := E_f * A_f / delta (p. 2 col 1)"
+
+- id: rel_alpha_ea_same_as_shear
+  kind: same_as
+  a: bathe2008/coupling_parameter_ea
+  b: bathe2008/coupling_parameter_shear_modulus
+  mapping:
+    G_shear: "k_x / delta"
+    E_f_A_f: "E_f_A_f"
+    L: "L"
+  output_map:
+    alpha: alpha
+  regime:
+    k_x: [1.0e-6, 1.0e-4]
+    E_f_A_f: [1.0e-8, 5.0e-7]
+    L: [1.0e-6, 1.0e-4]
+    delta: [2.0e-8, 5.0e-7]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "2959"
+    quote: "yields a concentration-dependent effective interlayer shear modulus"
+    where: text p. 5 col 2 & p. 7 col 1
+  assumptions:
+    - "Effective interlayer shear modulus G_shear = k_x / delta"
+
+- id: rel_eqa5_same_as_eq2
+  kind: same_as
+  a: bathe2008/wlb_hamiltonian_reduced_eqa5
+  b: bathe2008/wlb_bending_stiffness_eq2
+  mapping:
+    kappa_f: "kappa_f"
+    N: "4 * M**2"
+    alpha: "k_x * L**2 / (E_f_A_f * delta)"
+    chi2: "E_f_A_f * (d_f + t)**2 / (12 * kappa_f)"
+    c: "(q_j * L)**2 / 12"
+  output_map:
+    kappa_B: kappa_B
+  regime:
+    M: [1.0, 10.0]
+    kappa_f: [1.0e-26, 1.0e-25]
+    E_f_A_f: [1.0e-8, 1.0e-7]
+    d_f: [5.0e-9, 1.0e-8]
+    t: [1.0e-10, 1.0e-8]
+    k_x: [1.0e-6, 1.0e-4]
+    delta: [3.0e-8, 2.0e-7]
+    L: [1.0e-6, 1.0e-4]
+    q_j: [1.0e4, 1.0e6]
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "2962"
+    quote: "which yields the mode number dependent effective bundle-bending stiffness"
+    where: Appendix, Eqs. A5-A6
+  assumptions:
+    - "N = (2M)^2, kappa_f = E_f * I_f, chi^2 = A_f*(d_f+t)^2/(12*I_f) = E_f*A_f*(d_f+t)^2/(12*kappa_f), c(q_j) = (q_j*L)^2/12"
+
+- id: rel_eq2_reduces_to_decoupled
+  kind: reduces_to
+  a: bathe2008/wlb_bending_stiffness_eq2
+  b: bathe2008/wlb_decoupled_limit
+  mapping:
+    kappa_f: "kappa_f"
+    N: "N"
+  output_map:
+    kappa_B: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [4.0, 100.0]
+    alpha: [1.0e-4, 1.0e-2]
+    chi2: [1.0, 5.0]
+    c: [1.0, 5.0]
+  limit:
+    alpha: "0"
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "2959"
+    quote: "quantitative agreement with the FE results. In the limits of"
+    where: text, p. 5 col 1
+  assumptions:
+    - "Decoupled bending limit alpha -> 0 (alpha << 1)"
+
+- id: rel_eq2_reduces_to_fully_coupled
+  kind: reduces_to
+  a: bathe2008/wlb_bending_stiffness_eq2
+  b: bathe2008/wlb_fully_coupled_limit
+  mapping:
+    kappa_f: "kappa_f"
+    N: "N"
+    chi2: "chi2"
+  output_map:
+    kappa_B: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [4.0, 100.0]
+    alpha: [1.0e4, 1.0e6]
+    chi2: [1.0, 5.0]
+    c: [1.0, 5.0]
+  limit:
+    alpha: "oo"
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "2959"
+    quote: "quantitative agreement with the FE results. In the limits of"
+    where: text, p. 5 col 1
+  assumptions:
+    - "Fully coupled bending limit alpha -> oo (alpha >> N)"
+
+- id: rel_timoshenko_micro_same_as_macro
+  kind: same_as
+  a: bathe2008/timoshenko_microscopic
+  b: bathe2008/timoshenko_macroscopic
+  mapping:
+    E_B: "12 * kappa_f"
+    I_B: "N**2 / 12"
+    beta: "1"
+    G_B: "12 * kappa_f * alpha"
+    A_B: "N"
+    L: "1"
+  output_map:
+    kappa_B: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [4.0, 100.0]
+    alpha: [0.1, 1000.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "2959"
+    quote: "Setting the macroscopic bundle shear stress equal to the effective"
+    where: text, p. 5 col 1
+  assumptions:
+    - "Square cross-section fibers (A_f = d_f^2, I_f = d_f^4/12), small cross-links (t << d_f), G_B = k_x/delta, and uniform shear (beta = 1)"
+
+- id: rel_eq2_approximated_by_timoshenko_large_N_alpha
+  kind: approximated_by
+  a: bathe2008/wlb_bending_stiffness_eq2
+  b: bathe2008/timoshenko_microscopic
+  mapping:
+    kappa_f: "kappa_f"
+    N: "N"
+    alpha: "alpha"
+  output_map:
+    kappa_B_star: kappa_B_star
+  regime:
+    kappa_f: [7.0e-26, 7.0e-26]
+    N: [50.0, 500.0]
+    alpha: [20.0, 500.0]
+    chi2: [1.0, 1.0]
+    c: [1.0, 1.0]
+  provenance: stated
+  citation:
+    page: 5
+    printed_page: "2959"
+    quote: "Timoshenko theory is asymptotically correct only in the intermediate regime for large bundles"
+    where: text, p. 5 col 1
+  assumptions:
+    - "Small cross-links (chi^2 = 1), pinned three-point bending (c = 1), large N and large alpha (N >> 1, alpha >> 1)"
+  tolerance: 0.05
+
+- id: rel_eqa8_approximated_by_eq2_pinned
+  kind: approximated_by
+  a: bathe2008/wlb_mode_sum_deflection_eqa8
+  b: bathe2008/wlb_bending_stiffness_eq2
+  mapping:
+    kappa_f: "kappa_f"
+    N: "N"
+    alpha: "alpha"
+    chi2: "chi2"
+    c: "1"
+  output_map:
+    kappa_B_star: kappa_B_star
+  regime:
+    kappa_f: [7.0e-26, 7.0e-26]
+    N: [4.0, 100.0]
+    alpha: [0.01, 1000.0]
+    chi2: [1.0, 1.0]
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "2962"
+    quote: "yields an approximate solution that is nearly identical to the exact result."
+    where: Appendix, Eqs. A8-A9
+  assumptions:
+    - "Pinned three-point bending approximated by constant c = 1 in Eq. (2)"
+  tolerance: 0.12
+
+- id: rel_eqa10_approximated_by_eq2_ring
+  kind: approximated_by
+  a: bathe2008/wlb_ring_fluctuation_eqa10
+  b: bathe2008/wlb_bending_stiffness_eq2
+  mapping:
+    kappa_f: "kappa_f"
+    N: "N"
+    alpha: "alpha"
+    chi2: "chi2"
+    c: "5"
+  output_map:
+    kappa_B_star: kappa_B_star
+  regime:
+    kappa_f: [7.0e-26, 7.0e-26]
+    N: [4.0, 100.0]
+    alpha: [0.01, 1000.0]
+    chi2: [1.0, 1.0]
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "2962"
+    quote: "effective bundle-bending stiffness is again given by Eq. A6 with"
+    where: Appendix, Eq. A10
+  assumptions:
+    - "Periodic ring thermal fluctuation mode sum approximated by constant c = 5 in Eq. (2)"
+  tolerance: 0.20
+
+- id: rel_phi_star_figs2_scales_as_text
+  kind: scales_as
+  a: bathe2008/fracture_critical_density_figs2
+  b: bathe2008/fracture_critical_density_text
+  mapping:
+    N: "N"
+  output_map:
+    phi_star: phi_star
+  regime:
+    N: [16.0, 4096.0]
+  provenance: stated
+  citation:
+    page: 11
+    quote: "After renormalization by"
+    where: SM text & Fig. S2 caption, p. 11
+  assumptions:
+    - "Fig. S2B sets phi* = M/8, scaling linearly with the main/SM text scaling phi* ~ M = sqrt(N)/2"
+
+# ==========================================================================
+# Cross-record ModelAtlas relations (Wave 6: graham2023, graham_code,
+# claessens2008, grason2007).
+# Authored strictly inside bathe2008/relations.yaml under Wave 6 isolation;
+# relations stated by partner records use provenance: proposed with verbatim
+# partner citations in `reason`.
+#
+# Zero-relation audits:
+# - bathe2008 + grason2007 (0/1085 model pairs): bathe2008 cites grason2007
+#   once (ref-35, p. 2 col 2) solely to justify neglecting twist in linear
+#   bending (l_p >> L). The two frameworks are physically orthogonal (achiral
+#   bending stiffness kappa_B at exogenous N vs chiral torsional equilibrium
+#   radius R_0). The coarse shape match fiber_stretching_stiffness_def vs
+#   chiral_torque_coupling is a coincidental [force]/[length] ratio (see
+#   q_grason2007_citation_and_orthogonal_mechanics).
+# - bathe2008 + claessens2008 (0/868 runnable model pairs): claessens2008
+#   cites bathe2008 once conceptually (ref-3, p. 1 col 1) and models bundle
+#   thickness, hexagonal SAXS packing, helical overtwist, and droplet mass
+#   conservation rather than bending stiffness. While bathe2008/
+#   langmuir_crosslink_spacing (delta = delta_min*(K_d + c)/c ~ 1/theta [nm])
+#   is the exact reciprocal of the dilute-actin c_a -> 0 limit of
+#   claessens2008/effective_bound_ratio (R* -> theta = c/(K_d + c)
+#   [dimensionless]), the opposite-signed log-slopes and distinct dimensions
+#   preclude a direct relation without an unstated wrapper model (see
+#   q_claessens2008_kd_discrepancy_and_structural_comparison).
+# ==========================================================================
+
+# --- bathe2008 + graham2023 (graham2023 cites Bathe 2008 as ref-si-11) ---
+
+- id: rel_graham2023_bathe_eqS1_same_as_eq2
+  kind: same_as
+  a: graham2023/bundle_bending_rigidity_bathe_eqS1
+  b: bathe2008/wlb_bending_stiffness_eq2
+  mapping:
+    kappa_f: "k_b_fil / 10**30"
+    N: "N"
+    alpha: "alpha"
+    chi2: "chi**2"
+    c: "c_qj"
+  output_map:
+    kappa_B: k_b
+  regime:
+    k_b_fil: [10000.0, 200000.0]
+    N: [2.0, 100.0]
+    chi: [0.5, 5.0]
+    c_qj: [0.5, 10.0]
+    alpha: [0.01, 1000.0]
+  provenance: proposed
+  reason: >
+    Graham et al. (2023, SI Note 1, PDF p. 39 / SI-12, citing Bathe et al. 2008 as ref-si-11:
+    "Bathe et al. showed that the bending stiffness (k_b) depends on the bending stiffness of
+    individual actin filaments ... The expression is given by ... (S1)") directly transcribe
+    Bathe et al. (2008) Eq. (2) / Eq. (A6). Substituting kappa_f = k_b_fil / 10^30 (pN*nm^2 ->
+    N*m^2), chi2 = chi^2, and c = c_qj makes graham2023/bundle_bending_rigidity_bathe_eqS1
+    symbolically identical to bathe2008/wlb_bending_stiffness_eq2. (Recorded with provenance:
+    proposed inside bathe2008/relations.yaml under Wave 6 partner-isolation rules.)
+  assumptions:
+    - "Unit conversion 1 pN*nm^2 = 10^-30 N*m^2; graham2023 parameterizes cross-link geometry by chi rather than chi^2."
+
+- id: rel_eq2_reduces_to_graham2023_linear
+  kind: reduces_to
+  a: bathe2008/wlb_bending_stiffness_eq2
+  b: graham2023/bundle_bending_rigidity_linear
+  mapping:
+    K_b_fil: "10**30 * kappa_f"
+    N_fil: "N"
+  output_map:
+    K_b_ring: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 100.0]
+    alpha: [0.01, 1.0]
+    chi2: [0.5, 10.0]
+    c: [0.5, 10.0]
+  limit:
+    alpha: "0"
+  provenance: proposed
+  reason: >
+    Graham et al. (2023, SI Note 1, p. 39 / SI-12, citing ref-si-11; SI Section 2.6, p. 41 / SI-14)
+    state: "As VASP-crosslinked actin networks produce weaker elastic responses than fascin and
+    alpha-actinin [12], we assume that the inter-filament coupling parameter is really weak. Hence,
+    we assume that the contribution of nonlinear term in the above expression is low and hence
+    consider the bending stiffness to scale linearly with number of filaments." In the weak-coupling
+    limit alpha -> 0, Bathe et al. Eq. (2) reduces exactly to Graham et al.'s linear ring stiffness
+    K_b_ring = K_b_fil * N_fil.
+  assumptions:
+    - "Weak inter-filament shear coupling limit alpha -> 0 (alpha << 1) for fluid VASP bundles; 1 N*m^2 = 10^30 pN*nm^2."
+
+- id: rel_graham2023_bathe_eqS1_reduces_to_fully_coupled
+  kind: reduces_to
+  a: graham2023/bundle_bending_rigidity_bathe_eqS1
+  b: bathe2008/wlb_fully_coupled_limit
+  mapping:
+    kappa_f: "k_b_fil / 10**30"
+    N: "N"
+    chi2: "chi**2"
+  output_map:
+    kappa_B: k_b
+  regime:
+    k_b_fil: [10000.0, 200000.0]
+    N: [2.0, 100.0]
+    chi: [0.5, 5.0]
+    c_qj: [0.5, 10.0]
+    alpha: [1.0, 100.0]
+  limit:
+    alpha: "oo"
+  provenance: proposed
+  reason: >
+    In the strong inter-filament shear-coupling limit alpha -> oo (alpha >> N), Graham et al.'s
+    transcription of the WLB bending stiffness (SI Eq. S1, p. 39, citing Bathe 2008 ref-si-11)
+    reduces identically to Bathe et al.'s fully coupled bending stiffness limit
+    kappa_B = kappa_f * N * (1 + chi^2 * (N - 1)) (p. 5 col 1).
+  assumptions:
+    - "Strong inter-filament shear coupling limit alpha -> oo; unit conversion 1 pN*nm^2 = 10^-30 N*m^2."
+
+- id: rel_eqa10_reduces_to_graham2023_linear
+  kind: reduces_to
+  a: bathe2008/wlb_ring_fluctuation_eqa10
+  b: graham2023/bundle_bending_rigidity_linear
+  mapping:
+    K_b_fil: "10**30 * kappa_f"
+    N_fil: "N"
+  output_map:
+    K_b_ring: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 50.0]
+    alpha: [0.01, 1.0]
+    chi2: [0.5, 5.0]
+  limit:
+    alpha: "0"
+  provenance: proposed
+  reason: >
+    Both Bathe et al. Appendix Eq. (A10) (p. 8) and Graham et al. SI Section 2.6 (p. 41) treat
+    circular/periodic actin bundle rings confined inside droplets. In the weak-coupling limit
+    alpha -> 0, Bathe's exact 200-mode periodic ring thermal-fluctuation harmonic sum Eq. (A10)
+    reduces to Graham's linear ring bending stiffness K_b_ring = K_b_fil * N_fil (within ~4e-8
+    mode-truncation residual at n_modes = 200).
+  assumptions:
+    - "Weak inter-filament shear coupling limit alpha -> 0 for periodic ring modes q_j = 2*pi*j/L (n_modes = 200)."
+
+- id: rel_eqa10_approximated_by_graham2023_bathe_eqS1
+  kind: approximated_by
+  a: bathe2008/wlb_ring_fluctuation_eqa10
+  b: graham2023/bundle_bending_rigidity_bathe_eqS1
+  mapping:
+    k_b_fil: "10**30 * kappa_f"
+    N: "N"
+    chi: "sqrt(chi2)"
+    c_qj: "5"
+    alpha: "alpha"
+  output_map:
+    k_b: kappa_B
+  regime:
+    kappa_f: [7.0e-26, 7.0e-26]
+    N: [4.0, 100.0]
+    alpha: [0.01, 1000.0]
+    chi2: [1.0, 1.0]
+  tolerance: 0.20
+  provenance: proposed
+  reason: >
+    Evaluates the approximation accuracy of Graham et al.'s single-mode WLB formula (SI Eq. S1,
+    p. 39, ref-si-11) evaluated with Bathe's periodic-ring effective mode factor c(q_j) = 5
+    against Bathe et al.'s exact 200-mode periodic-ring thermal-fluctuation sum Eq. (A10) (p. 8),
+    matching within ~16.5% across N in [4, 100] and alpha in [0.01, 1000].
+  assumptions:
+    - "Periodic ring mode factor c(q_j) = 5 (Bathe Appendix Eq. A10, p. 8); small cross-link limit chi^2 = 1."
+
+- id: rel_decoupled_same_as_graham2023_linear
+  kind: same_as
+  a: bathe2008/wlb_decoupled_limit
+  b: graham2023/bundle_bending_rigidity_linear
+  mapping:
+    K_b_fil: "10**30 * kappa_f"
+    N_fil: "N"
+  output_map:
+    K_b_ring: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [1.0, 100.0]
+  provenance: proposed
+  reason: >
+    Bathe et al.'s decoupled bundle bending stiffness limit kappa_B = N * kappa_f (p. 5 col 1)
+    is symbolically identical to Graham et al.'s weak-coupling linear bundled-actin ring rigidity
+    K_b_ring = K_b_fil * N_fil (SI Section 2.6, p. 41 / SI-14; derived from Bathe SI Eq. S1 in
+    SI Note 1, p. 39), differing only by unit scale (N*m^2 vs pN*nm^2).
+  assumptions:
+    - "Unit conversion 1 N*m^2 = 10^30 pN*nm^2; decoupled limit alpha << 1."
+
+# --- bathe2008 + graham_code (VASPDroplet_simulate.ipynb cites Bathe 2008 as ref-bathe2008) ---
+
+- id: rel_eq2_reduces_to_graham_code_kbend
+  kind: reduces_to
+  a: bathe2008/wlb_bending_stiffness_eq2
+  b: graham_code/notebook_bundle_kbend
+  mapping:
+    Nfil: "N"
+    lcyl: "100"
+    kflex_fil: "10**30 * kappa_f"
+    alpha: "alpha"
+  output_map:
+    k_flex_bundle: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 50.0]
+    alpha: [0.01, 1.0]
+    chi2: [0.5, 10.0]
+    c: [0.5, 10.0]
+  limit:
+    alpha: "0"
+  provenance: proposed
+  reason: >
+    In VASPDroplet_simulate.ipynb cell 3 (line 73: '# Bathe et al Nonlinear', nonlinearbool = False)
+    and cell 7 (lines 170-204, getkbend), the live notebook adapter graham_code/notebook_bundle_kbend
+    runs with default nonlinearbool = False (matching all published graham2023 simulations) and
+    computes k_flex_bundle = k_bend * lcyl = kflex_fil * Nfil. In the weak-coupling limit alpha -> 0,
+    Bathe et al. Eq. (2) reduces identically to this live software implementation. (Note: the
+    inactive nonlinearbool = True branch in getkbend diverges from Bathe Eq. 2 and Eq. A10 by up to
+    10x due to arithmetically summing 10 hinged modes j = 1..10; see
+    q_graham_code_nonlinear_bathe_10mode_sum_bug.)
+  assumptions:
+    - "Default setting nonlinearbool = False in graham_code/notebook_bundle_kbend (active in all graham2023 simulations)."
+    - "Unit conversion 1 N*m^2 = 10^30 pN*nm^2; lcyl cancels in k_flex_bundle = kbend * lcyl."
+
+- id: rel_eqa10_reduces_to_graham_code_kbend
+  kind: reduces_to
+  a: bathe2008/wlb_ring_fluctuation_eqa10
+  b: graham_code/notebook_bundle_kbend
+  mapping:
+    Nfil: "N"
+    lcyl: "100"
+    kflex_fil: "10**30 * kappa_f"
+    alpha: "alpha"
+  output_map:
+    k_flex_bundle: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 50.0]
+    alpha: [0.01, 1.0]
+    chi2: [0.5, 5.0]
+  limit:
+    alpha: "0"
+  provenance: proposed
+  reason: >
+    In the weak-coupling limit alpha -> 0, Bathe et al.'s exact 200-mode periodic-ring bending
+    stiffness sum Appendix Eq. (A10) reduces to the live bundle flexural rigidity k_flex_bundle =
+    kflex_fil * Nfil returned by VASPDroplet_simulate.ipynb's getkbend() under its default
+    nonlinearbool = False setting.
+  assumptions:
+    - "Weak-coupling limit alpha -> 0; default nonlinearbool = False in graham_code/notebook_bundle_kbend."
+
+- id: rel_decoupled_same_as_graham_code_kbend
+  kind: same_as
+  a: bathe2008/wlb_decoupled_limit
+  b: graham_code/notebook_bundle_kbend
+  mapping:
+    Nfil: "N"
+    lcyl: "100"
+    kflex_fil: "10**30 * kappa_f"
+    alpha: "0"
+  output_map:
+    k_flex_bundle: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [1.0, 50.0]
+  provenance: proposed
+  reason: >
+    Bathe et al.'s decoupled bundle bending stiffness kappa_B = N * kappa_f (p. 5 col 1) agrees
+    identically across the regime with the live bundle flexural rigidity k_flex_bundle returned by
+    VASPDroplet_simulate.ipynb's getkbend() under its active default setting nonlinearbool = False.
+  assumptions:
+    - "Default setting nonlinearbool = False in graham_code/notebook_bundle_kbend; 1 N*m^2 = 10^30 pN*nm^2."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with claessens2006 (Wave 6 flagship
+# same-authors companion pair: bathe2008 cites claessens2006 as ref-29;
+# claessens2006 cites bathe2008 as ref-bathe-inprep, "MB, EF in preparation
+# 2006", p. 12). Authored strictly inside bathe2008/relations.yaml under
+# Wave 6 isolation.
+# ==========================================================================
+
+- id: rel_claessens2006_bundle_3d_same_as_eqa8
+  kind: same_as
+  a: claessens2006/bundle_3d_bending
+  b: bathe2008/wlb_mode_sum_deflection_eqa8
+  mapping:
+    kappa_f: "kappa_a"
+    N: "n"
+    alpha: "k_par * L_B**2 / (delta * k_a)"
+    chi2: "k_a * d * (d + t) / (12 * kappa_a)"
+  output_map:
+    kappa_B: kappa_B
+  regime:
+    n: [2.0, 40.0]
+    L_B: [1.0e-5, 8.0e-5]
+    k_par: [1.0e-7, 1.0e-4]
+    delta: [3.3e-8, 2.0e-6]
+    k_a: [4.4e-8, 4.4e-8]
+    kappa_a: [7.3e-26, 7.3e-26]
+    d: [4.5e-9, 4.5e-9]
+    t: [0.0, 3.5e-8]
+  tolerance: 1.0e-5
+  provenance: proposed
+  reason: >
+    Exact real-space vs. Fourier-space mathematical equivalence of the pinned three-point-bending
+    discrete fiber-bundle model introduced by the same authors in claessens2006 (Methods p. 12,
+    citing Tolomeo & Holley 1997 ref-25 and "MB, EF in preparation 2006" ref-bathe-inprep) and
+    reformulated in Fourier mode space in bathe2008 (Appendix Eqs. A6-A9, p. 8; citing
+    claessens2006 as ref-29 on p. 5 col 2: "bundle-bending stiffness was analyzed using an existing
+    analytical theory that depends in a complex manner on the numerous bundle parameters (25, 29)").
+    Because claessens2006's printed K = S_2/N = (n + sqrt(n))/12 gives 12*K = N + sqrt(N), partial-
+    fraction expansion of bathe2008's odd-mode pinned three-point-bending series
+    sum_{j odd} 2 / ((j*pi/L)^4 * kappa_B(q_j)) sums analytically to claessens2006's exact
+    hyperbolic-tangent compliance bracket w_B,max (matching to <= 8e-7 across the full physical
+    regime, limited solely by n_modes = 200 truncation).
+  assumptions:
+    - "Maps claessens2006's Tolomeo-Holley geometric factor d*(d+t) into chi^2 = k_a*d*(d+t)/(12*kappa_a); note bathe2008 Eq. (A6) uses parallel-axis (d_f+t)^2, which agrees identically at t = 0 and differs by (d+t)/d for t > 0."
+    - "Uses claessens2006's printed K = S_2/N = (n + sqrt(n))/12 (omitting 1/N in variant bundle_3d_bending_K_no_divN rescales alpha by 2/(sqrt(n) - 1))."
+    - "Default pinned three-point bending boundary condition (bc = pinned, n_modes = 200) in wlb_mode_sum_deflection_eqa8."
+
+- id: rel_claessens2006_bundle_3d_approx_by_eq2
+  kind: approximated_by
+  a: claessens2006/bundle_3d_bending
+  b: bathe2008/wlb_bending_stiffness_eq2
+  mapping:
+    kappa_f: "kappa_a"
+    N: "n"
+    alpha: "k_par * L_B**2 / (delta * k_a)"
+    chi2: "k_a * d * (d + t) / (12 * kappa_a)"
+    c: "1"
+  output_map:
+    kappa_B: kappa_B
+  regime:
+    n: [2.0, 40.0]
+    L_B: [1.0e-5, 8.0e-5]
+    k_par: [1.0e-7, 1.0e-4]
+    delta: [3.3e-8, 2.0e-6]
+    k_a: [4.4e-8, 4.4e-8]
+    kappa_a: [7.3e-26, 7.3e-26]
+    d: [4.5e-9, 4.5e-9]
+    t: [0.0, 3.5e-8]
+  tolerance: 0.12
+  provenance: proposed
+  reason: >
+    Bathe et al. (2008, p. 5 col 1 & Appendix p. 8) replace the exact pinned three-point-bending
+    deflection solution (analytically identical to claessens2006/bundle_3d_bending) with the
+    closed-form single-mode WLB formula Eq. (2) / Eq. (A6) using constant pinned mode factor
+    c = 1 ("In three-point bending at zero temperature, the analytical solution for the bundle-
+    bending stiffness is well approximated by Eq. 2 with a constant factor c = 1 for pinned ends").
+    Across the full claessens2006 experimental regime (n in [2, 40], t in [0, 35 nm], L_B in
+    [10, 80 um], k_par in [1e-7, 1e-4 N/m], delta in [33 nm, 2 um]), Eq. (2) at c = 1 approximates
+    claessens2006/bundle_3d_bending to within ~10.8% (matching the ~10.4% error of Eq. 2 vs
+    Eq. A8 inside bathe2008; using c = 5/6 tightens the worst-case error to ~9.5%).
+  assumptions:
+    - "Pinned three-point-bending constant mode factor c = 1 (bathe2008 p. 5 col 1 & p. 8)."
+    - "Maps claessens2006's Tolomeo-Holley geometric factor d*(d+t) into chi^2 = k_a*d*(d+t)/(12*kappa_a) (agrees with bathe2008 parallel-axis (d_f+t)^2 at t = 0)."
+    - "Uses claessens2006's printed K = S_2/N = (n + sqrt(n))/12."
+
+- id: rel_claessens2006_bundle_3d_approx_by_fig4
+  kind: approximated_by
+  a: claessens2006/bundle_3d_bending
+  b: bathe2008/wlb_bending_stiffness_fig4
+  mapping:
+    kappa_f: "kappa_a"
+    N: "n"
+    k_x: "k_par"
+    E_f_A_f: "k_a"
+    L2_over_delta: "L_B**2 / delta"
+    chi2: "k_a * d * (d + t) / (12 * kappa_a)"
+    c: "1"
+  regime:
+    n: [2.0, 40.0]
+    L_B: [1.0e-5, 8.0e-5]
+    k_par: [1.0e-7, 1.0e-4]
+    delta: [3.3e-8, 2.0e-6]
+    k_a: [4.4e-8, 4.4e-8]
+    kappa_a: [7.3e-26, 7.3e-26]
+    d: [4.5e-9, 4.5e-9]
+    t: [0.0, 3.5e-8]
+  tolerance: 0.12
+  provenance: proposed
+  reason: >
+    Bathe et al. (2008, Fig. 4 p. 6) evaluate Eq. (2) directly as a function of L^2/delta and
+    k_x/(E_f*A_f) in wlb_bending_stiffness_fig4. With pinned mode factor c = 1 (rather than
+    Fig. 4's periodic-ring value c = 5) and chi^2 = k_a*d*(d+t)/(12*kappa_a), wlb_bending_stiffness_fig4
+    approximates claessens2006/bundle_3d_bending to within ~10.8% across the full physical regime.
+    Note that evaluating Fig. 4 at periodic-ring c = 5 makes the intermediate shear-dominated regime
+    ~5-6x softer than claessens2006's pinned three-point-bending formula at identical alpha.
+  assumptions:
+    - "Pinned three-point-bending mode factor c = 1 (vs c = 5 used for periodic rings in bathe2008 Fig. 4)."
+    - "Tolomeo-Holley geometric factor d*(d+t) mapped into chi^2; printed K = S_2/N = (n + sqrt(n))/12."
+
+- id: rel_alpha_ea_same_as_claessens_alpha
+  kind: same_as
+  a: bathe2008/coupling_parameter_ea
+  b: claessens2006/bending_regime_alpha
+  mapping:
+    k_par: "k_x"
+    L_B: "L"
+    delta: "delta"
+    k_a: "E_f_A_f"
+  regime:
+    k_x: [1.0e-7, 1.0e-4]
+    E_f_A_f: [1.0e-8, 5.0e-7]
+    L: [1.0e-6, 1.0e-4]
+    delta: [3.3e-8, 2.0e-6]
+  provenance: proposed
+  reason: >
+    Both companion papers define the identical dimensionless bundle-bending coupling parameter
+    alpha = k_x * L^2 / (E_f * A_f * delta) = k_par * L_B^2 / (delta * k_a) separating decoupled
+    (alpha << 1), shear-dominated (1 << alpha << N), and fully coupled (alpha >> N) regimes
+    (claessens2006 p. 6 & Fig. 1 caption p. 16: "dimensionless quantity, alpha === k_|| L_B^2 /
+    delta k_a"; bathe2008 p. 5 col 2 & Appendix p. 8: "alpha := (k_x / E_f A_f)(L^2 / delta)",
+    with fiber extensional rigidity k_a = E_f * A_f = 4.4e-8 N from Kojima et al. 1994).
+  assumptions:
+    - "Identical physical quantities: k_par = k_x, L_B = L, k_a = E_f * A_f, and axial cross-link spacing delta."
+
+- id: rel_alpha_eq1_same_as_claessens_alpha
+  kind: same_as
+  a: bathe2008/coupling_parameter_eq1
+  b: claessens2006/bending_regime_alpha
+  mapping:
+    k_par: "k_x"
+    L_B: "L"
+    delta: "delta"
+    k_a: "k_f * delta"
+  regime:
+    k_x: [1.0e-7, 1.0e-4]
+    L: [1.0e-6, 1.0e-4]
+    k_f: [0.05, 5.0]
+    delta: [3.3e-8, 2.0e-6]
+  provenance: proposed
+  reason: >
+    Substituting bathe2008's discrete fiber-segment stretching stiffness definition
+    k_f := E_f * A_f / delta (p. 2 col 1) into Eq. (1) (p. 3 col 1: alpha := k_x * L^2 / (k_f * delta^2))
+    recovers claessens2006/bending_regime_alpha (p. 6: alpha === k_par * L_B^2 / (delta * k_a))
+    symbolically identically with k_a = E_f * A_f = k_f * delta.
+  assumptions:
+    - "Discrete fiber stretching stiffness definition k_f = E_f * A_f / delta = k_a / delta (bathe2008 p. 2 col 1)."
+
+- id: rel_langmuir_spacing_same_as_claessens_abp_eq
+  kind: same_as
+  a: bathe2008/langmuir_crosslink_spacing
+  b: claessens2006/abp_chemical_equilibrium
+  mapping:
+    c_ABP: "c_fascin"
+    K_d: "K_d"
+    delta_max: "delta_min"
+  output_map:
+    delta: delta
+  regime:
+    delta_min: [30.0, 45.0]
+    K_d: [0.3, 1.0]
+    c_fascin: [0.01, 10.0]
+  provenance: proposed
+  reason: >
+    Both papers calculate the mean axial cross-link spacing from an identical non-depleted
+    Langmuir equilibrium binding isotherm: bathe2008 p. 5 col 2 cites claessens2006 (ref-29)
+    for "equilibrium binding considerations (29)" and Fig. 4 caption (p. 6) writes
+    delta = delta_min * (K_d + c_fascin) / c_fascin, which is algebraically identical to
+    claessens2006 Methods p. 12: delta = delta_max / theta with theta = c_ABP / (K_d + c_ABP)
+    (where claessens2006 labels the minimum saturated hexagonal spacing delta_max = 33 nm vs
+    bathe2008's delta_min = 37.5 nm, and uses K_d = 0.7 uM vs bathe2008's 0.5 uM for fascin).
+  assumptions:
+    - "Non-depleted 1:1 Langmuir binding isotherm; claessens2006 symbol delta_max denotes the minimum saturated axial spacing (same physical quantity as bathe2008's delta_min)."
+
+- id: rel_interlayer_shear_same_as_claessens_keff
+  kind: same_as
+  a: bathe2008/interlayer_shear_modulus_from_kx
+  b: claessens2006/effective_shear_stiffness
+  mapping:
+    k_par: "k_x"
+    delta: "delta"
+  regime:
+    k_x: [1.0e-7, 1.0e-4]
+    delta: [3.3e-8, 2.0e-6]
+  provenance: proposed
+  reason: >
+    Both papers define the effective interlayer shear coupling modulus per unit axial length as
+    k_x / delta [Pa] (bathe2008 p. 5 col 1-2: "concentration-dependent effective interlayer shear
+    modulus, k_x / delta", identified with macroscopic Timoshenko G_B) and k_par / delta [N/m^2]
+    (claessens2006 pp. 5-7: "overall effective shear stiffness coupling neighboring filaments,
+    k_|| / delta"). Since 1 Pa = 1 N/m^2, the two definitions are symbolically identical.
+  assumptions:
+    - "1 Pa = 1 N/m^2; k_par = k_x and identical axial cross-link spacing delta."
+
+- id: rel_kx_from_shear_same_as_claessens_shear_inv
+  kind: same_as
+  a: bathe2008/kx_from_shear_modulus
+  b: claessens2006/shear_stiffness_from_effective
+  mapping:
+    k_eff: "G_shear"
+    delta: "delta"
+  regime:
+    G_shear: [10.0, 2000.0]
+    delta: [3.3e-8, 2.0e-6]
+  provenance: proposed
+  reason: >
+    Both papers invert the effective interlayer shear modulus to extract single-cross-linker shear
+    stiffness via k_x = (k_x / delta) * delta (bathe2008 p. 5 col 2 for fascin; claessens2006 p. 7
+    for PEG depletion lower bound k_par >= 10^-4 N/m from k_par/delta >= 10^3 N/m^2 and delta = 10^-7 m).
+  assumptions:
+    - "1 Pa = 1 N/m^2; inverse of rel_interlayer_shear_same_as_claessens_keff."
+
+- id: rel_decoupled_same_as_claessens_decoupled
+  kind: same_as
+  a: bathe2008/wlb_decoupled_limit
+  b: claessens2006/bundle_stiffness_decoupled
+  mapping:
+    n: "N"
+    kappa_a: "kappa_f"
+  output_map:
+    kappa_B: kappa_B
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 100.0]
+  provenance: proposed
+  reason: >
+    Both papers state the identical decoupled bundle-bending stiffness limit kappa_B = N * kappa_f
+    = n * kappa_a for alpha << 1 (bathe2008 p. 5 col 1 & Fig. 3A; claessens2006 p. 6 & Fig. 3
+    caption p. 16: "Dashed lines indicate decoupled (alpha << 1; kappa_B = n * kappa_a)").
+  assumptions:
+    - "Decoupled bending regime alpha << 1 (freely slipping filaments)."
+
+- id: rel_fully_coupled_derived_to_claessens_coupled
+  kind: derived_from
+  a: bathe2008/wlb_fully_coupled_limit
+  b: claessens2006/bundle_stiffness_coupled
+  mapping:
+    n: "N"
+    kappa_a: "kappa_f"
+  output_map:
+    kappa_B: kappa_B
+  steps:
+    - "subs: chi2 = 1"
+    - "simplify"
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 100.0]
+    chi2: [1.0, 5.0]
+  provenance: proposed
+  reason: >
+    Bathe et al.'s finite-thickness fully coupled limit kappa_B = kappa_f * N * (1 + chi^2 * (N - 1))
+    (p. 5 col 1 & Eq. A6 p. 8) reduces symbolically to claessens2006's zero-spacing fully coupled
+    asymptote kappa_B = n^2 * kappa_a (Fig. 3 caption p. 16: "fully coupled (alpha >> n;
+    kappa_B = n^2 * kappa_a) bundle bending regimes assuming zero inter-filament spacing (t = 0)")
+    upon substituting chi^2 = 1 (square cross-section fibers at t = 0).
+  assumptions:
+    - "Zero inter-filament spacing t = 0 with square-beam fiber geometry I_f = A_f * d_f^2 / 12 giving chi^2 = 1."
+
+- id: rel_eq2_reduces_to_claessens_decoupled
+  kind: reduces_to
+  a: bathe2008/wlb_bending_stiffness_eq2
+  b: claessens2006/bundle_stiffness_decoupled
+  mapping:
+    n: "N"
+    kappa_a: "kappa_f"
+  output_map:
+    kappa_B: kappa_B
+  limit:
+    alpha: "0"
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 40.0]
+    alpha: [0.01, 1.0]
+    chi2: [1.0, 10.0]
+    c: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    In the weak shear-coupling limit alpha -> 0 (alpha << 1), bathe2008's closed-form WLB stiffness
+    Eq. (2) reduces identically to claessens2006's decoupled asymptote kappa_B = n * kappa_a
+    (bathe2008 p. 5 col 1; claessens2006 Fig. 3 caption p. 16).
+  assumptions:
+    - "Weak inter-filament shear coupling alpha -> 0 (e.g., plastin/fimbrin bundles in claessens2006 Fig. 3A)."
+
+- id: rel_eq2_reduces_to_claessens_coupled
+  kind: reduces_to
+  a: bathe2008/wlb_bending_stiffness_eq2
+  b: claessens2006/bundle_stiffness_coupled
+  mapping:
+    n: "N"
+    kappa_a: "kappa_f"
+  output_map:
+    kappa_B: kappa_B
+  limit:
+    alpha: "oo"
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 40.0]
+    alpha: [1.0, 100.0]
+    chi2: [1.0, 1.0]
+    c: [0.5, 5.0]
+  provenance: proposed
+  reason: >
+    In the rigid-crosslink limit alpha -> oo (alpha >> N) at tight filament packing chi^2 = 1
+    (t = 0), bathe2008's closed-form WLB stiffness Eq. (2) reduces identically to claessens2006's
+    fully coupled asymptote kappa_B = n^2 * kappa_a (bathe2008 p. 5 col 1; claessens2006 Fig. 3
+    caption p. 16).
+  assumptions:
+    - "Strong shear coupling alpha -> oo and zero inter-filament spacing chi^2 = 1 (t = 0, e.g., PEG bundles in claessens2006 Fig. 3D)."
+
+- id: rel_eqa10_reduces_to_claessens_decoupled
+  kind: reduces_to
+  a: bathe2008/wlb_ring_fluctuation_eqa10
+  b: claessens2006/bundle_stiffness_decoupled
+  mapping:
+    n: "N"
+    kappa_a: "kappa_f"
+  output_map:
+    kappa_B: kappa_B
+  limit:
+    alpha: "0"
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 40.0]
+    alpha: [0.01, 1.0]
+    chi2: [1.0, 10.0]
+  provenance: proposed
+  reason: >
+    In the weak-coupling limit alpha -> 0, bathe2008's exact 200-mode periodic-ring thermal-
+    fluctuation bending stiffness Eq. (A10) (derived specifically for claessens2006's emulsion-
+    droplet rings on p. 8) reduces to claessens2006's decoupled limit kappa_B = n * kappa_a
+    (within ~4e-8 mode-truncation residual at n_modes = 200).
+  assumptions:
+    - "Periodic ring modes q_j = 2*pi*j/L (n_modes = 200) in the decoupled limit alpha -> 0."
+
+- id: rel_eqa10_reduces_to_claessens_coupled
+  kind: reduces_to
+  a: bathe2008/wlb_ring_fluctuation_eqa10
+  b: claessens2006/bundle_stiffness_coupled
+  mapping:
+    n: "N"
+    kappa_a: "kappa_f"
+  output_map:
+    kappa_B: kappa_B
+  limit:
+    alpha: "oo"
+  regime:
+    kappa_f: [1.0e-26, 1.0e-25]
+    N: [2.0, 40.0]
+    alpha: [1.0, 100.0]
+    chi2: [1.0, 1.0]
+  provenance: proposed
+  reason: >
+    In the strong-coupling limit alpha -> oo at tight packing chi^2 = 1 (t = 0), bathe2008's
+    periodic-ring thermal-fluctuation bending stiffness Eq. (A10) (p. 8) reduces to claessens2006's
+    fully coupled asymptote kappa_B = n^2 * kappa_a (Fig. 3 caption p. 16).
+  assumptions:
+    - "Periodic ring modes q_j = 2*pi*j/L (n_modes = 200), strong shear coupling alpha -> oo, and chi^2 = 1 (t = 0)."
+
+- id: rel_claessens2006_bundle_3d_reduces_to_decoupled
+  kind: reduces_to
+  a: claessens2006/bundle_3d_bending
+  b: bathe2008/wlb_decoupled_limit
+  mapping:
+    kappa_f: "kappa_a"
+    N: "n"
+  output_map:
+    kappa_B: kappa_B
+  limit:
+    k_par: "0"
+    delta: "oo"
+  regime:
+    n: [2.0, 40.0]
+    L_B: [1.0e-5, 8.0e-5]
+    k_par: [1.0e-7, 1.0e-4]
+    delta: [3.3e-8, 2.0e-6]
+    k_a: [4.4e-8, 4.4e-8]
+    kappa_a: [7.3e-26, 7.3e-26]
+    d: [4.5e-9, 4.5e-9]
+    t: [0.0, 3.5e-8]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    As effective cross-link shear coupling k_par / delta -> 0 (k_par -> 0, delta -> oo, i.e.,
+    alpha -> 0), claessens2006's 3D discrete-filament bending model (Methods p. 12) reduces
+    identically to bathe2008's decoupled limit kappa_B = N * kappa_f across all inter-filament
+    spacings t in [0, 35 nm].
+  assumptions:
+    - "Vanishing effective shear coupling k_par / delta -> 0 (k_par -> 0, delta -> oo; matching claessens2006/rel_bundle_3d_reduces_to_decoupled)."
+
+- id: rel_claessens2006_bundle_3d_reduces_to_fully_coupled
+  kind: reduces_to
+  a: claessens2006/bundle_3d_bending
+  b: bathe2008/wlb_fully_coupled_limit
+  mapping:
+    kappa_f: "kappa_a"
+    N: "n"
+    chi2: "k_a * d * (d + t) / (12 * kappa_a)"
+  output_map:
+    kappa_B: kappa_B
+  limit:
+    k_par: "oo"
+  regime:
+    n: [2.0, 40.0]
+    L_B: [1.0e-5, 8.0e-5]
+    k_par: [1.0e-5, 1.0e-3]
+    delta: [3.3e-8, 2.0e-6]
+    k_a: [4.4e-8, 4.4e-8]
+    kappa_a: [7.3e-26, 7.3e-26]
+    d: [4.5e-9, 4.5e-9]
+    t: [0.0, 3.5e-8]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the rigid-crosslink limit k_par -> oo (alpha -> oo), claessens2006/bundle_3d_bending
+    reduces identically for arbitrary inter-filament spacing t in [0, 35 nm] to bathe2008's
+    finite-thickness fully coupled limit kappa_B = kappa_f * N * (1 + chi^2 * (N - 1)) once
+    claessens2006's Tolomeo-Holley geometric factor d*(d+t) is mapped to chi^2 = k_a*d*(d+t)/(12*kappa_a).
+  assumptions:
+    - "Rigid cross-links k_par -> oo; maps Tolomeo-Holley d*(d+t) into chi^2 (note bathe2008 uses parallel-axis (d_f+t)^2)."
+
+- id: rel_claessens2006_bundle_3d_KnoN_reduces_to_decoupled
+  kind: reduces_to
+  a: claessens2006/bundle_3d_bending_K_no_divN
+  b: bathe2008/wlb_decoupled_limit
+  mapping:
+    kappa_f: "kappa_a"
+    N: "n"
+  output_map:
+    kappa_B: kappa_B
+  limit:
+    k_par: "0"
+    delta: "oo"
+  regime:
+    n: [2.0, 40.0]
+    L_B: [1.0e-5, 8.0e-5]
+    k_par: [1.0e-7, 1.0e-4]
+    delta: [3.3e-8, 2.0e-6]
+    k_a: [4.4e-8, 4.4e-8]
+    kappa_a: [7.3e-26, 7.3e-26]
+    d: [4.5e-9, 4.5e-9]
+    t: [0.0, 3.5e-8]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the vanishing effective shear-coupling limit k_par / delta -> 0 (k_par -> 0, delta -> oo),
+    claessens2006's diagnostic variant omitting 1/N in K (K = S_2, which reproduces the large-n
+    concavity of claessens2006 Fig. 3A-D) still reduces identically to bathe2008's decoupled
+    bending stiffness limit kappa_B = N * kappa_f because K cancels in the decoupled limit.
+  assumptions:
+    - "Vanishing effective shear coupling k_par / delta -> 0 (k_par -> 0, delta -> oo); K = S_2 diverges from bathe2008 Eq. (2) / Eq. (A8) only at intermediate alpha via effective rescaling alpha_eff = 2*alpha / (sqrt(n) - 1)."
+
+- id: rel_claessens2006_bundle_3d_KnoN_reduces_to_fully_coupled
+  kind: reduces_to
+  a: claessens2006/bundle_3d_bending_K_no_divN
+  b: bathe2008/wlb_fully_coupled_limit
+  mapping:
+    kappa_f: "kappa_a"
+    N: "n"
+    chi2: "k_a * d * (d + t) / (12 * kappa_a)"
+  output_map:
+    kappa_B: kappa_B
+  limit:
+    k_par: "oo"
+  regime:
+    n: [2.0, 40.0]
+    L_B: [1.0e-5, 8.0e-5]
+    k_par: [1.0e-5, 1.0e-3]
+    delta: [3.3e-8, 2.0e-6]
+    k_a: [4.4e-8, 4.4e-8]
+    kappa_a: [7.3e-26, 7.3e-26]
+    d: [4.5e-9, 4.5e-9]
+    t: [0.0, 3.5e-8]
+  tolerance: 1.0e-4
+  provenance: proposed
+  reason: >
+    In the rigid-crosslink limit k_par -> oo, claessens2006's K = S_2 variant reduces identically
+    for all t in [0, 35 nm] to bathe2008's fully coupled limit kappa_B = kappa_f * N * (1 + chi^2 * (N - 1))
+    (under Tolomeo-Holley chi^2 = k_a*d*(d+t)/(12*kappa_a)), confirming that omitting 1/N in K affects
+    only the intermediate shear-crossover scaling (alpha ~ n^(3/2) vs alpha ~ n) and not either asymptote.
+  assumptions:
+    - "Rigid cross-links k_par -> oo; Tolomeo-Holley geometric factor d*(d+t) mapped into chi^2."
+
+

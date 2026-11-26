@@ -1,0 +1,135 @@
+- id: rel_eq4_vs_actin_same_as_fig3b
+  kind: same_as
+  a: tang1996/chemical_binding_eq4_vs_actin
+  b: tang1996/fig3b_lys18_linear_fit
+  mapping:
+    c_18: "c_free"
+    s: "k * V_P * q_net * c_free"
+    c_actin: "c_actin"
+  regime:
+    c_free: [1.0e-5, 5.0e-5]
+    k: [500.0, 2000.0]
+    V_P: [0.5, 2.0]
+    q_net: [8.0, 14.0]
+    c_actin: [1.0e-6, 1.5e-4]
+  provenance: stated
+  citation: {page: 4, printed_page: "8559", quote: "Based on this property, a brief derivation in the appendix", where: "text / Eq. 4"}
+  assumptions:
+    - "Condensation zone volume fraction is v = V_P * q_net * [Actin] << 1 with no competing polyanions (ATP complexation neglected)"
+    - "Free concentration [Lys_18]_f and apparent affinity k are fixed at the onset of bundling"
+
+- id: rel_fig5b_scales_as_manning_onset
+  kind: scales_as
+  a: tang1996/fig5b_power_law_fit
+  b: tang1996/manning_onset_salt_scaling
+  mapping:
+    c_KCl: "c_KCl"
+    N: "alpha"
+  regime:
+    A: [0.05, 5.0]
+    c_KCl: [30.0, 150.0]
+    alpha: [0.2, 3.0]
+  provenance: stated
+  citation: {page: 4, printed_page: "8559", quote: "and log[KCl] with a slope between 1 and 3", where: "text / Eq. 3 / Fig. 5b"}
+  assumptions:
+    - "Local condensed concentration [C]_b is constant at bundling onset so [C]_onset = [C]_b / K scales as a power law in [KCl]"
+    - "When the empirical exponent alpha equals the trace Manning valence N, the empirical Fig. 5b power law scales identically with Eq. 3"
+
+# ==========================================================================
+# Cross-record relations: Wave 6 remaining ready pairs of tang1996
+#   - claessens2008 + tang1996: 3 proposed relations below
+#   - feigeles2025 + tang1996:  0 relations (disjoint wetting/capillarity vs Manning electrostatics;
+#                               see q_feigeles2025_relate_validate_audit)
+#   - grason2007 + tang1996:    0 relations (disjoint chiral continuum elasticity vs Manning electrostatics;
+#                               see q_grason2007_relate_validate_audit)
+# ==========================================================================
+
+- id: rel_claessens2008_actin_molar_from_mass
+  kind: same_as
+  a: tang1996/actin_molar_from_mass
+  b: claessens2008/actin_molar_from_mass
+  output_map:
+    c_a_molar: c_molar
+  mapping:
+    c_a: "c_mass"
+    M_actin: "M_actin"
+  regime:
+    c_mass: [0.04, 6.0]
+    M_actin: [41000.0, 43000.0]
+  provenance: proposed
+  reason: >
+    Both Tang & Janmey (1996, Fig. 3a-b, pp. 3-4) and Claessens et al. (2008, Fig. 1A / Fig. 4C-D /
+    Methods, pp. 1, 3-4) convert F-actin mass concentration [mg/ml] to monomer molar concentration [uM]
+    via the identical molar-mass relation c_molar = (c_mass / M_actin) * 1e6, both implicitly using
+    the standard rabbit skeletal muscle actin molecular weight M_actin = 42,000 g/mol (in added.yaml
+    of both records: e.g., 6.0 mg/ml -> 143 uM in tang1996 Fig. 3b and 0.04 mg/ml -> 0.95 uM in
+    claessens2008 Fig. 4C-D). Symbolically identical (flagged too_plain as a 2-op ratio).
+  assumptions:
+    - "1 mg/ml = 1 g/L and both records express monomeric actin concentration in uM with M_actin in g/mol"
+
+- id: rel_claessens2008_droplet_length_from_monomers
+  kind: same_as
+  a: claessens2008/droplet_ring_filament_number
+  b: tang1996/filament_length_from_monomers
+  output_map:
+    L: L
+  mapping:
+    N_mon: "602214076 * (pi / 6) * D_d**3 * (c_a / M_actin)"
+    rho_mon: "1000 / d"
+  regime:
+    c_a: [0.04, 6.0]
+    D_d: [3.0, 100.0]
+    M_actin: [41000.0, 43000.0]
+    d: [2.5, 3.1]
+  provenance: proposed
+  reason: >
+    Both models convert a count of polymerized F-actin monomers into F-actin contour length L [um]
+    using the monomer axial rise per subunit: Claessens et al. (2008, Fig. 2E, p. 2) compute total
+    F-actin contour length inside an emulsion droplet of diameter D_d [um] as
+    L = [(pi/6)*D_d^3*(c_a/M_actin)*N_A]*d (with d = 2.9 nm/monomer, i.e. 344.8 monomers/um),
+    whereas Tang & Janmey (1996, pp. 2, 4) compute average gelsolin-capped filament contour length as
+    L = N_mon / rho_mon (with rho_mon = 370 monomers/um, i.e. 2.703 nm/monomer — a 7.3% difference in
+    the assumed F-actin monomer axial length). Identifying N_mon with the total droplet monomer count
+    (pi/6)*D_d^3*(c_a/M_actin)*N_A*1e-15 (since 1 mg/ml = 1e-15 g/um^3, so N_A*1e-15 = 602214076) and
+    rho_mon = 1000/d [1/um] makes both contour-length formulas identical (flagged too_plain via
+    tang1996/filament_length_from_monomers).
+  assumptions:
+    - "Complete polymerization of G-actin monomers into F-actin contour length at uniform axial spacing d = 1/rho_mon"
+    - "Maps total actin contour length in a confined emulsion droplet (claessens2008) to single-filament contour length (tang1996) through total monomer count N_mon"
+
+- id: rel_claessens2008_effective_bound_ratio_reduces_to_eq4
+  kind: reduces_to
+  a: claessens2008/effective_bound_ratio
+  b: tang1996/eq4_predicted_slope
+  output_map:
+    s: R_star
+  mapping:
+    k: "1"
+    V_P: "1e6 / K_d"
+    q_net: "1"
+    c_free: "(R * c_a / (1 + c_a / K_d)) * 1e-6"
+  limit:
+    R: "0"
+  regime:
+    R: [0.01, 0.5]
+    K_d: [0.1, 10.0]
+    c_a: [1.0, 150.0]
+  provenance: proposed
+  reason: >
+    Both Claessens et al. (2008, Methods, p. 4 / 8822) and Tang & Janmey (1996, pp. 4, 7 / Appendix
+    Eq. 4) solve two-state equilibrium mass balance for a bundling agent partitioning between bulk
+    solution and F-actin filaments to obtain the bound-linker-to-actin molar ratio (R* vs
+    s = d[Lys_18]/d[Actin]). Claessens et al. solve the exact saturable 1:1 Langmuir equilibrium
+    K_d = (c_a - c_b)*(c_f - c_b)/c_b, yielding the quadratic R* = (1/2)*((1 + R + K_d/c_a) -
+    sqrt((1 + R + K_d/c_a)^2 - 4*R)). Tang & Janmey use dilute-partitioning Manning mass balance
+    [Lys_18]_o = [Lys_18]_f * (1 + k*V_P*q_net*c_a), which neglects actin-site saturation and gives
+    bound ratio s = k*V_P*q_net*c_free with effective dissociation constant K_{d,eff} = (k*V_P*q_net)^-1
+    (evaluating to ~75.8 uM for Lys_18 vs 0.3 uM for fascin) and free concentration
+    c_free = R*c_a / (1 + c_a/K_{d,eff}). In the unsaturated dilute-linker limit R -> 0 (R* << 1 at
+    arbitrary c_a/K_d, retaining free-ligand depletion by actin), Claessens's quadratic R* reduces
+    exactly to Tang & Janmey's linear-partitioning bound ratio s = R / (1 + K_d/c_a).
+  assumptions:
+    - "Dilute cross-linker / unsaturated actin binding-site limit R -> 0 (1 - R* -> 1), while c_a / K_d remains O(1) so ligand depletion by F-actin is retained"
+    - "Effective per-monomer dissociation constant identified as K_{d,eff} = (k * V_P * q_net)^-1 (with k = 1, q_net = 1, V_P = 1e6 / K_d [1/M] matching port units)"
+    - "Free cross-linker concentration c_free follows Tang & Janmey Appendix Eq. 4 mass balance c_free = R*c_a / (1 + c_a/K_d) [uM] * 1e-6 [M/uM]"
+

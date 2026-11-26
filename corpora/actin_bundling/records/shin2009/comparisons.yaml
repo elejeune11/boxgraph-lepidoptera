@@ -1,0 +1,276 @@
+# ==========================================================================
+# 1. SAXS interactin spacing, hexagonal q_11, linker sizes, and helical symmetry
+# ==========================================================================
+- id: cmp_D_fascin_from_q10
+  purpose: reproduction
+  computed: D_from_q10_comp
+  printed: D_fascin_printed
+  note: "4*pi/(sqrt(3)*0.057 A^-1) = 12.73 nm falls within the printed fascin-actin interactin spacing 12.9 +/- 0.3 nm."
+
+- id: cmp_D_espin_from_q10
+  purpose: consistency
+  computed: D_from_q10_comp
+  printed: D_espin_printed
+  note: "4*pi/(sqrt(3)*0.057 A^-1) = 12.73 nm is also consistent with the reported espin-actin spacing 12.6 +/- 0.2 nm [7] (both round to q_10 ~= 0.057 A^-1)."
+
+- id: cmp_q11_hexagonal
+  purpose: consistency
+  computed: q11_from_q10_comp
+  printed: q11_high_R
+  note: "Hexagonal lattice ratio sqrt(3)*q_10 = 0.0987 A^-1 vs printed q_11 = 0.100 A^-1 (within ~1.3%, consistent with 2-sig-fig rounding of q_10 = 0.057 A^-1; exact espin D = 12.6 nm gives q_11 = 0.0997 A^-1)."
+
+- id: cmp_d_fascin
+  purpose: reproduction
+  computed: d_fascin_comp
+  printed: d_fascin_printed
+  note: "D_fascin - d_actin = 12.9 - 7.5 = 5.4 nm reproduces printed 5.4 +/- 0.3 nm exactly."
+
+- id: cmp_d_espin
+  purpose: reproduction
+  computed: d_espin_comp
+  printed: d_espin_printed
+  note: "D_espin - d_actin = 12.6 - 7.5 = 5.1 nm reproduces printed 5.1 +/- 0.2 nm exactly."
+
+- id: cmp_omega_0_from_13_6
+  purpose: reproduction
+  computed: omega_0_from_13_6_comp
+  printed: omega_0_printed
+  note: "2*pi*(6/13) = 12*pi/13 rad reproduces printed omega_0 = 12*pi/13 exactly."
+
+- id: cmp_overtwist_espin_from_symmetry
+  purpose: consistency
+  computed: delta_omega_28_13_comp
+  printed: overtwist_espin_printed
+  note: "Geometric overtwist (13/28 - 6/13)*360 deg = 0.989 deg falls within the measured espin-actin overtwist 0.9 +/- 0.2 deg [7]."
+
+- id: cmp_overtwist_fascin_from_symmetry
+  purpose: consistency
+  computed: delta_omega_28_13_comp
+  printed: overtwist_fascin_max_printed
+  note: "Geometric overtwist 0.989 deg compared against approximate fascin high-R overtwist ~0.9 deg (no strict verdict due to ~)."
+
+- id: cmp_N_repeat_28_13
+  purpose: reproduction
+  computed: N_repeat_28_13_comp
+  printed: overtwisted_monomers_per_repeat
+  note: "4*5 + 2*4 = 28 monomers reproduces the composite 28/13 repeat length exactly."
+
+- id: cmp_T_repeat_28_13
+  purpose: reproduction
+  computed: T_repeat_28_13_comp
+  printed: overtwisted_turns_per_repeat
+  note: "4*(5*14/30) + 2*(4*11/24) = 28/3 + 11/3 = 13 turns reproduces the composite 28/13 turn count exactly."
+
+- id: cmp_bound_fraction_28_13
+  purpose: reproduction
+  computed: f_bound_28_13_comp
+  printed: bound_fraction_28_13_printed
+  note: "6/28 = 0.214286 reproduces printed 0.214 to all printed digits."
+
+# ==========================================================================
+# 2. Analytical derivation checks: Eq. (1) expansion & Eq. (2)-(3) cumulant
+# ==========================================================================
+- id: cmp_eq1_linear_coeff
+  purpose: reproduction
+  computed: c_1_exact_eq1_comp
+  printed: eq1_linear_coeff_printed
+  note: "For spin vectors a*S_i and exact aligned distance Delta_0 = D - 2*a, the linear coefficient of -a^2*D_hat.(S_i - S_j) in (Delta_ij - Delta_0)^2 is 4, twice the printed 2 on p. 2 col 2."
+
+- id: cmp_eps0_prime_shift_coeff_exact
+  purpose: reproduction
+  computed: c_U_exact_cumulant_comp
+  printed: eps0_prime_shift_coeff_printed
+  note: "Exact O(U) cumulant integration of -eps_0 + U*(1 - cos[phi_l - phi_m]) gives <1 - cos>_0 = 1 => eps_0' = eps_0 - U (c_U = 1), twice the printed shift U/2 (c_U = 0.5) after Eq. (2)."
+
+- id: cmp_cumulant_vs_eq3_V4
+  purpose: consistency
+  computed: V_nn_4_cumulant_comp
+  printed: V_nn_4_eq3_comp
+  note: "Exact O(U^2) Gaussian cumulant reproduces Eq. (3) V(l, l') factor (beta*U^2/2) and exp(-|l-l'|/xi_t) identically."
+
+# ==========================================================================
+# 3. Cooperativity u(beta*U, xi_t): printed sign vs left-handed variant vs continuum
+# ==========================================================================
+- id: cmp_stiffness_exp_printed
+  purpose: reproduction
+  computed: stiffness_exp_printed_comp
+  printed: cooperativity_stiffness_exp_printed
+  note: "Magnitude |u| scales exactly as (beta*U)^2 (exponent 2) even with the printed sign, though u itself is negative for all xi_t > 0."
+
+- id: cmp_stiffness_exp_lh
+  purpose: reproduction
+  computed: stiffness_exp_lh_comp
+  printed: cooperativity_stiffness_exp_printed
+  note: "Left-handed variant reproduces u propto (beta*U)^2 (exponent 2) exactly with u > 0."
+
+- id: cmp_xi_t_max_printed_model
+  purpose: reproduction
+  computed: xi_t_max_printed_model_comp
+  printed: xi_t_max_printed
+  note: "Printed positive omega_0 = +12*pi/13 with printed 28/13 sites gives u < 0 decreasing monotonically for all xi_t > 0, so the maximizer on [1, 1000] hits the lower boundary xi_t = 1.0 (u_max = -0.0055 < 0) with no interior peak around xi_t ~= 60."
+
+- id: cmp_xi_t_max_lh
+  purpose: reproduction
+  computed: xi_t_max_lh_comp
+  printed: xi_t_max_printed
+  note: "Chirality-consistent left-handed variant peaks at xi_t = 57.86 monomers (u_max/(beta*U)^2 = 5.6575), matching the printed approximate peak 'around xi_t ~= 60'."
+
+- id: cmp_xi_t_max_cont
+  purpose: approximation
+  computed: xi_t_max_cont_comp
+  printed: xi_t_max_printed
+  note: "Continuum dephasing peak 1/delta_omega = 182/pi = 57.93 monomers agrees closely with the discrete peak 57.86 and printed '~= 60'."
+
+- id: cmp_small_xit_exp_lh_very_small
+  purpose: reproduction
+  computed: local_xit_exp_lh_very_small_comp
+  printed: cooperativity_small_xit_exp_printed
+  note: "At truly small xi_t = 2 < minimum inter-bond gap 4 monomers, discrete lattice u(xi_t) ~ exp(-4/xi_t) has local log-slope 2.52, refuting strict xi_t -> 0 linear scaling u ~ xi_t."
+
+- id: cmp_small_xit_exp_lh_interm
+  purpose: reproduction
+  computed: local_xit_exp_lh_interm_comp
+  printed: cooperativity_small_xit_exp_printed
+  note: "In the intermediate short-range regime 4 < xi_t = 15 << 58, the discrete lattice sum has local log-slope 1.025, reproducing the printed u ~ xi_t scaling within 1-digit precision."
+
+- id: cmp_small_xit_exp_continuum
+  purpose: approximation
+  computed: local_xit_exp_cont_small_comp
+  printed: cooperativity_small_xit_exp_printed
+  note: "In the continuum limit (uniform bond density 6/28), local log-slope at xi_t = 2 is 0.998 -> 1, explaining the origin of the paper's u ~ xi_t scaling claim."
+
+- id: cmp_u_norm_printed_vs_lh
+  purpose: consistency
+  computed: u_norm_printed_peak_comp
+  printed: u_norm_lh_peak_comp
+  note: "Direct contrast of printed positive omega_0 (-0.471, repulsive, no real beta*U_c) against chirality-consistent left-handed variant (+5.658, attractive) at xi_t = 57.86."
+
+- id: cmp_k_c_prefactor_lh
+  purpose: reproduction
+  computed: beta_U_crit_lh_peak_comp
+  printed: k_c_prefactor_printed
+  note: "At the cooperativity peak xi_t = 57.86, left-handed variant gives beta*U_c = k_c/(k_B*T/a^2) = 0.841, consistent with printed order-of-magnitude estimate k_c ~= k_B*T/a^2."
+
+# ==========================================================================
+# 4. Mean-field critical point & susceptibility exponent (p. 4 col 1)
+# ==========================================================================
+- id: cmp_u_critical
+  purpose: reproduction
+  computed: u_c_mf_comp
+  printed: u_critical_printed
+  note: "Numerical solution of dz/drho = d^2z/drho^2 = 0 reproduces u_c = 4.000000 exactly."
+
+- id: cmp_rho_critical
+  purpose: reproduction
+  computed: rho_c_mf_comp
+  printed: rho_critical_printed
+  note: "Numerical critical occupancy reproduces rho_c = 0.500000 exactly."
+
+- id: cmp_chi_critical_exponent
+  purpose: reproduction
+  computed: chi_exp_mf_comp
+  printed: chi_critical_exponent_printed
+  note: "Numerical log-slope d(ln chi_rho)/d(ln |z - z_c|) at u = u_c reproduces -2/3 (-0.666667) exactly."
+
+# ==========================================================================
+# 5. Monomer-monomer overtwist correlation g(l_0) small-U scaling (p. 4 col 1)
+# ==========================================================================
+- id: cmp_overtwist_rho_exp_pert
+  purpose: reproduction
+  computed: rho_exp_pert_small_U_comp
+  printed: overtwist_rho_exponent_printed
+  note: "Exact connected O(U^2) perturbation theory at beta*U = 0.01 yields d(ln Im[ln g])/d(ln rho) = 2.0000, reproducing printed Im[ln g] ~ rho^2 in the U -> 0 limit."
+
+- id: cmp_overtwist_rho_exp_tm
+  purpose: reproduction
+  computed: rho_exp_tm_small_U_comp
+  printed: overtwist_rho_exponent_printed
+  note: "Exact 1D Fourier transfer matrix at beta*U = 0.01 yields d(ln Im[ln g])/d(ln rho) = 2.0000, independently confirming Im[ln g] ~ rho^2 in the U -> 0 limit."
+
+- id: cmp_overtwist_pert_vs_tm_small_U
+  purpose: consistency
+  computed: overtwist_pert_small_U_comp
+  printed: overtwist_tm_small_U_comp
+  note: "Cross-check: exact connected O(U^2) perturbation theory matches exact 1D transfer matrix to 5+ significant digits at beta*U = 0.01, xi_t = 100."
+
+# ==========================================================================
+# 6. Quantitative comparisons against digitized figures (Fig. 3b, Fig. 1e, Fig. 1c-d)
+# ==========================================================================
+- id: cmp_fig3b_pert_xit1000
+  purpose: reproduction
+  computed: overtwist_fig3b_pert_xit1000_comp
+  printed: overtwist_fig3b_xit1000
+  note: "Exact connected O(U^2) perturbation theory swept over all 13 digitized Fig. 3(b) points at xi_t = 1000: predicts linear growth up to 0.0205 rad at x=0.25 vs plotted curve rising concavely-up to 0.1137 rad (5.5x discrepancy)."
+
+- id: cmp_fig3b_pert_xit100
+  purpose: reproduction
+  computed: overtwist_fig3b_pert_xit100_comp
+  printed: overtwist_fig3b_xit100
+  note: "Exact connected O(U^2) perturbation theory swept over all 13 digitized Fig. 3(b) points at xi_t = 100: rises linearly to 0.871 rad at x=0.25 vs plotted plateau 0.0783 rad (11x discrepancy)."
+
+- id: cmp_fig3b_pert_xit10
+  purpose: reproduction
+  computed: overtwist_fig3b_pert_xit10_comp
+  printed: overtwist_fig3b_xit10
+  note: "Exact connected O(U^2) perturbation theory swept over all 12 digitized Fig. 3(b) points at xi_t = 10: rises to 0.158 rad at x=0.25 vs plotted plateau 0.00789 rad (20x discrepancy)."
+
+- id: cmp_fig3b_tm_xit1000
+  purpose: reproduction
+  computed: overtwist_fig3b_tm_xit1000_comp
+  printed: overtwist_fig3b_xit1000
+  note: "Exact non-perturbative 1D Fourier transfer matrix (n_modes=16, converged to 8 digits) swept over all 13 digitized Fig. 3(b) points at xi_t = 1000: remains below xi_t = 100 and reaches only 0.0610 rad at x=0.25 vs plotted 0.1137 rad (which exceeds the 28/13 mean pi/39 = 0.0806 rad)."
+
+- id: cmp_fig3b_tm_xit100
+  purpose: reproduction
+  computed: overtwist_fig3b_tm_xit100_comp
+  printed: overtwist_fig3b_xit100
+  note: "Exact non-perturbative 1D Fourier transfer matrix swept over all 13 digitized Fig. 3(b) points at xi_t = 100: saturates to pi/39 = 0.0805 rad (close to plotted 0.0783 rad at large x) but is concave down from x=0 and 2.1x above the plotted curve at x=0.01 (0.0425 vs 0.0203 rad)."
+
+- id: cmp_fig3b_tm_xit10
+  purpose: reproduction
+  computed: overtwist_fig3b_tm_xit10_comp
+  printed: overtwist_fig3b_xit10
+  note: "Exact non-perturbative 1D Fourier transfer matrix swept over all 12 digitized Fig. 3(b) points at xi_t = 10: rises smoothly toward pi/39 (0.0626 rad at x=0.25) vs plotted plateau 0.00789 rad (8x higher)."
+
+- id: cmp_fig1e_espin_vs_28_13
+  purpose: validation
+  computed: overtwist_28_13_fig1e_espin_comp
+  printed: overtwist_fig1e_espin
+  note: "Tests the paper's constant 28/13 ground-state packing overtwist (0.989 deg) against all 7 digitized espin-actin points in Fig. 1(e) (R = 0.02..0.33): matches both error-barred points (R=0.05: 0.948 +/- 0.05 deg; R=0.10: 0.900 +/- 0.10 deg), while sitting ~0.09 deg above the four un-barred 0.90 deg markers and ~0.19 deg above the un-barred R=0.33 (0.80 deg) marker."
+
+- id: cmp_fig1e_fascin_vs_28_13
+  purpose: validation
+  computed: overtwist_28_13_fig1e_fascin_comp
+  printed: overtwist_fig1e_fascin
+  note: "Contrasts the saturated 28/13 packing prediction (0.989 deg) against all 5 digitized fascin-actin points in Fig. 1(e) (R = 0.05..0.33): reproduces the high-R saturated point (R=0.33: 0.900 +/- 0.10 deg) and sits close at R=0.20 (0.799 +/- 0.10 deg), while strongly departing across the continuous low-R transition (0.002, 0.104, 0.302 deg at R = 0.05, 0.069, 0.101)."
+
+- id: cmp_q1_fig1c_R0p33
+  purpose: consistency
+  computed: q1_fig1c_R0p33_comp
+  printed: q_layer1_high_R
+  note: "First layer-line peak extracted from digitized Fig. 1(c) fascin R=0.33 curve vs printed high-R value 0.120 A^-1."
+
+- id: cmp_q2_fig1c_R0p33
+  purpose: consistency
+  computed: q2_fig1c_R0p33_comp
+  printed: q_layer2_high_R
+  note: "Second layer-line peak extracted from digitized Fig. 1(c) fascin R=0.33 curve vs printed high-R value 0.134 A^-1."
+
+- id: cmp_q1_fig1d_R0p2
+  purpose: consistency
+  computed: q1_fig1d_R0p2_comp
+  printed: q_layer1_high_R
+  note: "First layer-line peak extracted from digitized Fig. 1(d) espin R=0.2 curve vs printed high-R value 0.120 A^-1."
+
+- id: cmp_q2_fig1d_R0p2
+  purpose: consistency
+  computed: q2_fig1d_R0p2_comp
+  printed: q_layer2_high_R
+  note: "Second layer-line peak extracted from digitized Fig. 1(d) espin R=0.2 curve vs printed high-R value 0.134 A^-1 (checks 0.1348 A^-1 plotted peak and 0.1349 A^-1 guide line)."
+
+- id: cmp_q1_fig1d_pure
+  purpose: consistency
+  computed: q1_fig1d_pure_comp
+  printed: q_layer1_unbundled
+  note: "First layer-line peak extracted from digitized Fig. 1(d) pure F-actin curve vs printed unbundled value 0.114 A^-1."
+

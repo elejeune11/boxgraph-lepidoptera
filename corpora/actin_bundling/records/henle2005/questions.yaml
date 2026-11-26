@@ -1,0 +1,431 @@
+- id: q_n1_10nM_vs_10mM
+  kind: possible_error
+  about:
+    - n1_fig1
+    - n1_fig1_mM_hypothesis_added
+    - cmp_fig1_01uM_printed
+    - cmp_fig1_10uM_printed
+    - cmp_fig1_1mM_printed
+    - cmp_fig1_inset_lam_tot_printed
+    - cmp_fig1_inset_asymp_printed
+    - cmp_fig2_01uM_fe_printed
+    - cmp_fig2_10uM_fe_printed
+    - cmp_fig2_1mM_fe_printed
+    - cmp_fig1_01uM_10mM
+    - cmp_fig1_10uM_10mM
+    - cmp_fig1_1mM_10mM
+    - cmp_fig1_inset_lam_tot_10mM
+    - cmp_fig1_inset_asymp_10mM
+    - cmp_fig2_01uM_fe_10mM
+    - cmp_fig2_10uM_fe_10mM
+    - cmp_fig2_1mM_fe_10mM
+  text: >
+    The caption of Fig. 1 (p. 3, inherited by Fig. 2) prints the monovalent salt concentration as
+    n_1 = 10 nM. Evaluating the paper's exact Eqs. (2, 5-7) at n_1 = 10 nM fails to reproduce all four
+    plotted panels of Figs. 1 and 2: (1) in Fig. 1 main, the solid curve (n_q = 0.1 uM) remains strictly
+    positive (+2.42 nm^-1 at R/a = 1) rather than dipping deeply negative and crossing zero near
+    R/a ~= 3.8, and the dashed curve (10 uM) is monotonically decreasing instead of peaking near
+    R/a ~= 2; (2) in Fig. 1 inset, the asymptotic value of lambda_tot is 10.61 nm^-1 (not 8.19 nm^-1),
+    and lambda_tot(R) only reaches 4.52 nm^-1 at R/a = 100 (not ~7.69 nm^-1); (3) in Fig. 2 main, all
+    three curves nearly collapse together and all three exhibit a local minimum near R/a ~= 17, directly
+    contradicting both the plotted solid curve (which has no minimum) and the text on p. 3 col 2 ("At
+    small n_q, ... no minimum in beta*F(R) is obtained"). Replacing n_1 = 10 nM with n_1 = 10 mM
+    (a single-letter unit typo, factor 10^6, matching typical experimental monovalent salt concentrations)
+    simultaneously reproduces all three curves of Fig. 1 main, both curves of Fig. 1 inset (including the
+    asymptotic dashed line at 8.190 nm^-1 vs digitized 8.195 nm^-1), and all three curves of Fig. 2 main
+    to within ~0.001-0.004 nm^-1 (sub-pixel precision). Per BoxGraph rules, n1_fig1 is preserved verbatim
+    as 10 nM in data.yaml and tested alongside the diagnostic 10 mM hypothesis in added.yaml.
+  citation:
+    page: 3
+    printed_page: "060801-3"
+    quote: "n1 = 10 nM, q = 3,"
+    where: Fig. 1 caption
+
+- id: q_finite_size_eq6_rhs_sign
+  kind: possible_error
+  about:
+    - finite_size_eq6_printed
+    - finite_size_eq6_corrected
+    - finite_size_free_energy_p3
+    - rel_finite_fe_same_as_eq6_corrected
+  text: >
+    On p. 3 col 1, after adding the finite-size counterion steric entropy term
+    M*L*[(Lambda - lambda_q)*ln(1 - lambda_q/Lambda) + lambda_q] to beta*F_ent, the text states:
+    "This adds a term -ln(1 - lambda_q/Lambda) to the right-hand side of Eq. (6), which diverges as
+    lambda_q -> Lambda, thus forcing lambda_q < Lambda for any bundle size R." Differentiating the
+    printed free-energy term with respect to lambda_q gives d/d(lambda_q)[(Lambda - lambda_q)*
+    ln(1 - lambda_q/Lambda) + lambda_q] = -ln(1 - lambda_q/Lambda), which enters the LEFT-HAND side
+    of Eq. (6) (i.e., +ln(1 - lambda_q/Lambda) on the right-hand side). Placing -ln(1 - lambda_q/Lambda)
+    on the right-hand side produces ln[lambda_q*(1 - lambda_q/Lambda)/(n_q*alpha_b)] - l_B*q*lambda*
+    R^2/(2*a^2) - 2*l_B*q*lambda_tot*K_0/(kappa*R*K_1) = 0, whose left-hand side is bounded above and
+    strictly negative on all of (0, Lambda) for large R (e.g., max <= -624 at R = 100a and max <= -17.7
+    at R = 20a for Fig. 2 parameters), so no real solution exists at R = 100a or near the Fig. 2 minimum.
+    Direct numerical minimization of the printed modified free energy (finite_size_free_energy_p3) agrees
+    with the corrected LHS Eq. (6) variant (finite_size_eq6_corrected) to ~10^-14 in dF/(N*L) and
+    reproduces Fig. 2 (under n_1 = 10 mM).
+  citation:
+    page: 3
+    printed_page: "060801-3"
+    quote: "to the right-hand side of Eq."
+    where: "text, p. 3 col 1"
+
+- id: q_stern_charge_theta_vs_delta
+  kind: possible_error
+  about:
+    - pointlike_bundle_eq5_eq7
+  text: >
+    On p. 2 col 1, when modeling the Stern layer as a uniform surface charge (setting w = 0 in the
+    electrostatic integral Eq. 3), the text prints e*n_st(x) = theta(R - r) * e*lambda_st / (2*pi*R).
+    A surface charge localized at r = R requires a Dirac delta function delta(r - R) (dimension
+    1/[length], yielding 3D number density 1/[length]^3), not the Heaviside step function theta(R - r)
+    (dimensionless, yielding 1/[length]^2 and a uniform volume charge rather than a surface charge).
+    Integrating Eq. (3) with delta(r - R) yields the paper's printed Eqs. (4)-(7) verbatim, confirming
+    that theta(R - r) in the Stern-layer definition is a typographical misprint for delta(r - R).
+  citation:
+    page: 2
+    printed_page: "060801-2"
+    quote: "charge distributions of a bundle and its"
+    where: "text, p. 2 col 1"
+
+- id: q_fig2_inset_unexplained_discrepancy
+  kind: unexplained_difference
+  about:
+    - frustrated_bundle_p4
+    - frustrated_attraction_hyperbola_p4
+    - fig2_inset_dF_01uM_data
+    - fig2_inset_dF_10uM_data
+    - fig2_inset_dF_1mM_data
+    - cmp_fig2_inset_01uM_printed
+    - cmp_fig2_inset_10uM_printed
+    - cmp_fig2_inset_1mM_printed
+    - cmp_fig2_inset_01uM_10mM
+    - cmp_fig2_inset_10uM_10mM
+    - cmp_fig2_inset_1mM_10mM
+  text: >
+    Even after accounting for the n_1 = 10 mM unit-typo hypothesis (which reproduces Fig. 1 main, Fig. 1
+    inset, and Fig. 2 main to ~0.001-0.004 nm^-1), the printed frustrated-attraction model on p. 3-4
+    (beta*F_attr = -gamma*L*M*phi(b) with b = B/M = 3 - 3.6*a/R, phi(b) = (1/2)*(b + phi_max)
+    - (1/2)*|phi_max - b|*sqrt(1 + xi/(b - phi_max)^2), gamma = 1.7 nm^-1, phi_max = 2, xi = 0.1,
+    Delta F(R) = F(R) - F(100a)) does NOT reproduce the Fig. 2 inset curves. For n_q = 1 mM (dotted),
+    the printed model predicts beta*Delta F/(N*L) = +0.606 nm^-1 at R/a = 2.0 and a shallow minimum of
+    -0.102 nm^-1 near R/a = 4.37, whereas Fig. 2 inset shows -0.186 nm^-1 near R/a = 2.0 (dot at 1.96)
+    and a deep minimum of -0.267 nm^-1 near R/a = 2.5 (discrepancy up to 1.43 nm^-1 at R/a = 1.20).
+    For n_q = 10 uM (dashed), the printed model has a minimum of -0.470 nm^-1 near R/a = 3.25, whereas
+    Fig. 2 inset shows no minimum in the plotted range and drops monotonically below -0.63 nm^-1 at
+    R/a = 3.6. Two quantitative clues emerge from the digitized curves: (1) inverting phi(b) from the
+    1 mM dots over R/a in [1.20, 2.34] gives (3 - b)*(R/a) = 2.565 +/- 0.015 ~= 3.6/1.4 = 3.6/a,
+    suggesting b = 3 - 3.6/R (dropping the factor a = 1.4 nm) may have been evaluated, shifting the saturation knee from R/a = 3.6
+    to R/a = 2.57 (which is geometrically impossible for hexagonally packed rods since even M = 7 rods at
+    R/a = sqrt(7) = 2.65 only have B/M = 12/7 = 1.71 < 2); and (2) while model-independent double
+    differences [F(R, 0.1 uM) - F(R, 1 mM)] - [F(13.3a, 0.1 uM) - F(13.3a, 1 mM)] confirm n_1 = 10 mM
+    (rms 0.007 nm^-1), the absolute vertical offset between the 0.1 uM and 1 mM curves is shifted upward
+    by ~+0.037 nm^-1 relative to R_ref = 100a (consistent with a smaller reference radius R_ref ~= 25a).
+    Because these discrepancies are not attributable to a single evident printed-equation misprint, no
+    variant model is added for Fig. 2 inset.
+  citation:
+    page: 3
+    printed_page: "060801-3"
+    quote: "for frustrated attractive interactions, with ␰ = 0.1, ␾max = 2,"
+    where: Fig. 2 caption
+
+- id: q_veff_to_delta_eff_unstated
+  kind: unstated_input
+  about:
+    - ion_radius_threshold_p3
+    - packing_factor_veff_added
+    - delta_eff_dna_threshold
+    - cmp_dna_delta_eff_threshold
+  text: >
+    On p. 3 col 1, the paper defines Lambda ~= alpha_b / v_eff and evaluates the condition
+    lambda* = lambda_0 - q*Lambda > 0 for DNA with trivalent cobalt hexammine (1/lambda_0 = 1.7 A,
+    a_0 = 10 A, a ~= 14 A, q = 3), stating that lambda* > 0 when the effective ion radius
+    delta_eff >=~ 7 A. However, the paper does not print the geometric relation between effective ion
+    volume v_eff and effective radius delta_eff. Using bare sphere volume v_eff = (4*pi/3)*delta_eff^3
+    (f_pack = 1.0) yields delta_eff > 7.16 A, matching the printed ~7 A; fcc/hcp close packing
+    (f_pack = 0.7405) gives 6.48 A, and cubic packing v_eff = (2*delta_eff)^3 (f_pack = 0.5236) gives
+    5.77 A.
+  citation:
+    page: 3
+    printed_page: "060801-3"
+    quote: "the effective radius of the ions ␦ef f ⲏ 7 Å."
+    where: "text, p. 3 col 1"
+
+- id: q_bulk_coion_electroneutrality_implicit
+  kind: unstated_model
+  about:
+    - debye_screening_eq4
+    - pointlike_bundle_eq5_eq7
+  text: >
+    The paper states on p. 1 col 2 that positive monovalent (s = +1), positive q-valent (s = q), and
+    negative monovalent co-ions (s = -1) are present in an overall charge-neutral system in equilibrium
+    with a salt bath, and captions Figs. 1 and 2 by specifying only n_1 and n_q (not n_{-1}). The bulk
+    co-ion concentration n_{-1} = n_1 + q*n_q (giving sum_s s^2 n_s = 2*n_1 + q*(q + 1)*n_q in kappa^2)
+    is implicit from bulk salt-bath electroneutrality and is confirmed to ~0.001 nm^-1 by Figs. 1 and 2
+    (under n_1 = 10 mM).
+  citation:
+    page: 1
+    printed_page: "060801-1"
+    quote: "charge neutral and in chemical equilibrium with a salt bath."
+    where: "text, p. 1 col 2"
+
+# ---------------------------------------------------------------------------
+# Wave 6 cross-record relate / cited / validate audits (all 7 ready pairs)
+# ---------------------------------------------------------------------------
+- id: q_angelini2003_relate_validate_audit
+  kind: unstated_model
+  about:
+    - hexagonal_bonds_p2
+    - frustrated_attraction_hyperbola_p4
+    - frustrated_bundle_p4
+    - ref-5
+    - angelini2003/twist_energy_per_monomer
+    - angelini2003/hexagonal_equatorial_peaks
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for angelini2003+henle2005 (henle2005
+    cites angelini2003 as ref-5 on pp. 1, 2, and 3; 0 ModelAtlas relations, 0 cited.yaml links,
+    0 cross-validations).
+    (1) Citation & cited.yaml: Henle & Pincus cite Angelini et al. (2003) [ref-5] purely
+    qualitatively — on p. 1 col 1 for counterion-induced F-actin bundling, on p. 2 col 1 for
+    hexagonal rod packing, and on p. 3 col 2 ("Indeed, it has been experimentally observed that
+    F-actin filaments undergo twist distortions when forming bundles to reduce the electrostatic
+    repulsion between neighboring rods [5]") to motivate the frustrated-bond hypothesis. Neither
+    record borrows any numerical datum from the other (henle2005's only from_source datums cite
+    Bloomfield 1997 [ref-2] for DNA).
+    (2) ModelAtlas: All 10 runnable models of angelini2003 compute SAXS diffraction wavevectors,
+    1D counterion CDW/patch periods, helical overtwist angles, and single-filament torsional
+    elastic energy (1/2)*kappa*(Delta_theta)^2/d, whereas henle2005 models cylindrical cell-model
+    electrostatics and enters bond frustration purely phenomenologically via the hyperbola phi(b)
+    (with free parameters phi_max, xi) without deriving phi(b) from filament torsional stiffness.
+    No algebraic relation links the two model sets.
+    (3) Cross-validation: henle2005 contains 0 origin: measured datums, and all 29 origin: measured
+    datums in angelini2003 are SAXS scattering wavevectors q [1/angstrom] and relative scattering
+    intensity profiles I(q). None of henle2005's models outputs SAXS wavevectors or scattering
+    intensities, and angelini2003 does not report a measured equilibrium bundle radius R_eq or
+    effective bundle charge lambda_tot for its Ba^2+-condensed F-actin bundles.
+  citation:
+    page: 3
+    printed_page: "060801-3"
+    quote: "observed that F-actin filaments undergo twist distortions"
+    where: "text, p. 3 col 2 (citing ref-5)"
+
+- id: q_claessens2008_relate_validate_audit
+  kind: unstated_model
+  about:
+    - hexagonal_bonds_p2
+    - finite_size_req_approx_p3
+    - finite_size_req_exact_p3
+    - rel_claessens2008_hexagonal_bonds_approx
+    - rel_claessens2008_hexagonal_bonds_bulk_limit
+    - claessens2008/bundle_geometry_saturation
+    - claessens2008/bundle_geometry_bulk_limit
+    - claessens2008/D_fig1c_measured
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for claessens2008+henle2005
+    (claessens2008 cites Henle & Pincus 2005 as ref-19 on p. 1; 2 verified ModelAtlas relations,
+    0 cited.yaml links, 0 cross-validations).
+    (1) Citation & cited.yaml: Claessens et al. (2008, p. 1 col 1 & col 2) cite Henle & Pincus
+    [ref-19] qualitatively as the counterion-accumulation / frustration theory of finite bundle
+    size, borrowing no numerical datum from henle2005.
+    (2) ModelAtlas: Two verified geometric relations connect hexagonal nearest-neighbor bond
+    counting in henle2005/hexagonal_bonds_p2 (b = 3 - 3.6*a/R) to claessens2008 SI Methods
+    (bundle_geometry_saturation: R = (1/u)*(3 + sigma*3.5*n_f^(-1/2)) at u = 1, sigma = -1,
+    n_f = (R/a)^2, max relative error 4.0% on R/a in [2, 50]; and bulk limit
+    bundle_geometry_bulk_limit R_inf = 3/u as R/a -> oo). All other claessens2008 models
+    (fascin Langmuir binding, droplet confinement, SAXS helical symmetry mismatch, single-filament
+    twist energy, empirical D ~ (R*)^0.3 scaling) are physically and mathematically disjoint from
+    henle2005's counterion cell model (in particular, D ~ (R*)^0.3 is an empirical power law in
+    fascin-to-actin ratio R*, not Henle's electrostatic R_eq ~ gamma^(1/3)).
+    (3) Cross-validation: henle2005 has 0 measured datums, and all 26 measured datums in
+    claessens2008 pertain to fascin-cross-linked F-actin bundles (TEM diameter D vs fascin ratio
+    R*, confinement filament counts, SAXS wavevectors/intensities, monomer overtwist), NOT
+    multivalent-counterion-induced polyelectrolyte bundles. Crucially, Claessens et al. (p. 1 col
+    2) explicitly test and refute electrostatic charge-accumulation size control for fascin/F-actin
+    bundles: inter-filament spacing is ~5 nm (>> Debye length), and reducing salt to minimum
+    polymerization buffer (2 mM MgCl_2, 0 KCl, 0 CaCl_2) has no effect on maximum bundle
+    thickness. Moreover, henle2005's R_eq models require phenomenological counterion bond energy
+    gamma and steric residual charge fraction lambda_*/lambda_0 rather than bound fascin ratio R*.
+
+- id: q_dutta2016_relate_validate_audit
+  kind: unstated_model
+  about:
+    - debye_screening_eq4
+    - pointlike_bundle_eq5_eq7
+    - finite_size_req_exact_p3
+    - dutta2016/screening_length_salt_scaling
+    - dutta2016/real_space_potential
+    - dutta2016/bundle_size_eq8
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for dutta2016+henle2005 (dutta2016
+    cites Henle & Pincus 2005 as ref-18 on p. 2 [28001-p1]; 0 ModelAtlas relations, 0 cited.yaml
+    links, 0 cross-validations).
+    (1) Citation & cited.yaml: Dutta et al. (2016, p. 2 col 2) cite Henle & Pincus [ref-18] purely
+    qualitatively in the Introduction ("Henle and Pincus [18] predict bundles of finite size in
+    equilibrium for large-size counterions or frustrated attractive interactions, but of infinite
+    size otherwise"), borrowing no numerical datum.
+    (2) ModelAtlas: Both papers invoke cylindrical screened Debye-Huckel electrostatics —
+    henle2005/debye_screening_eq4 computes inverse Debye length kappa = sqrt(4*pi*l_B*(2*n_1 +
+    q*(q+1)*n_q)) [1/nm] (scaling as n^(+1/2)) and uses Bessel K_0(kappa*r) outside the bundle
+    (Eq. 4, not standalone), whereas dutta2016/screening_length_salt_scaling states the reciprocal
+    screening length lambda_R ~ n^(-1/2) [nm] (citing Israelachvili [ref-43]) and uses pairwise
+    Bessel repulsion Gamma_R*K_0(r/lambda_R) in real_space_potential. Because kappa [1/nm] and
+    lambda_R [nm] are reciprocal quantities (log-slopes +1/2 vs -1/2; incompatible dimensions) and
+    neither paper states a cross-model relation requiring a reciprocal helper model, no ModelAtlas
+    relation is forced. Physically, the two bundle-size mechanisms are distinct: henle2005 models
+    rigid L -> oo rods in a Wigner-Seitz cell where internal counterion condensation causes
+    pointlike unfrustrated bundles to diverge (R_eq -> oo) unless blocked by counterion excluded
+    volume (lambda_* > 0) or frustrated attraction phi(b), whereas dutta2016 obtains finite
+    microphase-separation wavelengths D* = 2*pi/k_0 from competing fixed-strength repulsion and
+    short-range attraction coupled to finite-tension directed-polymer conformational entropy b(k*)
+    (which vanishes in Henle's rigid-rod limit).
+    (3) Cross-validation: Both henle2005 and dutta2016 are purely theoretical papers with 0 origin:
+    measured datums in either record.
+
+- id: q_gov2008_relate_validate_audit
+  kind: unstated_model
+  about:
+    - finite_size_req_approx_p3
+    - hexagonal_bonds_p2
+    - frustrated_bundle_p4
+    - rel_gov2008_incomp_req_same_as_finite_size_approx
+    - rel_gov2008_finite_size_req_scales_weak_binding_cbrt
+    - gov2008/equilibrium_radius_incompressible_eq9
+    - gov2008/equilibrium_radius_bulk_monopole_eq7
+    - gov2008/equilibrium_radius_shell_eq3
+    - gov2008/binding_energy_eq1
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for gov2008+henle2005 (gov2008 cites
+    henle2005 as ref-7 on pp. 1, 2, and 3; 2 verified ModelAtlas relations, 0 cited.yaml links,
+    0 cross-validations).
+    (1) Citation & cited.yaml: Gov (2008) cites Henle & Pincus [ref-7] three times conceptually —
+    p. 1 col 1 (unbalanced electrostatic interactions giving finite equilibrium radius), p. 2 col 1
+    (neglecting translational entropy in the long-filament canonical-ensemble binding energy Eq.
+    1), and p. 3 col 1 (noting that empty-shell localized defects act as "frustrated interactions"
+    "somewhat similar to the concept proposed by Henle et al. [7] for electrostatic interactions")
+    — without taking any numerical datum from henle2005.
+    (2) ModelAtlas: Two verified relations capture the exact Rayleigh-type 1/R vs R^2 mathematical
+    equivalence: (a) rel_gov2008_incomp_req_same_as_finite_size_approx verifies symbolic same_as
+    equivalence between henle2005/finite_size_req_approx_p3 (R_eq = a*(7.2*gamma/(l_B*lambda_*^2))^(1/3))
+    and gov2008/equilibrium_radius_incompressible_eq9 (R_0,b' = a*(pi*(L_p/a)^4/(alpha'*rho))^(1/3)),
+    joining henle2005's approximate finite-size radius with Gov's Eq. (9) and numerical minimizer
+    into one ModelAtlas family; (b) rel_gov2008_finite_size_req_scales_weak_binding_cbrt verifies
+    their shared +1/3 scaling with inter-filament binding energy (gamma vs eps_b). Three related
+    gov2008 models are intentionally NOT linked: (i) gov2008/binding_energy_eq1 uses continuum
+    surface/bulk ratio 2.0 (E_bind = -pi*eps_b*(1 - 2*a/R) [pN]) vs Henle's hexagonal ratio 1.2
+    (b = 3 - 3.6*a/R [dimensionless]; different dimensions, opposite signs, and distinct R/a
+    log-slopes); (ii) gov2008/equilibrium_radius_bulk_monopole_eq7 contains an unscreened 2D
+    logarithmic ln(R/a) factor producing a Lambert-W radius law with effective exponent
+    (1/3)*W(C)/(1+W(C)) < 1/3, whereas Henle's exterior electrostatic field is screened beyond
+    kappa^-1 so the interior self-energy is purely quadratic (~ R^2); and (iii) Gov's empty-shell
+    model (Eqs. 2-3, pure c_1/R + c_2/R^2 rational radius lam/(1 - E_c*/E_c)) is only qualitatively
+    analogous to Henle's nonlinear DH + Stern + hyperbolic-frustration model frustrated_bundle_p4.
+    (3) Cross-validation: Both henle2005 and gov2008 are purely theoretical papers with 0 origin:
+    measured datums in either record.
+
+- id: q_grason2007_relate_validate_audit
+  kind: unstated_model
+  about:
+    - finite_size_req_approx_p3
+    - finite_size_req_exact_p3
+    - grason2007/columnar_radius_low_sigma
+    - grason2007/solid_radius_shear_regime
+    - grason2007/solid_radius_bending_regime
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for grason2007+henle2005 (grason2007
+    cites Henle & Pincus 2005 as ref-9 on p. 1 and acknowledges M. Henle on p. 4; 0 ModelAtlas
+    relations, 0 cited.yaml links, 0 cross-validations).
+    (1) Citation & cited.yaml: Grason & Bruinsma (2007, p. 1 col 1) cite Henle & Pincus [ref-9]
+    qualitatively as the long-range electrostatic explanation for finite bundle size, borrowing no
+    numerical datum.
+    (2) ModelAtlas & physical contrast: All 35 grason2007 models describe continuum/microscopic
+    chiral-bundle elasticity (Frank moduli, in-plane/out-of-plane shear, cholesteric pitch P,
+    anharmonic torsion Omega_0(R)) and are algebraically disjoint from henle2005's 11 runnable
+    polyelectrolyte cell models. Notably, the two theories predict OPPOSITE-SIGN surface-tension
+    scaling of equilibrium bundle radius: minimizing canonical free energy per filament in
+    henle2005/finite_size_req_approx_p3 yields R_eq = a*(7.2*gamma/(l_B*lambda_*^2))^(1/3)
+    proportional to Sigma_eff^(+1/3) (stronger surface tension / bond strength thickens bundles),
+    whereas minimizing grand-canonical single-bundle free energy Delta_F(R)/L at bulk coexistence
+    mu ~= mu_c in grason2007 yields negative powers of surface tension — R_0 ~ Sigma^(-3) in the
+    columnar phase (columnar_radius_low_sigma), R_0 ~ Sigma^(-1/3) in the solid shear regime
+    (solid_radius_shear_regime), and R_0 ~ Sigma^(-1/5) in the solid bending regime
+    (solid_radius_bending_regime) (higher surface tension thins chiral bundles and suppresses them
+    above Sigma_c).
+    (3) Cross-validation: Both henle2005 and grason2007 are purely theoretical papers containing 0
+    origin: measured datums (grason2007's cited F-actin diameter ~50 nm [ref-12] and pitch ~100 nm
+    [ref-22] are origin: reported literature values).
+
+- id: q_haviv2008_relate_validate_audit
+  kind: unstated_model
+  about:
+    - finite_size_req_approx_p3
+    - finite_size_req_exact_p3
+    - pointlike_bundle_eq5_eq7
+    - haviv2008/table_s1_Db_mean
+    - haviv2008/P_fig2a_measured
+    - haviv2008/size_distribution_eq1
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for haviv2008+henle2005 (haviv2008
+    cites henle2005 as ref-henle2005 on pp. 3 and 7; 0 ModelAtlas relations, 0 cited.yaml links,
+    0 cross-validations).
+    (1) Citation & cited.yaml: Haviv et al. (2008, p. 3 col 2 and p. 7 col 1) cite Henle & Pincus
+    (2005) purely qualitatively as an equilibrium electrostatic mechanism for finite long-filament
+    bundle width, contrasting it with their own kinetic simultaneous nucleation/polymerization/
+    cross-linking system; no numerical datum is shared.
+    (2) ModelAtlas: All 18 haviv2008 models describe kinetic Fokker-Planck steady-state size
+    distributions P(N_b) = R_n*exp(2*(k_on/D)*sqrt(N_b) - (k_off/D)*N_b), peak size (k_on/k_off)^2,
+    Langmuir fascin adsorption, Arrhenius rate barriers, and cylinder area ratios N_b = (D_b/D_f)^2;
+    none shares an algebraic form with henle2005's modified DH + Stern polyelectrolyte cell models.
+    (3) Cross-validation: henle2005 has 0 measured datums, and all 6 measured datums in haviv2008
+    (mean bundle diameter Table S1 vs fascin/actin ratio phi, broad exponential size distribution
+    Fig. 2a/b, and fascin bundling thresholds) were measured on fascin-cross-linked F-actin in
+    polymerization buffer (5 uM actin, 50 mM KCl, 1 mM MgCl_2, 25 degC — where 1 mM Mg^2+ is ~27x
+    below the ~27 mM divalent counterion bundling onset of Tang & Janmey 1996). Thus bundle
+    assembly is driven by specific fascin protein cross-linking during kinetic polymerization, not
+    equilibrium multivalent-counterion condensation, and henle2005's parameters (gamma, lambda_*,
+    phi_max, xi) do not map onto fascin molar ratio phi.
+
+- id: q_tang1996_relate_validate_audit
+  kind: unstated_model
+  about:
+    - asymptotic_charge_p2
+    - pointlike_bundle_eq5_eq7
+    - debye_screening_eq4
+    - ref-4
+    - tang1996/manning_condensation_eq1
+    - tang1996/manning_onset_salt_scaling
+    - tang1996/cohex_onset_prep1_fig5b
+    - tang1996/mn_onset_vs_kcl_fig5b
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit for henle2005+tang1996 (0 ModelAtlas
+    relations, 0 cited.yaml links, 0 cross-validations).
+    (1) Bibliographic clarification & cited.yaml: Although henle2005/ref-4 is a 1996 Tang & Janmey
+    paper cited on p. 1 col 1 for counterion-induced bundling of F-actin, microtubules, fd/M13, and
+    TMV, ref-4 is J. X. Tang, S. Wong, P. T. Tran & P. A. Janmey, Ber. Bunsenges. Phys. Chem. 100,
+    796 (1996) — a distinct publication from the corpus record tang1996 (J. X. Tang & P. A. Janmey,
+    J. Biol. Chem. 271, 8556-8563, 1996). Neither record cites the other directly or borrows
+    numerical datums from the other (both quote DNA's standard 1/lambda_0 = 1.7 A and l_B = 7.1 A
+    independently from Bloomfield 1997 [ref-2] and Manning 1978 [ref-12], respectively).
+    (2) ModelAtlas: Both papers build on Manning counterion condensation (1969/1978), but their
+    models operate on different observables and regimes: tang1996 implements single-filament
+    Manning condensed fraction theta = 1 - 1/(N*zeta) (dimensionless), condensation volume V_P =
+    41.1*(zeta - 1)*b^3 [cm^3/mol], competitive ion-exchange scaling K ~ [KCl]^(-N) and [C]_onset
+    ~ [KCl]^N, and linear Lys_18 binding vs actin concentration, whereas henle2005 models a dense
+    M-rod cylindrical bundle where internal multivalent condensation drives per-rod renormalized
+    charge to lambda_rod ~ (2/(l_B*q*M))*ln(lambda_0/(q*n_q*alpha_b)) ~ 1/R^2 [1/nm] and total
+    bundle charge to lambda_tot ~ 2/(l_B*q*(1+kappa*w))*ln(...) [1/nm]. No algebraic equivalence or
+    shared scaling relation links the existing runnable models without inventing unstated
+    conversions.
+    (3) Cross-validation: henle2005 has 0 measured datums, and all 58 measured datums in tang1996
+    are 90-degree light-scattering curves, polycation bundling onset concentrations (vs KCl or
+    actin concentration), and a relative measurement error. None of henle2005's models outputs
+    light-scattering intensity or critical counterion onset concentration n_q*(n_1). Furthermore,
+    tang1996's key quantitative scaling — Fig. 5b [C]_onset vs [KCl] for Mn^2+ and Co(NH_3)_6^3+ —
+    is governed by competitive monovalent/multivalent counterion exchange, which henle2005
+    explicitly excludes from its model on p. 1 col 2 ("we assume that only multivalent ions can
+    enter inside the bundle (the effects of competitive binding with monovalent ions will be
+    discussed in a future paper [23])").
+  citation:
+    page: 1
+    printed_page: "060801-1"
+    quote: "we assume that only multivalent ions can enter"
+    where: "text, p. 1 col 2"
+

@@ -1,0 +1,662 @@
+# ==========================================================================
+# 1. Exact verification of SI Eq. (5) from WLC SI Eq. (2) + mode SI Eq. (4)
+# ==========================================================================
+- id: rel_wlc_quadrature_eq5
+  kind: same_as
+  a: liu2008/wlc_bending_integral_eq2_on_eq4
+  b: liu2008/filament_bending_energy_eq5
+  mapping:
+    kBT: "kBT"
+    L_p: "L_p"
+    a: "a"
+    L: "L"
+  output_map:
+    E_bend: E_bend
+  regime:
+    kBT: [4.0, 4.3]
+    L_p: [15.0, 200.0]
+    a: [1.0, 50.0]
+    L: [5.0, 30.0]
+  tolerance: 1.0e-4
+  provenance: stated
+  citation:
+    page: 10
+    printed_page: "SI 5"
+    quote: "In this bent configuration the semi-flexible filament bundle, whose combined effective persistence length we denote Lp, has an internal energy"
+    where: "SI Eq. 5"
+  assumptions:
+    - "Small lateral amplitude a/L << 1 so curvature squared is (d^2 r_x / ds^2)^2"
+
+# ==========================================================================
+# 2. Small-amplitude compression Eq. (6) from exact inextensible shortening
+# ==========================================================================
+- id: rel_exact_shortening_approximated_by_eq6
+  kind: approximated_by
+  a: liu2008/compression_energy_exact_shortening
+  b: liu2008/compression_energy_eq6
+  mapping:
+    f_comp: "f_comp"
+    a: "a"
+    L: "L"
+  output_map:
+    Delta_E_comp: Delta_E_comp
+  regime:
+    f_comp: [1.0, 30.0]
+    a: [1.0, 50.0]
+    L: [10.0, 30.0]
+  tolerance: 1.0e-4
+  provenance: stated
+  citation:
+    page: 10
+    printed_page: "SI 5"
+    quote: "For our stability analysis, it is sufficient to consider small amplitudes"
+    where: "SI Eqs. 4, 6"
+  assumptions:
+    - "Small amplitude a/L << 1 (in regime, a/L <= 0.005 so O((a/L)^2) correction < 10^-5)"
+
+# ==========================================================================
+# 3. Case I buckling Eq. (10) identical to classical Euler Eq. (7) with f_comp = f_mem
+# ==========================================================================
+- id: rel_case1_eq10_same_as_eq7
+  kind: same_as
+  a: liu2008/euler_buckling_energy_eq7
+  b: liu2008/membrane_buckling_case1_eq9_eq10
+  mapping:
+    kBT: "kBT"
+    L_p: "L_p"
+    a: "a"
+    L: "L"
+    f_mem: "f_comp"
+  output_map:
+    Delta_E_tot: Delta_E_tot
+  regime:
+    kBT: [4.0, 4.3]
+    L_p: [15.0, 200.0]
+    a: [1.0, 50.0]
+    L: [5.0, 30.0]
+    f_comp: [5.0, 30.0]
+  provenance: stated
+  citation:
+    page: 12
+    printed_page: "SI 7"
+    quote: "The change in total energy thus has a form similar to equation (7)"
+    where: "SI Eq. 10"
+  assumptions:
+    - "Hypothetical Case I where the membrane tube stays straight and shortens by the filament's end-to-end shortening"
+
+# ==========================================================================
+# 4. Case II lower bound Eq. (11) equals filament bending energy Eq. (5)
+# ==========================================================================
+- id: rel_case2_eq11_same_as_eq5
+  kind: same_as
+  a: liu2008/filament_bending_energy_eq5
+  b: liu2008/membrane_buckling_case2_eq11
+  mapping:
+    kBT: "kBT"
+    L_p: "L_p"
+    a: "a"
+    L: "L"
+  output_map:
+    Delta_E_tot: E_bend
+  regime:
+    kBT: [4.0, 4.3]
+    L_p: [15.0, 200.0]
+    a: [1.0, 50.0]
+    L: [5.0, 30.0]
+  provenance: stated
+  citation:
+    page: 12
+    printed_page: "SI 7"
+    quote: "Without an energetically advantageous membrane response, filopodium compression is expressly unfavorable"
+    where: "SI Eq. 11"
+  assumptions:
+    - "Conformal membrane sheath does not shorten (Delta_E_mem > 0), so Delta_E_tot > E_bend = (pi^2 * a^2 / (16 * L)) * f_buckle"
+
+# ==========================================================================
+# 5. Constant-curvature arc at quarter-circle limit reduces to SI p. 3 bound 2L/pi
+# ==========================================================================
+- id: rel_arc_quarter_circle_xmax
+  kind: same_as
+  a: liu2008/filament_geometric_merge_bounds
+  b: liu2008/filament_wlc_arc_geometry
+  mapping:
+    theta: "pi/2"
+    L: "L"
+    D: "4*L/pi"
+    L_0: "100"
+    L_p: "15"
+    kBT: "4.11"
+  output_map:
+    x: x_max
+  regime:
+    L: [120.0, 300.0]
+  provenance: stated
+  citation:
+    page: 8
+    printed_page: "SI 3"
+    quote: "corresponding to a filament deformed into the shape of a quarter circle"
+    where: text
+  assumptions:
+    - "Filament anchored normal to membrane base bends into a circular arc of total angle theta = pi/2"
+
+# ==========================================================================
+# 6. Deflection-inverted WLC arc agrees with angle-parameterized WLC arc
+# ==========================================================================
+- id: rel_arc_by_deflection_same_as_geometry
+  kind: same_as
+  a: liu2008/filament_wlc_arc_geometry
+  b: liu2008/filament_wlc_arc_by_deflection
+  mapping:
+    x: "L * (1 - cos(theta)) / theta"
+    L: "L"
+    D: "D"
+    L_0: "L_0"
+    L_p: "L_p"
+    kBT: "kBT"
+  output_map:
+    E_fil: E_fil
+  regime:
+    theta: [0.05, 1.5]
+    L: [120.0, 300.0]
+    D: [20.0, 100.0]
+    L_0: [80.0, 120.0]
+    L_p: [10.0, 20.0]
+    kBT: [4.0, 4.3]
+  tolerance: 1.0e-8
+  provenance: stated
+  citation:
+    page: 7
+    printed_page: "SI 2"
+    quote: "The geometric parameters shown in Figure s1 are related by d = D"
+    where: "SI Eqs. 2-3 & Fig. s1"
+  assumptions:
+    - "Unique inversion of x = L*(1 - cos(theta))/theta for theta in (0, pi/2]"
+
+# ==========================================================================
+# 7. Equilibrium tube force equals SI Eq. (8) evaluated at R = R_eq
+# ==========================================================================
+- id: rel_eq8_at_equilibrium_radius
+  kind: same_as
+  a: liu2008/membrane_tube_equilibrium
+  b: liu2008/membrane_tube_force_energy_eq8
+  mapping:
+    kappa_kBT: "kappa_kBT"
+    sigma_kBT: "sigma_kBT"
+    kBT: "kBT"
+    R: "sqrt(kappa_kBT / (2 * sigma_kBT))"
+    L_mem: "1"
+  output_map:
+    f_mem: f_mem_eq
+  regime:
+    kappa_kBT: [10.0, 30.0]
+    sigma_kBT: [0.002, 0.03]
+    kBT: [4.0, 4.3]
+  provenance: stated
+  citation:
+    page: 11
+    printed_page: "SI 6"
+    quote: "where fmem = πκ/R + 2πRσ."
+    where: "SI Eq. 8"
+  assumptions:
+    - "Cylindrical tube adopts its equilibrium radius R_eq = sqrt(kappa / (2 * sigma))"
+
+# ==========================================================================
+# 8. ODE integration reproduces closed-form SI Eq. (12)
+# ==========================================================================
+- id: rel_growth_ode_same_as_eq12
+  kind: same_as
+  a: liu2008/filopodium_growth_ode_check
+  b: liu2008/filopodium_growth_eq12
+  mapping:
+    L_mem_0: "L_mem_0"
+    int_c0: "c_0 * dt_total"
+    f_mem: "f_mem"
+    delta: "delta"
+    N: "N"
+    kBT: "kBT"
+  output_map:
+    L_mem: L_mem
+  regime:
+    L_mem_0: [0.5, 5.0]
+    c_0: [0.1, 1.0]
+    dt_total: [10.0, 300.0]
+    f_mem: [10.0, 30.0]
+    delta: [2.5, 3.0]
+    N: [5.0, 15.0]
+    kBT: [4.0, 4.3]
+  tolerance: 1.0e-5
+  provenance: stated
+  citation:
+    page: 13
+    printed_page: "SI 8"
+    quote: "yielding the following analytic expression for filopodium length, Lmem(t), as a function of time"
+    where: "SI Eq. 12"
+  assumptions:
+    - "Constant c_0 over dt_total so integral c_0 dt' = c_0 * dt_total"
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with gov2018
+# (gov2018 cites liu2008 qualitatively as ref 19 on p. 2; relations entered here
+# as provenance: proposed per Wave 6 liu2008 record isolation)
+# ==========================================================================
+
+- id: rel_liu2008_tube_eq_same_as_gov2018_tube_radius
+  kind: same_as
+  a: liu2008/membrane_tube_equilibrium
+  b: gov2018/tube_equilibrium_radius
+  mapping:
+    kappa: "kappa_kBT * kBT / 1000"
+    sigma: "sigma_kBT * kBT * 1000"
+  output_map:
+    R_tube: R_eq
+  regime:
+    kappa_kBT: [1.0, 100.0]
+    sigma_kBT: [0.001, 0.05]
+    kBT: [4.0, 4.3]
+  provenance: proposed
+  reason: >
+    Both Liu et al. (2008, SI Eq. 8 minimization, citing Derenyi, Julicher & Prost 2002 [ref-17/s1])
+    and Gov (2018, Section 4 p. 6 col. 1, citing Shlomovitz & Gov 2009 [ref-88]; Gov also cites
+    Liu et al. 2008 as ref 19 on p. 2) obtain the identical equilibrium bare-Helfrich cylindrical
+    membrane tube radius R_eq = R_tube = sqrt(kappa / (2*sigma)) from the balance of membrane
+    bending rigidity kappa and surface tension sigma (with kappa [pN*um] = kappa_kBT * kBT / 1000
+    and sigma [pN/um] = sigma_kBT * kBT * 1000).
+  assumptions:
+    - "Bare fluid lipid bilayer tube with zero spontaneous curvature (no curved membrane components, n = 0)."
+    - "Unit conversions: kappa [pN*um] = kappa_kBT * kBT [pN*nm] / 1000; sigma [pN/um] = sigma_kBT [1/nm^2] * kBT [pN*nm] * 1000."
+
+- id: rel_gov2018_eq2_1_bare_scales_liu2008_eq8
+  kind: scales_as
+  a: gov2018/free_energy_density_eq2_1
+  b: liu2008/membrane_tube_force_energy_eq8
+  mapping:
+    kappa_kBT: "kappa / kBT"
+    sigma_kBT: "sigma / (kBT * 1e6)"
+    kBT: "kBT * 1000"
+    R: "1000 / H"
+    L_mem: "H / (2 * pi)"
+  output_map:
+    E_mem: f
+  regime:
+    kappa: [0.04, 0.2]
+    H: [5.0, 50.0]
+    n: [1.0e-10, 1.0e-9]
+    H0: [1.0, 20.0]
+    sigma: [10.0, 100.0]
+    kBT: [0.004, 0.0043]
+    ns: [100.0, 1000.0]
+    J: [1.0e-10, 1.0e-9]
+    grad_n: [1.0e-10, 1.0e-9]
+  provenance: proposed
+  reason: >
+    In the bare-membrane limit (vanishing curved-membrane-component coverage n -> 0, grad_n -> 0,
+    J -> 0), Gov (2018) Eq. (2.1)'s Helfrich free-energy density f = (1/2)*kappa*H^2 + sigma
+    (where Gov uses total curvature H = c_1 + c_2 = 1/R for a cylinder) is identical to the
+    Helfrich integrand (2*kappa*H_mean^2 + sigma with mean curvature H_mean = 1/(2*R)) integrated
+    over a cylindrical tube in Liu et al. (2008) SI Eqs. (1) and (8), E_mem = 2*pi*R*L_mem *
+    (kappa/(2*R^2) + sigma). Evaluating E_mem on a unit-area cylindrical patch (A = 2*pi*R*L_mem
+    = 1 um^2, i.e., L_mem = H/(2*pi) um at R = 1000/H nm) matches all nonlinear log-slopes of
+    gov2018/free_energy_density_eq2_1 across the bending-to-tension crossover in kappa, sigma, H,
+    and kBT.
+  assumptions:
+    - "Bare membrane limit n in [1e-10, 1e-9], grad_n in [1e-10, 1e-9], J in [1e-10, 1e-9] eliminates CMC spontaneous curvature, entropy, and aggregation terms (relative contribution < 1e-7)."
+    - "Cylindrical geometry identifies Gov's total curvature H = c_1 + c_2 = 1/R with twice Liu's mean curvature H_mean = 1/(2*R), and fixes lateral cylinder area A = 2*pi*R*L_mem = 1 um^2 so E_mem [pN*nm] = 1000 * f_bare [pN/um * um^2]."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with graham2023 (proposed; uncited pair)
+# ==========================================================================
+
+- id: rel_liu2008_wlc_arc_same_as_graham2023_ring_bending
+  kind: same_as
+  a: liu2008/filament_wlc_arc_geometry
+  b: graham2023/ring_confinement_bending_energy
+  mapping:
+    k_b: "kBT * L_p * 1000"
+    L: "L / 1000"
+    R: "(L / theta) / 1000"
+  output_map:
+    E_bend_0: E_fil
+  regime:
+    theta: [0.1, 1.57]
+    L: [120.0, 2000.0]
+    D: [20.0, 100.0]
+    L_0: [80.0, 120.0]
+    L_p: [10.0, 20.0]
+    kBT: [4.0, 4.3]
+  provenance: proposed
+  reason: >
+    Both Liu et al. (2008, SI Eq. 2 & Fig. s1, constant-curvature circular-arc WLC bending energy
+    E_fil = k_B*T * (L_p / (2*L)) * theta^2 for an arc of contour length L and bend angle
+    theta = L / R_c) and Graham et al. (2023, Main Eq. 1 / SI Eq. S21 zero-fluctuation circular
+    ring confinement bending energy E_bend_0 = (k_b / 2) * L / R^2) implement the exact same
+    constant-curvature worm-like chain circular-arc bending energy with flexural rigidity
+    k_b = k_B*T * L_p and radius of curvature R = L / theta.
+  assumptions:
+    - "Uniform constant curvature kappa_c = 1/R = theta/L along filament contour length L."
+    - "Flexural rigidity k_b [pN*nm^2] = kBT [pN*nm] * L_p [um] * 1000 [nm/um]."
+
+- id: rel_graham2023_ring_eq1_reduces_to_liu2008_wlc_arc
+  kind: reduces_to
+  a: graham2023/ring_bending_energy_eq1
+  b: liu2008/filament_wlc_arc_geometry
+  mapping:
+    theta: "L / R"
+    L: "L * 1000"
+    D: "100.0"
+    L_0: "100.0"
+    L_p: "k_b / 4110"
+    kBT: "4.11"
+  output_map:
+    E_fil: E_bend
+  regime:
+    k_b: [40000.0, 500000.0]
+    L: [3.0, 25.0]
+    R: [0.5, 4.0]
+    m: [1.0, 5.0]
+    u_m: [0.005, 0.1]
+  limit:
+    u_m: "0"
+  provenance: proposed
+  reason: >
+    In the zero-radial-fluctuation limit (u_m -> 0), Graham et al.'s (2023) printed fluctuating
+    circular actin-ring WLC bending energy Eq. (1) reduces identically to Liu et al.'s (2008)
+    constant-curvature circular-arc WLC bending energy E_fil = k_B*T * (L_p/(2*L)) * theta^2
+    with total bend angle theta = L/R and k_B*T * L_p = k_b (where kBT = 4.11 pN*nm cancels
+    identically between L_p = k_b/(1000*kBT) and kBT).
+  assumptions:
+    - "Zero radial thermal fluctuation amplitude u_m -> 0 leaves only the uniform-curvature circular arc baseline (k_b/2)*(L/R^2)."
+    - "Anchor geometry parameters D and L_0 in liu2008/filament_wlc_arc_geometry do not enter E_fil."
+
+- id: rel_graham2023_ring_eq1_corr_reduces_to_liu2008_wlc_arc
+  kind: reduces_to
+  a: graham2023/ring_bending_energy_eq1_corrected
+  b: liu2008/filament_wlc_arc_geometry
+  mapping:
+    theta: "L / R"
+    L: "L * 1000"
+    D: "100.0"
+    L_0: "100.0"
+    L_p: "k_b / 4110"
+    kBT: "4.11"
+  output_map:
+    E_fil: E_bend
+  regime:
+    k_b: [40000.0, 500000.0]
+    L: [3.0, 25.0]
+    R: [0.5, 4.0]
+    m: [1.0, 5.0]
+    u_m: [0.005, 0.1]
+  limit:
+    u_m: "0"
+  provenance: proposed
+  reason: >
+    Confirms that the algebraically corrected variant of Graham et al.'s (2023) Eq. (1)
+    (fixing the O(u_m^2) fluctuation coefficient from (2 + m^4) to (1/2)*(1 + 6*m^2 + m^4))
+    reduces identically in the u_m -> 0 limit to Liu et al.'s (2008) constant-curvature WLC
+    arc bending energy E_fil.
+  assumptions:
+    - "Zero radial fluctuation amplitude u_m -> 0 isolates the shared constant-curvature WLC baseline."
+
+- id: rel_graham2023_bathe_eqS1_weak_scales_liu2008_uncrosslinked
+  kind: scales_as
+  a: graham2023/bundle_bending_rigidity_bathe_eqS1
+  b: liu2008/uncrosslinked_bundle_persistence_length
+  mapping:
+    N: "N"
+    L_p1: "k_b_fil / 4110"
+  output_map:
+    L_p: k_b
+  regime:
+    k_b_fil: [40000.0, 80000.0]
+    N: [2.0, 30.0]
+    chi: [0.5, 2.0]
+    c_qj: [0.5, 2.0]
+    alpha: [1.0e-6, 1.0e-5]
+  provenance: proposed
+  reason: >
+    Both Graham et al. (2023, SI Section 2.1, Eq. S1 from Bathe et al. 2008 in the weak-coupling
+    fluid-VASP limit alpha << 1) and Liu et al. (2008, SI Section C, uncrosslinked parallel
+    filament bundle inside a lipid membrane tube) model an actin bundle without rigid shear
+    crosslinking as N mechanically decoupled filaments whose bending stiffness scales linearly
+    with filament count N and single-filament stiffness k_b_fil = k_B*T * L_p1 (log-slopes +1
+    in N and +1 in k_b_fil, in contrast to the N^2 strong-coupling limit alpha >> 1).
+  assumptions:
+    - "Weak interfilament shear coupling alpha in [1e-6, 1e-5] recovers the uncrosslinked linear bundle regime k_b = N * k_b_fil = N * k_B*T * L_p1."
+
+- id: rel_liu2008_wlc_arc_scales_graham2023_discrete_kbend
+  kind: scales_as
+  a: liu2008/filament_wlc_arc_geometry
+  b: graham2023/discrete_bending_constant
+  mapping:
+    N_fil: "1"
+    L_p: "L_p"
+    kBT: "kBT"
+    L_cyl: "L"
+  output_map:
+    k_bend: E_fil
+  regime:
+    theta: [0.1, 1.5]
+    L: [50.0, 500.0]
+    D: [20.0, 100.0]
+    L_0: [80.0, 120.0]
+    L_p: [10.0, 20.0]
+    kBT: [4.0, 4.3]
+  provenance: proposed
+  reason: >
+    Liu et al.'s (2008) continuum constant-curvature WLC bending energy E_fil = (theta^2 / 2) *
+    (k_B*T * L_p / L) and Graham et al.'s (2023, SI Eq. S2 & Table 1) discrete WLC segment bending
+    stiffness constant k_bend = N_fil * k_B*T * L_p / L_cyl share the identical single-filament
+    (N_fil = 1, L_cyl = L) worm-like chain energy scale k_B*T * L_p / L (matching log-slopes
+    +1 in kBT, +1 in L_p, and -1 in L, differing only by the dimensionless bend-angle factor
+    theta^2 / 2).
+  assumptions:
+    - "Single filament (N_fil = 1) with discrete segment length L_cyl identified with filament contour length L."
+
+- id: rel_liu2008_eq12_dim_reduces_to_graham2023_linear_growth
+  kind: reduces_to
+  a: liu2008/filopodium_growth_eq12_dimensional
+  b: graham2023/linear_bundle_elongation
+  mapping:
+    v: "v_0"
+    t: "int_c0"
+  output_map:
+    y: L_mem
+  regime:
+    L_mem_0: [0.5, 3.0]
+    int_c0: [10.0, 100.0]
+    f_mem: [5.0, 25.0]
+    delta: [2.7, 2.75]
+    N: [5.0, 20.0]
+    kBT: [4.0, 4.3]
+    L_star: [1.0, 10.0]
+    v_0: [0.01, 0.3]
+  limit:
+    f_mem: "0"
+    L_star: "oo"
+    L_mem_0: "0"
+  provenance: proposed
+  reason: >
+    In the zero-membrane-load (f_mem -> 0), fast-diffusion / reaction-limited (L_star -> oo), and
+    negligible-initial-length (L_mem_0 -> 0) limit with an undepleted monomer pool (c_0 = 1 so
+    int_c0 = t), Liu et al.'s (2008) dimensionally restored Mogilner-Rubinstein filopodium
+    elongation model (SI Eq. 12) reduces identically to Graham et al.'s (2023, Fig. 5h)
+    constant-velocity linear actin bundle elongation law y(t) = v * t with v = v_0.
+  assumptions:
+    - "Joint zero-load (f_mem -> 0), fast-diffusion (L_star -> oo), zero-seed (L_mem_0 -> 0) limit with undepleted monomer concentration c_0(t) = 1 (so int_c0 equals elapsed time t)."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with graham2024
+# (graham2024 cites liu2008 qualitatively as ref-52 on p. 10; relations entered
+# here as provenance: proposed per Wave 6 liu2008 record isolation)
+# ==========================================================================
+
+- id: rel_liu2008_eq12_dim_reduces_to_graham2024_vca_ode
+  kind: reduces_to
+  a: liu2008/filopodium_growth_eq12_dimensional
+  b: graham2024/cytosim_vca_ode_filament_length
+  mapping:
+    k_grow: "v_0"
+    N_fil: "N"
+    L_0: "L_mem_0"
+    L_total: "2 * N * (L_mem_0 + v_0 * int_c0)"
+    t_end: "-(2 * (L_mem_0 + v_0 * int_c0) / v_0) * log(1 - v_0 * int_c0 / (L_mem_0 + 2 * v_0 * int_c0))"
+    k_bind: "0"
+    C_vca: "0"
+    factor_Gmax: "1"
+    R_drop: "1"
+    l_mono: "delta"
+  output_map:
+    L_fil: L_mem
+  regime:
+    L_mem_0: [0.5, 3.0]
+    int_c0: [5.0, 50.0]
+    f_mem: [5.0, 25.0]
+    delta: [2.7, 2.75]
+    N: [5.0, 20.0]
+    kBT: [4.0, 4.3]
+    L_star: [1.0, 10.0]
+    v_0: [0.05, 0.3]
+  limit:
+    f_mem: "0"
+    L_star: "oo"
+  tolerance: 1.0e-5
+  provenance: proposed
+  reason: >
+    Both Liu et al. (2008, SI Eq. 12, dimensionally restored Mogilner-Rubinstein filopodium
+    elongation) and Graham et al. (2024, SI Eq. 2 / cytosim_vca_ode_filament_length without VCA
+    competitor, C_vca = 0) govern barbed-end actin elongation slowed by global free-monomer
+    depletion c_0(t) = [G-actin](t)/[T-actin], dL/dt = v_0 * c_0(t) * (load & diffusion factors).
+    In the zero-membrane-load (f_mem -> 0) and well-mixed fast-diffusion (L_star -> oo) limit,
+    liu2008/filopodium_growth_eq12_dimensional reduces identically to L_0 + v_0 * int_c0, matching
+    graham2024/cytosim_vca_ode_filament_length (at C_vca = 0) evaluated over the exact elapsed time
+    t_end at which Graham's self-consistent monomer-depletion ODE accumulates the identical
+    cumulative free-monomer exposure integral_0^{t_end} (1 - N*L(t')/L_total) dt' = int_c0.
+  assumptions:
+    - "Zero membrane resistance force (f_mem -> 0) and fast monomer diffusion (L_star -> oo) remove Liu's Brownian-ratchet load and 1D tube diffusion impedance."
+    - "Zero VCA sequestration (C_vca = 0, k_bind = 0) in Graham's CytoSim ODE; finite polymer pool L_total = 2*N*(L_mem_0 + v_0*int_c0) yields exact analytical depletion time t_end matching int_c0."
+
+- id: rel_liu2008_eq13_same_as_graham2024_eq1
+  kind: same_as
+  a: liu2008/free_actin_concentration_eq13
+  b: graham2024/actin_conservation_eq1
+  mapping:
+    T_actin: "I_inf"
+    F_actin: "I_t"
+  output_map:
+    free_fraction: c_0
+  regime:
+    I_t: [0.05, 0.9]
+    I_inf: [1.0, 2.0]
+  provenance: proposed
+  reason: >
+    Liu et al. (2008, SI Eq. 13: c_0(t) = 1 - I(t)/I(infinity), where integrated network
+    fluorescence I(t) is proportional to polymerized F-actin and I(infinity) to total actin)
+    and Graham et al. (2024, SI Eq. 1: free_fraction = [G-actin]/[T-actin] = 1 - [F-actin]/[T-actin])
+    express the exact same normalized free-monomer conservation law (flagged too_plain by ModelAtlas
+    because 1 - x/y has 2 operations, so it does not inflate model families).
+  assumptions:
+    - "Linear proportionality between background/photobleaching-corrected F-actin fluorescence I(t) and polymerized concentration [F-actin](t), with complete polymerization at t -> infinity (I_inf <-> T_actin)."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with weirich2017 (proposed; uncited pair)
+# Note: weirich2017 ref-9 is Gardel, Kasza, Brangwynne, Liu JY & Weitz (2008),
+# not Allen P. Liu et al. (2008).
+# ==========================================================================
+
+- id: rel_liu2008_eq8_reduces_to_weirich2017_capillary_energy
+  kind: reduces_to
+  a: liu2008/membrane_tube_force_energy_eq8
+  b: weirich2017/capillary_free_energy_integral
+  mapping:
+    R_0: "R / 1000"
+    u: "0"
+    lam: "L_mem"
+    gamma_I: "sigma_kBT * kBT * 1e6"
+    omega: "2.0"
+  output_map:
+    F: E_mem
+  regime:
+    kappa_kBT: [10.0, 30.0]
+    sigma_kBT: [0.002, 0.03]
+    kBT: [4.0, 4.3]
+    R: [20.0, 200.0]
+    L_mem: [2.0, 20.0]
+  limit:
+    kappa_kBT: "0"
+  provenance: proposed
+  reason: >
+    In the zero-bending-rigidity (pure surface-tension) limit kappa -> 0, Liu et al.'s (2008,
+    SI Eq. 8) cylindrical membrane-tube elastic energy E_mem = (pi*kappa/R + 2*pi*R*sigma)*L_mem
+    reduces identically to the isotropic interfacial free energy F = 2*pi*R_0*lambda*gamma_I of
+    Weirich et al.'s (2017, SI p. 9) unperturbed (u = 0) straight nematic actin liquid cylinder
+    (where the Rapini-Papoular anchoring area A_omega vanishes identically because the axial
+    director is strictly tangent to the lateral cylinder wall; unit conversions R_0 = R/1000 um
+    and gamma_I [nN/m] = 10^6 * sigma [pN/nm] = 10^6 * sigma_kBT * kBT).
+  assumptions:
+    - "Zero bilayer bending rigidity (kappa -> 0) transitions from a bending-elastic lipid membrane tube to a pure interfacial-tension fluid cylinder."
+    - "Unperturbed uniform cylinder (u = 0) in Weirich SI p. 9 makes A_omega = 0 identically for arbitrary anchoring strength omega."
+
+- id: rel_liu2008_eq8_reduces_to_weirich2017_capillary_force
+  kind: reduces_to
+  a: liu2008/membrane_tube_force_energy_eq8
+  b: weirich2017/capillary_free_energy_per_length
+  mapping:
+    R_0: "R / 1000"
+    u: "0"
+    lam: "L_mem"
+    gamma_I: "sigma_kBT * kBT * 1e6"
+    omega: "2.0"
+  output_map:
+    F_over_lam: f_mem
+  regime:
+    kappa_kBT: [10.0, 30.0]
+    sigma_kBT: [0.002, 0.03]
+    kBT: [4.0, 4.3]
+    R: [20.0, 200.0]
+    L_mem: [2.0, 20.0]
+  limit:
+    kappa_kBT: "0"
+  provenance: proposed
+  reason: >
+    In the zero-bending-rigidity limit kappa -> 0, Liu et al.'s (2008, SI Eq. 8) axial membrane-tube
+    resistance force f_mem = pi*kappa/R + 2*pi*R*sigma [pN] reduces identically to Weirich et al.'s
+    (2017, SI p. 9) unperturbed straight nematic cylinder interfacial free energy per unit length
+    F/lambda = 2*pi*R_0*gamma_I [pN], connecting Liu's membrane-sheathed bundle tube directly to the
+    same cylindrical surface-tension limit shared by Weirich et al. (2017) and Grason & Bruinsma
+    (2007) (weirich2017/rel_grason2007_eq6_reduces_to_weirich_cylinder_surface).
+  assumptions:
+    - "Zero bending rigidity (kappa -> 0) and straight cylinder (u = 0) with gamma_I [nN/m] = 10^6 * sigma_kBT * kBT."
+
+- id: rel_weirich2017_capillary_reduces_to_liu2008_eq8_tension
+  kind: reduces_to
+  a: weirich2017/capillary_free_energy_integral
+  b: liu2008/membrane_tube_force_energy_eq8
+  mapping:
+    kappa_kBT: "0"
+    sigma_kBT: "gamma_I / 4.11e6"
+    kBT: "4.11"
+    R: "R_0 * 1000"
+    L_mem: "lam"
+  output_map:
+    E_mem: F
+  regime:
+    R_0: [0.05, 0.5]
+    u: [0.001, 0.01]
+    lam: [2.0, 10.0]
+    gamma_I: [100.0, 1000.0]
+    omega: [0.5, 5.0]
+  limit:
+    u: "0"
+  provenance: proposed
+  reason: >
+    Converse limit across Weirich et al.'s (2017) experimental liquid-bundle regime (R_0 in
+    50-500 nm, lam in 2-10 um, gamma_I in 100-1000 nN/m, omega in 0.5-5): as the Rayleigh-Plateau
+    sinusoidal perturbation amplitude u -> 0, the Rapini-Papoular anchoring integral A_omega vanishes
+    as O(u^2) for all anchoring strengths omega, and Weirich's exact capillary free energy F reduces
+    identically to the pure-surface-tension (kappa = 0) limit of Liu et al.'s (2008) cylindrical
+    tube energy SI Eq. (8), E_mem = 2*pi*R*L_mem*sigma (where kBT = 4.11 pN*nm cancels identically
+    in sigma = sigma_kBT * kBT = gamma_I * 10^-6 pN/nm).
+  assumptions:
+    - "Vanishing Rayleigh-Plateau undulation amplitude u -> 0 annihilates anisotropic anchoring A_omega."
+    - "Liu SI Eq. (8) evaluated at zero membrane bending rigidity kappa_kBT = 0."
+

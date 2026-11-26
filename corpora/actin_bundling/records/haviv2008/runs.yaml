@@ -1,0 +1,424 @@
+# ==========================================================================
+# 1. Cylindrical cross-section geometry (p. 448 col 2, Table S1)
+# ==========================================================================
+- id: run_single_filament_cylinder
+  model: bundle_filament_number_cylinder
+  inputs:
+    D_b: D_b_single_filament_added
+    D_f: effective_filament_diameter_Df
+  outputs:
+    A_b: A_b_single_filament
+    A_f: A_f_single_filament
+    N_b: N_b_single_filament_pred
+  note: "Checks N_b = A_b / A_f = (D_b / D_f)^2 for a single unbundled filament (D_b = D_f = 9 nm) against Table S1 bottom row N_b = 1."
+
+- id: run_naive_Nb_from_table_s1_Db
+  model: mean_diameter_to_naive_filament_number
+  inputs:
+    D_b_mean: table_s1_Db_mean
+    D_f: effective_filament_diameter_Df
+  outputs:
+    N_b_mean: N_b_naive_from_Db_mean_pred
+  note: "Naive plug-in (D_{b,mean} / D_f)^2 across all 5 compact-bundle ratios of Table S1, quantifying the Jensen's-inequality deficit relative to N_{b,mean} = <D_b^2> / D_f^2."
+
+# ==========================================================================
+# 2. Eq. (1) steady-state distribution, peak location, and Table 1 / S1 checks
+# ==========================================================================
+- id: run_kon_over_D_phi3
+  model: on_rate_from_double
+  inputs:
+    two_kon_over_D: table1_phi3_two_kon_over_D
+  outputs:
+    kon_over_D: kon_over_D_phi3_derived
+
+- id: run_eq1_peak_norm_phi3
+  model: eq1_peak_normalization
+  inputs:
+    f: table1_phi3_f
+    kon_over_D: kon_over_D_phi3_derived
+    koff_over_D: table1_phi3_koff_over_D
+  outputs:
+    R_n: R_n_peak_norm_phi3
+
+- id: run_eq1_phi3_eval
+  model: size_distribution_eq1
+  inputs:
+    R_n: R_n_peak_norm_phi3
+    kon_over_D: kon_over_D_phi3_derived
+    koff_over_D: table1_phi3_koff_over_D
+    N_b: N_b_eval_phi3_added
+  outputs:
+    P: P_eq1_phi3_eval
+  note: "Evaluates peak-normalized Eq. (1) directly at phi = 3/1 (Fig. 2a-b) and N_b = 30.2 (N_peak)."
+
+- id: run_peak_size_phi3_formula
+  model: peak_bundle_size_eq1
+  inputs:
+    kon_over_D: kon_over_D_phi3_derived
+    koff_over_D: table1_phi3_koff_over_D
+  outputs:
+    N_peak: N_peak_phi3_formula_pred
+  note: "Evaluates printed N_peak = (k_on / k_off)^2 on Table 1's featured phi = 3/1 row."
+
+- id: run_peak_size_phi3_numerical_max
+  model: peak_bundle_size_from_eq1_max
+  inputs:
+    kon_over_D: kon_over_D_phi3_derived
+    koff_over_D: table1_phi3_koff_over_D
+  outputs:
+    N_peak: N_peak_phi3_num_max_pred
+  note: "Numerically maximizes Eq. (1) over N_b > 0 at phi = 3/1 to verify N_peak = (k_on / k_off)^2."
+
+- id: run_peak_size_table1_all
+  model: peak_bundle_size_table_eval
+  inputs:
+    two_kon_over_D: table1_two_kon_over_D
+    koff_over_D: table1_koff_over_D
+  outputs:
+    N_peak: N_peak_table1_pred
+  note: "Evaluates printed N_peak = ((2*k_on/D) / (2*k_off/D))^2 across all 5 fascin/actin ratios in Table 1."
+
+- id: run_eq1_moments_vs_table_s1
+  model: eq1_distribution_moments_table
+  inputs:
+    two_kon_over_D: table1_two_kon_over_D
+    koff_over_D: table1_koff_over_D
+    D_f: effective_filament_diameter_Df
+    N_min: N_min_moments_added
+  outputs:
+    N_b_mean: eq1_Nb_mean_pred
+    D_b_mean: eq1_Db_mean_pred
+  note: "Computes exact analytical means <N_b> and <D_b> = D_f*<sqrt(N_b)> of Eq. (1) from Table 1 parameters across all 5 ratios for consistency comparison with Table S1."
+
+# ==========================================================================
+# 3. Kinetic rate & peak-size scaling models vs phi (pp. 452-453, Fig. 2c-d)
+# ==========================================================================
+- id: run_off_rate_arrhenius_sweep
+  model: off_rate_arrhenius_scaling
+  inputs:
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: table1_koff_over_D
+  outputs:
+    koff_over_D: koff_arrhenius_shape_pred
+  note: "Sweeps k_off/D propto exp(-alpha*phi*eps/k_B T) at printed alpha ~= 0.032, eps ~= 10 k_B T over all 5 Table 1 ratios (Fig. 2c black solid line)."
+
+- id: run_pfa_at_compact_threshold
+  model: fascin_adsorption_probability
+  inputs:
+    phi: phi_compact_bundle_threshold
+    beta: langmuir_beta_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  outputs:
+    p_fa: pfa_at_phi_0p2_pred
+  note: "Evaluates Langmuir attachment probability p_fa at the compact-bundle onset phi = 1/5 = 0.2."
+
+- id: run_naf_at_compact_threshold
+  model: fascin_attached_actin_concentration
+  inputs:
+    n_a: actin_conc_na
+    p_fa: pfa_at_phi_0p2_pred
+  outputs:
+    n_af: naf_at_phi_0p2_pred
+  note: "Evaluates fascin-attached actin concentration n_af = n_a * p_fa at phi = 1/5 = 0.2."
+
+- id: run_pfa_sweep_table1
+  model: fascin_adsorption_probability
+  inputs:
+    beta: langmuir_beta_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: table1_two_kon_over_D
+  outputs:
+    p_fa: pfa_table1_pred
+  note: "Sweeps p_fa(phi) across all 5 compact-bundle ratios of Table 1."
+
+- id: run_on_rate_constant_sweep
+  model: on_rate_constant_scaling
+  inputs:
+    n_a: actin_conc_na
+  sweep:
+    phi: table1_two_kon_over_D
+  outputs:
+    two_kon_over_D: two_kon_constant_shape_pred
+  note: "Sweeps constant on-rate k_on propto n_a (Fig. 2c red solid line) across Table 1 ratios."
+
+- id: run_on_rate_adsorption_sweep
+  model: on_rate_adsorption_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: table1_two_kon_over_D
+  outputs:
+    two_kon_over_D: two_kon_adsorption_shape_pred
+  note: "Sweeps Langmuir adsorption on-rate k_on propto n_af (Fig. 2c red dashed line) across Table 1 ratios."
+
+- id: run_on_rate_coat_hindered_sweep
+  model: on_rate_coat_hindered_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: table1_two_kon_over_D
+  outputs:
+    two_kon_over_D: two_kon_coat_hindered_shape_pred
+  note: "Sweeps fascin-coat hindered on-rate k_on propto n_af * k_off (Fig. 2c red dotted line) across Table 1 ratios."
+
+- id: run_peak_size_constant_on_sweep
+  model: peak_size_constant_on_scaling
+  inputs:
+    n_a: actin_conc_na
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: table1_N_peak
+  outputs:
+    N_peak: N_peak_constant_on_shape_pred
+  note: "Sweeps N_peak propto exp(2*alpha*phi*eps/k_B T) (Fig. 2d solid line) across Table 1 ratios."
+
+- id: run_peak_size_adsorption_on_sweep
+  model: peak_size_adsorption_on_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: table1_N_peak
+  outputs:
+    N_peak: N_peak_adsorption_on_shape_pred
+  note: "Sweeps N_peak propto p_fa^2 * exp(2*alpha*phi*eps/k_B T) (Fig. 2d dashed line) across Table 1 ratios."
+
+- id: run_peak_size_coat_hindered_sweep
+  model: peak_size_coat_hindered_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: table1_N_peak
+  outputs:
+    N_peak: N_peak_coat_hindered_shape_pred
+  note: "Sweeps N_peak propto n_af^2 (Fig. 2d dotted line, misreferenced as Fig. 3d on p. 453) across Table 1 ratios."
+
+# ==========================================================================
+# 4. Sweep runs over all 14 calibrated Fig. 2a-d readings
+# ==========================================================================
+- id: run_eq1_fig2a_fit
+  model: size_distribution_eq1
+  inputs:
+    R_n: R_n_peak_norm_phi3
+    kon_over_D: kon_over_D_phi3_derived
+    koff_over_D: table1_phi3_koff_over_D
+  sweep:
+    N_b: P_fig2a_eq1_fit
+  outputs:
+    P: P_eq1_fig2a_fit_pred
+  note: "Sweeps peak-normalized Eq. (1) at Table 1 phi = 3/1 parameters over the 13 digitized N_b positions of Fig. 2(a)'s solid fit curve."
+
+- id: run_eq1_fig2a_data
+  model: size_distribution_eq1
+  inputs:
+    R_n: R_n_peak_norm_phi3
+    kon_over_D: kon_over_D_phi3_derived
+    koff_over_D: table1_phi3_koff_over_D
+  sweep:
+    N_b: P_fig2a_measured
+  outputs:
+    P: P_eq1_fig2a_data_pred
+  note: "Sweeps peak-normalized Eq. (1) at Table 1 phi = 3/1 parameters over all 29 digitized measured histogram bins of Fig. 2(a)."
+
+- id: run_eq1_fig2b_fit
+  model: size_distribution_eq1
+  inputs:
+    R_n: R_n_peak_norm_phi3
+    kon_over_D: kon_over_D_phi3_derived
+    koff_over_D: table1_phi3_koff_over_D
+  sweep:
+    N_b: lnP_fig2b_eq1_fit
+  outputs:
+    P: P_eq1_fig2b_fit_pred
+  note: "Sweeps peak-normalized Eq. (1) at Table 1 phi = 3/1 parameters over the 15 digitized N_b positions of Fig. 2(b)'s semi-log fit curve."
+
+- id: run_eq1_fig2b_data
+  model: size_distribution_eq1
+  inputs:
+    R_n: R_n_peak_norm_phi3
+    kon_over_D: kon_over_D_phi3_derived
+    koff_over_D: table1_phi3_koff_over_D
+  sweep:
+    N_b: lnP_fig2b_measured
+  outputs:
+    P: P_eq1_fig2b_data_pred
+  note: "Sweeps peak-normalized Eq. (1) at Table 1 phi = 3/1 parameters over all 19 digitized nonzero measured bins of Fig. 2(b)."
+
+- id: run_off_rate_arrhenius_fig2c_curve
+  model: off_rate_arrhenius_scaling
+  inputs:
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: koff_over_D_fig2c_arrhenius
+  outputs:
+    koff_over_D: koff_arrhenius_fig2c_curve_pred
+  note: "Sweeps k_off/D propto exp(-alpha*phi*eps/k_B T) over Fig. 2(c)'s digitized solid black curve."
+
+- id: run_on_rate_constant_fig2c_curve
+  model: on_rate_constant_scaling
+  inputs:
+    n_a: actin_conc_na
+  sweep:
+    phi: two_kon_over_D_fig2c_constant
+  outputs:
+    two_kon_over_D: two_kon_constant_fig2c_curve_pred
+  note: "Sweeps constant on-rate scaling over Fig. 2(c)'s digitized solid red horizontal line."
+
+- id: run_on_rate_adsorption_fig2c_curve
+  model: on_rate_adsorption_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: two_kon_over_D_fig2c_adsorption
+  outputs:
+    two_kon_over_D: two_kon_adsorption_fig2c_curve_pred
+  note: "Sweeps Langmuir adsorption on-rate scaling over Fig. 2(c)'s digitized dashed red curve."
+
+- id: run_on_rate_coat_hindered_fig2c_curve
+  model: on_rate_coat_hindered_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: two_kon_over_D_fig2c_coat_hindered
+  outputs:
+    two_kon_over_D: two_kon_coat_hindered_fig2c_curve_pred
+  note: "Sweeps coat-hindered on-rate scaling over Fig. 2(c)'s digitized dotted red curve."
+
+- id: run_off_rate_arrhenius_fig2c_data
+  model: off_rate_arrhenius_scaling
+  inputs:
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: koff_over_D_fig2c_data
+  outputs:
+    koff_over_D: koff_arrhenius_fig2c_data_pred
+  note: "Sweeps Arrhenius off-rate scaling over the 5 digitized Fig. 2(c) black circles with +/-20% error bars."
+
+- id: run_on_rate_constant_fig2c_data
+  model: on_rate_constant_scaling
+  inputs:
+    n_a: actin_conc_na
+  sweep:
+    phi: two_kon_over_D_fig2c_data
+  outputs:
+    two_kon_over_D: two_kon_constant_fig2c_data_pred
+  note: "Sweeps constant on-rate scaling over the 5 digitized Fig. 2(c) red squares with +/-20% error bars."
+
+- id: run_on_rate_adsorption_fig2c_data
+  model: on_rate_adsorption_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: two_kon_over_D_fig2c_data
+  outputs:
+    two_kon_over_D: two_kon_adsorption_fig2c_data_pred
+  note: "Sweeps Langmuir adsorption on-rate scaling over the 5 digitized Fig. 2(c) red squares with +/-20% error bars."
+
+- id: run_on_rate_coat_hindered_fig2c_data
+  model: on_rate_coat_hindered_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: two_kon_over_D_fig2c_data
+  outputs:
+    two_kon_over_D: two_kon_coat_hindered_fig2c_data_pred
+  note: "Sweeps coat-hindered on-rate scaling over the 5 digitized Fig. 2(c) red squares with +/-20% error bars."
+
+- id: run_peak_size_constant_fig2d_curve
+  model: peak_size_constant_on_scaling
+  inputs:
+    n_a: actin_conc_na
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: N_peak_fig2d_constant
+  outputs:
+    N_peak: N_peak_constant_fig2d_curve_pred
+  note: "Sweeps constant-on-rate N_peak scaling over Fig. 2(d)'s digitized solid black curve."
+
+- id: run_peak_size_adsorption_fig2d_curve
+  model: peak_size_adsorption_on_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: N_peak_fig2d_adsorption
+  outputs:
+    N_peak: N_peak_adsorption_fig2d_curve_pred
+  note: "Sweeps Langmuir-adsorption N_peak scaling over Fig. 2(d)'s digitized dashed black curve."
+
+- id: run_peak_size_coat_hindered_fig2d_curve
+  model: peak_size_coat_hindered_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: N_peak_fig2d_coat_hindered
+  outputs:
+    N_peak: N_peak_coat_hindered_fig2d_curve_pred
+  note: "Sweeps coat-hindered saturating N_peak scaling over Fig. 2(d)'s digitized dotted black curve."
+
+- id: run_peak_size_constant_fig2d_data
+  model: peak_size_constant_on_scaling
+  inputs:
+    n_a: actin_conc_na
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: N_peak_fig2d_data
+  outputs:
+    N_peak: N_peak_constant_fig2d_data_pred
+  note: "Sweeps constant-on-rate N_peak scaling over the 5 digitized Fig. 2(d) black squares with +/-44% error bars."
+
+- id: run_peak_size_adsorption_fig2d_data
+  model: peak_size_adsorption_on_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    alpha: arrhenius_alpha_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: N_peak_fig2d_data
+  outputs:
+    N_peak: N_peak_adsorption_fig2d_data_pred
+  note: "Sweeps Langmuir-adsorption N_peak scaling over the 5 digitized Fig. 2(d) black squares with +/-44% error bars."
+
+- id: run_peak_size_coat_hindered_fig2d_data
+  model: peak_size_coat_hindered_scaling
+  inputs:
+    n_a: actin_conc_na
+    beta: langmuir_beta_fit
+    eps_kBT: fascin_actin_binding_energy_eps
+  sweep:
+    phi: N_peak_fig2d_data
+  outputs:
+    N_peak: N_peak_coat_hindered_fig2d_data_pred
+  note: "Sweeps coat-hindered saturating N_peak scaling over the 5 digitized Fig. 2(d) black squares with +/-44% error bars."

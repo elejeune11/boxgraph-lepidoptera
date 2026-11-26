@@ -1,0 +1,125 @@
+# ==========================================================================
+# 1. Reproduction checks of Fokker-Planck Eq. (11) steady state & tails (p. 4)
+# ==========================================================================
+- id: cmp_fp_eq11_printed_boltzmann_coeff
+  purpose: reproduction
+  computed: fp_eq11_printed_boltzmann_coeff
+  printed: boltzmann_exponent_coeff_printed
+  note: "Printed Fokker-Planck Eq. (11) with +d(R_dot*P)/dR yields zero-flux steady-state Boltzmann exponent coefficient +2 instead of the paper's printed -2 on p. 4 col 2 (opposite sign; unnormalizable)."
+
+- id: cmp_fp_eq11_corrected_boltzmann_coeff
+  purpose: reproduction
+  computed: fp_eq11_corrected_boltzmann_coeff
+  printed: boltzmann_exponent_coeff_printed
+  note: "Sign-corrected variant of Eq. (11) with standard -d(R_dot*P)/dR reproduces the paper's printed Boltzmann exponent coefficient -2 exactly."
+
+- id: cmp_surface_tail_exponent_from_eq5
+  purpose: reproduction
+  computed: surface_tail_coeff_from_eq5
+  printed: surface_tail_exponent_coeff_printed
+  note: "Substituting Eq. (5) into P(R) ~ exp[-2*beta*(E_total - E_0)/D_R] gives large-R power-law exponent prefactor -4 (at R = 10^5 nm = 400*R_{0,s}: -3.99), a factor of 2 larger than the printed -2 in P(R) ~ R^(-2*pi*a^2*rho*beta*k/D_R)."
+
+- id: cmp_bulk_gaussian_tail_exp_eq6
+  purpose: reproduction
+  computed: gaussian_tail_exp_eq6
+  printed: bulk_gaussian_tail_exp_printed
+  note: "Incompressible bundle Eq. (6) RHS plugged into the steady-state Boltzmann distribution gives exact Gaussian exponent q = 2.0000 at large R, reproducing printed exp(-R^2)."
+
+- id: cmp_bulk_gaussian_tail_exp_eq4
+  purpose: reproduction
+  computed: gaussian_tail_exp_eq4
+  printed: bulk_gaussian_tail_exp_printed
+  note: "Bulk monopole Eq. (4) gives super-Gaussian decay exp(-c*R^2*ln(R/a)) whose local log-slope q = 2 + 1/ln(R/a) (~2.11 at R = 10^5 nm) falls within the 1-digit rounding interval of printed '2' while strictly exceeding 2 at all finite R."
+
+# ==========================================================================
+# 2. Reproduction checks of weak-binding & density scaling claims (pp. 3-4)
+# ==========================================================================
+- id: cmp_weak_binding_exp_shell
+  purpose: reproduction
+  computed: exp_R0_shell_epsb_weak
+  printed: weak_binding_exp_shell_printed
+  note: "Exact log-slope d(ln R_{0,shell})/d(ln eps_b) = (E_c*/E_c)/(1 - E_c*/E_c) -> 0 in the weak-binding limit (~5e-7 at eps_b = 1e-6 pN), refuting the paper's claim R_{0,shell} propto eps_b (exponent 1); only the excess R_{0,shell} - lambda scales linearly with eps_b."
+
+- id: cmp_weak_binding_exp_bulk_monopole
+  purpose: reproduction
+  computed: exp_R0_b_epsb_weak
+  printed: weak_binding_exp_bulk_printed
+  note: "Exact log-slope d(ln R_{0,b})/d(ln eps_b) = (1/3)*W(C)/(1 + W(C)) lies strictly in (0, 1/3) for all eps_b > 0 (~0.0014 at eps_b = 1e-6 pN), refuting the paper's claim R_{0,b} propto eps_b (exponent 1)."
+
+- id: cmp_weak_binding_exp_surface_monopole
+  purpose: reproduction
+  computed: exp_R0_s_epsb_weak
+  printed: weak_binding_exp_surface_printed
+  note: "Eq. (8) gives R_{0,s} = eps_b/(a*rho*k'_s), reproducing the paper's claimed linear scaling exponent 1 exactly."
+
+- id: cmp_weak_binding_exp_incompressible
+  purpose: reproduction
+  computed: exp_R0_bp_epsb_weak
+  printed: weak_binding_exp_incomp_printed
+  note: "Eq. (9) gives R'_{0,b} propto eps_b^(1/3), reproducing the paper's claimed cube-root scaling exponent 1/3 exactly."
+
+- id: cmp_shell_density_exp_near_Ecstar
+  purpose: reproduction
+  computed: exp_R0_shell_rho_near
+  printed: shell_density_exp_near_Ecstar_printed
+  note: "Exact log-slope d(ln R_{0,shell})/d(ln rho) = -(E_c*/E_c)/(1 - E_c*/E_c) diverges to -infinity as E_c -> E_c*+ (-100 at E_c/E_c* = 1.01), refuting the paper's claim that R_{0,shell} behaves as 1/rho (exponent -1) for E_c -> E_c*; the divergence is a pole proportional to 1/(rho - rho*)."
+
+# ==========================================================================
+# 3. Consistency checks: numerical energy minimizers vs printed Eqs. (3), (7)-(9)
+# ==========================================================================
+- id: cmp_consistency_shell_min_vs_eq3
+  purpose: consistency
+  computed: R0_shell_min_baseline
+  printed: R0_shell_eq3_baseline
+  note: "Verifies numerical minimizer of Eqs. (1)+(2) matches printed Eq. (3) at baseline parameters."
+
+- id: cmp_consistency_bulk_min_vs_eq7
+  purpose: consistency
+  computed: R0_bulk_min_baseline
+  printed: R0_bulk_eq7_baseline
+  note: "Verifies numerical minimizer of Eqs. (1)+(4) matches printed Lambert-W Eq. (7) at baseline parameters."
+
+- id: cmp_consistency_surface_min_vs_eq8
+  purpose: consistency
+  computed: R0_surface_min_baseline
+  printed: R0_surface_eq8_baseline
+  note: "Verifies numerical minimizer of Eqs. (1)+(5) matches printed Eq. (8) at baseline parameters."
+
+- id: cmp_consistency_incomp_min_vs_eq9
+  purpose: consistency
+  computed: R0_incomp_min_baseline
+  printed: R0_incomp_eq9_baseline
+  note: "Verifies numerical minimizer of Eqs. (1)+(6 RHS) matches printed Eq. (9) at baseline parameters."
+
+- id: cmp_consistency_eq6_middle_corr_vs_rhs
+  purpose: consistency
+  computed: E_defects_eq6_middle_corrected
+  printed: E_defects_incomp_baseline
+  note: "Verifies that dividing Eq. (6) middle expression by L_p matches Eq. (6) RHS exactly at baseline parameters."
+
+# ==========================================================================
+# 4. Reproduction checks of low-concentration scaling claims (p. 4 col 1)
+# ==========================================================================
+- id: cmp_low_conc_exp_surface_monopole
+  purpose: reproduction
+  computed: exp_R0_s_c_low
+  printed: low_conc_exp_surface_printed
+  note: "Combining Eq. (8) with Langmuir binding eps_b propto c*exp(eps)/(1 + c*exp(eps)) gives d(ln R_{0,s})/d(ln c) = 1/(1 + c*exp(eps)) -> 1 at low c and eps, reproducing linear concentration scaling."
+
+- id: cmp_low_conc_exp_incompressible
+  purpose: reproduction
+  computed: exp_R0_bp_c_low
+  printed: low_conc_exp_incomp_printed
+  note: "Combining Eq. (9) with Langmuir binding gives d(ln R'_{0,b})/d(ln c) = (1/3)/(1 + c*exp(eps)) -> 1/3 at low c and eps, reproducing cube-root concentration scaling."
+
+- id: cmp_low_conc_exp_shell
+  purpose: reproduction
+  computed: exp_R0_shell_c_low
+  printed: low_conc_exp_shell_printed
+  note: "Combining Eq. (3) with Langmuir binding gives d(ln R_{0,shell})/d(ln c) -> 0 as c -> 0 (approaching constant lambda), refuting linear scaling with concentration c."
+
+- id: cmp_low_conc_exp_bulk_monopole
+  purpose: reproduction
+  computed: exp_R0_b_c_low
+  printed: low_conc_exp_bulk_printed
+  note: "Combining Eq. (7) with Langmuir binding gives d(ln R_{0,b})/d(ln c) = [(1/3)*W(C)/(1 + W(C))]/(1 + c*exp(eps)) < 1/3 for all c > 0 (vanishing as c -> 0), refuting linear scaling with concentration c."

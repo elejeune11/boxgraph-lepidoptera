@@ -1,0 +1,701 @@
+# --- 1. Single F-actin persistence length and elastic geometry ---
+
+- id: run_kappa_a_from_lp
+  model: bending_stiffness_persistence
+  inputs: {l_p: l_p_actin_p5, T: T_room_p5}
+  outputs: {kappa_a: kappa_a_from_lp_comp}
+  note: "Reproduces single F-actin bending stiffness 7 x 10^-26 N m^2 from l_p = 17 um at T = 298 K (p. 5)."
+
+- id: run_actin_geometry_square
+  model: filament_geometry_square
+  inputs: {k_a: k_a_actin, kappa_a: kappa_a_ref35}
+  outputs: {d: d_actin_square_comp, E: E_actin_square_comp}
+  note: "Inverts k_a = 4.4 x 10^-8 N and kappa_a = 7.3 x 10^-26 N m^2 assuming square cross-section (A = d^2, I = d^4/12)."
+
+- id: run_actin_geometry_circular
+  model: filament_geometry_circular
+  inputs: {k_a: k_a_actin, kappa_a: kappa_a_ref35}
+  outputs: {d: d_actin_circular_comp, E: E_actin_circular_comp}
+  note: "Inverts k_a and kappa_a assuming circular cylinder (A = pi*d^2/4, I = pi*d^4/64) to test consistency with printed d = 4.5 nm, E = 2 GPa."
+
+- id: run_abp_length_ratio
+  model: abp_length_ratio
+  inputs: {t_aact: t_aact, t_fascin: t_fascin_plastin}
+  outputs: {ratio: t_ratio_aact_fascin_comp}
+  note: "Checks printed 'roughly three times' (p. 7) from printed lengths 35 nm and 10 nm (pp. 12, 16)."
+
+# --- 2. Droplet ABP concentrations and Langmuir equilibrium axial spacings ---
+
+- id: run_c_fascin_05
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_1_2, c_a: c_a_added}
+  outputs: {c_ABP: c_fascin_05}
+
+- id: run_c_fascin_02
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_0_2_si, c_a: c_a_added}
+  outputs: {c_ABP: c_fascin_02}
+
+- id: run_c_fascin_01
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_1_10, c_a: c_a_added}
+  outputs: {c_ABP: c_fascin_01}
+
+- id: run_c_fascin_005
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_1_20, c_a: c_a_added}
+  outputs: {c_ABP: c_fascin_005}
+
+- id: run_c_fascin_002
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_1_50, c_a: c_a_added}
+  outputs: {c_ABP: c_fascin_002}
+
+- id: run_c_plastin_05
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_1_2, c_a: c_a_added}
+  outputs: {c_ABP: c_plastin_05}
+
+- id: run_c_plastin_002
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_1_50, c_a: c_a_added}
+  outputs: {c_ABP: c_plastin_002}
+
+- id: run_c_aact_01
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_1_10, c_a: c_a_added}
+  outputs: {c_ABP: c_aact_01}
+
+- id: run_c_aact_002
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_1_50, c_a: c_a_added}
+  outputs: {c_ABP: c_aact_002}
+
+- id: run_eq_fascin_05
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_fascin_05, K_d: K_d_fascin, delta_max: delta_max_hex}
+  outputs: {theta: theta_fascin_05, delta: delta_fascin_05}
+
+- id: run_eq_fascin_02
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_fascin_02, K_d: K_d_fascin, delta_max: delta_max_hex}
+  outputs: {theta: theta_fascin_02, delta: delta_fascin_02}
+
+- id: run_eq_fascin_01
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_fascin_01, K_d: K_d_fascin, delta_max: delta_max_hex}
+  outputs: {theta: theta_fascin_01, delta: delta_fascin_01}
+
+- id: run_eq_fascin_005
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_fascin_005, K_d: K_d_fascin, delta_max: delta_max_hex}
+  outputs: {theta: theta_fascin_005, delta: delta_fascin_005}
+
+- id: run_eq_fascin_002
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_fascin_002, K_d: K_d_fascin, delta_max: delta_max_hex}
+  outputs: {theta: theta_fascin_002, delta: delta_fascin_002}
+
+- id: run_eq_plastin_05
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_plastin_05, K_d: K_d_aact_plastin, delta_max: delta_max_hex}
+  outputs: {theta: theta_plastin_05, delta: delta_plastin_05}
+
+- id: run_eq_plastin_002
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_plastin_002, K_d: K_d_aact_plastin, delta_max: delta_max_hex}
+  outputs: {theta: theta_plastin_002, delta: delta_plastin_002}
+
+- id: run_eq_aact_01
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_aact_01, K_d: K_d_aact_plastin, delta_max: delta_max_hex}
+  outputs: {theta: theta_aact_01, delta: delta_aact_01}
+
+- id: run_eq_aact_002
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_aact_002, K_d: K_d_aact_plastin, delta_max: delta_max_hex}
+  outputs: {theta: theta_aact_002, delta: delta_aact_002}
+
+# --- 3. Effective shear stiffness k_par / delta and PEG lower bound conversion ---
+
+- id: run_k_par_peg_from_keff
+  model: shear_stiffness_from_effective
+  inputs: {k_eff: k_eff_peg_lower, delta: delta_typical_high_abp}
+  outputs: {k_par: k_par_peg_from_keff_comp}
+  note: "Reproduces PEG lower bound k_par >= 10^-4 N/m from k_par/delta >= 10^3 N/m^2 and delta = 10^-7 m (p. 7)."
+
+- id: run_keff_peg_check
+  model: effective_shear_stiffness
+  inputs: {k_par: k_par_peg_lower, delta: delta_typical_high_abp}
+  outputs: {k_eff: k_eff_peg_roundtrip}
+
+- id: run_keff_fascin_05
+  model: effective_shear_stiffness
+  inputs: {k_par: k_par_fascin, delta: delta_fascin_05}
+  outputs: {k_eff: k_eff_fascin_05}
+
+- id: run_keff_plastin_05
+  model: effective_shear_stiffness
+  inputs: {k_par: k_par_plastin_upper, delta: delta_plastin_05}
+  outputs: {k_eff: k_eff_plastin_05}
+
+- id: run_keff_aact_01
+  model: effective_shear_stiffness
+  inputs: {k_par: k_par_aact, delta: delta_aact_01}
+  outputs: {k_eff: k_eff_aact_01}
+
+# --- 4. Empirical linear bundle lengths L_B(n) from SI Table (p. 20) ---
+
+- id: run_LB_plastin_05_n36
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_plastin_05, s: s_plastin_05, n: n_eval_36_added}
+  outputs: {L_B: L_B_plastin_05_n36}
+
+- id: run_LB_plastin_002_n36
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_plastin_002, s: s_plastin_002, n: n_eval_36_added}
+  outputs: {L_B: L_B_plastin_002_n36}
+
+- id: run_LB_fascin_05_n10
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_fascin_05, s: s_fascin_05, n: n_eval_10_added}
+  outputs: {L_B: L_B_fascin_05_n10}
+
+- id: run_LB_fascin_05_n36
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_fascin_05, s: s_fascin_05, n: n_eval_36_added}
+  outputs: {L_B: L_B_fascin_05_n36}
+
+- id: run_LB_fascin_01_n10
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_fascin_02, s: s_fascin_02, n: n_eval_10_added}
+  outputs: {L_B: L_B_fascin_01_n10}
+  note: "Uses second fascin SI table row (printed r=0.2 in SI vs 1:10 in Fig. 3b caption)."
+
+- id: run_LB_fascin_005_n10
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_fascin_005, s: s_fascin_005, n: n_eval_10_added}
+  outputs: {L_B: L_B_fascin_005_n10}
+
+- id: run_LB_fascin_002_n10
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_fascin_002, s: s_fascin_002, n: n_eval_10_added}
+  outputs: {L_B: L_B_fascin_002_n10}
+
+- id: run_LB_aact_01_n3p5
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_aact_01, s: s_aact_01, n: n_aact_crossover_eval_added}
+  outputs: {L_B: L_B_aact_01_n3p5}
+
+- id: run_LB_aact_01_n20
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_aact_01, s: s_aact_01, n: n_eval_20_added}
+  outputs: {L_B: L_B_aact_01_n20}
+
+- id: run_LB_aact_01_n36
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_aact_01, s: s_aact_01, n: n_eval_36_added}
+  outputs: {L_B: L_B_aact_01_n36}
+
+- id: run_LB_peg4_n10
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_peg_4pct, s: s_peg_4pct, n: n_eval_10_added}
+  outputs: {L_B: L_B_peg4_n10}
+
+- id: run_LB_peg4_n30
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_peg_4pct, s: s_peg_4pct, n: n_peg_max_p16}
+  outputs: {L_B: L_B_peg4_n30}
+
+- id: run_LB_peg4_n36
+  model: bundle_length_linear_fit
+  inputs: {L_0: L0_peg_4pct, s: s_peg_4pct, n: n_eval_36_added}
+  outputs: {L_B: L_B_peg4_n36}
+
+# --- 5. Dimensionless bending regime parameter alpha = k_par * L_B^2 / (delta * k_a) ---
+
+- id: run_alpha_microvilli_lo
+  model: bending_regime_alpha
+  inputs: {k_par: k_par_plastin_upper, L_B: L_B_microvilli_lo_added, delta: delta_typical_high_abp, k_a: k_a_actin}
+  outputs: {alpha: alpha_microvilli_lo}
+  note: "Checks physiological brush border microvilli (L_B = 2 um, plastin upper bound, delta = 100 nm) are decoupled (alpha << 1, p. 8)."
+
+- id: run_alpha_microvilli_hi
+  model: bending_regime_alpha
+  inputs: {k_par: k_par_plastin_upper, L_B: L_B_microvilli_hi_added, delta: delta_typical_high_abp, k_a: k_a_actin}
+  outputs: {alpha: alpha_microvilli_hi}
+  note: "Checks brush border microvilli at upper length L_B = 5 um (plastin upper bound, delta = 100 nm) remain deeply decoupled (alpha << 1, p. 8)."
+
+- id: run_alpha_peg4_n30
+  model: bending_regime_alpha
+  inputs: {k_par: k_par_peg_lower, L_B: L_B_peg4_n30, delta: delta_typical_high_abp, k_a: k_a_actin}
+  outputs: {alpha: alpha_peg4_n30}
+  note: "Checks PEG 4% lower bound at n = 30 yields alpha > n (fully coupled regime, p. 7)."
+
+- id: run_alpha_fascin_05_n10
+  model: bending_regime_alpha
+  inputs: {k_par: k_par_fascin, L_B: L_B_fascin_05_n10, delta: delta_fascin_05, k_a: k_a_actin}
+  outputs: {alpha: alpha_fascin_05_n10}
+
+- id: run_alpha_fascin_002_n10
+  model: bending_regime_alpha
+  inputs: {k_par: k_par_fascin, L_B: L_B_fascin_002_n10, delta: delta_fascin_002, k_a: k_a_actin}
+  outputs: {alpha: alpha_fascin_002_n10}
+
+- id: run_alpha_aact_01_crossover
+  model: bending_regime_alpha
+  inputs: {k_par: k_par_aact, L_B: L_B_aact_01_n3p5, delta: delta_aact_01, k_a: k_a_actin}
+  outputs: {alpha: alpha_aact_01_crossover}
+
+# --- 6. Decoupled and fully coupled asymptotic laws (Fig. 3 dashed lines) ---
+
+- id: run_decoupled_n10
+  model: bundle_stiffness_decoupled
+  inputs: {n: n_eval_10_added, kappa_a: kappa_a_ref35}
+  outputs: {kappa_B: kappa_B_decoupled_n10}
+
+- id: run_decoupled_n36
+  model: bundle_stiffness_decoupled
+  inputs: {n: n_eval_36_added, kappa_a: kappa_a_ref35}
+  outputs: {kappa_B: kappa_B_decoupled_n36}
+
+- id: run_coupled_n10
+  model: bundle_stiffness_coupled
+  inputs: {n: n_eval_10_added, kappa_a: kappa_a_ref35}
+  outputs: {kappa_B: kappa_B_coupled_n10}
+
+- id: run_coupled_n36
+  model: bundle_stiffness_coupled
+  inputs: {n: n_eval_36_added, kappa_a: kappa_a_ref35}
+  outputs: {kappa_B: kappa_B_coupled_n36}
+
+# --- 7. Core 2D and 3D fiber-based bundle bending model (printed p. 12 & K_no_divN variant) ---
+
+- id: run_bundle_2d_fascin_05_n2d3
+  model: bundle_2d_bending
+  inputs:
+    n: n_2d_eval_3_added
+    L_B: L_B_fascin_05_n10
+    k_par: k_par_fascin
+    delta: delta_fascin_05
+    k_a: k_a_actin
+    kappa_a: kappa_a_ref35
+    d: d_actin_p12
+    t: t_fascin_plastin
+  outputs: {beta: beta_2d_fascin_05_n2d3, w_B_max: w_max_2d_fascin_05_n2d3, kappa_B_2d: kappa_B_2d_fascin_05_n2d3}
+  note: "Direct evaluation of the 2D three-point-bending equation at n_2D = 3 (N = 1, n_3D = 9) where K = 1 and S_2 = 1."
+
+# Plastin r=0.5 (n=36) and r=0.02 (n=36)
+- id: run_3d_plastin_05_n36
+  model: bundle_3d_bending
+  inputs: {n: n_eval_36_added, L_B: L_B_plastin_05_n36, k_par: k_par_plastin_upper, delta: delta_plastin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  outputs: {kappa_B: kappa_B_plastin_05_n36_printed}
+
+- id: run_3d_plastin_05_n36_KnoN
+  model: bundle_3d_bending_K_no_divN
+  inputs: {n: n_eval_36_added, L_B: L_B_plastin_05_n36, k_par: k_par_plastin_upper, delta: delta_plastin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  outputs: {kappa_B: kappa_B_plastin_05_n36_KnoN}
+
+- id: run_3d_plastin_002_n36
+  model: bundle_3d_bending
+  inputs: {n: n_eval_36_added, L_B: L_B_plastin_002_n36, k_par: k_par_plastin_upper, delta: delta_plastin_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  outputs: {kappa_B: kappa_B_plastin_002_n36_printed}
+
+# Fascin r=0.5 (n=10 and n=36)
+- id: run_3d_fascin_05_n10
+  model: bundle_3d_bending
+  inputs: {n: n_eval_10_added, L_B: L_B_fascin_05_n10, k_par: k_par_fascin, delta: delta_fascin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  outputs: {kappa_B: kappa_B_fascin_05_n10_printed}
+
+- id: run_3d_fascin_05_n10_KnoN
+  model: bundle_3d_bending_K_no_divN
+  inputs: {n: n_eval_10_added, L_B: L_B_fascin_05_n10, k_par: k_par_fascin, delta: delta_fascin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  outputs: {kappa_B: kappa_B_fascin_05_n10_KnoN}
+
+- id: run_3d_fascin_05_n36
+  model: bundle_3d_bending
+  inputs: {n: n_eval_36_added, L_B: L_B_fascin_05_n36, k_par: k_par_fascin, delta: delta_fascin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  outputs: {kappa_B: kappa_B_fascin_05_n36_printed}
+
+- id: run_3d_fascin_05_n36_KnoN
+  model: bundle_3d_bending_K_no_divN
+  inputs: {n: n_eval_36_added, L_B: L_B_fascin_05_n36, k_par: k_par_fascin, delta: delta_fascin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  outputs: {kappa_B: kappa_B_fascin_05_n36_KnoN}
+
+# alpha-actinin r=0.1 (n=20 and n=36)
+- id: run_3d_aact_01_n20
+  model: bundle_3d_bending
+  inputs: {n: n_eval_20_added, L_B: L_B_aact_01_n20, k_par: k_par_aact, delta: delta_aact_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  outputs: {kappa_B: kappa_B_aact_01_n20_printed}
+
+- id: run_3d_aact_01_n20_KnoN
+  model: bundle_3d_bending_K_no_divN
+  inputs: {n: n_eval_20_added, L_B: L_B_aact_01_n20, k_par: k_par_aact, delta: delta_aact_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  outputs: {kappa_B: kappa_B_aact_01_n20_KnoN}
+
+- id: run_3d_aact_01_n36
+  model: bundle_3d_bending
+  inputs: {n: n_eval_36_added, L_B: L_B_aact_01_n36, k_par: k_par_aact, delta: delta_aact_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  outputs: {kappa_B: kappa_B_aact_01_n36_printed}
+
+- id: run_3d_aact_01_n36_KnoN
+  model: bundle_3d_bending_K_no_divN
+  inputs: {n: n_eval_36_added, L_B: L_B_aact_01_n36, k_par: k_par_aact, delta: delta_aact_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  outputs: {kappa_B: kappa_B_aact_01_n36_KnoN}
+
+# PEG 4% (t=0, k_par/delta = 10^3 N/m^2, n=10 and n=36; independent of unstated c_a!)
+- id: run_3d_peg4_n10
+  model: bundle_3d_bending
+  inputs: {n: n_eval_10_added, L_B: L_B_peg4_n10, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  outputs: {kappa_B: kappa_B_peg4_n10_printed}
+
+- id: run_3d_peg4_n10_KnoN
+  model: bundle_3d_bending_K_no_divN
+  inputs: {n: n_eval_10_added, L_B: L_B_peg4_n10, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  outputs: {kappa_B: kappa_B_peg4_n10_KnoN}
+
+- id: run_3d_peg4_n36
+  model: bundle_3d_bending
+  inputs: {n: n_eval_36_added, L_B: L_B_peg4_n36, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  outputs: {kappa_B: kappa_B_peg4_n36_printed}
+
+- id: run_3d_peg4_n36_KnoN
+  model: bundle_3d_bending_K_no_divN
+  inputs: {n: n_eval_36_added, L_B: L_B_peg4_n36, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  outputs: {kappa_B: kappa_B_peg4_n36_KnoN}
+
+# --- 8. Droplet geometry, WLC ring stiffness, and SI equilibration relaxation time ---
+
+- id: run_droplet_vol_si1a
+  model: droplet_volume_sphere
+  inputs: {R_d: R_d_si1a_added}
+  outputs: {V_d: V_d_si1a_only}
+
+- id: run_droplet_si1a
+  model: droplet_filament_count
+  inputs: {c_a: c_a_added, R_d: R_d_si1a_added, R_r: R_ring_si1a, a_mon: a_mon_added}
+  outputs: {V_d: V_d_si1a, L_tot: L_tot_si1a, L_B: L_B_si1a, n: n_si1a_est}
+
+- id: run_droplet_si1b
+  model: droplet_filament_count
+  inputs: {c_a: c_a_added, R_d: R_d_si1b_added, R_r: R_ring_si1b, a_mon: a_mon_added}
+  outputs: {V_d: V_d_si1b, L_tot: L_tot_si1b, L_B: L_B_si1b, n: n_si1b_est}
+
+- id: run_ring_stiffness_si1a
+  model: wlc_ring_bending_stiffness
+  inputs: {c_ring: prefactor_wlc_ring, R_c: R_ring_si1a, D_B: D_sat_si1a_eye, T: T_room_p5}
+  outputs: {kappa_B: kappa_B_ring_si1a}
+
+- id: run_ring_stiffness_si1b
+  model: wlc_ring_bending_stiffness
+  inputs: {c_ring: prefactor_wlc_ring, R_c: R_ring_si1b, D_B: D_sat_si1b_eye, T: T_room_p5}
+  outputs: {kappa_B: kappa_B_ring_si1b}
+
+- id: run_relaxation_si1a
+  model: wlc_relaxation_time_scaling
+  inputs: {mu: mu_water_added, kappa: kappa_B_ring_si1a, L: L_B_si1a}
+  outputs: {tau: tau_si1a_scaled}
+
+- id: run_relaxation_si1b
+  model: wlc_relaxation_time_scaling
+  inputs: {mu: mu_water_added, kappa: kappa_B_ring_si1b, L: L_B_si1b}
+  outputs: {tau: tau_si1b_scaled}
+
+# --- 9. Helper equilibrium runs for alpha-actinin r = 0.05 (SI table ratio) ---
+
+- id: run_c_aact_005
+  model: abp_concentration_from_ratio
+  inputs: {r_ABP_a: r_abp_1_20, c_a: c_a_added}
+  outputs: {c_ABP: c_aact_005}
+
+- id: run_eq_aact_005
+  model: abp_chemical_equilibrium
+  inputs: {c_ABP: c_aact_005, K_d: K_d_aact_plastin, delta_max: delta_max_hex}
+  outputs: {theta: theta_aact_005, delta: delta_aact_005}
+
+# --- 10. Swept runs over digitized Fig. 3A-D dashed asymptote curves ---
+
+- id: run_sweep_fig3a_coupled_ref35
+  model: bundle_stiffness_coupled
+  inputs: {kappa_a: kappa_a_ref35}
+  sweep: {n: fig3a_coupled_asymptote_curve}
+  outputs: {kappa_B: kappa_B_fig3a_coupled_ref35}
+
+- id: run_sweep_fig3a_coupled_p5
+  model: bundle_stiffness_coupled
+  inputs: {kappa_a: kappa_a_single_p5}
+  sweep: {n: fig3a_coupled_asymptote_curve}
+  outputs: {kappa_B: kappa_B_fig3a_coupled_p5}
+
+- id: run_sweep_fig3d_decoupled_ref35
+  model: bundle_stiffness_decoupled
+  inputs: {kappa_a: kappa_a_ref35}
+  sweep: {n: fig3d_decoupled_asymptote_curve}
+  outputs: {kappa_B: kappa_B_fig3d_decoupled_ref35}
+
+- id: run_sweep_fig3d_decoupled_p5
+  model: bundle_stiffness_decoupled
+  inputs: {kappa_a: kappa_a_single_p5}
+  sweep: {n: fig3d_decoupled_asymptote_curve}
+  outputs: {kappa_B: kappa_B_fig3d_decoupled_p5}
+
+# --- 11. Swept runs over digitized Fig. 3A-D solid model curves (printed K=S_2/N vs variant K=S_2) ---
+
+- id: run_sweep_fig3a_plastin_05_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_plastin_05, s: s_plastin_05, k_par: k_par_plastin_upper, delta: delta_plastin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3a_plastin_05_curve}
+  outputs: {kappa_B: kappa_B_fig3a_plastin_05_printed}
+
+- id: run_sweep_fig3a_plastin_05_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_plastin_05, s: s_plastin_05, k_par: k_par_plastin_upper, delta: delta_plastin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3a_plastin_05_curve}
+  outputs: {kappa_B: kappa_B_fig3a_plastin_05_KnoN}
+
+- id: run_sweep_fig3a_plastin_002_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_plastin_002, s: s_plastin_002, k_par: k_par_plastin_upper, delta: delta_plastin_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3a_plastin_002_curve}
+  outputs: {kappa_B: kappa_B_fig3a_plastin_002_printed}
+
+- id: run_sweep_fig3a_plastin_002_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_plastin_002, s: s_plastin_002, k_par: k_par_plastin_upper, delta: delta_plastin_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3a_plastin_002_curve}
+  outputs: {kappa_B: kappa_B_fig3a_plastin_002_KnoN}
+
+- id: run_sweep_fig3b_fascin_05_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_fascin_05, s: s_fascin_05, k_par: k_par_fascin, delta: delta_fascin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_05_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_05_printed}
+
+- id: run_sweep_fig3b_fascin_05_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_fascin_05, s: s_fascin_05, k_par: k_par_fascin, delta: delta_fascin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_05_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_05_KnoN}
+
+- id: run_sweep_fig3b_fascin_02_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_fascin_02, s: s_fascin_02, k_par: k_par_fascin, delta: delta_fascin_02, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_02_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_02_printed}
+
+- id: run_sweep_fig3b_fascin_02_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_fascin_02, s: s_fascin_02, k_par: k_par_fascin, delta: delta_fascin_02, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_02_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_02_KnoN}
+
+- id: run_sweep_fig3b_fascin_01_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_fascin_02, s: s_fascin_02, k_par: k_par_fascin, delta: delta_fascin_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_02_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_01_printed}
+  note: "Tests caption ratio r=1:10 (0.1) against the blue model curve of Fig. 3B (using the second fascin SI length row)."
+
+- id: run_sweep_fig3b_fascin_01_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_fascin_02, s: s_fascin_02, k_par: k_par_fascin, delta: delta_fascin_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_02_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_01_KnoN}
+
+- id: run_sweep_fig3b_fascin_005_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_fascin_005, s: s_fascin_005, k_par: k_par_fascin, delta: delta_fascin_005, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_005_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_005_printed}
+
+- id: run_sweep_fig3b_fascin_005_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_fascin_005, s: s_fascin_005, k_par: k_par_fascin, delta: delta_fascin_005, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_005_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_005_KnoN}
+
+- id: run_sweep_fig3b_fascin_002_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_fascin_002, s: s_fascin_002, k_par: k_par_fascin, delta: delta_fascin_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_002_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_002_printed}
+
+- id: run_sweep_fig3b_fascin_002_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_fascin_002, s: s_fascin_002, k_par: k_par_fascin, delta: delta_fascin_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_002_curve}
+  outputs: {kappa_B: kappa_B_fig3b_fascin_002_KnoN}
+
+- id: run_sweep_fig3c_aact_01_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_aact_01, s: s_aact_01, k_par: k_par_aact, delta: delta_aact_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_01_curve}
+  outputs: {kappa_B: kappa_B_fig3c_aact_01_printed}
+
+- id: run_sweep_fig3c_aact_01_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_aact_01, s: s_aact_01, k_par: k_par_aact, delta: delta_aact_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_01_curve}
+  outputs: {kappa_B: kappa_B_fig3c_aact_01_KnoN}
+
+- id: run_sweep_fig3c_aact_002_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_aact_005, s: s_aact_005, k_par: k_par_aact, delta: delta_aact_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_002_curve}
+  outputs: {kappa_B: kappa_B_fig3c_aact_002_printed}
+  note: "Tests caption ratio r=1:50 (0.02) against the blue model curve of Fig. 3C using the second alpha-actinin SI length row."
+
+- id: run_sweep_fig3c_aact_002_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_aact_005, s: s_aact_005, k_par: k_par_aact, delta: delta_aact_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_002_curve}
+  outputs: {kappa_B: kappa_B_fig3c_aact_002_KnoN}
+
+- id: run_sweep_fig3c_aact_005_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_aact_005, s: s_aact_005, k_par: k_par_aact, delta: delta_aact_005, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_002_curve}
+  outputs: {kappa_B: kappa_B_fig3c_aact_005_printed}
+  note: "Tests SI table ratio r=0.05 against the blue model curve of Fig. 3C."
+
+- id: run_sweep_fig3c_aact_005_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_aact_005, s: s_aact_005, k_par: k_par_aact, delta: delta_aact_005, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_002_curve}
+  outputs: {kappa_B: kappa_B_fig3c_aact_005_KnoN}
+
+- id: run_sweep_fig3d_peg_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_peg_4pct, s: s_peg_4pct, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  sweep: {n: fig3d_peg_curve}
+  outputs: {kappa_B: kappa_B_fig3d_peg_printed}
+  note: "Parameter-free test of verbatim printed K=S_2/N against the digitized PEG model curve in Fig. 3D."
+
+- id: run_sweep_fig3d_peg_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_peg_4pct, s: s_peg_4pct, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  sweep: {n: fig3d_peg_curve}
+  outputs: {kappa_B: kappa_B_fig3d_peg_KnoN}
+  note: "Parameter-free test of variant K=S_2 against the digitized PEG model curve in Fig. 3D."
+
+# --- 12. Validation sweeps over all 10 digitized measured point series in Fig. 3A-D ---
+
+- id: run_val_fig3a_plastin_05_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_plastin_05, s: s_plastin_05, k_par: k_par_plastin_upper, delta: delta_plastin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3a_plastin_05_meas}
+  outputs: {kappa_B: kappa_B_val_plastin_05_printed}
+
+- id: run_val_fig3a_plastin_05_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_plastin_05, s: s_plastin_05, k_par: k_par_plastin_upper, delta: delta_plastin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3a_plastin_05_meas}
+  outputs: {kappa_B: kappa_B_val_plastin_05_KnoN}
+
+- id: run_val_fig3a_plastin_002_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_plastin_002, s: s_plastin_002, k_par: k_par_plastin_upper, delta: delta_plastin_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3a_plastin_002_meas}
+  outputs: {kappa_B: kappa_B_val_plastin_002_printed}
+
+- id: run_val_fig3a_plastin_002_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_plastin_002, s: s_plastin_002, k_par: k_par_plastin_upper, delta: delta_plastin_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3a_plastin_002_meas}
+  outputs: {kappa_B: kappa_B_val_plastin_002_KnoN}
+
+- id: run_val_fig3b_fascin_05_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_fascin_05, s: s_fascin_05, k_par: k_par_fascin, delta: delta_fascin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_05_meas}
+  outputs: {kappa_B: kappa_B_val_fascin_05_printed}
+
+- id: run_val_fig3b_fascin_05_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_fascin_05, s: s_fascin_05, k_par: k_par_fascin, delta: delta_fascin_05, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_05_meas}
+  outputs: {kappa_B: kappa_B_val_fascin_05_KnoN}
+
+- id: run_val_fig3b_fascin_02_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_fascin_02, s: s_fascin_02, k_par: k_par_fascin, delta: delta_fascin_02, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_02_meas}
+  outputs: {kappa_B: kappa_B_val_fascin_02_printed}
+
+- id: run_val_fig3b_fascin_02_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_fascin_02, s: s_fascin_02, k_par: k_par_fascin, delta: delta_fascin_02, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_02_meas}
+  outputs: {kappa_B: kappa_B_val_fascin_02_KnoN}
+
+- id: run_val_fig3b_fascin_005_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_fascin_005, s: s_fascin_005, k_par: k_par_fascin, delta: delta_fascin_005, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_005_meas}
+  outputs: {kappa_B: kappa_B_val_fascin_005_printed}
+
+- id: run_val_fig3b_fascin_005_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_fascin_005, s: s_fascin_005, k_par: k_par_fascin, delta: delta_fascin_005, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_005_meas}
+  outputs: {kappa_B: kappa_B_val_fascin_005_KnoN}
+
+- id: run_val_fig3b_fascin_002_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_fascin_002, s: s_fascin_002, k_par: k_par_fascin, delta: delta_fascin_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_002_meas}
+  outputs: {kappa_B: kappa_B_val_fascin_002_printed}
+
+- id: run_val_fig3b_fascin_002_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_fascin_002, s: s_fascin_002, k_par: k_par_fascin, delta: delta_fascin_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_fascin_plastin}
+  sweep: {n: fig3b_fascin_002_meas}
+  outputs: {kappa_B: kappa_B_val_fascin_002_KnoN}
+
+- id: run_val_fig3c_aact_01_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_aact_01, s: s_aact_01, k_par: k_par_aact, delta: delta_aact_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_01_meas}
+  outputs: {kappa_B: kappa_B_val_aact_01_printed}
+
+- id: run_val_fig3c_aact_01_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_aact_01, s: s_aact_01, k_par: k_par_aact, delta: delta_aact_01, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_01_meas}
+  outputs: {kappa_B: kappa_B_val_aact_01_KnoN}
+
+- id: run_val_fig3c_aact_002_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_aact_005, s: s_aact_005, k_par: k_par_aact, delta: delta_aact_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_002_meas}
+  outputs: {kappa_B: kappa_B_val_aact_002_printed}
+
+- id: run_val_fig3c_aact_002_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_aact_005, s: s_aact_005, k_par: k_par_aact, delta: delta_aact_002, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_aact}
+  sweep: {n: fig3c_aact_002_meas}
+  outputs: {kappa_B: kappa_B_val_aact_002_KnoN}
+
+- id: run_val_fig3d_peg_4pct_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_peg_4pct, s: s_peg_4pct, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  sweep: {n: fig3d_peg_4pct_meas}
+  outputs: {kappa_B: kappa_B_val_peg_4pct_printed}
+
+- id: run_val_fig3d_peg_4pct_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_peg_4pct, s: s_peg_4pct, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  sweep: {n: fig3d_peg_4pct_meas}
+  outputs: {kappa_B: kappa_B_val_peg_4pct_KnoN}
+
+- id: run_val_fig3d_peg_2pct_printed
+  model: bundle_3d_bending_linear_L
+  inputs: {L_0: L0_peg_2pct, s: s_peg_2pct, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  sweep: {n: fig3d_peg_2pct_meas}
+  outputs: {kappa_B: kappa_B_val_peg_2pct_printed}
+
+- id: run_val_fig3d_peg_2pct_KnoN
+  model: bundle_3d_bending_linear_L_K_no_divN
+  inputs: {L_0: L0_peg_2pct, s: s_peg_2pct, k_par: k_par_peg_lower, delta: delta_typical_high_abp, k_a: k_a_actin, kappa_a: kappa_a_ref35, d: d_actin_p12, t: t_peg_zero_added}
+  sweep: {n: fig3d_peg_2pct_meas}
+  outputs: {kappa_B: kappa_B_val_peg_2pct_KnoN}

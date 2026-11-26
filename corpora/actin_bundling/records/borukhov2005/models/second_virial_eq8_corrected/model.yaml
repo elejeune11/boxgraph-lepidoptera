@@ -1,0 +1,29 @@
+id: second_virial_eq8_corrected
+name: angle-dependent second virial coefficient B(gamma) (Eq. 8, corrected parallel sign)
+role: model
+built_from: [effective_diameter_eq6]
+variant_of: second_virial_eq8
+corrections:
+  - equation: "Eq. 8"
+    change: "Replace (|u_par| - Gamma_par)*L/D with (Gamma_par - |u_par|)*L/D in the gamma <= D/L bracket: 1 + [exp(-(Gamma_par - |u_par|)*L/D) - 1]/[(Gamma_par - |u_par|)*L/D]"
+    evidence: "The Mayer integral over parallel overlap l in [0, L] of 1 - exp[-(Gamma_par - |u_par|)*l/D] equals 1 + [exp(-Y) - 1]/Y with Y = (Gamma_par - |u_par|)*L/D. The printed sign X = -Y makes the bracket stay positive in (0,1) for strong attraction (|u_par| > Gamma_par) and diverge to -1.60e66 (giving B(0 deg) = -2.32e64) for pure electrostatic repulsion (u_par = 0), contradicting the text immediately below Eq. 8 (pp. 3-4) stating that B(0 deg) becomes negative when (L/D)*(Gamma_par - |u_par|) is negative and of order unity."
+stated:
+  page: 3
+  printed_page: "3675"
+  quote: "Given the interrod potential embodied in Fig. 2, we can"
+  where: "Eq. 8"
+equation: "B(gamma) = 8*(D^2 + kappa^-2*ln^2(Gamma_par*L/D))/(D_eff*L) + 16*(D*delta/(D_eff*L))*[1 + (exp[-(Gamma_par-|u_par|)*L/D] - 1)/((Gamma_par-|u_par|)*L/D)] (gamma <= D/L); (8/pi)*sin(gamma)*[1 - (kappa^-1/D_eff)*ln(sin(gamma))] + (8*delta/(pi*D_eff))*sin(gamma)*[1 - exp(-Gamma_perp/sin(gamma) + |u_perp|)] (gamma > D/L)"
+inputs:
+  gamma: {quantity: interrod_angle, unit: dimensionless}
+  D: {quantity: rod_diameter, unit: nm}
+  L: {quantity: rod_length, unit: nm}
+  delta: {quantity: linker_size, unit: nm}
+  kappa_inv: {quantity: screening_length, unit: nm}
+  Gamma_par: {quantity: repulsion_energy_parallel, unit: dimensionless}
+  Gamma_perp: {quantity: repulsion_energy_perpendicular, unit: dimensionless}
+  u_par: {quantity: attraction_energy_parallel, unit: dimensionless}
+  u_perp: {quantity: attraction_energy_perpendicular, unit: dimensionless}
+outputs:
+  B: {quantity: second_virial_coefficient, unit: dimensionless}
+settings: {}
+stochastic: false

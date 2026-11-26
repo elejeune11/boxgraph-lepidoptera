@@ -1,0 +1,157 @@
+# Cross-record validation audit of bathe2008 models against independent measurements
+# across all five Wave 6 partner records: claessens2008, graham2023, graham_code,
+# grason2007, and claessens2006.
+#
+# Zero-validation pairs (0 valid cross-validations; recorded in bathe2008/questions.yaml):
+# - bathe2008 + grason2007 (q_grason2007_citation_and_orthogonal_mechanics): pure theory (0 measured datums).
+# - bathe2008 + claessens2008 (q_claessens2008_kd_discrepancy_and_structural_comparison): measures bundle
+#   thickness/filament count, bound fascin ratio R*, SAXS wavevectors, and overtwist (0 kappa_B or delta).
+# - bathe2008 + graham2023 (q_graham2023_wlb_adoption_and_no_cross_validation): measures VASP condensate
+#   FRAP, fusion, droplet diameters/aspect ratios, abundances, and elongation rate (0 kappa_B or delta).
+# - bathe2008 + graham_code (q_graham_code_nonlinear_bathe_10mode_sum_bug): software record (0 measured datums).
+#
+# Active cross-validation pair: bathe2008 + claessens2006 (4 genuine zero-free-parameter validations
+# on Fig. 3A plastin and Fig. 3D PEG; see q_claessens2006_fig4_not_replot_and_validation_scope and
+# q_claessens2006_parameter_and_model_discrepancies for full audit of excluded measurements):
+# - Excluded Fig. 3B (fascin, 4 ratios) and Fig. 3C (alpha-actinin, 2 ratios):
+#   * bathe2008's finite-alpha WLB models (wlb_bending_stiffness_eq2, wlb_ring_fluctuation_eqa10)
+#     require a single scalar alpha, whereas in claessens2006 Fig. 3B-C ring length L_i varies ~3x
+#     along each n-sweep (4.4-9.6x variation in alpha propto L^2) and per-point L_i (14-90 um) are
+#     unprinted; bathe2008 has no L_B(n) model. Furthermore, bathe2008's printed fascin G_shear
+#     (1097, 352, 148, 27 Pa, p. 5) was fitted to those exact Fig. 3B measurements (circular; and
+#     substituting claessens2006 SI L_B(n) shifts inverted G_shear by ~2x), c_actin is unstated in
+#     both papers, bathe2008 prints no k_x or d_f for alpha-actinin (t = 35 nm), and K_d (0.5 vs
+#     0.7 uM), delta_min (37.5/39 vs 33 nm), and kappa_f (7e-26 vs 4e-26 vs 7.3e-26) conflict.
+# - Excluded SI Fig. 1a-b (R_ring, D_sat, tau_eq, si_fig1a/b_D_vs_t_meas):
+#   * bathe2008 has no model outputting ring radius R_ring, fuzzy diameter D(t), or relaxation time tau.
+
+- id: val_decoupled_vs_claessens_plastin_05
+  model: wlb_decoupled_limit
+  inputs:
+    kappa_f: kappa_f_actin_p3
+  sweep:
+    N: "claessens2006/fig3a_plastin_05_meas"
+  output: kappa_B
+  against: "claessens2006/fig3a_plastin_05_meas"
+  purpose: validation
+  quantities:
+    "claessens2006/filament_number": filament_number
+    "claessens2006/bending_stiffness_bundle": bundle_bending_stiffness
+  conditions_ok: >
+    bathe2008/wlb_decoupled_limit (kappa_B = N * kappa_f) is an asymptotic cross-linker-independent
+    limit (alpha << 1) that depends neither on bundle length L_B(n) nor on ABP concentration ratio
+    r_ABP:a = 0.5; bathe2008 p. 6 col 1 explicitly assigns fimbrin/plastin-cross-linked F-actin
+    bundles in claessens2006 Fig. 3A to this decoupled bending regime across all bundle sizes and
+    concentrations examined (plastin is a human fimbrin isoform, claessens2006 p. 5 & ref-8).
+    Zero added or fitted inputs: kappa_f = 7 x 10^-26 N*m^2 is bathe2008's own printed single-actin
+    value (p. 3, ref-39 Le Goff et al. 2002).
+  basis: >
+    Bathe et al. (2008, p. 6 col 1, printed p. 2960, citing Claessens et al. 2006 as ref-29) state:
+    "Unlike fascin cross-linked bundles, bundles cross-linked by fimbrin and nonspecific depletion
+    forces exhibit a bending stiffness that is independent of the cross-linker concentration, where
+    fimbrin cross-linked bundles exhibit decoupled bending and depletion force induced bundles
+    exhibit fully coupled bending over the range of bundle dimensions and cross-linker
+    concentrations examined (29)."
+  note: >
+    Zero-free-parameter test on all 7 digitized high-plastin (r = 1:2) bundle rings (n = 1.19-11.8):
+    median ratio predicted/measured = 0.772 (range 0.68-1.28, median |rel err| = 23.7%, 7/7 within
+    1.5x). Measured bundles sit slightly above pure N * kappa_f due to weak residual plastin shear
+    coupling (claessens2006 upper bound k_par <= 5 x 10^-7 N/m); digitized markers carry only tight
+    pixel reading intervals with no experimental error bars.
+
+- id: val_decoupled_vs_claessens_plastin_002
+  model: wlb_decoupled_limit
+  inputs:
+    kappa_f: kappa_f_actin_p3
+  sweep:
+    N: "claessens2006/fig3a_plastin_002_meas"
+  output: kappa_B
+  against: "claessens2006/fig3a_plastin_002_meas"
+  purpose: validation
+  quantities:
+    "claessens2006/filament_number": filament_number
+    "claessens2006/bending_stiffness_bundle": bundle_bending_stiffness
+  conditions_ok: >
+    bathe2008/wlb_decoupled_limit (kappa_B = N * kappa_f) is an asymptotic cross-linker-independent
+    limit (alpha << 1) independent of bundle length L_B(n) and ABP concentration ratio r_ABP:a = 0.02;
+    bathe2008 p. 6 col 1 explicitly assigns fimbrin/plastin-cross-linked F-actin bundles in
+    claessens2006 Fig. 3A to decoupled bending across all measured concentrations and bundle sizes.
+    Uses bathe2008's own printed single-filament kappa_f = 7 x 10^-26 N*m^2 (p. 3, ref-39) with
+    zero added or fitted parameters.
+  basis: >
+    Bathe et al. (2008, p. 6 col 1, printed p. 2960, citing Claessens et al. 2006 as ref-29) state:
+    "Unlike fascin cross-linked bundles, bundles cross-linked by fimbrin and nonspecific depletion
+    forces exhibit a bending stiffness that is independent of the cross-linker concentration, where
+    fimbrin cross-linked bundles exhibit decoupled bending and depletion force induced bundles
+    exhibit fully coupled bending over the range of bundle dimensions and cross-linker
+    concentrations examined (29)."
+  note: >
+    Zero-free-parameter test on all 14 digitized low-plastin (r = 1:50) bundle rings (n = 2.94-12.3):
+    median ratio predicted/measured = 0.823 (range 0.68-1.01, median |rel err| = 17.7%, 14/14 within
+    1.5x), confirming near-decoupled linear scaling with modest positive shear/experimental offset.
+
+- id: val_fully_coupled_vs_claessens_peg_4pct
+  model: wlb_fully_coupled_limit
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    chi2: chi2_small_crosslinks
+  sweep:
+    N: "claessens2006/fig3d_peg_4pct_meas"
+  output: kappa_B
+  against: "claessens2006/fig3d_peg_4pct_meas"
+  purpose: validation
+  quantities:
+    "claessens2006/filament_number": filament_number
+    "claessens2006/bending_stiffness_bundle": bundle_bending_stiffness
+  conditions_ok: >
+    bathe2008/wlb_fully_coupled_limit with tight inter-filament packing chi^2 = 1 (t = 0) yields
+    kappa_B = N^2 * kappa_f, an asymptotic strong-coupling limit (alpha >> N) independent of bundle
+    length L_B(n) and PEG mass fraction (4% w/w). bathe2008 p. 6 col 1 explicitly predicts fully
+    coupled tight-packed bending for claessens2006's PEG depletion bundles across the measured
+    bundle-size range. Uses bathe2008's own printed kappa_f = 7 x 10^-26 N*m^2 (p. 3, ref-39) and
+    chi^2 = 1 (p. 8) with zero added or fitted parameters.
+  basis: >
+    Bathe et al. (2008, p. 6 col 1, printed p. 2960, citing Claessens et al. 2006 as ref-29) state:
+    "depletion force induced bundles exhibit fully coupled bending over the range of bundle
+    dimensions and cross-linker concentrations examined (29). Although nonspecific depletion forces
+    are likely to induce tight packing between helical actin filaments (43) that would explain the
+    fully coupled bending observed..."
+  note: >
+    Zero-free-parameter test on all 26 digitized 4% w/w PEG 6 kDa depletion bundle rings
+    (n = 1.59-33.5): median ratio predicted/measured = 1.672 (range 1.29-2.33, 24/26 within 2x).
+    Every measured point sits strictly below the infinite-shear tight-packed upper bound N^2 * kappa_f,
+    quantifying finite shear compliance / softening even in PEG depletion bundles (consistent with
+    claessens2006's finite shear bound k_par/delta >= 10^3 N/m^2).
+
+- id: val_fully_coupled_vs_claessens_peg_2pct
+  model: wlb_fully_coupled_limit
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    chi2: chi2_small_crosslinks
+  sweep:
+    N: "claessens2006/fig3d_peg_2pct_meas"
+  output: kappa_B
+  against: "claessens2006/fig3d_peg_2pct_meas"
+  purpose: validation
+  quantities:
+    "claessens2006/filament_number": filament_number
+    "claessens2006/bending_stiffness_bundle": bundle_bending_stiffness
+  conditions_ok: >
+    bathe2008/wlb_fully_coupled_limit with tight inter-filament packing chi^2 = 1 (t = 0) yields
+    kappa_B = N^2 * kappa_f, an asymptotic strong-coupling limit (alpha >> N) independent of bundle
+    length L_B(n) and PEG mass fraction (2% w/w). bathe2008 p. 6 col 1 explicitly predicts fully
+    coupled tight-packed bending for claessens2006's PEG depletion bundles across both PEG
+    concentrations examined. Uses bathe2008's own printed kappa_f = 7 x 10^-26 N*m^2 (p. 3, ref-39)
+    and chi^2 = 1 (p. 8) with zero added or fitted parameters.
+  basis: >
+    Bathe et al. (2008, p. 6 col 1, printed p. 2960, citing Claessens et al. 2006 as ref-29) state:
+    "depletion force induced bundles exhibit fully coupled bending over the range of bundle
+    dimensions and cross-linker concentrations examined (29). Although nonspecific depletion forces
+    are likely to induce tight packing between helical actin filaments (43) that would explain the
+    fully coupled bending observed..."
+  note: >
+    Zero-free-parameter test on all 15 digitized 2% w/w PEG 6 kDa depletion bundle rings
+    (n = 2.71-28.0): median ratio predicted/measured = 1.292 (range 1.06-2.20, median |rel err| =
+    29.2%, 14/15 within 2x), showing closer agreement with N^2 * kappa_f than 4% PEG while still
+    remaining consistently below the rigid infinite-shear bound.
+

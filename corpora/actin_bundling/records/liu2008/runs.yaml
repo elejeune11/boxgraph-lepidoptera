@@ -1,0 +1,412 @@
+# ==========================================================================
+# 1. Section A: Constant-curvature WLC filament arc geometry & merge bounds
+# ==========================================================================
+- id: run_arc_quarter_circle
+  model: filament_wlc_arc_geometry
+  inputs:
+    theta: theta_quarter_circle_added
+    L: L_contour_bundling_added
+    D: D_base_bundling_added
+    L_0: L0_anchor_main
+    L_p: Lp_single_si
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    x: arc_x_quarter
+    y: arc_y_quarter
+    d: arc_d_quarter
+    L_prot: arc_Lprot_quarter
+    E_fil: arc_Efil_quarter
+  note: "Evaluate constant-curvature arc geometry and WLC energy at quarter-circle deflection theta = pi/2."
+
+- id: run_arc_by_deflection
+  model: filament_wlc_arc_by_deflection
+  inputs:
+    x: x_deflection_bundling_added
+    L: L_contour_bundling_added
+    D: D_base_bundling_added
+    L_0: L0_anchor_main
+    L_p: Lp_single_si
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    theta: arc_theta_x15
+    y: arc_y_x15
+    d: arc_d_x15
+    L_prot: arc_Lprot_x15
+    E_fil: arc_Efil_x15
+  note: "Evaluate E_fil(x, L) and y(x, L) at x = 15 nm (merging D = 40 nm to d = 10 nm) for L = 200 nm."
+
+- id: run_geometric_merge_bounds
+  model: filament_geometric_merge_bounds
+  inputs:
+    L: L_contour_bundling_added
+  settings: {}
+  outputs:
+    x_max: bound_xmax_200nm
+    D_max: bound_Dmax_200nm
+  note: "Evaluate SI p. 3 geometric limits x_max = 2L/pi and D_max = 4L/pi at L = 200 nm."
+
+# ==========================================================================
+# 2. Section C: Euler buckling and cylindrical membrane tube mechanics
+# ==========================================================================
+- id: run_bundle_Lp_N10
+  model: uncrosslinked_bundle_persistence_length
+  inputs:
+    N: N_bundle_buckling_added
+    L_p1: Lp_single_si
+  settings: {}
+  outputs:
+    L_p: Lp_bundle_N10
+  note: "Effective persistence length of N = 10 uncrosslinked parallel actin filaments (150 um; alternatives N = 1 and 7)."
+
+- id: run_buckling_profile_eq4
+  model: buckling_profile_eq4
+  inputs:
+    a: a_buckling_small_added
+    L: L_long_protrusion_added
+    s: s_midpoint_added
+  settings: {}
+  outputs:
+    r_x: rx_midpoint_eq4
+
+- id: run_wlc_bending_quadrature
+  model: wlc_bending_integral_eq2_on_eq4
+  inputs:
+    kBT: kBT_added
+    L_p: Lp_bundle_N10
+    a: a_buckling_small_added
+    L: L_long_protrusion_added
+  settings: {}
+  outputs:
+    E_bend: Ebend_quad_N10
+  note: "Direct numerical quadrature of SI Eq. (2) on mode Eq. (4) verifying SI Eq. (5)."
+
+- id: run_bending_energy_eq5
+  model: filament_bending_energy_eq5
+  inputs:
+    kBT: kBT_added
+    L_p: Lp_bundle_N10
+    a: a_buckling_small_added
+    L: L_long_protrusion_added
+  settings: {}
+  outputs:
+    E_bend: Ebend_eq5_N10
+
+- id: run_compression_energy_eq6
+  model: compression_energy_eq6
+  inputs:
+    f_comp: f_comp_test_added
+    a: a_buckling_small_added
+    L: L_long_protrusion_added
+  settings: {}
+  outputs:
+    Delta_E_comp: dEcomp_eq6_20pN
+
+- id: run_compression_energy_exact
+  model: compression_energy_exact_shortening
+  inputs:
+    f_comp: f_comp_test_added
+    a: a_buckling_small_added
+    L: L_long_protrusion_added
+  settings: {}
+  outputs:
+    Delta_E_comp: dEcomp_exact_20pN
+  note: "Direct quadrature of exact inextensible shortening verifying small-amplitude SI Eq. (6)."
+
+- id: run_euler_buckling_force_bundle
+  model: euler_buckling_force
+  inputs:
+    kBT: kBT_added
+    L_p: Lp_bundle_N10
+    L: L_long_protrusion_added
+  settings: {}
+  outputs:
+    f_buckle: f_buckle_bundle_20um
+  note: "Euler buckling force for an uncrosslinked bundle of N = 10 filaments (L_p = 150 um) at L = 20 um (3.80 fN)."
+
+- id: run_euler_buckling_energy_eq7
+  model: euler_buckling_energy_eq7
+  inputs:
+    kBT: kBT_added
+    L_p: Lp_bundle_N10
+    a: a_buckling_small_added
+    L: L_long_protrusion_added
+    f_comp: f_comp_test_added
+  settings: {}
+  outputs:
+    Delta_E_tot: dEtot_eq7_N10
+
+- id: run_tube_eq_low_sigma
+  model: membrane_tube_equilibrium
+  inputs:
+    kappa_kBT: kappa_si
+    sigma_kBT: sigma_low_si
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    R_eq: R_eq_low_sigma
+    f_mem_eq: f_mem_eq_low_sigma
+  note: "Equilibrium tube radius (44.7 nm) and pulling force (11.55 pN at 298 K) minimizing SI Eq. (8) for Section A constants."
+
+- id: run_tube_eq_high_sigma
+  model: membrane_tube_equilibrium
+  inputs:
+    kappa_kBT: kappa_si
+    sigma_kBT: sigma_high_si
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    R_eq: R_eq_high_sigma
+    f_mem_eq: f_mem_eq_high_sigma
+  note: "Equilibrium tube radius (22.4 nm) and pulling force (23.10 pN at 298 K) for Fig. s2 high tension sigma = 0.02 k_B*T/nm^2."
+
+- id: run_tube_force_energy_eq8
+  model: membrane_tube_force_energy_eq8
+  inputs:
+    kappa_kBT: kappa_si
+    sigma_kBT: sigma_low_si
+    kBT: kBT_added
+    R: R_eq_low_sigma
+    L_mem: protrusion_terminal_length_fig1d
+  settings: {}
+  outputs:
+    f_mem: f_mem_eq8_at_Req
+    E_mem: E_mem_eq8_24um
+  note: "Evaluate SI Eq. (8) tube force and straight-tube energy at R = R_eq and L_mem = 24 um (Fig. 1d)."
+
+- id: run_buckling_case1_eq9_eq10
+  model: membrane_buckling_case1_eq9_eq10
+  inputs:
+    kBT: kBT_added
+    L_p: Lp_bundle_N10
+    a: a_buckling_small_added
+    L: L_long_protrusion_added
+    f_mem: f_mem_common_si
+  settings: {}
+  outputs:
+    Delta_E_mem: dEmem_case1_20pN
+    Delta_E_tot: dEtot_case1_20pN
+
+- id: run_critical_buckling_length_case1
+  model: critical_buckling_length_case1
+  inputs:
+    kBT: kBT_added
+    L_p: Lp_bundle_N10
+    f_mem: f_mem_common_si
+  settings: {}
+  outputs:
+    L_buckle: L_buckle_case1_N10
+  note: "Critical Case I buckling length (~0.276 um for N = 10 uncrosslinked filaments under 20 pN load, far shorter than 1-25 um protrusions)."
+
+- id: run_buckling_case2_eq11
+  model: membrane_buckling_case2_eq11
+  inputs:
+    kBT: kBT_added
+    L_p: Lp_bundle_N10
+    a: a_buckling_small_added
+    L: L_long_protrusion_added
+  settings: {}
+  outputs:
+    Delta_E_tot: dEtot_case2_N10
+
+# ==========================================================================
+# 3. Section D: Growth dynamics and inferred filament count
+# ==========================================================================
+- id: run_free_actin_eq13
+  model: free_actin_concentration_eq13
+  inputs:
+    I_t: I_t_sample_added
+    I_inf: I_inf_sample_added
+  settings: {}
+  outputs:
+    c_0: c0_sample_eq13
+
+- id: run_filament_count_20pN
+  model: filament_count_from_force_balance
+  inputs:
+    f_mem: f_mem_common_si
+    f_fil: f_fil_fit_si
+  settings: {}
+  outputs:
+    N: N_from_20pN_3pN
+  note: "Direct division of SI Section D values: 20 pN / 3 pN = 6.67 filaments vs paper's 'approximately 10'."
+
+- id: run_filament_count_eq_low_sigma
+  model: filament_count_from_force_balance
+  inputs:
+    f_mem: f_mem_eq_low_sigma
+    f_fil: f_fil_fit_si
+  settings: {}
+  outputs:
+    N: N_from_eq_low_sigma
+  note: "Consistency check using Section A equilibrium tube force (11.55 pN) divided by 3 pN/filament -> 3.85 filaments."
+
+- id: run_growth_eq12_printed
+  model: filopodium_growth_eq12
+  inputs:
+    L_mem_0: L_mem_0_dimless_added
+    int_c0: int_c0_dimless_added
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    L_mem: L_mem_eq12_printed
+  note: "Evaluate printed dimensionless SI Eq. (12) at f_mem / N = 3 pN with illustrative initial condition and integral."
+
+- id: run_growth_eq12_dimensional
+  model: filopodium_growth_eq12_dimensional
+  inputs:
+    L_mem_0: L_mem_0_phys_added
+    int_c0: int_c0_phys_added
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+    L_star: L_star_added
+    v_0: v_0_added
+  settings: {}
+  outputs:
+    L_mem: L_mem_eq12_dimensional
+  note: "Evaluate dimensionally restored variant of SI Eq. (12) with unstated scales L_star and v_0."
+
+- id: run_growth_ode_check
+  model: filopodium_growth_ode_check
+  inputs:
+    L_mem_0: L_mem_0_dimless_added
+    c_0: c0_const_ode_added
+    dt_total: dt_total_ode_added
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    L_mem: L_mem_ode_check
+  note: "RK4 numerical integration verifying equivalence between dL/dt = c_0*exp(-f*delta/(N*k_B*T))/(1+L) and printed SI Eq. (12)."
+
+# ==========================================================================
+# 4. Digitized Fig. s5 + Fig. s6 kinetic trajectory runs (SI Eq. 12)
+# ==========================================================================
+- id: run_eq12_traj_figs6_red
+  model: filopodium_growth_eq12_trajectory
+  inputs:
+    c0_curve: figs5_free_actin_data
+    target_curve: figs6_pred_red_data
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    L_mem_curve: L_mem_eq12_traj_red
+  note: "Printed SI Eq. (12) integrated over digitized Fig. s5 c_0(t) at Fig. s6 red-curve timestamps using f_mem/N = 3 pN."
+
+- id: run_eq12_traj_figs6_blue
+  model: filopodium_growth_eq12_trajectory
+  inputs:
+    c0_curve: figs5_free_actin_data
+    target_curve: figs6_pred_blue_data
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    L_mem_curve: L_mem_eq12_traj_blue
+  note: "Printed SI Eq. (12) integrated over digitized Fig. s5 c_0(t) at Fig. s6 blue-curve timestamps using f_mem/N = 3 pN."
+
+- id: run_eq12_traj_figs6_squares
+  model: filopodium_growth_eq12_trajectory
+  inputs:
+    c0_curve: figs5_free_actin_data
+    target_curve: figs6_exp_squares_data
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    L_mem_curve: L_mem_eq12_traj_squares
+  note: "Printed SI Eq. (12) integrated over digitized Fig. s5 c_0(t) at Fig. s6 measured protrusion 1 (black squares) timestamps."
+
+- id: run_eq12_traj_figs6_crosses
+  model: filopodium_growth_eq12_trajectory
+  inputs:
+    c0_curve: figs5_free_actin_data
+    target_curve: figs6_exp_crosses_data
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+  settings: {}
+  outputs:
+    L_mem_curve: L_mem_eq12_traj_crosses
+  note: "Printed SI Eq. (12) integrated over digitized Fig. s5 c_0(t) at Fig. s6 measured protrusion 2 (black crosses) timestamps."
+
+- id: run_eq12_dim_traj_figs6_red
+  model: filopodium_growth_eq12_dimensional_trajectory
+  inputs:
+    c0_curve: figs5_free_actin_data
+    target_curve: figs6_pred_red_data
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+    L_star: L_star_added
+    v_0: v_0_added
+  settings: {}
+  outputs:
+    L_mem_curve: L_mem_eq12_dim_traj_red
+  note: "Dimensionally restored SI Eq. (12) variant integrated over Fig. s5 c_0(t) at Fig. s6 red-curve timestamps (L_star = 1.0 um, v_0 = 0.25 um/s)."
+
+- id: run_eq12_dim_traj_figs6_blue
+  model: filopodium_growth_eq12_dimensional_trajectory
+  inputs:
+    c0_curve: figs5_free_actin_data
+    target_curve: figs6_pred_blue_data
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+    L_star: L_star_added
+    v_0: v_0_added
+  settings: {}
+  outputs:
+    L_mem_curve: L_mem_eq12_dim_traj_blue
+  note: "Dimensionally restored SI Eq. (12) variant integrated over Fig. s5 c_0(t) at Fig. s6 blue-curve timestamps (L_star = 1.0 um, v_0 = 0.25 um/s)."
+
+- id: run_eq12_dim_traj_figs6_squares
+  model: filopodium_growth_eq12_dimensional_trajectory
+  inputs:
+    c0_curve: figs5_free_actin_data
+    target_curve: figs6_exp_squares_data
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+    L_star: L_star_added
+    v_0: v_0_added
+  settings: {}
+  outputs:
+    L_mem_curve: L_mem_eq12_dim_traj_squares
+  note: "Dimensionally restored SI Eq. (12) variant integrated over Fig. s5 c_0(t) at Fig. s6 measured black squares timestamps."
+
+- id: run_eq12_dim_traj_figs6_crosses
+  model: filopodium_growth_eq12_dimensional_trajectory
+  inputs:
+    c0_curve: figs5_free_actin_data
+    target_curve: figs6_exp_crosses_data
+    f_mem: f_mem_common_si
+    delta: delta_monomer_si
+    N: N_from_20pN_3pN
+    kBT: kBT_added
+    L_star: L_star_added
+    v_0: v_0_added
+  settings: {}
+  outputs:
+    L_mem_curve: L_mem_eq12_dim_traj_crosses
+  note: "Dimensionally restored SI Eq. (12) variant integrated over Fig. s5 c_0(t) at Fig. s6 measured black crosses timestamps."
+

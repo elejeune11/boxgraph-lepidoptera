@@ -1,0 +1,388 @@
+# 1. Analytical three-filament heterogeneous single-transition rigidity threshold (p. 3 col 1)
+- id: run_three_filament_threshold
+  model: three_filament_single_transition_threshold
+  inputs:
+    r2: three_filament_k2_over_k1_equal
+  outputs:
+    r3_c: three_filament_r3c_pred
+
+# 2. Programmatic extraction of discontinuous unbinding thresholds |W_bar_c(N)| from Fig. 3(a)
+- id: run_extract_Wc_N2
+  model: extract_unbinding_threshold
+  inputs: {energy_curve: fig3a_N2_mc}
+  outputs: {W_bar_c: Wc_N2_fig3a}
+
+- id: run_extract_Wc_N3
+  model: extract_unbinding_threshold
+  inputs: {energy_curve: fig3a_N3_mc}
+  outputs: {W_bar_c: Wc_N3_fig3a}
+
+- id: run_extract_Wc_N5
+  model: extract_unbinding_threshold
+  inputs: {energy_curve: fig3a_N5_mc}
+  outputs: {W_bar_c: Wc_N5_fig3a}
+
+- id: run_extract_Wc_N10
+  model: extract_unbinding_threshold
+  inputs: {energy_curve: fig3a_N10_compact_mc}
+  outputs: {W_bar_c: Wc_N10_fig3a}
+
+- id: run_extract_Wc_N20
+  model: extract_unbinding_threshold
+  inputs: {energy_curve: fig3a_N20_compact_mc}
+  outputs: {W_bar_c: Wc_N20_fig3a}
+
+# 3. Analytical unbinding threshold models vs. Fig. 3(a) MC thresholds
+- id: run_eq5_lattice_N2
+  model: pair_unbinding_threshold_eq5_lattice
+  inputs:
+    L_p: mc_Lp
+    l_a: mc_la
+  outputs:
+    W_bar_c: Wc_N2_eq5_pred
+
+- id: run_large_N_Wc_hex
+  model: large_N_unbinding_threshold
+  inputs:
+    W_bar_c_pair: Wc_N2_fig3a
+    q: hexagonal_coordination_q
+  outputs:
+    W_bar_c: Wc_largeN_hex_pred
+
+- id: run_subbundle_largeN_M1_pair
+  model: subbundle_unbinding_threshold_large_N
+  inputs:
+    W_bar_c_pair: Wc_N2_fig3a
+    M: single_filament_subbundle_M
+    Delta_n_nn: delta_nnn_pair_contact
+  outputs:
+    W_bar_c: Wc_largeN_M1_pair_pred
+
+- id: run_subbundle_finite_N3_pair
+  model: subbundle_unbinding_threshold_finite_N
+  inputs:
+    W_bar_c_pair: Wc_N2_fig3a
+    M: single_filament_subbundle_M
+    N: mc_N3
+    Delta_n_nn: delta_nnn_pair_contact
+  outputs:
+    W_bar_c: Wc_N3_pair_pred
+
+- id: run_subbundle_finite_N5_pair
+  model: subbundle_unbinding_threshold_finite_N
+  inputs:
+    W_bar_c_pair: Wc_N2_fig3a
+    M: single_filament_subbundle_M
+    N: mc_N5
+    Delta_n_nn: delta_nnn_pair_contact
+  outputs:
+    W_bar_c: Wc_N5_pair_pred
+
+- id: run_subbundle_finite_N10_pair
+  model: subbundle_unbinding_threshold_finite_N
+  inputs:
+    W_bar_c_pair: Wc_N2_fig3a
+    M: single_filament_subbundle_M
+    N: mc_N10
+    Delta_n_nn: delta_nnn_pair_contact
+  outputs:
+    W_bar_c: Wc_N10_pair_pred
+
+- id: run_subbundle_finite_N20_pair
+  model: subbundle_unbinding_threshold_finite_N
+  inputs:
+    W_bar_c_pair: Wc_N2_fig3a
+    M: single_filament_subbundle_M
+    N: mc_N20
+    Delta_n_nn: delta_nnn_pair_contact
+  outputs:
+    W_bar_c: Wc_N20_pair_pred
+
+- id: run_subbundle_finite_N20_hex
+  model: subbundle_unbinding_threshold_finite_N
+  inputs:
+    W_bar_c_pair: Wc_N2_fig3a
+    M: single_filament_subbundle_M
+    N: mc_N20
+    Delta_n_nn: delta_nnn_hex_half_q
+  outputs:
+    W_bar_c: Wc_N20_hex_pred
+
+# 4. Footnote [15] finite separation moment order upper bound across simulated N
+- id: run_fn15_N2
+  model: finite_moment_bound_fn15
+  inputs: {N: mc_N2}
+  outputs: {m_max: m_max_N2_pred}
+
+- id: run_fn15_N3
+  model: finite_moment_bound_fn15
+  inputs: {N: mc_N3}
+  outputs: {m_max: m_max_N3_pred}
+
+- id: run_fn15_N5
+  model: finite_moment_bound_fn15
+  inputs: {N: mc_N5}
+  outputs: {m_max: m_max_N5_pred}
+
+- id: run_fn15_N10
+  model: finite_moment_bound_fn15
+  inputs: {N: mc_N10}
+  outputs: {m_max: m_max_N10_pred}
+
+- id: run_fn15_N20
+  model: finite_moment_bound_fn15
+  inputs: {N: mc_N20}
+  outputs: {m_max: m_max_N20_pred}
+
+# 5. Dimensional F-actin analytical model evaluations (Pages 1, 2, 3, 4)
+- id: run_factin_persistence_length
+  model: persistence_length_def
+  inputs: {kappa: actin_kappa_added, T: kBT_room_added}
+  outputs: {L_p: factin_Lp_from_kappa}
+
+- id: run_factin_reduced_rigidity_pair
+  model: reduced_bending_rigidity_pair
+  inputs: {kappa_1: actin_kappa_added, kappa_2: actin_kappa_added}
+  outputs: {kappa_r_12: factin_kappa_r12}
+
+- id: run_factin_three_filament_rigidity
+  model: three_filament_reduced_rigidity
+  inputs: {kappa_1: actin_kappa_added, kappa_2: actin_kappa_added, kappa_3: actin_kappa_soft_added}
+  outputs: {kappa_123: factin_kappa_123}
+
+- id: run_factin_subbundle_rigidity
+  model: subbundle_reduced_rigidity
+  inputs: {M: single_filament_subbundle_M, N: mc_N20, kappa: actin_kappa_added}
+  outputs: {kappa_r_M: factin_kappa_r_M1_N20}
+
+- id: run_factin_eq5_dimensional
+  model: pair_unbinding_threshold_eq5
+  inputs: {T: kBT_room_added, L_p: actin_Lp_reported, l_a: actin_la_added}
+  outputs: {W_bar_c: factin_Wc_eq5_dim}
+
+- id: run_factin_linker_occupancy
+  model: linker_site_occupancy
+  inputs: {K: linker_K_added, c_x: linker_cx_added}
+  outputs: {X_1: factin_X1}
+
+- id: run_factin_weak_pair_strength
+  model: effective_pair_strength_weak
+  inputs: {X_1: factin_X1, W: bare_W_weak_added}
+  outputs: {W_bar: factin_W_bar_weak}
+
+- id: run_factin_critical_occupancy_weak
+  model: critical_linker_occupancy_weak
+  inputs: {W_bar_c: crit_W_bar_c_signed_added, W: bare_W_weak_added}
+  outputs: {X_1c: factin_X1c_weak}
+
+- id: run_factin_strong_pair_printed
+  model: effective_pair_strength_strong_printed
+  inputs: {X_1: factin_X1, W: bare_W_strong_added, a_par: actin_a_par_added, T: kBT_room_added}
+  outputs: {W_bar: factin_W_bar_strong_printed}
+  note: "Demonstrates that the verbatim printed equation yields W_bar = 0 identically for X_1 < 1."
+
+- id: run_factin_strong_pair_corrected
+  model: effective_pair_strength_strong_corrected
+  inputs: {X_1: factin_X1, W: bare_W_strong_added, a_par: actin_a_par_added, T: kBT_room_added}
+  outputs: {W_bar: factin_W_bar_strong_corrected}
+  note: "Corrected RHS bare W yields finite attractive effective strength W_bar < 0."
+
+- id: run_factin_eq4_printed
+  model: effective_interaction_eq4_pair_printed
+  inputs: {X_1: factin_X1, W: bare_W_strong_added, a_par: actin_a_par_added, n_seg: actin_n_seg_added, T: kBT_room_added}
+  outputs: {H_bar_2: factin_H2_eq4_printed}
+
+- id: run_factin_eq4_corrected
+  model: effective_interaction_eq4_pair_corrected
+  inputs: {X_1: factin_X1, W: bare_W_strong_added, a_par: actin_a_par_added, n_seg: actin_n_seg_added, T: kBT_room_added}
+  outputs: {H_bar_2: factin_H2_eq4_corrected}
+
+- id: run_factin_rod_attraction_J
+  model: effective_rod_attraction_J
+  inputs: {W_bar: eff_W_bar_bound_added, W_bar_c: crit_W_bar_c_signed_added}
+  outputs: {J: factin_rod_J}
+
+- id: run_factin_translational_entropy
+  model: translational_entropy_fn16
+  inputs: {N: mc_N20, a_perp: actin_a_perp_added, L_perp: compartment_L_perp_added}
+  outputs: {S_tr: factin_S_tr_N20}
+
+- id: run_factin_entropy_diameter_bound
+  model: negligible_entropy_diameter_bound_fn16
+  inputs: {a_perp: actin_a_perp_added, N: mc_N20, L: actin_L_added, J: factin_rod_J, q: hexagonal_coordination_q, T: kBT_room_added}
+  outputs: {L_perp_max: factin_L_perp_max_N20}
+
+# 6. First-principles Metropolis MC simulation for N = 2 (Fig. 3(a) and Fig. 3(b))
+- id: run_mc_fig3a_N2
+  model: mc_two_filament_bundle
+  inputs:
+    L_p: mc_Lp
+    L: mc_L
+    l_a: mc_la
+    l_r: mc_lr
+  sweep:
+    W_bar: fig3a_N2_mc
+  replicates: 3
+  outputs:
+    energy_per_filament_length: fig3a_N2_mc_pred
+    mean_separation: fig3a_N2_sep_pred
+  note: "Added numerical choices: n_equil=3000, n_meas=4000 sweeps with 4-sublattice single-bead and multi-scale collective bump/translation moves (paper does not report sweep counts or proposal step sizes)."
+
+- id: run_mc_fig3b_N2_mean
+  model: mc_two_filament_bundle_reduced
+  inputs:
+    W_bar_c: Wc_N2_fig3a
+    L_p: mc_Lp
+    L: mc_L
+    l_a: mc_la
+    l_r: mc_lr
+  sweep:
+    reduced_W: fig3b_N2_mc
+  replicates: 3
+  outputs:
+    mean_separation: fig3b_N2_mean_pred
+  note: "Evaluates the captioned observable <|Delta z_12| - l_r> at |W_bar| = |W_bar_c|/(1 - reduced_W)."
+
+- id: run_mc_fig3b_N2_rms
+  model: mc_two_filament_bundle_reduced_rms
+  inputs:
+    W_bar_c: Wc_N2_fig3a
+    L_p: mc_Lp
+    L: mc_L
+    l_a: mc_la
+    l_r: mc_lr
+  sweep:
+    reduced_W: fig3b_N2_mc
+  replicates: 3
+  outputs:
+    mean_separation: fig3b_N2_rms_pred
+  note: "Diagnostic variant evaluating RMS separation sqrt(<(|Delta z_12| - l_r)^2>) on the same N = 2 Hamiltonian."
+
+# Single-point runs for MC sweep-count convergence refinement
+- id: run_mc_N2_ref_W7
+  model: mc_two_filament_bundle
+  inputs:
+    W_bar: ref_W_bar_7_added
+    L_p: mc_Lp
+    L: mc_L
+    l_a: mc_la
+    l_r: mc_lr
+  replicates: 3
+  outputs:
+    energy_per_filament_length: mc_N2_W7_e_ref
+    mean_separation: mc_N2_W7_dz_ref
+
+- id: run_mc_N2_red_ref
+  model: mc_two_filament_bundle_reduced
+  inputs:
+    reduced_W: ref_reduced_W_023_added
+    W_bar_c: Wc_N2_fig3a
+    L_p: mc_Lp
+    L: mc_L
+    l_a: mc_la
+    l_r: mc_lr
+  replicates: 3
+  outputs:
+    mean_separation: mc_N2_red_dz_ref
+
+- id: run_mc_N2_rms_ref
+  model: mc_two_filament_bundle_reduced_rms
+  inputs:
+    reduced_W: ref_reduced_W_023_added
+    W_bar_c: Wc_N2_fig3a
+    L_p: mc_Lp
+    L: mc_L
+    l_a: mc_la
+    l_r: mc_lr
+  replicates: 3
+  outputs:
+    mean_separation: mc_N2_rms_dz_ref
+
+# 7. Analytical hexagonal tight-binding energy envelopes for N = 3, 5, 10, 20 compact (Fig. 3(a))
+- id: run_hex_energy_N3
+  model: hexagonal_bundle_tight_binding_energy
+  inputs: {N: mc_N3, W_bar_c: Wc_N3_fig3a, L: mc_L}
+  sweep: {W_bar: fig3a_N3_mc}
+  outputs: {energy_per_filament_length: fig3a_N3_hex_pred}
+
+- id: run_hex_energy_N5
+  model: hexagonal_bundle_tight_binding_energy
+  inputs: {N: mc_N5, W_bar_c: Wc_N5_fig3a, L: mc_L}
+  sweep: {W_bar: fig3a_N5_mc}
+  outputs: {energy_per_filament_length: fig3a_N5_hex_pred}
+
+- id: run_hex_energy_N10
+  model: hexagonal_bundle_tight_binding_energy
+  inputs: {N: mc_N10, W_bar_c: Wc_N10_fig3a, L: mc_L}
+  sweep: {W_bar: fig3a_N10_compact_mc}
+  outputs: {energy_per_filament_length: fig3a_N10_hex_pred}
+
+- id: run_hex_energy_N20
+  model: hexagonal_bundle_tight_binding_energy
+  inputs: {N: mc_N20, W_bar_c: Wc_N20_fig3a, L: mc_L}
+  sweep: {W_bar: fig3a_N20_compact_mc}
+  outputs: {energy_per_filament_length: fig3a_N20_hex_pred}
+
+# 8. Geometric hexagonal packing separation baselines for N = 3, 5, 10, 20 compact (Fig. 3(b))
+- id: run_hex_sep_N3
+  model: hexagonal_bundle_packing_separation
+  inputs: {N: mc_N3, l_r: mc_lr}
+  sweep: {reduced_W: fig3b_N3_mc}
+  outputs: {mean_separation: fig3b_N3_hex_pred}
+
+- id: run_hex_sep_N5
+  model: hexagonal_bundle_packing_separation
+  inputs: {N: mc_N5, l_r: mc_lr}
+  sweep: {reduced_W: fig3b_N5_mc}
+  outputs: {mean_separation: fig3b_N5_hex_pred}
+
+- id: run_hex_sep_N10
+  model: hexagonal_bundle_packing_separation
+  inputs: {N: mc_N10, l_r: mc_lr}
+  sweep: {reduced_W: fig3b_N10_compact_mc}
+  outputs: {mean_separation: fig3b_N10_hex_pred}
+
+- id: run_hex_sep_N20
+  model: hexagonal_bundle_packing_separation
+  inputs: {N: mc_N20, l_r: mc_lr}
+  sweep: {reduced_W: fig3b_N20_compact_mc}
+  outputs: {mean_separation: fig3b_N20_hex_pred}
+
+- id: run_hex_sep_rms_N5
+  model: hexagonal_bundle_packing_separation_rms
+  inputs: {N: mc_N5, l_r: mc_lr}
+  sweep: {reduced_W: fig3b_N5_mc}
+  outputs: {mean_separation: fig3b_N5_hex_rms_pred}
+
+- id: run_hex_sep_rms_N10
+  model: hexagonal_bundle_packing_separation_rms
+  inputs: {N: mc_N10, l_r: mc_lr}
+  sweep: {reduced_W: fig3b_N10_compact_mc}
+  outputs: {mean_separation: fig3b_N10_hex_rms_pred}
+
+- id: run_hex_sep_rms_N20
+  model: hexagonal_bundle_packing_separation_rms
+  inputs: {N: mc_N20, l_r: mc_lr}
+  sweep: {reduced_W: fig3b_N20_compact_mc}
+  outputs: {mean_separation: fig3b_N20_hex_rms_pred}
+
+# 9. Resampled curve consistency comparisons for segregated planar branches (p. 4 col 1)
+- id: run_resample_N5_to_N10_planar
+  model: resample_energy_curve
+  inputs: {source: fig3a_N5_mc, target: fig3a_N10_planar_mc}
+  outputs: {resampled: fig3a_N5_on_N10_planar}
+
+- id: run_resample_N5_to_N20_planar
+  model: resample_energy_curve
+  inputs: {source: fig3a_N5_mc, target: fig3a_N20_planar_mc}
+  outputs: {resampled: fig3a_N5_on_N20_planar}
+
+- id: run_resample_N10c_to_N10p_sep
+  model: resample_separation_curve
+  inputs: {source: fig3b_N10_compact_mc, target: fig3b_N10_planar_mc}
+  outputs: {resampled: fig3b_N10c_on_N10p}
+
+- id: run_resample_N20c_to_N20p_sep
+  model: resample_separation_curve
+  inputs: {source: fig3b_N20_compact_mc, target: fig3b_N20_planar_mc}
+  outputs: {resampled: fig3b_N20c_on_N20p}

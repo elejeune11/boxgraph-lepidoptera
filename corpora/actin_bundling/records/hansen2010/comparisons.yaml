@@ -1,0 +1,423 @@
+# ==========================================================================
+# 1. VASP barbed-end processivity and kinetic derivations
+# ==========================================================================
+
+- id: cmp_barbed_end_koff
+  purpose: reproduction
+  computed: koff_computed_1uM_actin
+  printed: k_off_barbed_end_1uM_actin
+  note: "1 / 1.45 s = 0.6897 s^-1 vs printed 0.69 s^-1."
+
+- id: cmp_barbed_end_kon_printed_koff
+  purpose: reproduction
+  computed: kon_computed_from_printed_koff
+  printed: k_on_vasp_barbed_end
+  note: "0.69 s^-1 / 9.2 nM = 75.0 uM^-1 s^-1 vs printed 75 uM^-1 s^-1."
+
+- id: cmp_barbed_end_kon_chained
+  purpose: reproduction
+  computed: kon_computed_chained
+  printed: k_on_vasp_barbed_end
+  note: "(1 / 1.45 s) / 9.2 nM = 74.96 uM^-1 s^-1 vs printed 75 uM^-1 s^-1."
+
+- id: cmp_barbed_end_kon_abstract_kd
+  purpose: consistency
+  computed: kon_computed_abstract_kd
+  printed: k_on_vasp_barbed_end
+  note: "Sensitivity check using Abstract rounded K_d = 9 nM (0.69 / 0.009 = 76.7 uM^-1 s^-1 vs 75 uM^-1 s^-1)."
+
+- id: cmp_monomers_delivered_1uM
+  purpose: reproduction
+  computed: monomers_delivered_computed_1uM
+  printed: monomers_delivered_1uM_actin
+  conditions_ok: "Paper explicitly combines 50 nM VASP max elongation rate (29.1 sub/s) with 0.25 nM Cy3-VASP single-molecule barbed-end dwell time (1.45 s) to estimate monomers delivered per saturated binding event."
+  note: "29.1 sub/s * 1.45 s = 42.20 vs printed 42 monomers."
+
+- id: cmp_monomers_delivered_1uM_surfing
+  purpose: consistency
+  computed: monomers_delivered_computed_surfing
+  printed: monomers_delivered_1uM_actin
+  note: "Using single-molecule surfing velocity (33 +/- 6.5 sub/s) * 1.45 s = 47.85 monomers vs 42 monomers."
+
+- id: cmp_mm_50nM_vasp_rate
+  purpose: fit_quality
+  computed: v_mm_50nM_vasp_pred
+  printed: v_max_1uM_actin_50nM_vasp
+  note: "Offset Michaelis-Menten rate at 50 nM VASP with added delta_v_max = 23 sub/s vs measured 29.1 +/- 1.2 sub/s."
+
+- id: cmp_fold_actin_slope
+  purpose: reproduction
+  computed: fold_actin_slope_computed
+  printed: fold_enhancement_actin_slope_fig4h
+  conditions_ok: "Ratio compares +50 nM VASP slope (24 uM^-1 s^-1) to 0 nM VASP baseline slope (9 uM^-1 s^-1)."
+  note: "24 / 9 = 2.667 vs printed 2.7-fold."
+
+- id: cmp_fold_2uM_profilin_actin
+  purpose: reproduction
+  computed: fold_2uM_profilin_actin_computed
+  printed: fold_enhancement_2uM_profilin_actin
+  conditions_ok: "Ratio compares +50 nM VASP rate (28.2 sub/s) to 0 nM VASP baseline rate (11.4 sub/s)."
+  note: "28.2 / 11.4 = 2.474 vs printed 2.5-fold (p. 576)."
+
+- id: cmp_fold_2uM_profilin_actin_fig6b
+  purpose: consistency
+  computed: fold_2uM_profilin_actin_computed
+  printed: fold_enhancement_2uM_profilin_actin_fig6b
+  conditions_ok: "Ratio compares +50 nM VASP rate (28.2 sub/s) to 0 nM VASP baseline rate (11.4 sub/s) against the 2.4x scaling factor cited in Fig. 6B caption."
+  note: "28.2 / 11.4 = 2.474 vs 2.4x cited in Fig. 6B caption (p. 579)."
+
+- id: cmp_fold_1uM_actin_50mM_kcl_300pct
+  purpose: reproduction
+  computed: fold_1uM_actin_50mM_kcl_computed
+  printed: fold_enhancement_1uM_actin_50mM_kcl_300pct
+  conditions_ok: "Ratio compares +50 nM VASP rate (29.1 +/- 1.2 sub/s) to the Fig. 4G 10 sub/s basal offset against the printed 300% total-rate acceleration on p. 579 (up to threefold on p. 572)."
+  note: "29.1 / 10 = 2.91 = 291% (input uncertainty band from 29.1 +/- 1.2 sub/s spans 279-303%) vs printed 300% (p. 579)."
+
+# ==========================================================================
+# 2. Capping protein competition kinetics
+# ==========================================================================
+
+- id: cmp_cp_reduction_50mM_kcl
+  purpose: reproduction
+  computed: cp_reduction_50mM_computed
+  printed: cp_rate_reduction_50mM_kcl
+  conditions_ok: "Ratio compares 0 nM VASP capping rate constant (12 uM^-1 s^-1) to +50 nM VASP (1.9 uM^-1 s^-1)."
+  note: "12 / 1.9 = 6.316 vs printed 6.3-fold."
+
+- id: cmp_cp_reduction_100mM_kcl
+  purpose: reproduction
+  computed: cp_reduction_100mM_computed
+  printed: cp_rate_reduction_100mM_kcl
+  conditions_ok: "Ratio compares 0 nM VASP capping rate constant (10 uM^-1 s^-1) to +50 nM VASP (3.7 uM^-1 s^-1)."
+  note: "10 / 3.7 = 2.703 vs printed 2.7-fold."
+
+- id: cmp_k_obs_50mM_no_vasp
+  purpose: fit_quality
+  computed: k_obs_pred_50mM_no_vasp
+  printed: k_obs_capping_50mM_kcl_no_vasp
+  note: "Linear slope 12 uM^-1 s^-1 through origin predicts 0.024 and 0.048 s^-1 vs Fig. 6C table 0.024 and 0.049 s^-1."
+
+- id: cmp_k_obs_50mM_50nM_vasp
+  purpose: fit_quality
+  computed: k_obs_pred_50mM_50nM_vasp
+  printed: k_obs_capping_50mM_kcl_50nM_vasp
+  note: "Global Fig. 6D slope 1.9 uM^-1 s^-1 predicts 0.0038 and 0.0076 s^-1 vs Fig. 6C table 0.0063 and 0.0099 s^-1 (low-[CP] points sit 23-40% above the global origin-constrained line)."
+
+# ==========================================================================
+# 3. Single-molecule binding-mode counts and fractions (Fig. 2)
+# ==========================================================================
+
+- id: cmp_pct_diffusive
+  purpose: reproduction
+  computed: pct_diffusive_computed
+  printed: pct_events_fig2_diffusive
+  note: "719 / 1057 = 68.02% vs printed 68%."
+
+- id: cmp_pct_static
+  purpose: reproduction
+  computed: pct_static_computed
+  printed: pct_events_fig2_static
+  note: "116 / 1057 = 10.97% vs printed 11%."
+
+- id: cmp_pct_transient
+  purpose: reproduction
+  computed: pct_transient_computed
+  printed: pct_events_fig2_transient
+  note: "222 / 1057 = 21.00% vs printed 21%."
+
+- id: cmp_n_tau1_component
+  purpose: reproduction
+  computed: n_tau1_component_computed
+  printed: n_events_fig2d_tau1_component
+  note: "0.86 * 1057 = 909.02 vs printed n = 909."
+
+- id: cmp_n_tau2_component
+  purpose: reproduction
+  computed: n_tau2_component_computed
+  printed: n_events_fig2d_tau2_component
+  note: "0.14 * 1057 = 147.98 vs printed n = 148."
+
+- id: cmp_non_static_count
+  purpose: consistency
+  computed: n_non_static_computed
+  printed: n_events_fig2e_non_static
+  note: "1057 - 116 = 941 non-static events vs printed n = 936 in Fig. 2E (difference of 5 events)."
+
+# ==========================================================================
+# 4. F-actin nucleotide hydrolysis and Pi release (Fig. S3E)
+# ==========================================================================
+
+- id: cmp_pi_release_half_life
+  purpose: reproduction
+  computed: t_half_pi_release_computed
+  printed: t_half_pi_release_printed
+  note: "Exact sequential ATP -> ADP-Pi -> ADP model gives t_1/2 = 296.28 s vs printed 296 s."
+
+# ==========================================================================
+# 5. Protein stoichiometry and molecular weights (Figs. 1, 5A)
+# ==========================================================================
+
+- id: cmp_vasp_tetramer_conc
+  purpose: reproduction
+  computed: vasp_tetramer_conc_computed
+  printed: vasp_conc_63nM_tetramer
+  note: "250 nM / 4 = 62.5 nM vs printed 63 nM."
+
+- id: cmp_vasp_tetramer_mw_expected
+  purpose: consistency
+  computed: mw_vasp_tetramer_computed
+  printed: mw_vasp_tetramer_expected
+  note: "4 * 40 kD (rounded monomer label in Fig. 1B) = 160 kD vs 161 kD expected tetramer MW (p. 581)."
+
+- id: cmp_vasp_tetramer_mw_measured
+  purpose: validation
+  computed: mw_vasp_tetramer_computed
+  printed: mw_vasp_tetramer_measured
+  note: "4 * 40 kD = 160 kD vs 162 kD measured tetramer MW by sedimentation equilibrium (p. 581)."
+
+- id: cmp_vasp_profilin_mw_1_pred
+  purpose: reproduction
+  computed: mw_vasp_1hpro1_computed
+  printed: mw_fig5a_pred_30uM_hpro1
+  note: "24.8 + 15 = 39.8 kD vs printed MW_pred = 38 kD in Fig. 5A (30 uM hProI panel)."
+
+- id: cmp_vasp_profilin_mw_1_obs
+  purpose: validation
+  computed: mw_vasp_1hpro1_computed
+  printed: mw_fig5a_obs_30uM_hpro1
+  note: "24.8 + 15 = 39.8 kD vs printed MW_obs = 36 kD at 30 uM hProI."
+
+- id: cmp_vasp_profilin_mw_2_pred
+  purpose: reproduction
+  computed: mw_vasp_2hpro1_computed
+  printed: mw_fig5a_pred_90uM_hpro1
+  note: "24.8 + 2 * 15 = 54.8 kD vs printed MW_pred = 53 kD in Fig. 5A (90 uM hProI panel)."
+
+- id: cmp_vasp_profilin_mw_2_obs
+  purpose: validation
+  computed: mw_vasp_2hpro1_computed
+  printed: mw_fig5a_obs_90uM_hpro1
+  note: "24.8 + 2 * 15 = 54.8 kD vs printed MW_obs = 53 kD at 90 uM hProI."
+
+# ==========================================================================
+# 6. Figure S5 analytical ultracentrifugation models (pp. 19-23)
+# ==========================================================================
+
+- id: cmp_auc_sigma_o_vasp
+  purpose: reproduction
+  computed: sigma_o_vasp_computed
+  printed: auc_sigma_o_vasp
+  conditions_ok: "Computed at standard AUC reference speed 10,000 RPM with added T = 20 degC, vbar = 0.73 cm^3/g, rho = 1.00 g/cm^3."
+  note: "Standard vbar = 0.73 cm^3/g gives sigma_o = 1.96 cm^-2 vs printed 1.78 cm^-2 (reproducing 1.78 requires vbar ~ 0.754 cm^3/g at 20 degC or 0.750 at 25 degC)."
+
+- id: cmp_auc_sigma_a_actin
+  purpose: reproduction
+  computed: sigma_a_actin_computed
+  printed: auc_sigma_a_actin
+  conditions_ok: "Computed at standard AUC reference speed 10,000 RPM with added T = 20 degC, vbar = 0.73 cm^3/g, rho = 1.00 g/cm^3."
+  note: "Standard vbar = 0.73 cm^3/g gives sigma_a = 0.51 cm^-2 vs printed 0.57 cm^-2 (reproducing 0.57 requires vbar ~ 0.698 cm^3/g, opposite direction to VASP)."
+
+- id: cmp_auc_sigma_complexes
+  purpose: reproduction
+  computed: sigma_complexes_computed
+  printed: auc_sigma_complexes_table
+  note: "1.78 + i * 0.57 gives [2.35, 2.92, 3.49, 4.06] vs printed [2.35, 2.92, 3.50, 4.07] (consistent with unrounded sigma_a ~ 0.573)."
+
+- id: cmp_auc_speed_factors
+  purpose: reproduction
+  computed: auc_speed_factors_computed
+  printed: auc_speed_factors_table
+  note: "(omega / 10000)^2 gives exact [0.25, 0.49, 1.00] for [5000, 7000, 10000] RPM."
+
+- id: cmp_auc_rav
+  purpose: reproduction
+  computed: auc_rav_computed
+  printed: auc_rav_table
+  note: "[2, 25] uM / 1.43 uM = [1.399, 17.48] vs printed [1.4, 17.5]."
+
+- id: cmp_auc_kd_ladder_beta_02125
+  purpose: reproduction
+  computed: auc_kd_ladder_computed_02125
+  printed: auc_kd_four_sites_table
+  note: "0.43 / 0.2125^(i-1) = [0.43, 2.024, 9.522, 44.81] uM vs printed [0.43, 2.0, 9.5, 45] uM."
+
+- id: cmp_auc_kd_ladder_beta_0213
+  purpose: consistency
+  computed: auc_kd_ladder_computed_0213
+  printed: auc_kd_four_sites_table
+  note: "Sensitivity check using text rounded beta = 0.213 gives [0.43, 2.019, 9.478, 44.50] uM vs printed [0.43, 2.0, 9.5, 45] uM."
+
+- id: cmp_auc_kd1_from_ka_area_norm
+  purpose: reproduction
+  computed: auc_kd1_area_norm_computed
+  printed: auc_kd1_vasp_g_actin
+  note: "Strict p. 21 area-1 normalization (K_d1 = C_vasp * delta_X / K_a) gives 1.87 uM (for delta_X = 1.45 cm^2) vs printed 0.43 uM (4.3-fold mismatch; Fig. S5C curves have area ~3.7-4.2 and mean y ~ 2.9-3.0 rather than unit area)."
+
+# ==========================================================================
+# 7. Digitized figure curve and dose-response comparisons
+# ==========================================================================
+
+- id: cmp_fig4g_mm_fit_curve
+  purpose: reproduction
+  computed: v_mm_fig4g_fit_pred
+  printed: d_fig4g_mm_fit
+  note: Reproduces the Fig. 4G red offset Michaelis-Menten fit curve across 5-120 nM VASP using v_0 = 10 sub/s, K_d = 9.2
+    nM, and added delta_v_max = 23 sub/s (exact curve fit gives delta_v_max = 22.9 sub/s, settling q_fig4g_unstated_vmax).
+- id: cmp_fig4g_measured_rates
+  purpose: fit_quality
+  computed: v_mm_fig4g_measured_pred
+  printed: d_fig4g_measured
+  note: Compares the offset Michaelis-Menten curve against the digitized Fig. 4G measured mean rates + SD bars across 0-100
+    nM VASP.
+- id: cmp_fig1d_50mM_vasp_rates
+  purpose: validation
+  computed: v_mm_fig1d_50mM_vasp_pred
+  printed: d_fig1d_50mM_vasp
+  note: Compares the Fig. 4G Michaelis-Menten model against the independent Fig. 1D 50 mM KCl unlabeled VASP dose-response
+    bars (0-100 nM).
+- id: cmp_fig1d_50mM_cy3_vasp_rates
+  purpose: validation
+  computed: v_mm_fig1d_50mM_cy3_vasp_pred
+  printed: d_fig1d_50mM_cy3_vasp
+  note: Compares the Fig. 4G Michaelis-Menten model against the Fig. 1D 50 mM KCl Cy3-VASP dose-response bars (1-100 nM).
+- id: cmp_fig2d_survival_fit_curve
+  purpose: reproduction
+  computed: surv_fig2d_fit_pred
+  printed: d_fig2d_survival_fit
+  note: Reproduces the Fig. 2D red double-exponential survival fit curve using printed 86%/14%, tau_1 = 0.36 s, tau_2 = 4.99
+    s.
+- id: cmp_fig2d_survival_data_curve
+  purpose: fit_quality
+  computed: surv_fig2d_data_pred
+  printed: d_fig2d_survival_data
+  note: Compares the Fig. 2D double-exponential fit against the digitized black empirical 1-CF survival curve (0.5-15 s).
+- id: cmp_fig2e_inset_1cf_curve
+  purpose: reproduction
+  computed: surv_fig2e_inset_pred
+  printed: d_fig2e_inset_1cf_fit
+  conditions_ok: Single-exponential fit corresponds to x0 = 100% in the double-exponential survival model.
+  note: Reproduces the Fig. 2E inset red single-exponential fit (tau_1 = 0.44 s, n = 936).
+- id: cmp_fig2h_vasp_latb_vs_table
+  purpose: reproduction
+  computed: surv_fig2h_latb_table_pred
+  printed: d_fig2h_vasp_latb
+  note: 'Tests the Fig. 2H black ''VASP +LatB'' curve against its own Fig. 2H inset table parameters (82%, tau_1 = 0.41 s,
+    tau_2 = 5.19 s): the plotted curve sits systematically ~0.04-0.075 below the table formula!'
+- id: cmp_fig2h_vasp_latb_vs_fig2d
+  purpose: consistency
+  computed: surv_fig2h_latb_fig2d_pred
+  printed: d_fig2h_vasp_latb
+  conditions_ok: Cross-panel consistency test checking whether the Fig. 2H 'VASP +LatB' black curve was actually plotted using
+    the Fig. 2D (no LatB) parameters (86%, 0.36 s, 4.99 s).
+  note: 'Tests the Fig. 2H black curve against Fig. 2D parameters (86%, 0.36 s, 4.99 s): matches closely across 0.1-2.5 s,
+    indicating the plotted black trace in Fig. 2H likely reflects Fig. 2D parameters rather than the Fig. 2H table row.'
+- id: cmp_fig2h_vasp_lil_aaa_curve
+  purpose: reproduction
+  computed: surv_fig2h_lil_aaa_pred
+  printed: d_fig2h_vasp_lil_aaa
+  note: Reproduces the Fig. 2H red dashed VASP^(LIL->AAA) curve from its printed table parameters (93%, 0.12 s, 0.69 s).
+- id: cmp_fig2h_vasp_rk_ee_curve
+  purpose: reproduction
+  computed: surv_fig2h_rk_ee_pred
+  printed: d_fig2h_vasp_rk_ee
+  note: Reproduces the Fig. 2H blue dotted VASP^(RK->EE) single-exponential curve from its printed table parameters (100%,
+    0.13 s).
+- id: cmp_fig2h_vasp_2uM_actin_curve
+  purpose: reproduction
+  computed: surv_fig2h_2uM_actin_pred
+  printed: d_fig2h_vasp_2uM_actin
+  note: Reproduces the Fig. 2H green dashed +2 uM Actin (+LatB) curve from its printed table parameters (70%, 0.10 s, 0.58
+    s).
+- id: cmp_fig3g_high_adppi_curve
+  purpose: fit_quality
+  computed: surv_fig3g_high_adppi_pred
+  printed: d_fig3g_high_adppi
+  conditions_ok: Single-exponential fit corresponds to x0 = 100% in the double-exponential survival model.
+  note: Reproduces the Fig. 3G red p(ADP-Pi) >= 0.5 survival curve using tau_1 = 0.93 s.
+- id: cmp_fig3g_low_adppi_caption
+  purpose: fit_quality
+  computed: surv_fig3g_low_adppi_caption_pred
+  printed: d_fig3g_low_adppi
+  conditions_ok: Single-exponential fit corresponds to x0 = 100% in the double-exponential survival model.
+  note: Reproduces the Fig. 3G black p(ADP-Pi) <= 0.5 survival curve using the caption value tau_1 = 1.0 s.
+- id: cmp_fig3g_low_adppi_panel
+  purpose: consistency
+  computed: surv_fig3g_low_adppi_panel_pred
+  printed: d_fig3g_low_adppi
+  conditions_ok: Single-exponential fit corresponds to x0 = 100% in the double-exponential survival model.
+  note: Sensitivity check reproducing Fig. 3G black curve using the panel-printed value tau_1 = 0.99 s (indistinguishable
+    within figure reading uncertainty).
+- id: cmp_fig4e_inset_1cf_curve
+  purpose: reproduction
+  computed: surv_fig4e_inset_pred
+  printed: d_fig4e_inset_1cf_fit
+  note: Reproduces the Fig. 4E inset red single-exponential barbed-end dwell-time fit curve using tau_1 = 1.45 s.
+- id: cmp_fig3f_p_adp_pi_curve
+  purpose: reproduction
+  computed: p_adp_pi_fig3f_pred
+  printed: d_fig3f_p_adp_pi
+  note: Reproduces the Fig. 3F green dashed p(ADP-Pi) curve vs filament age (4-20 min) from Melki et al. (1996) k1 = 0.035
+    s^-1, k2 = 0.0026 s^-1.
+- id: cmp_fig3i_p_adp_pi_curve
+  purpose: reproduction
+  computed: p_adp_pi_fig3i_pred
+  printed: d_fig3i_p_adp_pi
+  note: Reproduces the Fig. 3I green dashed p(ADP-Pi) curve vs filament age (2-18 min) from Melki et al. (1996) rate constants.
+- id: cmp_figS3e_atp_curve
+  purpose: reproduction
+  computed: p_atp_figS3e_pred
+  printed: d_figS3e_atp
+  note: Reproduces the Fig. S3E red solid [ATP] subunit probability curve vs time (10-200 s).
+- id: cmp_figS3e_adp_pi_curve
+  purpose: reproduction
+  computed: p_adp_pi_figS3e_pred
+  printed: d_figS3e_adp_pi
+  note: Reproduces the Fig. S3E green dashed [ADP-Pi] subunit probability curve vs time (20-1800 s).
+- id: cmp_figS3e_adp_curve
+  purpose: reproduction
+  computed: p_adp_figS3e_pred
+  printed: d_figS3e_adp
+  note: Reproduces the Fig. S3E blue dotted [ADP] subunit probability curve vs time (50-2200 s).
+- id: cmp_fig6c_4nM_no_vasp_curve
+  purpose: reproduction
+  computed: f_capped_fig6c_4nM_no_vasp_pred
+  printed: d_fig6c_4nM_no_vasp
+  note: Reproduces the Fig. 6C 4 nM CP, 0 nM VASP solid curve using the corrected exponential model 1 - exp(-0.049 t) (confirming
+    q_capping_eq_misprint).
+- id: cmp_fig6c_2nM_no_vasp_curve
+  purpose: reproduction
+  computed: f_capped_fig6c_2nM_no_vasp_pred
+  printed: d_fig6c_2nM_no_vasp
+  note: Reproduces the Fig. 6C 2 nM CP, 0 nM VASP solid curve using 1 - exp(-0.024 t).
+- id: cmp_fig6c_4nM_50nM_vasp_curve
+  purpose: reproduction
+  computed: f_capped_fig6c_4nM_50nM_vasp_pred
+  printed: d_fig6c_4nM_50nM_vasp
+  note: Reproduces the Fig. 6C 4 nM CP, +50 nM VASP solid curve using 1 - exp(-0.0099 t).
+- id: cmp_fig6c_2nM_50nM_vasp_curve
+  purpose: reproduction
+  computed: f_capped_fig6c_2nM_50nM_vasp_pred
+  printed: d_fig6c_2nM_50nM_vasp
+  note: Reproduces the Fig. 6C 2 nM CP, +50 nM VASP solid curve using 1 - exp(-0.0063 t).
+- id: cmp_fig6d_no_vasp_kobs
+  purpose: fit_quality
+  computed: k_obs_fig6d_no_vasp_pred
+  printed: d_fig6d_no_vasp
+  note: Compares K_obs = 12 uM^-1 s^-1 * [CP] against all 5 digitized Fig. 6D -VASP circles (0.25-4 nM CP).
+- id: cmp_fig6d_50nM_vasp_kobs
+  purpose: fit_quality
+  computed: k_obs_fig6d_50nM_vasp_pred
+  printed: d_fig6d_50nM_vasp
+  note: 'Compares K_obs = 1.9 uM^-1 s^-1 * [CP] against all 5 digitized Fig. 6D +50 nM VASP circles (2-20 nM CP): quantifies
+    low-[CP] positive deviation and 20 nM sublinear saturation (q_fig6d_sublinear_kobs_plus_vasp).'
+- id: cmp_figS2d_ii_no_vasp_kobs
+  purpose: fit_quality
+  computed: k_obs_figS2d_ii_no_vasp_pred
+  printed: d_figS2d_ii_no_vasp
+  note: Compares K_obs = 10 uM^-1 s^-1 * [CP] against digitized Fig. S2D(ii) 100 mM KCl -VASP circles (1, 2, 4 nM CP).
+- id: cmp_figS2d_ii_50nM_vasp_kobs
+  purpose: fit_quality
+  computed: k_obs_figS2d_ii_50nM_vasp_pred
+  printed: d_figS2d_ii_50nM_vasp
+  note: Compares K_obs = 3.7 uM^-1 s^-1 * [CP] against digitized Fig. S2D(ii) 100 mM KCl +50 nM VASP circles (1, 2, 4, 8 nM
+    CP).

@@ -1,0 +1,206 @@
+# ==========================================================================
+# 1. Exact reproduction checks of printed formulas against Tables 1 and S1
+# ==========================================================================
+- id: cmp_single_filament_Nb
+  purpose: reproduction
+  computed: N_b_single_filament_pred
+  printed: table_s1_Nb_individual
+  note: "Verifies N_b = (D_b / D_f)^2 = 1 for an individual actin filament (D_b = D_f = 9 nm; even for physical filament diameters 7-8 nm alternatives, N_b = 0.60-0.79 rounds to printed '1')."
+
+- id: cmp_table1_N_peak_all
+  purpose: reproduction
+  computed: N_peak_table1_pred
+  printed: table1_N_peak
+  note: "Checks N_peak = ((2*k_on/D) / (2*k_off/D))^2 across all 5 fascin/actin ratios in Table 1 (1/5, 1/2, 1/1, 3/1, 6/1): reproduces every printed value (7.6, 12.8, 21.1, 30.2, 32.3) to its last printed decimal digit."
+
+- id: cmp_table1_phi3_N_peak_formula
+  purpose: reproduction
+  computed: N_peak_phi3_formula_pred
+  printed: table1_phi3_N_peak
+  note: "Scalar check of N_peak = (k_on / k_off)^2 on the featured phi = 3/1 row of Table 1 (gives 30.195 vs printed 30.2)."
+
+- id: cmp_table1_phi3_N_peak_num_max
+  purpose: reproduction
+  computed: N_peak_phi3_num_max_pred
+  printed: table1_phi3_N_peak
+  note: "Verifies direct numerical maximization of Eq. (1) reproduces printed N_peak = 30.2 at phi = 3/1."
+
+# ==========================================================================
+# 2. Consistency & approximation checks linking Table 1, Eq. (1), and Table S1
+# ==========================================================================
+- id: cmp_naive_Db_mean_vs_table_s1_Nb_mean
+  purpose: approximation
+  computed: N_b_naive_from_Db_mean_pred
+  printed: table_s1_Nb_mean
+  note: "Naive plug-in (D_{b,mean} / D_f)^2 underestimates Table S1's N_{b,mean} by 14-18% at every phi (22.2 vs 26.7, 27.2 vs 32.7, 51.4 vs 62.9, 63.6 vs 74.0, 70.7 vs 85.2), quantifying Jensen's inequality <D_b^2> = <D_b>^2 + Var(D_b) for the broad bundle thickness distribution (implied CV(D_b) = 0.40-0.47 and n = 114-312 bundles per ratio)."
+
+- id: cmp_eq1_mean_Nb_vs_table_s1
+  purpose: consistency
+  computed: eq1_Nb_mean_pred
+  printed: table_s1_Nb_mean
+  note: "Compares exact <N_b> implied by Table 1's Eq. (1) fits against Table S1's empirical N_{b,mean} +/- SE: reproduces at phi = 1/2 (30.9 vs 32.7 +/- 2.0), close at 1/5 and 3/1, but undershoots at phi = 1/1 (44.8 vs 62.9 +/- 4.2, -29% / 4.3 SE) and overshoots at phi = 6/1 (106.4 vs 85.2 +/- 7.3, +25% / 2.9 SE) across all N_min alternatives (0, 1, 2)."
+
+- id: cmp_eq1_mean_Db_vs_table_s1
+  purpose: consistency
+  computed: eq1_Db_mean_pred
+  printed: table_s1_Db_mean
+  note: "Compares exact <D_b> = D_f * <sqrt(N_b)> implied by Table 1's Eq. (1) fits against Table S1's empirical D_{b,mean} +/- SE: reproduces at phi = 1/2 (46.4 vs 46.9 +/- 1.2 nm), close at nominal D_f = 9 nm at 1/5 (-1.86 SE) and 3/1 (-1.63 SE) (widened to reproduced by integer input rounding of D_f = '9'), and undershoots at phi = 1/1 (56.1 vs 64.5 +/- 2.2 nm, -13% / 3.8 SE) while overshooting at phi = 6/1 (85.2 vs 75.7 +/- 3.2 nm, +12.5% / 3.0 SE)."
+
+# ==========================================================================
+# 3. Shape fit-quality comparisons of pp. 452-453 scaling laws vs Table 1
+#    (all scaling models have prefactor: unknown; judged on shape against
+#    Table 1's bare printed digit precision)
+# ==========================================================================
+- id: cmp_koff_arrhenius_vs_table1
+  purpose: fit_quality
+  computed: koff_arrhenius_shape_pred
+  printed: table1_koff_over_D
+  note: "Shape comparison of k_off/D propto exp(-alpha*phi*eps/k_B T) at printed alpha ~= 0.032, eps ~= 10 k_B T against Table 1 k_off/D (implied prefactor ~0.1008; residuals +5.1%, +7.4%, +18.1%, -3.5%, -22.2% vs Table 1 digits, whereas best log-OLS fit gives alpha = 0.0260 with max error 10.3%)."
+
+- id: cmp_on_rate_constant_vs_table1
+  purpose: fit_quality
+  computed: two_kon_constant_shape_pred
+  printed: table1_two_kon_over_D
+  note: "Shape comparison of constant on-rate k_on propto n_a (Fig. 2c red solid line) against Table 1 2*k_on/D: cannot capture the non-monotonic rise and large-phi drop (+100.9% error at phi = 6/1 under the fitted constant 0.4337)."
+
+- id: cmp_on_rate_adsorption_vs_table1
+  purpose: fit_quality
+  computed: two_kon_adsorption_shape_pred
+  printed: table1_two_kon_over_D
+  note: "Shape comparison of Langmuir adsorption on-rate k_on propto n_af (Fig. 2c red dashed line, beta ~= 2.75e-4, eps ~= 10 k_B T) against Table 1 2*k_on/D: monotonically increasing, overshooting phi = 6/1 by +145%."
+
+- id: cmp_on_rate_coat_hindered_vs_table1
+  purpose: fit_quality
+  computed: two_kon_coat_hindered_shape_pred
+  printed: table1_two_kon_over_D
+  note: "Shape comparison of fascin-coat hindered on-rate k_on propto n_af * k_off (Fig. 2c red dotted line, alpha ~= 0.032, beta ~= 2.75e-4, eps ~= 10 k_B T) against Table 1 2*k_on/D: reproduces the qualitative peak near phi ~ 0.5-1 and high-phi decrease, with residuals +11.5%, +20.5%, +17.8%, -11.1%, -28.9% (far exceeding Table 1's 4-decimal printed precision and exceeding the paper's +/-20% rate uncertainty at phi = 6/1)."
+
+- id: cmp_N_peak_constant_on_vs_table1
+  purpose: fit_quality
+  computed: N_peak_constant_on_shape_pred
+  printed: table1_N_peak
+  note: "Shape comparison of constant-on-rate N_peak propto exp(2*alpha*phi*eps/k_B T) (Fig. 2d solid line) against Table 1 N_peak: diverges exponentially at large phi, missing Table 1 saturation."
+
+- id: cmp_N_peak_adsorption_on_vs_table1
+  purpose: fit_quality
+  computed: N_peak_adsorption_on_shape_pred
+  printed: table1_N_peak
+  note: "Shape comparison of Langmuir-adsorption N_peak propto n_af^2 * exp(2*alpha*phi*eps/k_B T) (Fig. 2d dashed line) against Table 1 N_peak: diverges exponentially at large phi."
+
+- id: cmp_N_peak_coat_hindered_vs_table1
+  purpose: fit_quality
+  computed: N_peak_coat_hindered_shape_pred
+  printed: table1_N_peak
+  note: "Shape comparison of fascin-coat hindered N_peak propto n_af^2 (Fig. 2d dotted line, beta ~= 2.75e-4, eps ~= 10 k_B T) against Table 1 N_peak: captures saturation with implied plateau ~28.5 and residuals +12.6%, +25.9%, -0.5%, -15.2%, -16.4% (outside Table 1's 0.1-digit precision but well inside Fig. 2d's propagated ~+/-44% error bars)."
+
+# ==========================================================================
+# 4. Calibrated Fig. 2a-d comparisons (reproduction of plotted curves &
+#    fit-quality checks against digitized measurements and error bars)
+# ==========================================================================
+- id: cmp_eq1_vs_fig2a_fit
+  purpose: reproduction
+  computed: P_eq1_fig2a_fit_pred
+  printed: P_fig2a_eq1_fit
+  note: "Checks peak-normalized Eq. (1) at Table 1 phi = 3/1 parameters against the digitized solid black fit curve of Fig. 2(a)."
+
+- id: cmp_eq1_vs_fig2a_data
+  purpose: fit_quality
+  computed: P_eq1_fig2a_data_pred
+  printed: P_fig2a_measured
+  note: "Evaluates Eq. (1) fit quality against all 29 digitized cryo-TEM histogram bins of Fig. 2(a) (phi = 3/1, n = 200 bundles)."
+
+- id: cmp_eq1_vs_fig2b_fit
+  purpose: reproduction
+  computed: P_eq1_fig2b_fit_pred
+  printed: lnP_fig2b_eq1_fit
+  note: "Checks peak-normalized Eq. (1) (converted to natural log ln P) against the digitized semi-log solid black fit curve of Fig. 2(b)."
+
+- id: cmp_eq1_vs_fig2b_data
+  purpose: fit_quality
+  computed: P_eq1_fig2b_data_pred
+  printed: lnP_fig2b_measured
+  note: "Evaluates Eq. (1) fit quality in natural-log space against all 19 nonzero measured bins of Fig. 2(b), quantifying the heavy-tail excess for N_b >= 260 noted in the Fig. 2 caption."
+
+- id: cmp_koff_arrhenius_vs_fig2c_curve
+  purpose: reproduction
+  computed: koff_arrhenius_fig2c_curve_pred
+  printed: koff_over_D_fig2c_arrhenius
+  note: "Shape reproduction of Fig. 2(c)'s solid black Arrhenius off-rate curve at printed alpha ~= 0.032, eps ~= 10 k_B T (implies prefactor k_off(0)/D ~= 0.100)."
+
+- id: cmp_kon_constant_vs_fig2c_curve
+  purpose: reproduction
+  computed: two_kon_constant_fig2c_curve_pred
+  printed: two_kon_over_D_fig2c_constant
+  note: "Shape reproduction of Fig. 2(c)'s solid red horizontal constant on-rate line (implies constant 2*k_on/D ~= 0.456)."
+
+- id: cmp_kon_adsorption_vs_fig2c_curve
+  purpose: reproduction
+  computed: two_kon_adsorption_fig2c_curve_pred
+  printed: two_kon_over_D_fig2c_adsorption
+  note: "Shape reproduction of Fig. 2(c)'s dashed red Langmuir adsorption curve at printed beta ~= 2.75e-4, eps ~= 10 k_B T (implies asymptotic 2*k_on/D ~= 0.688)."
+
+- id: cmp_kon_coat_hindered_vs_fig2c_curve
+  purpose: reproduction
+  computed: two_kon_coat_hindered_fig2c_curve_pred
+  printed: two_kon_over_D_fig2c_coat_hindered
+  note: "Shape reproduction of Fig. 2(c)'s dotted red coat-hindered curve at printed alpha ~= 0.032, beta ~= 2.75e-4, eps ~= 10 k_B T (implies prefactor 2*k_on/D ~= 1.055 * p_fa * exp(-0.32*phi))."
+
+- id: cmp_koff_arrhenius_vs_fig2c_data
+  purpose: fit_quality
+  computed: koff_arrhenius_fig2c_data_pred
+  printed: koff_over_D_fig2c_data
+  note: "Shape fit-quality comparison of Arrhenius off-rate scaling against the 5 digitized Fig. 2(c) black circles WITH their +/-20% binning error bars."
+
+- id: cmp_kon_constant_vs_fig2c_data
+  purpose: fit_quality
+  computed: two_kon_constant_fig2c_data_pred
+  printed: two_kon_over_D_fig2c_data
+  note: "Shape fit-quality comparison of constant on-rate scaling against the 5 digitized Fig. 2(c) red squares WITH their +/-20% binning error bars."
+
+- id: cmp_kon_adsorption_vs_fig2c_data
+  purpose: fit_quality
+  computed: two_kon_adsorption_fig2c_data_pred
+  printed: two_kon_over_D_fig2c_data
+  note: "Shape fit-quality comparison of Langmuir adsorption on-rate scaling against the 5 digitized Fig. 2(c) red squares WITH their +/-20% binning error bars."
+
+- id: cmp_kon_coat_hindered_vs_fig2c_data
+  purpose: fit_quality
+  computed: two_kon_coat_hindered_fig2c_data_pred
+  printed: two_kon_over_D_fig2c_data
+  note: "Shape fit-quality comparison of coat-hindered on-rate scaling against the 5 digitized Fig. 2(c) red squares WITH their +/-20% binning error bars."
+
+- id: cmp_N_peak_constant_vs_fig2d_curve
+  purpose: reproduction
+  computed: N_peak_constant_fig2d_curve_pred
+  printed: N_peak_fig2d_constant
+  note: "Shape reproduction of Fig. 2(d)'s solid black constant-on-rate N_peak curve at printed alpha ~= 0.032, eps ~= 10 k_B T (implies prefactor N_peak(0) ~= 5.24 = (0.456/2/0.100)^2)."
+
+- id: cmp_N_peak_adsorption_vs_fig2d_curve
+  purpose: reproduction
+  computed: N_peak_adsorption_fig2d_curve_pred
+  printed: N_peak_fig2d_adsorption
+  note: "Shape reproduction of Fig. 2(d)'s dashed black Langmuir-adsorption N_peak curve (implies prefactor ~= 11.9 = (0.688/2/0.100)^2)."
+
+- id: cmp_N_peak_coat_hindered_vs_fig2d_curve
+  purpose: reproduction
+  computed: N_peak_coat_hindered_fig2d_curve_pred
+  printed: N_peak_fig2d_coat_hindered
+  note: "Shape reproduction of Fig. 2(d)'s dotted black coat-hindered saturating N_peak curve (implies plateau ~= 27.83 = (1.055/2/0.100)^2)."
+
+- id: cmp_N_peak_constant_vs_fig2d_data
+  purpose: fit_quality
+  computed: N_peak_constant_fig2d_data_pred
+  printed: N_peak_fig2d_data
+  note: "Shape fit-quality comparison of constant-on-rate N_peak scaling against the 5 digitized Fig. 2(d) black squares WITH their +/-44% error bars."
+
+- id: cmp_N_peak_adsorption_vs_fig2d_data
+  purpose: fit_quality
+  computed: N_peak_adsorption_fig2d_data_pred
+  printed: N_peak_fig2d_data
+  note: "Shape fit-quality comparison of Langmuir-adsorption N_peak scaling against the 5 digitized Fig. 2(d) black squares WITH their +/-44% error bars."
+
+- id: cmp_N_peak_coat_hindered_vs_fig2d_data
+  purpose: fit_quality
+  computed: N_peak_coat_hindered_fig2d_data_pred
+  printed: N_peak_fig2d_data
+  note: "Shape fit-quality comparison of coat-hindered saturating N_peak scaling against the 5 digitized Fig. 2(d) black squares WITH their +/-44% error bars."

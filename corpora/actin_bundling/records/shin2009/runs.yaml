@@ -1,0 +1,328 @@
+# ==========================================================================
+# 1. SAXS spacing, cross-linker size, helical overtwist, and 28/13 packing
+# ==========================================================================
+- id: run_hexagonal_spacing_high_R
+  model: hexagonal_spacing_from_q10
+  inputs:
+    q_10: q10_high_R
+  outputs:
+    D: D_from_q10_comp
+    q_11: q11_from_q10_comp
+
+- id: run_linker_size_fascin
+  model: linker_size_from_spacing
+  inputs:
+    D: D_fascin_printed
+    d_actin: d_actin_printed
+  outputs:
+    d_linker: d_fascin_comp
+
+- id: run_linker_size_espin
+  model: linker_size_from_spacing
+  inputs:
+    D: D_espin_printed
+    d_actin: d_actin_printed
+  outputs:
+    d_linker: d_espin_comp
+
+- id: run_composite_28_13_packing
+  model: composite_28_13_packing
+  inputs:
+    k_5: section5_count
+    m_5: section5_monomers
+    n_5: sym_30_14_monomers
+    t_5: sym_30_14_turns
+    k_4: section4_count
+    m_4: section4_monomers
+    n_4: sym_24_11_monomers
+    t_4: sym_24_11_turns
+  outputs:
+    N_repeat: N_repeat_28_13_comp
+    T_repeat: T_repeat_28_13_comp
+    f_bound: f_bound_28_13_comp
+
+- id: run_helical_overtwist_28_13
+  model: helical_overtwist_from_symmetry
+  inputs:
+    n_native: native_monomers_per_repeat
+    t_native: native_turns_per_repeat
+    n_bundle: overtwisted_monomers_per_repeat
+    t_bundle: overtwisted_turns_per_repeat
+  outputs:
+    omega_0: omega_0_from_13_6_comp
+    omega_bundle: omega_bundle_28_13_comp
+    delta_omega: delta_omega_28_13_comp
+
+# ==========================================================================
+# 2. Binding Hamiltonian Eq. (1) & effective Hamiltonian Eqs. (2)-(3)
+# ==========================================================================
+- id: run_binding_hamiltonian_eq1
+  model: binding_hamiltonian_eq1
+  inputs:
+    eps_0: optimal_binding_energy_eps0_added
+    k: linker_stiffness_k_added
+    D: D_fascin_printed
+    a: monomer_size_a_added
+    x: spin_projection_eval_added
+  outputs:
+    Delta_0: Delta_0_eq1_comp
+    H_bond: H_bond_eq1_comp
+    c_1_exact: c_1_exact_eq1_comp
+
+- id: run_effective_hamiltonian_eq2_eq3
+  model: effective_hamiltonian_eq2_eq3
+  inputs:
+    eps_0: optimal_binding_energy_eps0_added
+    U: linker_energy_U_added
+    C: torsional_stiffness_C_added
+    mu: chemical_potential_mu_added
+    kBT: kBT_room_temp_added
+    omega_0: omega_0_printed
+  outputs:
+    xi_t: xi_t_eq2_comp
+    eps_0_prime: eps0_prime_eq2_comp
+    c_U: c_U_printed_eq2_comp
+    z: z_eq2_comp
+    V_nn_4: V_nn_4_eq3_comp
+    V_nn_5: V_nn_5_eq3_comp
+
+- id: run_effective_hamiltonian_cumulant_exact
+  model: effective_hamiltonian_cumulant_exact
+  inputs:
+    eps_0: optimal_binding_energy_eps0_added
+    U: linker_energy_U_added
+    C: torsional_stiffness_C_added
+    kBT: kBT_room_temp_added
+    omega_0: omega_0_printed
+  outputs:
+    xi_t: xi_t_cumulant_comp
+    eps_0_prime_O1: eps0_prime_O1_cumulant_comp
+    eps_0_prime_O2_no_self: eps0_prime_O2_cumulant_comp
+    c_U_exact: c_U_exact_cumulant_comp
+    V_nn_4: V_nn_4_cumulant_comp
+    V_nn_5: V_nn_5_cumulant_comp
+
+# ==========================================================================
+# 3. Net cooperativity u(beta*U, xi_t): printed sign vs left-handed variant vs continuum
+# ==========================================================================
+- id: run_coop_printed_peak
+  model: cooperativity_28_13_printed
+  inputs:
+    beta_U: beta_U_baseline_added
+    xi_t: xi_t_peak_eval_added
+    omega_0: omega_0_printed
+  outputs:
+    u: u_printed_peak_comp
+    u_norm: u_norm_printed_peak_comp
+    xi_t_max: xi_t_max_printed_model_comp
+    u_max: u_max_printed_model_comp
+    stiffness_exponent: stiffness_exp_printed_comp
+
+- id: run_coop_lh_peak
+  model: cooperativity_28_13_left_handed
+  inputs:
+    beta_U: beta_U_baseline_added
+    xi_t: xi_t_peak_eval_added
+    omega_0: omega_0_printed
+  outputs:
+    u: u_lh_peak_comp
+    u_norm: u_norm_lh_peak_comp
+    xi_t_max: xi_t_max_lh_comp
+    stiffness_exponent: stiffness_exp_lh_comp
+    local_xit_exponent: local_xit_exp_lh_peak_comp
+    beta_U_crit: beta_U_crit_lh_peak_comp
+
+- id: run_coop_lh_very_small_xit
+  model: cooperativity_28_13_left_handed
+  inputs:
+    beta_U: beta_U_baseline_added
+    xi_t: xi_t_very_small_added
+    omega_0: omega_0_printed
+  outputs:
+    u: u_lh_very_small_comp
+    u_norm: u_norm_lh_very_small_comp
+    xi_t_max: xi_t_max_lh_vs_comp
+    stiffness_exponent: stiffness_exp_lh_vs_comp
+    local_xit_exponent: local_xit_exp_lh_very_small_comp
+    beta_U_crit: beta_U_crit_lh_vs_comp
+
+- id: run_coop_lh_intermediate_xit
+  model: cooperativity_28_13_left_handed
+  inputs:
+    beta_U: beta_U_baseline_added
+    xi_t: xi_t_intermediate_added
+    omega_0: omega_0_printed
+  outputs:
+    u: u_lh_interm_comp
+    u_norm: u_norm_lh_interm_comp
+    xi_t_max: xi_t_max_lh_int_comp
+    stiffness_exponent: stiffness_exp_lh_int_comp
+    local_xit_exponent: local_xit_exp_lh_interm_comp
+    beta_U_crit: beta_U_crit_lh_int_comp
+
+- id: run_coop_continuum_small_xit
+  model: cooperativity_28_13_continuum
+  inputs:
+    beta_U: beta_U_baseline_added
+    xi_t: xi_t_very_small_added
+    f_bound: f_bound_28_13_comp
+    delta_omega: delta_omega_28_13_comp
+  outputs:
+    u_cont: u_cont_small_comp
+    u_norm_cont: u_norm_cont_small_comp
+    xi_t_max: xi_t_max_cont_comp
+    local_xit_exponent: local_xit_exp_cont_small_comp
+
+# ==========================================================================
+# 4. Mean-field equation of state & critical point analysis (pp. 3-4)
+# ==========================================================================
+- id: run_mf_eos_first_order
+  model: mean_field_eos
+  inputs:
+    z: z_eval_added
+    u: u_first_order_eval_added
+  outputs:
+    rho: rho_mf_first_order_comp
+    chi_rho: chi_mf_first_order_comp
+    z_coex: z_coex_first_order_comp
+    delta_rho_coex: delta_rho_first_order_comp
+
+- id: run_mf_critical_point
+  model: mean_field_critical_point
+  inputs: {}
+  outputs:
+    u_c: u_c_mf_comp
+    rho_c: rho_c_mf_comp
+    z_c: z_c_mf_comp
+    chi_exponent: chi_exp_mf_comp
+
+# ==========================================================================
+# 5. Monomer-monomer overtwist correlation g(l_0) (p. 4 & Fig. 3b)
+# ==========================================================================
+- id: run_overtwist_pert_small_U
+  model: overtwist_correlation_perturbative
+  inputs:
+    beta_U: beta_U_small_added
+    rho: rho_eval_added
+    xi_t: xi_t_fig3b_mid_added
+    omega_0: omega_0_printed
+  outputs:
+    overtwist: overtwist_pert_small_U_comp
+    rho_exponent: rho_exp_pert_small_U_comp
+
+- id: run_overtwist_tm_small_U
+  model: overtwist_correlation_transfer_matrix
+  inputs:
+    beta_U: beta_U_small_added
+    rho: rho_eval_added
+    xi_t: xi_t_fig3b_mid_added
+    omega_0: omega_0_printed
+  outputs:
+    overtwist: overtwist_tm_small_U_comp
+    rho_exponent: rho_exp_tm_small_U_comp
+
+# ==========================================================================
+# 6. Digitized figure runs: Fig. 3(b) sweeps, Fig. 1(e) plateau, Fig. 1(c,d) peaks
+# ==========================================================================
+- id: run_fig3b_pert_xit1000
+  model: overtwist_fig3b_perturbative
+  inputs:
+    xi_t: xi_t_fig3b_1000_printed
+    omega_0: omega_0_printed
+  sweep:
+    x_sq: overtwist_fig3b_xit1000
+  outputs:
+    overtwist: overtwist_fig3b_pert_xit1000_comp
+
+- id: run_fig3b_pert_xit100
+  model: overtwist_fig3b_perturbative
+  inputs:
+    xi_t: xi_t_fig3b_100_printed
+    omega_0: omega_0_printed
+  sweep:
+    x_sq: overtwist_fig3b_xit100
+  outputs:
+    overtwist: overtwist_fig3b_pert_xit100_comp
+
+- id: run_fig3b_pert_xit10
+  model: overtwist_fig3b_perturbative
+  inputs:
+    xi_t: xi_t_fig3b_10_printed
+    omega_0: omega_0_printed
+  sweep:
+    x_sq: overtwist_fig3b_xit10
+  outputs:
+    overtwist: overtwist_fig3b_pert_xit10_comp
+
+- id: run_fig3b_tm_xit1000
+  model: overtwist_fig3b_transfer_matrix
+  inputs:
+    xi_t: xi_t_fig3b_1000_printed
+    omega_0: omega_0_printed
+  sweep:
+    x_sq: overtwist_fig3b_xit1000
+  outputs:
+    overtwist: overtwist_fig3b_tm_xit1000_comp
+
+- id: run_fig3b_tm_xit100
+  model: overtwist_fig3b_transfer_matrix
+  inputs:
+    xi_t: xi_t_fig3b_100_printed
+    omega_0: omega_0_printed
+  sweep:
+    x_sq: overtwist_fig3b_xit100
+  outputs:
+    overtwist: overtwist_fig3b_tm_xit100_comp
+
+- id: run_fig3b_tm_xit10
+  model: overtwist_fig3b_transfer_matrix
+  inputs:
+    xi_t: xi_t_fig3b_10_printed
+    omega_0: omega_0_printed
+  sweep:
+    x_sq: overtwist_fig3b_xit10
+  outputs:
+    overtwist: overtwist_fig3b_tm_xit10_comp
+
+- id: run_fig1e_28_13_espin
+  model: overtwist_28_13_plateau
+  inputs:
+    delta_omega_28_13: delta_omega_28_13_comp
+  sweep:
+    R: overtwist_fig1e_espin
+  outputs:
+    delta_omega: overtwist_28_13_fig1e_espin_comp
+
+- id: run_fig1e_28_13_fascin
+  model: overtwist_28_13_plateau
+  inputs:
+    delta_omega_28_13: delta_omega_28_13_comp
+  sweep:
+    R: overtwist_fig1e_fascin
+  outputs:
+    delta_omega: overtwist_28_13_fig1e_fascin_comp
+
+- id: run_saxs_peaks_fig1c_R0p33
+  model: saxs_layer_line_peak_finder
+  inputs:
+    I_q: I_saxs_fig1c_fascin_R0p33
+  outputs:
+    q_layer1: q1_fig1c_R0p33_comp
+    q_layer2: q2_fig1c_R0p33_comp
+
+- id: run_saxs_peaks_fig1d_R0p2
+  model: saxs_layer_line_peak_finder
+  inputs:
+    I_q: I_saxs_fig1d_espin_R0p2
+  outputs:
+    q_layer1: q1_fig1d_R0p2_comp
+    q_layer2: q2_fig1d_R0p2_comp
+
+- id: run_saxs_peaks_fig1d_pure
+  model: saxs_layer_line_peak_finder
+  inputs:
+    I_q: I_saxs_fig1d_pure_Factin
+  outputs:
+    q_layer1: q1_fig1d_pure_comp
+    q_layer2: q2_fig1d_pure_comp
+

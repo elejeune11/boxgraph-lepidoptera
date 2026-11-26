@@ -1,0 +1,381 @@
+# Model runs for borukhov2005.
+
+- id: run_bjerrum
+  model: bjerrum_length
+  inputs:
+    eps: eps_water_added
+    T: T_room_added
+  settings: {}
+  outputs:
+    l_B: l_B_computed
+
+- id: run_eps1_kcal
+  model: energy_kbt_to_kcal_mol
+  inputs:
+    eps: eps_1_printed
+    T: T_room_added
+  settings: {}
+  outputs:
+    E_molar: eps_1_kcal_computed
+
+- id: run_eps_perp_3c_kcal
+  model: energy_kbt_to_kcal_mol_perp
+  inputs:
+    eps_perp: eps_perp_3c_printed
+    T: T_room_added
+  settings: {}
+  outputs:
+    E_molar: eps_perp_3c_kcal_computed
+
+# Eq. 4: printed verbatim vs corrected variant (squared denominator restored in Gamma_perp)
+- id: run_eq4_printed
+  model: electrostatic_repulsion_eq4
+  inputs:
+    D: D_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    l_B: l_B_printed
+    lambda_e: lambda_e_added
+  settings: {}
+  outputs:
+    Gamma_par: Gamma_par_eq4_printed
+    Gamma_perp: Gamma_perp_eq4_printed
+
+- id: run_eq4_corrected
+  model: electrostatic_repulsion_eq4_corrected
+  inputs:
+    D: D_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    l_B: l_B_printed
+    lambda_e: lambda_e_added
+  settings: {}
+  outputs:
+    Gamma_par: Gamma_par_eq4_corrected
+    Gamma_perp: Gamma_perp_eq4_corrected
+
+# Intermediate component runs (Eqs. 1-3, 5, D_eff, 7, 8) at representative paper parameters
+- id: run_Deff
+  model: effective_diameter_eq6
+  inputs:
+    D: D_printed
+    kappa_inv: kappa_inv_printed
+    Gamma_perp: Gamma_perp_printed
+  settings: {}
+  outputs:
+    D_eff: D_eff_computed
+
+- id: run_eq5_probe
+  model: langmuir_attraction_eq5
+  inputs:
+    L: L_printed
+    D: D_printed
+    delta: delta_printed
+    n_perp: n_perp_printed
+    mu_l: mu_l_probe_added
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+    eps_perp: eps_perp_3a_printed
+  settings: {}
+  outputs:
+    u_par_total: u_par_total_probe
+    u_par: u_par_probe
+    u_perp: u_perp_probe
+
+- id: run_eq1_eq3_probe
+  model: effective_potential_eq1_eq3
+  inputs:
+    r: r_probe_added
+    gamma: gamma_probe_added
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    u_par: u_par_probe
+    u_perp: u_perp_probe
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+  settings: {}
+  outputs:
+    u: u_eq1_eq3_probe
+
+- id: run_eq1_eq3_corr_probe
+  model: effective_potential_eq1_eq3_corrected
+  inputs:
+    r: r_probe_added
+    gamma: gamma_probe_added
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    u_par: u_par_probe
+    u_perp: u_perp_probe
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+  settings: {}
+  outputs:
+    u: u_eq1_eq3_corr_probe
+
+- id: run_eq7_probe
+  model: free_linkers_eq7
+  inputs:
+    L: L_printed
+    D: D_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    Gamma_perp: Gamma_perp_printed
+    v_l: v_l_added
+    c_r: cr_probe_added
+    mu_l: mu_l_probe_added
+    eps_1: eps_1_printed
+  settings: {}
+  outputs:
+    f_linkers: f_linkers_probe
+    c_l_non_junction: c_l_non_junction_probe
+
+- id: run_eq8_probe
+  model: second_virial_eq8
+  inputs:
+    gamma: gamma_probe_added
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    u_par: u_par_probe
+    u_perp: u_perp_probe
+  settings: {}
+  outputs:
+    B: B_eq8_probe
+
+- id: run_eq8_corr_probe
+  model: second_virial_eq8_corrected
+  inputs:
+    gamma: gamma_probe_added
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    u_par: u_par_probe
+    u_perp: u_perp_probe
+  settings: {}
+  outputs:
+    B: B_eq8_corr_probe
+
+# Intermediate phase-diagram criterion B(0 deg) = B(90 deg) = 0 (p. 4 vs Fig. 3b eps_perp = -10.5)
+- id: run_intermediate_criterion_printed
+  model: intermediate_eps_perp_criterion
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+  settings: {}
+  outputs:
+    mu_l_crit: mu_l_crit_printed
+    eps_perp_int: eps_perp_int_printed
+
+- id: run_intermediate_criterion_corrected
+  model: intermediate_eps_perp_criterion_corrected
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+  settings: {}
+  outputs:
+    mu_l_crit: mu_l_crit_corrected
+    eps_perp_int: eps_perp_int_corrected
+
+# Fig. 3c B(90 deg) = 0 isotropic instability boundary (printed Eq. 8 vs corrected Eq. 8)
+- id: run_b90_curve_printed
+  model: b90_instability_curve
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+    eps_perp: eps_perp_3c_printed
+    v_l: v_l_added
+  sweep:
+    c_r: fig3c_B90_instability_data
+  settings:
+    n_gamma: 2000
+  outputs:
+    c_l: b90_instability_printed_pred
+    mu_l_star: b90_mu_star_printed_pred
+
+- id: run_b90_curve_corrected
+  model: b90_instability_curve_corrected
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+    eps_perp: eps_perp_3c_printed
+    v_l: v_l_added
+  sweep:
+    c_r: fig3c_B90_instability_data
+  settings:
+    n_gamma: 2000
+  outputs:
+    c_l: b90_instability_corrected_pred
+    mu_l_star: b90_mu_star_corrected_pred
+
+# Reconstructed spherical-cap cone I-N coexistence vs Fig. 3a vertical boundaries
+- id: run_cone_IN_I
+  model: cone_IN_coexistence
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+    eps_perp: eps_perp_3a_printed
+    v_l: v_l_added
+  sweep:
+    c_l: fig3a_I_IN_data
+  settings:
+    n_quad: 12
+  outputs:
+    c_I: cone_IN_cI_pred
+    c_N: cone_IN_cN_at_I_pred
+
+- id: run_cone_IN_N
+  model: cone_IN_coexistence
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+    eps_perp: eps_perp_3a_printed
+    v_l: v_l_added
+  sweep:
+    c_l: fig3a_IN_N_data
+  settings:
+    n_quad: 12
+  outputs:
+    c_I: cone_IN_cI_at_N_pred
+    c_N: cone_IN_cN_pred
+
+# Reconstructed small-cone cubatic coexistence boundaries vs Fig. 3b and Fig. 3c
+- id: run_cone_cubatic_3b
+  model: cone_cubatic_coexistence
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+    eps_perp: eps_perp_3b_printed
+    v_l: v_l_added
+  sweep:
+    c_l: fig3b_C_right_data
+  settings:
+    n_gamma: 2000
+  outputs:
+    c_C_left: cone_cubatic_3b_left_pred
+    c_C_right: cone_cubatic_3b_right_pred
+
+- id: run_cone_cubatic_3c
+  model: cone_cubatic_coexistence
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+    eps_perp: eps_perp_3c_printed
+    v_l: v_l_added
+  sweep:
+    c_l: fig3c_C_right_data
+  settings:
+    n_gamma: 2000
+  outputs:
+    c_C_left: cone_cubatic_3c_left_pred
+    c_C_right: cone_cubatic_3c_right_pred
+
+# Reconstructed hexagonal-bundle onset curves vs Fig. 3a and Fig. 3b
+- id: run_bundle_3a
+  model: bundle_onset_curve
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+    eps_perp: eps_perp_3a_printed
+    v_l: v_l_added
+  sweep:
+    c_r: fig3a_bundling_onset_data
+  settings:
+    n_gamma: 2000
+  outputs:
+    c_l: bundle_onset_3a_pred
+    mu_l_bundle: bundle_mu_3a_pred
+
+- id: run_bundle_3b
+  model: bundle_onset_curve
+  inputs:
+    D: D_printed
+    L: L_printed
+    delta: delta_printed
+    kappa_inv: kappa_inv_printed
+    n_perp: n_perp_printed
+    Gamma_par: Gamma_par_printed
+    Gamma_perp: Gamma_perp_printed
+    eps_1: eps_1_printed
+    eps_par: eps_par_printed
+    eps_perp: eps_perp_3b_printed
+    v_l: v_l_added
+  sweep:
+    c_r: fig3b_IB_onset_data
+  settings:
+    n_gamma: 2000
+  outputs:
+    c_l: bundle_onset_3b_pred
+    mu_l_bundle: bundle_mu_3b_pred

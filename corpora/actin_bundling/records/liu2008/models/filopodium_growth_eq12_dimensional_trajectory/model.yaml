@@ -1,0 +1,39 @@
+id: filopodium_growth_eq12_dimensional_trajectory
+name: dimensionally restored filopodium elongation trajectory on measured c_0(t) curve (variant of SI Eq. 12)
+role: model
+stated:
+  page: 13
+  printed_page: "SI 8"
+  quote: "yielding the following analytic expression for filopodium length, Lmem(t), as a function of time"
+  where: "SI Eq. 12 & Figs. s5-s6"
+built_from:
+  - filopodium_growth_eq12_dimensional
+variant_of: filopodium_growth_eq12_trajectory
+corrections:
+  - equation: "SI Eq. 12"
+    change: "Restore omitted characteristic diffusion length L_star and unconstrained polymerization velocity v_0: L_mem(t) = L_star * (sqrt(1 + (L_mem(t_0)/L_star)^2 + 2*(L_mem(t_0)/L_star) + (2*v_0/L_star)*exp(-f_mem*delta/(N*k_B*T))*integral_{t_0}^t c_0(t') dt') - 1)"
+    evidence: "Printed SI Eq. (12) (p. 13, SI p. 8) sums dimensionless 1, L_mem(t_0)^2 ([length]^2), 2*L_mem(t_0) ([length]), and 2*exp(-f_mem*delta/(N*k_B*T))*integral c_0(t') dt' ([time]), while Fig. s6 (p. 14, SI p. 9) plots L_mem in um vs t in s."
+equation: "L_mem(t) = L_star * (sqrt(1 + (L_mem(t_0)/L_star)^2 + 2*(L_mem(t_0)/L_star) + (2*v_0/L_star)*exp(-f_mem*delta/(N*k_B*T))*integral_{t_0}^t c_0(t') dt') - 1)"
+inputs:
+  c0_curve:
+    quantity: normalized_actin_concentration
+    unit: dimensionless
+    curve: {quantity: time, unit: s}
+  target_curve:
+    quantity: membrane_tube_length
+    unit: um
+    curve: {quantity: time, unit: s}
+  f_mem: {quantity: membrane_resistance_force, unit: pN}
+  delta: {quantity: monomer_length_increment, unit: nm}
+  N: {quantity: filament_number, unit: dimensionless}
+  kBT: {quantity: thermal_energy, unit: pN*nm}
+  L_star: {quantity: characteristic_diffusion_length, unit: um}
+  v_0: {quantity: unconstrained_polymerization_velocity, unit: um/s}
+outputs:
+  L_mem_curve:
+    quantity: membrane_tube_length
+    unit: um
+    curve: {quantity: time, unit: s}
+settings:
+  n_substeps: 100
+stochastic: false

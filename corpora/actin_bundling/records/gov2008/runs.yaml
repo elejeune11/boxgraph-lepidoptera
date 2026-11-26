@@ -1,0 +1,608 @@
+# ==========================================================================
+# 1. Defect densities, curvature, and adhesion energy (pp. 1-3)
+# ==========================================================================
+- id: run_defect_areal_density
+  model: defect_areal_density_def
+  inputs:
+    L: L_defect_spacing_added
+  outputs:
+    rho: rho_baseline
+
+- id: run_defect_volumetric_density
+  model: defect_volumetric_density_def
+  inputs:
+    rho: rho_baseline
+    L_p: Lp_healing_added
+  outputs:
+    rho_v: rho_v_baseline
+
+- id: run_defect_curvature
+  model: defect_curvature_scaling
+  inputs:
+    a: filament_radius_a_printed
+    L_p: Lp_healing_added
+  outputs:
+    kappa: kappa_defect_baseline
+
+- id: run_binding_energy_eq1
+  model: binding_energy_eq1
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+  outputs:
+    E_bind: E_bind_baseline
+
+- id: run_defect_energy_uniform_localized
+  model: defect_energy_uniform_localized
+  inputs:
+    rho: rho_baseline
+    a: filament_radius_a_printed
+    E_c: Ec_added
+  outputs:
+    E_defect: E_defect_uniform_baseline
+
+# ==========================================================================
+# 2. Empty-shell model (Eqs. 2-3, p. 3 col 1)
+# ==========================================================================
+- id: run_empty_shell_defect_energy_eq2
+  model: empty_shell_defect_energy_eq2
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    rho: rho_baseline
+    lam: lam_shell_added
+    E_c: Ec_added
+  outputs:
+    E_defect: E_defect_shell_baseline
+
+- id: run_empty_shell_total_energy
+  model: empty_shell_total_energy
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    rho: rho_baseline
+    lam: lam_shell_added
+    E_c: Ec_added
+  outputs:
+    E_total: E_total_shell_baseline
+
+- id: run_critical_core_energy_shell
+  model: critical_core_energy_shell
+  inputs:
+    eps_b: eps_b_added
+    rho: rho_baseline
+    a: filament_radius_a_printed
+    lam: lam_shell_added
+  outputs:
+    E_c_star: Ec_star_baseline
+
+- id: run_equilibrium_radius_shell_eq3
+  model: equilibrium_radius_shell_eq3
+  inputs:
+    lam: lam_shell_added
+    E_c: Ec_added
+    E_c_star: Ec_star_baseline
+  outputs:
+    R_0: R0_shell_eq3_baseline
+
+- id: run_equilibrium_radius_shell_from_energy
+  model: equilibrium_radius_shell_from_energy
+  inputs:
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    rho: rho_baseline
+    lam: lam_shell_added
+    E_c: Ec_added
+  outputs:
+    R_0: R0_shell_min_baseline
+
+- id: run_empty_shell_large_ec_limit
+  model: empty_shell_large_ec_limit
+  inputs:
+    lam: lam_shell_added
+  outputs:
+    R_0: R0_shell_large_ec_baseline
+
+- id: run_empty_shell_inv_rho_scaling
+  model: empty_shell_inv_rho_scaling
+  inputs:
+    rho: rho_baseline
+  outputs:
+    R_0: R0_shell_inv_rho_baseline
+
+# ==========================================================================
+# 3. Bulk and surface monopole models (Eqs. 4-5, 7-8, p. 3 col 2)
+# ==========================================================================
+- id: run_alpha_b
+  model: stiffness_to_binding_ratio_def
+  inputs:
+    k_prime: kb_prime_added
+    eps_b: eps_b_added
+  outputs:
+    alpha: alpha_b_baseline
+
+- id: run_alpha_s
+  model: stiffness_to_binding_ratio_def
+  inputs:
+    k_prime: ks_prime_added
+    eps_b: eps_b_added
+  outputs:
+    alpha: alpha_s_baseline
+
+- id: run_bulk_monopole_defect_energy_eq4
+  model: bulk_monopole_defect_energy_eq4
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    k_b_prime: kb_prime_added
+    rho: rho_baseline
+  outputs:
+    E_defects_b: E_defects_bulk_baseline
+
+- id: run_bulk_monopole_total_energy
+  model: bulk_monopole_total_energy
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    k_b_prime: kb_prime_added
+    rho: rho_baseline
+  outputs:
+    E_total: E_total_bulk_baseline
+
+- id: run_equilibrium_radius_bulk_monopole_eq7
+  model: equilibrium_radius_bulk_monopole_eq7
+  inputs:
+    alpha_b: alpha_b_baseline
+    a: filament_radius_a_printed
+    rho: rho_baseline
+  outputs:
+    R_0_over_a: R0_bulk_over_a_eq7_baseline
+    R_0: R0_bulk_eq7_baseline
+
+- id: run_equilibrium_radius_bulk_monopole_from_energy
+  model: equilibrium_radius_bulk_monopole_from_energy
+  inputs:
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    k_b_prime: kb_prime_added
+    rho: rho_baseline
+  outputs:
+    R_0_over_a: R0_bulk_over_a_min_baseline
+    R_0: R0_bulk_min_baseline
+
+- id: run_surface_monopole_defect_energy_eq5
+  model: surface_monopole_defect_energy_eq5
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    k_s_prime: ks_prime_added
+    rho: rho_baseline
+  outputs:
+    E_defects_s: E_defects_surface_baseline
+
+- id: run_surface_monopole_total_energy
+  model: surface_monopole_total_energy
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    k_s_prime: ks_prime_added
+    rho: rho_baseline
+  outputs:
+    E_total: E_total_surface_baseline
+
+- id: run_equilibrium_radius_surface_monopole_eq8
+  model: equilibrium_radius_surface_monopole_eq8
+  inputs:
+    alpha_s: alpha_s_baseline
+    a: filament_radius_a_printed
+    rho: rho_baseline
+  outputs:
+    R_0_over_a: R0_surface_over_a_eq8_baseline
+    R_0: R0_surface_eq8_baseline
+
+- id: run_equilibrium_radius_surface_monopole_from_energy
+  model: equilibrium_radius_surface_monopole_from_energy
+  inputs:
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    k_s_prime: ks_prime_added
+    rho: rho_baseline
+  outputs:
+    R_0_over_a: R0_surface_over_a_min_baseline
+    R_0: R0_surface_min_baseline
+
+# ==========================================================================
+# 4. Incompressible tightly packed bundle (Eqs. 6 and 9, pp. 3-4)
+# ==========================================================================
+- id: run_incompressible_eq6_middle_printed
+  model: incompressible_defect_energy_eq6_middle
+  inputs:
+    K: K_bending_added
+    rho_v: rho_v_baseline
+    L_p: Lp_healing_added
+    a: filament_radius_a_printed
+    R: R_eval_added
+  outputs:
+    E_slice: E_slice_eq6_middle_printed
+
+- id: run_incompressible_eq6_middle_corrected
+  model: incompressible_defect_energy_eq6_middle_corrected
+  inputs:
+    K: K_bending_added
+    rho_v: rho_v_baseline
+    L_p: Lp_healing_added
+    a: filament_radius_a_printed
+    R: R_eval_added
+  outputs:
+    E_defects_b: E_defects_eq6_middle_corrected
+
+- id: run_incompressible_defect_energy_eq6
+  model: incompressible_defect_energy_eq6
+  inputs:
+    K: K_bending_added
+    rho: rho_baseline
+    R: R_eval_added
+    L_p: Lp_healing_added
+    a: filament_radius_a_printed
+  outputs:
+    E_defects_b: E_defects_incomp_baseline
+
+- id: run_incompressible_total_energy
+  model: incompressible_total_energy
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    K: K_bending_added
+    rho: rho_baseline
+    L_p: Lp_healing_added
+  outputs:
+    E_total: E_total_incomp_baseline
+
+- id: run_alpha_prime
+  model: bend_to_binding_area_def
+  inputs:
+    K: K_bending_added
+    eps_b: eps_b_added
+  outputs:
+    alpha_prime: alpha_prime_baseline
+
+- id: run_equilibrium_radius_incompressible_eq9
+  model: equilibrium_radius_incompressible_eq9
+  inputs:
+    a: filament_radius_a_printed
+    L_p: Lp_healing_added
+    alpha_prime: alpha_prime_baseline
+    rho: rho_baseline
+  outputs:
+    R_0_over_a: R0_incomp_over_a_eq9_baseline
+    R_0: R0_incomp_eq9_baseline
+
+- id: run_equilibrium_radius_incompressible_from_energy
+  model: equilibrium_radius_incompressible_from_energy
+  inputs:
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    K: K_bending_added
+    rho: rho_baseline
+    L_p: Lp_healing_added
+  outputs:
+    R_0_over_a: R0_incomp_over_a_min_baseline
+    R_0: R0_incomp_min_baseline
+
+# ==========================================================================
+# 5. Weak-binding, density, and cross-linker concentration scalings (pp. 3-4)
+# ==========================================================================
+- id: run_binding_energy_vs_concentration
+  model: binding_energy_vs_concentration
+  inputs:
+    c: c_crosslinker_added
+    eps: eps_binding_free_energy_added
+  outputs:
+    eps_b: eps_b_langmuir_baseline
+
+- id: run_weak_binding_linear_scaling
+  model: weak_binding_linear_scaling
+  inputs:
+    eps_b: eps_b_weak_added
+  outputs:
+    R_0: R0_linear_scaling_weak
+
+- id: run_weak_binding_cbrt_scaling
+  model: weak_binding_cbrt_scaling
+  inputs:
+    eps_b: eps_b_weak_added
+  outputs:
+    R_0: R0_cbrt_scaling_weak
+
+- id: run_scaling_exponents_shell_weak
+  model: scaling_exponents_shell
+  inputs:
+    eps_b: eps_b_weak_added
+    rho: rho_baseline
+    a: filament_radius_a_printed
+    lam: lam_shell_added
+    E_c: Ec_added
+  outputs:
+    exp_eps_b: exp_R0_shell_epsb_weak
+    exp_rho: exp_R0_shell_rho_weak
+
+- id: run_core_energy_near_threshold
+  model: core_energy_from_threshold_ratio
+  inputs:
+    ratio: Ec_over_Ecstar_near_added
+    E_c_star: Ec_star_baseline
+  outputs:
+    E_c: Ec_near_threshold_derived
+
+- id: run_scaling_exponents_shell_near_threshold
+  model: scaling_exponents_shell
+  inputs:
+    eps_b: eps_b_added
+    rho: rho_baseline
+    a: filament_radius_a_printed
+    lam: lam_shell_added
+    E_c: Ec_near_threshold_derived
+  outputs:
+    exp_eps_b: exp_R0_shell_epsb_near
+    exp_rho: exp_R0_shell_rho_near
+
+- id: run_scaling_exponent_bulk_weak
+  model: scaling_exponent_bulk_monopole
+  inputs:
+    eps_b: eps_b_weak_added
+    k_b_prime: kb_prime_added
+    a: filament_radius_a_printed
+    rho: rho_baseline
+  outputs:
+    exp_eps_b: exp_R0_b_epsb_weak
+
+- id: run_scaling_exponent_surface_weak
+  model: scaling_exponent_surface_monopole
+  inputs:
+    eps_b: eps_b_weak_added
+    k_s_prime: ks_prime_added
+    a: filament_radius_a_printed
+    rho: rho_baseline
+  outputs:
+    exp_eps_b: exp_R0_s_epsb_weak
+
+- id: run_scaling_exponent_incomp_weak
+  model: scaling_exponent_incompressible
+  inputs:
+    eps_b: eps_b_weak_added
+    K: K_bending_added
+    a: filament_radius_a_printed
+    L_p: Lp_healing_added
+    rho: rho_baseline
+  outputs:
+    exp_eps_b: exp_R0_bp_epsb_weak
+
+# ==========================================================================
+# 6. Bundle growth Eq. (10), Fokker-Planck Eq. (11), and steady-state tails
+# ==========================================================================
+- id: run_growth_flux_eq10
+  model: growth_flux_eq10
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    rho_ac: rho_ac_added
+    gamma: gamma_friction_added
+    F_R: F_R_eval_added
+  outputs:
+    beta: beta_baseline
+    R_dot: R_dot_baseline
+    N_dot: N_dot_baseline
+
+- id: run_fp_boltzmann_baseline
+  model: fokker_planck_steady_state_boltzmann
+  inputs:
+    beta: beta_baseline
+    E_total: E_total_bulk_baseline
+    E_0: E_0_added
+    D_R: D_R_added
+  outputs:
+    P: P_boltzmann_baseline
+
+- id: run_fp_eq11_printed
+  model: fokker_planck_eq11_printed
+  inputs:
+    beta: beta_baseline
+    E_total: E_total_bulk_baseline
+    E_0: E_0_added
+    D_R: D_R_added
+  outputs:
+    boltzmann_coeff: fp_eq11_printed_boltzmann_coeff
+    P: P_fp_eq11_printed_baseline
+
+- id: run_fp_eq11_corrected
+  model: fokker_planck_eq11_corrected
+  inputs:
+    beta: beta_baseline
+    E_total: E_total_bulk_baseline
+    E_0: E_0_added
+    D_R: D_R_added
+  outputs:
+    boltzmann_coeff: fp_eq11_corrected_boltzmann_coeff
+    P: P_fp_eq11_corrected_baseline
+
+- id: run_empty_shell_boltzmann
+  model: empty_shell_boltzmann_dist
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    rho: rho_baseline
+    lam: lam_shell_added
+    E_c: Ec_added
+    beta: beta_baseline
+    D_R: D_R_added
+    E_0: E_0_added
+  outputs:
+    P: P_empty_shell_baseline
+
+- id: run_surface_monopole_boltzmann
+  model: surface_monopole_boltzmann_dist
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    k_s_prime: ks_prime_added
+    rho: rho_baseline
+    beta: beta_baseline
+    D_R: D_R_added
+    E_0: E_0_added
+  outputs:
+    P: P_surface_boltzmann_baseline
+
+- id: run_surface_monopole_tail_printed
+  model: surface_monopole_tail_printed
+  inputs:
+    R: R_large_tail_added
+    a: filament_radius_a_printed
+    rho: rho_baseline
+    beta: beta_baseline
+    k_s_prime: ks_prime_added
+    D_R: D_R_added
+  outputs:
+    P: P_surface_tail_printed_largeR
+
+- id: run_surface_monopole_tail_corrected
+  model: surface_monopole_tail_corrected
+  inputs:
+    R: R_large_tail_added
+    a: filament_radius_a_printed
+    rho: rho_baseline
+    beta: beta_baseline
+    k_s_prime: ks_prime_added
+    D_R: D_R_added
+  outputs:
+    P: P_surface_tail_corrected_largeR
+
+- id: run_surface_monopole_tail_exponent_from_eq5
+  model: surface_monopole_tail_exponent_from_eq5
+  inputs:
+    R: R_large_tail_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    k_s_prime: ks_prime_added
+    rho: rho_baseline
+    beta: beta_baseline
+    D_R: D_R_added
+  outputs:
+    tail_prefactor: surface_tail_coeff_from_eq5
+
+- id: run_bulk_monopole_boltzmann
+  model: bulk_monopole_boltzmann_dist
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    k_b_prime: kb_prime_added
+    rho: rho_baseline
+    beta: beta_baseline
+    D_R: D_R_added
+    E_0: E_0_added
+  outputs:
+    P: P_bulk_boltzmann_baseline
+
+- id: run_incompressible_boltzmann
+  model: incompressible_boltzmann_dist
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    K: K_bending_added
+    rho: rho_baseline
+    L_p: Lp_healing_added
+    beta: beta_baseline
+    D_R: D_R_added
+    E_0: E_0_added
+  outputs:
+    P: P_incomp_boltzmann_baseline
+
+- id: run_incompressible_gaussian_tail
+  model: incompressible_gaussian_tail
+  inputs:
+    R: R_eval_added
+    a: filament_radius_a_printed
+    K: K_bending_added
+    rho: rho_baseline
+    L_p: Lp_healing_added
+    beta: beta_baseline
+    D_R: D_R_added
+  outputs:
+    P: P_incomp_gaussian_tail_baseline
+
+- id: run_bulk_gaussian_tail_exponent_eq6
+  model: bulk_gaussian_tail_exponent_eq6
+  inputs:
+    R: R_large_tail_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    K: K_bending_added
+    rho: rho_baseline
+    L_p: Lp_healing_added
+    E_0: E_0_added
+  outputs:
+    tail_exponent: gaussian_tail_exp_eq6
+
+- id: run_bulk_gaussian_tail_exponent_eq4
+  model: bulk_gaussian_tail_exponent_eq4
+  inputs:
+    R: R_large_tail_added
+    a: filament_radius_a_printed
+    eps_b: eps_b_added
+    k_b_prime: kb_prime_added
+    rho: rho_baseline
+    E_0: E_0_added
+  outputs:
+    tail_exponent: gaussian_tail_exp_eq4
+
+# ==========================================================================
+# 7. Low-concentration radius scaling via Langmuir binding (p. 4 col 1)
+# ==========================================================================
+- id: run_conc_scaling_exp_surface_low
+  model: conc_scaling_exponent_surface_monopole
+  inputs:
+    c: c_crosslinker_low_added
+    eps: eps_binding_free_energy_added
+  outputs:
+    exp_c: exp_R0_s_c_low
+
+- id: run_conc_scaling_exp_incomp_low
+  model: conc_scaling_exponent_incompressible
+  inputs:
+    c: c_crosslinker_low_added
+    eps: eps_binding_free_energy_added
+  outputs:
+    exp_c: exp_R0_bp_c_low
+
+- id: run_conc_scaling_exp_shell_low
+  model: conc_scaling_exponent_shell
+  inputs:
+    c: c_crosslinker_low_added
+    eps: eps_binding_free_energy_added
+    eps_b_max: eps_b_sat_added
+    rho: rho_baseline
+    a: filament_radius_a_printed
+    lam: lam_shell_added
+    E_c: Ec_added
+  outputs:
+    exp_c: exp_R0_shell_c_low
+
+- id: run_conc_scaling_exp_bulk_low
+  model: conc_scaling_exponent_bulk_monopole
+  inputs:
+    c: c_crosslinker_low_added
+    eps: eps_binding_free_energy_added
+    eps_b_max: eps_b_sat_added
+    k_b_prime: kb_prime_added
+    a: filament_radius_a_printed
+    rho: rho_baseline
+  outputs:
+    exp_c: exp_R0_b_c_low

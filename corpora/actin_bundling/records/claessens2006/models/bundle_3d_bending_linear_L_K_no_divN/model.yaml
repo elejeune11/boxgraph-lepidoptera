@@ -1,0 +1,30 @@
+id: bundle_3d_bending_linear_L_K_no_divN
+name: 3D F-actin bundle bending stiffness along L_B(n) variant omitting 1/N in K
+role: model
+stated: {page: 20, printed_page: "SI 1", quote: "relations between LB and n were used to fit the measured", where: "SI Bundle Length"}
+built_from: [bundle_3d_bending_K_no_divN, bundle_length_linear_fit]
+variant_of: bundle_3d_bending_linear_L
+corrections:
+  - equation: "K definition (Methods, p. 12)"
+    change: "Use K = sum_{k=1}^N sum_{i=k}^N i = n_2D*(n_2D^2 - 1)/24 instead of printed K = (1/N) * sum_{k=1}^N sum_{i=k}^N i"
+    evidence: >
+      Calibrated digitization of Fig. 3D (parameter-free PEG 4% curve, t = 0, k_par/delta = 10^3 N/m^2,
+      L_B = 21.2 + 1.3*n um) yields kappa_B(10) = 5.04, kappa_B(30) = 35.87, and kappa_B(38) = 54.63 pN*um^2.
+      Printed K = S_2/N overshoots severely at large n (48.12 at n = 30, 78.93 at n = 38), whereas omitting 1/N
+      (K = S_2) reproduces the digitized PEG curve closely for n >= 10 (5.23 at n = 10, 36.36 at n = 30,
+      56.73 at n = 38) and likewise matches the large-n concavity of Fig. 3A-C.
+equation: "L_B(n) = L_0 + s * n; n_2D = sqrt(n); kappa_B(3D) = n_2D * kappa_B(2D) with K = S_2 = n_2D*(n_2D^2 - 1)/24"
+inputs:
+  n: {quantity: filament_number, unit: dimensionless}
+  L_0: {quantity: bundle_length_intercept, unit: um}
+  s: {quantity: bundle_length_slope, unit: um}
+  k_par: {quantity: crosslink_shear_stiffness, unit: N/m}
+  delta: {quantity: crosslink_spacing_axial, unit: m}
+  k_a: {quantity: stretching_stiffness_filament, unit: N}
+  kappa_a: {quantity: bending_stiffness_filament, unit: N*m^2}
+  d: {quantity: filament_diameter, unit: m}
+  t: {quantity: crosslink_spacing_interfilament, unit: m}
+outputs:
+  kappa_B: {quantity: bending_stiffness_bundle, unit: N*m^2}
+settings: {}
+stochastic: false

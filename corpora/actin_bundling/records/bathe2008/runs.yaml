@@ -1,0 +1,861 @@
+# --- 1. Peristaltic mode wavelength cutoff (p. 3 col 1) ---
+
+- id: run_peristaltic_wavelength
+  model: peristaltic_wavelength
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    delta: delta_min_hex
+    k_perp: k_perp_crosslink
+  outputs:
+    lambda_max: lambda_max_pred
+
+- id: run_c_eff_pinned
+  model: wlb_effective_c_appendix
+  inputs: {}
+  settings: {bc: pinned, n_modes: 2000}
+  outputs: {c_eff: c_eff_pinned_pred}
+
+- id: run_c_eff_clamped
+  model: wlb_effective_c_appendix
+  inputs: {}
+  settings: {bc: clamped, n_modes: 2000}
+  outputs: {c_eff: c_eff_clamped_pred}
+
+- id: run_c_eff_ring
+  model: wlb_effective_c_appendix
+  inputs: {}
+  settings: {bc: ring, n_modes: 2000}
+  outputs: {c_eff: c_eff_ring_pred}
+
+# --- 2. Fig. 3A: kappa_B* vs N at fixed alpha (p. 4) ---
+
+- id: run_fig3a_eq2_a1e0
+  model: wlb_bending_stiffness_eq2
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    alpha: alpha_1e0
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {N: fig3a_a1e0_datum}
+  outputs: {kappa_B_star: fig3a_eq2_a1e0_pred}
+
+- id: run_fig3a_eq2_a1e1
+  model: wlb_bending_stiffness_eq2
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    alpha: alpha_1e1
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {N: fig3a_a1e1_datum}
+  outputs: {kappa_B_star: fig3a_eq2_a1e1_pred}
+
+- id: run_fig3a_eq2_a1e2
+  model: wlb_bending_stiffness_eq2
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    alpha: alpha_1e2
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {N: fig3a_a1e2_datum}
+  outputs: {kappa_B_star: fig3a_eq2_a1e2_pred}
+
+- id: run_fig3a_eq2_a1e3
+  model: wlb_bending_stiffness_eq2
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    alpha: alpha_1e3
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {N: fig3a_a1e3_datum}
+  outputs: {kappa_B_star: fig3a_eq2_a1e3_pred}
+
+- id: run_fig3a_fe_a1e1
+  model: wlb_fe_3point
+  inputs:
+    alpha: alpha_1e1
+    chi2: chi2_small_crosslinks
+  sweep: {N: fig3a_a1e1_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3a_fe_a1e1_pred}
+
+- id: run_fig3a_fe_a1e2
+  model: wlb_fe_3point
+  inputs:
+    alpha: alpha_1e2
+    chi2: chi2_small_crosslinks
+  sweep: {N: fig3a_a1e2_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3a_fe_a1e2_pred}
+
+# --- 3. Fig. 3B: kappa_B* vs alpha at fixed N (Eq. 2, 2D FE, Eq. A8 mode sum, Timoshenko) ---
+
+- id: run_fig3b_eq2_n4
+  model: wlb_bending_stiffness_eq2
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_4
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {alpha: fig3b_n4_datum}
+  outputs: {kappa_B_star: fig3b_eq2_n4_pred}
+
+- id: run_fig3b_eq2_n25
+  model: wlb_bending_stiffness_eq2
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_25
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {alpha: fig3b_n25_datum}
+  outputs: {kappa_B_star: fig3b_eq2_n25_pred}
+
+- id: run_fig3b_eq2_n100
+  model: wlb_bending_stiffness_eq2
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_100
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {alpha: fig3b_n100_datum}
+  outputs: {kappa_B_star: fig3b_eq2_n100_pred}
+
+- id: run_fig3b_fe_n4
+  model: wlb_fe_3point
+  inputs:
+    N: N_4
+    chi2: chi2_small_crosslinks
+  sweep: {alpha: fig3b_n4_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3b_fe_n4_pred}
+
+- id: run_fig3b_fe_n25
+  model: wlb_fe_3point
+  inputs:
+    N: N_25
+    chi2: chi2_small_crosslinks
+  sweep: {alpha: fig3b_n25_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3b_fe_n25_pred}
+
+- id: run_fig3b_fe_n100
+  model: wlb_fe_3point
+  inputs:
+    N: N_100
+    chi2: chi2_small_crosslinks
+  sweep: {alpha: fig3b_n100_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3b_fe_n100_pred}
+
+- id: run_fig3b_modesum_n100
+  model: wlb_mode_sum_deflection_eqa8
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_100
+    chi2: chi2_small_crosslinks
+  sweep: {alpha: fig3b_n100_datum}
+  settings: {bc: pinned, n_modes: 200}
+  outputs: {kappa_B_star: fig3b_modesum_n100_pred}
+
+- id: run_fig3b_timo_n4
+  model: timoshenko_microscopic
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_4
+  sweep: {alpha: fig3b_timo_n4_datum}
+  outputs: {kappa_B_star: fig3b_timo_n4_pred}
+
+- id: run_fig3b_timo_n25
+  model: timoshenko_microscopic
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_25
+  sweep: {alpha: fig3b_timo_n25_datum}
+  outputs: {kappa_B_star: fig3b_timo_n25_pred}
+
+- id: run_fig3b_timo_n100
+  model: timoshenko_microscopic
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_100
+  sweep: {alpha: fig3b_timo_n100_datum}
+  outputs: {kappa_B_star: fig3b_timo_n100_pred}
+
+# --- 4. Fig. 3B inset: factor-of-2 crossover values alpha** vs N ---
+
+- id: run_fig3b_inset_pinned_dec
+  model: wlb_crossover_eq2
+  inputs:
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {N: fig3b_inset_pinned_dec_datum}
+  outputs: {alpha_dec: fig3b_inset_pinned_dec_pred}
+
+- id: run_fig3b_inset_pinned_fc
+  model: wlb_crossover_eq2
+  inputs:
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {N: fig3b_inset_pinned_fc_datum}
+  outputs: {alpha_fc: fig3b_inset_pinned_fc_pred}
+
+- id: run_fig3b_inset_clamped_dec
+  model: wlb_crossover_eq2
+  inputs:
+    chi2: chi2_small_crosslinks
+    c: c_clamped
+  sweep: {N: fig3b_inset_clamped_dec_datum}
+  outputs: {alpha_dec: fig3b_inset_clamped_dec_pred}
+
+- id: run_fig3b_inset_clamped_fc
+  model: wlb_crossover_eq2
+  inputs:
+    chi2: chi2_small_crosslinks
+    c: c_clamped
+  sweep: {N: fig3b_inset_clamped_fc_datum}
+  outputs: {alpha_fc: fig3b_inset_clamped_fc_pred}
+
+# --- 5. In vitro fascin-actin bundles (p. 5 col 2 & Fig. 4 p. 6) ---
+
+- id: run_kx_from_r05
+  model: kx_from_shear_modulus
+  inputs:
+    G_shear: G_shear_fascin_r05
+    delta: delta_min_p5
+  outputs: {k_x: kx_r05_pred}
+
+- id: run_langmuir_1uM
+  model: langmuir_crosslink_spacing
+  inputs:
+    delta_min: delta_min_hex_fig4
+    K_d: Kd_fascin
+    c_fascin: c_fascin_fig4_1uM_added
+  outputs: {delta: delta_langmuir_1uM_pred}
+
+- id: run_langmuir_0p1uM
+  model: langmuir_crosslink_spacing
+  inputs:
+    delta_min: delta_min_hex_fig4
+    K_d: Kd_fascin
+    c_fascin: c_fascin_fig4_0p1uM_added
+  outputs: {delta: delta_langmuir_0p1uM_pred}
+
+- id: run_langmuir_0p05uM
+  model: langmuir_crosslink_spacing
+  inputs:
+    delta_min: delta_min_hex_fig4
+    K_d: Kd_fascin
+    c_fascin: c_fascin_fig4_0p05uM_added
+  outputs: {delta: delta_langmuir_0p05uM_pred}
+
+- id: run_fig4_n27_printed_params
+  model: wlb_bending_stiffness_fig4
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_fig4_mid
+    k_x: kx_fascin_t0_printed
+    E_f_A_f: EfAf_actin
+    chi2: chi2_small_crosslinks
+    c: c_ring
+  sweep: {L2_over_delta: fig4_theory_n27_datum}
+  outputs: {kappa_B: fig4_n27_printed_params_pred}
+
+- id: run_fig4_exp_printed_params
+  model: wlb_bending_stiffness_fig4
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_fig4_mid
+    k_x: kx_fascin_t0_printed
+    E_f_A_f: EfAf_actin
+    chi2: chi2_small_crosslinks
+    c: c_ring
+  sweep: {L2_over_delta: fig4_exp_points_datum}
+  outputs: {kappa_B: fig4_exp_printed_params_pred}
+
+- id: run_fig4_n27_inferred
+  model: wlb_bending_stiffness_fig4
+  inputs:
+    kappa_f: kappa_f_fig4_added
+    N: N_fig4_mid
+    k_x: kx_fig4_added
+    E_f_A_f: EfAf_actin
+    chi2: chi2_small_crosslinks
+    c: c_ring
+  sweep: {L2_over_delta: fig4_theory_n27_datum}
+  outputs: {kappa_B: fig4_n27_inferred_pred}
+
+- id: run_fig4_n21_inferred
+  model: wlb_bending_stiffness_fig4
+  inputs:
+    kappa_f: kappa_f_fig4_added
+    N: N_fig4_lo
+    k_x: kx_fig4_added
+    E_f_A_f: EfAf_actin
+    chi2: chi2_small_crosslinks
+    c: c_ring
+  sweep: {L2_over_delta: fig4_theory_n21_datum}
+  outputs: {kappa_B: fig4_n21_inferred_pred}
+
+- id: run_fig4_n33_inferred
+  model: wlb_bending_stiffness_fig4
+  inputs:
+    kappa_f: kappa_f_fig4_added
+    N: N_fig4_hi
+    k_x: kx_fig4_added
+    E_f_A_f: EfAf_actin
+    chi2: chi2_small_crosslinks
+    c: c_ring
+  sweep: {L2_over_delta: fig4_theory_n33_datum}
+  outputs: {kappa_B: fig4_n33_inferred_pred}
+
+- id: run_fig4_exp_inferred
+  model: wlb_bending_stiffness_fig4
+  inputs:
+    kappa_f: kappa_f_fig4_added
+    N: N_fig4_mid
+    k_x: kx_fig4_added
+    E_f_A_f: EfAf_actin
+    chi2: chi2_small_crosslinks
+    c: c_ring
+  sweep: {L2_over_delta: fig4_exp_points_datum}
+  outputs: {kappa_B: fig4_exp_inferred_pred}
+
+# --- 6. In vivo bending stiffness state diagram (Fig. 5, pp. 6-7) ---
+
+- id: run_fig5_box_a_fascin_lb
+  model: state_diagram_alpha_bounds
+  inputs:
+    k_x: kx_fascin_t0_printed
+    E_f_A_f: EfAf_actin
+    delta: delta_min_hex
+    L_min: L_acrosome
+    L_max: L_acrosome
+    box_ref: fig5_box_a_datum
+  outputs: {alpha_bounds: fig5_box_a_pred}
+
+- id: run_fig5_box_b_stereocilia
+  model: state_diagram_alpha_bounds
+  inputs:
+    k_x: kx_fimbrin_added
+    E_f_A_f: EfAf_actin
+    delta: delta_min_hex
+    L_min: L_stereocilia_min
+    L_max: L_stereocilia_max
+    box_ref: fig5_box_b_datum
+  outputs: {alpha_bounds: fig5_box_b_pred}
+
+- id: run_fig5_box_c_microvilli
+  model: state_diagram_alpha_bounds
+  inputs:
+    k_x: kx_fimbrin_added
+    E_f_A_f: EfAf_actin
+    delta: delta_min_hex
+    L_min: L_microvilli_min
+    L_max: L_microvilli_max
+    box_ref: fig5_box_c_datum
+  outputs: {alpha_bounds: fig5_box_c_pred}
+
+- id: run_fig5_box_d_stress_fibers
+  model: state_diagram_alpha_bounds
+  inputs:
+    k_x: kx_alpha_actinin_added
+    E_f_A_f: EfAf_actin
+    delta: delta_min_hex
+    L_min: L_stress_fiber_min
+    L_max: L_stress_fiber_max
+    box_ref: fig5_box_d_datum
+  outputs: {alpha_bounds: fig5_box_d_pred}
+
+- id: run_fig5_box_e_filopodia
+  model: state_diagram_alpha_bounds
+  inputs:
+    k_x: kx_fascin_t0_printed
+    E_f_A_f: EfAf_actin
+    delta: delta_min_hex
+    L_min: L_filopodia_min
+    L_max: L_filopodia_max
+    box_ref: fig5_box_e_datum
+  outputs: {alpha_bounds: fig5_box_e_pred}
+
+- id: run_fig5_box_f_bristles
+  model: state_diagram_alpha_bounds
+  inputs:
+    k_x: kx_fascin_t0_printed
+    E_f_A_f: EfAf_actin
+    delta: delta_min_hex
+    L_min: L_bristle_min_added
+    L_max: L_bristle
+    box_ref: fig5_box_f_datum
+  outputs: {alpha_bounds: fig5_box_f_pred}
+
+- id: run_fig5_box_g_mt
+  model: state_diagram_mt_bounds
+  inputs:
+    G_shear: G_shear_mt
+    E_f_A_f: EfAf_mt
+    L_min: L_mt_min
+    L_max: L_mt_max
+    box_ref: fig5_box_g_datum
+  outputs: {alpha_bounds: fig5_box_g_pred}
+
+# --- 7. Drosophila bristle fracture density (p. 7 col 1) ---
+
+- id: run_bristle_phi
+  model: fracture_density_def
+  inputs:
+    L: L_bristle
+    L_f: Lf_bristle_early
+  outputs: {phi: phi_bristle_pred}
+
+- id: run_bristle_phi_star_figs2
+  model: fracture_critical_density_figs2
+  inputs:
+    N: N_bristle
+  outputs: {phi_star: phi_star_bristle_figs2_pred}
+
+# --- 8. Supplementary Material: Fiber fracture FE simulations (Figs. S1 & S2, p. 11) ---
+
+- id: run_figS1_fe_phi1
+  model: wlb_fe_fractured
+  inputs:
+    M: M_8
+    phi: phi_1
+    kappa_f_sim: kappa_f_sim_figS1_added
+  sweep: {alpha: figS1_phi1_datum}
+  settings: {n_el: 80, seed: 0}
+  replicates: 1
+  outputs: {kappa_B_sim: figS1_fe_phi1_pred}
+
+- id: run_figS1_fe_phi2
+  model: wlb_fe_fractured
+  inputs:
+    M: M_8
+    phi: phi_2
+    kappa_f_sim: kappa_f_sim_figS1_added
+  sweep: {alpha: figS1_phi2_datum}
+  settings: {n_el: 80, seed: 0}
+  replicates: 3
+  outputs: {kappa_B_sim: figS1_fe_phi2_pred}
+
+- id: run_figS1_fe_phi4
+  model: wlb_fe_fractured
+  inputs:
+    M: M_8
+    phi: phi_4
+    kappa_f_sim: kappa_f_sim_figS1_added
+  sweep: {alpha: figS1_phi4_datum}
+  settings: {n_el: 80, seed: 0}
+  replicates: 3
+  outputs: {kappa_B_sim: figS1_fe_phi4_pred}
+
+- id: run_figS1_fe_phi8
+  model: wlb_fe_fractured
+  inputs:
+    M: M_8
+    phi: phi_8
+    kappa_f_sim: kappa_f_sim_figS1_added
+  sweep: {alpha: figS1_phi8_datum}
+  settings: {n_el: 80, seed: 0}
+  replicates: 3
+  outputs: {kappa_B_sim: figS1_fe_phi8_pred}
+
+- id: run_figS1_fe_phi20
+  model: wlb_fe_fractured
+  inputs:
+    M: M_8
+    phi: phi_20
+    kappa_f_sim: kappa_f_sim_figS1_added
+  sweep: {alpha: figS1_phi20_datum}
+  settings: {n_el: 80, seed: 0}
+  replicates: 3
+  outputs: {kappa_B_sim: figS1_fe_phi20_pred}
+
+- id: run_figS1_fe_phi40
+  model: wlb_fe_fractured
+  inputs:
+    M: M_8
+    phi: phi_40
+    kappa_f_sim: kappa_f_sim_figS1_added
+  sweep: {alpha: figS1_phi40_datum}
+  settings: {n_el: 160, seed: 0}
+  replicates: 3
+  outputs: {kappa_B_sim: figS1_fe_phi40_pred}
+
+- id: run_figS2b_scaling_m2
+  model: fracture_renormalized_c
+  inputs: {}
+  sweep: {phi_ratio_sq: figS2b_m2_datum}
+  outputs: {c_eff: figS2b_m2_scaling_pred}
+
+- id: run_figS2b_scaling_m4
+  model: fracture_renormalized_c
+  inputs: {}
+  sweep: {phi_ratio_sq: figS2b_m4_datum}
+  outputs: {c_eff: figS2b_m4_scaling_pred}
+
+- id: run_figS2b_scaling_m8
+  model: fracture_renormalized_c
+  inputs: {}
+  sweep: {phi_ratio_sq: figS2b_m8_datum}
+  outputs: {c_eff: figS2b_m8_scaling_pred}
+
+# --- 9. Scalar runs for numerical mesh & mode-truncation refinement checks ---
+
+- id: run_fe_refinement_point
+  model: wlb_fe_3point
+  inputs:
+    N: N_25
+    alpha: alpha_1e2
+    chi2: chi2_small_crosslinks
+  settings: {bc: pinned, n_el: 40}
+  outputs: {kappa_B_star: fe_ref_point_out}
+
+- id: run_eqa8_refinement_point
+  model: wlb_mode_sum_deflection_eqa8
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_100
+    alpha: alpha_1e1
+    chi2: chi2_small_crosslinks
+  settings: {bc: pinned, n_modes: 50}
+  outputs: {kappa_B_star: eqa8_ref_point_out}
+
+- id: run_eqa10_refinement_point
+  model: wlb_ring_fluctuation_eqa10
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_25
+    alpha: alpha_1e1
+    chi2: chi2_small_crosslinks
+  settings: {n_modes: 50}
+  outputs: {kappa_B_star: eqa10_ref_point_out}
+
+- id: run_fe_fractured_refinement_point
+  model: wlb_fe_fractured
+  inputs:
+    M: M_8
+    alpha: alpha_1e2
+    phi: phi_8
+    kappa_f_sim: kappa_f_sim_figS1_added
+  settings: {n_el: 40, seed: 0}
+  replicates: 3
+  outputs: {kappa_B_sim: fe_frac_ref_point_out}
+
+# --- 10. Audit additions: complete Fig. 3A FE checks & exercise analytical models ---
+
+- id: run_fig3a_fe_a1e0
+  model: wlb_fe_3point
+  inputs:
+    alpha: alpha_1e0
+    chi2: chi2_small_crosslinks
+  sweep: {N: fig3a_a1e0_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3a_fe_a1e0_pred}
+
+- id: run_fig3a_fe_a1e3
+  model: wlb_fe_3point
+  inputs:
+    alpha: alpha_1e3
+    chi2: chi2_small_crosslinks
+  sweep: {N: fig3a_a1e3_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3a_fe_a1e3_pred}
+
+- id: run_G_shear_r05_from_kx_printed
+  model: interlayer_shear_modulus_from_kx
+  inputs:
+    k_x: kx_fascin_t0_printed
+    delta: delta_min_p5
+  outputs: {G_shear: G_shear_r05_from_kx_printed_pred}
+
+- id: run_G_shear_r05_from_kx_fig4
+  model: interlayer_shear_modulus_from_kx
+  inputs:
+    k_x: kx_fig4_added
+    delta: delta_fig4_56nm
+  outputs: {G_shear: G_shear_r05_from_kx_fig4_pred}
+
+- id: run_chi2_t0
+  model: wlb_chi_squared
+  inputs:
+    A_f: A_f_actin_added
+    d_f: d_f_actin_added
+    t: t_crosslink_0nm
+    I_f: I_f_actin_added
+  outputs: {chi2: chi2_t0_pred}
+
+- id: run_chi2_t10
+  model: wlb_chi_squared
+  inputs:
+    A_f: A_f_actin_added
+    d_f: d_f_actin_added
+    t: t_crosslink_10nm
+    I_f: I_f_actin_added
+  outputs: {chi2: chi2_t10_pred}
+
+- id: run_fig4_n27_t10_kx1e6
+  model: wlb_bending_stiffness_fig4
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_fig4_mid
+    k_x: kx_fascin_t10_printed
+    E_f_A_f: EfAf_actin
+    chi2: chi2_t10_pred
+    c: c_ring
+  sweep: {L2_over_delta: fig4_theory_n27_datum}
+  outputs: {kappa_B: fig4_n27_t10_kx1e6_pred}
+
+- id: run_kf_actin_hex
+  model: fiber_stretching_stiffness_def
+  inputs:
+    E_f_A_f: EfAf_actin
+    delta: delta_min_hex
+  outputs: {k_f: kf_actin_hex_pred}
+
+- id: run_alpha_eq1_bristle
+  model: coupling_parameter_eq1
+  inputs:
+    k_x: kx_fascin_t0_printed
+    L: L_bristle
+    k_f: kf_actin_hex_pred
+    delta: delta_min_hex
+  outputs: {alpha: alpha_eq1_bristle_pred}
+
+- id: run_alpha_ea_acrosome
+  model: coupling_parameter_ea
+  inputs:
+    k_x: kx_fascin_t0_printed
+    E_f_A_f: EfAf_actin
+    L: L_acrosome
+    delta: delta_min_hex
+  outputs: {alpha: alpha_ea_acrosome_pred}
+
+- id: run_alpha_ea_bristle
+  model: coupling_parameter_ea
+  inputs:
+    k_x: kx_fascin_t0_printed
+    E_f_A_f: EfAf_actin
+    L: L_bristle
+    delta: delta_min_hex
+  outputs: {alpha: alpha_ea_bristle_pred}
+
+- id: run_alpha_shear_mt_min
+  model: coupling_parameter_shear_modulus
+  inputs:
+    G_shear: G_shear_mt
+    E_f_A_f: EfAf_mt
+    L: L_mt_min
+  outputs: {alpha: alpha_shear_mt_min_pred}
+
+- id: run_alpha_shear_mt_max
+  model: coupling_parameter_shear_modulus
+  inputs:
+    G_shear: G_shear_mt
+    E_f_A_f: EfAf_mt
+    L: L_mt_max
+  outputs: {alpha: alpha_shear_mt_max_pred}
+
+- id: run_alpha_shear_acrosome_r05
+  model: coupling_parameter_shear_modulus
+  inputs:
+    G_shear: G_shear_fascin_r05
+    E_f_A_f: EfAf_actin
+    L: L_acrosome
+  outputs: {alpha: alpha_shear_acrosome_r05_pred}
+
+- id: run_bristle_phi_star_text
+  model: fracture_critical_density_text
+  inputs:
+    N: N_bristle
+  outputs: {phi_star: phi_star_bristle_text_pred}
+
+- id: run_bristle_alpha_prime_text
+  model: fracture_renormalized_coupling
+  inputs:
+    alpha: alpha_ea_bristle_pred
+    phi_star: phi_star_bristle_text_pred
+    phi: phi_bristle_pred
+  outputs: {alpha_prime: alpha_prime_bristle_text_pred}
+
+- id: run_bristle_alpha_prime_figs2
+  model: fracture_renormalized_coupling
+  inputs:
+    alpha: alpha_ea_bristle_pred
+    phi_star: phi_star_bristle_figs2_pred
+    phi: phi_bristle_pred
+  outputs: {alpha_prime: alpha_prime_bristle_figs2_pred}
+
+- id: run_decoupled_fig4_mid
+  model: wlb_decoupled_limit
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_fig4_mid
+  outputs:
+    kappa_B: kappa_B_decoupled_fig4_mid_pred
+    kappa_B_star: kappa_B_star_decoupled_fig4_mid_pred
+
+- id: run_fully_coupled_acrosome
+  model: wlb_fully_coupled_limit
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    N: N_acrosome
+    chi2: chi2_small_crosslinks
+  outputs:
+    kappa_B: kappa_B_fc_acrosome_pred
+    kappa_B_star: kappa_B_star_fc_acrosome_pred
+
+- id: run_buckling_acrosome
+  model: critical_buckling_force
+  inputs:
+    kappa_B: kappa_B_fc_acrosome_pred
+    L: L_acrosome
+  outputs: {F_crit: F_crit_acrosome_pred}
+
+- id: run_intermediate_scaling_filopodia
+  model: wlb_intermediate_scaling
+  inputs:
+    N: N_fig4_mid
+    k_x: kx_fascin_t0_printed
+    L: L_filopodia_max
+  outputs: {kappa_B: kappa_B_interm_filopodia_pred}
+
+# --- 11. Dedicated digitize pass additions (Figs. 3A, 3B, 3B inset, 4 per-spacing) ---
+
+- id: run_fig3a_eq2_a1e_1
+  model: wlb_bending_stiffness_eq2
+  inputs:
+    kappa_f: kappa_f_actin_p3
+    alpha: alpha_1e_1
+    chi2: chi2_small_crosslinks
+    c: c_pinned
+  sweep: {N: fig3a_a1e_1_datum}
+  outputs: {kappa_B_star: fig3a_eq2_a1e_1_pred}
+
+- id: run_fig3a_fe_a1e_1
+  model: wlb_fe_3point
+  inputs:
+    alpha: alpha_1e_1
+    chi2: chi2_small_crosslinks
+  sweep: {N: fig3a_a1e_1_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3a_fe_a1e_1_pred}
+
+- id: run_fig3b_eq2_n9
+  model: wlb_bending_stiffness_eq2
+  inputs: {kappa_f: kappa_f_actin_p3, N: N_9, chi2: chi2_small_crosslinks, c: c_pinned}
+  sweep: {alpha: fig3b_n9_datum}
+  outputs: {kappa_B_star: fig3b_eq2_n9_pred}
+
+- id: run_fig3b_eq2_n16
+  model: wlb_bending_stiffness_eq2
+  inputs: {kappa_f: kappa_f_actin_p3, N: N_16, chi2: chi2_small_crosslinks, c: c_pinned}
+  sweep: {alpha: fig3b_n16_datum}
+  outputs: {kappa_B_star: fig3b_eq2_n16_pred}
+
+- id: run_fig3b_eq2_n36
+  model: wlb_bending_stiffness_eq2
+  inputs: {kappa_f: kappa_f_actin_p3, N: N_36, chi2: chi2_small_crosslinks, c: c_pinned}
+  sweep: {alpha: fig3b_n36_datum}
+  outputs: {kappa_B_star: fig3b_eq2_n36_pred}
+
+- id: run_fig3b_eq2_n49
+  model: wlb_bending_stiffness_eq2
+  inputs: {kappa_f: kappa_f_actin_p3, N: N_49, chi2: chi2_small_crosslinks, c: c_pinned}
+  sweep: {alpha: fig3b_n49_datum}
+  outputs: {kappa_B_star: fig3b_eq2_n49_pred}
+
+- id: run_fig3b_eq2_n64
+  model: wlb_bending_stiffness_eq2
+  inputs: {kappa_f: kappa_f_actin_p3, N: N_64, chi2: chi2_small_crosslinks, c: c_pinned}
+  sweep: {alpha: fig3b_n64_datum}
+  outputs: {kappa_B_star: fig3b_eq2_n64_pred}
+
+- id: run_fig3b_eq2_n81
+  model: wlb_bending_stiffness_eq2
+  inputs: {kappa_f: kappa_f_actin_p3, N: N_81, chi2: chi2_small_crosslinks, c: c_pinned}
+  sweep: {alpha: fig3b_n81_datum}
+  outputs: {kappa_B_star: fig3b_eq2_n81_pred}
+
+- id: run_fig3b_fe_n9
+  model: wlb_fe_3point
+  inputs: {N: N_9, chi2: chi2_small_crosslinks}
+  sweep: {alpha: fig3b_n9_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3b_fe_n9_pred}
+
+- id: run_fig3b_fe_n16
+  model: wlb_fe_3point
+  inputs: {N: N_16, chi2: chi2_small_crosslinks}
+  sweep: {alpha: fig3b_n16_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3b_fe_n16_pred}
+
+- id: run_fig3b_fe_n36
+  model: wlb_fe_3point
+  inputs: {N: N_36, chi2: chi2_small_crosslinks}
+  sweep: {alpha: fig3b_n36_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3b_fe_n36_pred}
+
+- id: run_fig3b_fe_n49
+  model: wlb_fe_3point
+  inputs: {N: N_49, chi2: chi2_small_crosslinks}
+  sweep: {alpha: fig3b_n49_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3b_fe_n49_pred}
+
+- id: run_fig3b_fe_n64
+  model: wlb_fe_3point
+  inputs: {N: N_64, chi2: chi2_small_crosslinks}
+  sweep: {alpha: fig3b_n64_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3b_fe_n64_pred}
+
+- id: run_fig3b_fe_n81
+  model: wlb_fe_3point
+  inputs: {N: N_81, chi2: chi2_small_crosslinks}
+  sweep: {alpha: fig3b_n81_datum}
+  settings: {bc: pinned, n_el: 80}
+  outputs: {kappa_B_star: fig3b_fe_n81_pred}
+
+- id: run_fig3b_inset_n4_pinned
+  model: wlb_crossover_eq2
+  inputs: {chi2: chi2_small_crosslinks, c: c_pinned}
+  sweep: {N: fig3b_inset_n4_pinned_datum}
+  outputs: {alpha_dec: fig3b_inset_n4_pinned_pred}
+
+- id: run_fig3b_inset_n4_clamped
+  model: wlb_crossover_eq2
+  inputs: {chi2: chi2_small_crosslinks, c: c_clamped}
+  sweep: {N: fig3b_inset_n4_clamped_datum}
+  outputs: {alpha_dec: fig3b_inset_n4_clamped_pred}
+
+- id: run_fig4_exp_d40_inferred
+  model: wlb_bending_stiffness_fig4
+  inputs: {kappa_f: kappa_f_fig4_added, N: N_fig4_mid, k_x: kx_fig4_added, E_f_A_f: EfAf_actin, chi2: chi2_small_crosslinks, c: c_ring}
+  sweep: {L2_over_delta: fig4_exp_d40_datum}
+  outputs: {kappa_B: fig4_exp_d40_inferred_pred}
+
+- id: run_fig4_exp_d56_inferred
+  model: wlb_bending_stiffness_fig4
+  inputs: {kappa_f: kappa_f_fig4_added, N: N_fig4_mid, k_x: kx_fig4_added, E_f_A_f: EfAf_actin, chi2: chi2_small_crosslinks, c: c_ring}
+  sweep: {L2_over_delta: fig4_exp_d56_datum}
+  outputs: {kappa_B: fig4_exp_d56_inferred_pred}
+
+- id: run_fig4_exp_d68_inferred
+  model: wlb_bending_stiffness_fig4
+  inputs: {kappa_f: kappa_f_fig4_added, N: N_fig4_mid, k_x: kx_fig4_added, E_f_A_f: EfAf_actin, chi2: chi2_small_crosslinks, c: c_ring}
+  sweep: {L2_over_delta: fig4_exp_d68_datum}
+  outputs: {kappa_B: fig4_exp_d68_inferred_pred}
+
+- id: run_fig4_exp_d225_inferred
+  model: wlb_bending_stiffness_fig4
+  inputs: {kappa_f: kappa_f_fig4_added, N: N_fig4_mid, k_x: kx_fig4_added, E_f_A_f: EfAf_actin, chi2: chi2_small_crosslinks, c: c_ring}
+  sweep: {L2_over_delta: fig4_exp_d225_datum}
+  outputs: {kappa_B: fig4_exp_d225_inferred_pred}
+
+- id: run_fig4_exp_d412_inferred
+  model: wlb_bending_stiffness_fig4
+  inputs: {kappa_f: kappa_f_fig4_added, N: N_fig4_mid, k_x: kx_fig4_added, E_f_A_f: EfAf_actin, chi2: chi2_small_crosslinks, c: c_ring}
+  sweep: {L2_over_delta: fig4_exp_d412_datum}
+  outputs: {kappa_B: fig4_exp_d412_inferred_pred}
+

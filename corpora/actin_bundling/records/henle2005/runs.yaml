@@ -1,0 +1,649 @@
+# ---------------------------------------------------------------------------
+# Auxiliary / helper model runs
+# ---------------------------------------------------------------------------
+- id: run_alpha_b_fig1
+  model: available_area_eq2
+  inputs: {a: a_fig1, a_0: a0_fig1}
+  outputs: {alpha_b: alpha_b_fig1_calc}
+
+- id: run_kappa_fig1_10uM_printed
+  model: debye_screening_eq4
+  inputs: {l_B: lB_water, n_1: n1_fig1, n_q: nq_fig1_mid, q: q_fig1}
+  outputs: {kappa: kappa_fig1_10uM_printed_calc}
+
+- id: run_kappa_fig1_10uM_10mM
+  model: debye_screening_eq4
+  inputs: {l_B: lB_water, n_1: n1_fig1_mM_hypothesis_added, n_q: nq_fig1_mid, q: q_fig1}
+  outputs: {kappa: kappa_fig1_10uM_10mM_calc}
+
+- id: run_hex_bonds_bench
+  model: hexagonal_bonds_p2
+  inputs: {R_over_a: R_over_a_bench_added}
+  outputs: {b: b_bench_calc}
+
+- id: run_frustrated_phi_bench
+  model: frustrated_attraction_hyperbola_p4
+  inputs: {b: b_bench_calc, phi_max: phi_max_fig2_inset, xi: xi_fig2_inset}
+  outputs: {phi: phi_bench_calc}
+
+# ---------------------------------------------------------------------------
+# DNA + trivalent cobalt hexammine ion-radius threshold (p. 3 col 1)
+# ---------------------------------------------------------------------------
+- id: run_dna_delta_eff_min
+  model: ion_radius_threshold_p3
+  inputs:
+    a_0: a0_dna
+    a: a_dna
+    inv_lambda_0: inv_lambda0_dna
+    q: q_cobalt_dna
+    f_pack: packing_factor_veff_added
+  outputs:
+    delta_eff_min: delta_eff_dna_calc
+
+# ---------------------------------------------------------------------------
+# Fig. 1 main + inset — PRIMARY REPRODUCTION RUNS (printed n_1 = 10 nM)
+# ---------------------------------------------------------------------------
+- id: run_fig1_01uM_printed
+  model: pointlike_bundle_eq5_eq7
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_low
+    q: q_fig1
+    gamma: gamma_fig1
+  sweep: {R_over_a: fig1_dF_01uM_data}
+  outputs: {dF_over_NL: fig1_dF_01uM_printed_calc}
+
+- id: run_fig1_10uM_printed
+  model: pointlike_bundle_eq5_eq7
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig1
+  sweep: {R_over_a: fig1_dF_10uM_data}
+  outputs: {dF_over_NL: fig1_dF_10uM_printed_calc}
+
+- id: run_fig1_1mM_printed
+  model: pointlike_bundle_eq5_eq7
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig1
+  sweep: {R_over_a: fig1_dF_1mM_data}
+  outputs: {dF_over_NL: fig1_dF_1mM_printed_calc}
+
+- id: run_fig1_inset_lam_tot_printed
+  model: pointlike_bundle_eq5_eq7
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig1
+  sweep: {R_over_a: fig1_inset_lam_tot_data}
+  outputs: {lambda_tot: fig1_inset_lam_tot_printed_calc}
+
+- id: run_fig1_inset_asymp_printed
+  model: asymptotic_charge_p2
+  inputs:
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_mid
+    q: q_fig1
+  sweep: {R_over_a: fig1_inset_lam_tot_asymp_data}
+  outputs: {lambda_tot: fig1_inset_asymp_printed_calc}
+
+# ---------------------------------------------------------------------------
+# Fig. 1 main + inset — DIAGNOSTIC 10 mM UNIT-TYPO HYPOTHESIS RUNS
+# ---------------------------------------------------------------------------
+- id: run_fig1_01uM_10mM
+  model: pointlike_bundle_eq5_eq7
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_low
+    q: q_fig1
+    gamma: gamma_fig1
+  sweep: {R_over_a: fig1_dF_01uM_data}
+  outputs: {dF_over_NL: fig1_dF_01uM_10mM_calc}
+
+- id: run_fig1_10uM_10mM
+  model: pointlike_bundle_eq5_eq7
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig1
+  sweep: {R_over_a: fig1_dF_10uM_data}
+  outputs: {dF_over_NL: fig1_dF_10uM_10mM_calc}
+
+- id: run_fig1_1mM_10mM
+  model: pointlike_bundle_eq5_eq7
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig1
+  sweep: {R_over_a: fig1_dF_1mM_data}
+  outputs: {dF_over_NL: fig1_dF_1mM_10mM_calc}
+
+- id: run_fig1_inset_lam_tot_10mM
+  model: pointlike_bundle_eq5_eq7
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig1
+  sweep: {R_over_a: fig1_inset_lam_tot_data}
+  outputs: {lambda_tot: fig1_inset_lam_tot_10mM_calc}
+
+- id: run_fig1_inset_asymp_10mM
+  model: asymptotic_charge_p2
+  inputs:
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+  sweep: {R_over_a: fig1_inset_lam_tot_asymp_data}
+  outputs: {lambda_tot: fig1_inset_asymp_10mM_calc}
+
+# ---------------------------------------------------------------------------
+# Fig. 2 main (finite-size ions) — PRINTED FREE ENERGY (n_1 = 10 nM) & VARIANT
+# ---------------------------------------------------------------------------
+- id: run_fig2_01uM_fe_printed
+  model: finite_size_free_energy_p3
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_low
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_01uM_data}
+  outputs: {dF_over_NL: fig2_dF_01uM_fe_printed_calc}
+
+- id: run_fig2_10uM_fe_printed
+  model: finite_size_free_energy_p3
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_10uM_data}
+  outputs: {dF_over_NL: fig2_dF_10uM_fe_printed_calc}
+
+- id: run_fig2_1mM_fe_printed
+  model: finite_size_free_energy_p3
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_1mM_data}
+  outputs: {dF_over_NL: fig2_dF_1mM_fe_printed_calc}
+
+- id: run_fig2_01uM_eq6corr_printed
+  model: finite_size_eq6_corrected
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_low
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_01uM_data}
+  outputs: {dF_over_NL: fig2_dF_01uM_eq6corr_printed_calc}
+
+- id: run_fig2_10uM_eq6corr_printed
+  model: finite_size_eq6_corrected
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_10uM_data}
+  outputs: {dF_over_NL: fig2_dF_10uM_eq6corr_printed_calc}
+
+- id: run_fig2_1mM_eq6corr_printed
+  model: finite_size_eq6_corrected
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_1mM_data}
+  outputs: {dF_over_NL: fig2_dF_1mM_eq6corr_printed_calc}
+
+# ---------------------------------------------------------------------------
+# Fig. 2 main — DIAGNOSTIC 10 mM HYPOTHESIS RUNS (both FE & eq6_corrected)
+# ---------------------------------------------------------------------------
+- id: run_fig2_01uM_fe_10mM
+  model: finite_size_free_energy_p3
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_low
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_01uM_data}
+  outputs: {dF_over_NL: fig2_dF_01uM_fe_10mM_calc}
+
+- id: run_fig2_10uM_fe_10mM
+  model: finite_size_free_energy_p3
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_10uM_data}
+  outputs: {dF_over_NL: fig2_dF_10uM_fe_10mM_calc}
+
+- id: run_fig2_1mM_fe_10mM
+  model: finite_size_free_energy_p3
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_1mM_data}
+  outputs: {dF_over_NL: fig2_dF_1mM_fe_10mM_calc}
+
+- id: run_fig2_01uM_eq6corr_10mM
+  model: finite_size_eq6_corrected
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_low
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_01uM_data}
+  outputs: {dF_over_NL: fig2_dF_01uM_eq6corr_10mM_calc}
+
+- id: run_fig2_10uM_eq6corr_10mM
+  model: finite_size_eq6_corrected
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_10uM_data}
+  outputs: {dF_over_NL: fig2_dF_10uM_eq6corr_10mM_calc}
+
+- id: run_fig2_1mM_eq6corr_10mM
+  model: finite_size_eq6_corrected
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  sweep: {R_over_a: fig2_dF_1mM_data}
+  outputs: {dF_over_NL: fig2_dF_1mM_eq6corr_10mM_calc}
+
+# ---------------------------------------------------------------------------
+# Fig. 2 equilibrium bundle radius R_eq: analytical approx vs exact minimizer
+# ---------------------------------------------------------------------------
+- id: run_fig2_req_approx
+  model: finite_size_req_approx_p3
+  inputs:
+    a: a_fig1
+    gamma: gamma_fig2
+    l_B: lB_water
+    inv_lambda_0: inv_lambda0_fig1
+    lambda_star_frac: lambda_star_frac_fig2
+  outputs:
+    R_eq: fig2_Req_approx_calc
+    R_eq_over_a: fig2_Req_over_a_approx_calc
+
+- id: run_fig2_req_exact_1mM_10mM
+  model: finite_size_req_exact_p3
+  inputs:
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  outputs:
+    R_eq: fig2_Req_exact_1mM_10mM_calc
+    R_eq_over_a: fig2_Req_over_a_exact_1mM_10mM_calc
+
+- id: run_fig2_req_exact_10uM_10mM
+  model: finite_size_req_exact_p3
+  inputs:
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  outputs:
+    R_eq: fig2_Req_exact_10uM_10mM_calc
+    R_eq_over_a: fig2_Req_over_a_exact_10uM_10mM_calc
+
+# ---------------------------------------------------------------------------
+# Fig. 2 inset (frustrated attractive interactions) — PRINTED (10 nM) & 10 mM
+# ---------------------------------------------------------------------------
+- id: run_fig2_inset_01uM_printed
+  model: frustrated_bundle_p4
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_low
+    q: q_fig1
+    gamma: gamma_fig2_inset
+    phi_max: phi_max_fig2_inset
+    xi: xi_fig2_inset
+  sweep: {R_over_a: fig2_inset_dF_01uM_data}
+  outputs: {dF_over_NL: fig2_inset_dF_01uM_printed_calc}
+
+- id: run_fig2_inset_10uM_printed
+  model: frustrated_bundle_p4
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig2_inset
+    phi_max: phi_max_fig2_inset
+    xi: xi_fig2_inset
+  sweep: {R_over_a: fig2_inset_dF_10uM_data}
+  outputs: {dF_over_NL: fig2_inset_dF_10uM_printed_calc}
+
+- id: run_fig2_inset_1mM_printed
+  model: frustrated_bundle_p4
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig2_inset
+    phi_max: phi_max_fig2_inset
+    xi: xi_fig2_inset
+  sweep: {R_over_a: fig2_inset_dF_1mM_data}
+  outputs: {dF_over_NL: fig2_inset_dF_1mM_printed_calc}
+
+- id: run_fig2_inset_01uM_10mM
+  model: frustrated_bundle_p4
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_low
+    q: q_fig1
+    gamma: gamma_fig2_inset
+    phi_max: phi_max_fig2_inset
+    xi: xi_fig2_inset
+  sweep: {R_over_a: fig2_inset_dF_01uM_data}
+  outputs: {dF_over_NL: fig2_inset_dF_01uM_10mM_calc}
+
+- id: run_fig2_inset_10uM_10mM
+  model: frustrated_bundle_p4
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig2_inset
+    phi_max: phi_max_fig2_inset
+    xi: xi_fig2_inset
+  sweep: {R_over_a: fig2_inset_dF_10uM_data}
+  outputs: {dF_over_NL: fig2_inset_dF_10uM_10mM_calc}
+
+- id: run_fig2_inset_1mM_10mM
+  model: frustrated_bundle_p4
+  inputs:
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig2_inset
+    phi_max: phi_max_fig2_inset
+    xi: xi_fig2_inset
+  sweep: {R_over_a: fig2_inset_dF_1mM_data}
+  outputs: {dF_over_NL: fig2_inset_dF_1mM_10mM_calc}
+
+# ---------------------------------------------------------------------------
+# Scalar benchmark runs for numerical-tolerance refinement checks
+# ---------------------------------------------------------------------------
+- id: run_pointlike_scalar_bench
+  model: pointlike_bundle_eq5_eq7
+  inputs:
+    R_over_a: R_over_a_bench_added
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig1
+  outputs:
+    dF_over_NL: pointlike_dF_bench_calc
+    lambda_tot: pointlike_lam_tot_bench_calc
+
+- id: run_finite_fe_scalar_bench
+  model: finite_size_free_energy_p3
+  inputs:
+    R_over_a: R_over_a_bench_added
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  outputs:
+    dF_over_NL: finite_fe_dF_bench_calc
+
+- id: run_finite_eq6corr_scalar_bench
+  model: finite_size_eq6_corrected
+  inputs:
+    R_over_a: R_over_a_bench_added
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_mid
+    q: q_fig1
+    gamma: gamma_fig2
+    lambda_star_frac: lambda_star_frac_fig2
+  outputs:
+    dF_over_NL: finite_eq6corr_dF_bench_calc
+
+- id: run_frustrated_scalar_bench
+  model: frustrated_bundle_p4
+  inputs:
+    R_over_a: R_over_a_bench_added
+    R_ref_over_a: R_ref_fig1
+    a_0: a0_fig1
+    a: a_fig1
+    w: w_fig1
+    inv_lambda_0: inv_lambda0_fig1
+    l_B: lB_water
+    n_1: n1_fig1_mM_hypothesis_added
+    n_q: nq_fig1_high
+    q: q_fig1
+    gamma: gamma_fig2_inset
+    phi_max: phi_max_fig2_inset
+    xi: xi_fig2_inset
+  outputs:
+    dF_over_NL: frustrated_dF_bench_calc

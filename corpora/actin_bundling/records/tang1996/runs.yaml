@@ -1,0 +1,356 @@
+# --- Bjerrum length & Manning Eq. 1 for dsDNA (p. 1 / 8556) ---
+
+- id: run_bjerrum_water
+  model: bjerrum_length
+  inputs: {epsilon: epsilon_water, T: T_water_20C}
+  settings: {}
+  outputs: {lambda_B: lambda_B_water_comp}
+
+- id: run_zeta_dna
+  model: manning_charge_parameter
+  inputs: {lambda_B: lambda_B_water, b: b_dna}
+  settings: {}
+  outputs: {zeta: zeta_dna_comp}
+
+- id: run_zeta_dna_e2e
+  model: manning_charge_parameter
+  inputs: {lambda_B: lambda_B_water_comp, b: b_dna}
+  settings: {}
+  outputs: {zeta: zeta_dna_e2e_comp}
+
+- id: run_theta_dna_mono
+  model: manning_condensation_eq1
+  inputs: {N: N_monovalent, zeta: zeta_dna}
+  settings: {}
+  outputs: {theta: theta_dna_mono_comp}
+
+- id: run_theta_dna_di
+  model: manning_condensation_eq1
+  inputs: {N: N_divalent, zeta: zeta_dna}
+  settings: {}
+  outputs: {theta: theta_dna_di_comp}
+
+- id: run_theta_dna_tri
+  model: manning_condensation_eq1
+  inputs: {N: N_trivalent, zeta: zeta_dna}
+  settings: {}
+  outputs: {theta: theta_dna_tri_comp}
+
+# --- F-actin charge density, spacing, zeta, and Manning Eq. 1 (pp. 2-4 / 8557-8559) ---
+
+- id: run_q_actin_net
+  model: actin_net_monomer_charge
+  inputs: {q_raw: q_actin_raw, n_His: n_his_protonated}
+  settings: {}
+  outputs: {q_net: q_actin_net_comp}
+
+- id: run_sigma_actin
+  model: actin_linear_charge_density
+  inputs: {q_net: q_actin_net_comp, rho_mon: rho_actin_monomers}
+  settings: {}
+  outputs: {sigma: sigma_actin_comp}
+
+- id: run_b_actin_assumed
+  model: linear_charge_spacing_from_density
+  inputs: {sigma: sigma_actin_assumed}
+  settings: {}
+  outputs: {b: b_actin_assumed_comp}
+
+- id: run_b_actin_unrounded
+  model: linear_charge_spacing_from_density
+  inputs: {sigma: sigma_actin_comp}
+  settings: {}
+  outputs: {b: b_actin_unrounded_comp}
+
+- id: run_zeta_actin
+  model: manning_charge_parameter
+  inputs: {lambda_B: lambda_B_water, b: b_actin}
+  settings: {}
+  outputs: {zeta: zeta_actin_comp}
+
+- id: run_zeta_actin_e2e
+  model: manning_charge_parameter
+  inputs: {lambda_B: lambda_B_water_comp, b: b_actin_unrounded_comp}
+  settings: {}
+  outputs: {zeta: zeta_actin_e2e_comp}
+
+- id: run_theta_actin_mono
+  model: manning_condensation_eq1
+  inputs: {N: N_monovalent, zeta: zeta_actin}
+  settings: {}
+  outputs: {theta: theta_actin_mono_comp}
+
+- id: run_theta_actin_mono_from_b
+  model: manning_condensation_eq1
+  inputs: {N: N_monovalent, zeta: zeta_actin_comp}
+  settings: {}
+  outputs: {theta: theta_actin_mono_from_b_comp}
+
+- id: run_theta_actin_di
+  model: manning_condensation_eq1
+  inputs: {N: N_divalent, zeta: zeta_actin}
+  settings: {}
+  outputs: {theta: theta_actin_di_comp}
+
+- id: run_theta_actin_di_from_b
+  model: manning_condensation_eq1
+  inputs: {N: N_divalent, zeta: zeta_actin_comp}
+  settings: {}
+  outputs: {theta: theta_actin_di_from_b_comp}
+
+- id: run_theta_actin_di_e2e
+  model: manning_condensation_eq1
+  inputs: {N: N_divalent, zeta: zeta_actin_e2e_comp}
+  settings: {}
+  outputs: {theta: theta_actin_di_e2e_comp}
+
+# --- Lys18 binding, condensation volume Eq. 2, local concentration, K, and Appendix Eq. 4 (pp. 4, 7) ---
+
+- id: run_theta_18
+  model: bound_polycation_per_charge
+  inputs: {slope: slope_lys18_actin, q_net: q_actin_net}
+  settings: {}
+  outputs: {theta_18: theta_18_comp}
+
+- id: run_f_neut_lys18_printed
+  model: polycation_neutralized_fraction
+  inputs: {theta_18: theta_18_printed, N: N_lys18}
+  settings: {}
+  outputs: {f_neut: f_neut_lys18_printed_comp}
+
+- id: run_f_neut_lys18_unrounded
+  model: polycation_neutralized_fraction
+  inputs: {theta_18: theta_18_comp, N: N_lys18}
+  settings: {}
+  outputs: {f_neut: f_neut_lys18_unrounded_comp}
+
+- id: run_V_P_actin
+  model: condensation_volume_eq2
+  inputs: {zeta: zeta_actin, b: b_actin}
+  settings: {}
+  outputs: {V_P: V_P_actin_comp}
+
+- id: run_V_P_actin_unrounded_zeta
+  model: condensation_volume_eq2
+  inputs: {zeta: zeta_actin_comp, b: b_actin}
+  settings: {}
+  outputs: {V_P: V_P_actin_unrounded_zeta_comp}
+
+- id: run_c_loc_lys18
+  model: local_counterion_concentration
+  inputs: {theta_18: theta_18_printed, V_P: V_P_actin_invM}
+  settings: {}
+  outputs: {c_loc: c_loc_lys18_comp}
+
+- id: run_c_loc_lys18_e2e
+  model: local_counterion_concentration
+  inputs: {theta_18: theta_18_comp, V_P: V_P_actin_comp}
+  settings: {}
+  outputs: {c_loc: c_loc_lys18_e2e_comp}
+
+- id: run_K_lys18_exact_intercept
+  model: association_constant
+  inputs: {c_loc: c_loc_lys18, c_free: c_18_intercept}
+  settings: {}
+  outputs: {K: K_lys18_exact_comp}
+
+- id: run_K_lys18_rounded
+  model: association_constant
+  inputs: {c_loc: c_loc_lys18, c_free: c_18_rounded}
+  settings: {}
+  outputs: {K: K_lys18_rounded_comp}
+
+- id: run_c_actin_6mgml_molar
+  model: actin_molar_from_mass
+  inputs: {c_mass: c_actin_fig3a_high, M_actin: M_actin_added}
+  settings: {}
+  outputs: {c_molar: c_actin_6mgml_molar_comp}
+
+- id: run_v_cond_6mgml
+  model: condensation_volume_fraction
+  inputs: {V_P: V_P_actin_invM, q_net: q_actin_net, c_actin: c_actin_6mgml_molar_comp}
+  settings: {}
+  outputs: {v: v_cond_6mgml_comp}
+  note: "Verifies Appendix Eq. 4 small-volume-fraction assumption v << 1 at maximum Fig. 3 F-actin concentration (6.0 mg/ml)."
+
+- id: run_eq4_6mgml
+  model: chemical_binding_eq4
+  inputs: {c_free: c_18_intercept, k: K_lys18_printed, v: v_cond_6mgml_comp}
+  settings: {}
+  outputs: {c_total: c_lys18_eq4_6mgml_comp}
+
+- id: run_eq4_vs_actin_6mgml
+  model: chemical_binding_eq4_vs_actin
+  inputs: {c_free: c_18_intercept, k: K_lys18_printed, V_P: V_P_actin_invM, q_net: q_actin_net, c_actin: c_actin_6mgml_molar_comp}
+  settings: {}
+  outputs: {c_total: c_lys18_eq4_vs_actin_6mgml_comp}
+
+- id: run_fig3b_6mgml
+  model: fig3b_lys18_linear_fit
+  inputs: {c_18: c_18_intercept, s: slope_lys18_actin, c_actin: c_actin_6mgml_molar_comp}
+  settings: {}
+  outputs: {c_lys18_total: c_lys18_fig3b_6mgml_comp}
+
+- id: run_eq4_slope_consistency
+  model: eq4_predicted_slope
+  inputs: {k: K_lys18_printed, V_P: V_P_actin_invM, q_net: q_actin_net, c_free: c_18_intercept}
+  settings: {}
+  outputs: {s: slope_eq4_pred_comp}
+
+# --- Ionic strength dependence Eq. 3 and Fig. 5b power-law fits (pp. 4-5 / 8559-8560) ---
+
+- id: run_eq3_K_lys18
+  model: manning_salt_dependence_eq3
+  inputs: {c: c_KCl_standard, N: N_lys18}
+  settings: {}
+  outputs: {K: K_eq3_lys18_scaling_comp}
+
+- id: run_onset_salt_mn_150mM
+  model: manning_onset_salt_scaling
+  inputs: {c_KCl: c_KCl_standard, N: N_divalent}
+  settings: {}
+  outputs: {c_onset: c_onset_mn_scaling_comp}
+
+- id: run_alpha_cohex_trace
+  model: manning_salt_slope_trace
+  inputs: {N: N_trivalent}
+  settings: {}
+  outputs: {alpha: alpha_cohex_trace_comp}
+
+- id: run_alpha_mn_trace
+  model: manning_salt_slope_trace
+  inputs: {N: N_divalent}
+  settings: {}
+  outputs: {alpha: alpha_mn_trace_comp}
+
+- id: run_fig5b_mn_150mM
+  model: fig5b_power_law_fit
+  inputs: {A: A_mn_fitted, c_KCl: c_KCl_standard, alpha: alpha_mn_fitted}
+  settings: {}
+  outputs: {c_onset: c_mn_fig5b_150mM_comp}
+
+- id: run_fig5b_cohex_150mM
+  model: fig5b_power_law_fit
+  inputs: {A: A_cohex_fitted, c_KCl: c_KCl_standard, alpha: alpha_cohex_fitted}
+  settings: {}
+  outputs: {c_onset: c_cohex_fig5b_150mM_comp}
+
+# --- Filament length, aspect ratio, and Pi release (pp. 4, 7 / 8559, 8562) ---
+
+- id: run_L_actin_500
+  model: filament_length_from_monomers
+  inputs: {N_mon: N_mon_gel_500, rho_mon: rho_actin_monomers}
+  settings: {}
+  outputs: {L: L_actin_500_comp}
+
+- id: run_L_actin_50
+  model: filament_length_from_monomers
+  inputs: {N_mon: N_mon_gel_50, rho_mon: rho_actin_monomers}
+  settings: {}
+  outputs: {L: L_actin_50_comp}
+
+- id: run_aspect_ratio_50
+  model: filament_aspect_ratio
+  inputs: {L: L_actin_50_text, d_fil: d_actin_added}
+  settings: {}
+  outputs: {aspect_ratio: aspect_ratio_50_comp}
+
+- id: run_pi_release_frac
+  model: pi_release_charge_fraction
+  inputs: {delta_q: delta_q_pi_release, q_net: q_actin_net}
+  settings: {}
+  outputs: {frac_change: frac_charge_change_pi_comp}
+
+# --- Digitized figure curve sweeps: Fig. 3b (linear fit & Appendix Eq. 4) and Fig. 5b (power-law fits & Eq. 3 scaling) ---
+
+- id: run_fig3b_fit_on_line
+  model: fig3b_lys18_linear_fit
+  inputs: {c_18: c_18_intercept, s: slope_lys18_actin}
+  sweep: {c_actin: lys18_fit_line_fig3b}
+  settings: {}
+  outputs: {c_lys18_total: c_lys18_fig3b_line_comp}
+
+- id: run_fig3b_fit_on_points
+  model: fig3b_lys18_linear_fit
+  inputs: {c_18: c_18_intercept, s: slope_lys18_actin}
+  sweep: {c_actin: lys18_onset_vs_actin_fig3b}
+  settings: {}
+  outputs: {c_lys18_total: c_lys18_fig3b_pts_comp}
+
+- id: run_eq4_vs_actin_fig3b
+  model: chemical_binding_eq4_vs_actin
+  inputs: {c_free: c_18_intercept, k: K_lys18_printed, V_P: V_P_actin_invM, q_net: q_actin_net}
+  sweep: {c_actin: lys18_onset_vs_actin_fig3b}
+  settings: {}
+  outputs: {c_total: c_lys18_eq4_fig3b_comp}
+
+- id: run_fig5b_mn_fit_on_line
+  model: fig5b_power_law_fit
+  inputs: {A: A_mn_fitted, alpha: alpha_mn_fitted}
+  sweep: {c_KCl: mn_fit_line_fig5b}
+  settings: {}
+  outputs: {c_onset: c_mn_fig5b_line_comp}
+
+- id: run_fig5b_mn_fit_on_pts
+  model: fig5b_power_law_fit
+  inputs: {A: A_mn_fitted, alpha: alpha_mn_fitted}
+  sweep: {c_KCl: mn_onset_vs_kcl_fig5b}
+  settings: {}
+  outputs: {c_onset: c_mn_fig5b_pts_comp}
+
+- id: run_fig5b_cohex_fit_on_line
+  model: fig5b_power_law_fit
+  inputs: {A: A_cohex_fitted, alpha: alpha_cohex_fitted}
+  sweep: {c_KCl: cohex_fit_line_fig5b}
+  settings: {}
+  outputs: {c_onset: c_cohex_fig5b_line_comp}
+
+- id: run_fig5b_cohex_fit_on_prep1
+  model: fig5b_power_law_fit
+  inputs: {A: A_cohex_fitted, alpha: alpha_cohex_fitted}
+  sweep: {c_KCl: cohex_onset_prep1_fig5b}
+  settings: {}
+  outputs: {c_onset: c_cohex_fig5b_prep1_comp}
+
+- id: run_fig5b_cohex_fit_on_prep2
+  model: fig5b_power_law_fit
+  inputs: {A: A_cohex_fitted, alpha: alpha_cohex_fitted}
+  sweep: {c_KCl: cohex_onset_prep2_fig5b}
+  settings: {}
+  outputs: {c_onset: c_cohex_fig5b_prep2_comp}
+
+- id: run_fig5b_cohex_fit_on_prep3
+  model: fig5b_power_law_fit
+  inputs: {A: A_cohex_fitted, alpha: alpha_cohex_fitted}
+  sweep: {c_KCl: cohex_onset_prep3_fig5b}
+  settings: {}
+  outputs: {c_onset: c_cohex_fig5b_prep3_comp}
+
+- id: run_eq3_mn_fig5b
+  model: manning_onset_salt_scaling
+  inputs: {N: N_divalent}
+  sweep: {c_KCl: mn_onset_vs_kcl_fig5b}
+  settings: {}
+  outputs: {c_onset: c_mn_eq3_fig5b_comp}
+
+- id: run_eq3_cohex_prep1_fig5b
+  model: manning_onset_salt_scaling
+  inputs: {N: N_trivalent}
+  sweep: {c_KCl: cohex_onset_prep1_fig5b}
+  settings: {}
+  outputs: {c_onset: c_cohex_eq3_prep1_comp}
+
+- id: run_eq3_cohex_prep2_fig5b
+  model: manning_onset_salt_scaling
+  inputs: {N: N_trivalent}
+  sweep: {c_KCl: cohex_onset_prep2_fig5b}
+  settings: {}
+  outputs: {c_onset: c_cohex_eq3_prep2_comp}
+
+- id: run_eq3_cohex_prep3_fig5b
+  model: manning_onset_salt_scaling
+  inputs: {N: N_trivalent}
+  sweep: {c_KCl: cohex_onset_prep3_fig5b}
+  settings: {}
+  outputs: {c_onset: c_cohex_eq3_prep3_comp}
+

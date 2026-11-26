@@ -1,0 +1,28 @@
+id: filament_wlc_arc_by_deflection
+name: constant-curvature worm-like chain energy E_fil(x, L) and shortening y(x, L) by tip deflection (SI Eqs. 2-3)
+role: model
+stated:
+  page: 7
+  printed_page: "SI 2"
+  quote: "The geometric parameters shown in Figure s1 are related by d = D"
+  where: "SI Eqs. 2-3"
+built_from:
+  - filament_wlc_arc_geometry
+from_words: true
+equation: "Invert x = L*(1 - cos(theta))/theta for theta in [0, pi/2]; y(x, L) = L*(1 - sin(theta)/theta); d = D - 2*x; L_prot = L - L_0 - y(x, L); E_fil(x, L) = k_B*T * (L_p / (2*L)) * theta^2"
+inputs:
+  x: {quantity: filament_lateral_deflection, unit: nm}
+  L: {quantity: filament_contour_length, unit: nm}
+  D: {quantity: filament_base_separation, unit: nm}
+  L_0: {quantity: filament_anchor_depth, unit: nm}
+  L_p: {quantity: single_filament_persistence_length, unit: um}
+  kBT: {quantity: thermal_energy, unit: pN*nm}
+outputs:
+  theta: {quantity: filament_bend_angle, unit: dimensionless}
+  y: {quantity: filament_vertical_shortening, unit: nm}
+  d: {quantity: filament_tip_separation, unit: nm}
+  L_prot: {quantity: protrusion_length, unit: nm}
+  E_fil: {quantity: filament_bending_energy, unit: pN*nm}
+settings:
+  rtol: 1.0e-12
+stochastic: false

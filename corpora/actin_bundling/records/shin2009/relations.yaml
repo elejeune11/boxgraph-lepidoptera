@@ -1,0 +1,286 @@
+- id: rel_cumulant_same_as_eq3_xi_t
+  kind: same_as
+  a: shin2009/effective_hamiltonian_cumulant_exact
+  b: shin2009/effective_hamiltonian_eq2_eq3
+  mapping:
+    eps_0: "eps_0"
+    U: "U"
+    C: "C"
+    mu: "0"
+    kBT: "kBT"
+    omega_0: "omega_0"
+  output_map:
+    xi_t: xi_t
+  regime:
+    eps_0: [10.0, 60.0]
+    U: [1.0, 10.0]
+    C: [20.0, 200.0]
+    kBT: [3.5, 4.5]
+    omega_0: [2.5, 3.1]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "238102-3"
+    quote: "is the twist persistence length, over which"
+    where: "Eq. 3 text, p. 3 col 2"
+  assumptions:
+    - "Gaussian torsional fluctuations under H_0 = (C/2)*sum(Delta_phi_l - omega_0)^2 give xi_t = 2*beta*C"
+
+- id: rel_cumulant_same_as_eq3_V4
+  kind: same_as
+  a: shin2009/effective_hamiltonian_cumulant_exact
+  b: shin2009/effective_hamiltonian_eq2_eq3
+  mapping:
+    eps_0: "eps_0"
+    U: "U"
+    C: "C"
+    mu: "0"
+    kBT: "kBT"
+    omega_0: "omega_0"
+  output_map:
+    V_nn_4: V_nn_4
+  regime:
+    eps_0: [10.0, 60.0]
+    U: [1.0, 10.0]
+    C: [20.0, 200.0]
+    kBT: [3.5, 4.5]
+    omega_0: [2.5, 3.1]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "238102-3"
+    quote: "spin degrees of freedom via a thermodynamic perturbation"
+    where: "Eq. 3, p. 3 col 2"
+  assumptions:
+    - "Second-order cumulant expansion in beta*U of H_0 + sum n_{l,m}*[-eps_0 + U*(1 - cos(phi_l - phi_m))]"
+
+- id: rel_tm_approximated_by_pert_small_U
+  kind: approximated_by
+  a: shin2009/overtwist_correlation_transfer_matrix
+  b: shin2009/overtwist_correlation_perturbative
+  mapping:
+    beta_U: "beta_U"
+    rho: "rho"
+    xi_t: "xi_t"
+    omega_0: "omega_0"
+  output_map:
+    overtwist: overtwist
+  regime:
+    beta_U: [0.005, 0.02]
+    rho: [0.2, 0.9]
+    xi_t: [10.0, 150.0]
+    omega_0: [2.8, 3.0]
+  provenance: proposed
+  tolerance: 0.005
+  reason: "Measures the accuracy of the connected O(U^2) perturbative expansion against the exact non-perturbative 1D mean-field transfer matrix in the small-U regime (beta*U in [0.005, 0.02], where O((beta*U)^2) truncation error is ~1.35e-3)."
+  assumptions:
+    - "Single-filament mean-field Hamiltonian H_MF = (C/2)*sum(Delta_phi_l - omega_0)^2 - U*rho*sum cos(phi_l - phi_m) on the 28/13 lattice"
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with claessens2008
+# (shin2009 cites claessens2008 as ref-6 on pp. 1-2)
+# ==========================================================================
+
+- id: rel_claessens2008_hexagonal_spacing_same_as
+  kind: same_as
+  a: shin2009/hexagonal_spacing_from_q10
+  b: claessens2008/hexagonal_lattice_spacing
+  mapping:
+    q_10: "10 * q_10"
+  output_map:
+    a_H: D
+  regime:
+    q_10: [0.02, 0.15]
+  provenance: proposed
+  reason: >
+    Both papers compute the center-to-center interactin hexagonal lattice spacing of fascin-actin
+    bundles from the first-order SAXS structure-factor peak q_10 via the identical 2D hexagonal
+    reciprocal-lattice relation D = a_H = 4*pi / (sqrt(3) * q_10) (shin2009 p. 2 col 1 with q_10
+    in 1/angstrom; claessens2008 p. 2 col 2 with q_10 in 1/nm, factor 10 unit conversion).
+  assumptions:
+    - "Parallel F-actin filaments packed on a 2D hexagonal lattice; unit conversion q_10 [1/nm] = 10 * q_10 [1/angstrom]."
+
+- id: rel_claessens2008_hexagonal_q11_same_as
+  kind: same_as
+  a: shin2009/hexagonal_spacing_from_q10
+  b: claessens2008/hexagonal_bragg_peaks
+  mapping:
+    q_10: "10 * q_10"
+  output_map:
+    q_11: q_11
+  regime:
+    q_10: [0.02, 0.15]
+  provenance: proposed
+  reason: >
+    Both papers index the second-order hexagonal bundle SAXS Bragg peak via q_11 = sqrt(3) * q_10
+    (shin2009 p. 2 col 1; claessens2008 p. 2 col 2), differing only in wavevector units
+    (1/angstrom vs 1/nm).
+  assumptions:
+    - "2D hexagonal reciprocal-lattice peak ratio sqrt(3); unit conversion q_10 [1/nm] = 10 * q_10 [1/angstrom]."
+
+- id: rel_claessens2008_helical_overtwist_same_as
+  kind: same_as
+  a: shin2009/helical_overtwist_from_symmetry
+  b: claessens2008/helical_overtwist_from_symmetry
+  mapping:
+    p_0: "n_native"
+    s_0: "t_native"
+    p_1: "n_bundle"
+    s_1: "t_bundle"
+  output_map:
+    Delta_theta: delta_omega
+  regime:
+    n_native: [10.0, 40.0]
+    t_native: [4.0, 20.0]
+    n_bundle: [10.0, 40.0]
+    t_bundle: [4.0, 20.0]
+  provenance: proposed
+  reason: >
+    Both papers evaluate the F-actin per-monomer helical overtwist from the symmetry change between
+    native unbundled 13/6 and bundled 28/13 repeats via the identical relation
+    Delta_omega = Delta_theta = 360 * (t_bundle/n_bundle - t_native/n_native) = 0.989 deg/monomer
+    (shin2009 p. 2 col 1 citing claessens2008 [ref-6] for agreement at high fascin R;
+    claessens2008 p. 2 col 2). Note that individual twist angles carry opposite chirality sign
+    conventions (unsigned +12*pi/13 in shin2009 vs signed -360*6/13 in claessens2008), while the
+    overtwist magnitude delta_omega = Delta_theta is identical.
+  assumptions:
+    - "Same repeat-unit definition (n monomers per t helical turns) for native and bundled states."
+
+- id: rel_claessens2008_Rstar_reduces_to_mean_field_eos
+  kind: reduces_to
+  a: claessens2008/effective_bound_ratio
+  b: shin2009/mean_field_eos
+  mapping:
+    z: "R * c_a / K_d"
+    u: "0"
+  output_map:
+    rho: R_star
+  limit:
+    c_a: "0"
+  regime:
+    R: [0.1, 1.0]
+    K_d: [0.25, 0.35]
+    c_a: [1.0, 200.0]
+  tolerance: 2.0e-5
+  provenance: proposed
+  reason: >
+    Claessens et al. (2008, Methods p. 4) model fascin-actin binding occupancy via the exact 1:1
+    quadratic mass-action equation R* = (1/2)*[(1 + R + K_d/c_a) - sqrt((1 + R + K_d/c_a)^2 - 4*R)]
+    accounting for free-fascin depletion without cross-link cooperativity, whereas Shin et al.
+    (2009, p. 3 col 2) model cross-link site occupancy via the grand-canonical mean-field equation
+    of state rho = (1 + z^-1 * exp(-u*rho))^-1 at fixed unbound-linker fugacity z with torsional
+    cooperativity u. In the dilute-actin / negligible-depletion limit c_a -> 0 (so free fascin
+    approaches R*c_a), claessens2008's R* reduces identically to the non-cooperative (u = 0)
+    Langmuir limit z/(1 + z) of shin2009's mean_field_eos with z = R*c_a/K_d.
+  assumptions:
+    - "Dilute-actin limit c_a -> 0 (c_a << K_d) so free cross-linker concentration is undepleted (c_f,free -> R*c_a)."
+    - "Zero cross-link cooperativity (u = 0) in shin2009/mean_field_eos."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with pelletier2003
+# (shin2009 cites pelletier2003 as ref-3 in [2-12] on p. 1 col 1)
+# ==========================================================================
+
+- id: rel_pelletier2003_hexagonal_q11_same_as
+  kind: same_as
+  a: shin2009/hexagonal_spacing_from_q10
+  b: pelletier2003/hexagonal_lattice_bragg_q2
+  mapping:
+    q_1: "10 * q_10"
+  output_map:
+    q_2: q_11
+  regime:
+    q_10: [0.01, 0.15]
+  provenance: proposed
+  reason: >
+    Both papers apply the identical 2D hexagonal reciprocal-lattice second-order Bragg peak ratio
+    q_11 = q_2 = sqrt(3) * q_10 to diagnose F-actin bundle cross-sectional packing from SAXS
+    (shin2009 p. 2 col 1 confirming hexagonal coordination for fascin/espin bundles; pelletier2003
+    p. 3 col 1 evaluating the hexagonal reference prediction q_2 = sqrt(3)*q_1 = 0.33 nm^-1 to
+    contrast against the observed distorted-square peak q_2 = 0.29 nm^-1 in alpha-actinin bundles).
+  assumptions:
+    - "2D hexagonal lattice Bragg ratio sqrt(3); unit conversion q_1 [1/nm] = 10 * q_10 [1/angstrom]."
+
+- id: rel_pelletier2003_square_spacing_scales_hexagonal
+  kind: scales_as
+  a: shin2009/hexagonal_spacing_from_q10
+  b: pelletier2003/square_lattice_spacing
+  mapping:
+    q_1: "10 * q_10"
+  output_map:
+    d: D
+  regime:
+    q_10: [0.01, 0.15]
+  provenance: proposed
+  reason: >
+    Both SAXS spacing formulas convert the first-order inter-filament structure-factor peak q_10
+    (q_1) into real-space center-to-center filament spacing with identical 1/q_1 scaling, differing
+    solely by the 2D hexagonal vs. square geometric packing factor 2/sqrt(3) ~= 1.1547
+    (D_hex = 4*pi/(sqrt(3)*q_10) for hexagonal fascin/espin bundles in shin2009 p. 2 col 1 vs.
+    d_sq = 2*pi/q_1 for distorted-square alpha-actinin bundles in pelletier2003 p. 3 col 1).
+  assumptions:
+    - "2D reciprocal-to-real-space conversion differing by constant geometric factor 2/sqrt(3)."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with haviv2008
+# (shin2009 cites haviv2008 as ref-11 in [2-12] on p. 1 col 1)
+# ==========================================================================
+
+- id: rel_haviv2008_mean_field_eos_reduces_to_langmuir
+  kind: reduces_to
+  a: shin2009/mean_field_eos
+  b: haviv2008/fascin_adsorption_probability
+  mapping:
+    phi: "z * exp(-10) / 2.75e-4"
+    beta: "2.75e-4"
+    eps_kBT: "10"
+  output_map:
+    p_fa: rho
+  limit:
+    u: "0"
+  regime:
+    z: [0.01, 5.0]
+    u: [0.1, 3.5]
+  tolerance: 1.0e-5
+  provenance: proposed
+  reason: >
+    In the limit of vanishing torsional-fluctuation cooperativity (u -> 0, i.e., independent
+    cross-link binding sites, shin2009 p. 4 col 1), shin2009's cooperative grand-canonical
+    mean-field site occupancy rho = (1 + z^-1 * exp(-u*rho))^-1 reduces identically to haviv2008's
+    equilibrium Langmuir fascin-adsorption probability p_fa = beta*phi*exp(eps/k_B T) /
+    (1 + beta*phi*exp(eps/k_B T)) (p. 453 col 1) under z = beta*phi*exp(eps/k_B T). Evaluating
+    at haviv2008's printed fascin parameters (beta = 2.75e-4, eps/k_B T = 10) maps z in [0.01, 5]
+    to fascin/actin molar ratio phi in [0.00165, 0.825], with half-saturation z = 1 at phi = 0.165.
+  assumptions:
+    - "Zero cross-link cooperativity u -> 0 (flexible/independent binding sites)."
+    - "Grand-canonical fugacity identified with haviv2008's Langmuir weight z = beta*phi*exp(eps/k_B T)."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with gov2008
+# (shin2009 cites gov2008 as ref-12 in [2-12] on p. 1 col 1)
+# ==========================================================================
+
+- id: rel_gov2008_binding_energy_scales_as_mean_field_eos
+  kind: scales_as
+  a: gov2008/binding_energy_vs_concentration
+  b: shin2009/mean_field_eos
+  mapping:
+    z: "c * exp(eps)"
+    u: "0"
+  output_map:
+    rho: eps_b
+  regime:
+    c: [1.0e-5, 1.0e-3]
+    eps: [6.0, 10.0]
+  provenance: proposed
+  reason: >
+    Gov (2008, p. 4 col 1) assumes non-cooperative thermodynamic-equilibrium Langmuir adsorption
+    so that the average inter-filament adhesion energy per length scales as
+    eps_b ~ c*exp(eps) / (1 + c*exp(eps)) (prefactor: unknown), which has identical log-slopes in
+    cross-linker concentration c and binding free energy eps to the non-cooperative (u = 0)
+    Langmuir limit of shin2009's grand-canonical mean-field cross-linker occupancy rho(z, u)
+    under z = c*exp(eps).
+  assumptions:
+    - "Zero cross-link cooperativity (u = 0) in shin2009/mean_field_eos."
+    - "Average bundle adhesion energy per length eps_b proportional to bound cross-linker site occupancy rho."
+

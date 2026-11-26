@@ -1,0 +1,249 @@
+# Cross-record ModelAtlas relations for Hansen & Mullins (2010), J. Cell Biol. 191:571-584
+# Wave 6 pairs: chandrasekaran2024, graham2023, graham2024, nastkolb2022, walker2025.
+# Note: None of the five partner papers states an explicit equation-level relation to a
+# hansen2010 model (all citations are qualitative biological/protocol references, plus
+# graham2023 p. 582 directly comparing measured elongation rates), so all entries below
+# have provenance: proposed.
+
+# ==============================================================================
+# 1. Relations with chandrasekaran2024 (Nat. Commun. 15, 3139, 2024; cites hansen2010 as ref-38)
+# ==============================================================================
+
+- id: rel_chandra2024_vasp_tetramer_conc
+  kind: same_as
+  a: hansen2010/vasp_tetramer_monomer_concentration
+  b: chandrasekaran2024/vasp_tetramer_concentration
+  mapping:
+    C_vasp_mon: "C_monomer / 1000"
+    valency: "4"
+  output_map:
+    C_vasp_tet: C_tetramer
+  regime:
+    C_monomer: [1.0, 20000.0]
+  provenance: proposed
+  reason: >
+    Both models convert VASP polypeptide monomer concentration to tetrameric VASP concentration
+    via stoichiometry 4 (C_tet = C_mon / 4). Hansen & Mullins (2010, Fig. 1C, p. 573) report
+    concentrations as tetramers by default (converting 250 nM monomer to 63 nM tetramer),
+    whereas Chandrasekaran et al. (2024, SI p. 18) divide experimental VASP monomer concentration
+    by valency = 4 to obtain CytoSim droplet tetramer concentration (flagged too_plain as a
+    1-op quotient).
+  assumptions:
+    - "Fixed VASP tetramer stoichiometry (valency = 4); unit conversion 1 uM = 1000 nM."
+
+- id: rel_chandra2024_bell_reduces_to_off_rate
+  kind: reduces_to
+  a: chandrasekaran2024/bell_slip_bond_unbinding
+  b: hansen2010/barbed_end_off_rate
+  mapping:
+    tau_1: "1 / k_unbind0"
+  output_map:
+    K_off: k_unbind
+  limit:
+    f: "0"
+  regime:
+    k_unbind0: [0.05, 10.0]
+    f: [0.01, 20.0]
+    f_u: [2.0, 20.0]
+  provenance: proposed
+  reason: >
+    In the zero-force limit (f -> 0), Chandrasekaran et al.'s (2024) Bell slip-bond unbinding
+    law for VASP-actin crosslinks in CytoSim, k_unbind(f) = k_unbind0 * exp(f / f_u)
+    (f_u = 10 pN, swept k_unbind0 = 0.1-1.75 s^-1), reduces identically to Hansen & Mullins's
+    (2010, p. 576) unloaded first-order dissociation rate K_off = 1 / tau_1 (0.69 s^-1 from
+    tau_1 = 1.45 s at barbed ends; on lateral F-actin sides, WT tau_1 = 0.41 s / tau_2 = 5.19 s
+    drops to 0.12 s / 0.69 s in the GAB mutant LIL-AAA cited qualitatively by Chandrasekaran
+    et al. 2024 p. 7 ref-38 to justify VASP-GABmut's reduced actin residence time).
+  assumptions:
+    - "Zero applied load (f -> 0) and reciprocal identification tau_1 = 1 / k_unbind0."
+    - "Rate-law limit connecting force-dependent lateral crosslinking in CytoSim to unloaded TIRF dissociation."
+
+# ==============================================================================
+# 2. Relations with graham2023 (Nat. Phys. 19, 574-585, 2023; cites hansen2010 as ref-2, ref-si-7)
+# ==============================================================================
+
+- id: rel_graham2023_linear_elongation_scales_monomers_delivered
+  kind: scales_as
+  a: graham2023/linear_bundle_elongation
+  b: hansen2010/monomers_delivered_per_binding
+  mapping:
+    v: "v / 0.0027"
+    tau_1: "t"
+  output_map:
+    N: y
+  regime:
+    v: [0.005, 0.15]
+    t: [0.5, 600.0]
+  provenance: proposed
+  reason: >
+    Both models express constant-velocity VASP-catalyzed actin elongation as the bilinear product
+    of elongation rate and duration: Graham et al. (2023, Fig. 5h, p. 582) fit linear VASP-droplet
+    bundle growth y(t) = v * t (v = 23 +/- 3 nm/s, converted via actin monomer axial rise
+    delta_l = 2.7 nm to ~8-9 monomers/s and compared directly with Hansen & Mullins 2010 ref-2),
+    while Hansen & Mullins (2010, p. 576 / Fig. 4I) compute subunits incorporated per processive
+    VASP run as N = v * tau_1. Under v_mon = v_lin / 0.0027 um and tau_1 = t, both share identical
+    log-slopes (+1 in elongation rate and +1 in duration), differing only by the constant axial
+    monomer rise delta_l = 0.0027 um/subunit (y = delta_l * N).
+  assumptions:
+    - "Constant-velocity actin elongation with axial monomer step delta_l = 2.7 nm = 0.0027 um/subunit."
+    - "scales_as relates linear growth length [um] to dimensionless incorporated subunit count N."
+
+# ==============================================================================
+# 3. Relations with graham2024 (PNAS 121, e2309152121, 2024; cites hansen2010 as ref-31)
+# ==============================================================================
+
+- id: rel_graham2024_vasp_tetramer_conc
+  kind: same_as
+  a: hansen2010/vasp_tetramer_monomer_concentration
+  b: graham2024/vasp_tetramer_from_monomer
+  mapping:
+    C_mono: "C_monomer / 1000"
+    valency: "4"
+  output_map:
+    C_tet: C_tetramer
+  regime:
+    C_monomer: [1.0, 20000.0]
+  provenance: proposed
+  reason: >
+    Both models convert VASP polypeptide monomer concentration to tetrameric VASP concentration
+    via stoichiometry 4 (C_tet = C_mono / 4; Hansen & Mullins 2010 p. 573 Fig. 1C converts
+    250 nM monomer to 63 nM tetramer, while Graham et al. 2024 reports experimental monomer
+    concentrations and divides by valency = 4 to obtain CytoSim tetramer concentrations;
+    flagged too_plain as a 1-op quotient).
+  assumptions:
+    - "Fixed VASP tetramer stoichiometry (valency = 4); unit conversion 1 uM = 1000 nM."
+
+- id: rel_graham2024_actin_vasp_molar_ratio
+  kind: same_as
+  a: hansen2010/auc_actin_vasp_ratio
+  b: graham2024/vasp_to_actin_molar_ratio
+  mapping:
+    C_actin: "C_actin"
+    C_vasp: "C_vasp"
+  output_map:
+    actin_to_vasp: R_av
+  regime:
+    C_actin: [0.5, 25.0]
+    C_vasp: [0.5, 20.0]
+  provenance: proposed
+  reason: >
+    Both models compute the actin-to-VASP molar ratio [actin]/[VASP] as a direct quotient
+    (flagged too_plain as a 1-op quotient). Notably, the two papers adopt opposite VASP
+    stoichiometry conventions: Hansen & Mullins (2010, Fig. S5) express C_vasp as VASP tetramer
+    concentration (R_av = 1.4 and 17.5 at 2 and 25 uM actin with 1.43 uM VASP tetramer), whereas
+    Graham et al. (2024) express C_vasp as VASP monomer concentration (actin:VASP_mono = 1:7.5
+    at 2 uM actin and 15 uM VASP monomer), so matching physical solutions requires scaling by 4
+    (R_av_tet = 4 * actin_to_vasp_mono).
+  assumptions:
+    - "Form-level identity for [actin]/[VASP]; physically C_vasp_mono (graham2024) = 4 * C_vasp_tet (hansen2010)."
+
+# ==============================================================================
+# 4. Relations with nastkolb2022 (Mol. Biol. Cell 33, ar75, 2022; cites hansen2010 as ref-hansen2010)
+# ==============================================================================
+
+- id: rel_nastkolb2022_frap_reduces_to_capping_exp
+  kind: reduces_to
+  a: nastkolb2022/frap_recovery_fit
+  b: hansen2010/capping_fraction_exponential_corrected
+  mapping:
+    K_obs: "1 / (60 * tau)"
+    t: "60 * t"
+  output_map:
+    f_capped: y
+  limit:
+    a: "1"
+    c: "0"
+  regime:
+    a: [0.5, 1.0]
+    tau: [0.05, 5.0]
+    c: [0.0, 0.3]
+    t: [0.05, 10.0]
+  provenance: proposed
+  reason: >
+    In the unit-amplitude, zero-baseline limit (a -> 1, c -> 0), Nast-Kolb et al.'s (2022)
+    4-parameter single-exponential FRAP recovery model y(t) = a*(1 - exp(-t / tau)) + c reduces
+    identically to Hansen & Mullins's (2010, Fig. 6C / Fig. S2D) 2-parameter first-order
+    cumulative exponential relaxation law f_capped(t) = 1 - exp(-K_obs * t) with K_obs = 1/(60*tau)
+    (converting minutes to seconds). Pure mathematical rate-law reduction between distinct
+    physical observables (2D lipid-bilayer VASP FRAP recovery vs. single-filament barbed-end
+    capping kinetics); physical parameters are not equated.
+  assumptions:
+    - "Complete mobile fraction (a -> 1) and zero post-bleach baseline (c -> 0); 1 min = 60 s."
+    - "Mathematical rate-law equivalence only; governs distinct physical observables."
+
+- id: rel_nastkolb2022_pi_release_reduces_to_frap_half_time
+  kind: reduces_to
+  a: hansen2010/actin_nucleotide_hydrolysis_pi_release
+  b: nastkolb2022/frap_half_time
+  mapping:
+    tau: "1 / (60 * k2)"
+  output_map:
+    t_half: t_half
+  limit:
+    k1: "oo"
+  regime:
+    k1: [0.01, 1.0]
+    k2: [0.001, 0.05]
+  provenance: proposed
+  reason: >
+    In the fast first-step limit (k1 -> oo, instantaneous ATP hydrolysis relative to Pi release),
+    Hansen & Mullins's (2010, Fig. S3E) consecutive two-step first-order kinetics half-life
+    P_ADP(t_half) = 1 - (k1*exp(-k2*t_half) - k2*exp(-k1*t_half))/(k1 - k2) = 0.5 reduces
+    identically to the single-exponential half-life law t_half = tau * ln(2) of Nast-Kolb et al.
+    (2022) with tau = 1/(60*k2) min (giving t_half = ln(2)/k2 in seconds). At Hansen & Mullins's
+    parameters (k1 = 0.035 s^-1, k2 = 0.0026 s^-1), finite k1 introduces a 29.7 s hydrolysis
+    lag (296.3 s vs. single-step 266.6 s). Rate-law limit only; distinct physical observables.
+  assumptions:
+    - "Fast first-step limit k1 >> k2 (k1 -> oo); unit conversion 1 min = 60 s."
+    - "Mathematical rate-law equivalence only; governs distinct physical observables."
+
+# ==============================================================================
+# 5. Relations with walker2025 (Dev. Cell 60, 1550-1567, 2025; cites hansen2010 as ref-15)
+# ==============================================================================
+
+- id: rel_walker2025_vasp_oligomer_conc
+  kind: same_as
+  a: hansen2010/vasp_tetramer_monomer_concentration
+  b: walker2025/protein_oligomer_concentration
+  mapping:
+    C_mon: "C_monomer / 1000"
+    n_subunits: "4"
+  output_map:
+    C_olig: C_tetramer
+  regime:
+    C_monomer: [1.0, 20000.0]
+  provenance: proposed
+  reason: >
+    Both models convert monomeric subunit concentration to oligomer concentration via
+    C_olig = C_mon / n_subunits, matching identically for VASP tetramers (n_subunits = 4;
+    Hansen & Mullins 2010 p. 573 Fig. 1C converts 250 nM monomer to 63 nM tetramer, while
+    Walker et al. 2025 applies C_mon / n_subunits to VASP tetramers with n_subunits = 4 and
+    mini-Lpd dimers with n_subunits = 2; flagged too_plain as a 1-op quotient).
+  assumptions:
+    - "Fixed tetramer stoichiometry (n_subunits = 4); unit conversion 1 uM = 1000 nM."
+
+- id: rel_walker2025_bell_reduces_to_off_rate
+  kind: reduces_to
+  a: walker2025/bell_slip_bond_unbinding
+  b: hansen2010/barbed_end_off_rate
+  mapping:
+    tau_1: "1 / k_unbind_0"
+  output_map:
+    K_off: k_unbind
+  limit:
+    F: "0"
+  regime:
+    k_unbind_0: [0.05, 10.0]
+    F: [0.01, 20.0]
+    F_unbind: [2.0, 20.0]
+  provenance: proposed
+  reason: >
+    In the zero-force limit (F -> 0), Walker et al.'s (2025, STAR Methods / Table S1) CytoSim
+    Bell slip-bond unbinding law k_unbind(F) = k_unbind_0 * exp(F / F_unbind) (baseline
+    k_unbind_0 = 1.0 s^-1, F_unbind = 10 pN for VASP and mini-Lpd crosslinkers) reduces
+    identically to Hansen & Mullins's (2010, p. 576) unloaded single-molecule first-order
+    dissociation rate K_off = 1 / tau_1 (0.69 s^-1 from tau_1 = 1.45 s at barbed ends;
+    lateral-side tau_1 = 0.36-0.44 s, tau_2 = 5.0 s).
+  assumptions:
+    - "Zero applied load (F -> 0) and reciprocal identification tau_1 = 1 / k_unbind_0."
+    - "Rate-law limit connecting force-dependent condensate crosslink unbinding to unloaded TIRF dissociation."

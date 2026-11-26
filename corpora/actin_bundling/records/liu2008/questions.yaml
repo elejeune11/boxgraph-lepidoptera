@@ -1,0 +1,659 @@
+- id: q_eq12_dimensional_inconsistency
+  kind: possible_error
+  about:
+    - filopodium_growth_eq12
+    - filopodium_growth_eq12_dimensional
+    - filopodium_growth_ode_check
+  text: >
+    Printed SI Eq. (12) (p. 13, SI p. 8) reads L_mem(t) = sqrt(1 + L_mem(t_0)^2 + 2*L_mem(t_0) +
+    2*exp(-f_mem*delta/(N*k_B*T)) * integral_{t_0}^t c_0(t') dt') - 1, which is dimensionally
+    inconsistent as written: it sums dimensionless 1, L_mem(t_0)^2 ([length]^2), 2*L_mem(t_0)
+    ([length]), and 2*exp(-f_mem*delta/(N*k_B*T))*integral c_0(t') dt' ([time], because SI Eq. 13
+    explicitly defines c_0(t) as dimensionless), while Fig. s6 (p. 14, SI p. 9) plots L_mem in um
+    versus time in s. The characteristic diffusion length scale L_star and unconstrained
+    polymerization velocity v_0 (or time scale t_star = L_star / v_0) were omitted without stating
+    a nondimensionalization. Furthermore, differentiating Eq. (12) gives dL_tilde/dt_tilde =
+    c_0(t)*exp(-f_mem*delta/(N*k_B*T))/(1 + L_tilde), in which the load factor exp(-f_mem*delta/
+    (N*k_B*T)) is absent from the diffusion-depletion denominator (unlike exact steady-state
+    diffusion-consumption flux balance where tip consumption is also slowed by the load factor,
+    making force drop out in the diffusion-limited regime L >> L_star*exp(f_mem*delta/(N*k_B*T))).
+  citation:
+    page: 13
+    printed_page: "SI 8"
+    quote: "yielding the following analytic expression for filopodium length, Lmem(t), as a function of time"
+    where: "SI Eq. 12"
+
+- id: q_eq12_unstated_fit_parameters
+  kind: unstated_input
+  about:
+    - filopodium_growth_eq12
+    - filopodium_growth_eq12_dimensional
+    - f_fil_fit_si
+    - L_star_added
+    - v_0_added
+  text: >
+    Even after restoring dimensional scale factors L_star and v_0 to SI Eq. (12), Section D does
+    not state the values of L_star, v_0, G-actin diffusion coefficient D, tube radius R, barbed-end
+    association rate k_on, thermal energy k_B*T, the sigmoidal fit parameters for c_0(t) in Fig. s5,
+    or the initial conditions (t_0, L_mem(t_0)) for the two protrusions in Fig. s6. Consequently,
+    the claimed 3 pN/filament best fit and the red/blue predicted trajectories in Fig. s6 cannot be
+    reproduced from the printed text alone.
+  citation:
+    page: 14
+    printed_page: "SI 9"
+    quote: "best fit of Lmem(t) to experimental data using a 3 pN polymerization force per filament"
+    where: "text & Fig. s6"
+
+- id: q_filament_count_rounding
+  kind: unexplained_difference
+  about:
+    - filament_count_from_force_balance
+    - cmp_N_filaments_si
+    - cmp_N_filaments_main
+    - f_mem_common_si
+    - f_fil_fit_si
+    - N_filaments_si
+    - N_filaments_main
+  text: >
+    SI Section D fits a polymerization force of 3 pN per filament and adopts a membrane resistance
+    of 20 pN (ref-s2), then concludes that "approximately 10 polymerizing filaments drive the growth
+    of the filopodium-like membrane protrusions" (~10 filaments on p. 790). Direct division yields
+    N = 20 pN / 3 pN = 6.67 (~7 filaments), so the reported ~10 is a 50% upward rounding (conversely,
+    N = 10 at f_mem = 20 pN corresponds to 2 pN/filament, or 3 pN/filament with N = 10 requires
+    f_mem = 30 pN).
+  citation:
+    page: 14
+    printed_page: "SI 9"
+    quote: "Taking a common value of 20 pN for the membrane resistance s2 our result suggests that approximately 10 polymerizing filaments"
+    where: text
+
+- id: q_fmem_inconsistency_sectionA_vs_sectionD
+  kind: unexplained_difference
+  about:
+    - membrane_tube_equilibrium
+    - membrane_tube_force_energy_eq8
+    - cmp_f_mem_eq_vs_20pN_low
+    - cmp_f_mem_eq_vs_20pN_high
+    - cmp_N_filaments_from_sectionA_force
+    - sigma_low_si
+    - kappa_si
+    - f_mem_common_si
+  text: >
+    Using Liu et al.'s own Section A membrane elastic constants (kappa = 20 k_B*T, sigma = 0.005
+    k_B*T/nm^2, ref-s2), minimizing SI Eq. (8) (f_mem = pi*kappa/R + 2*pi*R*sigma) yields equilibrium
+    tube radius R_eq = sqrt(kappa/(2*sigma)) = 44.7 nm and resistance force f_mem,eq =
+    2*pi*sqrt(2*kappa*sigma) = 2.81 k_B*T/nm = 11.55 pN at 298 K (11.6-12.0 pN across 298-310 K),
+    nearly a factor of 2 below the "common value of 20 pN" adopted in Section D from the same
+    reference (ref-s2). Dividing 11.55 pN by 3 pN/filament would yield only N = 3.85 (~4) filaments.
+    The 20 pN value is instead closer to the higher tension sigma = 0.02 k_B*T/nm^2 shown in Fig. s2,
+    which gives R_eq = 22.4 nm and f_mem,eq = 23.10 pN at 298 K.
+  citation:
+    page: 7
+    printed_page: "SI 2"
+    quote: "We choose σ = 0.005 kBT/nm2 and κ = 20 kBT for the elastic constants"
+    where: "SI p. 2 & SI p. 9"
+
+- id: q_surface_evolver_not_runnable
+  kind: unstated_model
+  about:
+    - membrane_bundling_surface_evolver
+  text: >
+    The 2D Helfrich elastic-sheet optimization E_mem(d, L_prot) + 2*E_fil(x, L) (SI Eqs. 1 & 3)
+    producing the bundling phase boundaries in Fig. 3a and Fig. s2 was performed with Surface Evolver
+    (ref-s4), but neither the paper nor the SI provides the Surface Evolver script, mesh refinement
+    schedule, boundary slope condition at the outer pinned circle (clamped vs hinged at R_ring =
+    1 um), finite-size tip regularization of the two pinned height points, or the single-filament
+    polymerization force used to calculate the force-limited protrusion lengths L_prot^F (~130 nm
+    at sigma = 0.005 k_B*T/nm^2 and ~68 nm at sigma = 0.02 k_B*T/nm^2).
+  citation:
+    page: 7
+    printed_page: "SI 2"
+    quote: "The membrane configuration is optimized using the Surface Evolver computer software"
+    where: "SI Eqs. 1, 3"
+
+- id: q_hyperosmotic_typo_si_p4
+  kind: possible_error
+  about:
+    - sigma_low_si
+    - sigma_high_si
+    - hyperosmotic_frequency_reduction
+  text: >
+    On SI p. 4 (PDF p. 9), the text states "lower frequency of filopodium-like structures in
+    hyperosmotic solution (low sigma), while the frequency of filopodium-like structures is weakly
+    tension-dependent in hyperosmotic solution (high sigma), as illustrated in Figure s3." The
+    second "hyperosmotic solution (high sigma)" is a typographical error for "hypoosmotic solution
+    (high sigma)", as confirmed by Fig. s3 (PDF p. 10) which labels the three bars Hypoosmotic,
+    Isoosmotic, and Hyperosmotic, and by osmotic swelling physics (hypoosmotic buffer raises tension).
+  citation:
+    page: 9
+    printed_page: "SI 4"
+    quote: "weakly tension-dependent in hyperosmotic solution (high σ), as illustrated in Figure s3"
+    where: text
+
+- id: q_diameter_vs_radius_symbols
+  kind: possible_error
+  about:
+    - membrane_tube_force_energy_eq8
+    - R_ring_diameter_si
+  text: >
+    Two radius-versus-diameter symbol inconsistencies appear in the SI: (1) On SI p. 7 (PDF p. 12),
+    the text writes "the filopodium diameter R", whereas SI Eq. (8) (p. 11, SI p. 6) defines
+    f_mem = pi*kappa/R + 2*pi*R*sigma, which requires R to be the cylindrical tube radius (perimeter
+    2*pi*R, mean curvature H = 1/(2R)); treating R as diameter would instead give 2*pi*kappa/R +
+    pi*R*sigma. (2) On SI p. 2 (PDF p. 7), the radius-like symbol R_ring = 1 um is defined as "a
+    circle of diameter R_ring = 1 um".
+  citation:
+    page: 12
+    printed_page: "SI 7"
+    quote: "we have assumed that the filopodium diameter R is small compared to its length"
+    where: "SI p. 7 & SI p. 2"
+
+- id: q_fig3b_emem_equality_vs_text
+  kind: possible_error
+  about:
+    - membrane_buckling_case2_eq11
+    - membrane_tube_force_energy_eq8
+  text: >
+    In Fig. 3b (right panel, buckled configuration, PDF p. 3), the printed annotation reads
+    E_mem = f_mem*L_mem, contradicting both the adjacent main text ("Because the membrane bends and
+    does not shorten in these configurations, E_mem exceeds f_mem*L_mem", p. 791 col 2) and SI Eq.
+    (11) (p. 12, SI p. 7), which writes strict inequality Delta_E_tot > (pi^2*a^2/(16*L))*f_buckle
+    specifically because membrane tube bending adds positive energy Delta_E_mem > 0.
+  citation:
+    page: 3
+    printed_page: "791"
+    quote: "Because the membrane bends and does not shorten in these configurations, Emem exceeds fmemLmem"
+    where: "Fig. 3b & text"
+
+- id: q_eq7_inline_inequality_notation
+  kind: reading
+  about:
+    - euler_buckling_energy_eq7
+    - buckling_profile_eq4
+  text: >
+    Printed SI Eq. (7) (p. 11, SI p. 6) writes Delta_E_tot = E_bend + Delta_E_comp =
+    (k_B*T*L_p/64)*a^2*(pi^4/L^3) - (f_comp/16)*a^2*(pi^2/L) < 0 = a^2*(pi^2/(16*L))*
+    (f_buckle - f_comp), inserting the buckling instability condition "< 0" inside an equality chain
+    (the equality holds for all f_comp, whereas "< 0" holds only for f_comp > f_buckle). In addition,
+    SI Eq. (4) places a vector arrow over the scalar lateral displacement component r_x(s), and OCR
+    on p. 12 drops the square-root radical in L > sqrt(pi^2*k_B*T*L_p/(4*f_mem)) (verified on
+    page-012.png).
+  citation:
+    page: 11
+    printed_page: "SI 6"
+    quote: "Summing equations (5) and (6), we obtain"
+    where: "SI Eq. 7"
+
+- id: q_merge_bound_finite_thickness
+  kind: reading
+  about:
+    - filament_geometric_merge_bounds
+    - filament_thickness_si
+  text: >
+    SI p. 3 (PDF p. 8) states that "it is impossible to merge two filaments if their base distance
+    D is greater than 4L/pi for purely geometric reasons", based on quarter-circle deflection
+    x_max = 2L/pi. Strictly, given d = D - 2x and the paper's own merging criterion d < 10 nm
+    (SI p. 2, PDF p. 7), filaments can still satisfy d < 10 nm up to D < 4L/pi + 10 nm; 4L/pi is
+    the exact geometric bound for zero tip separation (d = 0).
+  citation:
+    page: 8
+    printed_page: "SI 3"
+    quote: "impossible to merge two filaments if their base distance D is greater than 4L"
+    where: text
+
+- id: q_unstated_temperature_kBT
+  kind: unstated_input
+  about:
+    - kBT_added
+    - euler_buckling_force
+    - membrane_tube_force_energy_eq8
+    - filopodium_growth_eq12
+  text: >
+    Neither the main text nor the SI states the experimental temperature T or value of k_B*T used
+    to convert between k_B*T elastic units (Section A) and piconewton/femtonewton forces (Sections C
+    and D). This record adopts k_B*T = 4.11 pN*nm (298 K) with alternatives 4.14 pN*nm (300 K) and
+    4.28 pN*nm (310 K).
+  citation:
+    page: 7
+    printed_page: "SI 2"
+    quote: "and kBT the unit of thermal energy"
+    where: text
+
+- id: q_buckling_length_and_bundle_stiffness_unstated
+  kind: unstated_input
+  about:
+    - L_long_protrusion_added
+    - N_bundle_buckling_added
+    - euler_buckling_force
+    - uncrosslinked_bundle_persistence_length
+    - cmp_f_buckle_bundle_order
+  text: >
+    Main text p. 791 states that "the long protrusion shown in the overlay of Fig. 1a" has "a
+    buckling threshold of the order of femtonewtons", without specifying the contour length L or
+    effective bundle persistence length L_p used in the calculation. At L = 20 um (within the 1-25
+    um range; Fig. 1d reaches ~24 um), single-filament L_p = 15 um gives f_buckle = 0.38 fN and an
+    uncrosslinked N = 10 bundle (L_p = 150 um) gives 3.80 fN (2.64 fN at 24 um), both consistent
+    with the femtonewton order-of-magnitude claim.
+  citation:
+    page: 3
+    printed_page: "791"
+    quote: "with a buckling threshold of the order of femtonewtons"
+    where: text
+
+- id: q_lipids_methods_vs_si_fig1d
+  kind: reading
+  about:
+    - protrusion_terminal_length_fig1d
+  text: >
+    Main text Methods (p. 792 col 2) gives the phase-separating GUV lipid composition as 24.3%
+    DOPC, 35% DPPC, 40% cholesterol, 0.7% BODIPY TMR-PIP2, whereas SI Section G (p. 15, SI p. 10)
+    gives 23% DOPC, 46% DPPC, 30% cholesterol, 0.4% Fluo-DOPE, 0.6% BODIPY TMR PIP2 for Fig. 1d
+    (both sum to 100%, but the Fig. 1d composition differs from the three primary compositions
+    listed in Methods).
+  citation:
+    page: 4
+    printed_page: "792"
+    quote: "24.3% dioleoyl-phosphatidylcholine, 35% dipalmitoyl-phosphatidylcholine,"
+    where: "Methods & SI Section G"
+
+- id: q_audit_grouped_quantities_and_reduction_definition
+  kind: reading
+  about:
+    - protrusion_fraction
+    - vesicle_protrusion_prevalence
+    - arp23_3x_frequency_reduction
+    - hyperosmotic_frequency_reduction
+    - protein_concentration
+    - g_actin_conc_standard
+    - arp23_conc_standard
+    - nwasp_conc_standard
+    - arp23_conc_low_test
+  text: >
+    Audit disagreement with two quantity-grouping choices in quantities.yaml and data.yaml:
+    (1) protrusion_fraction combines absolute vesicle protrusion prevalence
+    (vesicle_protrusion_prevalence = ~95%, p. 789) with frequency reductions
+    (arp23_3x_frequency_reduction = ~60% and hyperosmotic_frequency_reduction = ~15%, p. 791),
+    which are distinct physical quantities (and the text does not specify whether ~60% and ~15%
+    are relative fractional drops or absolute percentage-point reductions; in Fig. s3, Isoosmotic
+    ~0.90 vs Hyperosmotic ~0.75 is ~15 percentage points or ~16.7% relative); (2)
+    protein_concentration combines three distinct chemical species (G-actin, Arp2/3 complex,
+    N-WASP) under one quantity without species-distinguishing quantities or conditions. Preserved
+    as first-reader choices per audit rules.
+  citation:
+    page: 3
+    printed_page: "791"
+    quote: "we observed a ∼60% reduction in the frequency of filopodium formation"
+    where: "pp. 789, 791-792"
+
+- id: q_audit_reconstructed_relations_provenance
+  kind: reading
+  about:
+    - rel_eq8_at_equilibrium_radius
+    - rel_exact_shortening_approximated_by_eq6
+    - rel_growth_ode_same_as_eq12
+    - membrane_tube_equilibrium
+    - compression_energy_exact_shortening
+    - filopodium_growth_ode_check
+  text: >
+    Audit disagreement with assigning provenance: stated in relations.yaml to
+    rel_eq8_at_equilibrium_radius, rel_exact_shortening_approximated_by_eq6, and
+    rel_growth_ode_same_as_eq12. Each relates a reader-built reconstructed model
+    (membrane_tube_equilibrium, compression_energy_exact_shortening, filopodium_growth_ode_check)
+    to a paper-stated equation; in particular, Liu et al. print f_mem = pi*kappa/R + 2*pi*R*sigma
+    (SI p. 6) without writing the minimized equilibrium radius R_eq = sqrt(kappa/(2*sigma)) or
+    pulling force f_mem,eq = 2*pi*sqrt(2*kappa*sigma), nor do they write the exact inextensible
+    shortening integral or differentiated ODE. These are verified reader derivations (provenance:
+    proposed) rather than paper-stated relations. Preserved per audit rules.
+  citation:
+    page: 11
+    printed_page: "SI 6"
+    quote: "where fmem = πκ/R + 2πRσ."
+    where: "SI pp. 6, 8"
+
+- id: q_audit_quarter_circle_run_negative_d
+  kind: reading
+  about:
+    - run_arc_quarter_circle
+    - filament_wlc_arc_geometry
+    - D_base_bundling_added
+  text: >
+    Audit note on illustrative run run_arc_quarter_circle: evaluating filament_wlc_arc_geometry
+    at quarter-circle angle theta = pi/2 and L = 200 nm (x = 127.32 nm) with
+    D = D_base_bundling_added = 40 nm yields an unphysical negative tip separation
+    d = D - 2*x = -214.65 nm (crossed filaments) because D < 4*L/pi = 254.65 nm. Preserved per
+    audit rules since run_arc_quarter_circle feeds no comparison and rel_arc_quarter_circle_xmax
+    correctly maps D = 4*L/pi (d = 0).
+  citation:
+    page: 7
+    printed_page: "SI 2"
+    quote: "The geometric parameters shown in Figure s1 are related by d = D"
+    where: "SI pp. 2-3"
+
+- id: q_audit_eq6_load_direction_wording
+  kind: possible_error
+  about:
+    - compression_energy_eq6
+    - compression_energy_exact_shortening
+    - euler_buckling_energy_eq7
+    - euler_buckling_force
+  text: >
+    SI p. 5 (PDF p. 10) states that the filament bundle is subject to an external compressive
+    force f_comp "along the vector separating its endpoints". However, SI Eq. (6)
+    (Delta_E_comp = -(f_comp/16)*a^2*(pi^2/L), p. 11) and the resulting clamped-free Euler
+    buckling force f_buckle = pi^2*k_B*T*L_p/(4*L^2) use the axial shortening
+    Delta_z = (1/2)*integral_0^L (dr_x/ds)^2 ds = pi^2*a^2/(16*L), which corresponds to a vertical
+    compressive load along the fixed undeformed filament axis (normal to the clamped base), not
+    along the deflected chord connecting the two endpoints. For mode Eq. (4) (r_x(L) = -a), the
+    Euclidean endpoint-to-endpoint chord shortens only by
+    L - sqrt((L - Delta_z)^2 + a^2) ≈ ((pi^2 - 8)/16)*(a^2/L) (~18.94% of Eq. 6, over 5x smaller).
+  citation:
+    page: 10
+    printed_page: "SI 5"
+    quote: "subject to an external compressive force fcomp along the vector separating its endpoints"
+    where: "SI p. 5 & Eq. 6"
+
+- id: q_audit_quarter_circle_overhang_and_Lprot_bound
+  kind: reading
+  about:
+    - filament_geometric_merge_bounds
+    - filament_wlc_arc_geometry
+    - filament_wlc_arc_by_deflection
+    - L0_anchor_main
+  text: >
+    In addition to omitting the 10 nm finite-thickness merging cutoff (q_merge_bound_finite_thickness),
+    SI p. 3's statement that 2*L/pi (quarter circle, theta = pi/2) is "The largest possible lateral
+    deflection that can be obtained in this geometry" omits two geometric subtleties of a
+    constant-curvature circular arc anchored normal to the base: (1) unconstrained
+    x(theta) = L*(1 - cos(theta))/theta continues increasing beyond theta = pi/2 (2/pi ≈ 0.6366*L)
+    to a global maximum of 0.7246*L at theta = 2.3311 rad (133.56 deg), so 2*L/pi implicitly
+    restricts theta <= pi/2 (no downward-curving overhang); (2) conversely, requiring the deflected
+    tip to remain above the unperturbed membrane (L_prot = L*sin(theta)/theta - L_0 > 0) precludes
+    reaching a quarter circle whenever L < (pi/2)*L_0 = 157.08 nm (L - L_0 < 57.08 nm, inside the
+    left portion of Fig. 3a and Fig. s2), where a quarter-circle filament gives L_prot < 0.
+  citation:
+    page: 8
+    printed_page: "SI 3"
+    quote: "The largest possible lateral deflection that can be obtained in this geometry is 2L"
+    where: "SI p. 3 & Fig. s1"
+
+- id: q_audit_unstated_osmolality_and_si_conditions
+  kind: unstated_input
+  about:
+    - hyperosmotic_frequency_reduction
+    - arp23_3x_frequency_reduction
+    - g_actin_conc_standard
+    - f_fil_fit_si
+  text: >
+    Neither the main text nor SI Section G specifies: (1) the sucrose/salt concentrations,
+    osmolalities (e.g. in mOsm), or resulting membrane tensions sigma for the "Hypoosmotic",
+    "Isoosmotic", and "Hyperosmotic" solutions tested in Fig. s3 (p. 791, SI pp. 4-5); (2) the
+    baseline protrusion frequency, GUV lipid composition, or sample size n for the 3x Arp2/3
+    concentration increase (~60% reduction, p. 791) and 10 nM low-Arp2/3 test; or (3) the GUV
+    lipid composition and initial bulk G-actin concentration a_0 used in the Figs. s5-s6 kinetic
+    growth experiments (note also that SI Section G p. 15 lists 7.5 uM unlabeled actin for Fig. 1d
+    compared with ~8.5 uM total actin [7.5 uM unlabeled + 1 uM labeled] in Methods p. 792 and
+    Figs. 1a/2).
+  citation:
+    page: 10
+    printed_page: "SI 5"
+    quote: "Frequency of parallel filament protrusions in solutions with different osmolality"
+    where: "Fig. s3 & SI Section G"
+
+- id: q_audit_frap_figs7_time_offset_and_fit_params
+  kind: unstated_input
+  about:
+    - fluorescence_intensity
+    - g_actin_conc_standard
+  text: >
+    SI Section F / Fig. s7 (PDF p. 15, SI p. 10) plots five FRAP recovery points from Fig. 2a
+    against Time (s) from 0 to ~366 s together with a dotted red single-exponential fit, without
+    stating the fit equation, recovery time constant tau, immobile fraction, or why t = 0 s in
+    Fig. s7 is shifted by 280 s relative to "Bleach 0 s" in Fig. 2a (the five points correspond to
+    the 280 s, 372 s, 463 s, 555 s, and 646 s post-bleach frames of Fig. 2a/2b).
+  citation:
+    page: 15
+    printed_page: "SI 10"
+    quote: "Fluorescence recovery of photobleached region in Figure 2a (black circles) and single"
+    where: "Fig. s7 & Fig. 2a-b"
+
+- id: q_digitize_figs5_figs6_slope_inconsistency
+  kind: unexplained_difference
+  about:
+    - filopodium_growth_eq12_trajectory
+    - filopodium_growth_eq12_dimensional_trajectory
+    - figs5_free_actin_data
+    - figs6_pred_red_data
+    - figs6_pred_blue_data
+    - cmp_eq12_traj_figs6_red
+    - cmp_eq12_traj_figs6_blue
+    - cmp_eq12_dim_traj_figs6_red
+    - cmp_eq12_dim_traj_figs6_blue
+  text: >
+    Calibrated digitization of Fig. s5 (c_0(t)) and Fig. s6 (red and blue model curves) shows that
+    the mismatch with SI Eq. (12) goes beyond the omitted dimensional scales L_star and v_0
+    (q_eq12_dimensional_inconsistency, q_eq12_unstated_fit_parameters). Evaluating printed SI Eq. (12)
+    on digitized Fig. s5 c_0(t) at f_fil = 3 pN predicts asymptotes of only 6.25 um (red, vs plotted
+    9.56 um) and 7.31 um (blue, vs plotted 10.78 um), and the dimensionally restored variant at
+    L_star = 1.0 um, v_0 = 0.25 um/s predicts even less. More fundamentally, ANY choice of positive
+    parameters (L_star, v_0, f_fil) in SI Eq. (12) requires (dL_mem/dt) / c_0(t) =
+    v_0 * exp(-f_fil*delta/(k_B*T)) / (1 + L_mem/L_star) to decrease monotonically as L_mem grows,
+    whereas digitized Fig. s6 divided by Fig. s5 on the same time axis yields (dL_mem/dt) / c_0(t)
+    INCREASING ~3-fold from ~0.037 um/s at t = 260 s to ~0.11 um/s at t = 900-1100 s; moreover, at
+    matching times t in [350, 1000] s, the longer blue curve grows as fast or faster than the shorter
+    red curve (L_blue - L_red widens from 0.96 um at 350 s to 1.24 um at 1000 s). Shifting Fig. s5
+    later by ~300-350 s removes most of the drift (reducing CV of ((L+1)^2 - (L_0+1)^2)/(2*int c_0)
+    to ~1-4%), suggesting either an unstated time-origin offset between Fig. s5 and Fig. s6 or distinct
+    unstated c_0(t) traces/parameters per protrusion.
+  citation:
+    page: 14
+    printed_page: "SI 9"
+    quote: "Elongation of two parallel filament protrusions (black squares and black crosses) and predicted"
+    where: "Figs. s5 & s6"
+
+- id: q_digitize_figs3_reduction_clarification
+  kind: reading
+  about:
+    - figs3_osmolarity_frequency_data
+    - hyperosmotic_frequency_reduction
+  text: >
+    Calibrated digitization of Fig. s3 (SI p. 5) quantifies the three osmotic bar heights and
+    symmetric s.e.m. error bars referenced in q_audit_grouped_quantities_and_reduction_definition:
+    Hypoosmotic = 0.987 (s.e.m. [0.970, 1.000], N = 3), Isoosmotic = 0.908 (s.e.m. [0.877, 0.939],
+    N = 4), and Hyperosmotic = 0.752 (s.e.m. [0.718, 0.783], N = 3). Thus the drop from Isoosmotic
+    to Hyperosmotic is 0.156 (15.6 percentage points, or 17.2% relative reduction), confirming the
+    main text's "~15%" reduction claim (p. 791) corresponds most closely to the absolute
+    percentage-point difference (while both definitions are near ~15%).
+  citation:
+    page: 10
+    printed_page: "SI 5"
+    quote: "Frequency of parallel filament protrusions in solutions with different osmolality."
+    where: "Fig. s3"
+
+- id: q_digitize_fig1c_tick_irregularity
+  kind: reading
+  about:
+    - fig1c_actin_data
+    - fig1c_arp23_data
+    - fig1c_cp_data
+  text: >
+    In Nature's typeset Fig. 1c (p. 790), the four interior x ticks (0.2, 0.4, 0.6, 0.8) are strictly
+    uniform (spacing 339.5 +/- 0.5 px at 1500 dpi) and the three interior y ticks (1.0, 1.5, 2.0) are
+    strictly uniform (spacing 354.25 +/- 0.25 px), whereas the outermost ticks are displaced inward
+    relative to the uniform grid: x = 1.0 by 32.5 px (0.019 normalized position), y = 2.5 by 23.8 px
+    (0.034 a.u.), and y = 0.5 by 7.8 px (0.011 a.u.), consistent with journal art-redraw tick
+    nudging. Figure readers calibrate from the uniform interior ticks and propagate half the maximum
+    outer-tick shift (~12 px) into every reading's uncertainty interval.
+  citation:
+    page: 2
+    printed_page: "790"
+    quote: "Localization of actin, Arp2/3 complex and capping protein along thin actin filament protrusions."
+    where: "Fig. 1c"
+
+- id: q_claessens2008_no_cross_validation
+  kind: unstated_model
+  about:
+    - membrane_tube_force_energy_eq8
+    - membrane_tube_equilibrium
+    - euler_buckling_force
+    - critical_buckling_length_case1
+    - uncrosslinked_bundle_persistence_length
+    - filament_count_from_force_balance
+    - filopodium_growth_eq12_dimensional
+    - claessens2008/nf_max_abstract
+    - claessens2008/D_fig1c_measured
+    - claessens2008/q10_saxs
+  text: >
+    Cross-validation audit of claessens2008+liu2008 finds 0 valid CrossValidation entries (and 0
+    ModelAtlas model relations or cited-value links; neither paper cites the other):
+    (1) liu2008 models vs all 26 origin: measured datums in claessens2008: Claessens et al. (2008)
+    study fascin-crosslinked F-actin bundles in bulk solution and confined water-in-oil emulsion
+    droplets (zero lipid bilayer membrane, zero Arp2/3 or N-WASP), measuring fascin-limited bundle
+    diameters D and filament counts n_f ~ 20, bound fascin ratio R*, hexagonal SAXS Bragg peaks
+    q_10 and helical layer lines, monomer overtwist Delta_theta, and droplet-confinement ring-split
+    phase boundaries c_a(D_d). None of liu2008's models predicts these observables:
+    membrane_tube_{force_energy_eq8,equilibrium} apply to bare lipid membrane tubes (absent in
+    claessens2008); euler_buckling_force and critical_buckling_length_case1 predict cantilevered
+    buckling thresholds never measured in claessens2008; uncrosslinked_bundle_persistence_length
+    (L_p = N*L_p1) applies to uncrosslinked bundles and claessens2008 measures no persistence
+    length; filament_count_from_force_balance (N = f_mem/f_fil) sets filament number from lipid
+    membrane resistance force rather than fascin helical twist frustration; and
+    filopodium_growth_eq12* predicts diffusion/load-limited protrusion elongation with unstated
+    scales L_star, v_0 (q_eq12_unstated_fit_parameters).
+    (2) Reverse direction (claessens2008 models vs all 16 origin: measured datums in liu2008):
+    Liu et al. (2008) reconstitute crosslinker-free (zero-fascin) Arp2/3-branched dendritic shells
+    and filopodium-like lipid membrane tubes on GUVs, so claessens2008's fascin mass-action,
+    hexagonal SAXS, helical-overtwist, and spherical emulsion-droplet equatorial-ring mass
+    conservation models do not apply to liu2008's measured protrusion prevalence, lengths,
+    growth trajectories, fluorescence line-scans, or FRAP kinetics.
+
+- id: q_gov2018_no_cross_validation
+  kind: unstated_model
+  about:
+    - membrane_tube_equilibrium
+    - membrane_tube_force_energy_eq8
+    - critical_buckling_length_case1
+    - protrusion_stationary_length_range
+    - fig1d_length_data
+    - gov2018/tube_equilibrium_radius
+    - gov2018/cylindrical_ring_critical_mode
+    - gov2018/flat_membrane_instability_thresholds
+  text: >
+    Cross-validation audit of gov2018+liu2008 finds 0 valid CrossValidation entries (while ModelAtlas
+    establishes exact bare-Helfrich tube-radius equivalence rel_liu2008_tube_eq_same_as_gov2018_tube_radius
+    and bare Helfrich energy-density scaling rel_gov2018_eq2_1_bare_scales_liu2008_eq8; Gov 2018
+    cites Liu 2008 qualitatively as ref 19 on p. 2 without adopting numeric values):
+    (1) liu2008 models vs gov2018 data: Gov (2018) is a theoretical review containing 0 origin:
+    measured datums (all 55 datums are reported literature ranges, assumed model parameters,
+    qualitative sign predictions, or digitized simulation curves from prior theory papers).
+    (2) Reverse direction (gov2018 models vs all 16 origin: measured datums in liu2008): Although
+    both papers share the bare Helfrich cylindrical tube radius R_eq = sqrt(kappa/(2*sigma)),
+    liu2008 never measures membrane tube radius R (reporting only protrusion lengths 1-25 um,
+    initial velocity ~1 um/min, vesicle prevalence ~95%, osmolarity frequencies, fluorescence
+    line-scans, and FRAP). All remaining gov2018 predictive models require active curved membrane
+    components (CMCs with spontaneous curvature H_0 != 0) and/or contractile myosin (A* != 0),
+    both absent from Liu et al.'s passive-membrane, myosin-free GUV reconstitution assay.
+
+- id: q_graham2023_no_cross_validation
+  kind: unstated_model
+  about:
+    - filament_wlc_arc_geometry
+    - uncrosslinked_bundle_persistence_length
+    - membrane_tube_force_energy_eq8
+    - filopodium_growth_eq12_dimensional
+    - protrusion_initial_growth_rate_fig1d
+    - graham2023/elongation_rate_mean_text
+    - graham2023/ring_confinement_bending_energy
+    - graham2023/bundle_bending_rigidity_bathe_eqS1
+  text: >
+    Cross-validation audit of graham2023+liu2008 finds 0 valid CrossValidation entries (while
+    ModelAtlas links their shared constant-curvature WLC circular-arc bending energy, weak-coupling
+    uncrosslinked bundle stiffness, discrete WLC bending constant, and zero-load linear elongation
+    limit; neither paper cites the other):
+    (1) liu2008 models vs all 38 origin: measured datums in graham2023: Graham et al. (2023) study
+    membrane-free 3D liquid-like VASP protein condensates (PEG8k-crowded, no lipid bilayer, no
+    Arp2/3, no N-WASP, no capping protein), measuring droplet fusion time, VASP FRAP, droplet
+    diameters and aspect ratios, morphology abundances, protein partitioning, normalized intensity
+    traces, and linear bundle elongation rate (23 +/- 3 nm/s). None of liu2008's models predicts
+    droplet shape, VASP FRAP, or bundle persistence length measurements (graham2023 never measures
+    bundle L_p, buckling force/length, or membrane tube force/radius); liu2008/filopodium_growth_eq12_dimensional
+    outputs length rather than velocity, leaves its kinetic scales L_star and v_0 unstated
+    (q_eq12_unstated_fit_parameters), and models lipid-membrane-resisted filopodia rather than
+    VASP-accelerated membrane-free droplet rods.
+    (2) Reverse direction (graham2023 models vs all 16 origin: measured datums in liu2008):
+    graham2023's continuum ring-fluctuation, droplet wetting/SLSQP, and ring-to-rod transition
+    models describe closed F-actin rings confined inside phase-separated VASP liquid droplets
+    (absent in liu2008's Arp2/3-branched GUV membrane protrusions), while linear_bundle_elongation
+    (y = v*t) is an empirical fit rather than an out-of-sample predictor of Liu's nonlinear
+    monomer-depleted growth curves.
+
+- id: q_graham2024_no_cross_validation
+  kind: unstated_model
+  about:
+    - filopodium_growth_eq12_dimensional
+    - free_actin_concentration_eq13
+    - membrane_tube_force_energy_eq8
+    - figs5_free_actin_data
+    - figs6_exp_squares_data
+    - graham2024/cytosim_vca_ode_filament_length
+    - graham2024/actin_conservation_eq1
+    - graham2024/vasp_droplet_avg_diameter
+  text: >
+    Cross-validation audit of graham2024+liu2008 finds 0 valid CrossValidation entries (while
+    ModelAtlas links liu2008/filopodium_growth_eq12_dimensional in its zero-load fast-diffusion
+    limit to graham2024/cytosim_vca_ode_filament_length and links free_actin_concentration_eq13
+    to actin_conservation_eq1; Graham 2024 cites Liu 2008 qualitatively as ref-52 on p. 10 for
+    surface tension opposing branching, without importing any numeric datum):
+    (1) liu2008 models vs all 60 origin: measured datums in graham2024: Graham et al. (2024) study
+    membrane-free PEG8k-crowded VASP liquid condensates containing Arp2/3 and GST-VCA, measuring
+    droplet diameters, VASP FRAP half-times/mobile fractions, droplet aspect-ratio distributions and
+    Hedges' g statistics, radial fluorescence profiles, relative actin enrichment (R.A.E.),
+    morphology percentages (rings/rods/asters/spheres), and VASP/Arp2/3 aster-spoke partitioning.
+    None of liu2008's membrane-tube, Euler-buckling, WLC-arc, or filopodium-elongation models
+    predicts any of these liquid-condensate observables (graham2024 has no lipid bilayer membrane
+    and measures no filament length vs time curves).
+    (2) Reverse direction (graham2024 models vs all 16 origin: measured datums in liu2008):
+    graham2024's runnable polymerization ODEs (actin_polymerization_ode_eq2*,
+    actin_vca_competition_ode_eq3*, cytosim_vca_ode_filament_length) assume a closed, well-mixed
+    1-um VASP droplet with fixed filament count N_fil, zero membrane resistance force, zero 1D
+    diffusion impedance, and no bulk dendritic network outside the droplet; they cannot predict
+    liu2008's GUV protrusion growth curves (Figs. 1d, s6, where depletion c_0(t) is governed by
+    an unmeasured bulk Arp2/3 dendritic shell outside the ~10-filament membrane tube and membrane
+    load f_mem ~ 12-20 pN slows barbed-end addition), and graham2024's full 3D CytoSim model is
+    non-runnable (and models VASP droplets without lipid membranes).
+
+- id: q_weirich2017_no_cross_validation
+  kind: unstated_model
+  about:
+    - membrane_tube_force_energy_eq8
+    - membrane_tube_equilibrium
+    - euler_buckling_force
+    - critical_buckling_length_case1
+    - filopodium_growth_eq12_dimensional
+    - figs7_frap_exp_data
+    - weirich2017/capillary_free_energy_integral
+    - weirich2017/tactoid_exponential_relaxation
+    - weirich2017/bundle_initial_length
+    - weirich2017/capillary_lambda_observed
+  text: >
+    Cross-validation audit of liu2008+weirich2017 finds 0 valid CrossValidation entries (while
+    ModelAtlas establishes the exact cylindrical surface-tension limit connecting
+    liu2008/membrane_tube_force_energy_eq8 at kappa -> 0 and weirich2017/capillary_free_energy_{integral,
+    per_length} at u -> 0; neither paper cites the other — weirich2017 ref-9 is Gardel, Kasza,
+    Brangwynne, Liu JY & Weitz 2008, not Allen P. Liu et al. 2008):
+    (1) liu2008 models vs all 35 origin: measured datums in weirich2017: Weirich et al. (2017)
+    study membrane-free, filamin-crosslinked nematic liquid-crystal tactoids and fluid contracting
+    bundles formed from short capped F-actin (0.1-1 um, 1-15 mol % filamin, zero lipid bilayer,
+    zero Arp2/3), measuring tactoid lengths/aspect ratios, phase boundaries, coalescence relaxation
+    times tau, capillary pearling wavelengths (~10 um), contractile strains (20-60%), and tactoid
+    FRAP. None of liu2008's lipid-membrane-tube, cantilevered Euler-buckling, WLC circular-arc, or
+    polymerization-driven filopodium growth models predicts nematic tactoid shapes, liquid
+    coalescence relaxation, or Rayleigh-Plateau pearling of short-filament filamin bundles.
+    (2) Reverse direction (weirich2017 models vs all 16 origin: measured datums in liu2008):
+    weirich2017's nematic tactoid, capillary instability, Stokes-Einstein ellipsoid viscosity, and
+    exponential-contraction models do not apply to liu2008's growing, uncrosslinked, lipid-membrane-
+    enveloped actin protrusions (note also that liu2008's Fig. s7 FRAP reports fluorescence recovery
+    without stating bleach width L_b, recovery time tau_R, or diffusivity D, precluding even
+    weirich2017/frap_diffusion_scaling).
+
+
+

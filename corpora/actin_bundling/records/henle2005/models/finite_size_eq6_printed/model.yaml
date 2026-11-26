@@ -1,0 +1,42 @@
+id: finite_size_eq6_printed
+name: finite-size counterion saddle-point equation as literally printed on p. 3 (RHS sign)
+role: model
+stated:
+  page: 3
+  printed_page: "060801-3"
+  quote: "to the right-hand side of Eq."
+  where: "text, p. 3 col 1"
+equation: >
+  ln(lambda_q/(n_q*alpha_b)) - l_B*q*lambda*R^2/(2*a^2) - 2*l_B*q*lambda_tot*K_0(kappa*R)/(kappa*R*K_1(kappa*R))
+  = -ln(1 - lambda_q/Lambda)
+inputs:
+  R_over_a: {quantity: dimensionless_bundle_radius, unit: dimensionless}
+  R_ref_over_a: {quantity: dimensionless_bundle_radius, unit: dimensionless}
+  a_0: {quantity: rod_radius, unit: nm}
+  a: {quantity: rod_half_spacing, unit: nm}
+  w: {quantity: stern_layer_width, unit: nm}
+  inv_lambda_0: {quantity: charge_spacing, unit: nm}
+  l_B: {quantity: bjerrum_length, unit: nm}
+  n_1: {quantity: monovalent_salt_concentration, unit: M}
+  n_q: {quantity: multivalent_salt_concentration, unit: M}
+  q: {quantity: counterion_valence, unit: dimensionless}
+  gamma: {quantity: bond_attraction_strength, unit: 1/nm}
+  lambda_star_frac: {quantity: residual_charge_fraction, unit: dimensionless}
+outputs:
+  dF_over_NL: {quantity: free_energy_per_rod_length, unit: 1/nm}
+  lambda_tot: {quantity: bundle_total_linear_charge_density, unit: 1/nm}
+  lambda_rod: {quantity: renormalized_rod_charge_density, unit: 1/nm}
+settings: {}
+runnable: false
+not_runnable_reason: >
+  Putting -ln(1 - lambda_q/Lambda) on the right-hand side of Eq. (6) as literally printed
+  yields ln[lambda_q*(1 - lambda_q/Lambda)/(n_q*alpha_b)] - l_B*q*lambda*R^2/(2*a^2)
+  - 2*l_B*q*lambda_tot*K_0/(kappa*R*K_1) = 0. Because lambda_q*(1 - lambda_q/Lambda) <= Lambda/4
+  is bounded above on (0, Lambda) while -l_B*q*lambda*R^2/(2*a^2) -> -infinity as R grows,
+  the left-hand side is strictly negative everywhere on (0, Lambda) for large R (for Fig. 2
+  parameters, max <= -624 at R = 100a and max <= -17.7 at R = 20a for all n_q), so no real
+  root exists at R = 100a or in the Fig. 2 minimum region. Direct differentiation of the
+  paper's own printed free-energy modification places -ln(1 - lambda_q/Lambda) on the
+  left-hand side of Eq. (6) (implemented in variant finite_size_eq6_corrected and confirmed
+  by direct minimization in finite_size_free_energy_p3).
+stochastic: false

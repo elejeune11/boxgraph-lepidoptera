@@ -1,0 +1,244 @@
+- id: run_hex_nonelec
+  model: hexagonal_equatorial_peaks
+  inputs:
+    q_10: q_a_nonelec
+  settings: {}
+  outputs:
+    q_11: q_11_nonelec_pred
+    q_20: q_20_nonelec_pred
+
+- id: run_hex_ba_elec
+  model: hexagonal_equatorial_peaks
+  inputs:
+    q_10: q_g_ba_elec
+  settings: {}
+  outputs:
+    q_11: q_11_ba_elec_pred
+    q_20: q_20_ba_elec_pred
+
+- id: run_cdw_period
+  model: cdw_spatial_period
+  inputs:
+    q_z: q_i_cdw
+  settings: {}
+  outputs:
+    d_CDW: d_cdw_calc
+
+- id: run_charge_patch_period
+  model: charge_patch_period
+  inputs:
+    d_m: d_monomer_extracted
+  settings: {}
+  outputs:
+    d: d_patch_calc
+
+- id: run_angle_13_6
+  model: helical_monomer_angle
+  inputs:
+    M: M_13_6_native
+    t: t_13_6_native
+  settings: {}
+  outputs:
+    theta: theta_13_6_calc
+
+- id: run_angle_36_17
+  model: helical_monomer_angle
+  inputs:
+    M: M_36_17_overtwisted
+    t: t_36_17_overtwisted
+  settings: {}
+  outputs:
+    theta: theta_36_17_calc
+
+- id: run_overtwist_36_17
+  model: helical_overtwist
+  inputs:
+    M_0: M_13_6_native
+    t_0: t_13_6_native
+    M_1: M_36_17_overtwisted
+    t_1: t_36_17_overtwisted
+  settings: {}
+  outputs:
+    Delta_theta: Delta_theta_36_17_calc
+
+- id: run_thermal_energy_room
+  model: thermal_energy_scale
+  inputs:
+    T: T_room_added
+  settings: {}
+  outputs:
+    kBT: kBT_room_calc
+
+- id: run_twist_energy_J
+  model: twist_energy_per_monomer
+  inputs:
+    kappa: kappa_torsional_modulus
+    Delta_theta: Delta_theta_overtwist_printed
+    d: d_monomer_extracted
+  settings: {}
+  outputs:
+    E_twist: E_twist_J_calc
+  note: "Computes E_twist in J using printed kappa, printed Delta_theta = -3.8 deg, and extracted monomer spacing d = 28.7 Å."
+
+- id: run_twist_energy_kT_printed_dtheta
+  model: twist_energy_kT
+  inputs:
+    kappa: kappa_torsional_modulus
+    Delta_theta: Delta_theta_overtwist_printed
+    d: d_monomer_extracted
+    T: T_room_added
+  settings: {}
+  outputs:
+    E_twist_kT: E_twist_kT_calc
+  note: "Computes E_twist / (k_B T) using printed Delta_theta = -3.8 deg, extracted d = 28.7 Å, kappa ≈ 8 x 10^-26 N*m^2, and room temperature T_room_added."
+
+- id: run_twist_energy_kT_chained_dtheta
+  model: twist_energy_kT
+  inputs:
+    kappa: kappa_torsional_modulus
+    Delta_theta: Delta_theta_36_17_calc
+    d: d_monomer_extracted
+    T: T_room_added
+  settings: {}
+  outputs:
+    E_twist_kT: E_twist_kT_chained_calc
+  note: "Chained check using exact unrounded overtwist Delta_theta_36_17_calc (-3.846 deg) from 36/17 vs 13/6."
+
+- id: run_thermal_rms_twist
+  model: thermal_rms_twist
+  inputs:
+    kappa: kappa_torsional_modulus
+    d: d_monomer_extracted
+    T: T_room_added
+  settings: {}
+  outputs:
+    Delta_theta_rms: Delta_theta_rms_calc
+  note: "Computes thermal rms twist per monomer from equipartition sqrt(k_B T d / kappa) at room temperature."
+
+# Extract individual digitized peak wavevectors (via curve-port processing model extract_saxs_peak)
+- id: run_extract_fig2a_108mM_q1
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig2a_108mM}
+  settings: {peak_index: 1}
+  outputs: {q_peak: q_1_fig2a_108mM_dig}
+
+- id: run_extract_fig2a_108mM_q2
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig2a_108mM}
+  settings: {peak_index: 2}
+  outputs: {q_peak: q_2_fig2a_108mM_dig}
+
+- id: run_extract_fig2a_36mM_q2
+  model: extract_saxs_peak
+  inputs: {peaks: q_peak2_fig2a_36mM}
+  settings: {peak_index: 2}
+  outputs: {q_peak: q_2_fig2a_36mM_dig}
+
+- id: run_extract_fig3b_qa
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3b_nonelec}
+  settings: {peak_index: 1}
+  outputs: {q_peak: q_a_fig3b_dig}
+
+- id: run_extract_fig3b_qb
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3b_nonelec}
+  settings: {peak_index: 2}
+  outputs: {q_peak: q_b_fig3b_dig}
+
+- id: run_extract_fig3c_qd
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3c_nonelec}
+  settings: {peak_index: 1}
+  outputs: {q_peak: q_d_fig3c_dig}
+
+- id: run_extract_fig3c_qf
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3c_nonelec}
+  settings: {peak_index: 2}
+  outputs: {q_peak: q_f_fig3c_dig}
+
+- id: run_extract_fig3e_qg
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3e_ba}
+  settings: {peak_index: 1}
+  outputs: {q_peak: q_g_fig3e_dig}
+
+- id: run_extract_fig3e_qh
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3e_ba}
+  settings: {peak_index: 2}
+  outputs: {q_peak: q_h_fig3e_dig}
+
+- id: run_extract_fig3f_qg
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3f_main_ba}
+  settings: {peak_index: 1}
+  outputs: {q_peak: q_g_fig3f_dig}
+
+- id: run_extract_fig3f_qm
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3f_main_ba}
+  settings: {peak_index: 2}
+  outputs: {q_peak: q_m_fig3f_dig}
+
+- id: run_extract_fig3f_qi
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3f_inset_ba}
+  settings: {peak_index: 1}
+  outputs: {q_peak: q_i_fig3f_dig}
+
+- id: run_extract_fig3f_qj
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3f_inset_ba}
+  settings: {peak_index: 2}
+  outputs: {q_peak: q_j_fig3f_dig}
+
+- id: run_extract_fig3f_qk
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3f_inset_ba}
+  settings: {peak_index: 3}
+  outputs: {q_peak: q_k_fig3f_dig}
+
+- id: run_extract_fig3f_ql
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3f_inset_ba}
+  settings: {peak_index: 4}
+  outputs: {q_peak: q_l_fig3f_dig}
+
+# Paper's models evaluated on digitized peak wavevectors
+- id: run_hex_fig2a_108mM
+  model: hexagonal_equatorial_peaks
+  inputs: {q_10: q_1_fig2a_108mM_dig}
+  settings: {}
+  outputs:
+    q_11: q_11_fig2a_108mM_pred
+    q_20: q_20_fig2a_108mM_pred
+  note: "Hexagonal sqrt(3)-order and 2nd-order predictions from digitized Fig. 2A 108 mM first-order peak."
+
+- id: run_hex_fig3b_dig
+  model: hexagonal_equatorial_peaks
+  inputs: {q_10: q_a_fig3b_dig}
+  settings: {}
+  outputs:
+    q_11: q_11_fig3b_dig_pred
+    q_20: q_20_fig3b_dig_pred
+  note: "Hexagonal sqrt(3)-order and 2nd-order predictions from digitized Fig. 3B first-order peak (a)."
+
+- id: run_hex_fig3e_dig
+  model: hexagonal_equatorial_peaks
+  inputs: {q_10: q_g_fig3e_dig}
+  settings: {}
+  outputs:
+    q_11: q_11_fig3e_dig_pred
+    q_20: q_20_fig3e_dig_pred
+  note: "Hexagonal sqrt(3)-order and 2nd-order predictions from digitized Fig. 3E first-order peak (g)."
+
+- id: run_cdw_period_fig3f_dig
+  model: cdw_spatial_period
+  inputs: {q_z: q_i_fig3f_dig}
+  settings: {}
+  outputs:
+    d_CDW: d_cdw_fig3f_dig_calc
+  note: "1D counterion CDW spatial period d_CDW = 2*pi/q_z computed from digitized Fig. 3F Inset peak (i)."
+

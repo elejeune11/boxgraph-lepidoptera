@@ -1,0 +1,264 @@
+# Cross-record ModelAtlas relations for angelini2003 across the three remaining
+# Wave 6 ready partner pairs authored here:
+# - angelini2003 + claessens2008: 7 proposed relations below (linear-elastic twist
+#   energy same_as corrected variant, printed twist energy scales_as, k_B T-normalized
+#   twist energy scales_as per-fascin twist energy, hexagonal Bragg peaks q_11 and q_20
+#   same_as, helical monomer twist angle same_as, and helical overtwist scales_as
+#   across opposite sign conventions).
+# - angelini2003 + grason2007: 2 proposed relations below (achiral small-strain
+#   harmonic twist limit of Grason & Bruinsma columnar Eq. 5 and solid Eq. 9
+#   scaling identically with Angelini's single-filament torsional twist energy).
+# - angelini2003 + tang1996: 0 relations (see q_tang1996_relate_validate_audit;
+#   tang1996 models smooth-cylinder Manning counterion condensation, polycation
+#   binding mass balance, ionic-strength scaling, and gelsolin filament length,
+#   completely disjoint from angelini2003's SAXS Bragg diffraction, 1D CDW period,
+#   helical symmetry/overtwist, and single-filament torsional elasticity models).
+# (Note: angelini2003+borukhov2005 and angelini2003+henle2005 were previously
+# authored inside those partner records.)
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with claessens2008
+# (claessens2008 cites angelini2003 qualitatively as ref-11 on pp. 1 and 3)
+# ==========================================================================
+
+- id: rel_claessens2008_twist_energy_same_as_half
+  kind: same_as
+  a: angelini2003/twist_energy_per_monomer
+  b: claessens2008/twist_energy_per_monomer_half
+  mapping:
+    tau: "kappa"
+    Delta_theta: "Delta_theta"
+    d: "d / 10"
+  regime:
+    kappa: [1.0e-26, 2.0e-25]
+    Delta_theta: [0.005, 0.1]
+    d: [25.0, 32.0]
+  provenance: proposed
+  reason: >
+    Both papers evaluate the linear-elastic continuum torsional strain energy per actin monomer
+    using the identical formula E_twist = (1/2) * kappa * (Delta_theta)^2 / d with the same
+    single-filament torsional rigidity (~8 x 10^-26 N*m^2 from Tsuda et al. 1996, ref-19 in
+    angelini2003 and ref-35 in claessens2008) once the omitted linear-elasticity factor of 1/2
+    is restored in claessens2008/twist_energy_per_monomer_half (variant_of
+    claessens2008/twist_energy_per_monomer). The two models differ only in the monomer-spacing
+    port unit (angstrom in angelini2003 vs. nm in claessens2008; d_nm = d_angstrom / 10).
+  assumptions:
+    - "Linear torsional elasticity of a uniform single F-actin filament segment of axial rise d."
+    - "Unit conversion d [nm] = d [angstrom] / 10; torsional modulus kappa = tau [N*m^2]; Delta_theta [rad]."
+
+- id: rel_claessens2008_twist_energy_printed_scales_as
+  kind: scales_as
+  a: angelini2003/twist_energy_per_monomer
+  b: claessens2008/twist_energy_per_monomer
+  mapping:
+    tau: "kappa"
+    Delta_theta: "Delta_theta"
+    d: "d / 10"
+  regime:
+    kappa: [1.0e-26, 2.0e-25]
+    Delta_theta: [0.005, 0.1]
+    d: [25.0, 32.0]
+  provenance: proposed
+  reason: >
+    Compares the two papers' literally printed per-monomer torsional strain energy equations:
+    angelini2003 (p. 4 col. 1) prints E_twist = (1/2)*kappa*(Delta_theta)^2*d^(-1), whereas
+    claessens2008 (p. 2 col. 2) prints E_twist = tau*(Delta_theta)^2*d^(-1) without the 1/2
+    linear-elasticity prefactor. Both exhibit identical power-law scaling (kappa^1, Delta_theta^2,
+    d^-1) and differ everywhere by an exact factor of 2 (see q_claessens2008_relate_validate_audit).
+  assumptions:
+    - "Printed equations differ by a constant factor of 2 due to the omitted 1/2 prefactor in claessens2008 p. 2."
+    - "Unit conversion d [nm] = d [angstrom] / 10."
+
+- id: rel_claessens2008_twist_energy_kT_scales_as_fascin
+  kind: scales_as
+  a: claessens2008/twist_energy_per_fascin
+  b: angelini2003/twist_energy_kT
+  mapping:
+    kappa: "tau"
+    Delta_theta: "Delta_theta"
+    d: "10 * d"
+    T: "T"
+  regime:
+    tau: [1.0e-26, 2.0e-25]
+    Delta_theta: [0.005, 0.1]
+    d: [2.5, 3.2]
+    R_star: [0.05, 0.5]
+    T: [290.0, 310.0]
+  provenance: proposed
+  reason: >
+    At fixed bound fascin-to-actin stoichiometry R*, claessens2008's dimensionless twist energy per
+    bound fascin E_twist_fascin / (k_B T) = (tau * Delta_theta^2 / d) / (R* * k_B * T) scales
+    identically in (tau, Delta_theta, d, T) to angelini2003's dimensionless twist energy per
+    actin monomer E_twist / (k_B T) = (1/2) * (kappa * Delta_theta^2 / d) / (k_B * T), differing
+    only by the cross-linker stoichiometry factor 1/R* and the factor of 2 prefactor difference.
+  assumptions:
+    - "Fixed bound cross-linker ratio R* in claessens2008 (absent from angelini2003's counterion CDW model)."
+    - "Unit conversion d [angstrom] = 10 * d [nm]; both use exact SI k_B = 1.380649e-23 J/K."
+
+- id: rel_claessens2008_hexagonal_q11_same_as
+  kind: same_as
+  a: angelini2003/hexagonal_equatorial_peaks
+  b: claessens2008/hexagonal_bragg_peaks
+  mapping:
+    q_10: "10 * q_10"
+  output_map:
+    q_11: q_11
+  regime:
+    q_10: [0.02, 0.15]
+  provenance: proposed
+  reason: >
+    Both papers index the sqrt(3)-order equatorial SAXS Bragg reflection of hexagonally
+    coordinated F-actin bundles via the identical 2D hexagonal reciprocal-lattice relation
+    q_11 = sqrt(3) * q_10 (angelini2003 p. 2 col. 2 with q_10 in 1/angstrom for nonelectrostatic
+    and Ba2+-condensed actin; claessens2008 p. 2 col. 2 with q_10 in 1/nm for fascin-actin
+    bundles; unit conversion q_10 [1/nm] = 10 * q_10 [1/angstrom]).
+  assumptions:
+    - "2D hexagonal reciprocal-lattice peak ratio sqrt(3); unit conversion q_10 [1/nm] = 10 * q_10 [1/angstrom]."
+
+- id: rel_claessens2008_hexagonal_q20_same_as
+  kind: same_as
+  a: angelini2003/hexagonal_equatorial_peaks
+  b: claessens2008/hexagonal_bragg_peaks
+  mapping:
+    q_10: "10 * q_10"
+  output_map:
+    q_20: q_20
+  regime:
+    q_10: [0.02, 0.15]
+  provenance: proposed
+  reason: >
+    Both papers index the second-order equatorial SAXS Bragg reflection of hexagonally
+    coordinated F-actin bundles via the identical 2D hexagonal reciprocal-lattice relation
+    q_20 = 2 * q_10 (angelini2003 p. 2 col. 2 with q_10 in 1/angstrom; claessens2008 p. 2 col. 2
+    with q_10 in 1/nm; unit conversion q_10 [1/nm] = 10 * q_10 [1/angstrom]).
+  assumptions:
+    - "2D hexagonal reciprocal-lattice peak ratio 2; unit conversion q_10 [1/nm] = 10 * q_10 [1/angstrom]."
+
+- id: rel_claessens2008_helical_monomer_angle_same_as
+  kind: same_as
+  a: claessens2008/helical_overtwist_from_symmetry
+  b: angelini2003/helical_monomer_angle
+  mapping:
+    M: "p_0"
+    t: "s_0"
+  output_map:
+    theta: theta_0
+  regime:
+    p_0: [10.0, 40.0]
+    s_0: [4.0, 20.0]
+    p_1: [10.0, 40.0]
+    s_1: [4.0, 20.0]
+  provenance: proposed
+  reason: >
+    Both papers compute the signed left-handed azimuthal rotation angle between adjacent monomers
+    along an F-actin genetic helix of M/t (p/s) crystallographic repeat symmetry via the identical
+    formula theta = -2*pi*t/M [rad] = -360*s/p [deg] (e.g., -166.154 deg for native -13/6 F-actin
+    in angelini2003 p. 3 col. 2 and claessens2008 p. 2 col. 2). Output unit conversion between
+    deg and rad is exact.
+  assumptions:
+    - "Left-handed genetic helix sign convention (negative azimuthal rotation per monomer) with p_0 = M monomers per s_0 = t turns."
+
+- id: rel_claessens2008_helical_overtwist_scales_as
+  kind: scales_as
+  a: angelini2003/helical_overtwist
+  b: claessens2008/helical_overtwist_from_symmetry
+  mapping:
+    p_0: "M_0"
+    s_0: "t_0"
+    p_1: "M_1"
+    s_1: "t_1"
+  output_map:
+    Delta_theta: Delta_theta
+  regime:
+    M_0: [13.0, 14.0]
+    t_0: [5.5, 6.0]
+    M_1: [34.0, 36.5]
+    t_1: [17.0, 18.0]
+  provenance: proposed
+  reason: >
+    Both papers compute the per-monomer helical overtwist between native M_0/t_0 (13/6) and
+    bundled M_1/t_1 (36/17 in angelini2003; 28/13 in claessens2008) F-actin repeat symmetries
+    via the identical magnitude |Delta_theta| = 2*pi*|t_1/M_1 - t_0/M_0| = 360*|s_1/p_1 - s_0/p_0|
+    deg, differing strictly by an opposite sign convention and angle unit: angelini2003 defines
+    Delta_theta = theta_1 - theta_0 = -2*pi*(t_1/M_1 - t_0/M_0) < 0 (in rad, giving -3.846 deg
+    for 13/6 -> 36/17), whereas claessens2008 defines Delta_theta = theta_0 - theta_1 =
+    +360*(s_1/p_1 - s_0/p_0) > 0 (in deg, giving +0.989 deg for 13/6 -> 28/13). Accordingly,
+    scales_as holds identically across all four repeat integers while preserving the true
+    physical mapping (native -> native, bundled -> bundled) without swapping states.
+  assumptions:
+    - "Overtwisting regime (t_1/M_1 > t_0/M_0) so Delta_theta != 0 across the sampled hyperrectangle."
+    - "Opposite sign convention: Delta_theta_angelini [rad] = -(pi/180) * Delta_theta_claessens [deg]."
+
+# ==========================================================================
+# Cross-record ModelAtlas relations with grason2007
+# (grason2007 cites angelini2003 qualitatively as ref-6 in [3-6] on p. 1)
+# ==========================================================================
+
+- id: rel_grason2007_eq5_scales_angelini_twist
+  kind: scales_as
+  a: grason2007/columnar_elastic_energy_eq5
+  b: angelini2003/twist_energy_per_monomer
+  mapping:
+    kappa: "K2_bar * (sqrt(3) / 2) * 8.152**2 * 1e-30"
+    Delta_theta: "Omega * 2.87"
+    d: "28.7"
+  regime:
+    R: [1.0, 5.0]
+    Omega: [1.0e-4, 1.0e-3]
+    mu_perp_bar: [1.0e-4, 1.0e-3]
+    K2_bar: [10.0, 100.0]
+    K3_bar: [1.0, 10.0]
+    gamma: [1.0e-8, 1.0e-7]
+  provenance: proposed
+  reason: >
+    In the achiral, small-strain harmonic limit (gamma -> 0, Omega*R << 1), Grason & Bruinsma's
+    hexagonal-columnar elastic energy density Eq. (5) reduces to the Frank twist term
+    K2_bar * Omega^2 [pN/nm^2]. Mapping twist rate Omega [1/nm] to per-monomer twist angle
+    Delta_theta = Omega * d at Angelini's extracted monomer spacing d = 28.7 Å = 2.87 nm and
+    effective Frank twist modulus K2_bar [pN] to per-filament torsional stiffness
+    kappa = K2_bar / rho_0 = K2_bar * A_fil (with hexagonal area per filament
+    A_fil = (sqrt(3)/2)*a_H^2 at Angelini's close-packed Ba2+ spacing
+    a_H = 4*pi/(sqrt(3)*0.089 Å^-1) = 81.52 Å = 8.152 nm, and 1 pN*nm^2 = 1e-30 N*m^2),
+    angelini2003/twist_energy_per_monomer (E_twist = (1/2)*kappa*(Delta_theta)^2/d [J]) scales
+    identically in (K2_bar, Omega) to K2_bar * Omega^2 (energy per monomer vs. energy per unit
+    volume). Outside this formal achiral harmonic limit, Grason & Bruinsma drop K2_bar
+    (K2 << K3, finite chiral torque gamma) so quartic shear/bend and linear -gamma*Omega
+    govern macroscopic whole-bundle supertwist rather than single-filament internal overtwist
+    (see q_grason2007_relate_validate_audit).
+  assumptions:
+    - "Achiral small-strain harmonic twist limit (gamma -> 0, Omega*R << 1, K2_bar*Omega^2 dominates Eq. 5)."
+    - "Fixed monomer axial rise d = 28.7 Å = 2.87 nm and hexagonal area per filament A_fil = (sqrt(3)/2)*(8.152 nm)^2."
+    - "Formal structural comparison only: grason2007's Omega is macroscopic whole-bundle braiding/supertwist whereas angelini2003's Delta_theta/d is internal single-filament helical overtwist."
+
+- id: rel_grason2007_eq9_scales_angelini_twist
+  kind: scales_as
+  a: grason2007/solid_elastic_energy_eq9
+  b: angelini2003/twist_energy_per_monomer
+  mapping:
+    kappa: "2 * pi * 3.75**4 * 1e-30 * mu_par_bar"
+    Delta_theta: "Omega * 2.87"
+    d: "28.7"
+  regime:
+    R: [3.0, 10.0]
+    Omega: [1.0e-4, 1.0e-3]
+    mu_par_bar: [1.0, 10.0]
+    mu_perp_bar: [1.0e-3, 1.0e-2]
+    K3_bar: [1.0, 10.0]
+    gamma: [1.0e-8, 1.0e-7]
+  provenance: proposed
+  reason: >
+    In the achiral harmonic limit (gamma -> 0, Omega*R << 1), Grason & Bruinsma's 3D
+    hexagonal-solid elastic energy density Eq. (9) reduces to classical Saint-Venant torsion
+    of a circular elastic rod, E_elast = mu_par_bar*(Omega*R)^2 = (1/4)*mu_par*(Omega*R)^2
+    (grason2007 p. 3, Ref. 20). Mapping out-of-plane shear modulus mu_par_bar [pN/nm^2] to
+    Saint-Venant torsional rigidity kappa = (pi/2)*mu_par*r_0^4 = 2*pi*r_0^4*mu_par_bar for a
+    single F-actin filament of radius r_0 = D_A/2 = 37.5 Å = 3.75 nm (angelini2003 p. 1,
+    D_A ≈ 75 Å; 1 pN*nm^2 = 1e-30 N*m^2) and per-monomer twist angle Delta_theta = Omega * d
+    at d = 28.7 Å = 2.87 nm yields exact volumetric energy density equivalence
+    E_twist / (pi*r_0^2*d) = mu_par_bar*(Omega*r_0)^2 (matching Angelini's exact 1/2
+    linear-elasticity prefactor) and identical quadratic Omega and linear mu_par_bar scaling.
+    Bundle radius R is held fixed because Grason's Eq. (9) scales as R^2 (coherent solid-bundle
+    torsion), whereas Angelini's single-filament overtwist is R-independent (R^0).
+  assumptions:
+    - "Achiral harmonic Saint-Venant regime (gamma -> 0, Omega*R << 1, mu_par_bar*(Omega*R)^2 dominates Eq. 9)."
+    - "Fixed filament radius r_0 = D_A/2 = 3.75 nm and monomer spacing d = 28.7 Å; bundle radius R held fixed while comparing (mu_par_bar, Omega) scaling."

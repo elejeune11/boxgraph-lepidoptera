@@ -1,0 +1,231 @@
+# Cross-record ModelAtlas relations for borukhov2005 (Wave 6).
+# All entries are authored strictly inside borukhov2005/relations.yaml.
+
+- id: rel_dutta2016_dh_repulsion_k0
+  kind: reduces_to
+  a: borukhov2005/electrostatic_repulsion_eq4
+  b: dutta2016/real_space_potential
+  output_map: {betaV: Gamma_par}
+  mapping:
+    r: "D + delta"
+    lambda_R: "kappa_inv"
+    Gamma_R: "2 * D * lambda_e**2 * l_B"
+    Gamma_A: "0"
+    lambda_A: "1"
+  limit: {D: "0"}
+  regime:
+    D: [0.5, 10.0]
+    delta: [0.5, 3.0]
+    kappa_inv: [0.5, 5.0]
+    l_B: [0.5, 1.0]
+    lambda_e: [1.0, 5.0]
+  provenance: proposed
+  reason: >
+    Both models represent screened Debye-Huckel electrostatic repulsion between parallel
+    uniformly charged cylinders via the modified Bessel function K_0(r / lambda_R).
+    Borukhov et al. (2005) Eq. 4 includes the Brenner-Parsegian finite-cylinder surface
+    factor [(kappa*D/2)*K_1(kappa*D/2)]^-2 for rod diameter D; in the thin-rod limit
+    D -> 0 (kappa*D -> 0), [(kappa*D/2)*K_1(kappa*D/2)] -> 1 and Gamma_par reduces
+    exactly to the pure repulsive K_0 term of Dutta et al. (2016) real_space_potential
+    (Gamma_A = 0) with r = D + delta, lambda_R = kappa^-1, and Gamma_R = 2*D*(lambda/e)^2*l_B.
+    (Dutta et al. 2016 cite Borukhov et al. 2005 as ref-11 for actin D ~ 8 nm and
+    kappa^-1 ~ 1 nm.)
+
+- id: rel_gov2008_langmuir_adsorption
+  kind: scales_as
+  a: borukhov2005/free_linkers_eq7
+  b: gov2008/binding_energy_vs_concentration
+  output_map: {eps_b: c_l_non_junction}
+  mapping:
+    c: "exp(mu_l)"
+    eps: "-eps_1"
+  regime:
+    L: [100.0, 1000.0]
+    D: [6.0, 10.0]
+    delta: [0.5, 2.0]
+    kappa_inv: [0.5, 2.0]
+    Gamma_perp: [0.5, 3.0]
+    v_l: [1.0, 10.0]
+    c_r: [5.0, 20.0]
+    mu_l: [-23.0, -17.0]
+    eps_1: [-22.0, -18.0]
+  provenance: proposed
+  reason: >
+    Both Borukhov et al. (2005) Eq. 7 and Gov (2008, p. 4 col. 1; citing Borukhov 2005
+    as ref-4) model equilibrium cross-linker adsorption onto actin filaments via the
+    two-state Langmuir isotherm theta = z/(1 + z), with z = exp(mu_l - eps_1) in Borukhov
+    (eps_1 < 0) and z = c*exp(eps) in Gov (eps > 0, opposite sign convention). In the
+    strong-binding adsorbed-dominated regime where free linkers in solution are negligible
+    relative to filament-adsorbed linkers (exp(mu_l) << v_l*c_r/(L*D_eff*delta)),
+    c_l_non_junction = -df_linkers/dmu_l scales identically with Gov's equilibrium Langmuir
+    binding-energy scaling eps_b ~ c*exp(eps)/(1 + c*exp(eps)) across both linear and
+    saturated occupancy regimes in (mu_l, eps_1).
+
+- id: rel_haviv2008_langmuir_adsorption
+  kind: scales_as
+  a: borukhov2005/free_linkers_eq7
+  b: haviv2008/fascin_adsorption_probability
+  output_map: {p_fa: c_l_non_junction}
+  mapping:
+    phi: "exp(mu_l)"
+    beta: "1"
+    eps_kBT: "-eps_1"
+  regime:
+    L: [100.0, 1000.0]
+    D: [6.0, 10.0]
+    delta: [0.5, 2.0]
+    kappa_inv: [0.5, 2.0]
+    Gamma_perp: [0.5, 3.0]
+    v_l: [1.0, 10.0]
+    c_r: [5.0, 20.0]
+    mu_l: [-23.0, -17.0]
+    eps_1: [-22.0, -18.0]
+  provenance: proposed
+  reason: >
+    Haviv et al. (2008, p. 452) cite Borukhov et al. (2005) for the single fascin-actin
+    binding energy scale (eps ~= 10 k_B T) and model single-filament fascin adsorption by
+    the equilibrium Langmuir probability p_fa = beta*phi*exp(eps_kBT)/(1 + beta*phi*exp(eps_kBT))
+    (p. 453). Identifying linker volume fraction/fugacity beta*phi = exp(mu_l) and
+    eps_kBT = -eps_1 (opposite sign convention), Borukhov Eq. 7's non-junction linker
+    concentration c_l_non_junction in the strong-binding adsorbed-dominated regime scales
+    identically with p_fa in (mu_l, eps_1) up to the filament site density factor (L/delta)*c_r.
+
+- id: rel_kierfeld2005_langmuir_occupancy
+  kind: scales_as
+  a: borukhov2005/free_linkers_eq7
+  b: kierfeld2005/linker_site_occupancy
+  output_map: {X_1: c_l_non_junction}
+  mapping:
+    K: "exp(-eps_1)"
+    c_x: "exp(mu_l)"
+  regime:
+    L: [100.0, 1000.0]
+    D: [6.0, 10.0]
+    delta: [0.5, 2.0]
+    kappa_inv: [0.5, 2.0]
+    Gamma_perp: [0.5, 3.0]
+    v_l: [1.0, 10.0]
+    c_r: [5.0, 20.0]
+    mu_l: [-23.0, -17.0]
+    eps_1: [-22.0, -18.0]
+  provenance: proposed
+  reason: >
+    Both Borukhov et al. (2005) Eq. 7 and Kierfeld et al. (2005) p. 2 model single-filament
+    cross-linker adsorption as an equilibrium Langmuir lattice gas: X_1 = K*c_x/(1 + K*c_x)
+    with K*c_x = exp(mu_l - eps_1). In the strong-binding adsorbed-dominated regime where
+    free linkers in solution are negligible relative to single-filament adsorbed linkers,
+    c_l_non_junction from Borukhov Eq. 7 scales identically with X_1 across (mu_l, eps_1).
+
+- id: rel_kierfeld2005_pair_grand_canonical
+  kind: scales_as
+  a: borukhov2005/langmuir_attraction_eq5
+  b: kierfeld2005/effective_interaction_eq4_pair_corrected
+  output_map: {H_bar_2: u_par_total}
+  mapping:
+    X_1: "exp(mu_l - eps_1) / (1 + exp(mu_l - eps_1))"
+    W: "(2 * eps_par - eps_1) * 4.114 / delta"
+    a_par: "delta"
+    n_seg: "L / delta"
+    T: "4.114"
+  regime:
+    L: [200.0, 2000.0]
+    D: [6.0, 10.0]
+    delta: [0.5, 2.0]
+    n_perp: [1.0, 1.0]
+    mu_l: [-19.0, -15.0]
+    eps_1: [-7.0, -5.0]
+    eps_par: [-10.0, -8.0]
+    eps_perp: [-12.0, -7.0]
+  provenance: proposed
+  reason: >
+    Both Borukhov et al. (2005) Eq. 5 and Kierfeld et al. (2005) Eq. 4 derive the effective
+    parallel two-filament linker-mediated attraction free energy by tracing over grand-canonical
+    Langmuir linkers along n_par = n_seg = L/delta segments of length a_par = delta.
+    Substituting X_1 = exp(mu_l - eps_1)/(1 + exp(mu_l - eps_1)) and second-end bridging
+    energy a_par*W/T = 2*eps_par - eps_1 into Kierfeld Eq. 4 gives
+    H_bar_2/T = -2*(L/delta)*ln[1 + exp(mu_l - 2*eps_par)] + 2*(L/delta)*ln[1 + exp(mu_l - eps_1)],
+    versus Borukhov Eq. 5's
+    u_par_total = -(L/delta)*ln[1 + exp(mu_l - 2*eps_par)] + 2*(L/delta)*ln[1 + exp(mu_l - eps_1)].
+    In the dilute single-filament adsorption regime (exp(mu_l - eps_1) << 1, matching Borukhov's
+    bundling regime), the reference term is negligible and H_bar_2/T = 2*u_par_total (the factor
+    of 2 arises because Kierfeld traces linkers independently on both filaments whereas Borukhov
+    counts one shared inter-rod site per segment), yielding identical scaling across all five
+    shared parameters (L, delta, mu_l, eps_par, eps_1).
+
+- id: rel_tang1996_bjerrum_length
+  kind: same_as
+  a: borukhov2005/bjerrum_length
+  b: tang1996/bjerrum_length
+  output_map: {lambda_B: l_B}
+  mapping:
+    epsilon: "eps"
+    T: "T"
+  regime:
+    eps: [50.0, 90.0]
+    T: [273.0, 320.0]
+  provenance: proposed
+  reason: >
+    Both Borukhov et al. (2005, p. 3, Gaussian CGS l_B = e^2/(eps*k_B*T)) and Tang & Janmey
+    (1996, p. 1, SI lambda_B = e^2/(4*pi*eps_0*epsilon*k*T)) define the identical aqueous
+    electrostatic Bjerrum length in Angstroms as a function of solvent dielectric constant and
+    absolute temperature.
+
+- id: rel_tang1996_linker_mass_balance
+  kind: scales_as
+  a: borukhov2005/free_linkers_eq7
+  b: tang1996/chemical_binding_eq4_vs_actin
+  output_map: {c_total: c_l_non_junction}
+  mapping:
+    c_free: "(L**2 * (D + kappa_inv * (0.5772156649015329 + log(Gamma_perp))) / v_l) * exp(mu_l)"
+    c_actin: "c_r"
+    k: "v_l * exp(-eps_1) / (L * (D + kappa_inv * (0.5772156649015329 + log(Gamma_perp))) * delta)"
+    V_P: "1"
+    q_net: "1"
+  regime:
+    L: [500.0, 2000.0]
+    D: [6.0, 10.0]
+    delta: [0.5, 2.0]
+    kappa_inv: [0.5, 2.0]
+    Gamma_perp: [0.5, 3.0]
+    v_l: [0.5, 5.0]
+    c_r: [0.5, 15.0]
+    mu_l: [-20.0, -15.0]
+    eps_1: [-8.0, -5.0]
+  provenance: proposed
+  reason: >
+    Borukhov et al. (2005, p. 5, citing Tang & Janmey 1996 as ref-25) note that bundling-onset
+    linker concentration rises linearly with actin rod concentration because linkers partition
+    between free solution and single-filament adsorption. In the low single-filament occupancy
+    regime (exp(mu_l - eps_1) << 1, satisfied across Borukhov's bundling regime mu_l ~ -17,
+    eps_1 = -7), Borukhov Eq. 7's c_l_non_junction = c_l_free + (L/delta)*c_r*exp(mu_l - eps_1)
+    / (1 + exp(mu_l - eps_1)) linearizes to c_l_free + [v_l*exp(-eps_1)/(L*D_eff*delta)]*c_r*c_l_free,
+    which matches Tang & Janmey (1996) Appendix Eq. 4, [Lys_18]_o = [Lys_18]_f + k*V_P*q_net*[Actin]*[Lys_18]_f,
+    across all nine shared parameters up to the constant concentration normalization (pi/4)*L^2*D_eff*N_A.
+
+- id: rel_weirich2019_onsager_sin_gamma
+  kind: scales_as
+  a: borukhov2005/second_virial_eq8
+  b: weirich2019/rod_misalignment_energy_local
+  output_map: {Delta_F: B}
+  mapping:
+    alpha: "gamma"
+    F_0: "1"
+  regime:
+    gamma: [0.1, 1.5]
+    D: [6.0, 10.0]
+    L: [500.0, 2000.0]
+    delta: [0.0005, 0.005]
+    kappa_inv: [0.0005, 0.005]
+    Gamma_par: [0.5, 2.0]
+    Gamma_perp: [0.5, 2.0]
+    u_par: [-1.0, -0.1]
+    u_perp: [-0.5, -0.05]
+  provenance: proposed
+  reason: >
+    Weirich et al. (2019, SI p. 9, citing Onsager 1949 [ref-si-11] and Borukhov et al. 2005
+    [ref-si-12]) adopt the Onsager hard-rod misalignment free energy Delta_F = F_0*|sin(alpha)|
+    and note that a similar model describes alignment of actin filaments by passive crosslinkers
+    as in Borukhov et al. (2005). In the hard-rod Onsager limit of Borukhov Eq. 8 (gamma > D/L,
+    kappa^-1 << D, delta << D with |u_perp| < Gamma_perp), the screened-electrostatic twisting
+    and linker-well corrections vanish and B(gamma) -> (8/pi)*sin(gamma), scaling identically
+    with Weirich's Delta_F(alpha) = F_0*|sin(alpha)| in the inter-rod angle gamma = alpha.

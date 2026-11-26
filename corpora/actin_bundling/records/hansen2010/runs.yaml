@@ -1,0 +1,665 @@
+# ==========================================================================
+# 1. VASP barbed-end processivity, kinetics, and rate enhancements
+# ==========================================================================
+
+- id: run_barbed_end_koff
+  model: barbed_end_off_rate
+  inputs:
+    tau_1: tau1_barbed_end_1uM_actin
+  outputs:
+    K_off: koff_computed_1uM_actin
+
+- id: run_barbed_end_kon_from_printed_koff
+  model: barbed_end_association_rate
+  inputs:
+    K_off: k_off_barbed_end_1uM_actin
+    K_d: kd_vasp_barbed_end_fig4g
+  outputs:
+    k_on: kon_computed_from_printed_koff
+
+- id: run_barbed_end_kon_chained
+  model: barbed_end_association_rate
+  inputs:
+    K_off: koff_computed_1uM_actin
+    K_d: kd_vasp_barbed_end_fig4g
+  outputs:
+    k_on: kon_computed_chained
+
+- id: run_barbed_end_kon_abstract_kd
+  model: barbed_end_association_rate
+  inputs:
+    K_off: k_off_barbed_end_1uM_actin
+    K_d: kd_vasp_barbed_end_abstract
+  outputs:
+    k_on: kon_computed_abstract_kd
+
+- id: run_monomers_delivered_1uM
+  model: monomers_delivered_per_binding
+  inputs:
+    v: v_max_1uM_actin_50nM_vasp
+    tau_1: tau1_barbed_end_1uM_actin
+  outputs:
+    N: monomers_delivered_computed_1uM
+
+- id: run_monomers_delivered_1uM_surfing
+  model: monomers_delivered_per_binding
+  inputs:
+    v: v_single_vasp_surfing_1uM_actin
+    tau_1: tau1_barbed_end_1uM_actin
+  outputs:
+    N: monomers_delivered_computed_surfing
+
+- id: run_mm_50nM_vasp
+  model: michaelis_menten_barbed_end_rate
+  inputs:
+    v_0: v_offset_fig4g
+    delta_v_max: delta_v_max_fig4g_added
+    C_vasp: vasp_conc_50nM
+    K_d: kd_vasp_barbed_end_fig4g
+  outputs:
+    v: v_mm_50nM_vasp_pred
+
+- id: run_fold_actin_slope
+  model: elongation_on_rate_enhancement
+  inputs:
+    k_on_vasp: k_on_actin_plus_50nM_vasp_fig4h
+    k_on_basal: k_on_actin_alone_fig4h
+  outputs:
+    fold: fold_actin_slope_computed
+
+- id: run_fold_2uM_profilin_actin
+  model: elongation_rate_enhancement
+  inputs:
+    v_vasp: v_2uM_profilin_actin_50nM_vasp
+    v_basal: v_2uM_profilin_actin_alone
+  outputs:
+    fold: fold_2uM_profilin_actin_computed
+
+- id: run_fold_1uM_actin_50mM_kcl
+  model: elongation_rate_enhancement
+  inputs:
+    v_vasp: v_max_1uM_actin_50nM_vasp
+    v_basal: v_offset_fig4g
+  outputs:
+    fold: fold_1uM_actin_50mM_kcl_computed
+
+# ==========================================================================
+# 2. Capping protein competition kinetics
+# ==========================================================================
+
+- id: run_cp_reduction_50mM_kcl
+  model: capping_rate_reduction
+  inputs:
+    K_plus_no_vasp: k_plus_cp_50mM_kcl_no_vasp
+    K_plus_vasp: k_plus_cp_50mM_kcl_50nM_vasp
+  outputs:
+    fold_reduction: cp_reduction_50mM_computed
+
+- id: run_cp_reduction_100mM_kcl
+  model: capping_rate_reduction
+  inputs:
+    K_plus_no_vasp: k_plus_cp_100mM_kcl_no_vasp
+    K_plus_vasp: k_plus_cp_100mM_kcl_50nM_vasp
+  outputs:
+    fold_reduction: cp_reduction_100mM_computed
+
+- id: run_k_obs_50mM_no_vasp
+  model: capping_pseudo_first_order_rate
+  inputs:
+    K_plus: k_plus_cp_50mM_kcl_no_vasp
+  sweep:
+    C_cp: k_obs_capping_50mM_kcl_no_vasp
+  outputs:
+    K_obs: k_obs_pred_50mM_no_vasp
+
+- id: run_k_obs_50mM_50nM_vasp
+  model: capping_pseudo_first_order_rate
+  inputs:
+    K_plus: k_plus_cp_50mM_kcl_50nM_vasp
+  sweep:
+    C_cp: k_obs_capping_50mM_kcl_50nM_vasp
+  outputs:
+    K_obs: k_obs_pred_50mM_50nM_vasp
+
+- id: run_capping_fraction_corrected_diag
+  model: capping_fraction_exponential_corrected
+  inputs:
+    K_obs: k_obs_4nM_cp_no_vasp_scalar
+    t: diag_time_50s_added
+  outputs:
+    f_capped: f_capped_4nM_50s_pred
+    f_free: f_free_4nM_50s_pred
+  note: "Diagnostic run at t = 50 s for 4 nM CP without VASP (predicts 0.914 capped, matching Fig. 6C); full curves await Fig. 6C digitization."
+
+# ==========================================================================
+# 3. Single-molecule dwell-time survival fits and event counts (Fig. 2)
+# ==========================================================================
+
+- id: run_single_exp_barbed_end_diag
+  model: dwell_time_single_exponential
+  inputs:
+    x: diag_time_1s_added
+    x0: x0_single_exp_added
+    tau_1: tau1_barbed_end_1uM_actin
+  outputs:
+    survival: survival_be_1s_pred
+  note: "Diagnostic evaluation of Materials and methods single-exponential equation at x = 1.0 s for Fig. 4E parameters."
+
+- id: run_double_exp_side_diag
+  model: dwell_time_double_exponential
+  inputs:
+    x: diag_time_1s_added
+    x0: pct_fig2d_tau1_component
+    tau_1: tau1_side_all_fig2d
+    tau_2: tau2_side_all_fig2d
+  outputs:
+    survival: survival_side_1s_pred
+  note: "Diagnostic evaluation of Materials and methods double-exponential equation at x = 1.0 s for Fig. 2D parameters."
+
+- id: run_pct_diffusive
+  model: binding_mode_fraction
+  inputs:
+    n_mode: n_events_fig2_diffusive
+    n_total: n_events_fig2d_total
+  outputs:
+    pct: pct_diffusive_computed
+
+- id: run_pct_static
+  model: binding_mode_fraction
+  inputs:
+    n_mode: n_events_fig2_static
+    n_total: n_events_fig2d_total
+  outputs:
+    pct: pct_static_computed
+
+- id: run_pct_transient
+  model: binding_mode_fraction
+  inputs:
+    n_mode: n_events_fig2_transient
+    n_total: n_events_fig2d_total
+  outputs:
+    pct: pct_transient_computed
+
+- id: run_n_tau1_component
+  model: component_event_count
+  inputs:
+    fraction: pct_fig2d_tau1_component
+    n_total: n_events_fig2d_total
+  outputs:
+    n_component: n_tau1_component_computed
+
+- id: run_n_tau2_component
+  model: component_event_count
+  inputs:
+    fraction: pct_fig2d_tau2_component
+    n_total: n_events_fig2d_total
+  outputs:
+    n_component: n_tau2_component_computed
+
+- id: run_non_static_count
+  model: non_static_event_count
+  inputs:
+    n_total: n_events_fig2d_total
+    n_static: n_events_fig2_static
+  outputs:
+    n_remaining: n_non_static_computed
+
+# ==========================================================================
+# 4. F-actin nucleotide hydrolysis and Pi release (Fig. S3E)
+# ==========================================================================
+
+- id: run_pi_release_half_life
+  model: actin_nucleotide_hydrolysis_pi_release
+  inputs:
+    k1: k1_atp_hydrolysis
+    k2: k2_pi_release
+  outputs:
+    t_half: t_half_pi_release_computed
+
+- id: run_nucleotide_state_at_296s
+  model: actin_nucleotide_state_probability
+  inputs:
+    k1: k1_atp_hydrolysis
+    k2: k2_pi_release
+    t: diag_filament_age_296s_added
+  outputs:
+    p_atp: p_atp_296s_pred
+    p_adp_pi: p_adp_pi_296s_pred
+    p_adp: p_adp_296s_pred
+  note: "Evaluates nucleotide-state probabilities at the printed 296 s Pi-release half-life (gives P_ADP = 0.4996, P_ADP-Pi = 0.5003)."
+
+# ==========================================================================
+# 5. Protein stoichiometry and molecular weight checks (Figs. 1, 5A)
+# ==========================================================================
+
+- id: run_vasp_tetramer_conc
+  model: vasp_tetramer_monomer_concentration
+  inputs:
+    C_monomer: vasp_conc_250nM_monomer
+  outputs:
+    C_tetramer: vasp_tetramer_conc_computed
+
+- id: run_vasp_tetramer_mw
+  model: vasp_tetramer_molecular_weight
+  inputs:
+    MW_monomer: mw_vasp_monomer_fig1b
+  outputs:
+    MW_tetramer: mw_vasp_tetramer_computed
+
+- id: run_vasp_profilin_mw_1
+  model: vasp_profilin_complex_mw
+  inputs:
+    MW_vasp: mw_vasp_1_240_predicted
+    MW_profilin: mw_hpro1_monomer
+  settings:
+    n_profilin: 1
+  outputs:
+    MW_complex: mw_vasp_1hpro1_computed
+
+- id: run_vasp_profilin_mw_2
+  model: vasp_profilin_complex_mw
+  inputs:
+    MW_vasp: mw_vasp_1_240_predicted
+    MW_profilin: mw_hpro1_monomer
+  settings:
+    n_profilin: 2
+  outputs:
+    MW_complex: mw_vasp_2hpro1_computed
+
+# ==========================================================================
+# 6. Figure S5 analytical ultracentrifugation models (pp. 19-23)
+# ==========================================================================
+
+- id: run_auc_sigma_o_vasp
+  model: auc_reduced_molecular_weight
+  inputs:
+    M: mw_vasp_tetramer_expected
+    omega: auc_ref_speed_10000rpm
+    vbar: auc_vbar_protein_added
+    rho: auc_solvent_density_added
+    T: auc_temperature_added
+  outputs:
+    sigma_o: sigma_o_vasp_computed
+
+- id: run_auc_sigma_a_actin
+  model: auc_reduced_molecular_weight
+  inputs:
+    M: mw_actin_monomer_fig1b
+    omega: auc_ref_speed_10000rpm
+    vbar: auc_vbar_protein_added
+    rho: auc_solvent_density_added
+    T: auc_temperature_added
+  outputs:
+    sigma_o: sigma_a_actin_computed
+
+- id: run_auc_sigma_complexes
+  model: auc_complex_reduced_mw
+  inputs:
+    sigma_o: auc_sigma_o_vasp
+    sigma_a: auc_sigma_a_actin
+  sweep:
+    i: auc_sigma_complexes_table
+  outputs:
+    sigma_i: sigma_complexes_computed
+
+- id: run_auc_speed_factors
+  model: auc_speed_factor
+  inputs:
+    omega_ref: auc_ref_speed_10000rpm
+  sweep:
+    omega: auc_speed_factors_table
+  outputs:
+    speed_factor: auc_speed_factors_computed
+
+- id: run_auc_rav
+  model: auc_actin_vasp_ratio
+  inputs:
+    C_vasp: auc_vasp_conc_figs5
+  sweep:
+    C_actin: auc_rav_table
+  outputs:
+    R_av: auc_rav_computed
+
+- id: run_auc_kd_ladder_beta_02125
+  model: auc_cooperative_kd_ladder
+  inputs:
+    K_d_1: auc_kd1_vasp_g_actin
+    beta: auc_beta_optimum_figs5b
+  sweep:
+    i: auc_kd_four_sites_table
+  outputs:
+    K_d_i: auc_kd_ladder_computed_02125
+
+- id: run_auc_kd_ladder_beta_0213
+  model: auc_cooperative_kd_ladder
+  inputs:
+    K_d_1: auc_kd1_vasp_g_actin
+    beta: auc_beta_text_rounded
+  sweep:
+    i: auc_kd_four_sites_table
+  outputs:
+    K_d_i: auc_kd_ladder_computed_0213
+
+- id: run_auc_kd1_from_ka_area_norm
+  model: auc_ka_to_kd_area_normalized
+  inputs:
+    C_vasp: auc_vasp_conc_figs5
+    delta_X: auc_delta_x_cell_added
+    K_a: auc_ka_optimum_figs5b
+  outputs:
+    K_d_1: auc_kd1_area_norm_computed
+
+- id: run_auc_quintic_2uM_10krpm
+  model: auc_vasp_actin_equilibrium_quintic
+  inputs:
+    sigma_o: auc_sigma_o_vasp
+    sigma_a: auc_sigma_a_actin
+    C_actin: auc_actin_conc_2uM_figs5
+    C_vasp: auc_vasp_conc_figs5
+    omega: auc_ref_speed_10000rpm
+    omega_ref: auc_ref_speed_10000rpm
+    K_a: auc_ka_optimum_figs5b
+    beta: auc_beta_optimum_figs5b
+    X_min: auc_x_min_2uM_added
+    X_max: auc_x_max_2uM_added
+  outputs:
+    A_o: auc_Ao_2uM_10krpm
+    V_o: auc_Vo_2uM_10krpm
+    mean_actin_bound: auc_mean_bound_2uM_10krpm
+    fractional_saturation: auc_sat_frac_2uM_10krpm
+    V_base_to_meniscus: auc_v_ratio_2uM_10krpm
+  note: "Solves Fig. S5 Eqns. 3 and 5 verbatim at printed K_a = 1.11, beta = 0.2125, 2 uM actin, 10,000 RPM (predicts ~12-13% site saturation, supporting p. 576 statement that VASP is unsaturated at 2 uM actin)."
+
+- id: run_auc_quintic_25uM_10krpm
+  model: auc_vasp_actin_equilibrium_quintic
+  inputs:
+    sigma_o: auc_sigma_o_vasp
+    sigma_a: auc_sigma_a_actin
+    C_actin: auc_actin_conc_25uM_figs5
+    C_vasp: auc_vasp_conc_figs5
+    omega: auc_ref_speed_10000rpm
+    omega_ref: auc_ref_speed_10000rpm
+    K_a: auc_ka_optimum_figs5b
+    beta: auc_beta_optimum_figs5b
+    X_min: auc_x_min_2uM_added
+    X_max: auc_x_max_2uM_added
+  outputs:
+    A_o: auc_Ao_25uM_10krpm
+    V_o: auc_Vo_25uM_10krpm
+    mean_actin_bound: auc_mean_bound_25uM_10krpm
+    fractional_saturation: auc_sat_frac_25uM_10krpm
+    V_base_to_meniscus: auc_v_ratio_25uM_10krpm
+  note: "Solves Fig. S5 Eqns. 3 and 5 verbatim at 25 uM actin, 10,000 RPM."
+
+# ==========================================================================
+# 7. Digitized figure sweeps (Figs. 1D, 2D, 2E, 2H, 3F, 3G, 3I, 4E, 4G, 6C, 6D, S2D, S3E)
+# ==========================================================================
+
+- id: run_mm_fig4g_fit_sweep
+  model: michaelis_menten_barbed_end_rate
+  inputs:
+    v_0: v_offset_fig4g
+    delta_v_max: delta_v_max_fig4g_added
+    K_d: kd_vasp_barbed_end_fig4g
+  sweep:
+    C_vasp: d_fig4g_mm_fit
+  outputs:
+    v: v_mm_fig4g_fit_pred
+- id: run_mm_fig4g_measured_sweep
+  model: michaelis_menten_barbed_end_rate
+  inputs:
+    v_0: v_offset_fig4g
+    delta_v_max: delta_v_max_fig4g_added
+    K_d: kd_vasp_barbed_end_fig4g
+  sweep:
+    C_vasp: d_fig4g_measured
+  outputs:
+    v: v_mm_fig4g_measured_pred
+- id: run_mm_fig1d_50mM_vasp_sweep
+  model: michaelis_menten_barbed_end_rate
+  inputs:
+    v_0: v_offset_fig4g
+    delta_v_max: delta_v_max_fig4g_added
+    K_d: kd_vasp_barbed_end_fig4g
+  sweep:
+    C_vasp: d_fig1d_50mM_vasp
+  outputs:
+    v: v_mm_fig1d_50mM_vasp_pred
+- id: run_mm_fig1d_50mM_cy3_vasp_sweep
+  model: michaelis_menten_barbed_end_rate
+  inputs:
+    v_0: v_offset_fig4g
+    delta_v_max: delta_v_max_fig4g_added
+    K_d: kd_vasp_barbed_end_fig4g
+  sweep:
+    C_vasp: d_fig1d_50mM_cy3_vasp
+  outputs:
+    v: v_mm_fig1d_50mM_cy3_vasp_pred
+- id: run_fig2d_survival_fit_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2d_tau1_component
+    tau_1: tau1_side_all_fig2d
+    tau_2: tau2_side_all_fig2d
+  sweep:
+    x: d_fig2d_survival_fit
+  outputs:
+    survival: surv_fig2d_fit_pred
+- id: run_fig2d_survival_data_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2d_tau1_component
+    tau_1: tau1_side_all_fig2d
+    tau_2: tau2_side_all_fig2d
+  sweep:
+    x: d_fig2d_survival_data
+  outputs:
+    survival: surv_fig2d_data_pred
+- id: run_fig2e_inset_1cf_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2h_vasp_rk_ee_tau1
+    tau_1: tau1_side_diffusive_only_fig2e
+    tau_2: tau1_side_diffusive_only_fig2e
+  sweep:
+    x: d_fig2e_inset_1cf_fit
+  outputs:
+    survival: surv_fig2e_inset_pred
+- id: run_fig2h_vasp_latb_table_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2h_vasp_latb_tau1
+    tau_1: tau1_side_vasp_latb_fig2h
+    tau_2: tau2_side_vasp_latb_fig2h
+  sweep:
+    x: d_fig2h_vasp_latb
+  outputs:
+    survival: surv_fig2h_latb_table_pred
+- id: run_fig2h_vasp_latb_fig2d_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2d_tau1_component
+    tau_1: tau1_side_all_fig2d
+    tau_2: tau2_side_all_fig2d
+  sweep:
+    x: d_fig2h_vasp_latb
+  outputs:
+    survival: surv_fig2h_latb_fig2d_pred
+- id: run_fig2h_vasp_lil_aaa_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2h_vasp_lil_aaa_tau1
+    tau_1: tau1_side_vasp_LIL_AAA_fig2h
+    tau_2: tau2_side_vasp_LIL_AAA_fig2h
+  sweep:
+    x: d_fig2h_vasp_lil_aaa
+  outputs:
+    survival: surv_fig2h_lil_aaa_pred
+- id: run_fig2h_vasp_rk_ee_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2h_vasp_rk_ee_tau1
+    tau_1: tau1_side_vasp_RK_EE_fig2h
+    tau_2: tau1_side_vasp_RK_EE_fig2h
+  sweep:
+    x: d_fig2h_vasp_rk_ee
+  outputs:
+    survival: surv_fig2h_rk_ee_pred
+- id: run_fig2h_vasp_2uM_actin_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2h_2uM_actin_tau1
+    tau_1: tau1_side_2uM_actin_latb_fig2h
+    tau_2: tau2_side_2uM_actin_latb_fig2h
+  sweep:
+    x: d_fig2h_vasp_2uM_actin
+  outputs:
+    survival: surv_fig2h_2uM_actin_pred
+- id: run_fig3g_high_adppi_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2h_vasp_rk_ee_tau1
+    tau_1: tau1_side_high_adppi_fig3g
+    tau_2: tau1_side_high_adppi_fig3g
+  sweep:
+    x: d_fig3g_high_adppi
+  outputs:
+    survival: surv_fig3g_high_adppi_pred
+- id: run_fig3g_low_adppi_caption_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2h_vasp_rk_ee_tau1
+    tau_1: tau1_side_low_adppi_fig3g_caption
+    tau_2: tau1_side_low_adppi_fig3g_caption
+  sweep:
+    x: d_fig3g_low_adppi
+  outputs:
+    survival: surv_fig3g_low_adppi_caption_pred
+- id: run_fig3g_low_adppi_panel_sweep
+  model: dwell_time_double_exponential
+  inputs:
+    x0: pct_fig2h_vasp_rk_ee_tau1
+    tau_1: tau1_side_low_adppi_fig3g_panel
+    tau_2: tau1_side_low_adppi_fig3g_panel
+  sweep:
+    x: d_fig3g_low_adppi
+  outputs:
+    survival: surv_fig3g_low_adppi_panel_pred
+- id: run_fig4e_inset_1cf_sweep
+  model: dwell_time_single_exponential
+  inputs:
+    x0: x0_single_exp_added
+    tau_1: tau1_barbed_end_1uM_actin
+  sweep:
+    x: d_fig4e_inset_1cf_fit
+  outputs:
+    survival: surv_fig4e_inset_pred
+- id: run_fig3f_p_adp_pi_sweep
+  model: actin_nucleotide_state_probability
+  inputs:
+    k1: k1_atp_hydrolysis
+    k2: k2_pi_release
+  sweep:
+    t: d_fig3f_p_adp_pi
+  outputs:
+    p_adp_pi: p_adp_pi_fig3f_pred
+- id: run_fig3i_p_adp_pi_sweep
+  model: actin_nucleotide_state_probability
+  inputs:
+    k1: k1_atp_hydrolysis
+    k2: k2_pi_release
+  sweep:
+    t: d_fig3i_p_adp_pi
+  outputs:
+    p_adp_pi: p_adp_pi_fig3i_pred
+- id: run_figS3e_atp_sweep
+  model: actin_nucleotide_state_probability
+  inputs:
+    k1: k1_atp_hydrolysis
+    k2: k2_pi_release
+  sweep:
+    t: d_figS3e_atp
+  outputs:
+    p_atp: p_atp_figS3e_pred
+- id: run_figS3e_adp_pi_sweep
+  model: actin_nucleotide_state_probability
+  inputs:
+    k1: k1_atp_hydrolysis
+    k2: k2_pi_release
+  sweep:
+    t: d_figS3e_adp_pi
+  outputs:
+    p_adp_pi: p_adp_pi_figS3e_pred
+- id: run_figS3e_adp_sweep
+  model: actin_nucleotide_state_probability
+  inputs:
+    k1: k1_atp_hydrolysis
+    k2: k2_pi_release
+  sweep:
+    t: d_figS3e_adp
+  outputs:
+    p_adp: p_adp_figS3e_pred
+- id: run_fig6c_4nM_no_vasp_sweep
+  model: capping_fraction_exponential_corrected
+  inputs:
+    K_obs: k_obs_4nM_cp_no_vasp_scalar
+  sweep:
+    t: d_fig6c_4nM_no_vasp
+  outputs:
+    f_capped: f_capped_fig6c_4nM_no_vasp_pred
+- id: run_fig6c_2nM_no_vasp_sweep
+  model: capping_fraction_exponential_corrected
+  inputs:
+    K_obs: k_obs_2nM_cp_no_vasp_scalar
+  sweep:
+    t: d_fig6c_2nM_no_vasp
+  outputs:
+    f_capped: f_capped_fig6c_2nM_no_vasp_pred
+- id: run_fig6c_4nM_50nM_vasp_sweep
+  model: capping_fraction_exponential_corrected
+  inputs:
+    K_obs: k_obs_4nM_cp_50nM_vasp_scalar
+  sweep:
+    t: d_fig6c_4nM_50nM_vasp
+  outputs:
+    f_capped: f_capped_fig6c_4nM_50nM_vasp_pred
+- id: run_fig6c_2nM_50nM_vasp_sweep
+  model: capping_fraction_exponential_corrected
+  inputs:
+    K_obs: k_obs_2nM_cp_50nM_vasp_scalar
+  sweep:
+    t: d_fig6c_2nM_50nM_vasp
+  outputs:
+    f_capped: f_capped_fig6c_2nM_50nM_vasp_pred
+- id: run_fig6d_no_vasp_sweep
+  model: capping_pseudo_first_order_rate
+  inputs:
+    K_plus: k_plus_cp_50mM_kcl_no_vasp
+  sweep:
+    C_cp: d_fig6d_no_vasp
+  outputs:
+    K_obs: k_obs_fig6d_no_vasp_pred
+- id: run_fig6d_50nM_vasp_sweep
+  model: capping_pseudo_first_order_rate
+  inputs:
+    K_plus: k_plus_cp_50mM_kcl_50nM_vasp
+  sweep:
+    C_cp: d_fig6d_50nM_vasp
+  outputs:
+    K_obs: k_obs_fig6d_50nM_vasp_pred
+- id: run_figS2d_ii_no_vasp_sweep
+  model: capping_pseudo_first_order_rate
+  inputs:
+    K_plus: k_plus_cp_100mM_kcl_no_vasp
+  sweep:
+    C_cp: d_figS2d_ii_no_vasp
+  outputs:
+    K_obs: k_obs_figS2d_ii_no_vasp_pred
+- id: run_figS2d_ii_50nM_vasp_sweep
+  model: capping_pseudo_first_order_rate
+  inputs:
+    K_plus: k_plus_cp_100mM_kcl_50nM_vasp
+  sweep:
+    C_cp: d_figS2d_ii_50nM_vasp
+  outputs:
+    K_obs: k_obs_figS2d_ii_50nM_vasp_pred

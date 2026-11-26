@@ -1,0 +1,36 @@
+id: fokker_planck_eq11_corrected
+name: zero-flux steady state of Fokker-Planck Eq. (11) with standard minus drift sign
+role: model
+variant_of: fokker_planck_eq11_printed
+corrections:
+  - equation: "Eq. 11"
+    change: "Replace + d(R_dot * P)/dR with the standard continuity-equation drift sign - d(R_dot * P)/dR."
+    evidence: "With Eq. (10) R_dot = -beta * dE_total/dR, the printed + sign in Eq. (11) yields steady-state P(R) ~ exp[+2*beta*(E_total(R) - E_0)/D_R] (inverted sign, diverging at large energy and minimizing probability at R_0), contradicting the paper's own steady-state formula P(R) ~ exp[-2*beta*(E_total(R) - E_0)/D_R] printed immediately below Eq. (11). Using the standard Fokker-Planck minus sign -d(R_dot*P)/dR reproduces the printed Boltzmann steady state exactly."
+stated:
+  page: 4
+  printed_page: "011916-4"
+  quote: "can then be derived from a standard Fokker"
+  where: "Eq. 11 (sign-corrected)"
+equation: "dP/dt = (1/2)*D_R*d^2P/dR^2 - d(R_dot*P)/dR with R_dot = -beta*dE_total/dR => P_ss = exp[-2*beta*(E_total - E_0)/D_R]"
+inputs:
+  beta:
+    quantity: radius_mobility
+    unit: "nm**2 / (pN * s)"
+  E_total:
+    quantity: energy_per_length_per_filament
+    unit: pN
+  E_0:
+    quantity: energy_per_length_per_filament
+    unit: pN
+  D_R:
+    quantity: radius_diffusion_coefficient
+    unit: "nm**2 / s"
+outputs:
+  boltzmann_coeff:
+    quantity: boltzmann_exponent_coefficient
+    unit: dimensionless
+  P:
+    quantity: boltzmann_radius_weight
+    unit: dimensionless
+settings: {}
+stochastic: false

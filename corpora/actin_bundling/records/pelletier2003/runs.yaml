@@ -1,0 +1,150 @@
+- id: run_q2_square
+  model: square_lattice_bragg_q2
+  inputs: {q_1: q1_saxs}
+  settings: {}
+  outputs: {q_2: q2_square_pred}
+  note: "Computes the ideal square-lattice second-order Bragg peak q_2 = q_1 * sqrt(2) from measured q_1 = 0.19 nm^-1 at gamma = 1:5."
+
+- id: run_q2_hex
+  model: hexagonal_lattice_bragg_q2
+  inputs: {q_1: q1_saxs}
+  settings: {}
+  outputs: {q_2: q2_hex_pred}
+  note: "Computes the ideal hexagonal-lattice second-order Bragg peak q_2 = q_1 * sqrt(3) from measured q_1 = 0.19 nm^-1 at gamma = 1:5."
+
+- id: run_lattice_spacing
+  model: square_lattice_spacing
+  inputs: {q_1: q1_saxs}
+  settings: {}
+  outputs: {d: lattice_spacing_pred}
+  note: "Computes the real-space inter-filament lattice spacing d = 2*pi / q_1 from measured q_1 = 0.19 nm^-1 at gamma = 1:5."
+
+- id: run_width_q2_scaling
+  model: disorder_peak_width_scaling
+  inputs: {}
+  sweep: {q: saxs_peak_widths_vs_q}
+  settings: {}
+  outputs: {Delta_q: peak_widths_q2_pred}
+  note: "Evaluates the prefactor-free q^2 disorder peak-width scaling law at the two measured peak positions q_1 = 0.19 and q_2 = 0.29 nm^-1."
+
+- id: run_domain_size_dq1
+  model: domain_size_scherrer
+  inputs: {Delta_q: dq1_saxs, K: scherrer_shape_factor}
+  settings: {}
+  outputs: {L: domain_size_dq1_pred}
+  note: "Reconstructed Scherrer domain size from the first-order peak width Delta_q_1 = 0.056 nm^-1 across added shape-factor conventions K = 1, 0.9, 0.5, 0.375."
+
+- id: run_domain_size_dq2
+  model: domain_size_scherrer
+  inputs: {Delta_q: dq2_saxs, K: scherrer_shape_factor}
+  settings: {}
+  outputs: {L: domain_size_dq2_pred}
+  note: "Reconstructed Scherrer domain size from the second-order peak width Delta_q_2 = 0.136 nm^-1 across added shape-factor conventions K = 1, 0.9, 0.5, 0.375."
+
+# Runs on calibrated digitized figures (Fig. 3(a), 3(b), 3(c))
+- id: run_extract_fig3c_q1
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3c}
+  settings: {peak_index: 1}
+  outputs: {q_peak: q1_fig3c_dig}
+  note: "Extracts calibrated first-order Gaussian center q_1 from digitized Fig. 3(c)."
+
+- id: run_extract_fig3c_q2
+  model: extract_saxs_peak
+  inputs: {peaks: q_peaks_fig3c}
+  settings: {peak_index: 2}
+  outputs: {q_peak: q2_fig3c_dig}
+  note: "Extracts calibrated second-order Gaussian center q_2 from digitized Fig. 3(c)."
+
+- id: run_extract_fig3a_1_2_q1
+  model: extract_saxs_peak
+  inputs: {peaks: q_peak1_fig3a_1_2}
+  settings: {peak_index: 1}
+  outputs: {q_peak: q1_fig3a_1_2_dig}
+  note: "Extracts calibrated raw first-order peak q_1 at gamma = 1:2 from digitized Fig. 3(a)."
+
+- id: run_q2_square_fig3c_dig
+  model: square_lattice_bragg_q2
+  inputs: {q_1: q1_fig3c_dig}
+  settings: {}
+  outputs: {q_2: q2_square_fig3c_pred}
+  note: "Evaluates ideal square-lattice second-order peak q_2 = q_1 * sqrt(2) using digitized Fig. 3(c) q_1."
+
+- id: run_q2_hex_fig3c_dig
+  model: hexagonal_lattice_bragg_q2
+  inputs: {q_1: q1_fig3c_dig}
+  settings: {}
+  outputs: {q_2: q2_hex_fig3c_pred}
+  note: "Evaluates ideal hexagonal-lattice second-order peak q_2 = q_1 * sqrt(3) using digitized Fig. 3(c) q_1."
+
+- id: run_lattice_spacing_fig3c_dig
+  model: square_lattice_spacing
+  inputs: {q_1: q1_fig3c_dig}
+  settings: {}
+  outputs: {d: lattice_spacing_fig3c_pred}
+  note: "Evaluates real-space lattice spacing d = 2*pi / q_1 using digitized Fig. 3(c) q_1."
+
+- id: run_width_q2_scaling_fig3c_fwhm
+  model: disorder_peak_width_scaling
+  inputs: {}
+  sweep: {q: fwhm_peaks_fig3c}
+  settings: {}
+  outputs: {Delta_q: peak_fwhms_q2_pred}
+  note: "Evaluates prefactor-free Delta_q ~ q^2 disorder broadening law against the calibrated plotted Gaussian FWHMs in Fig. 3(c)."
+
+- id: run_fig3b_bg_1_over_q_fit
+  model: saxs_rod_background_1_over_q
+  inputs: {I_curve: I_q_fig3b_bg_fit}
+  settings: {}
+  outputs: {I_fit: I_bg_1_over_q_pred}
+  note: "Fits pure I_bg(q) = A / q rod-scattering law to the digitized Fig. 3(b) background curve."
+
+- id: run_fig3c_two_gaussian_refit
+  model: saxs_two_gaussian_refit
+  inputs: {I_sub: I_q_fig3c_sub}
+  settings: {}
+  outputs:
+    I_fit: I_sub_two_gauss_refit
+    q_1: q1_two_gauss_refit
+    q_2: q2_two_gauss_refit
+    w_1: w1_two_gauss_refit
+    w_2: w2_two_gauss_refit
+    fwhm_1: fwhm1_two_gauss_refit
+    fwhm_2: fwhm2_two_gauss_refit
+  note: "Independent nonlinear two-Gaussian fit to the digitized background-subtracted SAXS data I_sub(q) in Fig. 3(c)."
+
+- id: run_fig3c_gauss1_fit
+  model: saxs_single_gaussian_component_fit
+  inputs: {G_curve: I_q_fig3c_gauss1}
+  settings: {}
+  outputs:
+    G_fit: G1_curve_fit
+    q_0: q1_gauss1_fit
+    w_2sigma: w1_gauss1_fit
+    fwhm: fwhm1_gauss1_fit
+  note: "Single-Gaussian fit directly to the digitized plotted first-order Gaussian curve G_1(q) in Fig. 3(c)."
+
+- id: run_fig3c_gauss2_fit
+  model: saxs_single_gaussian_component_fit
+  inputs: {G_curve: I_q_fig3c_gauss2}
+  settings: {}
+  outputs:
+    G_fit: G2_curve_fit
+    q_0: q2_gauss2_fit
+    w_2sigma: w2_gauss2_fit
+    fwhm: fwhm2_gauss2_fit
+  note: "Single-Gaussian fit directly to the digitized plotted second-order Gaussian curve G_2(q) in Fig. 3(c)."
+
+- id: run_domain_size_fig3c_fwhm1
+  model: domain_size_scherrer
+  inputs: {Delta_q: fwhm1_gauss1_fit, K: scherrer_shape_factor}
+  settings: {}
+  outputs: {L: domain_size_fig3c_fwhm1_pred}
+  note: "Reconstructed Scherrer domain size evaluated on the actual plotted FWHM of Gaussian 1 in Fig. 3(c)."
+
+- id: run_domain_size_fig3c_fwhm2
+  model: domain_size_scherrer
+  inputs: {Delta_q: fwhm2_gauss2_fit, K: scherrer_shape_factor}
+  settings: {}
+  outputs: {L: domain_size_fig3c_fwhm2_pred}
+  note: "Reconstructed Scherrer domain size evaluated on the actual plotted FWHM of Gaussian 2 in Fig. 3(c)."

@@ -1,0 +1,684 @@
+# ==========================================================================
+# 1. Exact variational consistency: numerical minimizers vs Eqs. (3), (7)-(9)
+# ==========================================================================
+- id: rel_shell_minimizer_eq3
+  kind: same_as
+  a: gov2008/equilibrium_radius_shell_from_energy
+  b: gov2008/equilibrium_radius_shell_eq3
+  mapping:
+    lam: "lam"
+    E_c: "E_c"
+    E_c_star: "eps_b / (rho * a * lam)"
+  regime:
+    a: [5.0, 15.0]
+    eps_b: [0.5, 2.0]
+    rho: [0.001, 0.005]
+    lam: [15.0, 30.0]
+    E_c: [50.0, 200.0]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "the system has an minimum"
+    where: "Eq. 3"
+  assumptions:
+    - "E_c > E_c* = eps_b / (rho * a * lam) so a finite global minimum exists"
+
+- id: rel_bulk_monopole_minimizer_eq7
+  kind: same_as
+  a: gov2008/equilibrium_radius_bulk_monopole_from_energy
+  b: gov2008/equilibrium_radius_bulk_monopole_eq7
+  mapping:
+    alpha_b: "k_b_prime / eps_b"
+    a: "a"
+    rho: "rho"
+  output_map:
+    R_0: R_0
+  regime:
+    a: [5.0, 15.0]
+    eps_b: [0.5, 5.0]
+    k_b_prime: [0.5, 5.0]
+    rho: [0.0001, 0.001]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "has a global minimum at a finite"
+    where: "Eq. 7"
+  assumptions:
+    - "Uniform bulk monopoles with lambda = 0 (no empty-shell term)"
+
+- id: rel_surface_monopole_minimizer_eq8
+  kind: same_as
+  a: gov2008/equilibrium_radius_surface_monopole_from_energy
+  b: gov2008/equilibrium_radius_surface_monopole_eq8
+  mapping:
+    alpha_s: "k_s_prime / eps_b"
+    a: "a"
+    rho: "rho"
+  output_map:
+    R_0: R_0
+  regime:
+    a: [5.0, 15.0]
+    eps_b: [0.5, 5.0]
+    k_s_prime: [0.5, 5.0]
+    rho: [0.0001, 0.001]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "has a global minimum at a finite"
+    where: "Eq. 8"
+  assumptions:
+    - "Surface monopoles with lambda = 0 (no empty-shell term)"
+
+- id: rel_incompressible_minimizer_eq9
+  kind: same_as
+  a: gov2008/equilibrium_radius_incompressible_from_energy
+  b: gov2008/equilibrium_radius_incompressible_eq9
+  mapping:
+    a: "a"
+    L_p: "L_p"
+    alpha_prime: "K / eps_b"
+    rho: "rho"
+  output_map:
+    R_0: R_0
+  regime:
+    a: [5.0, 15.0]
+    eps_b: [0.5, 5.0]
+    K: [1.0e4, 1.0e5]
+    rho: [0.0001, 0.001]
+    L_p: [50.0, 200.0]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "and W is the Lambert-W"
+    where: "Eq. 9"
+  assumptions:
+    - "K carries physical bending-modulus dimension [energy]*[length] so alpha' = K/eps_b has dimension [length]^2 and alpha'*rho is dimensionless"
+
+# ==========================================================================
+# 2. Eq. (6) middle (corrected) vs Eq. (6) RHS, and empty-shell limits
+# ==========================================================================
+- id: rel_eq6_middle_corrected_same_as_rhs
+  kind: same_as
+  a: gov2008/incompressible_defect_energy_eq6_middle_corrected
+  b: gov2008/incompressible_defect_energy_eq6
+  mapping:
+    K: "K"
+    rho: "rho_v * L_p"
+    R: "R"
+    L_p: "L_p"
+    a: "a"
+  regime:
+    K: [1.0e4, 1.0e5]
+    rho_v: [1.0e-6, 1.0e-5]
+    L_p: [50.0, 200.0]
+    a: [5.0, 15.0]
+    R: [20.0, 200.0]
+  provenance: proposed
+  reason: "Verifies that dividing the printed middle expression of Eq. (6) by slice length L_p makes it symbolically identical to the right-hand side K*rho*(R/L_p)^4/(R/a)^2 under rho_v = rho/L_p."
+
+- id: rel_empty_shell_eq2_reduces_to_uniform
+  kind: reduces_to
+  a: gov2008/empty_shell_defect_energy_eq2
+  b: gov2008/defect_energy_uniform_localized
+  mapping:
+    rho: "rho"
+    a: "a"
+    E_c: "E_c"
+  regime:
+    R: [50.0, 200.0]
+    a: [5.0, 15.0]
+    rho: [0.0001, 0.001]
+    lam: [1.0, 10.0]
+    E_c: [10.0, 50.0]
+  limit:
+    lam: "0"
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "overall energy of the defects"
+    where: "Eq. 2"
+  assumptions:
+    - "Vanishing empty-shell thickness lambda -> 0 recovers uniform localized defect energy rho*pi*a^2*E_c (p. 2 col 2)"
+
+- id: rel_R0_shell_reduces_to_lam_large_Ec
+  kind: reduces_to
+  a: gov2008/equilibrium_radius_shell_eq3
+  b: gov2008/empty_shell_large_ec_limit
+  mapping:
+    lam: "lam"
+  regime:
+    lam: [10.0, 30.0]
+    E_c: [20.0, 50.0]
+    E_c_star: [5.0, 15.0]
+  limit:
+    E_c: "oo"
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "we find that the equilibrium radius approaches the"
+    where: "text, p. 3 col 1"
+  assumptions:
+    - "Large defect core energy E_c / E_c* >> 1"
+
+# ==========================================================================
+# 3. Weak-binding and defect-density scaling claims (pp. 3-4)
+# ==========================================================================
+- id: rel_R0_shell_scales_epsb_weak
+  kind: scales_as
+  a: gov2008/equilibrium_radius_shell_from_energy
+  b: gov2008/weak_binding_linear_scaling
+  mapping:
+    eps_b: "eps_b"
+  regime:
+    a: [8.0, 12.0]
+    eps_b: [1.0e-5, 1.0e-4]
+    rho: [0.0003, 0.0005]
+    lam: [15.0, 25.0]
+    E_c: [20.0, 40.0]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "We find that in the limit of"
+    where: "text, p. 4 col 1"
+  assumptions:
+    - "Weak-binding regime eps_b << rho*a*lambda*E_c (tests paper's claim R_{0,shell} propto eps_b)"
+
+- id: rel_R0_bulk_scales_epsb_weak
+  kind: scales_as
+  a: gov2008/equilibrium_radius_bulk_monopole_from_energy
+  b: gov2008/weak_binding_linear_scaling
+  mapping:
+    eps_b: "eps_b"
+  output_map:
+    R_0: R_0
+  regime:
+    a: [8.0, 12.0]
+    eps_b: [1.0e-5, 1.0e-4]
+    k_b_prime: [0.8, 1.2]
+    rho: [0.0003, 0.0005]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "We find that in the limit of"
+    where: "text, p. 4 col 1"
+  assumptions:
+    - "Weak-binding regime eps_b << k'_b*(a^2*rho)^2 (tests paper's claim R_{0,b} propto eps_b)"
+
+- id: rel_R0_surface_scales_epsb
+  kind: scales_as
+  a: gov2008/equilibrium_radius_surface_monopole_from_energy
+  b: gov2008/weak_binding_linear_scaling
+  mapping:
+    eps_b: "eps_b"
+  output_map:
+    R_0: R_0
+  regime:
+    a: [8.0, 12.0]
+    eps_b: [0.1, 2.0]
+    k_s_prime: [0.8, 1.2]
+    rho: [0.0003, 0.0005]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "We find that in the limit of"
+    where: "text, p. 4 col 1"
+  assumptions:
+    - "Tests paper's claim R_{0,s} propto eps_b"
+
+- id: rel_R0_incomp_scales_epsb
+  kind: scales_as
+  a: gov2008/equilibrium_radius_incompressible_from_energy
+  b: gov2008/weak_binding_cbrt_scaling
+  mapping:
+    eps_b: "eps_b"
+  output_map:
+    R_0: R_0
+  regime:
+    a: [8.0, 12.0]
+    eps_b: [0.1, 2.0]
+    K: [2.0e4, 6.0e4]
+    rho: [0.0003, 0.0005]
+    L_p: [80.0, 120.0]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "We find that in the limit of"
+    where: "text, p. 4 col 1"
+  assumptions:
+    - "Tests paper's claim R'_{0,b} propto eps_b^(1/3)"
+
+- id: rel_R0_shell_scales_inv_rho_near_Ecstar
+  kind: scales_as
+  a: gov2008/equilibrium_radius_shell_from_energy
+  b: gov2008/empty_shell_inv_rho_scaling
+  mapping:
+    rho: "rho"
+  regime:
+    a: [10.0, 10.0]
+    eps_b: [1.0, 1.0]
+    lam: [20.0, 20.0]
+    E_c: [12.6, 13.0]
+    rho: [0.000405, 0.00042]
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "behaving as 1 /"
+    where: "text, p. 3 col 1"
+  assumptions:
+    - "Near threshold E_c -> E_c*+ (tests paper's claim that R_{0,shell} behaves as 1/rho)"
+
+# ==========================================================================
+# 4. Fokker-Planck Eq. (11) steady state and large-R distribution tails (p. 4)
+# ==========================================================================
+- id: rel_fp_eq11_printed_vs_boltzmann
+  kind: same_as
+  a: gov2008/fokker_planck_eq11_printed
+  b: gov2008/fokker_planck_steady_state_boltzmann
+  mapping:
+    beta: "beta"
+    E_total: "E_total"
+    E_0: "E_0"
+    D_R: "D_R"
+  output_map:
+    P: P
+  regime:
+    beta: [1.0, 5.0]
+    E_total: [1.0, 3.0]
+    E_0: [0.1, 0.5]
+    D_R: [5.0, 20.0]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "The steady-state solutions of this equation using the"
+    where: "Eq. 11 and text, p. 4 col 2"
+  assumptions:
+    - "Zero-flux steady state of printed Eq. (11) with +d(R_dot*P)/dR"
+
+- id: rel_fp_eq11_corrected_vs_boltzmann
+  kind: same_as
+  a: gov2008/fokker_planck_eq11_corrected
+  b: gov2008/fokker_planck_steady_state_boltzmann
+  mapping:
+    beta: "beta"
+    E_total: "E_total"
+    E_0: "E_0"
+    D_R: "D_R"
+  output_map:
+    P: P
+  regime:
+    beta: [1.0, 5.0]
+    E_total: [1.0, 3.0]
+    E_0: [0.1, 0.5]
+    D_R: [5.0, 20.0]
+  provenance: proposed
+  reason: "Verifies that correcting the printed + drift sign in Eq. (11) to the standard Fokker-Planck - sign makes its zero-flux steady state symbolically identical to the paper's printed Boltzmann distribution."
+
+- id: rel_surface_boltzmann_scales_tail_printed
+  kind: scales_as
+  a: gov2008/surface_monopole_boltzmann_dist
+  b: gov2008/surface_monopole_tail_printed
+  mapping:
+    R: "R"
+    a: "a"
+    rho: "rho"
+    beta: "beta"
+    k_s_prime: "k_s_prime"
+    D_R: "D_R"
+  regime:
+    R: [2.0e4, 5.0e4]
+    a: [8.0, 12.0]
+    eps_b: [1.0e-6, 1.0e-5]
+    k_s_prime: [1.0, 2.0]
+    rho: [0.0005, 0.001]
+    beta: [1.0, 2.0]
+    D_R: [10.0, 20.0]
+    E_0: [1.0e-6, 1.0e-5]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "decays as a power-law for large R, in the form"
+    where: "text, p. 4 col 2"
+  assumptions:
+    - "Large-R asymptotic regime R >> R_{0,s} with negligible E_bind and E_0 (tests printed -2*pi exponent)"
+
+- id: rel_surface_boltzmann_scales_tail_corrected
+  kind: scales_as
+  a: gov2008/surface_monopole_boltzmann_dist
+  b: gov2008/surface_monopole_tail_corrected
+  mapping:
+    R: "R"
+    a: "a"
+    rho: "rho"
+    beta: "beta"
+    k_s_prime: "k_s_prime"
+    D_R: "D_R"
+  regime:
+    R: [2.0e4, 5.0e4]
+    a: [8.0, 12.0]
+    eps_b: [1.0e-6, 1.0e-5]
+    k_s_prime: [1.0, 2.0]
+    rho: [0.0005, 0.001]
+    beta: [1.0, 2.0]
+    D_R: [10.0, 20.0]
+    E_0: [1.0e-6, 1.0e-5]
+  provenance: proposed
+  reason: "Verifies that correcting the printed surface-monopole power-law exponent from -2*pi*a^2*rho*beta*k'_s/D_R to -4*pi*a^2*rho*beta*k'_s/D_R matches the exact large-R scaling of Eq. (5) in the Boltzmann steady state."
+
+- id: rel_incomp_total_energy_reduces_to_eq6_large_R
+  kind: reduces_to
+  a: gov2008/incompressible_total_energy
+  b: gov2008/incompressible_defect_energy_eq6
+  mapping:
+    K: "K"
+    rho: "rho"
+    R: "R"
+    L_p: "L_p"
+    a: "a"
+  regime:
+    R: [50.0, 200.0]
+    a: [5.0, 15.0]
+    eps_b: [0.5, 2.0]
+    K: [1.0e4, 1.0e5]
+    rho: [0.0001, 0.001]
+    L_p: [50.0, 200.0]
+  limit:
+    R: "oo"
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "we find a Gaussian decay"
+    where: "text, p. 4 col 2"
+  assumptions:
+    - "Large-R regime where incompressible defect bending energy (~R^2) dominates E_bind"
+
+- id: rel_incomp_boltzmann_scales_gaussian_tail
+  kind: scales_as
+  a: gov2008/incompressible_boltzmann_dist
+  b: gov2008/incompressible_gaussian_tail
+  mapping:
+    R: "R"
+    a: "a"
+    K: "K"
+    rho: "rho"
+    L_p: "L_p"
+    beta: "beta"
+    D_R: "D_R"
+  regime:
+    R: [100.0, 250.0]
+    a: [8.0, 12.0]
+    eps_b: [1.0e-5, 1.0e-4]
+    K: [2.0e4, 5.0e4]
+    rho: [0.0002, 0.0005]
+    L_p: [80.0, 120.0]
+    beta: [1.0, 2.0]
+    D_R: [10.0, 20.0]
+    E_0: [1.0e-5, 1.0e-4]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "we find a Gaussian decay"
+    where: "text, p. 4 col 2"
+  assumptions:
+    - "Large-R regime where incompressible bending energy dominates binding energy, producing exact Gaussian decay exp(-2*beta*K*rho*a^2*R^2/(D_R*L_p^4))"
+
+- id: rel_bulk_total_energy_reduces_to_eq4_large_R
+  kind: reduces_to
+  a: gov2008/bulk_monopole_total_energy
+  b: gov2008/bulk_monopole_defect_energy_eq4
+  mapping:
+    R: "R"
+    a: "a"
+    k_b_prime: "k_b_prime"
+    rho: "rho"
+  regime:
+    R: [50.0, 200.0]
+    a: [5.0, 15.0]
+    eps_b: [0.5, 2.0]
+    k_b_prime: [0.5, 2.0]
+    rho: [0.0001, 0.001]
+  limit:
+    R: "oo"
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "In both arrangements this energy will"
+    where: "text, p. 3 col 2"
+  assumptions:
+    - "Large-R regime where bulk monopole energy (~R^2*ln(R/a)) dominates E_bind"
+
+- id: rel_R0_shell_reduces_to_lam_large_rho
+  kind: reduces_to
+  a: gov2008/equilibrium_radius_shell_eq3
+  b: gov2008/empty_shell_large_ec_limit
+  mapping:
+    lam: "lam"
+  regime:
+    lam: [10.0, 30.0]
+    E_c: [20.0, 50.0]
+    E_c_star: [1.0, 10.0]
+  limit:
+    E_c_star: "0"
+  provenance: stated
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "approaches the value of"
+    where: "text, p. 3 col 1"
+  assumptions:
+    - "High defect density rho -> oo drives E_c* = eps_b/(rho*a*lambda) -> 0, so R_{0,shell} -> lambda"
+
+# ==========================================================================
+# 5. Cross-record ModelAtlas relations (Wave 6 remaining 7 partner pairs:
+#    claessens2006, claessens2008, dutta2016, gov2018, grason2007,
+#    haviv2008, mietke2019)
+#    - claessens2006+gov2008: 1 proposed Langmuir relation
+#    - claessens2008+gov2008: 1 proposed dilute-actin Langmuir relation
+#    - gov2008+haviv2008: 4 relations (1 proposed Langmuir, 2 stated tail
+#      scaling tests for Eqs. 6 and 4 vs Haviv Eq. 1, 1 proposed reduction
+#      of Haviv Eq. 1 to incompressible_gaussian_tail as kon_over_D -> 0)
+#    - dutta2016+gov2008, gov2008+gov2018, gov2008+grason2007,
+#      gov2008+mietke2019: 0 relations (see questions.yaml for each pair)
+# ==========================================================================
+
+- id: rel_claessens2006_langmuir_binding_energy
+  kind: scales_as
+  a: gov2008/binding_energy_vs_concentration
+  b: claessens2006/abp_chemical_equilibrium
+  output_map:
+    theta: eps_b
+  mapping:
+    c_ABP: "c"
+    K_d: "exp(-eps)"
+    delta_max: "33"
+  regime:
+    c: [1.0e-5, 1.0e-1]
+    eps: [2.0, 12.0]
+  provenance: proposed
+  reason: >
+    Both Gov (2008, p. 4 col. 1; citing Claessens et al. 2006 as ref-1 on p. 1 col. 1) and
+    Claessens et al. (2006, Methods p. 12) model equilibrium non-cooperative cross-linker
+    binding to F-actin with the identical two-state Langmuir isotherm: eps_b ~ c*exp(eps)/(1 +
+    c*exp(eps)) in Gov (prefactor: unknown, carrying adhesion-energy-per-length unit pN) and
+    bound fraction theta = c_ABP / (K_d + c_ABP) = (c_ABP/K_d)/(1 + c_ABP/K_d) in Claessens
+    (determining axial cross-link spacing delta = delta_max/theta). Identifying K_d/c_0 =
+    exp(-eps) and c_ABP/c_0 = c (with unit concentration scale c_0 = 1 uM so c_ABP/K_d =
+    c*exp(eps)), both functions have identical log-slopes in (c, eps) across both the linear
+    dilute regime (c*exp(eps) << 1) and the saturated occupancy plateau (c*exp(eps) >> 1).
+  assumptions:
+    - "Excess-ABP (non-depleted) Langmuir equilibrium in both models, with c_ABP/K_d = c*exp(eps)"
+    - "Linear proportionality between Gov's average adhesion energy per unit length eps_b and bound cross-linker fraction theta"
+    - "Minimum axial cross-link spacing delta_max = 33 nm does not enter theta"
+
+- id: rel_claessens2008_bound_ratio_scales_langmuir
+  kind: scales_as
+  a: claessens2008/effective_bound_ratio
+  b: gov2008/binding_energy_vs_concentration
+  output_map:
+    eps_b: R_star
+  mapping:
+    c: "R * c_a * 1e-6"
+    eps: "log(1e6 / K_d)"
+  regime:
+    R: [50.0, 500.0]
+    K_d: [0.3, 1.0]
+    c_a: [0.0005, 0.005]
+  provenance: proposed
+  reason: >
+    Claessens et al. (2008, Methods p. 4) compute the bound fascin-to-actin molar ratio
+    R* = (1/2)*[(1 + R + K_d/c_a) - sqrt((1 + R + K_d/c_a)^2 - 4*R)] from closed-system
+    mass-action equilibrium accounting for fascin depletion by F-actin, whereas Gov (2008,
+    p. 4 col. 1) uses the grand-canonical (non-depleted) Langmuir isotherm
+    eps_b ~ c*exp(eps)/(1 + c*exp(eps)). Under standard-state normalization c_0 = 1 M = 10^6 uM
+    (c = c_f/c_0 = R*c_a*1e-6 and eps = -ln(K_d/c_0) = ln(1e6/K_d), matching Claessens p. 3's
+    Delta G / k_B T = -ln(K_d/c_0) ~= 15 for fascin), in the dilute-actin crossover regime
+    (c_a << K_d, R >> 1 so c*exp(eps) = R*c_a/K_d spans [0.025, 8.33] across the nonlinear
+    Langmuir knee), R* approaches (R*c_a/K_d)/(1 + R*c_a/K_d) and shares the exact log-slopes
+    of Gov's Langmuir binding energy in all three variables (R, K_d, c_a). In Claessens's
+    actual experimental regime (c_a = 0.1-3 mg/ml ~= 2.4-71 uM >> K_d = 0.3 uM), fascin
+    depletion breaks this equivalence.
+  assumptions:
+    - "Dilute-actin reservoir limit c_a in [0.0005, 0.005] uM << K_d in [0.3, 1.0] uM with stoichiometric excess R in [50, 500]"
+    - "Standard-state thermodynamic mapping c = c_f / (1 M) and eps = -ln(K_d / (1 M))"
+    - "Linear proportionality between adhesion energy eps_b and bound cross-linker occupancy R*"
+
+- id: rel_haviv2008_langmuir_binding_energy
+  kind: scales_as
+  a: gov2008/binding_energy_vs_concentration
+  b: haviv2008/fascin_adsorption_probability
+  output_map:
+    p_fa: eps_b
+  mapping:
+    phi: "c"
+    beta: "1"
+    eps_kBT: "eps"
+  regime:
+    c: [1.0e-5, 1.0e-1]
+    eps: [2.0, 12.0]
+  provenance: proposed
+  reason: >
+    Both Gov (2008, p. 4 col. 1, citing Haviv et al. 2008 [ref-6] for bundle thickness increasing
+    with cross-linker concentration) and Haviv, Gov, Ideses & Bernheim-Groswasser (2008, p. 7
+    col. 1, co-authored by Gov) employ the exact same equilibrium Langmuir binding isotherm:
+    eps_b ~ c*exp(eps)/(1 + c*exp(eps)) in Gov (prefactor: unknown, unit pN) and
+    p_fa = beta*phi*exp(eps/k_B T)/(1 + beta*phi*exp(eps/k_B T)) in Haviv (dimensionless
+    probability that a short actin filament carries an attached fascin cross-linker, where
+    beta*phi is proportional to the fascin volume fraction in solution). Identifying c = beta*phi
+    (mapped at beta = 1) and eps = eps_kBT yields identical log-slopes in (c, eps) throughout
+    both the linear weak-binding and saturated regimes.
+  assumptions:
+    - "Gov's dimensionless cross-linker concentration c corresponds directly to Haviv's volume-fraction factor beta*phi (mapped with beta = 1)"
+    - "Single-bond binding free energy eps (in k_B T units) equals Haviv's eps_kBT"
+
+- id: rel_haviv2008_incomp_boltzmann_scales_eq1_tail
+  kind: scales_as
+  a: gov2008/incompressible_boltzmann_dist
+  b: haviv2008/size_distribution_eq1
+  output_map:
+    P: P
+  mapping:
+    R_n: "1"
+    kon_over_D: "0"
+    koff_over_D: "2 * beta * K * rho * a**4 / (D_R * L_p**4)"
+    N_b: "(R / a)**2"
+  regime:
+    R: [100.0, 250.0]
+    a: [8.0, 12.0]
+    eps_b: [1.0e-6, 1.0e-5]
+    K: [2.0e4, 5.0e4]
+    rho: [0.0002, 0.0005]
+    L_p: [80.0, 120.0]
+    beta: [1.0, 2.0]
+    D_R: [10.0, 20.0]
+    E_0: [1.0e-6, 1.0e-5]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "Such a distribution can be well fitted with"
+    where: "text, p. 4 col 2"
+  assumptions:
+    - "Large-R asymptotic tail regime (E_defects_b >> |E_bind| in Gov Eq. 6 and k_off*N_b >> 2*k_on*sqrt(N_b) in Haviv Eq. 1, evaluated at kon_over_D = 0)"
+    - "Cylindrical cross-section filament count N_b = (R/a)^2 with Gaussian-in-R / exponential-in-N_b decay constant k_off/D = 2*beta*K*rho*a^4/(D_R*L_p^4)"
+    - "Agreement holds only in the large-R tail; at small R, Haviv Eq. (1) rises via exp(+2*(k_on/D)*(R/a)) (finite P(0) = R_n) whereas Gov Eq. (1)+(6) suppresses small R via exp(-4*pi*beta*a*eps_b/(D_R*R)) (vanishing as R -> 0+)"
+
+- id: rel_haviv2008_eq1_reduces_to_incomp_gaussian_tail
+  kind: reduces_to
+  a: haviv2008/size_distribution_eq1
+  b: gov2008/incompressible_gaussian_tail
+  output_map:
+    P: P
+  mapping:
+    R: "10 * sqrt(N_b)"
+    a: "10"
+    K: "50000"
+    rho: "1000 * koff_over_D"
+    L_p: "100"
+    beta: "1"
+    D_R: "10000"
+  limit:
+    kon_over_D: "0"
+  regime:
+    R_n: [1.0, 1.0]
+    kon_over_D: [0.01, 0.5]
+    koff_over_D: [0.01, 0.1]
+    N_b: [10.0, 200.0]
+  provenance: proposed
+  reason: >
+    Formalizes the exact equivalence between the large-size decay of Haviv et al. (2008) Eq. (1)
+    (P(N_b) = R_n*exp(2*(k_on/D)*sqrt(N_b) - (k_off/D)*N_b), exponential in filament count N_b
+    and equivalently Gaussian in radius R = a*sqrt(N_b)) and Gov (2008, p. 4 col. 2)'s large-R
+    incompressible-bundle Gaussian tail P(R) = exp(-2*beta*K*rho*a^2*R^2/(D_R*L_p^4)). At unit
+    normalization (R_n = 1) as the rim-attachment rising term vanishes (k_on/D -> 0), Haviv
+    Eq. (1) reduces identically to Gov's incompressible Gaussian tail under N_b = (R/a)^2 and
+    k_off/D = 2*beta*K*rho*a^4/(D_R*L_p^4) (illustrated at Gov's baseline scale a = 10 nm,
+    L_p = 100 nm, K = 5e4 pN*nm^2, beta = 1, D_R = 1e4 nm^2/s).
+  assumptions:
+    - "Unit normalization prefactor R_n = 1 (incompressible_gaussian_tail omits normalization R_n)"
+    - "Vanishing rim-attachment growth term k_on/D -> 0 isolating the pure exponential-in-N_b / Gaussian-in-R tail"
+    - "Cylindrical packing relation N_b = (R/a)^2 with a = 10 nm and k_off/D = 2*beta*K*rho*a^4/(D_R*L_p^4)"
+
+- id: rel_haviv2008_bulk_monopole_eq4_scales_eq1_tail
+  kind: scales_as
+  a: gov2008/bulk_monopole_boltzmann_dist
+  b: haviv2008/size_distribution_eq1
+  output_map:
+    P: P
+  mapping:
+    R_n: "1"
+    kon_over_D: "0"
+    koff_over_D: "4 * pi * beta * k_b_prime * a**4 * rho**2 / D_R"
+    N_b: "(R / a)**2"
+  regime:
+    R: [100.0, 250.0]
+    a: [8.0, 12.0]
+    eps_b: [1.0e-6, 1.0e-5]
+    k_b_prime: [0.5, 1.5]
+    rho: [0.0002, 0.0005]
+    beta: [1.0, 2.0]
+    D_R: [10.0, 20.0]
+    E_0: [1.0e-6, 1.0e-5]
+  provenance: stated
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "Such a distribution can be well fitted with"
+    where: "text, p. 4 col 2"
+  assumptions:
+    - "Tests Gov (2008, p. 4 col. 2)'s stated claim that bulk monopole Eq. (4) produces a Gaussian decay P(R) ~ exp(-R^2) matching Haviv et al. (2008) [ref-6]; Eq. (4) actually gives a super-Gaussian tail exp[-4*pi*beta*k'_b*a^2*rho^2*R^2*ln(R/a)/D_R] with an extra ln(R/a) factor compared to Haviv Eq. (1)'s pure Gaussian-in-R tail exp(-(k_off/D)*(R/a)^2)"
+

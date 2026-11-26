@@ -1,0 +1,646 @@
+- id: q_eq6_middle_missing_Lp_and_K_dimension
+  kind: possible_error
+  about:
+    - incompressible_defect_energy_eq6_middle
+    - incompressible_defect_energy_eq6_middle_corrected
+    - incompressible_defect_energy_eq6
+    - equilibrium_radius_incompressible_eq9
+    - bend_to_binding_area_def
+  text: >
+    Three linked dimensional and algebraic discrepancies appear in Eq. (6) and its surrounding text (p. 3 col 2 - p. 4 col 1):
+    (1) Substituting rho_v = rho / L_p into the printed middle expression of Eq. (6),
+    K * rho_v * L_p * (a / L_p^2)^2 * R^2 * L_p, yields K * rho * a^2 * R^2 / L_p^3, which is larger by a
+    factor of L_p than the printed right-hand side K * rho * (R/L_p)^4 / (R/a)^2 = K * rho * a^2 * R^2 / L_p^4.
+    Physically, the middle expression gives the bending energy per filament inside one slice of length L_p
+    (omitting division by L_p to obtain energy per unit length, and dropping the factor of pi from rho_v*L_p*pi*R^2).
+    Dividing by L_p (variant incompressible_defect_energy_eq6_middle_corrected) makes both expressions
+    symbolically identical (verified by rel_eq6_middle_corrected_same_as_rhs).
+    (2) Immediately below Eq. (6), the text defines K as "the bending modulus of the filaments (energy per unit length)",
+    and below Eq. (9) defines alpha' = K / eps_b alongside dimensionless alpha_{b,s} = k'_{b,s} / eps_b.
+    However, a filament bending rigidity has dimension [energy]*[length] (e.g. k_B T * l_p), NOT [energy]/[length].
+    If K had dimension [energy]/[length], then Eq. (6) RHS would have dimension [energy]/[length]^3 (incompatible
+    with E_bind in [energy]/[length]) and Eq. (9), R'_{0,b}/a = [pi*(L_p/a)^4/(alpha'*rho)]^(1/3), would have
+    dimension [length]^(2/3) instead of dimensionless (since rho = 1/L^2 has dimension 1/[length]^2).
+    With the true physical dimension [energy]*[length] for K, alpha' = K/eps_b has dimension [length]^2,
+    alpha'*rho is dimensionless, and both Eq. (6) RHS and Eq. (9) are dimensionally exact and mutually consistent.
+    (3) Two sentences above Eq. (6), the text states "develops a curvature of ~a/L_p" (missing the exponent 2;
+    Fig. 1 caption, two sentences earlier on p. 3 col 2, and Eq. 6 itself correctly write a/L_p^2).
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "where K is the bending modulus of the filaments"
+    where: "Eq. 6 and text, p. 3 col 2"
+
+- id: q_fp_eq11_drift_sign_error
+  kind: possible_error
+  about:
+    - fokker_planck_eq11_printed
+    - fokker_planck_eq11_corrected
+    - fokker_planck_steady_state_boltzmann
+    - cmp_fp_eq11_printed_boltzmann_coeff
+    - cmp_fp_eq11_corrected_boltzmann_coeff
+    - rel_fp_eq11_printed_vs_boltzmann
+  text: >
+    Eq. (11) (p. 4 col 2) is printed with a plus sign on the drift divergence:
+    dP/dt = (1/2)*D_R*d^2P/dR^2 + d(R_dot*P)/dR, where Eq. (10) defines R_dot = -beta*dE_total/dR.
+    The standard 1D Fokker-Planck continuity equation is dP/dt = -dJ/dR = (1/2)*D_R*d^2P/dR^2 - d(R_dot*P)/dR.
+    Integrating the printed equation at zero flux yields P(R) propto exp[+2*beta*(E_total(R) - E_0)/D_R]
+    (coefficient +2 instead of -2, unnormalizable and minimizing P at the energy minimum R_0), contradicting
+    the steady-state solution P(R) propto exp[-2*beta*(E_total(R) - E_0)/D_R] printed immediately below Eq. (11).
+    Replacing + with - (variant fokker_planck_eq11_corrected) reproduces the paper's printed steady-state
+    Boltzmann distribution exactly. The sign slip likely arose from writing +d(beta*(dE/dR)*P)/dR and then
+    substituting R_dot without flipping the sign.
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "can then be derived from a standard Fokker"
+    where: "Eq. 11"
+
+- id: q_surface_monopole_tail_factor_of_2
+  kind: possible_error
+  about:
+    - surface_monopole_defect_energy_eq5
+    - surface_monopole_boltzmann_dist
+    - surface_monopole_tail_printed
+    - surface_monopole_tail_corrected
+    - surface_monopole_tail_exponent_from_eq5
+    - cmp_surface_tail_exponent_from_eq5
+    - rel_surface_boltzmann_scales_tail_printed
+  text: >
+    On p. 4 col 2, the paper claims that for surface monopoles (Eq. 5), the steady-state distribution
+    decays as a power law P(R) propto R^(-2*pi*a^2*rho*beta*k/D_R). Substituting Eq. (5),
+    E_{defects,s} = 2*pi*k'_s*(1/(R/a)^2)*R^2*rho*ln(R/a) = 2*pi*k'_s*a^2*rho*ln(R/a), directly into
+    P(R) propto exp[-2*beta*(E_total(R) - E_0)/D_R] multiplies the factor of 2 in Eq. (5) by the factor of 2
+    in the Boltzmann exponent, giving P(R) propto (R/a)^(-4*pi*a^2*rho*beta*k'_s/D_R) — a factor of 2 larger
+    in the exponent than printed (verified by cmp_surface_tail_exponent_from_eq5 and
+    rel_surface_boltzmann_scales_tail_corrected). The printed exponent also drops the prime and subscript s
+    from k'_s (writing k), and omits the normalizability condition 4*pi*a^2*rho*beta*k'_s/D_R > 1.
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "decays as a power-law for large R, in the form"
+    where: "text, p. 4 col 2"
+
+- id: q_weak_binding_scaling_shell_and_bulk_monopole
+  kind: possible_error
+  about:
+    - equilibrium_radius_shell_eq3
+    - equilibrium_radius_bulk_monopole_eq7
+    - scaling_exponents_shell
+    - scaling_exponent_bulk_monopole
+    - cmp_weak_binding_exp_shell
+    - cmp_weak_binding_exp_bulk_monopole
+    - rel_R0_shell_scales_epsb_weak
+    - rel_R0_bulk_scales_epsb_weak
+  text: >
+    On p. 4 col 1, the paper claims: "in the limit of weak binding R_{0,shell}, R_{0,b}, R_{0,s} propto eps_b,
+    while R'_{0,b} propto eps_b^(1/3)". While R_{0,s} propto eps_b and R'_{0,b} propto eps_b^(1/3) hold
+    identically, neither R_{0,shell} nor R_{0,b} is proportional to eps_b in the weak-binding limit (eps_b -> 0):
+    (1) From Eq. (3), R_{0,shell} = lambda / (1 - eps_b/(rho*a*lambda*E_c)) = lambda + eps_b/(rho*a*E_c) + O(eps_b^2),
+    so R_{0,shell} approaches the nonzero constant lambda (log-slope d(ln R_{0,shell})/d(ln eps_b) -> 0);
+    only the excess width R_{0,shell} - lambda scales linearly with eps_b.
+    (2) From Eq. (7), exact differentiation of the Lambert-W solution yields
+    d(ln R_{0,b})/d(ln eps_b) = (1/3)*W(C)/(1 + W(C)) with C = 3*exp(3/2)*eps_b/(2*k'_b*(a^2*rho)^2).
+    Because W(C) > 0 for all positive parameters, this scaling exponent lies strictly in (0, 1/3) for ALL eps_b > 0
+    and never approaches 1: as eps_b -> 0 (weak binding), R_{0,b}/a -> exp(-1/2) + (e/(2*k'_b*(a^2*rho)^2))*eps_b
+    (approaching the unphysical sub-filament constant e^(-1/2) ~ 0.607 < 1, with log-slope -> 0), while for
+    large eps_b (strong binding, R_{0,b} >> a), R_{0,b} ~ (eps_b / ln eps_b)^(1/3) (log-slope -> 1/3).
+    Both errors appear to stem from keeping the O(eps_b) linear Taylor term while overlooking the nonzero
+    constant offsets lambda and a*exp(-1/2).
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "We find that in the limit of"
+    where: "text, p. 4 col 1"
+
+- id: q_empty_shell_density_scaling_near_Ecstar
+  kind: possible_error
+  about:
+    - equilibrium_radius_shell_eq3
+    - empty_shell_inv_rho_scaling
+    - scaling_exponents_shell
+    - cmp_shell_density_exp_near_Ecstar
+    - rel_R0_shell_scales_inv_rho_near_Ecstar
+  text: >
+    On p. 3 col 1, the paper states that R_{0,shell} decreases with increasing defect density rho,
+    "behaving as 1/rho for E_c -> E_c*". From Eq. (3) with E_c* = eps_b/(rho*a*lambda), writing
+    rho* = eps_b/(a*lambda*E_c), we have R_{0,shell} = lambda*rho / (rho - rho*). As E_c -> E_c*+
+    (equivalently rho -> rho*+), R_{0,shell} diverges as a pole proportional to 1/(rho - rho*), whose
+    local log-log slope d(ln R_{0,shell})/d(ln rho) = -rho*/(rho - rho*) diverges to -infinity rather than -1.
+    By contrast, a 1/rho decay occurs only for the excess width R_{0,shell} - lambda ~ lambda*rho*/rho in the
+    OPPOSITE limit of large defect density rho >> rho* (E_c >> E_c*).
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "behaving as 1 /"
+    where: "text, p. 3 col 1"
+
+- id: q_empty_shell_tail_sign_dimensions_normalizability
+  kind: possible_error
+  about:
+    - empty_shell_tail_printed
+    - empty_shell_boltzmann_dist
+    - empty_shell_total_energy
+  text: >
+    On p. 4 col 2, the paper prints the large-R empty-shell distribution tail as
+    P(R) propto exp(-1/a - 1/R) for R > R_{0,shell}. This printed expression has three issues:
+    (1) Dimensional inconsistency: -1/a - 1/R has dimension 1/[length], omitting the dimensional energy/diffusivity
+    coefficients from -2*beta*E_total(R)/D_R; consequently empty_shell_tail_printed cannot be made runnable
+    without inventing unstated prefactors.
+    (2) Reversed sign on 1/R: expanding Eqs. (1)+(2) gives
+    -2*beta*E_total(R)/D_R = const + [4*pi*beta*a^2*rho*lambda*(E_c - E_c*)/D_R]/R + O(1/R^2).
+    Because E_c > E_c*, the coefficient of 1/R is POSITIVE (+C/R), so exp(+C/R) decreases monotonically
+    toward its R -> infinity asymptote, whereas printed exp(-1/R) INCREASES with R.
+    (3) Non-normalizability: since E_total(R) approaches the finite constant pi*(rho*a^2*E_c - eps_b) as
+    R -> infinity, P(R) approaches a strictly positive constant and cannot be normalized on [R_{0,shell}, infinity)
+    without an upper radius cutoff.
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "we get a very shallow decay of"
+    where: "text, p. 4 col 2"
+
+- id: q_bulk_monopole_eq4_supergaussian_vs_gaussian
+  kind: overstated_claim
+  about:
+    - bulk_monopole_defect_energy_eq4
+    - bulk_monopole_boltzmann_dist
+    - bulk_gaussian_tail_exponent_eq4
+    - cmp_bulk_gaussian_tail_exp_eq4
+  text: >
+    On p. 4 col 2, the paper groups Eqs. (4) and (6) together as yielding "a Gaussian decay,
+    P(R) propto exp(-R^2) for large R" (also omitting the dimensional inverse-area prefactor inside exp).
+    While Eq. (6) RHS indeed gives an exact Gaussian tail exp(-2*beta*K*rho*a^2*R^2/(D_R*L_p^4)),
+    Eq. (4) has an extra logarithmic factor ln(R/a) in E_{defects,b} = 2*pi*k'_b*a^2*R^2*rho^2*ln(R/a),
+    yielding a super-Gaussian tail P(R) propto exp[-4*pi*beta*k'_b*a^2*rho^2*R^2*ln(R/a)/D_R] whose
+    local exponent q(R) = 2 + 1/ln(R/a) exceeds 2 for all finite R.
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "we find a Gaussian decay"
+    where: "text, p. 4 col 2"
+
+- id: q_eqs7_to_9_assumption_Ec_lt_Ecstar_vs_lambda_zero
+  kind: unstated_input
+  about:
+    - equilibrium_radius_bulk_monopole_eq7
+    - equilibrium_radius_surface_monopole_eq8
+    - equilibrium_radius_incompressible_eq9
+    - empty_shell_defect_energy_eq2
+  text: >
+    Before Eqs. (7)-(9) (p. 3 col 2), the paper states "Using Eqs. (4)-(6), respectively, and assuming
+    E_c < E_c*, we find that this radius is given by [Eqs. 7-9]". However, Eqs. (7)-(9) minimize
+    E_bind + E_{defects} WITHOUT Eq. (2). If an empty outer shell of thickness lambda > 0 were present
+    with 0 < E_c < E_c*, Eq. (2) would still contribute a nonzero derivative 2*pi*rho*a^2*lambda*E_c*(R - lambda)/R^3
+    that shifts the equilibrium radius (effectively reducing eps_b to eps_b*(1 - E_c/E_c*) at leading order).
+    Eqs. (7)-(9) hold exactly only when lambda = 0 (uniform defects, where Eq. 2 is a constant independent of R)
+    or when the core energy E_c is neglected altogether. In addition, Eqs. (7)-(9) can yield continuum solutions
+    R_0 < a in the weak-binding regime (e.g. R_{0,b}/a < 1 when alpha_b*(a^2*rho)^2 > 1, where ln(R/a) < 0 in Eq. 4).
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "has a global minimum at a finite"
+    where: "text, p. 3 col 2"
+
+- id: q_unstated_numerical_parameters_and_units
+  kind: unstated_input
+  about:
+    - eps_b_added
+    - L_defect_spacing_added
+    - lam_shell_added
+    - Ec_added
+    - kb_prime_added
+    - ks_prime_added
+    - K_bending_added
+    - Lp_healing_added
+    - rho_ac_added
+    - gamma_friction_added
+    - D_R_added
+  text: >
+    The paper is purely analytical and prints only one explicit physical parameter value (a ~ 10 nm, p. 2 col 1).
+    All other model parameters (eps_b, rho or L, lambda, E_c, k'_b, k'_s, K, L_p, c, epsilon, rho_ac, gamma, D_R)
+    are left numerically unstated (and the dimensional conventions for c, epsilon, rho_ac, and gamma in Eq. 10 and
+    the Langmuir relation on p. 4 are not explicitly stated). All representative F-actin parameter values used to
+    execute the models are entered in added.yaml with plausible alternatives; every reproduction verdict in
+    comparisons.yaml rests on dimensionless analytical exponents or prefactors that are invariant to these choices
+    within the specified regimes.
+  citation:
+    page: 2
+    printed_page: "011916-2"
+    quote: "10 nm is the radius of the individual filaments"
+    where: "text, p. 2 col 1"
+
+- id: q_continuum_elasticity_multipole_decay_2d_vs_3d
+  kind: reading
+  about:
+    - bulk_monopole_defect_energy_eq4
+    - surface_monopole_defect_energy_eq5
+  text: >
+    On p. 2 col 2, within a 2D cross-sectional continuum description, the paper writes that an isolated splay /
+    local dilation ("monopole" force defect) induces a strain field u ~ 1/r whose 2D elastic energy diverges
+    logarithmically, and that a quadrupole force center produces a strain field u ~ 1/r^4 [16]. In 2D linear
+    elasticity (Landau & Lifshitz [16]), a local center of dilation (isotropic force dipole) produces displacement
+    ~ 1/r and strain ~ 1/r^2 (with finite 2D strain energy), whereas a point force or edge dislocation produces
+    strain ~ 1/r (logarithmically diverging energy); similarly, a quadrupole produces strain ~ 1/r^3 in 2D and
+    ~ 1/r^4 in 3D. Although either 1/r^3 or 1/r^4 yields finite integrated strain energy in 2D (preserving the
+    paper's qualitative conclusion for higher multipoles), the stated 1/r^4 exponent and identification of a
+    2D local dilation with a 1/r strain field mix 2D and 3D/dislocation elasticity scalings.
+  citation:
+    page: 2
+    printed_page: "011916-2"
+    quote: "quadropole force center decays as u"
+    where: "text, p. 2 col 2"
+
+- id: q_minor_typos_and_prose_issues
+  kind: reading
+  about:
+    - binding_energy_eq1
+    - empty_shell_defect_energy_eq2
+  text: >
+    Minor prose and typographical issues noticed during full-page verification:
+    (1) p. 2 col 1: "since the binding energy per unit length is a few k_B T" omits the length unit
+    (k_B T is an energy, not energy per unit length; presumably per monomer or cross-linker spacing).
+    (2) p. 4 col 2: "the width distribution of actin filaments was measured [6], and found to behave as a
+    Guassian" — means actin bundles (Haviv et al. [6]), and misspells "Gaussian".
+    (3) Minor typographical errors across pages 1-5: "hexgonal" (p. 1 col 1), "quadropole" and "logarithmicaly"
+    (p. 2 col 2), "an defect-free" (p. 3 Fig. 2 caption), "an minimum" (p. 3 col 1), "smaller then" (p. 4 col 1),
+    "inifinity" (p. 5 Ref. 18), and "Kosterlit" for Kosterlitz (p. 5 Ref. 19).
+  citation:
+    page: 2
+    printed_page: "011916-2"
+    quote: "since the binding energy per"
+    where: "text, p. 2 col 1"
+
+- id: q_audit_filament_radius_vs_spacing_ambiguity
+  kind: reading
+  about:
+    - filament_radius_a_printed
+    - binding_energy_eq1
+  text: >
+    Two reading ambiguities surround a ~ 10 nm (p. 2 col 1):
+    (1) The text defines a ~ 10 nm as "the radius of the individual filaments and surrounding cross linkers [5,6]",
+    and Eqs. (1)-(6) use (R/a)^2 as the number of filaments in a bundle of radius R (consistent with filament
+    radius a via pi*R^2 / (pi*a^2)). However, Fig. 1(b) (p. 1) draws a as the center-to-center lattice spacing
+    (effective diameter) between adjacent filaments in the 2D hexagonal array, and co-cited Ref. [6] (haviv2008,
+    co-authored by Gov) takes 9 nm as the effective filament diameter (inter-filament spacing), not the radius
+    (a 10 nm radius would correspond to ~20 nm center-to-center spacing).
+    (2) The first reader set from_source: ref-5 (Lai et al. 2007, outside the corpus) on filament_radius_a_printed,
+    whereas the paper co-cites [5,6] including ref-6 (haviv2008, in the corpus); kept unchanged per audit rules.
+  citation:
+    page: 2
+    printed_page: "011916-2"
+    quote: "10 nm is the radius of the individual filaments"
+    where: "text, p. 2 col 1 and Fig. 1(b)"
+
+- id: q_audit_incompressible_gaussian_tail_unprinted_prefactor
+  kind: reading
+  about:
+    - incompressible_gaussian_tail
+    - empty_shell_tail_printed
+    - surface_monopole_tail_printed
+  text: >
+    Disagreement with first-reader scope/treatment asymmetry among the three p. 4 col 2 large-R tail models:
+    (1) For bulk monopoles [Eqs. (4) and (6)], the paper prints only the schematic P(R) propto exp(-R^2),
+    omitting the dimensional inverse-area prefactor inside exp(...) — just as it omits the dimensional length
+    prefactor in empty_shell_tail_printed (which the first reader marked runnable: false). Yet
+    incompressible_gaussian_tail supplies the unprinted derived coefficient 2*beta*K*rho*a^2/(D_R*L_p^4)
+    inside exp[...] as a runnable model without marking it from_words or reconstructed.
+    (2) Similarly, surface_monopole_tail_printed/model.py normalizes the printed base R to R/a (and maps printed
+    symbol k to k_s_prime) for dimensional invariance under scales_as across all six parameters; during audit,
+    its equation metadata string was updated to match the exact printed P(R) ~ R^(-2*pi*a^2*rho*beta*k/D_R)
+    while leaving model.py unchanged.
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "we find a Gaussian decay"
+    where: "text, p. 4 col 2"
+
+- id: q_audit_empty_shell_added_alternatives_cross_threshold
+  kind: reading
+  about:
+    - eps_b_added
+    - L_defect_spacing_added
+    - lam_shell_added
+    - Ec_added
+    - equilibrium_radius_shell_eq3
+    - equilibrium_radius_shell_from_energy
+  text: >
+    Disagreement with the choice of one-at-a-time alternatives in added.yaml relative to the baseline empty-shell
+    parameterization (E_c = 25 pN = 2*E_c* at eps_b = 1.0 pN, L = 50 nm, lam = 20 nm, a = 10 nm): three of the
+    recorded alternatives — eps_b_added = 4.0 pN (giving E_c* = 50 pN), L_defect_spacing_added = 100 nm
+    (giving E_c* = 50 pN), and lam_shell_added = 10 nm (giving E_c* = 25 pN) — hit or cross the finite-width
+    threshold E_c <= E_c*, causing run_equilibrium_radius_shell_eq3 and run_equilibrium_radius_shell_from_energy
+    to silently return R_0 = None (unbounded bundle width) instead of testing finite-width sensitivity.
+    No reproduction comparison verdict is affected because reproduction checks use eps_b_weak_added and
+    Ec_over_Ecstar_near_added.
+  citation:
+    page: 3
+    printed_page: "011916-3"
+    quote: "the system has an minimum"
+    where: "Eq. 3 and text, p. 3 col 1"
+
+- id: q_audit_low_conc_scaling_shell_and_bulk
+  kind: possible_error
+  about:
+    - binding_energy_vs_concentration
+    - conc_scaling_exponent_shell
+    - conc_scaling_exponent_bulk_monopole
+    - conc_scaling_exponent_surface_monopole
+    - conc_scaling_exponent_incompressible
+    - cmp_low_conc_exp_shell
+    - cmp_low_conc_exp_bulk_monopole
+  text: >
+    On p. 4 col 1, combining the equilibrium Langmuir binding relation eps_b propto c*exp(eps)/(1 + c*exp(eps))
+    with the weak-binding scaling claims, the paper predicts that at low c and low eps the bundle radius increases
+    "either linearly or as the third root of the concentration". Exact chain-rule differentiation gives
+    d(ln R_0)/d(ln c) = [d(ln R_0)/d(ln eps_b)] / (1 + c*exp(eps)). While R_{0,s} (Eq. 8) and R'_{0,b} (Eq. 9)
+    indeed approach exponents 1 and 1/3 as c*exp(eps) -> 0 (reproduced by cmp_low_conc_exp_surface_monopole and
+    cmp_low_conc_exp_incompressible), R_{0,shell} (Eq. 3) and R_{0,b} (Eq. 7) inherit the weak-binding scaling
+    failure (q_weak_binding_scaling_shell_and_bulk_monopole): their concentration log-slopes vanish as c -> 0
+    (and d(ln R_{0,b})/d(ln c) < 1/3 for all c > 0), refuting linear concentration scaling (not reproduced in
+    cmp_low_conc_exp_shell and cmp_low_conc_exp_bulk_monopole).
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "should increase either linearly or as the third root of the"
+    where: "text, p. 4 col 1"
+
+- id: q_audit_eq10_flux_dimensions
+  kind: unstated_input
+  about:
+    - growth_flux_eq10
+    - rho_ac_added
+    - gamma_friction_added
+  text: >
+    Above Eq. (10) (p. 4 col 2), the paper introduces N_dot = (2*R/a^2)*R_dot = 2*pi*R*a*rho_ac*(1/gamma)*(-dE_total/dR)
+    as "The total filament flux at the surface of a bundle of radius R (per unit length)", without stating the
+    dimensions of rho_ac or gamma. Because N = (R/a)^2 is the dimensionless number of filaments in the bundle
+    cross-section, N_dot has dimension 1/[time] (not per unit length). With -dE_total/dR in [energy]/[length]^2
+    (force per unit length), dimensional consistency requires either: (i) rho_ac is a 3D filament number density
+    (1/[length]^3) and gamma has viscosity dimensions ([energy]*[time]/[length]^3), making 2*pi*R*a the surface
+    area of an axial slice of thickness a (rather than unit length or bundle length L_b); or (ii) rho_ac is a 2D
+    cross-sectional density (1/[length]^2) with a factor of length absorbed into gamma. In addition, using
+    -dE_total/dR (derivative of energy per filament) as the single-filament attachment force implicitly absorbs
+    the reservoir chemical potential at E_total(R_0).
+  citation:
+    page: 4
+    printed_page: "011916-4"
+    quote: "total filament flux at the surface of a bundle of"
+    where: "Eq. 10"
+
+# ==========================================================================
+# Cross-record relate & validate audits (7 remaining Wave 6 partner pairs)
+# ==========================================================================
+
+- id: q_claessens2006_cross_audit_and_no_validation
+  kind: choice
+  about:
+    - rel_claessens2006_langmuir_binding_energy
+    - binding_energy_vs_concentration
+    - equilibrium_radius_incompressible_from_energy
+    - claessens2006/abp_chemical_equilibrium
+    - claessens2006/filament_geometry_circular
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit of claessens2006 + gov2008 yields
+    1 verified relation, 0 cited-value links, and 0 cross-validations:
+    (1) ModelAtlas relation: rel_claessens2006_langmuir_binding_energy (proposed, scales_as)
+    verifies that Gov's equilibrium cross-linker binding-energy isotherm
+    eps_b ~ c*exp(eps)/(1 + c*exp(eps)) (p. 4 col. 1) shares identical log-slopes in (c, eps)
+    with Claessens et al. (2006) Methods p. 12 bound cross-linker fraction
+    theta = c_ABP/(K_d + c_ABP) under c_ABP/K_d = c*exp(eps). The automated dimensional shape
+    match between claessens2006/filament_geometry_circular (single-filament diameter
+    d = 4*sqrt(kappa_a/k_a) from bending and stretching stiffness) and
+    gov2008/equilibrium_radius_incompressible_from_energy (bundle radius from packing-defect
+    bending) is a dimensional coincidence and is not linked; all other claessens2006 models
+    concern wormlike-bundle bending mechanics kappa_B(n) and droplet-ring geometry rather than
+    equilibrium bundle-width selection.
+    (2) Cited values: gov2008 cites claessens2006 (ref-1) solely qualitatively on p. 1 col. 1;
+    zero numerical values are transferred between the two papers.
+    (3) Cross-validation: gov2008 has 0 origin: measured datums. All 18 origin: measured datums
+    in claessens2006 measure confined droplet ring radii (R_ring_si1a/b), thermal ring fuzzy
+    diameters and equilibration times (D_sat_si1a/b_eye, tau_eq_si1a/b_eye, si_fig1a/b_D_vs_t_meas),
+    or bundle bending stiffness kappa_B(n) vs droplet-imposed filament number n (fig3a-d_*_meas);
+    gov2008 predicts none of these quantities.
+
+- id: q_claessens2008_cross_audit_and_no_validation
+  kind: choice
+  about:
+    - rel_claessens2008_bound_ratio_scales_langmuir
+    - binding_energy_vs_concentration
+    - weak_binding_cbrt_scaling
+    - incompressible_defect_energy_eq6_middle
+    - claessens2008/effective_bound_ratio
+    - claessens2008/diameter_scaling_Rstar
+    - claessens2008/twist_energy_per_monomer
+    - claessens2008/D_fig1c_measured
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit of claessens2008 + gov2008 yields
+    1 verified relation, 0 cited-value links, and 0 cross-validations:
+    (1) Citations: Neither paper cites the other (published three weeks apart in July 2008;
+    claessens2008 ref-27 is Haviv, Gov, Ideses & Bernheim-Groswasser 2008 [haviv2008], not
+    gov2008). Zero cited-value links exist.
+    (2) ModelAtlas relation: rel_claessens2008_bound_ratio_scales_langmuir (proposed, scales_as)
+    verifies that Claessens et al. (2008)'s closed-system mass-action bound ratio
+    R*(R, K_d, c_a) reduces in the dilute-actin (non-depleted) crossover regime (c_a << K_d)
+    to the exact log-slopes of Gov's grand-canonical Langmuir binding isotherm
+    eps_b ~ c*exp(eps)/(1 + c*exp(eps)) under standard-state mapping c = R*c_a/(1 M) and
+    eps = -ln(K_d/(1 M)) (~15 for fascin), while highlighting that fascin depletion breaks
+    this equivalence at Claessens's actual experimental concentrations (c_a = 2.4-71 uM >> K_d).
+    Three non-linked candidates were audited explicitly: (a) the automated shape match between
+    claessens2008/twist_energy_per_monomer (torsional elastic energy per monomer) and
+    gov2008/incompressible_defect_energy_eq6_middle (bending energy per slice, dimensionally
+    energy only because Eq. 6 middle omits division by L_p) is coincidental; (b)
+    claessens2008/bundle_geometry_saturation R = (1/u)*(3 - 3.5*n_f^(-1/2)) and
+    gov2008/binding_energy_eq1 E_bind = -pi*eps_b*(1 - 2*n_f^(-1/2)) share bulk-minus-surface
+    1/sqrt(n_f) structure but differ in surface-to-bulk ratio (3.5/3 = 1.17 vs 2.0); (c)
+    claessens2008/diameter_scaling_Rstar (empirical fit D ~ (R*)^0.3; digitized Fig. 1C rising
+    log-log slope 0.283 for R* <= 0.174) differs from gov2008/weak_binding_cbrt_scaling
+    (R'_{0,b} ~ eps_b^(1/3), exponent 0.333, mismatch 0.033 > 1e-2) and rests on equilibrium
+    helical overtwist rather than quenched packing defects.
+    (3) Cross-validation: gov2008 has 0 origin: measured datums. Claessens2008's 26 origin:
+    measured datums (TEM bundle diameters D(R*), maximum n_f ~ 20, plateau R* ~ 0.25, droplet
+    ring-splitting boundaries, SAXS hexagonal/layer-line peaks and profiles, helical overtwist
+    Delta_theta(R*), and R*(n_f)) cannot be predicted by gov2008: gov2008 has no helical-twist,
+    SAXS, or droplet model, outputs radius R_0 (not diameter D) from adhesion energy eps_b [pN]
+    and unstated defect parameters rather than bound ratio R* [dimensionless], cannot produce
+    the saturation plateau at R* ~ 0.25 once bound occupancy R* is the independent variable, and
+    assumes quenched packing defects contradicted by Claessens's preparation-independent bundles.
+
+- id: q_dutta2016_cross_audit_and_no_validation
+  kind: choice
+  about:
+    - equilibrium_radius_bulk_monopole_from_energy
+    - equilibrium_radius_bulk_monopole_eq7
+    - equilibrium_radius_incompressible_eq9
+    - equilibrium_radius_surface_monopole_eq8
+    - dutta2016/in_plane_rg_def
+    - dutta2016/bundle_size_eq8
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit of dutta2016 + gov2008 yields
+    0 ModelAtlas relations, 0 cited-value links, and 0 cross-validations:
+    (1) Citations: dutta2016 cites gov2008 qualitatively as ref-22 on p. 2 col. 2 ("Gov [22]
+    proposes that quenched packing defects (splay and twist) limit the size of the bundles in
+    cells' cytoskeleton"; dutta2016 ref-6 is haviv2008). Zero numerical values are taken from
+    gov2008 (dutta2016's two reported actin parameters come from ref-11, Borukhov et al. 2005).
+    (2) ModelAtlas: The two frameworks occupy distinct physical regimes with incompatible
+    scaling laws. dutta2016 performs a weak-segregation quadratic RPA spinodal stability analysis
+    of aligned polymers with competing screened Yukawa-Bessel repulsion and Gaussian attraction
+    (yielding unscreened finite-bundle size D* = 2*pi/k_min ~ Gamma_R^(-1/2) and screened
+    k = 0 macrophase separation below critical lambda_R), whereas gov2008 performs sharp-interface
+    canonical energy minimization of a single cylindrical bundle with quenched packing defects
+    (yielding Rayleigh-like exponents R'_{0,b} ~ (eps_b/(K*rho))^(1/3), R_{0,s} ~ eps_b/(k'_s*rho),
+    Lambert-W Eq. 7, and empty-shell pole Eq. 3). The automated shape match between
+    dutta2016/in_plane_rg_def (single-chain transverse radius of gyration sqrt(L*k_B T/epsilon))
+    and gov2008/equilibrium_radius_bulk_monopole_from_energy is purely dimensional coincidence.
+    (3) Cross-validation: Both dutta2016 and gov2008 are purely theoretical papers with 0
+    origin: measured datums in either record.
+
+- id: q_gov2018_cross_audit_and_no_validation
+  kind: choice
+  about:
+    - equilibrium_radius_bulk_monopole_eq7
+    - gov2018/cylindrical_ring_critical_mode
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit of gov2008 + gov2018 yields
+    0 ModelAtlas relations, 0 cited-value links, and 0 cross-validations:
+    (1) Citations: Despite sharing author Nir S. Gov, gov2018 does NOT cite gov2008 (PRE 78,
+    011916); the automated author+year match flagged gov2018 ref-33 (Shlomovitz & Gov 2008,
+    EPL 84, 58008 on curved membrane inclusions, alongside ref-87 and ref-117 by Shlomovitz &
+    Gov 2008 on contractile rings and membrane waves). Zero cited-value links exist.
+    (2) ModelAtlas: The two papers treat physically disjoint systems — quenched packing defects
+    controlling the width of 3D cross-linked biopolymer bundles (gov2008) vs continuum Helfrich
+    lipid membranes coupled to curved membrane protein complexes (CMCs) and active actomyosin
+    protrusions/rings/waves (gov2018). The automated shape match between
+    gov2008/equilibrium_radius_bulk_monopole_eq7 and gov2018/cylindrical_ring_critical_mode
+    is purely dimensional coincidence.
+    (3) Cross-validation: Both gov2008 and gov2018 are pure theory/review papers with 0
+    origin: measured datums in either record.
+
+- id: q_grason2007_cross_audit_and_no_validation
+  kind: choice
+  about:
+    - binding_energy_eq1
+    - equilibrium_radius_incompressible_eq9
+    - equilibrium_radius_surface_monopole_eq8
+    - fokker_planck_steady_state_boltzmann
+    - grason2007/columnar_free_energy_eq6
+    - grason2007/columnar_free_energy_from_eq5
+    - grason2007/columnar_radius_low_sigma
+    - grason2007/solid_radius_shear_regime
+    - grason2007/cluster_size_distribution_eq7
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit of gov2008 + grason2007 yields
+    0 ModelAtlas relations, 0 cited-value links, and 0 cross-validations:
+    (1) Citations: gov2008 cites grason2007 qualitatively as ref-8 on p. 1 col. 1, contrasting
+    Grason & Bruinsma's global chiral twist frustration mechanism with Gov's neutral, achiral
+    quenched packing-defect model. Zero numerical values are taken from grason2007 (grason2007
+    predates gov2008).
+    (2) ModelAtlas: The two theories predict opposite physical scaling with adhesion/surface
+    energy and differ structurally across all model classes:
+    (a) Achiral baseline energy (automated shape match binding_energy_eq1 vs
+    columnar_free_energy_from_eq5): in the achiral limit gamma -> 0 (f_0 -> 0), Grason Eq. (6)
+    gives extensive total bundle free energy per length Delta F/L = -pi*R^2*epsilon + 2*pi*R*Sigma,
+    whereas Gov Eq. (1) gives intensive per-filament energy E_bind = -pi*eps_b + 2*pi*a*eps_b/R
+    = (Delta F/L) / (R/a)^2 under epsilon = eps_b/a^2 and Sigma = eps_b/a; the R-dependent
+    filament-count factor N = (R/a)^2 separates them in R without an unstated helper model.
+    (b) Equilibrium bundle radius: in gov2008, stronger adhesion eps_b (larger surface tension
+    Sigma = eps_b/a) thickens bundles (R_{0,s} ~ eps_b^(+1), R'_{0,b} ~ eps_b^(+1/3), R_{0,b}
+    and R_{0,shell} strictly increasing in eps_b), whereas in grason2007 finite chiral bundles
+    exist only below a critical surface tension Sigma < Sigma_c and shrink as surface tension
+    increases (columnar low-Sigma R_0 ~ Sigma^(-3), solid shear R_0 ~ Sigma^(-1/3), solid
+    bending R_0 ~ Sigma^(-1/5)).
+    (c) Size distribution: grason2007 Eq. (7) is grand-canonical equilibrium
+    P(R) ~ R^2*exp(-(Delta F - mu*rho_0*pi*R^2)/(k_B*T)) (extensive in L*N ~ R^2), whereas
+    gov2008 Eq. (11) is a non-equilibrium Fokker-Planck steady state
+    P(R) ~ exp(-2*beta*(E_total - E_0)/D_R) exponentiating intensive per-filament energy.
+    (3) Cross-validation: Both gov2008 and grason2007 are purely analytical theory papers with
+    0 origin: measured datums in either record.
+
+- id: q_haviv2008_cross_audit_and_no_validation
+  kind: choice
+  about:
+    - rel_haviv2008_langmuir_binding_energy
+    - rel_haviv2008_incomp_boltzmann_scales_eq1_tail
+    - rel_haviv2008_eq1_reduces_to_incomp_gaussian_tail
+    - rel_haviv2008_bulk_monopole_eq4_scales_eq1_tail
+    - filament_radius_a_printed
+    - incompressible_boltzmann_dist
+    - bulk_monopole_boltzmann_dist
+    - incompressible_gaussian_tail
+    - haviv2008/size_distribution_eq1
+    - haviv2008/fascin_adsorption_probability
+    - haviv2008/effective_filament_diameter_Df
+    - haviv2008/table_s1_Db_mean
+    - haviv2008/P_fig2a_measured
+    - haviv2008/lnP_fig2b_measured
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit of gov2008 + haviv2008 yields
+    4 ModelAtlas relations (3 verified, 1 honest not_verified audit of a stated claim),
+    0 cited-value links, and 0 cross-validations:
+    (1) ModelAtlas relations:
+    (a) rel_haviv2008_langmuir_binding_energy (proposed, scales_as, verified): Gov's Langmuir
+    binding energy eps_b ~ c*exp(eps)/(1 + c*exp(eps)) (p. 4 col. 1) and Haviv's fascin
+    adsorption probability p_fa = beta*phi*exp(eps/k_B T)/(1 + beta*phi*exp(eps/k_B T))
+    (p. 7 col. 1, co-authored by Gov) share identical log-slopes under c = beta*phi.
+    (b) rel_haviv2008_incomp_boltzmann_scales_eq1_tail (stated, scales_as, verified) and
+    rel_haviv2008_eq1_reduces_to_incomp_gaussian_tail (proposed, reduces_to as kon_over_D -> 0,
+    verified): verify Gov's p. 4 col. 2 claim for Eq. (6) that the incompressible bulk-defect
+    Boltzmann distribution shares the exact large-R Gaussian tail exp(-2*beta*K*rho*a^2*R^2/(D_R*L_p^4))
+    of Haviv Eq. (1) P(N_b) = R_n*exp(2*(k_on/D)*sqrt(N_b) - (k_off/D)*N_b) under N_b = (R/a)^2
+    and k_off/D = 2*beta*K*rho*a^4/(D_R*L_p^4) (which is exponential in N_b and exact shifted
+    Gaussian in R). At small R, however, the two models differ qualitatively: Haviv Eq. (1) rises
+    via exp(+2*(k_on/D)*(R/a)) with finite P(0) = R_n, whereas Gov Eq. (1)+(6) suppresses small R
+    via exp(-4*pi*beta*a*eps_b/(D_R*R)) -> 0 as R -> 0+.
+    (c) rel_haviv2008_bulk_monopole_eq4_scales_eq1_tail (stated, scales_as, not_verified):
+    honestly tests and refutes Gov's p. 4 col. 2 claim that bulk monopole Eq. (4) also produces
+    a Gaussian tail matching Haviv [6], because Eq. (4)'s extra ln(R/a) factor yields a steeper
+    super-Gaussian tail exp(-c*R^2*ln(R/a)) (corroborating q_bulk_monopole_eq4_supergaussian_vs_gaussian).
+    (2) Cited values (factor-of-2 radius vs diameter discrepancy): gov2008 p. 2 col. 1 prints
+    `a ~ 10 nm is the radius of the individual filaments and surrounding cross linkers [5,6]`
+    (`filament_radius_a_printed`, recorded with from_source: ref-5 in data.yaml), co-citing
+    ref-5 (Lai et al. 2007) and ref-6 (haviv2008). In haviv2008 p. 2 col. 2, `D_f = 9 nm`
+    (`effective_filament_diameter_Df`, cited from Ishikawa et al. 2003) is the effective filament
+    DIAMETER (center-to-center spacing, N_b = (D_b/D_f)^2), corresponding to a filament radius
+    D_f/2 = 4.5 nm (~2x smaller than Gov's a ~ 10 nm). Thus filament_radius_a_printed cannot be
+    linked to haviv2008/effective_filament_diameter_Df in cited.yaml (both physically and because
+    data.yaml's immutable from_source: ref-5 cannot be overridden).
+    (3) Cross-validation: gov2008 has 0 origin: measured datums. Haviv2008's 6 origin: measured
+    datums — 3 bundling-onset phi thresholds, Table S1 mean bundle diameters D_{b,mean}(phi)
+    (42.4-75.7 nm), and Fig. 2(a)-(b) cryo-TEM histograms P(N_b) and ln P(N_b) at phi = 3/1 —
+    cannot be validly cross-validated by gov2008: (i) gov2008 leaves all energy, defect, mobility,
+    and diffusivity parameters numerically unstated (so any curve comparison against Fig. 2a-b
+    would fit every unstated parameter directly to Haviv's data); (ii) gov2008 predicts no
+    bundling-onset threshold, outputs mode radius R_0 (not mean diameter D_{b,mean}, which
+    exceeds 2*R_peak = D_f*sqrt(N_peak) by 45-71% across Haviv's skewed distributions: 42.4 vs
+    24.8 nm at phi = 0.2 through 75.7 vs 51.1 nm at phi = 6) as a function of eps_b [pN] rather
+    than phi [dimensionless], and parameterizes P(R) by R [nm] rather than N_b [dimensionless];
+    (iii) physically, Haviv's Fig. 2 and Table S1 measure bundles nucleated from monomeric
+    co-polymerization where haviv2008 p. 451 col. 2 explicitly notes packing defects are
+    irrelevant in short flat disc seeds, whereas mixing preformed long filaments with fascin
+    (Gov 2008's assumed aggregation route) yielded disordered bundles from which no width
+    distribution could be extracted (haviv2008 Fig. 4a,c).
+
+- id: q_mietke2019_cross_audit_and_no_validation
+  kind: choice
+  about:
+    - growth_flux_eq10
+    - binding_energy_vs_concentration
+    - mietke2019/sphere_mode_l_stability_eqs69_71
+    - mietke2019/hill_regulation_eq12
+  text: >
+    Cross-record ModelAtlas, citation, and validation audit of gov2008 + mietke2019 yields
+    0 ModelAtlas relations, 0 cited-value links, and 0 cross-validations:
+    (1) Citations: Neither paper cites the other; the automated author+year match flagged
+    mietke2019 ref-17 (Shlomovitz & Gov 2008, Biophys. J. 94, 1155-1168 on contractile ring
+    initiation, not gov2008 PRE 78, 011916). Zero cited-value links exist.
+    (2) ModelAtlas: The two papers model physically disjoint systems — passive cross-linked
+    biopolymer bundles with quenched packing defects (gov2008) vs self-organized shape dynamics
+    of active viscous fluid surfaces (spheres and tubes) regulated by diffusing cortical stress
+    regulators (mietke2019). The automated shape match between gov2008/growth_flux_eq10 and
+    mietke2019/sphere_mode_l_stability_eqs69_71 is purely dimensional coincidence, and the
+    formal rational similarity between mietke2019/hill_regulation_eq12 at Hill exponent m = 1
+    and gov2008/binding_energy_vs_concentration is an unrelated constitutive coincidence across
+    disjoint physical domains and is not linked.
+    (3) Cross-validation: Both gov2008 and mietke2019 are pure theory/simulation papers with
+    0 origin: measured datums in either record.
+
